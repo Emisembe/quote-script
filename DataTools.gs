@@ -14,11 +14,19 @@ function onOpen() {
     .addItem('Clean & Sort Sheet…', 'promptCleanSheet')
     .addSeparator()
     .addSubMenu(
+      SpreadsheetApp.getUi().createMenu('Analyse')
+        .addItem('Column Summary',       'runColumnSummary')
+        .addItem('Frequency Table…',     'promptFrequencyTable')
+        .addItem('Quick Stats Panel',    'runQuickStats')
+        .addItem('Filter to New Sheet…', 'promptFilterToSheet')
+    )
+    .addSeparator()
+    .addSubMenu(
       SpreadsheetApp.getUi().createMenu('Create Chart')
-        .addItem('Bar Chart',     'createBarChart')
-        .addItem('Line Chart',    'createLineChart')
-        .addItem('Pie Chart',     'createPieChart')
-        .addItem('Column Chart',  'createColumnChart')
+        .addItem('Bar Chart',       'createBarChart')
+        .addItem('Line Chart',      'createLineChart')
+        .addItem('Pie Chart',       'createPieChart')
+        .addItem('Column Chart',    'createColumnChart')
         .addItem('Map / Geo Chart', 'createGeoChart')
     )
     .addSeparator()
@@ -105,6 +113,239 @@ function cleanAndSortSheet(sheet) {
   for (var c = 1; c <= result[0].length; c++) {
     sheet.autoResizeColumn(c);
   }
+}
+
+
+// -----------------------------------------------------------
+// ANALYSE — COLUMN SUMMARY
+// -----------------------------------------------------------
+
+function runColumnSummary() {
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
+  var src   = ss.getActiveSheet();
+  var data  = src.getDataRange().getValues();
+  if (data.length < 2) { SpreadsheetApp.getUi().alert('Sheet has no data rows.'); return; }
+
+  var headers  = data[0];
+  var rows     = data.slice(1);
+  var numCols  = headers.length;
+
+  var summary  = [['Column', 'Total Rows', 'Filled', 'Blanks', 'Unique Values', 'Detected Type', 'Min', 'Max']];
+
+  for (var c = 0; c < numCols; c++) {
+    var col      = rows.map(function(r) { return r[c]; });
+    var filled   = col.filter(function(v) { return v !== '' && v !== null; });
+    var blanks   = col.length - filled.length;
+    var unique   = {};
+    filled.forEach(function(v) { unique[v] = true; });
+    var uniqueCount = Object.keys(unique).length;
+
+    // Detect predominant type
+    var numCount  = filled.filter(function(v) { return typeof v === 'number'; }).length;
+    var dateCount = filled.filter(function(v) { return v instanceof Date; }).length;
+    var type = dateCount > numCount && dateCount > filled.length / 2 ? 'Date'
+             : numCount > filled.length / 2 ? 'Number'
+             : 'Text';
+
+    var min = '', max = '';
+    if (type === 'Number') {
+      var nums = filled.map(Number);
+      min = Math.min.apply(null, nums);
+      max = Math.max.apply(null, nums);
+    } else if (type === 'Date') {
+      var times = filled.map(function(v) { return v.getTime(); });
+      min = new Date(Math.min.apply(null, times)).toLocaleDateString();
+      max = new Date(Math.max.apply(null, times)).toLocaleDateString();
+    }
+
+    summary.push([headers[c], rows.length, filled.length, blanks, uniqueCount, type, min, max]);
+  }
+
+  var destName = src.getName() + '_summary';
+  var dest = ss.getSheetByName(destName) || ss.insertSheet(destName);
+  dest.clearContents();
+  dest.getRange(1, 1, summary.length, summary[0].length).setValues(summary);
+
+  // Style header row
+  var hdr = dest.getRange(1, 1, 1, summary[0].length);
+  hdr.setFontWeight('bold').setBackground('#4a86e8').setFontColor('#ffffff');
+  for (var i = 1; i <= summary[0].length; i++) dest.autoResizeColumn(i);
+
+  ss.setActiveSheet(dest);
+  SpreadsheetApp.getUi().alert('Column summary written to sheet "' + destName + '".');
+}
+
+
+// -----------------------------------------------------------
+// ANALYSE — FREQUENCY TABLE
+// -----------------------------------------------------------
+
+function promptFrequencyTable() {
+  var ui      = SpreadsheetApp.getUi();
+  var sheet   = SpreadsheetApp.getActiveSheet();
+  var headers = sheet.getDataRange().getValues()[0];
+  var names   = headers.join(', ');
+
+  var response = ui.prompt(
+    'Frequency Table',
+    'Enter the column header name to count:\n(Available: ' + names + ')',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (response.getSelectedButton() !== ui.Button.OK) return;
+
+  var colName = response.getResponseText().trim();
+  var colIdx  = headers.indexOf(colName);
+  if (colIdx === -1) { ui.alert('Column "' + colName + '" not found.'); return; }
+
+  var data    = sheet.getDataRange().getValues().slice(1);
+  var counts  = {};
+  data.forEach(function(row) {
+    var val = String(row[colIdx]).trim();
+    if (val === '') val = '(blank)';
+    counts[val] = (counts[val] || 0) + 1;
+  });
+
+  var rows = Object.keys(counts).map(function(k) { return [k, counts[k]]; });
+  rows.sort(function(a, b) { return b[1] - a[1]; }); // descending by count
+
+  var total    = data.length;
+  var tableData = [['Value', 'Count', '% of Total']].concat(
+    rows.map(function(r) { return [r[0], r[1], (r[1] / total * 100).toFixed(1) + '%']; })
+  );
+
+  var ss       = SpreadsheetApp.getActiveSpreadsheet();
+  var destName = sheet.getName() + '_freq_' + colName.replace(/\s+/g, '_');
+  var dest     = ss.getSheetByName(destName) || ss.insertSheet(destName);
+  dest.clearContents();
+  dest.getRange(1, 1, tableData.length, 3).setValues(tableData);
+
+  var hdr = dest.getRange(1, 1, 1, 3);
+  hdr.setFontWeight('bold').setBackground('#6aa84f').setFontColor('#ffffff');
+  [1, 2, 3].forEach(function(i) { dest.autoResizeColumn(i); });
+
+  ss.setActiveSheet(dest);
+  ui.alert('Frequency table for "' + colName + '" written to "' + destName + '".');
+}
+
+
+// -----------------------------------------------------------
+// ANALYSE — QUICK STATS PANEL
+// -----------------------------------------------------------
+
+function runQuickStats() {
+  var ui      = SpreadsheetApp.getUi();
+  var sheet   = SpreadsheetApp.getActiveSheet();
+  var data    = sheet.getDataRange().getValues();
+  if (data.length < 2) { ui.alert('Sheet has no data rows.'); return; }
+
+  var headers = data[0];
+  var rows    = data.slice(1);
+
+  // Collect only numeric columns
+  var numericCols = [];
+  headers.forEach(function(h, c) {
+    var nums = rows.map(function(r) { return r[c]; }).filter(function(v) { return typeof v === 'number'; });
+    if (nums.length > 0) numericCols.push({ name: h, values: nums });
+  });
+
+  if (numericCols.length === 0) { ui.alert('No numeric columns found.'); return; }
+
+  var statRows = [['Column', 'Count', 'Sum', 'Mean', 'Median', 'Std Dev', 'Min', 'Max']];
+
+  numericCols.forEach(function(col) {
+    var n    = col.values.length;
+    var sum  = col.values.reduce(function(a, b) { return a + b; }, 0);
+    var mean = sum / n;
+
+    var sorted = col.values.slice().sort(function(a, b) { return a - b; });
+    var median = n % 2 === 0
+      ? (sorted[n / 2 - 1] + sorted[n / 2]) / 2
+      : sorted[Math.floor(n / 2)];
+
+    var variance = col.values.reduce(function(acc, v) { return acc + Math.pow(v - mean, 2); }, 0) / n;
+    var stddev   = Math.sqrt(variance);
+
+    statRows.push([
+      col.name,
+      n,
+      +sum.toFixed(2),
+      +mean.toFixed(2),
+      +median.toFixed(2),
+      +stddev.toFixed(2),
+      sorted[0],
+      sorted[n - 1]
+    ]);
+  });
+
+  var ss       = SpreadsheetApp.getActiveSpreadsheet();
+  var destName = sheet.getName() + '_stats';
+  var dest     = ss.getSheetByName(destName) || ss.insertSheet(destName);
+  dest.clearContents();
+  dest.getRange(1, 1, statRows.length, statRows[0].length).setValues(statRows);
+
+  var hdr = dest.getRange(1, 1, 1, statRows[0].length);
+  hdr.setFontWeight('bold').setBackground('#e69138').setFontColor('#ffffff');
+  for (var i = 1; i <= statRows[0].length; i++) dest.autoResizeColumn(i);
+
+  ss.setActiveSheet(dest);
+  ui.alert('Quick stats written to "' + destName + '".');
+}
+
+
+// -----------------------------------------------------------
+// ANALYSE — FILTER TO NEW SHEET
+// -----------------------------------------------------------
+
+function promptFilterToSheet() {
+  var ui      = SpreadsheetApp.getUi();
+  var sheet   = SpreadsheetApp.getActiveSheet();
+  var headers = sheet.getDataRange().getValues()[0];
+  var names   = headers.join(', ');
+
+  var colResp = ui.prompt(
+    'Filter to New Sheet (1 of 2)',
+    'Column to filter on:\n(Available: ' + names + ')',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (colResp.getSelectedButton() !== ui.Button.OK) return;
+  var colName = colResp.getResponseText().trim();
+  var colIdx  = headers.indexOf(colName);
+  if (colIdx === -1) { ui.alert('Column "' + colName + '" not found.'); return; }
+
+  var valResp = ui.prompt(
+    'Filter to New Sheet (2 of 2)',
+    'Show rows where "' + colName + '" equals:',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (valResp.getSelectedButton() !== ui.Button.OK) return;
+  var filterVal = valResp.getResponseText().trim();
+
+  var allRows   = sheet.getDataRange().getValues();
+  var header    = allRows[0];
+  var matched   = allRows.slice(1).filter(function(row) {
+    return String(row[colIdx]).trim() === filterVal;
+  });
+
+  if (matched.length === 0) {
+    ui.alert('No rows found where "' + colName + '" = "' + filterVal + '".');
+    return;
+  }
+
+  var ss       = SpreadsheetApp.getActiveSpreadsheet();
+  var destName = sheet.getName() + '_' + colName.replace(/\s+/g, '_') + '_' + filterVal.replace(/\s+/g, '_');
+  destName     = destName.substring(0, 100); // sheet name length limit
+  var dest     = ss.getSheetByName(destName) || ss.insertSheet(destName);
+  dest.clearContents();
+
+  var output = [header].concat(matched);
+  dest.getRange(1, 1, output.length, output[0].length).setValues(output);
+
+  var hdr = dest.getRange(1, 1, 1, header.length);
+  hdr.setFontWeight('bold').setBackground('#674ea7').setFontColor('#ffffff');
+  for (var i = 1; i <= header.length; i++) dest.autoResizeColumn(i);
+
+  ss.setActiveSheet(dest);
+  ui.alert(matched.length + ' rows written to "' + destName + '".');
 }
 
 
