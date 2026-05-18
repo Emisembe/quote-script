@@ -38,6 +38,13 @@ function onOpen() {
         .addItem('Balance Sheet Only',   'generateBSCustom')
         .addItem('Cash Flow Only',       'generateCFCustom')
     )
+    .addSubMenu(
+      SpreadsheetApp.getUi().createMenu('Health Ratios')
+        .addItem('This Month',        'generateRatiosThisMonth')
+        .addItem('This Quarter',      'generateRatiosThisQuarter')
+        .addItem('This Year',         'generateRatiosThisYear')
+        .addItem('Custom Date Range', 'generateRatiosCustom')
+    )
     .addSeparator()
     .addItem('📋 View Chart of Accounts', 'showChartOfAccounts')
     .addItem('ℹ️  Help & Instructions',   'showHelp')
@@ -58,12 +65,13 @@ function _generateAll(range) {
   const netIncome = generatePL(range);
   generateBS(range, netIncome);
   generateCF(range, netIncome);
+  generateRatios(range);
   SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(
     SpreadsheetApp.getActiveSpreadsheet().getSheetByName('P&L')
   );
   SpreadsheetApp.getUi().alert(
-    '✅ All three statements generated!\n\n' +
-    'Check tabs: P&L, Balance Sheet, Cash Flow'
+    '✅ All statements generated!\n\n' +
+    'Check tabs: P&L | Balance Sheet | Cash Flow | Financial Ratios'
   );
 }
 
@@ -85,6 +93,16 @@ function generateBSThisYear()    { generateBS(currentYearRange(), null); }
 function generateBSCustom() {
   const range = promptDateRange();
   if (range) generateBS(range, null);
+}
+
+// ── Ratios shortcuts ─────────────────────────────────────────
+
+function generateRatiosThisMonth()   { generateRatios(currentMonthRange()); }
+function generateRatiosThisQuarter() { generateRatios(currentQuarterRange()); }
+function generateRatiosThisYear()    { generateRatios(currentYearRange()); }
+function generateRatiosCustom() {
+  const range = promptDateRange();
+  if (range) generateRatios(range);
 }
 
 // ── Cash Flow shortcuts ──────────────────────────────────────

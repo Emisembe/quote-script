@@ -18,10 +18,11 @@ Google Forms and Google Sheets — no accounting software required.
 8. [Reading the P&L Statement](#8-reading-the-pl-statement)
 9. [Reading the Balance Sheet](#9-reading-the-balance-sheet)
 10. [Reading the Cash Flow Statement](#10-reading-the-cash-flow-statement)
-11. [Customising the Chart of Accounts](#11-customising-the-chart-of-accounts)
-12. [Month-End and Quarter-End Routine](#12-month-end-and-quarter-end-routine)
-13. [Troubleshooting](#13-troubleshooting)
-14. [Glossary](#14-glossary)
+11. [Reading the Financial Ratios Dashboard](#11-reading-the-financial-ratios-dashboard)
+12. [Customising the Chart of Accounts](#12-customising-the-chart-of-accounts)
+13. [Month-End and Quarter-End Routine](#13-month-end-and-quarter-end-routine)
+14. [Troubleshooting](#14-troubleshooting)
+15. [Glossary](#15-glossary)
 
 ---
 
@@ -556,7 +557,158 @@ This ending balance should match the Cash figure on your Balance Sheet.
 
 ---
 
-## 11. Customising the Chart of Accounts
+## 11. Reading the Financial Ratios Dashboard
+
+The **Financial Ratios** tab is generated alongside the three statements whenever
+you run **All Three Statements**, or independently via
+**📊 Financial Statements → Health Ratios**.
+
+It contains 19 ratios across five categories, each with a colour-coded health status.
+
+---
+
+### The Traffic Light System
+
+Every ratio is assessed against general business benchmarks and rated:
+
+| Status | Colour | Meaning |
+|---|---|---|
+| **✓ Healthy** | Dark green | The ratio is within a strong range |
+| **! Watch** | Dark amber | The ratio is borderline — monitor and investigate |
+| **✗ Concern** | Dark red | The ratio is outside healthy norms — action may be needed |
+| **— N/A** | Grey | Not enough data to calculate (e.g. zero revenue) |
+
+> Hover over any ratio name in the sheet to read a one-line explanation of
+> what it measures.
+
+---
+
+### Category 1 — Liquidity Ratios
+
+These answer: *Can the business pay its short-term bills?*
+
+| Ratio | Formula | Healthy | What it tells you |
+|---|---|---|---|
+| **Current Ratio** | Current Assets ÷ Current Liabilities | > 2.0x | For every £1 owed short-term, how many £ of liquid assets exist |
+| **Quick Ratio** | (Current Assets − Prepaid) ÷ Current Liabilities | > 1.0x | Stricter liquidity — excludes the least-liquid current assets |
+| **Cash Ratio** | Cash ÷ Current Liabilities | > 0.5x | The strictest test — cash on hand versus immediate debts |
+| **Net Working Capital** | Current Assets − Current Liabilities | Positive | The raw cash buffer available after paying all short-term debts |
+
+**What to do if these are red:**
+- Current and Quick Ratio below 1 means you cannot cover short-term debts —
+  chase outstanding invoices, delay non-essential purchases, or arrange a credit facility.
+- Cash Ratio near zero means a single late payment from a customer could cause a problem.
+
+---
+
+### Category 2 — Profitability Ratios
+
+These answer: *Is the business making money, and how efficiently?*
+
+| Ratio | Formula | Healthy | What it tells you |
+|---|---|---|---|
+| **Gross Profit Margin** | Gross Profit ÷ Revenue × 100 | > 40% | What percentage of each sale survives after direct costs |
+| **Net Profit Margin** | Net Income ÷ Revenue × 100 | > 10% | The final profit kept from every £1 of sales |
+| **Operating Profit Margin** | Net Operating Income ÷ Revenue × 100 | > 15% | Profitability from core operations, before interest and non-operating items |
+| **EBITDA Margin** | EBITDA ÷ Revenue × 100 | > 20% | Operational cash-generating power before accounting adjustments |
+| **Return on Assets (ROA)** | Net Income ÷ Total Assets × 100 | > 5% | How hard every £1 of assets is working to produce profit |
+| **Return on Equity (ROE)** | Net Income ÷ Total Equity × 100 | > 15% | The return owners receive on money they put into the business |
+
+**What to do if these are red:**
+- Low Gross Margin → your pricing or direct costs need work. Either raise prices
+  or renegotiate supplier/production costs.
+- Low Net Margin with a healthy Gross Margin → operating expenses are too high.
+  Review your OpEx line by line.
+- Low ROA or ROE → the business is sitting on too many assets relative to the
+  profit they generate, or equity is too large compared to returns.
+
+---
+
+### Category 3 — Leverage & Solvency Ratios
+
+These answer: *How much debt does the business carry, and is it sustainable long-term?*
+
+| Ratio | Formula | Healthy | What it tells you |
+|---|---|---|---|
+| **Debt-to-Equity** | Total Liabilities ÷ Total Equity | < 1.0x | How much of the business is funded by debt versus owners |
+| **Debt-to-Assets** | Total Liabilities ÷ Total Assets | < 0.5x | The proportion of assets financed by creditors |
+| **Equity Multiplier** | Total Assets ÷ Total Equity | < 2.0x | Financial leverage — higher means more assets funded by debt |
+| **Debt-to-Capitalisation** | Total Liabilities ÷ (Liabilities + Equity) | < 40% | Debt as a share of the total capital structure |
+
+**What to do if these are red:**
+- High Debt-to-Equity (above 2) means creditors own more of the business than
+  the owners — a risk to lenders and a constraint on future borrowing.
+- Pay down debt, retain more profit rather than distributing it, or raise equity.
+
+---
+
+### Category 4 — Efficiency Ratios
+
+These answer: *How well is the business using what it has?*
+
+| Ratio | Formula | Healthy | What it tells you |
+|---|---|---|---|
+| **Asset Turnover** | Revenue ÷ Total Assets | > 1.0x | How many £1 of sales each £1 of assets generates |
+| **Revenue per £ of Equity** | Revenue ÷ Total Equity | > 1.5x | How effectively owner capital drives sales volume |
+
+**What to do if these are red:**
+- Low Asset Turnover can mean idle assets (unused equipment, excess stock, uncollected
+  receivables). Dispose of surplus assets or accelerate collections.
+
+---
+
+### Category 5 — Cash Flow Ratios
+
+These answer: *Is the profit real — backed by actual cash?*
+
+| Ratio | Formula | Healthy | What it tells you |
+|---|---|---|---|
+| **Operating CF to Sales** | Operating Cash Flow ÷ Revenue | > 0.10x | Quality check — does profit convert to real cash? |
+| **Free Cash Flow** | Operating CF + Investing CF | Positive | Cash left after investing — funds growth and debt repayment |
+| **Cash Flow Coverage** | Operating CF ÷ Total Liabilities | > 0.20x | Can the business service all its debt from cash generated? |
+
+**What to do if these are red:**
+- Negative Operating CF to Sales while the P&L shows profit usually means
+  customers aren't paying on time. Focus on receivables collection.
+- Negative Free Cash Flow is sometimes fine during a growth phase (heavy investment),
+  but sustained negative FCF requires a funding plan.
+
+---
+
+### The Scorecard
+
+At the bottom of the Ratios tab, a scorecard summarises:
+
+```
+✓  Healthy     12
+!  Watch        4
+✗  Concern      3
+Total scored   19
+
+74% of ratios healthy  –  Good overall health
+```
+
+A score of 70 %+ is generally solid. Below 40 % warrants a structured review
+with your accountant or CFO.
+
+---
+
+### Important Note on Benchmarks
+
+The benchmarks shown are **general guidelines** for most small and medium
+businesses. They vary significantly by industry:
+
+- **Retail** typically has low margins but high asset turnover.
+- **Professional services** typically have high margins but low asset values.
+- **Manufacturing** typically carries more debt and fixed assets.
+
+Always compare your ratios against others in your specific sector, not just
+the generic benchmarks in the sheet.
+
+---
+
+## 12. Customising the Chart of Accounts
+
 
 The default Chart of Accounts covers most small businesses. To adapt it to
 your organisation, edit `ChartOfAccounts.gs` in the Apps Script editor.
