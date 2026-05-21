@@ -42,8 +42,11 @@ function onOpen() {
     .addSeparator()
     .addSubMenu(
       ui.createMenu('💰 Budget')
-        .addItem('Create Budget Template (fill in targets)', 'createBudgetTemplate')
-        .addItem('Generate Budget vs Actual Report',         'generateBudgetVsActual')
+        .addItem('1. Create Budget Template (fill in targets)',     'createBudgetTemplate')
+        .addItem('2. Generate Budget vs Actual Report',             'generateBudgetVsActual')
+        .addSeparator()
+        .addItem('3. Create Budget Plan from Last Year',            'generateBudgetPlan')
+        .addItem('4. Export Budget Plan to Google Doc',             'exportBudgetDocument')
     )
     .addSeparator()
     .addItem('📋 View Chart of Accounts', 'showChartOfAccounts')
