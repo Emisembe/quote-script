@@ -17,9 +17,13 @@ const COL = {
   DESCRIPTION: 11
 };
 
-function getResponseSheet() {
+// Pass an explicit sheetName to target a specific sheet,
+// or omit it to auto-detect the first "Form Responses" sheet.
+function getResponseSheet(sheetName) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  // Form responses land in a sheet whose name starts with "Form Responses"
+  if (sheetName) {
+    return ss.getSheetByName(sheetName) || null;
+  }
   const sheets = ss.getSheets();
   for (const sh of sheets) {
     if (sh.getName().startsWith('Form Responses')) return sh;
@@ -34,9 +38,10 @@ function parseSignedAmount(rawAmount, direction) {
   return isPositive ? Math.abs(amt) : -Math.abs(amt);
 }
 
-// Returns rows between startDate and endDate (inclusive), as objects
-function getRowsInRange(startDate, endDate) {
-  const sheet = getResponseSheet();
+// Returns rows between startDate and endDate (inclusive), as objects.
+// Pass sheetName to read from a specific sheet.
+function getRowsInRange(startDate, endDate, sheetName) {
+  const sheet = getResponseSheet(sheetName);
   if (!sheet) return [];
   const data = sheet.getDataRange().getValues();
   if (data.length < 2) return [];
@@ -88,59 +93,8 @@ function groupByAccount(rows, categoryKey) {
   return Object.entries(map).map(([name, total]) => ({ name, total }));
 }
 
-// Date prompt dialog – returns {startDate, endDate} or null if cancelled
-function promptDateRange() {
-  const ui = SpreadsheetApp.getUi();
-  const today = new Date();
-
-  const startResp = ui.prompt(
-    'Select Period – Start Date',
-    'Enter start date (YYYY-MM-DD):',
-    ui.ButtonSet.OK_CANCEL
-  );
-  if (startResp.getSelectedButton() !== ui.Button.OK) return null;
-
-  const endResp = ui.prompt(
-    'Select Period – End Date',
-    'Enter end date (YYYY-MM-DD):',
-    ui.ButtonSet.OK_CANCEL
-  );
-  if (endResp.getSelectedButton() !== ui.Button.OK) return null;
-
-  const start = new Date(startResp.getResponseText().trim());
-  const end   = new Date(endResp.getResponseText().trim());
-  start.setHours(0, 0, 0, 0);
-  end.setHours(23, 59, 59, 999);
-
-  if (isNaN(start) || isNaN(end)) {
-    ui.alert('Invalid dates entered. Please use YYYY-MM-DD format.');
-    return null;
-  }
-  return { startDate: start, endDate: end };
-}
-
-// Quick period helpers
-function currentMonthRange() {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
-  return { startDate: start, endDate: end };
-}
-
-function currentQuarterRange() {
-  const now = new Date();
-  const q = Math.floor(now.getMonth() / 3);
-  const start = new Date(now.getFullYear(), q * 3, 1);
-  const end   = new Date(now.getFullYear(), q * 3 + 3, 0, 23, 59, 59);
-  return { startDate: start, endDate: end };
-}
-
-function currentYearRange() {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 1);
-  const end   = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
-  return { startDate: start, endDate: end };
-}
+// Period helpers and the natural-language promptPeriodAndSheet()
+// are defined in PeriodParser.gs.
 
 function formatDate(d) {
   return Utilities.formatDate(d, Session.getScriptTimeZone(), 'dd MMM yyyy');

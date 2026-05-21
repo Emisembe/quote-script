@@ -1,49 +1,43 @@
 // ============================================================
 // CODE.GS – Entry point
-// This is the first file Apps Script loads. It wires up the
-// custom menu and all top-level menu actions.
 // ============================================================
 
-// Runs automatically every time the spreadsheet is opened.
 function onOpen() {
-  SpreadsheetApp.getUi()
-    .createMenu('📊 Financial Statements')
-    .addItem('🛠  Setup: Create Data-Entry Form', 'createFinancialForm')
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu('📊 Financial Statements')
+    .addItem('🛠  Setup: Create Data-Entry Form',  'createFinancialForm')
     .addSeparator()
+    // ── Type-any-period actions (prompt: sheet + period) ──
+    .addItem('📊 Generate All Statements…',         'generateAllPrompt')
+    .addItem('     P&L Statement…',                 'generatePLPrompt')
+    .addItem('     Balance Sheet…',                 'generateBSPrompt')
+    .addItem('     Cash Flow Statement…',           'generateCFPrompt')
+    .addItem('📈 Health Ratios…',                   'generateRatiosPrompt')
+    .addSeparator()
+    // ── Quick-access shortcuts (auto-detect sheet) ────────
     .addSubMenu(
-      SpreadsheetApp.getUi().createMenu('Generate – This Month')
-        .addItem('All Three Statements', 'generateAllThisMonth')
-        .addItem('P&L Only',             'generatePLThisMonth')
-        .addItem('Balance Sheet Only',   'generateBSThisMonth')
-        .addItem('Cash Flow Only',       'generateCFThisMonth')
+      ui.createMenu('⚡ Quick – This Month')
+        .addItem('All Statements',   'generateAllThisMonth')
+        .addItem('P&L Only',         'generatePLThisMonth')
+        .addItem('Balance Sheet',    'generateBSThisMonth')
+        .addItem('Cash Flow',        'generateCFThisMonth')
+        .addItem('Health Ratios',    'generateRatiosThisMonth')
     )
     .addSubMenu(
-      SpreadsheetApp.getUi().createMenu('Generate – This Quarter')
-        .addItem('All Three Statements', 'generateAllThisQuarter')
-        .addItem('P&L Only',             'generatePLThisQuarter')
-        .addItem('Balance Sheet Only',   'generateBSThisQuarter')
-        .addItem('Cash Flow Only',       'generateCFThisQuarter')
+      ui.createMenu('⚡ Quick – This Quarter')
+        .addItem('All Statements',   'generateAllThisQuarter')
+        .addItem('P&L Only',         'generatePLThisQuarter')
+        .addItem('Balance Sheet',    'generateBSThisQuarter')
+        .addItem('Cash Flow',        'generateCFThisQuarter')
+        .addItem('Health Ratios',    'generateRatiosThisQuarter')
     )
     .addSubMenu(
-      SpreadsheetApp.getUi().createMenu('Generate – This Year')
-        .addItem('All Three Statements', 'generateAllThisYear')
-        .addItem('P&L Only',             'generatePLThisYear')
-        .addItem('Balance Sheet Only',   'generateBSThisYear')
-        .addItem('Cash Flow Only',       'generateCFThisYear')
-    )
-    .addSubMenu(
-      SpreadsheetApp.getUi().createMenu('Generate – Custom Date Range')
-        .addItem('All Three Statements', 'generateAllCustom')
-        .addItem('P&L Only',             'generatePLCustom')
-        .addItem('Balance Sheet Only',   'generateBSCustom')
-        .addItem('Cash Flow Only',       'generateCFCustom')
-    )
-    .addSubMenu(
-      SpreadsheetApp.getUi().createMenu('Health Ratios')
-        .addItem('This Month',        'generateRatiosThisMonth')
-        .addItem('This Quarter',      'generateRatiosThisQuarter')
-        .addItem('This Year',         'generateRatiosThisYear')
-        .addItem('Custom Date Range', 'generateRatiosCustom')
+      ui.createMenu('⚡ Quick – This Year')
+        .addItem('All Statements',   'generateAllThisYear')
+        .addItem('P&L Only',         'generatePLThisYear')
+        .addItem('Balance Sheet',    'generateBSThisYear')
+        .addItem('Cash Flow',        'generateCFThisYear')
+        .addItem('Health Ratios',    'generateRatiosThisYear')
     )
     .addSeparator()
     .addItem('📋 View Chart of Accounts', 'showChartOfAccounts')
@@ -51,17 +45,65 @@ function onOpen() {
     .addToUi();
 }
 
-// ── "All Three" helpers ──────────────────────────────────────
+// ── Type-any-period actions ────────────────────────────────────
+// Each shows: (1) sheet picker if needed, (2) free-text period input.
 
-function generateAllThisMonth()    { _generateAll(currentMonthRange()); }
-function generateAllThisQuarter()  { _generateAll(currentQuarterRange()); }
-function generateAllThisYear()     { _generateAll(currentYearRange()); }
-function generateAllCustom() {
-  const range = promptDateRange();
-  if (range) _generateAll(range);
+function generateAllPrompt() {
+  const r = promptPeriodAndSheet();
+  if (r) _generateAll(r);
+}
+function generatePLPrompt() {
+  const r = promptPeriodAndSheet();
+  if (r) generatePL(r);
+}
+function generateBSPrompt() {
+  const r = promptPeriodAndSheet();
+  if (r) generateBS(r, null);
+}
+function generateCFPrompt() {
+  const r = promptPeriodAndSheet();
+  if (r) generateCF(r, null);
+}
+function generateRatiosPrompt() {
+  const r = promptPeriodAndSheet();
+  if (r) generateRatios(r);
 }
 
+// ── Quick shortcuts (auto-detect sheet) ───────────────────────
+
+function generateAllThisMonth()      { _generateAll(_quick(currentMonthRange())); }
+function generateAllThisQuarter()    { _generateAll(_quick(currentQuarterRange())); }
+function generateAllThisYear()       { _generateAll(_quick(currentYearRange())); }
+
+function generatePLThisMonth()       { generatePL(_quick(currentMonthRange())); }
+function generatePLThisQuarter()     { generatePL(_quick(currentQuarterRange())); }
+function generatePLThisYear()        { generatePL(_quick(currentYearRange())); }
+
+function generateBSThisMonth()       { generateBS(_quick(currentMonthRange()), null); }
+function generateBSThisQuarter()     { generateBS(_quick(currentQuarterRange()), null); }
+function generateBSThisYear()        { generateBS(_quick(currentYearRange()), null); }
+
+function generateCFThisMonth()       { generateCF(_quick(currentMonthRange()), null); }
+function generateCFThisQuarter()     { generateCF(_quick(currentQuarterRange()), null); }
+function generateCFThisYear()        { generateCF(_quick(currentYearRange()), null); }
+
+function generateRatiosThisMonth()   { generateRatios(_quick(currentMonthRange())); }
+function generateRatiosThisQuarter() { generateRatios(_quick(currentQuarterRange())); }
+function generateRatiosThisYear()    { generateRatios(_quick(currentYearRange())); }
+
+// Attaches auto-detected sheet name to a plain range object.
+function _quick(range) {
+  const ss   = SpreadsheetApp.getActiveSpreadsheet();
+  const ui   = SpreadsheetApp.getUi();
+  const name = pickDataSheet(ui, ss); // auto-returns if only one sheet exists
+  if (!name) return null;
+  return Object.assign({}, range, { sheetName: name });
+}
+
+// ── Core orchestrator ──────────────────────────────────────────
+
 function _generateAll(range) {
+  if (!range) return;
   const netIncome = generatePL(range);
   generateBS(range, netIncome);
   generateCF(range, netIncome);
@@ -70,52 +112,14 @@ function _generateAll(range) {
     SpreadsheetApp.getActiveSpreadsheet().getSheetByName('P&L')
   );
   SpreadsheetApp.getUi().alert(
-    '✅ All statements generated!\n\n' +
-    'Check tabs: P&L | Balance Sheet | Cash Flow | Financial Ratios'
+    '✅ Done!\n\n' +
+    'Period:  ' + formatDate(range.startDate) + ' – ' + formatDate(range.endDate) + '\n' +
+    'Source:  ' + (range.sheetName || 'Form Responses') + '\n\n' +
+    'Tabs updated:  P&L  |  Balance Sheet  |  Cash Flow  |  Financial Ratios'
   );
 }
 
-// ── P&L shortcuts ────────────────────────────────────────────
-
-function generatePLThisMonth()   { generatePL(currentMonthRange()); }
-function generatePLThisQuarter() { generatePL(currentQuarterRange()); }
-function generatePLThisYear()    { generatePL(currentYearRange()); }
-function generatePLCustom() {
-  const range = promptDateRange();
-  if (range) generatePL(range);
-}
-
-// ── Balance Sheet shortcuts ──────────────────────────────────
-
-function generateBSThisMonth()   { generateBS(currentMonthRange(), null); }
-function generateBSThisQuarter() { generateBS(currentQuarterRange(), null); }
-function generateBSThisYear()    { generateBS(currentYearRange(), null); }
-function generateBSCustom() {
-  const range = promptDateRange();
-  if (range) generateBS(range, null);
-}
-
-// ── Ratios shortcuts ─────────────────────────────────────────
-
-function generateRatiosThisMonth()   { generateRatios(currentMonthRange()); }
-function generateRatiosThisQuarter() { generateRatios(currentQuarterRange()); }
-function generateRatiosThisYear()    { generateRatios(currentYearRange()); }
-function generateRatiosCustom() {
-  const range = promptDateRange();
-  if (range) generateRatios(range);
-}
-
-// ── Cash Flow shortcuts ──────────────────────────────────────
-
-function generateCFThisMonth()   { generateCF(currentMonthRange(), null); }
-function generateCFThisQuarter() { generateCF(currentQuarterRange(), null); }
-function generateCFThisYear()    { generateCF(currentYearRange(), null); }
-function generateCFCustom() {
-  const range = promptDateRange();
-  if (range) generateCF(range, null);
-}
-
-// ── Chart of Accounts viewer ─────────────────────────────────
+// ── Chart of Accounts viewer ───────────────────────────────────
 
 function showChartOfAccounts() {
   const ss    = SpreadsheetApp.getActiveSpreadsheet();
@@ -126,14 +130,15 @@ function showChartOfAccounts() {
   sheet.setColumnWidth(4, 180);
 
   let r = 1;
-  sheet.getRange(r, 1, 1, 4).setValues([['Code', 'Account Name', 'Category', 'Statement']])
+  sheet.getRange(r, 1, 1, 4)
+    .setValues([['Code', 'Account Name', 'Category', 'Statement']])
     .setBackground('#16213e').setFontColor('#ffffff').setFontWeight('bold');
   r++;
 
   const sectionColors = {
-    'Revenue': '#d4edda', 'COGS': '#fde8d8', 'Expenses': '#dce4f5',
-    'OtherIncome': '#f5e6ff', 'OtherExpense': '#ffe0e0',
-    'Assets': '#dbeafe', 'Liabilities': '#fde8e8', 'Equity': '#d1fae5'
+    Revenue: '#d4edda', COGS: '#fde8d8', Expenses: '#dce4f5',
+    OtherIncome: '#f5e6ff', OtherExpense: '#ffe0e0',
+    Assets: '#dbeafe', Liabilities: '#fde8e8', Equity: '#d1fae5'
   };
 
   Object.keys(COA).forEach(key => {
@@ -152,56 +157,64 @@ function showChartOfAccounts() {
   ss.setActiveSheet(sheet);
 }
 
-// ── Help dialog ──────────────────────────────────────────────
+// ── Help dialog ────────────────────────────────────────────────
 
 function showHelp() {
   const html = HtmlService.createHtmlOutput(`
     <style>
-      body { font-family: Arial, sans-serif; font-size: 13px; padding: 16px; }
+      body { font-family: Arial, sans-serif; font-size: 13px; padding: 16px; line-height: 1.6; }
       h2   { color: #16213e; }
       h3   { color: #1a1a5e; margin-top: 18px; }
-      li   { margin: 6px 0; }
-      code { background: #f0f0f0; padding: 2px 5px; border-radius: 3px; }
+      li   { margin: 5px 0; }
+      code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 12px; }
+      table { border-collapse: collapse; width: 100%; margin-top: 8px; }
+      td, th { border: 1px solid #ddd; padding: 5px 8px; font-size: 12px; }
+      th { background: #16213e; color: #fff; }
     </style>
     <h2>📊 Financial Statements – Help</h2>
 
-    <h3>Getting Started</h3>
+    <h3>How to Generate Statements</h3>
+    <p>Click <b>Generate All Statements…</b> — you will be asked:</p>
     <ol>
-      <li>Click <b>Financial Statements → Setup: Create Data-Entry Form</b>.</li>
-      <li>Share the generated Google Form URL with anyone who needs to enter transactions.</li>
-      <li>All responses appear automatically in the <b>Form Responses 1</b> tab.</li>
+      <li>Which data sheet to use (auto-skipped if only one exists).</li>
+      <li>What period you want — type it in plain language:</li>
     </ol>
+    <table>
+      <tr><th>What you type</th><th>What it means</th></tr>
+      <tr><td><code>Q1 2025</code></td><td>1 Jan – 31 Mar 2025</td></tr>
+      <tr><td><code>Q3</code></td><td>Q3 of the current year</td></tr>
+      <tr><td><code>H1 2024</code></td><td>1 Jan – 30 Jun 2024</td></tr>
+      <tr><td><code>January 2025</code></td><td>1 Jan – 31 Jan 2025</td></tr>
+      <tr><td><code>March</code></td><td>March of the current year</td></tr>
+      <tr><td><code>2024</code></td><td>Full calendar year 2024</td></tr>
+      <tr><td><code>last month</code></td><td>Previous calendar month</td></tr>
+      <tr><td><code>last quarter</code></td><td>Previous calendar quarter</td></tr>
+      <tr><td><code>last year</code></td><td>Previous calendar year</td></tr>
+      <tr><td><code>Jan to Mar 2025</code></td><td>1 Jan – 31 Mar 2025</td></tr>
+      <tr><td><code>January 2024 to June 2024</code></td><td>1 Jan – 30 Jun 2024</td></tr>
+      <tr><td><code>Q1 to Q3 2024</code></td><td>1 Jan – 30 Sep 2024</td></tr>
+      <tr><td><code>2025-01-01 to 2025-06-30</code></td><td>Exact dates</td></tr>
+    </table>
+
+    <h3>Quick Shortcuts</h3>
+    <p>Use the <b>⚡ Quick</b> submenus to jump straight to this month, quarter, or year
+    without typing anything.</p>
 
     <h3>Entering Transactions</h3>
     <ul>
-      <li><b>Transaction Date</b> – the actual date of the transaction (not today's date).</li>
-      <li><b>Account Type</b> – pick the broad category (Revenue, COGS, Operating Expense, etc.).</li>
-      <li><b>Account Name</b> – the specific account from the Chart of Accounts.</li>
-      <li><b>Amount</b> – positive number, no currency symbol.</li>
-      <li><b>Direction</b> – Income/Asset Increase for money coming in; Expense/Asset Decrease for money going out.</li>
-      <li><b>Cash Flow Category</b> – tag the transaction for the Cash Flow Statement.</li>
-    </ul>
-
-    <h3>Generating Statements</h3>
-    <ul>
-      <li>Use the <b>Generate</b> submenus to pick a period (month / quarter / year / custom).</li>
-      <li><b>All Three Statements</b> generates P&L, Balance Sheet, and Cash Flow at once.</li>
-      <li>Each statement opens in its own sheet tab and is refreshed every time.</li>
-    </ul>
-
-    <h3>Financial Statement Logic</h3>
-    <ul>
-      <li><b>P&L</b>: Revenue − COGS = Gross Profit − OpEx = Net Operating Income ± Other = Net Income.</li>
-      <li><b>Balance Sheet</b>: Assets = Liabilities + Equity. Uses ALL data up to the end date.</li>
-      <li><b>Cash Flow</b>: Groups transactions by the Cash Flow Category you tagged on entry.</li>
+      <li><b>Transaction Date</b> – the actual date (not today).</li>
+      <li><b>Account Type</b> – the broad category (Revenue, COGS, Operating Expense…).</li>
+      <li><b>Amount</b> – positive number only, no £ or $.</li>
+      <li><b>Direction</b> – Income/Asset Increase = money in; Expense/Asset Decrease = money out.</li>
+      <li><b>Cash Flow Category</b> – Operating / Investing / Financing / Non-cash.</li>
     </ul>
 
     <h3>Tips</h3>
     <ul>
-      <li>Add custom accounts by editing <code>ChartOfAccounts.gs</code>.</li>
-      <li>The Balance Sheet "Beginning Cash Balance" cell must be filled in manually.</li>
-      <li>Negative numbers on the Balance Sheet usually mean an opening balance is missing.</li>
+      <li>Run <b>All Three Statements</b> together so the Balance Sheet and Cash Flow link to the P&amp;L net income.</li>
+      <li>Customise accounts in <code>ChartOfAccounts.gs</code>, then re-run Setup to regenerate the form.</li>
+      <li>Duplicate statement tabs before re-running to keep historical copies.</li>
     </ul>
-  `).setWidth(560).setHeight(520);
+  `).setWidth(600).setHeight(560);
   SpreadsheetApp.getUi().showModalDialog(html, 'Help & Instructions');
 }

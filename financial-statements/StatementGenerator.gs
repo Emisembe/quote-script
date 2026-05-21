@@ -8,7 +8,7 @@
 function generatePL(range) {
   const ss    = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = getOrCreateSheet(ss, 'P&L');
-  const rows  = getRowsInRange(range.startDate, range.endDate);
+  const rows  = getRowsInRange(range.startDate, range.endDate, range.sheetName);
   const period = formatDate(range.startDate) + ' – ' + formatDate(range.endDate);
 
   sheet.setColumnWidth(1, 320);
@@ -105,7 +105,7 @@ function generateBS(range, retainedEarnings) {
   const sheet = getOrCreateSheet(ss, 'Balance Sheet');
   // Balance Sheet uses ALL transactions up to end date (not just the period)
   const allStart = new Date(2000, 0, 1);
-  const rows  = getRowsInRange(allStart, range.endDate);
+  const rows  = getRowsInRange(allStart, range.endDate, range.sheetName);
   const asOf  = 'As of ' + formatDate(range.endDate);
 
   sheet.setColumnWidth(1, 320);
@@ -182,7 +182,7 @@ function generateBS(range, retainedEarnings) {
 function generateCF(range, netIncome) {
   const ss    = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = getOrCreateSheet(ss, 'Cash Flow');
-  const rows  = getRowsInRange(range.startDate, range.endDate);
+  const rows  = getRowsInRange(range.startDate, range.endDate, range.sheetName);
   const period = formatDate(range.startDate) + ' – ' + formatDate(range.endDate);
 
   sheet.setColumnWidth(1, 320);

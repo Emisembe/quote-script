@@ -8,8 +8,8 @@ function generateRatios(range) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
 
   // ── 1. Pull raw data ───────────────────────────────────────
-  const periodRows = getRowsInRange(range.startDate, range.endDate);
-  const allRows    = getRowsInRange(new Date(2000, 0, 1), range.endDate); // BS needs all history
+  const periodRows = getRowsInRange(range.startDate, range.endDate, range.sheetName);
+  const allRows    = getRowsInRange(new Date(2000, 0, 1), range.endDate, range.sheetName); // BS needs all history
 
   if (periodRows.length === 0 && allRows.length === 0) {
     SpreadsheetApp.getUi().alert('No transactions found for this period.');
