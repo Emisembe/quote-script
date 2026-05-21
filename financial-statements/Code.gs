@@ -40,6 +40,12 @@ function onOpen() {
         .addItem('Health Ratios',    'generateRatiosThisYear')
     )
     .addSeparator()
+    .addSubMenu(
+      ui.createMenu('💰 Budget')
+        .addItem('Create Budget Template (fill in targets)', 'createBudgetTemplate')
+        .addItem('Generate Budget vs Actual Report',         'generateBudgetVsActual')
+    )
+    .addSeparator()
     .addItem('📋 View Chart of Accounts', 'showChartOfAccounts')
     .addItem('ℹ️  Help & Instructions',   'showHelp')
     .addToUi();
