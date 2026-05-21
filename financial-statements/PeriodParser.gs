@@ -58,45 +58,33 @@ function promptPeriodAndSheet() {
 
 // ── Sheet picker ───────────────────────────────────────────────
 
-// Lists available Form Response sheets and lets the user choose.
+// Always prompts the user to type the sheet name.
+// Lists all available sheets as a reference so they can see exact names.
 // Returns the sheet name string, or null if cancelled.
 function pickDataSheet(ui, ss) {
   const allSheets = ss.getSheets().map(s => s.getName());
 
-  // Auto-collect candidates: any sheet starting with "Form Responses"
-  const candidates = allSheets.filter(n => n.startsWith('Form Responses'));
-
-  if (candidates.length === 0) {
-    ui.alert(
-      'No data sheet found.\n\n' +
-      'Please run Setup: Create Data-Entry Form first, then submit at least one transaction.'
-    );
-    return null;
-  }
-
-  if (candidates.length === 1) return candidates[0]; // only one — skip the dialog
-
-  // Multiple sheets: ask user to pick
   const resp = ui.prompt(
-    '📋  Select Data Sheet',
-    'Multiple Form Response sheets found. Type the number of the sheet to use:\n\n' +
-    candidates.map((n, i) => '  ' + (i + 1) + '.  ' + n).join('\n') +
-    '\n\nOr type the full sheet name:',
+    '📋  Which sheet contains your data?',
+    'Available sheets in this spreadsheet:\n\n' +
+    allSheets.map((n, i) => '  ' + (i + 1) + '.  ' + n).join('\n') +
+    '\n\nType the sheet name exactly as shown above:',
     ui.ButtonSet.OK_CANCEL
   );
   if (resp.getSelectedButton() !== ui.Button.OK) return null;
 
-  const raw = resp.getResponseText().trim();
-  const idx = parseInt(raw, 10);
+  const name = resp.getResponseText().trim();
+  if (!name) { ui.alert('No sheet name entered.'); return null; }
 
-  if (!isNaN(idx) && idx >= 1 && idx <= candidates.length) {
-    return candidates[idx - 1];
+  if (!allSheets.includes(name)) {
+    ui.alert(
+      '"' + name + '" was not found.\n\n' +
+      'Check the spelling — sheet names are case-sensitive.'
+    );
+    return null;
   }
-  if (allSheets.includes(raw)) {
-    return raw;
-  }
-  ui.alert('"' + raw + '" does not match any sheet. Try again.');
-  return null;
+
+  return name;
 }
 
 // ── Period parser ──────────────────────────────────────────────

@@ -91,11 +91,11 @@ function generateRatiosThisMonth()   { generateRatios(_quick(currentMonthRange()
 function generateRatiosThisQuarter() { generateRatios(_quick(currentQuarterRange())); }
 function generateRatiosThisYear()    { generateRatios(_quick(currentYearRange())); }
 
-// Attaches auto-detected sheet name to a plain range object.
+// Asks for the sheet name then attaches it to the range object.
 function _quick(range) {
   const ss   = SpreadsheetApp.getActiveSpreadsheet();
   const ui   = SpreadsheetApp.getUi();
-  const name = pickDataSheet(ui, ss); // auto-returns if only one sheet exists
+  const name = pickDataSheet(ui, ss);
   if (!name) return null;
   return Object.assign({}, range, { sheetName: name });
 }
