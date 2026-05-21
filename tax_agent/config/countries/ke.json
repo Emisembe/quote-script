@@ -1,0 +1,166 @@
+{
+  "country_code": "KE",
+  "country_name": "Kenya",
+  "currency_symbol": "KSh",
+  "currency_code": "KES",
+  "language": "en",
+  "fiscal_year": { "start_month": 1, "end_month": 12 },
+
+  "bookkeeping": {
+    "accounting_method": "accrual",
+    "entity_type": "llc",
+    "fiscal_year_end": "December"
+  },
+
+  "labels": {
+    "revenue":            "Revenue / Turnover",
+    "cost_of_sales":      "Cost of Sales",
+    "gross_profit":       "Gross Profit",
+    "operating_expenses": "Operating Expenses",
+    "depreciation":       "Depreciation & Amortisation",
+    "ebit":               "Earnings Before Interest & Tax (EBIT)",
+    "interest_expense":   "Finance Costs",
+    "profit_before_tax":  "Profit Before Tax",
+    "income_tax":         "Corporation Tax",
+    "net_profit":         "Profit After Tax"
+  },
+
+  "tax": {
+    "vat": {
+      "enabled": true,
+      "standard_rate": 0.16,
+      "reduced_rate": 0.0,
+      "zero_rated_categories": ["exports", "basic_food", "medical_supplies"],
+      "exempt_categories": ["financial_services", "insurance", "land"],
+      "registration_threshold_kes": 5000000,
+      "filing_frequency": "monthly",
+      "due_date": "20th of following month",
+      "label": "VAT"
+    },
+    "corporate_income_tax": {
+      "enabled": true,
+      "method": "flat",
+      "flat_rate": 0.30,
+      "resident_rate": 0.30,
+      "non_resident_rate": 0.375,
+      "small_business_rate": 0.15,
+      "sme_threshold_kes": 10000000,
+      "instalment_tax": "4 instalments: 25% each on 20th Apr, Jun, Sep, Dec",
+      "filing_deadline": "6 months after year end",
+      "label": "Corporation Tax (KRA)"
+    },
+    "withholding_tax": {
+      "enabled": true,
+      "dividends_resident": 0.05,
+      "dividends_non_resident": 0.10,
+      "interest": 0.15,
+      "royalties": 0.20,
+      "professional_fees_resident": 0.05,
+      "professional_fees_non_resident": 0.20,
+      "rent_immovable": 0.075,
+      "label": "Withholding Tax (WHT)"
+    },
+    "paye": {
+      "enabled": true,
+      "brackets": [
+        { "from": 0,       "to": 288000,   "rate": 0.10, "label": "10%" },
+        { "from": 288000,  "to": 388000,   "rate": 0.25, "label": "25%" },
+        { "from": 388000,  "to": 6000000,  "rate": 0.30, "label": "30%" },
+        { "from": 6000000, "to": 9600000,  "rate": 0.325,"label": "32.5%" },
+        { "from": 9600000, "to": null,     "rate": 0.35, "label": "35%" }
+      ],
+      "personal_relief": 28800,
+      "due_date": "9th of following month",
+      "label": "PAYE (Pay As You Earn)"
+    },
+    "nssf": {
+      "enabled": true,
+      "employee_rate": 0.06,
+      "employer_rate": 0.06,
+      "lower_earnings_limit": 6000,
+      "upper_earnings_limit": 18000,
+      "label": "NSSF"
+    },
+    "nhif": {
+      "enabled": true,
+      "label": "NHIF / Social Health Insurance (SHA)",
+      "note": "As of 2024 SHA replaces NHIF — 2.75% of gross salary"
+    },
+    "digital_service_tax": {
+      "enabled": true,
+      "rate": 0.015,
+      "label": "Digital Service Tax (DST)",
+      "note": "1.5% on gross value of digital marketplace transactions"
+    },
+    "turnover_tax": {
+      "enabled": true,
+      "rate": 0.015,
+      "threshold_min_kes": 1000000,
+      "threshold_max_kes": 50000000,
+      "label": "Turnover Tax (TOT)",
+      "note": "For businesses with annual turnover KES 1M–50M. Alternative to CIT."
+    }
+  },
+
+  "key_compliance_dates": {
+    "VAT return": "20th of following month",
+    "PAYE": "9th of following month",
+    "NSSF": "15th of following month",
+    "Corporation Tax instalment 1": "20th April",
+    "Corporation Tax instalment 2": "20th June",
+    "Corporation Tax instalment 3": "20th September",
+    "Corporation Tax instalment 4": "20th December",
+    "Annual CIT return": "6 months after year end",
+    "Annual financial statements": "File with Registrar within 42 days of AGM"
+  },
+
+  "tax_authority": {
+    "name": "Kenya Revenue Authority (KRA)",
+    "portal": "itax.kra.go.ke",
+    "helpline": "0800 720 469"
+  },
+
+  "common_deductions": [
+    "Capital allowances on plant & machinery (investment deduction 100% in year 1)",
+    "Wear & tear allowances: 25% reducing balance for most assets",
+    "Commercial building allowance: 10% straight-line",
+    "Bad debt provisions (if specific and likely irrecoverable)",
+    "Pension contributions up to KES 20,000/month per employee",
+    "Training and staff development costs",
+    "Research & development expenses",
+    "Donations to registered charities (limited)"
+  ],
+
+  "categories": {
+    "income":            ["revenue", "sales", "service_income", "other_income", "interest_income"],
+    "cogs":              ["cost_of_sales", "direct_costs", "inventory_cost", "materials"],
+    "operating_expense": ["salaries", "wages", "rent", "utilities", "marketing", "admin",
+                          "repairs", "insurance", "travel", "professional_fees"],
+    "depreciation":      ["depreciation", "amortisation"],
+    "interest":          ["interest_expense", "finance_costs", "bank_charges"],
+    "tax":               ["corporation_tax", "vat_paid"]
+  },
+
+  "entity_tax_treatment": {
+    "sole_proprietor": { "label": "Sole Proprietorship", "tax_method": "personal_income_tax", "double_taxation": false },
+    "partnership":     { "label": "Partnership", "tax_method": "pass_through", "double_taxation": false },
+    "llc":             { "label": "Limited Company", "tax_method": "corporate", "double_taxation": false, "notes": "30% CIT on profits" },
+    "c_corp":          { "label": "Public Limited Company (PLC)", "tax_method": "corporate", "double_taxation": true }
+  },
+
+  "ratios": {
+    "gross_margin":      "Gross Margin %",
+    "operating_margin":  "Operating Margin %",
+    "net_profit_margin": "Net Profit Margin %",
+    "cogs_ratio":        "COGS as % of Revenue",
+    "opex_ratio":        "OpEx as % of Revenue",
+    "interest_coverage": "Interest Coverage Ratio",
+    "effective_tax_rate":"Effective Tax Rate %"
+  },
+
+  "bookkeeping": {
+    "accounting_method": "accrual",
+    "entity_type": "llc",
+    "fiscal_year_end": "December"
+  }
+}

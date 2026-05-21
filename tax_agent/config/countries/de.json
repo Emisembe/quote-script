@@ -1,0 +1,147 @@
+{
+  "country_code": "DE",
+  "country_name": "Germany",
+  "currency_symbol": "€",
+  "currency_code": "EUR",
+  "language": "de",
+  "fiscal_year": { "start_month": 1, "end_month": 12 },
+
+  "labels": {
+    "revenue":            "Umsatzerlöse (Revenue)",
+    "cost_of_sales":      "Materialaufwand (Cost of Sales)",
+    "gross_profit":       "Bruttogewinn (Gross Profit)",
+    "operating_expenses": "Betriebliche Aufwendungen (Operating Expenses)",
+    "depreciation":       "Abschreibungen (Depreciation)",
+    "ebit":               "EBIT (Betriebsergebnis)",
+    "interest_expense":   "Zinsaufwand (Interest Expense)",
+    "profit_before_tax":  "Ergebnis vor Steuern (Profit Before Tax)",
+    "income_tax":         "Körperschaftsteuer + GewSt (Corporate + Trade Tax)",
+    "net_profit":         "Jahresüberschuss (Net Profit)"
+  },
+
+  "tax": {
+    "vat": {
+      "enabled": true,
+      "standard_rate": 0.19,
+      "reduced_rate": 0.07,
+      "reduced_rate_applies_to": ["food", "books", "newspapers", "medical", "public_transport"],
+      "zero_rated": ["intra_EU_supplies", "exports"],
+      "registration_threshold_eur": 22000,
+      "filing_frequency": "monthly_or_quarterly",
+      "due_date": "10th of following month (monthly) or quarter",
+      "annual_return_deadline": "31 July following year",
+      "label": "Umsatzsteuer (USt) / VAT"
+    },
+    "corporate_income_tax": {
+      "enabled": true,
+      "method": "flat",
+      "flat_rate": 0.15,
+      "solidarity_surcharge": 0.055,
+      "effective_rate_note": "15% Körperschaftsteuer + 5.5% Solidaritätszuschlag on CIT = ~15.825%",
+      "quarterly_prepayments": "10 Mar, 10 Jun, 10 Sep, 10 Dec",
+      "filing_deadline": "31 July following year (with tax advisor: 28/29 Feb after that)",
+      "label": "Körperschaftsteuer (KSt)"
+    },
+    "trade_tax": {
+      "enabled": true,
+      "base_rate": 0.035,
+      "municipal_multiplier_avg": 4.0,
+      "effective_rate_avg": 0.14,
+      "note": "Gewerbesteuer = 3.5% × Hebesatz (municipality multiplier, typically 300-500%). Avg ~14%. Deductible for income tax but NOT for CIT.",
+      "allowance_eur": 24500,
+      "label": "Gewerbesteuer (GewSt)"
+    },
+    "combined_effective_rate": {
+      "note": "Total effective corporate tax ≈ 30%: 15% KSt + 0.825% SolZ + ~14% GewSt",
+      "approximate": 0.30
+    },
+    "withholding_tax": {
+      "dividends": 0.25,
+      "interest":  0.25,
+      "royalties": 0.15,
+      "solidarity_on_wht": 0.055,
+      "label": "Kapitalertragsteuer (KapESt)"
+    },
+    "income_tax_personal": {
+      "brackets": [
+        { "from": 0,      "to": 11784,  "rate": 0.00 },
+        { "from": 11784,  "to": 66761,  "rate": 0.14, "note": "Progressive 14%–42%" },
+        { "from": 66761,  "to": 277826, "rate": 0.42 },
+        { "from": 277826, "to": null,   "rate": 0.45, "note": "Reichensteuer" }
+      ],
+      "solidarity_surcharge": 0.055,
+      "label": "Einkommensteuer (ESt)"
+    },
+    "social_security": {
+      "pension":    { "employee": 0.093, "employer": 0.093, "label": "Rentenversicherung" },
+      "health":     { "employee": 0.073, "employer": 0.073, "additional_avg": 0.017, "label": "Krankenversicherung" },
+      "unemployment":{ "employee": 0.013, "employer": 0.013, "label": "Arbeitslosenversicherung" },
+      "care":       { "employee": 0.017, "employer": 0.017, "label": "Pflegeversicherung" },
+      "total_employer_approx": 0.20,
+      "label": "Sozialversicherung"
+    }
+  },
+
+  "key_compliance_dates": {
+    "VAT Voranmeldung (monthly)": "10th of following month",
+    "CIT prepayment Q1": "10 March",
+    "CIT prepayment Q2": "10 June",
+    "CIT prepayment Q3": "10 September",
+    "CIT prepayment Q4": "10 December",
+    "Annual CIT return": "31 July (or 28/29 Feb with Steuerberater)",
+    "Trade tax (GewSt) prepayment": "Same dates as CIT",
+    "Annual financial statements (GmbH)": "File with Bundesanzeiger within 12 months of year end",
+    "Wage tax (Lohnsteuer)": "10th of following month"
+  },
+
+  "tax_authority": {
+    "name": "Finanzamt (local tax office) / Bundeszentralamt für Steuern",
+    "portal": "elster.de",
+    "helpline": "Varies by Finanzamt"
+  },
+
+  "common_deductions": [
+    "Depreciation (AfA): linear or declining balance method per AfA-Tabellen",
+    "GWG (low-value assets < €800 net): fully deductible in year of purchase",
+    "Home office (Homeoffice-Pauschale): €6/day up to €1,260/year",
+    "Travel expenses: €0.30/km for car, actual costs for public transport",
+    "Business meals: 70% deductible",
+    "Gifts to business partners: €50/year limit per recipient",
+    "R&D expenses: 25% tax credit on eligible R&D wages (Forschungszulagengesetz)",
+    "Loss carryforward: unlimited; carryback: €10M",
+    "Trade tax add-backs: interest, rent, royalties partially added back for GewSt base"
+  ],
+
+  "categories": {
+    "income":            ["revenue", "sales", "service_income", "other_income", "interest_income"],
+    "cogs":              ["cost_of_sales", "direct_costs", "materials", "materialaufwand"],
+    "operating_expense": ["salaries", "wages", "rent", "utilities", "marketing", "admin",
+                          "repairs", "insurance", "travel", "professional_fees"],
+    "depreciation":      ["depreciation", "abschreibung", "amortisation"],
+    "interest":          ["interest_expense", "zinsaufwand", "bank_charges"],
+    "tax":               ["koerperschaftsteuer", "gewerbesteuer", "vat_paid"]
+  },
+
+  "entity_tax_treatment": {
+    "sole_proprietor": { "label": "Einzelunternehmen", "tax_method": "income_tax", "double_taxation": false },
+    "partnership":     { "label": "Personengesellschaft (GbR/OHG/KG)", "tax_method": "pass_through", "double_taxation": false },
+    "llc":             { "label": "GmbH (Gesellschaft mit beschränkter Haftung)", "tax_method": "corporate", "double_taxation": false, "notes": "~30% combined CIT + GewSt" },
+    "c_corp":          { "label": "AG (Aktiengesellschaft)", "tax_method": "corporate", "double_taxation": true }
+  },
+
+  "bookkeeping": {
+    "accounting_method": "accrual",
+    "entity_type": "llc",
+    "fiscal_year_end": "December"
+  },
+
+  "ratios": {
+    "gross_margin":      "Bruttogewinnmarge %",
+    "operating_margin":  "Betriebliche Marge %",
+    "net_profit_margin": "Nettomarge %",
+    "cogs_ratio":        "Materialquote %",
+    "opex_ratio":        "Kostenquote %",
+    "interest_coverage": "Zinsdeckungsgrad",
+    "effective_tax_rate":"Effektive Steuerquote %"
+  }
+}
