@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blog Preview — News Theme (Modernised)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* =============================================
+       CSS Custom Properties
+    ============================================= */
+    :root {
+      --color-primary:    #0094d2;
+      --color-primary-dk: #0077aa;
+      --color-dark:       #1a1a2e;
+      --color-mid:        #333333;
+      --color-text:       #444444;
+      --color-muted:      #888888;
+      --color-border:     #e8e8e8;
+      --color-bg:         #f4f6f8;
+      --color-white:      #ffffff;
+
+      --font-heading: 'Oswald', sans-serif;
+      --font-body:    'Inter', sans-serif;
+
+      --radius:    6px;
+      --radius-lg: 12px;
+      --shadow-sm: 0 1px 4px rgba(0,0,0,.08);
+      --shadow-md: 0 4px 16px rgba(0,0,0,.10);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,.13);
+
+      --transition:    0.22s ease;
+      --content-width: 1060px;
+      --sidebar-width: 320px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--color-text);
+      background: var(--color-bg);
+    }
+
+    a { color: var(--color-primary); text-decoration: none; transition: color var(--transition); }
+    a:hover { color: var(--color-primary-dk); text-decoration: underline; }
+    img { max-width: 100%; height: auto; display: block; }
+    h1,h2,h3,h4,h5,h6 { font-family: var(--font-heading); font-weight: 500; line-height: 1.3; color: var(--color-dark); }
+
+    /* =============================================
+       Layout Shell
+    ============================================= */
+    .content-outer {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      background: var(--color-white);
+      box-shadow: var(--shadow-lg);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+
+    /* =============================================
+       Header
+    ============================================= */
+    .header-outer {
+      background: linear-gradient(135deg, var(--color-dark) 0%, #16213e 100%);
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .blog-title {
+      font-family: var(--font-heading);
+      font-size: clamp(26px, 4vw, 40px);
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--color-white);
+      margin: 0;
+    }
+
+    .blog-title a { color: var(--color-white); }
+
+    .blog-description {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 6px;
+    }
+
+    .searchform {
+      display: flex;
+    }
+
+    .searchform input[type="text"] {
+      font-family: var(--font-body);
+      font-size: 14px;
+      padding: 9px 14px;
+      border: none;
+      border-radius: var(--radius) 0 0 var(--radius);
+      background: rgba(255,255,255,0.12);
+      color: var(--color-white);
+      width: 200px;
+      outline: none;
+    }
+
+    .searchform input[type="text"]::placeholder { color: rgba(255,255,255,0.45); }
+
+    .searchform button {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 16px;
+      background: var(--color-primary);
+      border: none;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      color: var(--color-white);
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+
+    .searchform button:hover { background: var(--color-primary-dk); }
+
+    /* =============================================
+       Navigation
+    ============================================= */
+    #cssmenu {
+      background: var(--color-mid);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+
+    #cssmenu ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    #cssmenu ul li { position: relative; }
+
+    #cssmenu ul li a {
+      display: block;
+      padding: 15px 22px;
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.88);
+      text-transform: uppercase;
+      transition: color var(--transition), background var(--transition);
+      white-space: nowrap;
+    }
+
+    #cssmenu ul li a:hover,
+    #cssmenu ul li.active > a {
+      color: var(--color-primary);
+      background: rgba(255,255,255,0.06);
+      text-decoration: none;
+    }
+
+    #cssmenu ul li ul {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 200px;
+      background: #2a2a2a;
+      border-top: 2px solid var(--color-primary);
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow-md);
+      flex-direction: column;
+      z-index: 999;
+    }
+
+    #cssmenu ul li:hover > ul { display: flex; }
+
+    #cssmenu ul li ul li a {
+      padding: 11px 18px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    #cssmenu ul li ul li:last-child a { border-bottom: none; }
+
+    #cssmenu ul li ul li ul {
+      top: 0; left: 100%;
+      border-top: none;
+      border-left: 2px solid var(--color-primary);
+    }
+
+    #nav-toggle {
+      display: none;
+      padding: 14px 20px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: var(--color-white);
+      font-size: 22px;
+    }
+
+    /* =============================================
+       Main + Sidebar
+    ============================================= */
+    .main-inner {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .column-center-inner {
+      flex: 1;
+      min-width: 0;
+      padding: 28px;
+      border-right: 1px solid var(--color-border);
+    }
+
+    .column-right-inner {
+      width: var(--sidebar-width);
+      flex-shrink: 0;
+      padding: 28px 22px;
+    }
+
+    /* =============================================
+       Posts
+    ============================================= */
+    .post-outer {
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .post-outer:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+    .post {
+      background: var(--color-white);
+      border-radius: var(--radius);
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+
+    .post:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+
+    /* Featured image */
+    .post-thumbnail {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+      border: 1px solid var(--color-border);
+    }
+
+    h2.post-title {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 500;
+      line-height: 1.35;
+      margin: 0 0 10px;
+    }
+
+    h2.post-title a { color: var(--color-dark); }
+    h2.post-title a:hover { color: var(--color-primary); text-decoration: none; }
+
+    .post-header {
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: var(--color-muted);
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .post-header .sep { opacity: 0.4; }
+
+    .post-body {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--color-text);
+    }
+
+    .post-body img {
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-sm);
+      margin: 16px 0;
+    }
+
+    .post-thumbnail-inline {
+      float: left;
+      margin: 0 16px 10px 0;
+      width: 180px;
+      height: 130px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+    }
+
+    .rmlink {
+      display: block;
+      margin-top: 16px;
+      text-align: right;
+      clear: both;
+    }
+
+    .rmlink a {
+      display: inline-block;
+      padding: 7px 18px;
+      background: var(--color-primary);
+      color: var(--color-white) !important;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none !important;
+      transition: background var(--transition), transform var(--transition);
+    }
+
+    .rmlink a:hover { background: var(--color-primary-dk); transform: translateX(2px); }
+
+    /* Labels */
+    .post-labels { margin-top: 14px; }
+
+    .label-tag {
+      display: inline-block;
+      padding: 3px 12px;
+      background: #eef7fb;
+      color: var(--color-primary) !important;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 20px;
+      margin: 3px 3px 3px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: background var(--transition), color var(--transition);
+      text-decoration: none !important;
+    }
+
+    .label-tag:hover {
+      background: var(--color-primary);
+      color: var(--color-white) !important;
+      text-decoration: none !important;
+    }
+
+    /* =============================================
+       Single Post — full article
+    ============================================= */
+    .post-full .post-thumbnail {
+      height: 340px;
+    }
+
+    .post-full .post-body { font-size: 16px; }
+
+    .post-full .post-footer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+      padding: 14px 16px;
+      background: #f8f9fa;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      font-size: 13px;
+      color: var(--color-muted);
+    }
+
+    /* =============================================
+       Pagination
+    ============================================= */
+    .pagenavi {
+      text-align: center;
+      padding: 24px 0 8px;
+      clear: both;
+    }
+
+    .pagenavi a, .pagenavi span {
+      display: inline-block;
+      margin: 3px;
+      padding: 7px 15px;
+      background: var(--color-white);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      color: var(--color-mid);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all var(--transition);
+    }
+
+    .pagenavi a:hover {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-white);
+      text-decoration: none;
+    }
+
+    .pagenavi .current {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-white);
+    }
+
+    /* =============================================
+       Sidebar
+    ============================================= */
+    .sidebar-widget { margin-bottom: 30px; padding-bottom: 28px; border-bottom: 1px solid var(--color-border); }
+    .sidebar-widget:last-child { border-bottom: none; margin-bottom: 0; }
+
+    .sidebar-widget h3 {
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--color-dark);
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+      border-bottom: 2px solid var(--color-primary);
+    }
+
+    .sidebar-widget ul { list-style: none; padding: 0; }
+
+    .sidebar-widget ul li {
+      padding: 7px 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-widget ul li:last-child { border-bottom: none; }
+
+    .sidebar-widget ul li a { color: var(--color-text); }
+    .sidebar-widget ul li a:hover { color: var(--color-primary); text-decoration: none; }
+
+    .sidebar-widget .count {
+      margin-left: auto;
+      background: #eee;
+      color: var(--color-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 20px;
+    }
+
+    /* Popular post widget */
+    .popular-post {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .popular-post:last-child { border-bottom: none; }
+
+    .popular-post img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      flex-shrink: 0;
+      border: 1px solid var(--color-border);
+    }
+
+    .popular-post .pp-title {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: var(--color-dark);
+    }
+
+    .popular-post .pp-title a { color: var(--color-dark); }
+    .popular-post .pp-title a:hover { color: var(--color-primary); text-decoration: none; }
+
+    .popular-post .pp-date {
+      font-size: 12px;
+      color: var(--color-muted);
+      margin-top: 4px;
+    }
+
+    /* About widget */
+    .about-widget { text-align: center; }
+
+    .about-widget img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      border: 3px solid var(--color-primary);
+      object-fit: cover;
+    }
+
+    .about-widget p { font-size: 14px; line-height: 1.6; color: var(--color-text); }
+
+    /* Social widget */
+    .social-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+    .social-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      color: white !important;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none !important;
+      transition: background var(--transition), transform var(--transition);
+    }
+
+    .social-links a:hover { background: var(--color-primary-dk); transform: scale(1.1); text-decoration: none !important; }
+
+    /* Ad placeholder */
+    .ad-placeholder {
+      background: #f0f0f0;
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius);
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-muted);
+      font-size: 13px;
+    }
+
+    /* =============================================
+       Comments
+    ============================================= */
+    .comments-section { margin-top: 40px; border-top: 2px solid var(--color-border); padding-top: 28px; }
+
+    .comments-section h4 {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .comment-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .comment-item:last-child { border-bottom: none; }
+
+    .comment-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 2px solid var(--color-border);
+      object-fit: cover;
+    }
+
+    .comment-body-wrap { flex: 1; min-width: 0; }
+
+    .comment-author-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--color-dark);
+      margin-bottom: 6px;
+    }
+
+    .comment-text {
+      font-size: 14px;
+      line-height: 1.65;
+      background: #f8f9fa;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+    }
+
+    .comment-date {
+      font-size: 12px;
+      color: var(--color-muted);
+      margin-top: 6px;
+    }
+
+    /* =============================================
+       Footer
+    ============================================= */
+    footer {
+      background: var(--color-dark);
+      border-top: 3px solid var(--color-primary);
+      padding: 40px 32px 24px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 32px;
+      max-width: var(--content-width);
+      margin: 0 auto 32px;
+    }
+
+    .footer-col h4 {
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-white);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .footer-col ul { list-style: none; }
+
+    .footer-col ul li {
+      padding: 5px 0;
+      font-size: 14px;
+    }
+
+    .footer-col ul li a { color: rgba(255,255,255,0.6); }
+    .footer-col ul li a:hover { color: var(--color-primary); text-decoration: none; }
+
+    .footer-col p { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .footer-bottom a { color: rgba(255,255,255,0.6); }
+    .footer-bottom a:hover { color: var(--color-primary); text-decoration: none; }
+
+    /* =============================================
+       Tab switcher (for the preview demo)
+    ============================================= */
+    .demo-tabs {
+      background: #1a1a2e;
+      padding: 0 32px;
+      display: flex;
+      gap: 4px;
+      max-width: var(--content-width);
+      margin: 0 auto;
+    }
+
+    .demo-tabs button {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.5);
+      font-family: var(--font-body);
+      font-size: 13px;
+      padding: 10px 18px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color var(--transition), border-color var(--transition);
+    }
+
+    .demo-tabs button.active,
+    .demo-tabs button:hover { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+
+    .demo-label {
+      background: var(--color-primary);
+      color: white;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 6px;
+    }
+
+    /* =============================================
+       View panels
+    ============================================= */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* =============================================
+       Responsive
+    ============================================= */
+    @media (max-width: 860px) {
+      .main-inner { flex-direction: column; }
+      .column-center-inner { border-right: none; border-bottom: 1px solid var(--color-border); }
+      .column-right-inner { width: 100%; }
+      .column-center-inner, .column-right-inner { padding: 20px 16px; }
+      #nav-toggle { display: block; }
+      #cssmenu > ul { display: none; flex-direction: column; }
+      #cssmenu > ul.open { display: flex; }
+      .header-outer { flex-direction: column; align-items: flex-start; padding: 20px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .demo-tabs { padding: 0 16px; }
+    }
+
+    @media (max-width: 480px) {
+      h2.post-title { font-size: 18px; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="demo-label">&#9654; LIVE PREVIEW — News Theme (Modernised)</div>
+
+<!-- Demo view tabs -->
+<div style="background:#1a1a2e;max-width:var(--content-width);margin:0 auto;">
+  <div class="demo-tabs">
+    <button class="active" onclick="showView('index')">Blog Index</button>
+    <button onclick="showView('post')">Single Post</button>
+    <button onclick="showView('mobile')">Mobile View</button>
+  </div>
+</div>
+
+<!-- ================================================
+     VIEW 1: Blog Index
+================================================ -->
+<div class="view active" id="view-index">
+<div class="content-outer">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-outer">
+      <div>
+        <h1 class="blog-title"><a href="#">The Daily Pulse</a></h1>
+        <p class="blog-description">News &amp; Insights, Every Day</p>
+      </div>
+      <div class="searchform">
+        <input placeholder="Search articles…" type="text"/>
+        <button type="submit">Search</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav id="cssmenu">
+    <button id="nav-toggle">&#9776;</button>
+    <ul id="nav-list">
+      <li class="active"><a href="#">Home</a></li>
+      <li class="has-sub">
+        <a href="#">Categories</a>
+        <ul>
+          <li><a href="#">Technology</a></li>
+          <li><a href="#">Business</a></li>
+          <li class="has-sub">
+            <a href="#">Lifestyle</a>
+            <ul>
+              <li><a href="#">Travel</a></li>
+              <li><a href="#">Food</a></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main-inner">
+    <div class="column-center-inner">
+
+      <!-- POST 1 — with image -->
+      <div class="post-outer">
+        <div class="post">
+          <img alt="Post thumbnail" class="post-thumbnail" src="https://picsum.photos/seed/blog1/800/220"/>
+          <h2 class="post-title"><a href="#">The Future of Artificial Intelligence in Everyday Life</a></h2>
+          <div class="post-header">
+            <span>&#128197; May 20, 2026</span>
+            <span class="sep">|</span>
+            <span>&#9998; Jane Doe</span>
+            <span class="sep">|</span>
+            <span>&#128172; 14 Comments</span>
+          </div>
+          <div class="post-body">
+            <p>Artificial intelligence is no longer confined to research labs or science-fiction films. From the smartphone in your pocket to the recommendations on your favourite streaming platform, AI is quietly reshaping the way we live, work, and connect with one another. But what does the next decade hold, and how should we prepare for a world increasingly guided by machine intelligence?</p>
+          </div>
+          <div class="post-labels">
+            <a class="label-tag" href="#">Technology</a>
+            <a class="label-tag" href="#">AI</a>
+            <a class="label-tag" href="#">Future</a>
+          </div>
+          <div class="rmlink"><a href="#">Continue Reading &#8594;</a></div>
+        </div>
+      </div>
+
+      <!-- POST 2 — with inline thumbnail -->
+      <div class="post-outer">
+        <div class="post">
+          <h2 class="post-title"><a href="#">10 Minimalist Travel Destinations for 2026</a></h2>
+          <div class="post-header">
+            <span>&#128197; May 18, 2026</span>
+            <span class="sep">|</span>
+            <span>&#9998; Mark Travels</span>
+            <span class="sep">|</span>
+            <span>&#128172; 7 Comments</span>
+          </div>
+          <div class="post-body">
+            <img alt="Travel" class="post-thumbnail-inline" src="https://picsum.photos/seed/travel2/400/260"/>
+            <p>Slow travel is having its moment. As the world reopens to tourism, more adventurers are swapping packed itineraries for thoughtful, unhurried journeys. These ten destinations offer something truly rare: space, silence, and a genuine connection with local culture, without the selfie-stick crowds.</p>
+          </div>
+          <div class="post-labels">
+            <a class="label-tag" href="#">Travel</a>
+            <a class="label-tag" href="#">Lifestyle</a>
+          </div>
+          <div class="rmlink"><a href="#">Continue Reading &#8594;</a></div>
+        </div>
+      </div>
+
+      <!-- POST 3 — text only -->
+      <div class="post-outer">
+        <div class="post">
+          <h2 class="post-title"><a href="#">Why Your Morning Routine Is Costing You Productivity</a></h2>
+          <div class="post-header">
+            <span>&#128197; May 15, 2026</span>
+            <span class="sep">|</span>
+            <span>&#9998; Sarah M.</span>
+            <span class="sep">|</span>
+            <span>&#128172; 22 Comments</span>
+          </div>
+          <div class="post-body">
+            <p>Productivity gurus will tell you to wake at 5 am, meditate, journal, exercise, and eat a colour-coded breakfast — all before 7 am. The reality? Research consistently shows that rigid morning routines often increase cortisol levels rather than reduce them. Here's what the science actually recommends.</p>
+          </div>
+          <div class="post-labels">
+            <a class="label-tag" href="#">Productivity</a>
+            <a class="label-tag" href="#">Wellbeing</a>
+          </div>
+          <div class="rmlink"><a href="#">Continue Reading &#8594;</a></div>
+        </div>
+      </div>
+
+      <!-- PAGINATION -->
+      <div class="pagenavi">
+        <a href="#">&laquo;</a>
+        <span class="current">1</span>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">4</a>
+        <a href="#">5</a>
+        <a href="#">&raquo;</a>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="column-right-inner">
+
+      <!-- Search -->
+      <div class="sidebar-widget">
+        <h3>Search</h3>
+        <div class="searchform" style="width:100%">
+          <input placeholder="Search…" style="width:100%;border-radius:4px 0 0 4px;" type="text"/>
+          <button style="border-radius:0 4px 4px 0;">Go</button>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="sidebar-widget">
+        <h3>About</h3>
+        <div class="about-widget">
+          <img alt="Author" src="https://picsum.photos/seed/avatar1/200/200"/>
+          <p>Welcome to The Daily Pulse — your source for thoughtful takes on technology, travel, and modern living.</p>
+          <div class="social-links" style="justify-content:center;margin-top:14px;">
+            <a href="#" title="Twitter">𝕏</a>
+            <a href="#" title="Facebook">f</a>
+            <a href="#" title="Instagram">&#9711;</a>
+            <a href="#" title="RSS">&#9762;</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Popular Posts -->
+      <div class="sidebar-widget">
+        <h3>Popular Posts</h3>
+        <div class="popular-post">
+          <img alt="" src="https://picsum.photos/seed/pop1/120/120"/>
+          <div>
+            <div class="pp-title"><a href="#">How to Build a Second Brain in 30 Days</a></div>
+            <div class="pp-date">May 12, 2026</div>
+          </div>
+        </div>
+        <div class="popular-post">
+          <img alt="" src="https://picsum.photos/seed/pop2/120/120"/>
+          <div>
+            <div class="pp-title"><a href="#">The Best Budget Cameras of 2026 Ranked</a></div>
+            <div class="pp-date">May 8, 2026</div>
+          </div>
+        </div>
+        <div class="popular-post">
+          <img alt="" src="https://picsum.photos/seed/pop3/120/120"/>
+          <div>
+            <div class="pp-title"><a href="#">5 Countries Offering Digital Nomad Visas</a></div>
+            <div class="pp-date">April 30, 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="sidebar-widget">
+        <h3>Categories</h3>
+        <ul>
+          <li><a href="#">Technology</a><span class="count">24</span></li>
+          <li><a href="#">Travel</a><span class="count">18</span></li>
+          <li><a href="#">Business</a><span class="count">15</span></li>
+          <li><a href="#">Lifestyle</a><span class="count">12</span></li>
+          <li><a href="#">Productivity</a><span class="count">9</span></li>
+        </ul>
+      </div>
+
+      <!-- Ad slot -->
+      <div class="sidebar-widget">
+        <div class="ad-placeholder">Advertisement (300×250)</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>The Daily Pulse</h4>
+        <p>Thoughtful writing on technology, travel, and the things that matter.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Categories</h4>
+        <ul>
+          <li><a href="#">Technology</a></li>
+          <li><a href="#">Travel</a></li>
+          <li><a href="#">Business</a></li>
+          <li><a href="#">Lifestyle</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Follow Us</h4>
+        <div class="social-links">
+          <a href="#" title="Twitter">𝕏</a>
+          <a href="#" title="Facebook">f</a>
+          <a href="#" title="Instagram">&#9711;</a>
+          <a href="#" title="RSS">&#9762;</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 The Daily Pulse &mdash; Powered by <a href="#">Blogger</a>. Template by <a href="#">News Theme</a>.
+    </div>
+  </footer>
+
+</div>
+</div><!-- /view-index -->
+
+<!-- ================================================
+     VIEW 2: Single Post
+================================================ -->
+<div class="view" id="view-post">
+<div class="content-outer">
+
+  <header>
+    <div class="header-outer">
+      <div>
+        <h1 class="blog-title"><a href="#">The Daily Pulse</a></h1>
+        <p class="blog-description">News &amp; Insights, Every Day</p>
+      </div>
+      <div class="searchform">
+        <input placeholder="Search articles…" type="text"/>
+        <button>Search</button>
+      </div>
+    </div>
+  </header>
+
+  <nav id="cssmenu">
+    <ul>
+      <li class="active"><a href="#">Home</a></li>
+      <li><a href="#">Categories</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="main-inner">
+    <div class="column-center-inner">
+      <div class="post-outer post-full">
+        <div class="post">
+          <img alt="Featured" class="post-thumbnail" src="https://picsum.photos/seed/blog1/900/340"/>
+          <h2 class="post-title" style="font-size:28px;">The Future of Artificial Intelligence in Everyday Life</h2>
+          <div class="post-header">
+            <span>&#128197; May 20, 2026</span>
+            <span class="sep">|</span>
+            <span>&#9998; Jane Doe</span>
+            <span class="sep">|</span>
+            <span>&#128172; 14 Comments</span>
+          </div>
+          <div class="post-body">
+            <p>Artificial intelligence is no longer confined to research labs or science-fiction films. From the smartphone in your pocket to the recommendations on your favourite streaming platform, AI is quietly reshaping the way we live, work, and connect with one another.</p>
+            <p style="margin-top:16px;">But what does the next decade hold, and how should we prepare for a world increasingly guided by machine intelligence? The answer lies not in fear or blind optimism, but in understanding — and that's exactly what this post aims to provide.</p>
+            <h3 style="margin:24px 0 12px;font-size:20px;">1. AI in the Home</h3>
+            <p>Smart speakers, robotic vacuum cleaners, and AI-powered thermostats are already common fixtures in millions of homes. The next generation goes further: predictive appliances that learn your schedule, health monitors that flag anomalies before symptoms appear, and ambient assistants that respond to context rather than commands.</p>
+            <img alt="AI home" src="https://picsum.photos/seed/aihome/700/280" style="margin:20px 0;border-radius:6px;"/>
+            <h3 style="margin:24px 0 12px;font-size:20px;">2. AI at Work</h3>
+            <p>The World Economic Forum estimates that AI will displace 85 million jobs by 2025 — but create 97 million new ones. The shift is already visible: legal assistants, radiologists, and financial analysts are augmenting their work with AI tools that handle volume while humans handle nuance and judgment.</p>
+            <p style="margin-top:16px;">The key skill for the next decade is not technical — it's adaptability. The workers who thrive will be those who treat AI as a collaborator rather than a competitor.</p>
+          </div>
+          <div class="post-labels" style="margin-top:20px;">
+            <a class="label-tag" href="#">Technology</a>
+            <a class="label-tag" href="#">AI</a>
+            <a class="label-tag" href="#">Future</a>
+          </div>
+          <div class="post-full post-footer-bar">
+            <div>&#9668; <a href="#">Previous Post</a></div>
+            <div><a href="#">Share on Twitter</a> &nbsp; <a href="#">Share on Facebook</a></div>
+            <div><a href="#">Next Post</a> &#9658;</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMMENTS -->
+      <div class="comments-section">
+        <h4>14 Comments</h4>
+
+        <div class="comment-item">
+          <img alt="avatar" class="comment-avatar" src="https://picsum.photos/seed/user1/80/80"/>
+          <div class="comment-body-wrap">
+            <div class="comment-author-name">Alex Turner</div>
+            <div class="comment-text">Really well-written piece. The distinction between AI augmenting versus replacing workers is one that doesn't get enough airtime. Sharing this with my team.</div>
+            <div class="comment-date">May 20, 2026 at 10:42 am</div>
+          </div>
+        </div>
+
+        <div class="comment-item">
+          <img alt="avatar" class="comment-avatar" src="https://picsum.photos/seed/user2/80/80"/>
+          <div class="comment-body-wrap">
+            <div class="comment-author-name">Priya Nair</div>
+            <div class="comment-text">The statistic about 97 million new jobs is encouraging, but I'd love to see a follow-up on which sectors those jobs are concentrated in. Healthcare and tech feel obvious, but what about manufacturing communities?</div>
+            <div class="comment-date">May 20, 2026 at 11:15 am</div>
+          </div>
+        </div>
+
+        <div class="comment-item">
+          <img alt="avatar" class="comment-avatar" src="https://picsum.photos/seed/user3/80/80"/>
+          <div class="comment-body-wrap">
+            <div class="comment-author-name">Jordan Lee</div>
+            <div class="comment-text">Great article. Bookmarked. The bit about predictive appliances genuinely excited me — my fridge already judges my food choices enough as it is!</div>
+            <div class="comment-date">May 21, 2026 at 9:03 am</div>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;">
+          <h4 style="font-family:var(--font-heading);font-size:18px;margin-bottom:12px;">Leave a Comment</h4>
+          <div style="background:#f8f9fa;border:1px solid var(--color-border);border-radius:6px;padding:20px;color:var(--color-muted);font-size:14px;">
+            Comment form powered by Blogger (embedded iframe in live version)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="column-right-inner">
+      <div class="sidebar-widget">
+        <h3>About</h3>
+        <div class="about-widget">
+          <img alt="Author" src="https://picsum.photos/seed/avatar1/200/200"/>
+          <p>Welcome to The Daily Pulse — thoughtful writing on technology, travel, and modern living.</p>
+        </div>
+      </div>
+      <div class="sidebar-widget">
+        <h3>Popular Posts</h3>
+        <div class="popular-post">
+          <img alt="" src="https://picsum.photos/seed/pop1/120/120"/>
+          <div><div class="pp-title"><a href="#">How to Build a Second Brain in 30 Days</a></div><div class="pp-date">May 12, 2026</div></div>
+        </div>
+        <div class="popular-post">
+          <img alt="" src="https://picsum.photos/seed/pop2/120/120"/>
+          <div><div class="pp-title"><a href="#">The Best Budget Cameras of 2026</a></div><div class="pp-date">May 8, 2026</div></div>
+        </div>
+      </div>
+      <div class="sidebar-widget">
+        <div class="ad-placeholder">Advertisement (300×250)</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>The Daily Pulse</h4>
+        <p>Thoughtful writing on technology, travel, and the things that matter.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 The Daily Pulse &mdash; Powered by <a href="#">Blogger</a>.</div>
+  </footer>
+
+</div>
+</div><!-- /view-post -->
+
+<!-- ================================================
+     VIEW 3: Mobile View
+================================================ -->
+<div class="view" id="view-mobile">
+  <div style="max-width:390px;margin:0 auto;box-shadow:var(--shadow-lg);background:var(--color-white);border-radius:var(--radius-lg);overflow:hidden;">
+
+    <!-- Mobile header -->
+    <div style="background:linear-gradient(135deg,#1a1a2e,#16213e);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-family:var(--font-heading);font-size:22px;font-weight:600;color:white;text-transform:uppercase;letter-spacing:1px;">The Daily Pulse</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:2px;margin-top:3px;">News &amp; Insights</div>
+      </div>
+      <button style="background:none;border:none;color:white;font-size:22px;cursor:pointer;">&#9776;</button>
+    </div>
+
+    <!-- Mobile nav (expanded for demo) -->
+    <div style="background:#333;border-bottom:2px solid var(--color-primary);">
+      <a href="#" style="display:block;padding:12px 18px;color:var(--color-primary);font-family:var(--font-heading);font-size:13px;text-transform:uppercase;font-weight:500;background:rgba(255,255,255,0.06);text-decoration:none;">Home</a>
+      <a href="#" style="display:block;padding:12px 18px;color:rgba(255,255,255,0.8);font-family:var(--font-heading);font-size:13px;text-transform:uppercase;font-weight:500;text-decoration:none;">Categories</a>
+      <a href="#" style="display:block;padding:12px 18px;color:rgba(255,255,255,0.8);font-family:var(--font-heading);font-size:13px;text-transform:uppercase;font-weight:500;text-decoration:none;">About</a>
+      <a href="#" style="display:block;padding:12px 18px;color:rgba(255,255,255,0.8);font-family:var(--font-heading);font-size:13px;text-transform:uppercase;font-weight:500;text-decoration:none;border-bottom:none;">Contact</a>
+    </div>
+
+    <!-- Mobile posts -->
+    <div style="padding:16px;">
+
+      <div style="margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--color-border);">
+        <img alt="" src="https://picsum.photos/seed/blog1/390/180" style="width:100%;border-radius:6px;margin-bottom:12px;"/>
+        <h2 style="font-family:var(--font-heading);font-size:18px;font-weight:500;margin-bottom:8px;"><a href="#" style="color:var(--color-dark);text-decoration:none;">The Future of AI in Everyday Life</a></h2>
+        <div style="font-size:12px;color:var(--color-muted);margin-bottom:10px;">&#128197; May 20, 2026 &nbsp;|&nbsp; &#128172; 14</div>
+        <p style="font-size:14px;line-height:1.6;color:var(--color-text);">AI is quietly reshaping the way we live, work, and connect with one another. But what does the next decade hold?</p>
+        <div style="margin-top:10px;text-align:right;"><a href="#" style="display:inline-block;padding:6px 14px;background:var(--color-primary);color:white;border-radius:4px;font-size:12px;font-weight:600;text-decoration:none;">Read More &#8594;</a></div>
+      </div>
+
+      <div style="margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--color-border);">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <img alt="" src="https://picsum.photos/seed/travel2/120/90" style="width:80px;height:70px;object-fit:cover;border-radius:4px;flex-shrink:0;"/>
+          <div>
+            <h2 style="font-family:var(--font-heading);font-size:15px;font-weight:500;margin-bottom:6px;"><a href="#" style="color:var(--color-dark);text-decoration:none;">10 Minimalist Travel Destinations for 2026</a></h2>
+            <div style="font-size:11px;color:var(--color-muted);">May 18, 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <img alt="" src="https://picsum.photos/seed/prod3/120/90" style="width:80px;height:70px;object-fit:cover;border-radius:4px;flex-shrink:0;"/>
+          <div>
+            <h2 style="font-family:var(--font-heading);font-size:15px;font-weight:500;margin-bottom:6px;"><a href="#" style="color:var(--color-dark);text-decoration:none;">Why Your Morning Routine Is Costing You Productivity</a></h2>
+            <div style="font-size:11px;color:var(--color-muted);">May 15, 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile pagination -->
+      <div style="text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid var(--color-border);">
+        <a href="#" style="display:inline-block;margin:3px;padding:7px 14px;background:white;border:1px solid var(--color-border);border-radius:4px;color:var(--color-mid);font-size:13px;text-decoration:none;">&laquo; Newer</a>
+        <a href="#" style="display:inline-block;margin:3px;padding:7px 14px;background:white;border:1px solid var(--color-border);border-radius:4px;color:var(--color-mid);font-size:13px;text-decoration:none;">Older &raquo;</a>
+      </div>
+    </div>
+
+    <!-- Mobile footer -->
+    <div style="background:var(--color-dark);border-top:3px solid var(--color-primary);padding:20px 18px;text-align:center;">
+      <div style="color:rgba(255,255,255,0.4);font-size:12px;">&copy; 2026 The Daily Pulse &mdash; Powered by Blogger</div>
+    </div>
+
+  </div>
+</div><!-- /view-mobile -->
+
+<script>
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.demo-tabs button').forEach(b => b.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // Mobile nav toggle
+  var toggle = document.getElementById('nav-toggle');
+  var list   = document.getElementById('nav-list');
+  if (toggle && list) {
+    toggle.addEventListener('click', function() {
+      list.classList.toggle('open');
+      list.style.display = list.classList.contains('open') ? 'flex' : '';
+    });
+  }
+</script>
+</body>
+</html>
