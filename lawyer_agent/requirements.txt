@@ -1,0 +1,22 @@
+# Core LLM & RAG
+langchain==0.2.16
+langchain-community==0.2.16
+langchain-core==0.2.38
+
+# Offline LLM runner (install separately: https://ollama.com)
+ollama>=0.3.0
+
+# Vector store
+chromadb>=0.5.0
+
+# Offline embeddings
+sentence-transformers>=3.0.0
+torch>=2.0.0
+
+# Document loaders
+pypdf>=4.0.0
+docx2txt>=0.8
+unstructured>=0.15.0
+
+# Config
+pyyaml>=6.0

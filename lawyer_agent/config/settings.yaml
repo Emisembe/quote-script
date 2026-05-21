@@ -1,0 +1,37 @@
+# Offline Lawyer Agent Configuration
+# Update these settings for your target country and language
+
+agent:
+  name: "LexAI"
+  jurisdiction: "General"          # e.g. "Kenya", "Nigeria", "South Africa", "USA"
+  legal_system: "common_law"       # "common_law" | "civil_law" | "mixed"
+  language: "en"                   # ISO 639-1 code: en, fr, sw, ar, pt, es, etc.
+
+llm:
+  provider: "ollama"               # "ollama" is the offline provider
+  model: "llama3"                  # llama3, mistral, gemma2, aya (multilingual)
+  base_url: "http://localhost:11434"
+  temperature: 0.1                 # Low temp for factual legal reasoning
+  max_tokens: 4096
+
+embeddings:
+  model: "sentence-transformers/all-MiniLM-L6-v2"  # Runs fully offline
+  device: "cpu"                    # "cpu" | "cuda" | "mps"
+
+vector_store:
+  path: "./data/vector_store"
+  collection_name: "legal_docs"
+  chunk_size: 1000
+  chunk_overlap: 150
+
+retrieval:
+  top_k: 6                         # Number of document chunks to retrieve per query
+  score_threshold: 0.3
+
+legal_docs:
+  path: "./data/legal_docs"
+  supported_formats:
+    - ".pdf"
+    - ".txt"
+    - ".md"
+    - ".docx"
