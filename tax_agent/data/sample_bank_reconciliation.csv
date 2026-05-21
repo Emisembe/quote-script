@@ -1,0 +1,19 @@
+source,date,description,amount,matched
+bank_statement,2024-01-05,Client A payment received,15000,yes
+bank_statement,2024-01-10,AWS hosting charge,-1200,yes
+bank_statement,2024-01-12,Google Ads,-3000,yes
+bank_statement,2024-01-15,Payroll run,-12000,yes
+bank_statement,2024-01-18,Office rent EFT,-4500,yes
+bank_statement,2024-01-20,Bank service fees,-150,yes
+bank_statement,2024-01-22,Electricity payment,-800,yes
+bank_statement,2024-01-28,Loan interest debit,-300,yes
+bank_statement,2024-01-30,Outstanding deposit not yet booked,2500,no
+books,2024-01-05,Client A - January invoice,15000,yes
+books,2024-01-08,Client B - consulting,8000,no
+books,2024-01-10,AWS hosting January,-1200,yes
+books,2024-01-12,Google Ads January,-3000,yes
+books,2024-01-15,Staff salaries January,-12000,yes
+books,2024-01-18,Office rent January,-4500,yes
+books,2024-01-20,Bank service fees,-150,yes
+books,2024-01-22,Electricity & internet,-800,yes
+books,2024-01-28,Loan interest,-300,yes

@@ -1,0 +1,123 @@
+{
+  "country_code": "TEMPLATE",
+  "country_name": "My Country",
+  "currency_symbol": "$",
+  "currency_code": "USD",
+  "language": "en",
+  "fiscal_year": {
+    "start_month": 1,
+    "end_month": 12
+  },
+  "labels": {
+    "revenue":              "Revenue",
+    "cost_of_sales":        "Cost of Sales",
+    "gross_profit":         "Gross Profit",
+    "operating_expenses":   "Operating Expenses",
+    "depreciation":         "Depreciation & Amortisation",
+    "ebit":                 "Earnings Before Interest & Tax (EBIT)",
+    "interest_expense":     "Interest Expense",
+    "profit_before_tax":    "Profit Before Tax",
+    "income_tax":           "Income Tax",
+    "net_profit":           "Net Profit After Tax"
+  },
+  "tax": {
+    "vat": {
+      "enabled": true,
+      "standard_rate": 0.15,
+      "reduced_rate": 0.0,
+      "exempt_categories": [],
+      "label": "VAT"
+    },
+    "corporate_income_tax": {
+      "enabled": true,
+      "method": "brackets",
+      "flat_rate": 0.28,
+      "brackets": [
+        { "from": 0,      "to": 100000, "rate": 0.18 },
+        { "from": 100000, "to": 365000, "rate": 0.26 },
+        { "from": 365000, "to": null,   "rate": 0.28 }
+      ],
+      "label": "Corporate Income Tax"
+    },
+    "dividend_withholding_tax": {
+      "enabled": false,
+      "rate": 0.20,
+      "label": "Dividend Withholding Tax"
+    },
+    "payroll_tax": {
+      "enabled": false,
+      "employee_rate": 0.0,
+      "employer_rate": 0.0,
+      "label": "Payroll Tax"
+    }
+  },
+  "categories": {
+    "income":             ["revenue", "sales", "service_income", "other_income", "interest_income", "rental_income"],
+    "cogs":               ["cost_of_sales", "direct_costs", "inventory_cost", "materials", "freight_in"],
+    "operating_expense":  ["salaries", "wages", "rent", "utilities", "marketing", "advertising",
+                           "admin", "repairs", "maintenance", "insurance", "travel", "entertainment",
+                           "office_supplies", "professional_fees", "it_costs", "cleaning"],
+    "depreciation":       ["depreciation", "amortisation"],
+    "interest":           ["interest_expense", "bank_charges", "loan_interest"],
+    "tax":                ["income_tax", "provisional_tax"]
+  },
+  "bookkeeping": {
+    "accounting_method": "accrual",
+    "entity_type": "llc",
+    "fiscal_year_end": "December",
+    "notes": "Set accounting_method to 'cash' or 'accrual'. Set entity_type to one of: sole_proprietor, partnership, llp, llc, s_corp, c_corp, nonprofit"
+  },
+  "entity_tax_treatment": {
+    "sole_proprietor": {
+      "label": "Sole Proprietorship",
+      "liability": "unlimited",
+      "tax_method": "pass_through",
+      "double_taxation": false,
+      "notes": "Owner reports business income on personal tax return"
+    },
+    "llc": {
+      "label": "Limited Liability Company (LLC)",
+      "liability": "limited",
+      "tax_method": "pass_through",
+      "double_taxation": false,
+      "notes": "No separate corporate tax; profit passes to owner's personal return"
+    },
+    "s_corp": {
+      "label": "S Corporation",
+      "liability": "limited",
+      "tax_method": "pass_through",
+      "double_taxation": false,
+      "notes": "Pass-through taxation; max 100 shareholders"
+    },
+    "c_corp": {
+      "label": "C Corporation",
+      "liability": "limited",
+      "tax_method": "corporate",
+      "double_taxation": true,
+      "notes": "Taxed at corporate level AND shareholders taxed on dividends"
+    },
+    "partnership": {
+      "label": "General Partnership",
+      "liability": "unlimited",
+      "tax_method": "pass_through",
+      "double_taxation": false,
+      "notes": "Income passes through to partners' personal returns"
+    },
+    "nonprofit": {
+      "label": "Nonprofit Corporation",
+      "liability": "limited",
+      "tax_method": "exempt",
+      "double_taxation": false,
+      "notes": "Tax-exempt; donations may be tax-deductible for donors"
+    }
+  },
+  "ratios": {
+    "gross_margin":         "Gross Margin %",
+    "operating_margin":     "Operating Margin %",
+    "net_profit_margin":    "Net Profit Margin %",
+    "cogs_ratio":           "COGS as % of Revenue",
+    "opex_ratio":           "OpEx as % of Revenue",
+    "interest_coverage":    "Interest Coverage Ratio",
+    "effective_tax_rate":   "Effective Tax Rate %"
+  }
+}

@@ -1,0 +1,26 @@
+period,account_code,account_name,budget_amount
+2024-01,40100,Revenue Stream 1,14000
+2024-01,40200,Revenue Stream 2,7000
+2024-01,50100,Web Domain & Hosting Fees,1100
+2024-01,60100,Advertising & Marketing,2500
+2024-01,60600,Salaries & Wages,12000
+2024-01,60420,Rent & Lease,4500
+2024-01,60800,Utilities,700
+2024-02,40100,Revenue Stream 1,14000
+2024-02,40200,Revenue Stream 2,7000
+2024-02,40300,Revenue Stream 3,4000
+2024-02,50100,Web Domain & Hosting Fees,1100
+2024-02,60100,Advertising & Marketing,2500
+2024-02,60600,Salaries & Wages,12000
+2024-02,60420,Rent & Lease,4500
+2024-02,60800,Utilities,700
+2024-03,40100,Revenue Stream 1,16000
+2024-03,40200,Revenue Stream 2,7000
+2024-03,40300,Revenue Stream 3,4000
+2024-03,40400,Subscription Revenue,3000
+2024-03,50100,Web Domain & Hosting Fees,1300
+2024-03,60100,Advertising & Marketing,3000
+2024-03,60600,Salaries & Wages,12000
+2024-03,60420,Rent & Lease,4500
+2024-03,60800,Utilities,700
+2024-03,60510,Accounting Fees,2000

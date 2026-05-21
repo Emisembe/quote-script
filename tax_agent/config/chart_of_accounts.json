@@ -1,0 +1,154 @@
+{
+  "description": "Default Chart of Accounts — edit account names/numbers to match your business",
+  "accounts": {
+    "income": {
+      "range": "40000-49999",
+      "label": "Income",
+      "statement": "pl",
+      "normal_balance": "credit",
+      "accounts": {
+        "40100": "Revenue Stream 1",
+        "40200": "Revenue Stream 2",
+        "40300": "Revenue Stream 3",
+        "40400": "Subscription Revenue",
+        "40500": "Service Income",
+        "40600": "Product Revenue",
+        "40700": "Affiliate Revenue",
+        "40800": "Grant Revenue",
+        "40900": "Other Revenue"
+      }
+    },
+    "cogs": {
+      "range": "50000-59999",
+      "label": "Cost of Goods Sold",
+      "statement": "pl",
+      "normal_balance": "debit",
+      "accounts": {
+        "50100": "Web Domain & Hosting Fees",
+        "50200": "Merchant Account Fees",
+        "50300": "Direct Labour",
+        "50400": "Raw Materials",
+        "50500": "Freight In"
+      }
+    },
+    "operating_expenses": {
+      "range": "60000-69999",
+      "label": "Operating Expenses",
+      "statement": "pl",
+      "normal_balance": "debit",
+      "accounts": {
+        "60100": "Advertising & Marketing",
+        "60200": "Bank Charges & Fees",
+        "60300": "Insurance",
+        "60400": "Office Expenses",
+        "60410": "Office Supplies & Software",
+        "60420": "Rent & Lease",
+        "60500": "Professional Services",
+        "60510": "Accounting Fees",
+        "60520": "Consulting Fees",
+        "60600": "Salaries & Wages",
+        "60700": "Travel & Entertainment",
+        "60800": "Utilities",
+        "60900": "Repairs & Maintenance",
+        "61000": "IT Costs",
+        "61100": "Cleaning"
+      }
+    },
+    "other_income": {
+      "range": "70000-79999",
+      "label": "Other Income",
+      "statement": "pl",
+      "normal_balance": "credit",
+      "accounts": {
+        "70100": "Interest Income",
+        "70200": "Other Income",
+        "70300": "Rental Income"
+      }
+    },
+    "other_expenses": {
+      "range": "80000-89999",
+      "label": "Other Expenses",
+      "statement": "pl",
+      "normal_balance": "debit",
+      "accounts": {
+        "80100": "Depreciation Expense",
+        "80200": "Interest Expense",
+        "80300": "Amortisation"
+      }
+    },
+    "current_assets": {
+      "range": "10000-10399",
+      "label": "Current Assets",
+      "statement": "bs",
+      "normal_balance": "debit",
+      "cash_flow_category": "operating",
+      "accounts": {
+        "10100": "Cash & Cash Equivalents",
+        "10200": "Accounts Receivable",
+        "10310": "Prepaid Expenses",
+        "10320": "Security Deposit",
+        "10330": "Due to/from Officers",
+        "10340": "Inventory",
+        "10350": "Other Current Assets"
+      }
+    },
+    "fixed_assets": {
+      "range": "10400-10999",
+      "label": "Fixed Assets",
+      "statement": "bs",
+      "normal_balance": "debit",
+      "cash_flow_category": "investing",
+      "accounts": {
+        "10410": "Computers & Laptops",
+        "10420": "Furniture",
+        "10430": "Equipment",
+        "10440": "Accumulated Depreciation",
+        "10450": "Vehicles",
+        "10460": "Land & Buildings"
+      }
+    },
+    "current_liabilities": {
+      "range": "20000-20399",
+      "label": "Current Liabilities",
+      "statement": "bs",
+      "normal_balance": "credit",
+      "cash_flow_category": "operating",
+      "accounts": {
+        "20100": "Accounts Payable",
+        "20310": "Accrued Expenses",
+        "20320": "Accrued Payroll",
+        "20330": "Sales Tax Payable",
+        "20340": "Income Tax Payable",
+        "20350": "Short Term Loans"
+      }
+    },
+    "long_term_liabilities": {
+      "range": "20400-29999",
+      "label": "Long Term Liabilities",
+      "statement": "bs",
+      "normal_balance": "credit",
+      "cash_flow_category": "financing",
+      "accounts": {
+        "20410": "Convertible Notes",
+        "20411": "Long Term Loan — Principal",
+        "20412": "Accrued Interest on Loans",
+        "20420": "Deferred Revenue",
+        "20430": "Other Long Term Liabilities"
+      }
+    },
+    "equity": {
+      "range": "30000-39999",
+      "label": "Equity",
+      "statement": "bs",
+      "normal_balance": "credit",
+      "cash_flow_category": "financing",
+      "accounts": {
+        "30100": "Common Stock",
+        "30200": "Preferred Stock",
+        "30300": "Additional Paid in Capital",
+        "30400": "Retained Earnings",
+        "30500": "Owner Drawings"
+      }
+    }
+  }
+}
