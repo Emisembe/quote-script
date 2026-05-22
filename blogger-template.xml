@@ -574,9 +574,29 @@ ul, ol { list-style: none; }
 .share-btn.whatsapp { background: #25D366; }
 .share-btn.telegram { background: #0088CC; }
 .share-btn.linkedin { background: #0077B5; }
-.share-btn.reddit   { background: #FF4500; }
-.share-btn.email    { background: #555555; }
+.share-btn.reddit     { background: #FF4500; }
+.share-btn.instagram  { background: #E1306C; }
+.share-btn.email      { background: #555555; }
 .share-btn.share-print { background: #444444; }
+
+/* Instagram copied tooltip */
+.share-btn.instagram.copied::after {
+  content: 'Copied!';
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1a;
+  color: #fff;
+  font-family: 'Oswald', sans-serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.share-btn.instagram { position: relative; }
 
 /* ============================================================
    Pagination
@@ -1039,7 +1059,8 @@ ul, ol { list-style: none; }
                       <a class='share-btn whatsapp' data-share='whatsapp' href='#' rel='noopener'>W</a>
                       <a class='share-btn telegram' data-share='telegram' href='#' rel='noopener'>T</a>
                       <a class='share-btn linkedin' data-share='linkedin' href='#' rel='noopener'>in</a>
-                      <a class='share-btn reddit'   data-share='reddit'   href='#' rel='noopener'>R</a>
+                      <a class='share-btn reddit'     data-share='reddit'     href='#' rel='noopener'>R</a>
+                      <button class='share-btn instagram' data-share='instagram' type='button'>&#128247;</button>
                       <a class='share-btn email'    data-share='email'    href='#'>&#9993;</a>
                       <button class='share-btn share-print' type='button'>&#128438;</button>
                     </div>
@@ -2061,6 +2082,26 @@ document.querySelectorAll('.share-bar').forEach(function(bar) {
     if (links[key]) a.href = links[key];
     if (key !== 'email') a.target = '_blank';
   });
+
+  /* Instagram — Web Share API on mobile, clipboard fallback on desktop */
+  var igBtn = bar.querySelector('[data-share="instagram"]');
+  if (igBtn) {
+    igBtn.addEventListener('click', function() {
+      var rawUrl   = bar.dataset.url   || window.location.href;
+      var rawTitle = bar.dataset.title || document.title;
+      if (navigator.share) {
+        navigator.share({ title: rawTitle, url: rawUrl }).catch(function() {});
+      } else {
+        navigator.clipboard.writeText(rawUrl).then(function() {
+          igBtn.classList.add('copied');
+          setTimeout(function() { igBtn.classList.remove('copied'); }, 2000);
+        }).catch(function() {
+          prompt('Copy this link to share on Instagram:', rawUrl);
+        });
+      }
+    });
+  }
+
   var printBtn = bar.querySelector('.share-print');
   if (printBtn) {
     printBtn.addEventListener('click', function() { window.print(); });

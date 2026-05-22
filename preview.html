@@ -527,9 +527,26 @@
     .share-btn.whatsapp { background: #25D366; }
     .share-btn.telegram { background: #0088CC; }
     .share-btn.linkedin { background: #0077B5; }
-    .share-btn.reddit   { background: #FF4500; }
-    .share-btn.email    { background: #555555; }
-    .share-btn.print    { background: #333333; }
+    .share-btn.reddit     { background: #FF4500; }
+    .share-btn.instagram  { background: #E1306C; position: relative; }
+    .share-btn.email      { background: #555555; }
+    .share-btn.print      { background: #333333; }
+
+    .share-btn.instagram.copied::after {
+      content: 'Copied!';
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
 
     /* =============================================
        Pagination
@@ -1038,7 +1055,8 @@
           <a class="share-btn whatsapp" data-share="whatsapp" href="#">W</a>
           <a class="share-btn telegram" data-share="telegram" href="#">T</a>
           <a class="share-btn linkedin" data-share="linkedin" href="#">in</a>
-          <a class="share-btn reddit"   data-share="reddit"   href="#">R</a>
+          <a class="share-btn reddit"     data-share="reddit"     href="#">R</a>
+          <button class="share-btn instagram" data-share="instagram" type="button">&#128247;</button>
           <a class="share-btn email"    data-share="email"    href="#">✉</a>
           <button class="share-btn print" onclick="window.print()">&#128438;</button>
           <a class="read-more" href="#" style="margin-left:auto;">Read Full Story →</a>
@@ -1483,6 +1501,25 @@
       if (links[k]) a.href = links[k];
       if (k !== 'email') a.target = '_blank';
     });
+
+    // Instagram — Web Share API on mobile, clipboard fallback on desktop
+    var igBtn = bar.querySelector('[data-share="instagram"]');
+    if (igBtn) {
+      igBtn.addEventListener('click', function() {
+        var rawUrl   = bar.dataset.url   || window.location.href;
+        var rawTitle = bar.dataset.title || document.title;
+        if (navigator.share) {
+          navigator.share({ title: rawTitle, url: rawUrl }).catch(function() {});
+        } else {
+          navigator.clipboard.writeText(rawUrl).then(function() {
+            igBtn.classList.add('copied');
+            setTimeout(function() { igBtn.classList.remove('copied'); }, 2000);
+          }).catch(function() {
+            prompt('Copy this link to share on Instagram:', rawUrl);
+          });
+        }
+      });
+    }
   });
 
   // Mobile nav toggle
