@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Preview — The Daily Pulse (Newspaper Edition)</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Oswald:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    /* =============================================
+       Tokens
+    ============================================= */
+    :root {
+      --red:          #C41230;
+      --red-dk:       #9c0e26;
+      --ink:          #1a1a1a;
+      --ink-mid:      #333;
+      --ink-light:    #555;
+      --muted:        #888;
+      --rule:         #1a1a1a;
+      --rule-light:   #d0c8b8;
+      --newsprint:    #FDFAF4;
+      --white:        #ffffff;
+      --dark-bg:      #1a1a2e;
+      --font-head:    'Playfair Display', Georgia, serif;
+      --font-body:    'Libre Baskerville', Georgia, serif;
+      --font-label:   'Oswald', Arial, sans-serif;
+      --content-w:    1080px;
+      --sidebar-w:    280px;
+      --col-gap:      24px;
+      --transition:   0.2s ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--ink);
+      background: #e8e4dc;
+    }
+
+    a { color: var(--ink); text-decoration: none; transition: color var(--transition); }
+    a:hover { color: var(--red); }
+    img { max-width: 100%; height: auto; display: block; }
+
+    /* =============================================
+       Outer wrapper
+    ============================================= */
+    .paper {
+      max-width: var(--content-w);
+      margin: 0 auto;
+      background: var(--newsprint);
+      box-shadow: 0 0 40px rgba(0,0,0,0.35);
+    }
+
+    /* =============================================
+       Demo switcher bar
+    ============================================= */
+    .demo-bar {
+      background: #111;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      position: sticky;
+      top: 0;
+      z-index: 2000;
+      border-bottom: 2px solid var(--red);
+    }
+
+    .demo-bar span {
+      color: rgba(255,255,255,0.4);
+      font-family: var(--font-label);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 0 14px;
+    }
+
+    .demo-bar button {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.55);
+      font-family: var(--font-label);
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color var(--transition), border-color var(--transition);
+    }
+
+    .demo-bar button.active,
+    .demo-bar button:hover { color: var(--red); border-bottom-color: var(--red); }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* =============================================
+       Masthead
+    ============================================= */
+    .masthead {
+      padding: 18px 32px 0;
+      text-align: center;
+      border-bottom: 3px solid var(--rule);
+    }
+
+    .masthead-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-label);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--rule-light);
+      margin-bottom: 12px;
+    }
+
+    .masthead-top .edition { color: var(--red); font-weight: 600; }
+
+    .masthead-title {
+      font-family: var(--font-head);
+      font-size: clamp(44px, 7vw, 88px);
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -1px;
+      line-height: 1;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .masthead-rules {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .masthead-rules hr {
+      flex: 1;
+      border: none;
+      border-top: 1px solid var(--rule);
+    }
+
+    .masthead-tagline {
+      font-family: var(--font-label);
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+
+    .masthead-cats {
+      font-family: var(--font-label);
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      padding: 8px 0;
+      border-top: 1px solid var(--rule-light);
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .masthead-cats a { color: var(--ink-mid); }
+    .masthead-cats a:hover { color: var(--red); }
+
+    /* =============================================
+       Navigation bar
+    ============================================= */
+    .topnav {
+      background: var(--ink);
+      position: sticky;
+      top: 36px;
+      z-index: 999;
+    }
+
+    .topnav ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      max-width: var(--content-w);
+      margin: 0 auto;
+    }
+
+    .topnav ul li { position: relative; }
+
+    .topnav ul li a {
+      display: block;
+      padding: 12px 18px;
+      font-family: var(--font-label);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+      border-bottom: 2px solid transparent;
+      transition: color var(--transition), border-color var(--transition);
+    }
+
+    .topnav ul li a:hover,
+    .topnav ul li.active > a {
+      color: var(--white);
+      border-bottom-color: var(--red);
+    }
+
+    .topnav ul li ul {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 180px;
+      background: #222;
+      border-top: 2px solid var(--red);
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .topnav ul li:hover > ul { display: flex; }
+    .topnav ul li ul li a { padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 11px; color: rgba(255,255,255,0.65); }
+    .topnav ul li ul li a:hover { color: var(--white); border-bottom-color: transparent; }
+
+    #nav-toggle { display: none; padding: 12px 18px; background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+
+    /* =============================================
+       Breaking ticker
+    ============================================= */
+    .ticker {
+      background: var(--red);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      height: 32px;
+    }
+
+    .ticker-label {
+      font-family: var(--font-label);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 0 14px;
+      background: #8B0000;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .ticker-track {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      height: 100%;
+    }
+
+    .ticker-inner {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      white-space: nowrap;
+      animation: ticker-scroll 32s linear infinite;
+    }
+
+    .ticker-inner span {
+      font-family: var(--font-body);
+      font-size: 12px;
+      padding: 0 32px 0 0;
+    }
+
+    .ticker-inner span::before { content: '◆  '; }
+
+    @keyframes ticker-scroll {
+      0%   { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* =============================================
+       Main layout
+    ============================================= */
+    .main-wrap {
+      display: grid;
+      grid-template-columns: 1fr var(--sidebar-w);
+      border-top: 3px double var(--rule);
+    }
+
+    .main-col {
+      padding: 24px 24px 32px;
+      border-right: 1px solid var(--rule);
+    }
+
+    .sidebar-col {
+      padding: 24px 18px 32px;
+    }
+
+    /* =============================================
+       Section heading
+    ============================================= */
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .section-head h2 {
+      font-family: var(--font-label);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+      background: var(--red);
+      padding: 3px 10px;
+      white-space: nowrap;
+    }
+
+    .section-head hr { flex: 1; border: none; border-top: 1px solid var(--rule); }
+
+    /* =============================================
+       Featured story
+    ============================================= */
+    .featured {
+      border-bottom: 1px solid var(--rule-light);
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+    }
+
+    .featured img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      margin-bottom: 14px;
+      border: 1px solid var(--rule-light);
+    }
+
+    .featured-category {
+      font-family: var(--font-label);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 6px;
+    }
+
+    .featured h3 {
+      font-family: var(--font-head);
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .featured h3 a { color: var(--ink); }
+    .featured h3 a:hover { color: var(--red); }
+
+    .byline {
+      font-family: var(--font-label);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .byline b { color: var(--ink-light); }
+
+    .featured p {
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.75;
+      text-align: justify;
+    }
+
+    /* =============================================
+       Post grid (3 columns)
+    ============================================= */
+    .post-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule-light);
+      padding-top: 24px;
+    }
+
+    .post-card {
+      padding: 0 20px 20px;
+      border-right: 1px solid var(--rule-light);
+      transition: border-left-color var(--transition);
+      border-left: 3px solid transparent;
+    }
+
+    .post-card:hover { border-left-color: var(--red); }
+    .post-card:first-child { padding-left: 0; border-left: none; }
+    .post-card:last-child { border-right: none; }
+
+    .post-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      margin-bottom: 12px;
+      border: 1px solid var(--rule-light);
+    }
+
+    .post-card .card-cat {
+      font-family: var(--font-label);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 5px;
+    }
+
+    .post-card h4 {
+      font-family: var(--font-head);
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .post-card h4 a { color: var(--ink); }
+    .post-card h4 a:hover { color: var(--red); }
+
+    .post-card p {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--ink-light);
+      text-align: justify;
+    }
+
+    .post-card .byline { margin: 6px 0 8px; font-size: 10px; }
+
+    .read-more {
+      display: inline-block;
+      margin-top: 10px;
+      font-family: var(--font-label);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--red);
+      border-bottom: 1px solid var(--red);
+      transition: color var(--transition), border-color var(--transition);
+    }
+
+    .read-more:hover { color: var(--red-dk); border-color: var(--red-dk); }
+
+    /* Labels */
+    .label-tag {
+      display: inline-block;
+      font-family: var(--font-label);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--white);
+      background: var(--red);
+      padding: 2px 8px;
+      margin: 2px 2px 2px 0;
+      transition: background var(--transition);
+    }
+
+    .label-tag:hover { background: var(--red-dk); color: var(--white); }
+
+    /* =============================================
+       Share bar
+    ============================================= */
+    .share-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--rule-light);
+    }
+
+    .share-label {
+      font-family: var(--font-label);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 28px;
+      border-radius: 3px;
+      color: var(--white);
+      font-family: var(--font-label);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: opacity var(--transition), transform var(--transition);
+    }
+
+    .share-btn:hover { opacity: 0.85; transform: translateY(-1px); color: var(--white); }
+
+    .share-btn.twitter  { background: #000000; }
+    .share-btn.facebook { background: #1877F2; }
+    .share-btn.whatsapp { background: #25D366; }
+    .share-btn.telegram { background: #0088CC; }
+    .share-btn.linkedin { background: #0077B5; }
+    .share-btn.reddit     { background: #FF4500; }
+    .share-btn.instagram  { background: #E1306C; position: relative; }
+    .share-btn.email      { background: #555555; }
+    .share-btn.print      { background: #333333; }
+
+    .share-btn.instagram.copied::after {
+      content: 'Copied!';
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* =============================================
+       Pagination
+    ============================================= */
+    .pagenavi {
+      text-align: center;
+      padding: 24px 0;
+      border-top: 1px solid var(--rule-light);
+      margin-top: 24px;
+    }
+
+    .pagenavi a,
+    .pagenavi span {
+      display: inline-block;
+      margin: 2px;
+      padding: 5px 12px;
+      border: 1px solid var(--rule);
+      font-family: var(--font-label);
+      font-size: 13px;
+      color: var(--ink);
+      transition: all var(--transition);
+    }
+
+    .pagenavi a:hover { background: var(--red); border-color: var(--red); color: var(--white); }
+    .pagenavi .current { background: var(--ink); border-color: var(--ink); color: var(--white); }
+
+    /* =============================================
+       Sidebar
+    ============================================= */
+    .widget { margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid var(--rule-light); }
+    .widget:last-child { border-bottom: none; }
+
+    .widget-title {
+      font-family: var(--font-label);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ink);
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+      border-top: 3px solid var(--red);
+      padding-top: 8px;
+    }
+
+    .widget ul { list-style: none; }
+
+    .widget ul li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--rule-light);
+      font-family: var(--font-body);
+      font-size: 13px;
+    }
+
+    .widget ul li:last-child { border-bottom: none; }
+    .widget ul li a { color: var(--ink-mid); }
+    .widget ul li a:hover { color: var(--red); }
+    .widget ul li .count { font-size: 11px; color: var(--muted); font-family: var(--font-label); }
+
+    /* Popular posts in sidebar */
+    .popular-item {
+      display: flex;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--rule-light);
+    }
+
+    .popular-item:last-child { border-bottom: none; }
+
+    .popular-item img {
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--rule-light);
+    }
+
+    .popular-item .pi-text { flex: 1; min-width: 0; }
+
+    .popular-item .pi-title {
+      font-family: var(--font-head);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--ink);
+    }
+
+    .popular-item .pi-title a { color: var(--ink); }
+    .popular-item .pi-title a:hover { color: var(--red); }
+    .popular-item .pi-date { font-family: var(--font-label); font-size: 10px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* About widget */
+    .about-widget { text-align: center; }
+    .about-widget img { width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 10px; border: 3px solid var(--red); object-fit: cover; }
+    .about-widget p { font-size: 13px; line-height: 1.6; color: var(--ink-light); }
+
+    .social-row { display: flex; gap: 6px; justify-content: center; margin-top: 12px; }
+    .social-row a {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; border-radius: 2px;
+      background: var(--ink); color: var(--white);
+      font-family: var(--font-label); font-size: 12px; font-weight: 700;
+      text-decoration: none; transition: background var(--transition);
+    }
+    .social-row a:hover { background: var(--red); color: var(--white); }
+
+    .ad-slot {
+      background: #f0ece0;
+      border: 1px dashed var(--rule-light);
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-label);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* =============================================
+       Single post
+    ============================================= */
+    .article-head { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--rule-light); }
+
+    .article-category {
+      font-family: var(--font-label);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--white);
+      background: var(--red);
+      display: inline-block;
+      padding: 2px 8px;
+      margin-bottom: 8px;
+    }
+
+    .article-title {
+      font-family: var(--font-head);
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .article-img {
+      width: 100%;
+      height: 360px;
+      object-fit: cover;
+      border: 1px solid var(--rule-light);
+      margin: 16px 0;
+    }
+
+    .article-body {
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.85;
+      text-align: justify;
+      color: var(--ink);
+    }
+
+    /* Drop cap on first paragraph */
+    .article-body > p:first-child::first-letter {
+      font-family: var(--font-head);
+      font-size: 64px;
+      font-weight: 900;
+      line-height: 0.8;
+      float: left;
+      margin: 4px 8px 0 0;
+      color: var(--red);
+    }
+
+    .article-body h3 {
+      font-family: var(--font-head);
+      font-size: 22px;
+      font-weight: 700;
+      margin: 28px 0 10px;
+      border-top: 1px solid var(--rule-light);
+      padding-top: 16px;
+    }
+
+    .article-body p { margin-bottom: 16px; }
+
+    .article-body img {
+      width: 100%;
+      margin: 20px 0;
+      border: 1px solid var(--rule-light);
+    }
+
+    /* Pull quote */
+    .pull-quote {
+      font-family: var(--font-head);
+      font-size: 20px;
+      font-style: italic;
+      font-weight: 700;
+      line-height: 1.4;
+      color: var(--ink);
+      border-top: 3px solid var(--red);
+      border-bottom: 1px solid var(--rule-light);
+      padding: 16px 0 14px;
+      margin: 24px 0;
+      text-align: center;
+    }
+
+    /* Article footer */
+    .article-footer {
+      margin-top: 28px;
+      padding: 14px 0;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: gap;
+      gap: 12px;
+    }
+
+    .article-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 24px;
+      font-family: var(--font-label);
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .article-nav a {
+      color: var(--ink-mid);
+      border-bottom: 1px solid var(--rule-light);
+      padding-bottom: 2px;
+    }
+
+    .article-nav a:hover { color: var(--red); border-color: var(--red); }
+
+    /* =============================================
+       Comments
+    ============================================= */
+    .comments-section {
+      margin-top: 36px;
+      border-top: 3px double var(--rule);
+      padding-top: 24px;
+    }
+
+    .comments-title {
+      font-family: var(--font-head);
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .comment-item {
+      display: flex;
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--rule-light);
+    }
+
+    .comment-item:last-child { border-bottom: none; }
+
+    .comment-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 2px solid var(--rule-light);
+      object-fit: cover;
+    }
+
+    .comment-right { flex: 1; }
+
+    .comment-meta {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
+
+    .comment-name { font-family: var(--font-head); font-size: 14px; font-weight: 700; color: var(--ink); }
+    .comment-date { font-family: var(--font-label); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+
+    .comment-text {
+      font-size: 14px;
+      line-height: 1.65;
+      background: #f5f1e8;
+      border-left: 3px solid var(--rule-light);
+      padding: 10px 14px;
+      color: var(--ink-light);
+    }
+
+    .comment-form-placeholder {
+      background: #f5f1e8;
+      border: 1px solid var(--rule-light);
+      border-left: 3px solid var(--red);
+      padding: 20px;
+      font-family: var(--font-label);
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 20px;
+    }
+
+    /* =============================================
+       Footer
+    ============================================= */
+    .site-footer {
+      background: var(--dark-bg);
+      border-top: 4px solid var(--red);
+      padding: 40px 32px 20px;
+    }
+
+    .footer-masthead {
+      font-family: var(--font-head);
+      font-size: 28px;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--white);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .footer-tagline {
+      font-family: var(--font-label);
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      text-align: center;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      margin-bottom: 28px;
+    }
+
+    .footer-col h4 {
+      font-family: var(--font-label);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { padding: 4px 0; font-size: 13px; }
+    .footer-col ul li a { color: rgba(255,255,255,0.5); font-family: var(--font-body); }
+    .footer-col ul li a:hover { color: var(--red); }
+    .footer-col p { font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.65; font-family: var(--font-body); }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      font-family: var(--font-label);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .footer-bottom a { color: rgba(255,255,255,0.5); }
+    .footer-bottom a:hover { color: var(--red); }
+
+    /* =============================================
+       Print styles
+    ============================================= */
+    @media print {
+      .demo-bar, .topnav, .ticker, .share-bar, .sidebar-col,
+      .pagenavi, .site-footer, .comments-section { display: none !important; }
+      .main-wrap { grid-template-columns: 1fr; }
+      body { background: white; }
+      .paper { box-shadow: none; }
+      .article-body { font-size: 11pt; line-height: 1.5; }
+    }
+
+    /* =============================================
+       Responsive
+    ============================================= */
+    @media (max-width: 900px) {
+      .main-wrap { grid-template-columns: 1fr; }
+      .main-col { border-right: none; border-bottom: 1px solid var(--rule); }
+      .post-grid { grid-template-columns: 1fr 1fr; }
+      .post-card:nth-child(2) { border-right: none; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      #nav-toggle { display: block; }
+      .topnav > ul { display: none; flex-direction: column; }
+      .topnav > ul.open { display: flex; }
+    }
+
+    @media (max-width: 560px) {
+      .masthead { padding: 14px 16px 0; }
+      .masthead-top { flex-direction: column; gap: 4px; text-align: center; }
+      .post-grid { grid-template-columns: 1fr; }
+      .post-card { border-right: none; padding: 0 0 20px; }
+      .article-title { font-size: 26px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+      .masthead-cats { gap: 12px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========= DEMO SWITCHER ========= -->
+<div class="demo-bar">
+  <span>Preview:</span>
+  <button class="active" onclick="showView('index',this)">Blog Index</button>
+  <button onclick="showView('post',this)">Single Post</button>
+  <button onclick="showView('mobile',this)">Mobile</button>
+</div>
+
+<!-- ====================================================
+     VIEW 1 — BLOG INDEX
+==================================================== -->
+<div class="view active" id="view-index">
+<div class="paper">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="masthead-top">
+      <span>Vol. CXLII &nbsp;· &nbsp;No. 49</span>
+      <span class="edition">&#11044; Breaking Edition</span>
+      <span>Thursday, 22 May 2026</span>
+    </div>
+    <h1 class="masthead-title">The Daily Pulse</h1>
+    <div class="masthead-rules"><hr/><span class="masthead-tagline">Truth · Depth · Perspective · Est. 2014</span><hr/></div>
+    <div class="masthead-cats">
+      <a href="#">World</a>
+      <a href="#">Technology</a>
+      <a href="#">Business</a>
+      <a href="#">Science</a>
+      <a href="#">Travel</a>
+      <a href="#">Lifestyle</a>
+      <a href="#">Opinion</a>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="topnav">
+    <button id="nav-toggle">&#9776;</button>
+    <ul id="nav-list">
+      <li class="active"><a href="#">Home</a></li>
+      <li class="has-sub">
+        <a href="#">Categories</a>
+        <ul>
+          <li><a href="#">Technology</a></li>
+          <li><a href="#">Business</a></li>
+          <li><a href="#">Travel</a></li>
+          <li><a href="#">Lifestyle</a></li>
+        </ul>
+      </li>
+      <li><a href="#">Archive</a></li>
+      <li><a href="#">About</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-label">Breaking</div>
+    <div class="ticker-track">
+      <div class="ticker-inner">
+        <span>Global AI regulation summit concludes with landmark 12-nation accord</span>
+        <span>Markets reach all-time high as tech sector surges 4.2% in morning trading</span>
+        <span>Scientists confirm record ocean temperatures for third consecutive month</span>
+        <span>New study links remote work to 18% increase in regional property values</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-wrap">
+    <div class="main-col">
+
+      <!-- Featured story -->
+      <div class="section-head"><h2>Today's Lead</h2><hr/></div>
+      <div class="featured">
+        <img alt="Featured" src="https://picsum.photos/seed/lead1/900/320"/>
+        <div class="featured-category">Technology</div>
+        <h3><a href="#">The Future of Artificial Intelligence in Everyday Life</a></h3>
+        <div class="byline">
+          <span>By <b>Jane Doe</b></span>
+          <span>&#9679;</span>
+          <span>May 20, 2026</span>
+          <span>&#9679;</span>
+          <span>14 Comments</span>
+        </div>
+        <p>Artificial intelligence is no longer confined to research labs or science-fiction films. From the smartphone in your pocket to the recommendations on your favourite streaming platform, AI is quietly reshaping the way we live, work, and connect with one another. But what does the next decade hold, and how should we prepare for a world increasingly guided by machine intelligence?</p>
+        <div class="share-bar" data-url="https://example.com/ai-future" data-title="The Future of AI in Everyday Life">
+          <span class="share-label">Share:</span>
+          <a class="share-btn twitter"  data-share="twitter"  href="#">𝕏</a>
+          <a class="share-btn facebook" data-share="facebook" href="#">f</a>
+          <a class="share-btn whatsapp" data-share="whatsapp" href="#">W</a>
+          <a class="share-btn telegram" data-share="telegram" href="#">T</a>
+          <a class="share-btn linkedin" data-share="linkedin" href="#">in</a>
+          <a class="share-btn reddit"     data-share="reddit"     href="#">R</a>
+          <button class="share-btn instagram" data-share="instagram" type="button">&#128247;</button>
+          <a class="share-btn email"    data-share="email"    href="#">✉</a>
+          <button class="share-btn print" onclick="window.print()">&#128438;</button>
+          <a class="read-more" href="#" style="margin-left:auto;">Read Full Story →</a>
+        </div>
+      </div>
+
+      <!-- 3-column grid -->
+      <div class="section-head"><h2>Latest Stories</h2><hr/></div>
+      <div class="post-grid">
+
+        <div class="post-card">
+          <img alt="" src="https://picsum.photos/seed/travel2/400/260"/>
+          <div class="card-cat">Travel</div>
+          <h4><a href="#">10 Minimalist Destinations Redefining Slow Travel in 2026</a></h4>
+          <div class="byline"><span>By <b>Mark Travels</b></span> · <span>May 18</span></div>
+          <p>As the world reopens, more adventurers are swapping packed itineraries for thoughtful, unhurried journeys that forge genuine connections.</p>
+          <a class="read-more" href="#">Continue Reading →</a>
+        </div>
+
+        <div class="post-card">
+          <img alt="" src="https://picsum.photos/seed/prod3/400/260"/>
+          <div class="card-cat">Productivity</div>
+          <h4><a href="#">Why Your Morning Routine Is Costing You Productivity</a></h4>
+          <div class="byline"><span>By <b>Sarah M.</b></span> · <span>May 15</span></div>
+          <p>Research consistently shows that rigid morning routines often increase cortisol levels rather than reduce them. Here's what science says instead.</p>
+          <a class="read-more" href="#">Continue Reading →</a>
+        </div>
+
+        <div class="post-card">
+          <img alt="" src="https://picsum.photos/seed/biz4/400/260"/>
+          <div class="card-cat">Business</div>
+          <h4><a href="#">The Rise of the Four-Day Work Week: One Year On</a></h4>
+          <div class="byline"><span>By <b>R. Okafor</b></span> · <span>May 13</span></div>
+          <p>Companies that trialled the shorter week reported higher retention, lower absenteeism, and — critically — no drop in revenue. The data is in.</p>
+          <a class="read-more" href="#">Continue Reading →</a>
+        </div>
+
+      </div>
+
+      <div class="pagenavi" style="margin-top:28px;">
+        <a href="#">&laquo; Previous</a>
+        <span class="current">1</span>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">4</a>
+        <a href="#">Next &raquo;</a>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar-col">
+
+      <div class="widget">
+        <div class="widget-title">Search</div>
+        <div style="display:flex;">
+          <input placeholder="Search the archive…" style="flex:1;padding:7px 10px;border:1px solid #ccc;font-family:var(--font-body);font-size:13px;background:#faf6ee;outline:none;" type="text"/>
+          <button style="padding:7px 12px;background:var(--red);border:none;color:white;font-family:var(--font-label);font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">Go</button>
+        </div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-title">About</div>
+        <div class="about-widget">
+          <img alt="Editor" src="https://picsum.photos/seed/avatar1/200/200"/>
+          <p>The Daily Pulse delivers clear-eyed journalism on technology, travel, and the world's most important stories — every day.</p>
+          <div class="social-row">
+            <a href="#" title="Twitter">𝕏</a>
+            <a href="#" title="Facebook">f</a>
+            <a href="#" title="Instagram">◯</a>
+            <a href="#" title="RSS">⚡</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-title">Most Read</div>
+        <div class="popular-item">
+          <img alt="" src="https://picsum.photos/seed/pop1/120/120"/>
+          <div class="pi-text">
+            <div class="pi-title"><a href="#">How to Build a Second Brain in 30 Days</a></div>
+            <div class="pi-date">May 12, 2026</div>
+          </div>
+        </div>
+        <div class="popular-item">
+          <img alt="" src="https://picsum.photos/seed/pop2/120/120"/>
+          <div class="pi-text">
+            <div class="pi-title"><a href="#">Best Budget Cameras of 2026 Ranked</a></div>
+            <div class="pi-date">May 8, 2026</div>
+          </div>
+        </div>
+        <div class="popular-item">
+          <img alt="" src="https://picsum.photos/seed/pop3/120/120"/>
+          <div class="pi-text">
+            <div class="pi-title"><a href="#">5 Countries Offering Digital Nomad Visas</a></div>
+            <div class="pi-date">April 30, 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-title">Sections</div>
+        <ul>
+          <li><a href="#">Technology</a><span class="count">24</span></li>
+          <li><a href="#">Travel</a><span class="count">18</span></li>
+          <li><a href="#">Business</a><span class="count">15</span></li>
+          <li><a href="#">Lifestyle</a><span class="count">12</span></li>
+          <li><a href="#">Opinion</a><span class="count">9</span></li>
+          <li><a href="#">Science</a><span class="count">7</span></li>
+        </ul>
+      </div>
+
+      <div class="widget">
+        <div class="ad-slot">Advertisement 300×250</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-masthead">The Daily Pulse</div>
+    <div class="footer-tagline">Truth &nbsp;·&nbsp; Depth &nbsp;·&nbsp; Perspective</div>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>About</h4>
+        <p>Independent journalism covering technology, travel, business, and the world — since 2014.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Sections</h4>
+        <ul>
+          <li><a href="#">Technology</a></li>
+          <li><a href="#">Business</a></li>
+          <li><a href="#">Travel</a></li>
+          <li><a href="#">Lifestyle</a></li>
+          <li><a href="#">Opinion</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Information</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Advertise</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">RSS Feed</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Follow Us</h4>
+        <div class="social-row" style="justify-content:flex-start;">
+          <a href="#" title="Twitter">𝕏</a>
+          <a href="#" title="Facebook">f</a>
+          <a href="#" title="Instagram">◯</a>
+          <a href="#" title="Telegram">T</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 The Daily Pulse &nbsp;·&nbsp; Powered by <a href="#">Blogger</a> &nbsp;·&nbsp; <a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a></div>
+  </footer>
+
+</div>
+</div><!-- /view-index -->
+
+<!-- ====================================================
+     VIEW 2 — SINGLE POST
+==================================================== -->
+<div class="view" id="view-post">
+<div class="paper">
+
+  <div class="masthead">
+    <div class="masthead-top">
+      <span>Vol. CXLII &nbsp;·&nbsp; No. 49</span>
+      <span class="edition">&#11044; Breaking Edition</span>
+      <span>Thursday, 22 May 2026</span>
+    </div>
+    <h1 class="masthead-title">The Daily Pulse</h1>
+    <div class="masthead-rules"><hr/><span class="masthead-tagline">Truth · Depth · Perspective · Est. 2014</span><hr/></div>
+    <div class="masthead-cats">
+      <a href="#">World</a> <a href="#">Technology</a> <a href="#">Business</a>
+      <a href="#">Science</a> <a href="#">Travel</a> <a href="#">Lifestyle</a>
+    </div>
+  </div>
+
+  <nav class="topnav">
+    <ul>
+      <li class="active"><a href="#">Home</a></li>
+      <li><a href="#">Categories</a></li>
+      <li><a href="#">Archive</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+  </nav>
+
+  <div class="main-wrap">
+    <div class="main-col">
+      <div class="article-head">
+        <div class="article-category">Technology</div>
+        <h2 class="article-title">The Future of Artificial Intelligence in Everyday Life</h2>
+        <div class="byline" style="margin-top:10px;">
+          <span>By <b>Jane Doe</b>, Technology Editor</span>
+          <span>&#9679;</span>
+          <span>Thursday, 20 May 2026</span>
+          <span>&#9679;</span>
+          <span>8 min read</span>
+          <span>&#9679;</span>
+          <span>14 Comments</span>
+        </div>
+      </div>
+
+      <img alt="Featured" class="article-img" src="https://picsum.photos/seed/lead1/900/360"/>
+
+      <div class="article-body">
+        <p>Artificial intelligence is no longer confined to research labs or science-fiction films. From the smartphone in your pocket to the recommendations on your favourite streaming platform, AI is quietly reshaping the way we live, work, and connect with one another. But what does the next decade hold, and how should we prepare for a world increasingly guided by machine intelligence?</p>
+
+        <p>The answer lies not in fear or blind optimism, but in understanding — and that's exactly what this investigation aims to provide. We spoke to leading researchers, policymakers, and everyday users to build a picture of the AI-integrated world that is already, in many ways, here.</p>
+
+        <div class="pull-quote">"The workers who thrive will be those who treat AI as a collaborator rather than a competitor."</div>
+
+        <h3>1. AI in the Home</h3>
+        <p>Smart speakers, robotic vacuum cleaners, and AI-powered thermostats are already common fixtures in millions of homes. The next generation goes further: predictive appliances that learn your schedule, health monitors that flag anomalies before symptoms appear, and ambient assistants that respond to context rather than commands.</p>
+        <p>By 2028, analysts at Gartner estimate that more than 60% of new household appliances sold in OECD countries will include embedded AI capabilities — a figure that would have seemed implausible just five years ago.</p>
+
+        <img alt="AI home" src="https://picsum.photos/seed/aihome/800/300"/>
+
+        <h3>2. AI at Work</h3>
+        <p>The World Economic Forum estimates that AI will displace 85 million jobs by 2025 — but create 97 million new ones. The shift is already visible: legal assistants, radiologists, and financial analysts are augmenting their work with AI tools that handle volume while humans handle nuance and judgment.</p>
+        <p>The key skill for the next decade is not technical — it's adaptability. The workers who thrive will be those who treat AI as a collaborator rather than a competitor, learning to direct, verify, and extend what the machines produce.</p>
+      </div>
+
+      <!-- Labels -->
+      <div style="margin-top:20px;">
+        <a class="label-tag" href="#">Technology</a>
+        <a class="label-tag" href="#">Artificial Intelligence</a>
+        <a class="label-tag" href="#">Future of Work</a>
+      </div>
+
+      <!-- Share bar -->
+      <div class="share-bar" data-url="https://example.com/ai-future" data-title="The Future of AI in Everyday Life">
+        <span class="share-label">Share this article:</span>
+        <a class="share-btn twitter"  data-share="twitter"  href="#" rel="noopener">𝕏</a>
+        <a class="share-btn facebook" data-share="facebook" href="#" rel="noopener">f</a>
+        <a class="share-btn whatsapp" data-share="whatsapp" href="#" rel="noopener">W</a>
+        <a class="share-btn telegram" data-share="telegram" href="#" rel="noopener">T</a>
+        <a class="share-btn linkedin" data-share="linkedin" href="#" rel="noopener">in</a>
+        <a class="share-btn reddit"   data-share="reddit"   href="#" rel="noopener">R</a>
+        <a class="share-btn email"    data-share="email"    href="#">✉</a>
+        <button class="share-btn print" onclick="window.print()">&#128438;</button>
+      </div>
+
+      <!-- Article nav -->
+      <div class="article-nav">
+        <a href="#">&larr; Previous: The Rise of the Four-Day Week</a>
+        <a href="#">Next: Minimalist Travel 2026 &rarr;</a>
+      </div>
+
+      <!-- Comments -->
+      <div class="comments-section">
+        <h3 class="comments-title">14 Comments</h3>
+
+        <div class="comment-item">
+          <img alt="" class="comment-avatar" src="https://picsum.photos/seed/u1/80/80"/>
+          <div class="comment-right">
+            <div class="comment-meta"><span class="comment-name">Alex Turner</span><span class="comment-date">20 May 2026, 10:42 am</span></div>
+            <div class="comment-text">Really well-written piece. The distinction between AI augmenting versus replacing workers is one that doesn't get enough airtime. Sharing this with my team.</div>
+          </div>
+        </div>
+
+        <div class="comment-item">
+          <img alt="" class="comment-avatar" src="https://picsum.photos/seed/u2/80/80"/>
+          <div class="comment-right">
+            <div class="comment-meta"><span class="comment-name">Priya Nair</span><span class="comment-date">20 May 2026, 11:15 am</span></div>
+            <div class="comment-text">The statistic about 97 million new jobs is encouraging, but I'd love a follow-up on which sectors. Healthcare and tech feel obvious — but what about manufacturing communities?</div>
+          </div>
+        </div>
+
+        <div class="comment-item">
+          <img alt="" class="comment-avatar" src="https://picsum.photos/seed/u3/80/80"/>
+          <div class="comment-right">
+            <div class="comment-meta"><span class="comment-name">Jordan Lee</span><span class="comment-date">21 May 2026, 9:03 am</span></div>
+            <div class="comment-text">Great article. The bit about predictive appliances genuinely excited me — my fridge already judges my food choices enough as it is!</div>
+          </div>
+        </div>
+
+        <h4 style="font-family:var(--font-head);font-size:18px;font-weight:700;margin:24px 0 10px;">Leave a Comment</h4>
+        <div class="comment-form-placeholder">Comment form embedded here via Blogger's iframe system in the live version.</div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar-col">
+      <div class="widget">
+        <div class="widget-title">Most Read</div>
+        <div class="popular-item">
+          <img alt="" src="https://picsum.photos/seed/pop1/120/120"/>
+          <div class="pi-text"><div class="pi-title"><a href="#">How to Build a Second Brain in 30 Days</a></div><div class="pi-date">May 12, 2026</div></div>
+        </div>
+        <div class="popular-item">
+          <img alt="" src="https://picsum.photos/seed/pop2/120/120"/>
+          <div class="pi-text"><div class="pi-title"><a href="#">Best Budget Cameras of 2026</a></div><div class="pi-date">May 8, 2026</div></div>
+        </div>
+        <div class="popular-item">
+          <img alt="" src="https://picsum.photos/seed/pop3/120/120"/>
+          <div class="pi-text"><div class="pi-title"><a href="#">5 Countries Offering Digital Nomad Visas</a></div><div class="pi-date">April 30, 2026</div></div>
+        </div>
+      </div>
+      <div class="widget">
+        <div class="widget-title">Sections</div>
+        <ul>
+          <li><a href="#">Technology</a><span class="count">24</span></li>
+          <li><a href="#">Travel</a><span class="count">18</span></li>
+          <li><a href="#">Business</a><span class="count">15</span></li>
+          <li><a href="#">Lifestyle</a><span class="count">12</span></li>
+        </ul>
+      </div>
+      <div class="widget"><div class="ad-slot">Advertisement 300×250</div></div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-masthead">The Daily Pulse</div>
+    <div class="footer-tagline">Truth &nbsp;·&nbsp; Depth &nbsp;·&nbsp; Perspective</div>
+    <div class="footer-grid">
+      <div class="footer-col"><h4>About</h4><p>Independent journalism since 2014.</p></div>
+      <div class="footer-col"><h4>Sections</h4><ul><li><a href="#">Technology</a></li><li><a href="#">Business</a></li><li><a href="#">Travel</a></li></ul></div>
+      <div class="footer-col"><h4>Info</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Contact</a></li><li><a href="#">Privacy</a></li></ul></div>
+      <div class="footer-col"><h4>Follow</h4><div class="social-row" style="justify-content:flex-start;"><a href="#">𝕏</a><a href="#">f</a><a href="#">◯</a><a href="#">T</a></div></div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 The Daily Pulse &nbsp;·&nbsp; Powered by <a href="#">Blogger</a></div>
+  </footer>
+
+</div>
+</div><!-- /view-post -->
+
+<!-- ====================================================
+     VIEW 3 — MOBILE
+==================================================== -->
+<div class="view" id="view-mobile">
+  <div style="max-width:390px;margin:0 auto;background:var(--newsprint);box-shadow:0 0 30px rgba(0,0,0,0.3);">
+
+    <!-- Mobile masthead -->
+    <div style="padding:14px 16px 0;text-align:center;border-bottom:2px solid var(--rule);">
+      <div style="font-family:var(--font-label);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding-bottom:8px;border-bottom:1px solid var(--rule-light);margin-bottom:8px;">Thursday, 22 May 2026 &nbsp;·&nbsp; Vol. CXLII</div>
+      <h1 style="font-family:var(--font-head);font-size:42px;font-weight:900;font-style:italic;line-height:1;color:var(--ink);">The Daily Pulse</h1>
+      <div style="font-family:var(--font-label);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:6px 0;">Truth · Depth · Perspective</div>
+    </div>
+
+    <!-- Mobile nav toggle state (expanded for demo) -->
+    <div style="background:var(--ink);display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-family:var(--font-label);font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.5);padding-left:14px;text-transform:uppercase;">&#9776; Menu</span>
+      <div style="display:flex;overflow-x:auto;">
+        <a href="#" style="display:block;padding:11px 14px;font-family:var(--font-label);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--red);border-bottom:2px solid var(--red);white-space:nowrap;text-decoration:none;">Home</a>
+        <a href="#" style="display:block;padding:11px 14px;font-family:var(--font-label);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.7);white-space:nowrap;text-decoration:none;">Tech</a>
+        <a href="#" style="display:block;padding:11px 14px;font-family:var(--font-label);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.7);white-space:nowrap;text-decoration:none;">Travel</a>
+        <a href="#" style="display:block;padding:11px 14px;font-family:var(--font-label);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.7);white-space:nowrap;text-decoration:none;">Business</a>
+      </div>
+    </div>
+
+    <!-- Mobile ticker -->
+    <div class="ticker" style="height:28px;">
+      <div class="ticker-label" style="font-size:10px;padding:0 10px;">Breaking</div>
+      <div class="ticker-track">
+        <div class="ticker-inner">
+          <span style="font-size:11px;">Global AI summit concludes with 12-nation accord</span>
+          <span style="font-size:11px;">Markets surge 4.2% as tech sector leads gains</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile content -->
+    <div style="padding:16px;">
+
+      <!-- Featured mobile -->
+      <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:2px solid var(--rule);">
+        <div style="font-family:var(--font-label);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--white);background:var(--red);display:inline-block;padding:2px 7px;margin-bottom:6px;">Technology</div>
+        <img alt="" src="https://picsum.photos/seed/lead1/390/200" style="width:100%;margin-bottom:10px;border:1px solid var(--rule-light);"/>
+        <h2 style="font-family:var(--font-head);font-size:20px;font-weight:700;line-height:1.25;margin-bottom:8px;"><a href="#" style="color:var(--ink);text-decoration:none;">The Future of Artificial Intelligence in Everyday Life</a></h2>
+        <div style="font-family:var(--font-label);font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);margin-bottom:10px;">By Jane Doe &nbsp;·&nbsp; May 20, 2026</div>
+        <p style="font-size:13px;line-height:1.65;color:var(--ink-light);">AI is reshaping the way we live, work, and connect. But what does the next decade hold for a world increasingly guided by machine intelligence?</p>
+        <div style="margin-top:10px;display:flex;gap:5px;flex-wrap:wrap;">
+          <a style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:26px;border-radius:3px;background:#000;color:white;font-size:11px;font-family:var(--font-label);font-weight:700;text-decoration:none;">𝕏</a>
+          <a style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:26px;border-radius:3px;background:#1877F2;color:white;font-size:11px;font-family:var(--font-label);font-weight:700;text-decoration:none;">f</a>
+          <a style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:26px;border-radius:3px;background:#25D366;color:white;font-size:11px;font-family:var(--font-label);font-weight:700;text-decoration:none;">W</a>
+          <a style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:26px;border-radius:3px;background:#0088CC;color:white;font-size:11px;font-family:var(--font-label);font-weight:700;text-decoration:none;">T</a>
+          <a style="margin-left:auto;font-family:var(--font-label);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--red);border-bottom:1px solid var(--red);text-decoration:none;display:flex;align-items:center;">Read →</a>
+        </div>
+      </div>
+
+      <!-- More stories -->
+      <div style="display:flex;gap:10px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--rule-light);">
+        <img alt="" src="https://picsum.photos/seed/travel2/120/90" style="width:72px;height:72px;object-fit:cover;flex-shrink:0;border:1px solid var(--rule-light);"/>
+        <div>
+          <div style="font-family:var(--font-label);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--red);margin-bottom:4px;">Travel</div>
+          <h4 style="font-family:var(--font-head);font-size:14px;font-weight:700;line-height:1.3;"><a href="#" style="color:var(--ink);text-decoration:none;">10 Minimalist Destinations Redefining Slow Travel</a></h4>
+          <div style="font-family:var(--font-label);font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;">May 18, 2026</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--rule-light);">
+        <img alt="" src="https://picsum.photos/seed/prod3/120/90" style="width:72px;height:72px;object-fit:cover;flex-shrink:0;border:1px solid var(--rule-light);"/>
+        <div>
+          <div style="font-family:var(--font-label);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--red);margin-bottom:4px;">Productivity</div>
+          <h4 style="font-family:var(--font-head);font-size:14px;font-weight:700;line-height:1.3;"><a href="#" style="color:var(--ink);text-decoration:none;">Why Your Morning Routine Costs You Productivity</a></h4>
+          <div style="font-family:var(--font-label);font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;">May 15, 2026</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding-top:8px;">
+        <a href="#" style="display:inline-block;padding:7px 20px;border:1px solid var(--rule);font-family:var(--font-label);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink);text-decoration:none;">Load More Stories</a>
+      </div>
+    </div>
+
+    <!-- Mobile footer -->
+    <div style="background:var(--dark-bg);border-top:3px solid var(--red);padding:18px 16px;text-align:center;">
+      <div style="font-family:var(--font-head);font-size:22px;font-weight:900;font-style:italic;color:white;margin-bottom:4px;">The Daily Pulse</div>
+      <div style="font-family:var(--font-label);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);">&copy; 2026 &nbsp;·&nbsp; Powered by Blogger</div>
+    </div>
+  </div>
+</div><!-- /view-mobile -->
+
+<script>
+  function showView(name, btn) {
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+    document.querySelectorAll('.demo-bar button').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById('view-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  // Wire share buttons
+  document.querySelectorAll('.share-bar').forEach(function(bar) {
+    var url   = encodeURIComponent(bar.dataset.url   || window.location.href);
+    var title = encodeURIComponent(bar.dataset.title || document.title);
+    var links = {
+      twitter:  'https://twitter.com/intent/tweet?url='   + url + '&text=' + title,
+      facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + url,
+      whatsapp: 'https://wa.me/?text=' + title + '%20' + url,
+      telegram: 'https://t.me/share/url?url=' + url + '&text=' + title,
+      linkedin: 'https://www.linkedin.com/sharing/share-offsite/?url=' + url,
+      reddit:   'https://reddit.com/submit?url=' + url + '&title=' + title,
+      email:    'mailto:?subject=' + title + '&body=' + url
+    };
+    bar.querySelectorAll('a[data-share]').forEach(function(a) {
+      var k = a.dataset.share;
+      if (links[k]) a.href = links[k];
+      if (k !== 'email') a.target = '_blank';
+    });
+
+    // Instagram — Web Share API on mobile, clipboard fallback on desktop
+    var igBtn = bar.querySelector('[data-share="instagram"]');
+    if (igBtn) {
+      igBtn.addEventListener('click', function() {
+        var rawUrl   = bar.dataset.url   || window.location.href;
+        var rawTitle = bar.dataset.title || document.title;
+        if (navigator.share) {
+          navigator.share({ title: rawTitle, url: rawUrl }).catch(function() {});
+        } else {
+          navigator.clipboard.writeText(rawUrl).then(function() {
+            igBtn.classList.add('copied');
+            setTimeout(function() { igBtn.classList.remove('copied'); }, 2000);
+          }).catch(function() {
+            prompt('Copy this link to share on Instagram:', rawUrl);
+          });
+        }
+      });
+    }
+  });
+
+  // Mobile nav toggle
+  var toggle = document.getElementById('nav-toggle');
+  var navList = document.getElementById('nav-list');
+  if (toggle && navList) {
+    toggle.addEventListener('click', function() {
+      navList.classList.toggle('open');
+      navList.style.display = navList.classList.contains('open') ? 'flex' : '';
+    });
+  }
+</script>
+</body>
+</html>
