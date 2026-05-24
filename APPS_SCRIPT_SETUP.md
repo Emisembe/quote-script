@@ -12,7 +12,23 @@ This Google Apps Script automatically generates documents (Invoices, Receipts, P
 4. Save the project
 5. Refresh your Google Sheet
 
-### Step 2: Set Up Sheet Structure
+### Step 2: Configure Organization Settings
+
+⚠️ **IMPORTANT - Do This First!**
+
+1. Click the **"📄 Document Generator"** menu
+2. Select **"⚙️ Organization Settings"**
+3. Fill in your company details:
+   - Company Name, Address, Phone, Email, Website
+   - Tax ID / VAT Number
+   - Bank Details (for payment info on documents)
+   - Default Currency and Payment Terms
+   - Footer text and other preferences
+4. Click **"💾 Save Settings"**
+
+✅ This information will automatically appear on all generated documents!
+
+### Step 3: Set Up Sheet Structure
 
 Your Google Sheet needs a **"Document Type"** column and other relevant columns:
 
@@ -30,14 +46,124 @@ Your Google Sheet needs a **"Document Type"** column and other relevant columns:
 - `Amount`
 - `Description`, `Items`, `Reason`, `Purpose`, etc.
 
-### Step 3: Generate Documents
+### Step 4: Generate Documents
 
 A **"📄 Document Generator"** menu will appear in your sheet:
 
 - **Generate Document** - Select a row and click to create one document
 - **Batch Generate All** - Generate all rows with Document Types at once
+- **⚙️ Organization Settings** - Configure company details (appears on all documents)
 - **Setup Templates Folder** - Create template folder structure
 - **Help** - View this help dialog
+
+## 🏢 Organization Configuration System
+
+The script automatically creates a **"Settings"** sheet to store your organization details. This is the most powerful feature!
+
+### What Gets Stored
+
+```
+Company Information
+├── Company Name
+├── Company Address
+├── Company Phone
+├── Company Email
+└── Company Website
+
+Identification
+├── Tax ID / VAT Number
+└── Registration Number
+
+Banking Information
+├── Bank Name
+├── Bank Account Number
+├── Bank Routing Number
+└── Bank SWIFT Code
+
+Document Defaults
+├── Default Currency
+├── Default Payment Terms
+├── Company Logo URL
+├── Company Registration Details
+└── Footer Text
+```
+
+### How It Works
+
+1. **First Run**: Click "⚙️ Organization Settings" to open the configuration form
+2. **Fill Details**: Enter your company information in the user-friendly form
+3. **Save**: Click "💾 Save Settings" - details are stored in the hidden "Settings" sheet
+4. **Auto-Insert**: Every document generated automatically includes these details
+5. **Update Anytime**: Change your company info by reopening the settings dialog
+6. **Instant Effect**: All future documents use the updated information
+
+### What Appears on Documents
+
+When you generate a document, it automatically includes:
+
+```
+═════════════════════════════════
+    YOUR COMPANY NAME (from settings)
+    123 Business Street, City, State 12345
+    Phone: (555) 000-0000
+    Email: info@company.com
+    Website: www.company.com
+═════════════════════════════════
+
+                    INVOICE
+                 Generated on: 5/24/2026
+
+[Document-specific data from sheet]
+
+═════════════════════════════════
+Tax ID: XX-XXXXXXX
+Bank: Your Bank Name
+Account: XXXXXXXX
+Thank you for your business!
+```
+
+### Configuration Fields Explained
+
+| Field | Purpose | Example |
+|-------|---------|---------|
+| **Company Name** | Main company identifier | "ABC Corporation Ltd" |
+| **Company Address** | Physical/mailing address | "123 Business Ave, New York, NY 10001" |
+| **Company Phone** | Contact phone number | "+1 (555) 000-0000" |
+| **Company Email** | Official email address | "billing@company.com" |
+| **Company Website** | Company website URL | "www.company.com" |
+| **Tax ID / VAT Number** | Tax identifier | "12-3456789" or "VAT: IE1234567AB" |
+| **Registration Number** | Business registration | "REG-123456789" |
+| **Bank Name** | Bank institution name | "First National Bank" |
+| **Bank Account Number** | Account for payments | "1234567890" |
+| **Bank Routing Number** | Routing/Sort code | "021000021" |
+| **Bank SWIFT Code** | International bank code | "FNBAUS33" |
+| **Default Currency** | Currency symbol/code | "$" or "USD" or "€" |
+| **Default Payment Terms** | Payment deadline | "Net 30" or "Due on Receipt" |
+| **Company Logo URL** | Logo image URL | "https://example.com/logo.png" |
+| **Company Registration Details** | Additional legal info | "Registered in California, License #XX" |
+| **Footer Text** | Closing message | "Thank you for your business!" |
+
+### Update Company Information
+
+**To change company details:**
+
+1. Open your Google Sheet
+2. Click **"📄 Document Generator" → "⚙️ Organization Settings"**
+3. Update any fields you need to change
+4. Click **"💾 Save Settings"**
+5. Generate new documents - they'll automatically use the updated information
+
+✅ **No need to edit code or recreate documents!**
+
+### View Stored Configuration
+
+If you want to see the raw configuration:
+
+1. Open your Google Sheet
+2. Look for the hidden **"Settings"** sheet tab
+3. You'll see a Key-Value table with all your settings
+
+**Note**: Manually editing the Settings sheet is possible but not recommended - use the settings dialog instead!
 
 ## 📋 Supported Document Types
 
