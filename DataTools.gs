@@ -23,9 +23,11 @@ function onOpen() {
     .addSeparator()
     .addSubMenu(
       SpreadsheetApp.getUi().createMenu('Create Chart')
+        .addItem('Smart Chart (Auto-detect)', 'smartChart')
+        .addSeparator()
         .addItem('Bar Chart',       'createBarChart')
         .addItem('Line Chart',      'createLineChart')
-        .addItem('Pie Chart',       'createPieChart')
+        .addItem('Pie Chart',       'createPieChartSafe')
         .addItem('Column Chart',    'createColumnChart')
         .addItem('Map / Geo Chart', 'createGeoChart')
     )
@@ -350,6 +352,138 @@ function promptFilterToSheet() {
 
 
 // -----------------------------------------------------------
+// SMART CHART — auto-detects the best chart type
+// -----------------------------------------------------------
+
+var GEO_KEYWORDS  = ['country', 'region', 'state', 'province', 'city', 'location', 'place', 'territory', 'area', 'nation'];
+var DATE_KEYWORDS = ['date', 'time', 'year', 'month', 'day', 'week', 'period', 'quarter'];
+
+// Broad list of recognised country/territory names for geo detection
+var COUNTRY_NAMES = [
+  'afghanistan','albania','algeria','angola','argentina','australia','austria','bangladesh',
+  'belgium','bolivia','brazil','bulgaria','cambodia','cameroon','canada','chile','china',
+  'colombia','congo','croatia','cuba','czech republic','denmark','ecuador','egypt',
+  'ethiopia','finland','france','germany','ghana','greece','guatemala','hungary','india',
+  'indonesia','iran','iraq','ireland','israel','italy','japan','jordan','kenya','malaysia',
+  'mexico','morocco','mozambique','myanmar','nepal','netherlands','new zealand','nigeria',
+  'norway','pakistan','peru','philippines','poland','portugal','romania','russia','saudi arabia',
+  'senegal','serbia','singapore','somalia','south africa','south korea','spain','sri lanka',
+  'sudan','sweden','switzerland','syria','taiwan','tanzania','thailand','turkey','uganda',
+  'ukraine','united kingdom','united states','uruguay','venezuela','vietnam','zambia','zimbabwe'
+];
+
+function detectColumnProfile(headers, rows) {
+  return headers.map(function(h, c) {
+    var vals   = rows.map(function(r) { return r[c]; }).filter(function(v) { return v !== '' && v !== null; });
+    var nums   = vals.filter(function(v) { return typeof v === 'number'; });
+    var dates  = vals.filter(function(v) { return v instanceof Date; });
+    var unique = {};
+    vals.forEach(function(v) { unique[String(v).toLowerCase()] = true; });
+    var uniqueKeys = Object.keys(unique);
+
+    var type = dates.length  > vals.length * 0.5 ? 'date'
+             : nums.length   > vals.length * 0.5 ? 'number'
+             : 'text';
+
+    // Geo: header keyword OR >40% of sample values are known country names
+    var headerLow = String(h).toLowerCase();
+    var headerIsGeo = GEO_KEYWORDS.some(function(k) { return headerLow.indexOf(k) !== -1; });
+    var sampleGeoHits = uniqueKeys.slice(0, 30).filter(function(v) { return COUNTRY_NAMES.indexOf(v) !== -1; }).length;
+    var isGeo = type === 'text' && (headerIsGeo || sampleGeoHits / Math.min(uniqueKeys.length, 30) > 0.4);
+
+    // Date: header keyword OR actual Date objects
+    var isDate = type === 'date' || DATE_KEYWORDS.some(function(k) { return headerLow.indexOf(k) !== -1; });
+
+    return { header: h, type: type, uniqueCount: uniqueKeys.length, filled: vals.length, isGeo: isGeo, isDate: isDate };
+  });
+}
+
+function smartChart() {
+  var ui    = SpreadsheetApp.getUi();
+  var sheet = SpreadsheetApp.getActiveSheet();
+  var data  = sheet.getDataRange().getValues();
+
+  if (data.length < 2) { ui.alert('Not enough data to chart.'); return; }
+
+  var headers = data[0];
+  var rows    = data.slice(1);
+  var cols    = detectColumnProfile(headers, rows);
+
+  var geoCols  = cols.filter(function(c) { return c.isGeo; });
+  var dateCols = cols.filter(function(c) { return c.isDate; });
+  var numCols  = cols.filter(function(c) { return c.type === 'number'; });
+  var textCols = cols.filter(function(c) { return c.type === 'text' && !c.isGeo; });
+
+  var chartType, reason, warning = '';
+
+  if (geoCols.length > 0 && numCols.length > 0) {
+    chartType = Charts.ChartType.GEO;
+    reason    = 'Geographic column "' + geoCols[0].header + '" detected with numeric data — a Map chart shows regional distribution best.';
+
+  } else if (dateCols.length > 0 && numCols.length > 0) {
+    chartType = Charts.ChartType.LINE;
+    reason    = 'Date/time column "' + dateCols[0].header + '" detected — a Line chart shows trends over time best.';
+
+  } else if (numCols.length >= 2 && textCols.length === 0) {
+    chartType = Charts.ChartType.SCATTER;
+    reason    = 'Two or more numeric columns with no categories — a Scatter chart reveals the relationship between them.';
+
+  } else if (textCols.length > 0 && numCols.length > 0) {
+    var cat = textCols[0];
+    if (cat.uniqueCount <= 7 && numCols.length === 1) {
+      chartType = Charts.ChartType.PIE;
+      reason    = '"' + cat.header + '" has only ' + cat.uniqueCount + ' categories — a Pie chart works well for part-to-whole comparison.';
+    } else if (cat.uniqueCount > 20) {
+      chartType = Charts.ChartType.BAR;
+      reason    = '"' + cat.header + '" has ' + cat.uniqueCount + ' categories — a horizontal Bar chart handles many labels without crowding.';
+    } else {
+      chartType = Charts.ChartType.COLUMN;
+      reason    = '"' + cat.header + '" has ' + cat.uniqueCount + ' categories — a Column chart is best for comparing across them.';
+    }
+    if (numCols.length > 1) {
+      warning = '\n\nNote: multiple numeric columns found — all will be included as separate series.';
+    }
+
+  } else {
+    chartType = Charts.ChartType.COLUMN;
+    reason    = 'No clear pattern detected — defaulting to a Column chart.';
+  }
+
+  var confirmed = ui.alert(
+    'Smart Chart',
+    'Recommended: ' + chartTypeName(chartType) + '\n\nReason: ' + reason + warning + '\n\nCreate this chart?',
+    ui.ButtonSet.YES_NO
+  );
+  if (confirmed !== ui.Button.YES) return;
+
+  var range = sheet.getDataRange();
+  var builder = sheet.newChart()
+    .setChartType(chartType)
+    .addRange(range)
+    .setOption('title', sheet.getName())
+    .setOption('legend', { position: 'bottom' })
+    .setPosition(3, 2, 0, 0);
+
+  if (chartType === Charts.ChartType.GEO)     builder.setOption('displayMode', 'regions');
+  if (chartType === Charts.ChartType.PIE)      builder.setOption('pieHole', 0.3);
+
+  sheet.insertChart(builder.build());
+  ui.alert(chartTypeName(chartType) + ' created on "' + sheet.getName() + '".');
+}
+
+function chartTypeName(type) {
+  var map = {};
+  map[Charts.ChartType.PIE]     = 'Pie Chart';
+  map[Charts.ChartType.BAR]     = 'Bar Chart';
+  map[Charts.ChartType.LINE]    = 'Line Chart';
+  map[Charts.ChartType.COLUMN]  = 'Column Chart';
+  map[Charts.ChartType.GEO]     = 'Map / Geo Chart';
+  map[Charts.ChartType.SCATTER] = 'Scatter Chart';
+  return map[type] || 'Chart';
+}
+
+
+// -----------------------------------------------------------
 // CHART HELPERS
 // -----------------------------------------------------------
 
@@ -385,9 +519,29 @@ function createLineChart() {
   SpreadsheetApp.getUi().alert('Line chart created on "' + ctx.sheet.getName() + '".');
 }
 
-function createPieChart() {
-  var ctx = getActiveSheetDataRange();
-  // Pie chart uses only the first two columns (label, value)
+function createPieChartSafe() {
+  var ui    = SpreadsheetApp.getUi();
+  var sheet = SpreadsheetApp.getActiveSheet();
+  var data  = sheet.getDataRange().getValues();
+  if (data.length < 2) { ui.alert('Not enough data.'); return; }
+
+  var rows     = data.slice(1);
+  var firstCol = rows.map(function(r) { return r[0]; }).filter(function(v) { return v !== '' && v !== null; });
+  var unique   = {};
+  firstCol.forEach(function(v) { unique[v] = true; });
+  var catCount = Object.keys(unique).length;
+
+  if (catCount > 7) {
+    var proceed = ui.alert(
+      'Pie Chart Warning',
+      '"' + data[0][0] + '" has ' + catCount + ' unique values — pie charts become hard to read above 7 slices.\n\n' +
+      'A Column or Bar chart would communicate this data more clearly.\n\nCreate the pie chart anyway?',
+      ui.ButtonSet.YES_NO
+    );
+    if (proceed !== ui.Button.YES) return;
+  }
+
+  var ctx        = getActiveSheetDataRange();
   var twoColRange = ctx.sheet.getRange(1, 1, ctx.sheet.getLastRow(), 2);
   var chart = ctx.sheet.newChart()
     .setChartType(Charts.ChartType.PIE)
@@ -395,7 +549,7 @@ function createPieChart() {
     .setOption('title', ctx.sheet.getName() + ' — Pie Chart')
     .setOption('pieHole', 0.3);
   insertChart(chart);
-  SpreadsheetApp.getUi().alert('Pie chart created on "' + ctx.sheet.getName() + '".');
+  ui.alert('Pie chart created on "' + ctx.sheet.getName() + '".');
 }
 
 function createColumnChart() {
