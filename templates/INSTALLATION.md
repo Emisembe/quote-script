@@ -28,7 +28,7 @@ Follow these steps to install the template on your Blogger blog.
 
 1. Select ALL the HTML code in the editor (Ctrl+A or Cmd+A)
 2. Delete the selected code
-3. Copy the entire contents of `efic-consultancy-blogger-template.xml`
+3. Copy the entire contents of `efic-consultancy-blogger-template-v2.0.xml`
 4. Paste it into the editor
 5. Click **Save theme**
 

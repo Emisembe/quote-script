@@ -8,9 +8,10 @@ A modern, responsive Blogger template designed for consultancy and business webs
 
 ### What's Included
 
-- **efic-consultancy-blogger-template.xml** - Complete template file
+- **efic-consultancy-blogger-template-v2.0.xml** - Complete template file (Stable)
 - **INSTALLATION.md** - Step-by-step installation guide
 - **CUSTOMIZATION.md** - Detailed customization instructions
+- **VERSIONS.md** - Version management and testing guide
 - **README.md** - This file
 
 ### Quick Facts
