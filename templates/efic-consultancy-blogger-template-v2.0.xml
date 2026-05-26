@@ -27,7 +27,7 @@
 <b:if cond='data:blog.pageType == &quot;item&quot;'><meta expr:content='data:blog.pageName' property='og:title'/><meta expr:content='data:blog.canonicalUrl' property='og:url'/><meta content='article' property='og:type'/></b:if>
 <b:if cond='data:blog.postImageUrl'><meta expr:content='data:blog.postImageUrl' property='og:image'/><b:else/><b:if cond='data:blog.postImageThumbnailUrl'><meta expr:content='data:blog.postImageThumbnailUrl' property='og:image'/></b:if></b:if>
 <b:if cond='data:blog.metaDescription != &quot;&quot;'><meta expr:content='data:blog.metaDescription' name='og:description'/></b:if>
-<style><![CDATA[
+<b:skin><![CDATA[
 :root {--brand: #5DADE2; --brand-dark: #2e86c1; --dark: #0f172a; --nav-bg: rgba(15, 23, 42, 0.95); --nav-bg-top: rgba(15, 23, 42, 0.15); --text: #2e2e2e; --text-muted: #606060; --light-bg: #f8f9fb; --white: #ffffff; --shadow: 0 4px 24px rgba(0,0,0,0.10); --radius: 6px; --row-max: 1170px; --nav-h: 64px; --transition: all 0.3s ease;}
 * {margin: 0; padding: 0; box-sizing: border-box;}
 html {overflow-x: hidden; scroll-behavior: smooth;}
@@ -62,7 +62,7 @@ img {max-width: 100%; vertical-align: middle; border: 0;}
 @media (max-width: 1024px) {.nav-links {display: none;} .nav-hamburger {display: flex;}}
 @media (max-width: 900px) {.special-tiles-link {width: 50%;} .post-grid {width: 50%;}}
 @media (max-width: 600px) {.special-tiles-link {width: 100%;} .post-grid {width: 100%;} #header h1 {font-size: 36px;}}
-]]></style>
+]]></b:skin>
 </head>
 <body expr:class='data:blog.pageType'>
 <div id='outer-wrapper'>
