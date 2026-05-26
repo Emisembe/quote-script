@@ -14,6 +14,13 @@ function onOpen() {
     .addItem('Clean & Sort Sheet…', 'promptCleanSheet')
     .addSeparator()
     .addSubMenu(
+      SpreadsheetApp.getUi().createMenu('Import Data')
+        .addItem('From CSV URL…',             'importFromUrl')
+        .addItem('From Google Drive (CSV)…',  'importFromDrive')
+        .addItem('From Another Google Sheet…','importFromSheet')
+    )
+    .addSeparator()
+    .addSubMenu(
       SpreadsheetApp.getUi().createMenu('Analyse')
         .addItem('Column Summary',       'runColumnSummary')
         .addItem('Frequency Table…',     'promptFrequencyTable')
@@ -38,6 +45,165 @@ function onOpen() {
         .addItem('Copy to Another Spreadsheet…',  'copySheetToOther')
     )
     .addToUi();
+}
+
+
+// -----------------------------------------------------------
+// IMPORT DATA
+// -----------------------------------------------------------
+
+function importFromUrl() {
+  var ui = SpreadsheetApp.getUi();
+  var urlResp = ui.prompt(
+    'Import CSV from URL',
+    'Paste the URL of a publicly accessible CSV file:',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (urlResp.getSelectedButton() !== ui.Button.OK) return;
+  var url = urlResp.getResponseText().trim();
+  if (!url) { ui.alert('No URL entered.'); return; }
+
+  var nameResp = ui.prompt(
+    'Import CSV from URL',
+    'Name for the new sheet (leave blank to use the filename):',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (nameResp.getSelectedButton() !== ui.Button.OK) return;
+
+  try {
+    var response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    if (response.getResponseCode() !== 200) {
+      ui.alert('Could not fetch the URL (HTTP ' + response.getResponseCode() + ').\nMake sure the file is publicly accessible.');
+      return;
+    }
+    var csvText = response.getContentText();
+    var parsed  = Utilities.parseCsv(csvText);
+    if (!parsed || parsed.length === 0) { ui.alert('The file appears to be empty or is not valid CSV.'); return; }
+
+    var sheetName = nameResp.getResponseText().trim() || guessNameFromUrl(url);
+    writeToNewSheet(sheetName, parsed);
+    ui.alert(parsed.length + ' rows imported to sheet "' + sheetName + '".');
+  } catch (e) {
+    ui.alert('Import failed.\n\nError: ' + e.message);
+  }
+}
+
+function importFromDrive() {
+  var ui = SpreadsheetApp.getUi();
+  var resp = ui.prompt(
+    'Import CSV from Google Drive',
+    'Paste the Drive file URL or file ID of the CSV:',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (resp.getSelectedButton() !== ui.Button.OK) return;
+  var input = resp.getResponseText().trim();
+  if (!input) { ui.alert('No input entered.'); return; }
+
+  var fileId = extractDriveFileId(input);
+  if (!fileId) { ui.alert('Could not read a file ID from the input.\n\nExpected a Drive URL like:\nhttps://drive.google.com/file/d/FILE_ID/view\nor a bare file ID.'); return; }
+
+  var nameResp = ui.prompt(
+    'Import CSV from Google Drive',
+    'Name for the new sheet (leave blank to use the file name):',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (nameResp.getSelectedButton() !== ui.Button.OK) return;
+
+  try {
+    var file    = DriveApp.getFileById(fileId);
+    var csvText = file.getBlob().getDataAsString();
+    var parsed  = Utilities.parseCsv(csvText);
+    if (!parsed || parsed.length === 0) { ui.alert('The file appears to be empty or is not valid CSV.'); return; }
+
+    var sheetName = nameResp.getResponseText().trim() || file.getName().replace(/\.csv$/i, '');
+    writeToNewSheet(sheetName, parsed);
+    ui.alert(parsed.length + ' rows imported from "' + file.getName() + '" to sheet "' + sheetName + '".');
+  } catch (e) {
+    ui.alert('Import failed. Make sure the file is a CSV and shared with this account.\n\nError: ' + e.message);
+  }
+}
+
+function importFromSheet() {
+  var ui = SpreadsheetApp.getUi();
+  var urlResp = ui.prompt(
+    'Import from Another Google Sheet (1 of 2)',
+    'Paste the Google Sheets URL or spreadsheet ID:',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (urlResp.getSelectedButton() !== ui.Button.OK) return;
+  var input = urlResp.getResponseText().trim();
+  if (!input) { ui.alert('No input entered.'); return; }
+
+  var spreadsheetId = extractSpreadsheetId(input);
+  if (!spreadsheetId) { ui.alert('Could not read a spreadsheet ID from the input.'); return; }
+
+  var srcSs;
+  try {
+    srcSs = SpreadsheetApp.openById(spreadsheetId);
+  } catch (e) {
+    ui.alert('Could not open the spreadsheet. Make sure it is shared with your account.\n\nError: ' + e.message);
+    return;
+  }
+
+  var sheetNames = srcSs.getSheets().map(function(s) { return s.getName(); }).join(', ');
+  var tabResp = ui.prompt(
+    'Import from Another Google Sheet (2 of 2)',
+    'Available sheets: ' + sheetNames + '\n\nEnter the sheet name to import (leave blank for the first sheet):',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (tabResp.getSelectedButton() !== ui.Button.OK) return;
+
+  var tabName = tabResp.getResponseText().trim();
+  var srcSheet = tabName ? srcSs.getSheetByName(tabName) : srcSs.getSheets()[0];
+  if (!srcSheet) { ui.alert('Sheet "' + tabName + '" not found in that spreadsheet.'); return; }
+
+  var data = srcSheet.getDataRange().getValues();
+  if (data.length === 0) { ui.alert('That sheet is empty.'); return; }
+
+  var destName = srcSheet.getName();
+  writeToNewSheet(destName, data);
+  SpreadsheetApp.getUi().alert(
+    data.length + ' rows imported from "' + srcSheet.getName() + '" (' + srcSs.getName() + ').'
+  );
+}
+
+// --- import helpers ---
+
+function writeToNewSheet(name, rows) {
+  var ss   = SpreadsheetApp.getActiveSpreadsheet();
+  var safe = name.substring(0, 100);
+  var dest = ss.getSheetByName(safe) || ss.insertSheet(safe);
+  dest.clearContents();
+  dest.getRange(1, 1, rows.length, rows[0].length).setValues(rows);
+  var hdr = dest.getRange(1, 1, 1, rows[0].length);
+  hdr.setFontWeight('bold').setBackground('#37474f').setFontColor('#ffffff');
+  for (var i = 1; i <= rows[0].length; i++) dest.autoResizeColumn(i);
+  ss.setActiveSheet(dest);
+}
+
+function guessNameFromUrl(url) {
+  var parts = url.split('/');
+  var last  = parts[parts.length - 1].split('?')[0];
+  return last.replace(/\.csv$/i, '') || 'imported';
+}
+
+function extractDriveFileId(input) {
+  // Drive share URL: /file/d/FILE_ID/
+  var m = input.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return m[1];
+  // Open URL: id=FILE_ID
+  m = input.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (m) return m[1];
+  // Bare ID (alphanumeric + dash/underscore, long enough)
+  if (/^[a-zA-Z0-9_-]{20,}$/.test(input)) return input;
+  return null;
+}
+
+function extractSpreadsheetId(input) {
+  var m = input.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return m[1];
+  if (/^[a-zA-Z0-9_-]{20,}$/.test(input)) return input;
+  return null;
 }
 
 
