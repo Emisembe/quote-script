@@ -139,7 +139,7 @@ img {max-width: 100%; vertical-align: middle; border: 0;}
 </div>
 </div>
 
-<script type='text/javascript'>
+<script type='text/javascript'><![CDATA[
 (function() {
   var nav = document.getElementById('site-nav');
   if (nav) {
@@ -156,7 +156,7 @@ img {max-width: 100%; vertical-align: middle; border: 0;}
     });
   }
 })();
-</script>
+]]></script>
 <script src='https://emisembe.github.io/quote-script/quote.js'/>
 </body>
 </html>
