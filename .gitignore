@@ -1,6 +1,0 @@
-node_modules/
-config.json
-.env
-.env.local
-*.log
-.DS_Store
