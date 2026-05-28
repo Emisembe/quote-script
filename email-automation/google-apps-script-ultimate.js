@@ -469,6 +469,526 @@ class FormBuilder {
   }
 }
 
+// ===== BULK EMAIL SENDER =====
+class BulkEmailSender {
+  static showBulkSendDialog() {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheets = ss.getSheets().map(s => s.getName()).filter(name =>
+      !name.includes("📊") && !name.includes("📋") && !name.includes("📧")
+    );
+
+    let sheetOptions = sheets.map(s => `<option value="${s}">${s}</option>`).join('');
+
+    const templates = emailSystem.getTemplateList();
+    let templateOptions = templates.map(t => `<option value="${t}">${t}</option>`).join('');
+
+    const businesses = emailSystem.getBusinessList();
+    let businessOptions = businesses.map(b => `<option value="${b}">${b}</option>`).join('');
+
+    const html = HtmlService.createHtmlOutput(`
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 600px; }
+        h2 { color: #0066cc; margin-top: 0; }
+        .section { background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        label { display: block; margin-top: 12px; font-weight: bold; color: #333; }
+        input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        textarea { height: 60px; }
+        button { background-color: #0066cc; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; margin-top: 15px; font-size: 14px; }
+        button:hover { background-color: #004499; }
+        .button-group { display: flex; gap: 10px; }
+        .button-group button { flex: 1; }
+        .warning { background-color: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 4px; margin: 15px 0; color: #856404; }
+        .info { background-color: #e3f2fd; border: 1px solid #0066cc; padding: 12px; border-radius: 4px; margin: 15px 0; color: #0066cc; font-size: 12px; }
+        .progress { display: none; margin-top: 20px; }
+        .progress-bar { background-color: #f5f5f5; border-radius: 5px; height: 30px; overflow: hidden; }
+        .progress-fill { background-color: #4caf50; height: 100%; width: 0%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; }
+      </style>
+      <div class="container">
+        <h2>📤 Bulk Send Emails to Sheet</h2>
+
+        <div class="warning">
+          ⚠️ <strong>Warning:</strong> This will send emails to ALL customers in the selected sheet!
+        </div>
+
+        <div class="section">
+          <h3>Step 1: Select Sheet</h3>
+          <label>Which sheet contains your customer data?</label>
+          <select id="sheetNameSelect">
+            <option value="">-- Choose a sheet --</option>
+            ${sheetOptions}
+          </select>
+          <div class="info">
+            ℹ️ The sheet must have columns: Email, First Name
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Step 2: Configure Email</h3>
+
+          <label>Email Template:</label>
+          <select id="bulkTemplateSelect">
+            ${templateOptions}
+          </select>
+
+          <label>Business:</label>
+          <select id="bulkBusinessSelect">
+            ${businessOptions}
+          </select>
+
+          <label>Email Subject:</label>
+          <input type="text" id="bulkEmailSubject" placeholder="Your Quote is Ready!" value="Your Quote is Ready!">
+
+          <label>Additional Data (JSON - optional):</label>
+          <textarea id="bulkAdditionalData" placeholder='{"quoteId": "Q-001", "totalAmount": "5000"}
+(Leave empty to use data from sheet)
+(Or provide static data for all emails)'></textarea>
+
+          <div class="info">
+            💡 Additional data will be added to EVERY email.
+            Leave empty if your sheet has the data in columns.
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Step 3: Preview & Send</h3>
+          <div class="button-group">
+            <button onclick="previewBulkEmail()">👁️ Preview First</button>
+            <button onclick="confirmBulkSend()" style="background-color: #f44336;">📤 Send to All</button>
+          </div>
+        </div>
+
+        <div class="progress" id="progressSection">
+          <p>Sending emails...</p>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill">0%</div>
+          </div>
+          <p id="progressText">0 of 0 sent</p>
+        </div>
+
+        <div id="resultsSection" style="display: none; margin-top: 20px; padding: 15px; background-color: #f5f5f5; border-radius: 5px;">
+          <h3>✅ Sending Complete!</h3>
+          <p id="resultsSummary"></p>
+        </div>
+      </div>
+
+      <script>
+        function previewBulkEmail() {
+          const sheetName = document.getElementById('sheetNameSelect').value;
+          if (!sheetName) {
+            alert('❌ Please select a sheet!');
+            return;
+          }
+
+          let additionalData = {};
+          try {
+            const data = document.getElementById('bulkAdditionalData').value;
+            if (data) additionalData = JSON.parse(data);
+          } catch (e) {
+            alert('❌ Invalid JSON in Additional Data!');
+            return;
+          }
+
+          google.script.run.previewBulkSend(
+            sheetName,
+            document.getElementById('bulkTemplateSelect').value,
+            document.getElementById('bulkBusinessSelect').value,
+            additionalData,
+            function(result) {
+              if (result.success) {
+                alert('✅ Preview:\\n\\nSheet: ' + sheetName + '\\n' +
+                      'Customers found: ' + result.count + '\\n' +
+                      'First customer: ' + result.firstCustomer + '\\n\\n' +
+                      'Ready to send to all ' + result.count + ' customers?');
+              } else {
+                alert('❌ Error: ' + result.error);
+              }
+            }
+          );
+        }
+
+        function confirmBulkSend() {
+          const sheetName = document.getElementById('sheetNameSelect').value;
+          if (!sheetName) {
+            alert('❌ Please select a sheet!');
+            return;
+          }
+
+          const count = prompt('How many customers are in this sheet? (This is a safety check)', '');
+          if (!count) return;
+
+          if (confirm('⚠️ You are about to send ' + count + ' emails to all customers in "' + sheetName + '"!\\n\\nThis cannot be undone.\\n\\nAre you SURE?')) {
+            sendBulkEmails();
+          }
+        }
+
+        function sendBulkEmails() {
+          const sheetName = document.getElementById('sheetNameSelect').value;
+
+          let additionalData = {};
+          try {
+            const data = document.getElementById('bulkAdditionalData').value;
+            if (data) additionalData = JSON.parse(data);
+          } catch (e) {
+            alert('❌ Invalid JSON!');
+            return;
+          }
+
+          document.getElementById('progressSection').style.display = 'block';
+          document.getElementById('resultsSection').style.display = 'none';
+
+          google.script.run.withSuccessHandler(onBulkSendComplete).executeBulkSend(
+            sheetName,
+            document.getElementById('bulkTemplateSelect').value,
+            document.getElementById('bulkBusinessSelect').value,
+            document.getElementById('bulkEmailSubject').value,
+            additionalData
+          );
+        }
+
+        function onBulkSendComplete(result) {
+          document.getElementById('progressSection').style.display = 'none';
+          document.getElementById('resultsSection').style.display = 'block';
+
+          let summary = 'Sent: <strong>' + result.sent + '</strong><br>';
+          summary += 'Failed: <strong>' + result.failed + '</strong><br>';
+          summary += 'Total: <strong>' + (result.sent + result.failed) + '</strong>';
+
+          if (result.failed > 0) {
+            summary += '<br><br>Failed emails:<br>';
+            result.failedEmails.forEach(f => {
+              summary += '• ' + f.email + ' - ' + f.error + '<br>';
+            });
+          }
+
+          document.getElementById('resultsSummary').innerHTML = summary;
+        }
+      </script>
+    `);
+
+    SpreadsheetApp.getUi().showModelessDialog(html, '📤 Bulk Send Emails');
+  }
+
+  static previewBulkSend(sheetName, templateName, businessKey, additionalData) {
+    try {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheet = ss.getSheetByName(sheetName);
+
+      if (!sheet) {
+        return { success: false, error: `Sheet "${sheetName}" not found` };
+      }
+
+      const data = sheet.getDataRange().getValues();
+      const headers = data[0];
+      const emailIndex = headers.indexOf('Email');
+      const nameIndex = headers.indexOf('First Name');
+
+      if (emailIndex === -1 || nameIndex === -1) {
+        return { success: false, error: 'Sheet must have "Email" and "First Name" columns' };
+      }
+
+      let count = 0;
+      let firstCustomer = '';
+
+      for (let i = 1; i < data.length; i++) {
+        if (data[i][emailIndex]) {
+          count++;
+          if (count === 1) firstCustomer = data[i][nameIndex] + ' (' + data[i][emailIndex] + ')';
+        }
+      }
+
+      return { success: true, count: count, firstCustomer: firstCustomer };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  static executeBulkSend(sheetName, templateName, businessKey, emailSubject, additionalData) {
+    try {
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      const sheet = ss.getSheetByName(sheetName);
+
+      if (!sheet) throw new Error(`Sheet "${sheetName}" not found`);
+
+      const data = sheet.getDataRange().getValues();
+      const headers = data[0];
+      const emailIndex = headers.indexOf('Email');
+      const nameIndex = headers.indexOf('First Name');
+      const customMsgIndex = headers.indexOf('Custom Message');
+
+      if (emailIndex === -1 || nameIndex === -1) {
+        throw new Error('Sheet must have "Email" and "First Name" columns');
+      }
+
+      let sent = 0;
+      let failed = 0;
+      let failedEmails = [];
+
+      for (let i = 1; i < data.length; i++) {
+        const email = data[i][emailIndex];
+
+        if (!email) continue;
+
+        try {
+          const emailData = {
+            firstName: data[i][nameIndex] || 'Customer',
+            customMessage: customMsgIndex !== -1 ? data[i][customMsgIndex] : '',
+            ...additionalData
+          };
+
+          const result = emailSystem.sendEmail(email, templateName, businessKey, emailSubject, emailData);
+
+          if (result.success) {
+            emailLogger.logEmail(email, emailData.firstName, templateName, businessKey, emailSubject, '✅ Sent', '', sheetName);
+            sent++;
+          } else {
+            emailLogger.logEmail(email, emailData.firstName, templateName, businessKey, emailSubject, '❌ Failed', result.error, sheetName);
+            failed++;
+            failedEmails.push({ email: email, error: result.error });
+          }
+        } catch (error) {
+          failed++;
+          failedEmails.push({ email: email, error: error.message });
+          emailLogger.logEmail(email, data[i][nameIndex], templateName, businessKey, emailSubject, '❌ Failed', error.message, sheetName);
+        }
+      }
+
+      return { sent: sent, failed: failed, failedEmails: failedEmails };
+    } catch (error) {
+      return { sent: 0, failed: 0, failedEmails: [{ email: 'ALL', error: error.message }] };
+    }
+  }
+}
+
+// ===== FILE UPLOAD IMPORTER =====
+class FileUploadImporter {
+  static showUploadDialog() {
+    const html = HtmlService.createHtmlOutput(`
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 600px; }
+        h2 { color: #0066cc; margin-top: 0; }
+        .section { background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        label { display: block; margin-top: 12px; font-weight: bold; color: #333; }
+        input[type="file"] { padding: 10px; }
+        input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #0066cc; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; margin-top: 15px; font-size: 14px; }
+        button:hover { background-color: #004499; }
+        .info { background-color: #e3f2fd; border: 1px solid #0066cc; padding: 12px; border-radius: 4px; margin: 15px 0; color: #0066cc; font-size: 12px; }
+        .progress { display: none; margin-top: 20px; }
+        .progress-text { color: #0066cc; font-weight: bold; }
+      </style>
+      <div class="container">
+        <h2>📁 Import Customer Data from File</h2>
+
+        <div class="section">
+          <h3>📥 Choose File</h3>
+          <label>Select a CSV or Excel file:</label>
+          <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" />
+
+          <div class="info">
+            ✅ Supported formats: CSV, Excel (.xlsx, .xls)<br>
+            ✅ Required columns: Email, First Name<br>
+            ✅ Optional columns: Last Name, Company, Custom Message, etc.
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>⚙️ Configure Import</h3>
+
+          <label>New Sheet Name:</label>
+          <input type="text" id="sheetNameInput" placeholder="Imported Customers" value="Imported Customers">
+
+          <div class="info">
+            💡 The data will be imported into a new sheet with this name.
+            If the sheet exists, it will be overwritten.
+          </div>
+        </div>
+
+        <div class="section">
+          <button onclick="uploadFile()">📤 Upload & Import File</button>
+        </div>
+
+        <div class="progress" id="progressSection">
+          <p class="progress-text" id="progressText">Uploading file...</p>
+        </div>
+
+        <div id="resultsSection" style="display: none; margin-top: 20px; padding: 15px; background-color: #f5f5f5; border-radius: 5px;">
+          <h3 id="resultsTitle"></h3>
+          <p id="resultsSummary"></p>
+        </div>
+      </div>
+
+      <script>
+        function uploadFile() {
+          const fileInput = document.getElementById('fileInput');
+          const sheetName = document.getElementById('sheetNameInput').value;
+
+          if (!fileInput.files.length) {
+            alert('❌ Please select a file!');
+            return;
+          }
+
+          if (!sheetName) {
+            alert('❌ Please enter a sheet name!');
+            return;
+          }
+
+          const file = fileInput.files[0];
+
+          document.getElementById('progressSection').style.display = 'block';
+          document.getElementById('resultsSection').style.display = 'none';
+          document.getElementById('progressText').textContent = 'Uploading ' + file.name + '...';
+
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            google.script.run.importFileData(
+              file.name,
+              e.target.result,
+              sheetName,
+              function(result) {
+                onUploadComplete(result);
+              }
+            );
+          };
+          reader.readAsArrayBuffer(file);
+        }
+
+        function onUploadComplete(result) {
+          document.getElementById('progressSection').style.display = 'none';
+          document.getElementById('resultsSection').style.display = 'block';
+
+          if (result.success) {
+            document.getElementById('resultsTitle').textContent = '✅ Import Successful!';
+            let summary = '<strong>Sheet Name:</strong> ' + result.sheetName + '<br>';
+            summary += '<strong>Rows Imported:</strong> ' + result.rowCount + '<br>';
+            summary += '<strong>Columns:</strong> ' + result.columns.join(', ') + '<br>';
+            if (result.invalidRows > 0) {
+              summary += '<strong>Invalid Rows (skipped):</strong> ' + result.invalidRows + '<br>';
+            }
+            summary += '<br><strong>Next Step:</strong> Go to Email Tools → Import from Sheets';
+            document.getElementById('resultsSummary').innerHTML = summary;
+          } else {
+            document.getElementById('resultsTitle').textContent = '❌ Import Failed';
+            document.getElementById('resultsSummary').textContent = result.error;
+          }
+        }
+      </script>
+    `);
+
+    SpreadsheetApp.getUi().showModelessDialog(html, '📁 Import File');
+  }
+
+  static importFileData(fileName, fileData, sheetName) {
+    try {
+      const isExcel = fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
+      const isCSV = fileName.endsWith('.csv');
+
+      let rows = [];
+
+      if (isCSV) {
+        const text = new TextDecoder().decode(fileData);
+        const lines = text.split('\n');
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+
+          const row = [];
+          let current = '';
+          let inQuotes = false;
+
+          for (let j = 0; j < line.length; j++) {
+            const char = line[j];
+
+            if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+              row.push(current.trim());
+              current = '';
+            } else {
+              current += char;
+            }
+          }
+          row.push(current.trim());
+
+          rows.push(row);
+        }
+      } else if (isExcel) {
+        return {
+          success: false,
+          error: 'Excel import requires converting to CSV first. Please save your Excel file as CSV and try again.'
+        };
+      } else {
+        return {
+          success: false,
+          error: 'Unsupported file format. Please use CSV or Excel (.xlsx, .xls)'
+        };
+      }
+
+      if (rows.length === 0) {
+        return { success: false, error: 'File is empty' };
+      }
+
+      const headers = rows[0];
+
+      const emailIndex = headers.findIndex(h => h.toLowerCase() === 'email');
+      const firstNameIndex = headers.findIndex(h => h.toLowerCase() === 'first name');
+
+      if (emailIndex === -1 || firstNameIndex === -1) {
+        return {
+          success: false,
+          error: 'File must contain "Email" and "First Name" columns'
+        };
+      }
+
+      const ss = SpreadsheetApp.getActiveSpreadsheet();
+      let sheet = ss.getSheetByName(sheetName);
+
+      if (sheet) {
+        ss.deleteSheet(sheet);
+      }
+
+      sheet = ss.insertSheet(sheetName, 0);
+
+      sheet.appendRow(headers);
+
+      const headerRange = sheet.getRange(1, 1, 1, headers.length);
+      headerRange.setBackground('#0066cc');
+      headerRange.setFontColor('white');
+      headerRange.setFontWeight('bold');
+
+      let validRows = 0;
+      let invalidRows = 0;
+
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+
+        if (row[emailIndex] && row[firstNameIndex]) {
+          sheet.appendRow(row);
+          validRows++;
+        } else {
+          invalidRows++;
+        }
+      }
+
+      for (let i = 0; i < headers.length; i++) {
+        sheet.setColumnWidth(i + 1, 150);
+      }
+
+      return {
+        success: true,
+        sheetName: sheetName,
+        rowCount: validRows,
+        invalidRows: invalidRows,
+        columns: headers
+      };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+}
+
 // ===== GLOBAL VARIABLES =====
 let emailSystem = new BusinessEmailAutomation();
 let emailLogger = new EmailLogger();
@@ -482,9 +1002,12 @@ function onOpen() {
     .addItem('📝 Create Google Form', 'createCustomerForm')
     .addItem('🔗 View Form Link', 'viewFormLink')
     .addSeparator()
-    .addItem('⚙️ Setup Business Info', 'showBusinessSetup')
+    .addItem('📁 Import File from Computer', 'showFileUploadDialog')
     .addItem('📋 Import from Sheets', 'showMultiSheetImportDialog')
+    .addSeparator()
+    .addItem('⚙️ Setup Business Info', 'showBusinessSetup')
     .addItem('✉️ Send Email', 'showSendEmailDialog')
+    .addItem('📤 Send Emails to All in Sheet', 'showBulkSendDialog')
     .addItem('🎨 Manage Templates', 'showTemplateManager')
     .addSeparator()
     .addItem('📊 Email Stats Dashboard', 'showStatsDashboard')
@@ -509,6 +1032,16 @@ function createCustomerForm() {
 
 function viewFormLink() {
   FormBuilder.viewFormLink();
+}
+
+// ===== FILE UPLOAD =====
+function showFileUploadDialog() {
+  FileUploadImporter.showUploadDialog();
+}
+
+// ===== BULK EMAIL SENDER =====
+function showBulkSendDialog() {
+  BulkEmailSender.showBulkSendDialog();
 }
 
 // ===== SETUP BUSINESS INFO =====
