@@ -1411,9 +1411,88 @@ function importMultipleSheetData(sheetNames, emailColumn, nameColumn) {
 }
 
 // ===== SEND EMAIL DIALOG =====
+// ===== IMPORT GUIDE DIALOG =====
+function showImportGuideDialog() {
+  const html = HtmlService.createHtmlOutput(`
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 0; background: #f9f9f9; }
+      .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+      .header-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+      .header-section h2 { font-size: 1.6em; margin: 0; font-weight: 700; }
+      .header-section p { margin: 10px 0 0 0; opacity: 0.95; }
+      .content { padding: 30px; }
+      .message-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 6px; margin-bottom: 20px; color: #856404; }
+      .steps { margin: 20px 0; }
+      .step { background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); border-left: 4px solid #667eea; padding: 15px; margin: 12px 0; border-radius: 6px; }
+      .step-num { background: #667eea; color: white; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px; }
+      .step-text { color: #555; margin: 5px 0; }
+      .button-group { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+      button { width: 100%; padding: 13px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; }
+      .btn-primary { background: #667eea; color: white; }
+      .btn-primary:hover { background: #5568d3; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
+      .btn-secondary { background: #f0f4ff; color: #667eea; border: 2px solid #667eea; }
+      .btn-secondary:hover { background: #e3ecff; }
+      .btn-success { background: #4caf50; color: white; }
+      .btn-success:hover { background: #45a049; }
+    </style>
+    <div class="container">
+      <div class="header-section">
+        <h2>📥 Import Customer Data First</h2>
+        <p>No customer data found. Let's get you set up!</p>
+      </div>
+      <div class="content">
+        <div class="message-box">
+          ⚠️ You need to import customer data before sending emails. Choose one of the options below!
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <span class="step-num">1</span>
+            <strong style="color: #667eea;">Option A: Import from Your Computer</strong>
+            <div class="step-text">Upload a CSV or Excel file with your customer list</div>
+          </div>
+
+          <div class="step">
+            <span class="step-num">2</span>
+            <strong style="color: #667eea;">Option B: Import from Google Sheets</strong>
+            <div class="step-text">Import data from an existing sheet in this spreadsheet</div>
+          </div>
+
+          <div class="step">
+            <span class="step-num">3</span>
+            <strong style="color: #667eea;">Option C: Create a Google Form</strong>
+            <div class="step-text">Auto-create a form to collect customer information</div>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn-primary" onclick="importFileAction()">📁 Import File from Computer</button>
+          <button class="btn-secondary" onclick="importFromSheetsAction()">📋 Import from Sheets</button>
+          <button class="btn-success" onclick="createFormAction()">📝 Create Google Form</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function importFileAction() {
+        google.script.run.showFileUploadDialog();
+      }
+      function importFromSheetsAction() {
+        google.script.run.showMultiSheetImportDialog();
+      }
+      function createFormAction() {
+        google.script.run.createCustomerForm();
+      }
+    </script>
+  `);
+
+  SpreadsheetApp.getUi().showModelessDialog(html, '📥 Import Data');
+}
+
 function showSendEmailDialog() {
   if (importedData.length === 0) {
-    SpreadsheetApp.getUi().alert('❌ Please import customer data first!');
+    showImportGuideDialog();
     return;
   }
 
