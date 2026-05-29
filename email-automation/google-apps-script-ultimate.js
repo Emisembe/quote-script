@@ -1588,21 +1588,28 @@ function showStatsDashboard() {
 
   const html = HtmlService.createHtmlOutput(`
     <style>
-      body { font-family: Arial, sans-serif; padding: 20px; }
-      .container { max-width: 600px; }
-      h2 { color: #0066cc; margin-top: 0; }
-      .stat-box { background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 10px 0; }
-      .stat-item { display: flex; justify-content: space-between; margin: 10px 0; font-size: 16px; }
-      .stat-label { font-weight: bold; color: #333; }
-      .stat-value { color: #0066cc; font-weight: bold; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 0; background: #f9f9f9; }
+      .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+      .header-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+      .header-section h2 { font-size: 1.6em; margin: 0; font-weight: 700; }
+      .content { padding: 30px; }
+      .stat-box { background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea; }
+      .stat-box h3 { font-size: 1.1em; font-weight: 600; color: #667eea; margin-bottom: 15px; }
+      .stat-item { display: flex; justify-content: space-between; align-items: center; margin: 12px 0; font-size: 15px; }
+      .stat-label { font-weight: 500; color: #555; }
+      .stat-value { color: #667eea; font-weight: 700; font-size: 1.1em; }
       .success { color: #4caf50; }
       .warning { color: #ff9800; }
       .danger { color: #f44336; }
     </style>
     <div class="container">
-      <h2>📊 Email Statistics Dashboard</h2>
-      <div class="stat-box">
-        <h3 style="margin-top: 0; color: #0066cc;">Today's Email Activity</h3>
+      <div class="header-section">
+        <h2>📊 Email Statistics</h2>
+      </div>
+      <div class="content">
+        <div class="stat-box">
+          <h3>Today's Email Activity</h3>
         <div class="stat-item">
           <span class="stat-label">Emails Sent:</span>
           <span class="stat-value success">` + stats.sent + `</span>
@@ -1650,27 +1657,35 @@ function showEmailLogs() {
 function showTemplateManager() {
   const html = HtmlService.createHtmlOutput(`
     <style>
-      body { font-family: Arial, sans-serif; padding: 15px; }
-      .container { max-width: 800px; }
-      h2 { color: #0066cc; margin-top: 0; }
-      .tabs { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-      .tab-btn { padding: 10px 15px; border: 1px solid #ddd; background-color: #f5f5f5; cursor: pointer; border-radius: 4px; }
-      .tab-btn.active { background-color: #0066cc; color: white; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 0; background: #f9f9f9; }
+      .container { max-width: 900px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+      .header-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+      .header-section h2 { font-size: 1.6em; margin: 0; font-weight: 700; }
+      .content { padding: 30px; }
+      .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+      .tab-btn { padding: 10px 16px; border: 2px solid #ddd; background-color: white; cursor: pointer; border-radius: 6px; font-weight: 600; transition: all 0.3s ease; color: #555; }
+      .tab-btn:hover { border-color: #667eea; }
+      .tab-btn.active { background-color: #667eea; color: white; border-color: #667eea; }
       .tab-content { display: none; }
       .tab-content.active { display: block; }
-      label { display: block; margin-top: 12px; font-weight: bold; color: #333; }
-      input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-      textarea { resize: vertical; height: 400px; font-family: monospace; font-size: 12px; }
-      button { background-color: #0066cc; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-top: 15px; }
-      button:hover { background-color: #004499; }
-      .template-list { background-color: #f5f5f5; padding: 10px; border-radius: 4px; margin-top: 10px; }
-      .template-item { padding: 8px; margin: 5px 0; background-color: white; border-radius: 4px; }
-      .help { background-color: #fff3cd; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 12px; color: #333; }
+      label { display: block; margin-top: 12px; font-weight: 500; color: #555; font-size: 0.95em; }
+      input, select, textarea { width: 100%; padding: 10px 12px; margin-top: 6px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 0.95em; transition: all 0.3s ease; }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+      textarea { resize: vertical; height: 300px; font-family: 'Courier New', monospace; font-size: 12px; }
+      button { background-color: #667eea; color: white; padding: 11px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; margin-top: 15px; }
+      button:hover { background-color: #5568d3; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
+      .template-list { background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); padding: 12px; border-radius: 6px; margin-top: 10px; border-left: 4px solid #667eea; }
+      .template-item { padding: 10px; margin: 6px 0; background-color: white; border-radius: 6px; transition: all 0.3s ease; }
+      .template-item:hover { box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15); }
+      .help { background-color: #f0f4ff; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 12px; color: #555; border-left: 4px solid #667eea; line-height: 1.5; }
     </style>
     <div class="container">
-      <h2>🎨 Manage Email Templates</h2>
-
-      <div class="tabs">
+      <div class="header-section">
+        <h2>🎨 Manage Templates</h2>
+      </div>
+      <div class="content">
+        <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('view')">📋 View Templates</button>
         <button class="tab-btn" onclick="switchTab('edit')">✏️ Edit Template</button>
         <button class="tab-btn" onclick="switchTab('create')">➕ Create New</button>
@@ -1838,31 +1853,54 @@ function showBusinessesList() {
   const businesses = emailSystem.getBusinessList();
   const list = businesses.map(b => {
     const biz = emailSystem.getBusiness(b);
-    return `<b>${b}:</b> ${biz.name} (${biz.email})<br>`;
+    return `<div class="item"><strong>${b}:</strong> ${biz.name} (${biz.email})</div>`;
   }).join('');
 
   const html = HtmlService.createHtmlOutput(`
     <style>
-      body { font-family: Arial, sans-serif; padding: 15px; }
-      div { background-color: #f5f5f5; padding: 15px; border-radius: 4px; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 0; background: #f9f9f9; }
+      .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+      .header-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+      .header-section h2 { font-size: 1.5em; margin: 0; font-weight: 700; }
+      .content { padding: 30px; }
+      .item { background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #667eea; color: #555; }
+      .item strong { color: #667eea; }
     </style>
-    <h2>Your Businesses:</h2>
-    <div>${list}</div>
+    <div class="container">
+      <div class="header-section">
+        <h2>📧 Your Businesses</h2>
+      </div>
+      <div class="content">
+        ${list}
+      </div>
+    </div>
   `);
   SpreadsheetApp.getUi().showModelessDialog(html, '📧 Businesses');
 }
 
 function showTemplatesList() {
   const templates = emailSystem.getTemplateList();
-  const list = templates.map(t => `<li>📧 ${t}</li>`).join('');
+  const list = templates.map(t => `<div class="item">📧 <strong>${t}</strong></div>`).join('');
 
   const html = HtmlService.createHtmlOutput(`
     <style>
-      body { font-family: Arial, sans-serif; padding: 15px; }
-      ul { background-color: #f5f5f5; padding: 15px; border-radius: 4px; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 0; background: #f9f9f9; }
+      .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+      .header-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+      .header-section h2 { font-size: 1.5em; margin: 0; font-weight: 700; }
+      .content { padding: 30px; }
+      .item { background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #667eea; color: #667eea; font-weight: 500; }
     </style>
-    <h2>Your Templates:</h2>
-    <ul>${list}</ul>
+    <div class="container">
+      <div class="header-section">
+        <h2>📧 Your Templates</h2>
+      </div>
+      <div class="content">
+        ${list}
+      </div>
+    </div>
   `);
   SpreadsheetApp.getUi().showModelessDialog(html, '📧 Templates');
 }
