@@ -176,6 +176,74 @@ class EmailLogger {
   }
 }
 
+// ===== TEMPLATE STORAGE SYSTEM =====
+class TemplateStorage {
+  constructor() {
+    this.sheetName = "📋 Templates Storage";
+    this.ensureStorageSheetExists();
+  }
+
+  ensureStorageSheetExists() {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName(this.sheetName);
+
+    if (!sheet) {
+      sheet = ss.insertSheet(this.sheetName);
+      sheet.appendRow(["Template Name", "HTML Content"]);
+
+      const headerRange = sheet.getRange(1, 1, 1, 2);
+      headerRange.setBackground("#667eea");
+      headerRange.setFontColor("white");
+      headerRange.setFontWeight("bold");
+    }
+    return sheet;
+  }
+
+  saveTemplate(templateName, htmlContent) {
+    const sheet = this.ensureStorageSheetExists();
+    const data = sheet.getDataRange().getValues();
+
+    let found = false;
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === templateName) {
+        sheet.getRange(i + 1, 2).setValue(htmlContent);
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      sheet.appendRow([templateName, htmlContent]);
+    }
+  }
+
+  loadAllTemplates() {
+    const sheet = this.ensureStorageSheetExists();
+    const data = sheet.getDataRange().getValues();
+    const templates = {};
+
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] && data[i][1]) {
+        templates[data[i][0]] = data[i][1];
+      }
+    }
+
+    return templates;
+  }
+
+  deleteTemplate(templateName) {
+    const sheet = this.ensureStorageSheetExists();
+    const data = sheet.getDataRange().getValues();
+
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === templateName) {
+        sheet.deleteRow(i + 1);
+        break;
+      }
+    }
+  }
+}
+
 // ===== SHEET PREPARATION SYSTEM =====
 class SheetPreparer {
   static createDataSheet() {
@@ -1018,10 +1086,20 @@ class FileUploadImporter {
 // ===== GLOBAL VARIABLES =====
 let emailSystem = new BusinessEmailAutomation();
 let emailLogger = new EmailLogger();
+let templateStorage = new TemplateStorage();
 let importedData = [];
+
+// ===== LOAD TEMPLATES FROM STORAGE =====
+function loadTemplatesFromStorage() {
+  const savedTemplates = templateStorage.loadAllTemplates();
+  for (let templateName in savedTemplates) {
+    emailSystem.addTemplate(templateName, savedTemplates[templateName]);
+  }
+}
 
 // ===== CREATE MENU =====
 function onOpen() {
+  loadTemplatesFromStorage();
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('📧 Email Tools')
     .addItem('🆕 Prepare Email Campaign Sheet', 'prepareSheet')
@@ -1840,12 +1918,14 @@ function getTemplatesList() {
 
 function updateTemplate(templateName, htmlCode) {
   emailSystem.addTemplate(templateName, htmlCode);
-  SpreadsheetApp.getUi().alert(`✅ Template "${templateName}" updated!`);
+  templateStorage.saveTemplate(templateName, htmlCode);
+  SpreadsheetApp.getUi().alert(`✅ Template "${templateName}" updated and saved!`);
 }
 
 function addNewTemplate(templateName, htmlCode) {
   emailSystem.addTemplate(templateName, htmlCode);
-  SpreadsheetApp.getUi().alert(`✅ Template "${templateName}" created!`);
+  templateStorage.saveTemplate(templateName, htmlCode);
+  SpreadsheetApp.getUi().alert(`✅ Template "${templateName}" created and saved!`);
 }
 
 // ===== VIEW LISTS =====
