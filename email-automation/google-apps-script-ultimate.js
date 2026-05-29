@@ -487,25 +487,38 @@ class BulkEmailSender {
 
     const html = HtmlService.createHtmlOutput(`
       <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .container { max-width: 600px; }
-        h2 { color: #0066cc; margin-top: 0; }
-        .section { background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0; }
-        label { display: block; margin-top: 12px; font-weight: bold; color: #333; }
-        input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        textarea { height: 60px; }
-        button { background-color: #0066cc; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; margin-top: 15px; font-size: 14px; }
-        button:hover { background-color: #004499; }
-        .button-group { display: flex; gap: 10px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 0; background: #f9f9f9; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .header-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+        .header-section h2 { font-size: 1.6em; margin: 0; font-weight: 700; letter-spacing: -0.5px; }
+        .header-section p { font-size: 0.9em; margin: 8px 0 0 0; opacity: 0.95; }
+        .content { padding: 30px; }
+        .section { margin-bottom: 28px; }
+        .section h3 { font-size: 1.05em; font-weight: 600; color: #222; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        label { display: block; margin-top: 12px; font-weight: 500; color: #555; font-size: 0.95em; }
+        input, select, textarea { width: 100%; padding: 10px 12px; margin-top: 6px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 0.95em; transition: all 0.3s ease; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        textarea { resize: vertical; height: 80px; }
+        button { background-color: #667eea; color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; }
+        button:hover { background-color: #5568d3; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
+        .button-group { display: flex; gap: 10px; margin-top: 25px; }
         .button-group button { flex: 1; }
-        .warning { background-color: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 4px; margin: 15px 0; color: #856404; }
-        .info { background-color: #e3f2fd; border: 1px solid #0066cc; padding: 12px; border-radius: 4px; margin: 15px 0; color: #0066cc; font-size: 12px; }
+        .warning { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; border-radius: 6px; margin: 20px 0; color: #856404; font-weight: 500; }
+        .info { background-color: #f0f4ff; border-left: 4px solid #667eea; padding: 12px; border-radius: 6px; margin-top: 8px; color: #555; font-size: 0.9em; line-height: 1.5; }
         .progress { display: none; margin-top: 20px; }
-        .progress-bar { background-color: #f5f5f5; border-radius: 5px; height: 30px; overflow: hidden; }
-        .progress-fill { background-color: #4caf50; height: 100%; width: 0%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; }
+        .progress-bar { background-color: #f0f0f0; border-radius: 6px; height: 30px; overflow: hidden; }
+        .progress-fill { background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; transition: width 0.3s ease; }
+        #resultsSection { display: none; margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); border-left: 4px solid #667eea; border-radius: 6px; }
+        #resultsSection h3 { color: #667eea; margin-bottom: 10px; }
+        #resultsSummary { color: #555; line-height: 1.6; }
       </style>
       <div class="container">
-        <h2>📤 Bulk Send Emails to Sheet</h2>
+        <div class="header-section">
+          <h2>📤 Bulk Send Emails</h2>
+          <p>Send personalized emails to all customers</p>
+        </div>
+        <div class="content">
 
         <div class="warning">
           ⚠️ <strong>Warning:</strong> This will send emails to ALL customers in the selected sheet!
@@ -765,21 +778,34 @@ class FileUploadImporter {
   static showUploadDialog() {
     const html = HtmlService.createHtmlOutput(`
       <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .container { max-width: 600px; }
-        h2 { color: #0066cc; margin-top: 0; }
-        .section { background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0; }
-        label { display: block; margin-top: 12px; font-weight: bold; color: #333; }
-        input[type="file"] { padding: 10px; }
-        input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #0066cc; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; margin-top: 15px; font-size: 14px; }
-        button:hover { background-color: #004499; }
-        .info { background-color: #e3f2fd; border: 1px solid #0066cc; padding: 12px; border-radius: 4px; margin: 15px 0; color: #0066cc; font-size: 12px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 0; background: #f9f9f9; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .header-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+        .header-section h2 { font-size: 1.6em; margin: 0; font-weight: 700; letter-spacing: -0.5px; }
+        .header-section p { font-size: 0.9em; margin: 8px 0 0 0; opacity: 0.95; }
+        .content { padding: 30px; }
+        .section { margin-bottom: 28px; }
+        .section h3 { font-size: 1.05em; font-weight: 600; color: #222; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        label { display: block; margin-top: 12px; font-weight: 500; color: #555; font-size: 0.95em; }
+        input[type="file"] { padding: 10px; cursor: pointer; }
+        input[type="text"] { width: 100%; padding: 10px 12px; margin-top: 6px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 0.95em; transition: all 0.3s ease; }
+        input[type="text"]:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        button { background-color: #667eea; color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; margin-top: 15px; }
+        button:hover { background-color: #5568d3; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
+        .info { background-color: #f0f4ff; border-left: 4px solid #667eea; padding: 12px; border-radius: 6px; margin-top: 8px; color: #555; font-size: 0.9em; line-height: 1.6; }
         .progress { display: none; margin-top: 20px; }
-        .progress-text { color: #0066cc; font-weight: bold; }
+        .progress-text { color: #667eea; font-weight: 600; }
+        #resultsSection { display: none; margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); border-left: 4px solid #667eea; border-radius: 6px; }
+        #resultsSection h3 { color: #667eea; margin-bottom: 10px; font-size: 1.1em; }
+        #resultsSummary { color: #555; line-height: 1.6; }
       </style>
       <div class="container">
-        <h2>📁 Import Customer Data from File</h2>
+        <div class="header-section">
+          <h2>📁 Import Customer Data</h2>
+          <p>Upload CSV or Excel file from your computer</p>
+        </div>
+        <div class="content">
 
         <div class="section">
           <h3>📥 Choose File</h3>
@@ -1048,19 +1074,26 @@ function showBulkSendDialog() {
 function showBusinessSetup() {
   const html = HtmlService.createHtmlOutput(`
     <style>
-      body { font-family: Arial, sans-serif; padding: 15px; }
-      .container { max-width: 500px; }
-      h2 { color: #0066cc; margin-top: 0; }
-      label { display: block; margin-top: 12px; font-weight: bold; color: #333; }
-      input, textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-      button { background-color: #0066cc; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-top: 15px; }
-      button:hover { background-color: #004499; }
-      .color-input { display: flex; gap: 10px; }
-      .color-input input[type="color"] { width: 50px; height: 40px; padding: 2px; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 0; background: #f9f9f9; }
+      .container { max-width: 500px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+      .header-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+      .header-section h2 { font-size: 1.5em; margin: 0; font-weight: 700; }
+      .content { padding: 30px; }
+      label { display: block; margin-top: 14px; font-weight: 500; color: #555; font-size: 0.95em; }
+      input, textarea { width: 100%; padding: 10px 12px; margin-top: 6px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 0.95em; transition: all 0.3s ease; }
+      input:focus, textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+      button { background-color: #667eea; color: white; padding: 11px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; margin-top: 20px; width: 100%; }
+      button:hover { background-color: #5568d3; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
+      .color-input { display: flex; gap: 10px; margin-top: 6px; }
+      .color-input input[type="color"] { width: 50px; height: 40px; padding: 2px; border-radius: 6px; border: 1px solid #ddd; cursor: pointer; }
       .color-input input[type="text"] { flex: 1; }
     </style>
     <div class="container">
-      <h2>⚙️ Setup Your Business Information</h2>
+      <div class="header-section">
+        <h2>⚙️ Business Setup</h2>
+      </div>
+      <div class="content">
       <label>Business Name:</label>
       <input type="text" id="businessName" placeholder="Your Business Name">
       <label>Email Address:</label>
@@ -1114,25 +1147,34 @@ function saveBusinessInfo(data) {
 function showMultiSheetImportDialog() {
   const html = HtmlService.createHtmlOutput(`
     <style>
-      body { font-family: Arial, sans-serif; padding: 15px; }
-      .container { max-width: 600px; }
-      h2 { color: #0066cc; margin-top: 0; }
-      .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-      .tab-btn { padding: 10px 15px; border: 1px solid #ddd; background-color: #f5f5f5; cursor: pointer; border-radius: 4px; }
-      .tab-btn.active { background-color: #0066cc; color: white; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 0; background: #f9f9f9; }
+      .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+      .header-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+      .header-section h2 { font-size: 1.5em; margin: 0; font-weight: 700; }
+      .content { padding: 30px; }
+      .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+      .tab-btn { padding: 10px 16px; border: 2px solid #ddd; background-color: white; cursor: pointer; border-radius: 6px; font-weight: 600; transition: all 0.3s ease; color: #555; }
+      .tab-btn:hover { border-color: #667eea; }
+      .tab-btn.active { background-color: #667eea; color: white; border-color: #667eea; }
       .tab-content { display: none; }
       .tab-content.active { display: block; }
-      label { display: block; margin-top: 12px; font-weight: bold; color: #333; }
-      input, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-      button { background-color: #0066cc; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-top: 15px; }
-      button:hover { background-color: #004499; }
-      .sheet-list { background-color: #f5f5f5; padding: 10px; border-radius: 4px; margin-top: 10px; max-height: 300px; overflow-y: auto; }
-      .sheet-checkbox { display: flex; align-items: center; padding: 8px; margin: 5px 0; background-color: white; border-radius: 4px; }
-      .sheet-checkbox input { width: auto; margin-right: 10px; }
-      .info { background-color: #e3f2fd; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 12px; color: #0066cc; }
+      label { display: block; margin-top: 12px; font-weight: 500; color: #555; font-size: 0.95em; }
+      input, select { width: 100%; padding: 10px 12px; margin-top: 6px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 0.95em; transition: all 0.3s ease; }
+      input:focus, select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+      button { background-color: #667eea; color: white; padding: 11px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; margin-top: 15px; }
+      button:hover { background-color: #5568d3; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
+      .sheet-list { background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); padding: 12px; border-radius: 6px; margin-top: 10px; max-height: 300px; overflow-y: auto; border-left: 4px solid #667eea; }
+      .sheet-checkbox { display: flex; align-items: center; padding: 10px; margin: 6px 0; background-color: white; border-radius: 6px; transition: all 0.3s ease; }
+      .sheet-checkbox:hover { background-color: #f9f9f9; }
+      .sheet-checkbox input { width: 18px; height: 18px; margin-right: 10px; cursor: pointer; }
+      .info { background-color: #f0f4ff; border-left: 4px solid #667eea; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 0.9em; color: #555; line-height: 1.5; }
     </style>
     <div class="container">
-      <h2>📋 Import Customer Data</h2>
+      <div class="header-section">
+        <h2>📋 Import Customer Data</h2>
+      </div>
+      <div class="content">
       <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('single')">Single Sheet</button>
         <button class="tab-btn" onclick="switchTab('multiple')">Multiple Sheets</button>
@@ -1312,21 +1354,28 @@ function showSendEmailDialog() {
 
   const html = HtmlService.createHtmlOutput(`
     <style>
-      body { font-family: Arial, sans-serif; padding: 15px; }
-      .container { max-width: 600px; }
-      h2 { color: #0066cc; margin-top: 0; }
-      label { display: block; margin-top: 12px; font-weight: bold; color: #333; }
-      input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 0; background: #f9f9f9; }
+      .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+      .header-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+      .header-section h2 { font-size: 1.6em; margin: 0; font-weight: 700; letter-spacing: -0.5px; }
+      .content { padding: 30px; }
+      label { display: block; margin-top: 14px; font-weight: 500; color: #555; font-size: 0.95em; }
+      input, select, textarea { width: 100%; padding: 10px 12px; margin-top: 6px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 0.95em; transition: all 0.3s ease; }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
       textarea { resize: vertical; height: 100px; }
-      button { background-color: #0066cc; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-top: 15px; }
-      button:hover { background-color: #004499; }
-      .button-group { display: flex; gap: 10px; }
+      button { background-color: #667eea; color: white; padding: 11px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; margin-top: 15px; }
+      button:hover { background-color: #5568d3; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
+      .button-group { display: flex; gap: 10px; margin-top: 24px; }
       .button-group button { flex: 1; }
-      .preview { background-color: #f5f5f5; padding: 10px; border-radius: 4px; margin-top: 10px; max-height: 300px; overflow-y: auto; font-size: 12px; }
-      .info { background-color: #e3f2fd; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 12px; color: #0066cc; }
+      .preview { background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); padding: 15px; border-left: 4px solid #667eea; border-radius: 6px; margin-top: 20px; max-height: 300px; overflow-y: auto; font-size: 12px; color: #555; }
+      .info { background-color: #f0f4ff; border-left: 4px solid #667eea; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 0.9em; color: #555; line-height: 1.5; }
     </style>
     <div class="container">
-      <h2>✉️ Send Email</h2>
+      <div class="header-section">
+        <h2>✉️ Send Email</h2>
+      </div>
+      <div class="content">
 
       <label>Select Customer:</label>
       <select id="customerSelect">
