@@ -594,13 +594,10 @@ class BulkEmailSender {
 
         <div class="section">
           <h3>Step 1: Select Sheet</h3>
-          <label>Which sheet contains your customer data?</label>
-          <select id="sheetNameSelect">
-            <option value="">-- Choose a sheet --</option>
-            ${sheetOptions}
-          </select>
+          <label>Sheet name (type the exact name):</label>
+          <input type="text" id="sheetNameSelect" placeholder="e.g., Payment Reminders" value="">
           <div class="info">
-            ℹ️ The sheet must have columns: Email, First Name
+            ℹ️ Type your sheet name exactly as it appears in the tabs. Must have: Email, First Name columns
           </div>
         </div>
 
