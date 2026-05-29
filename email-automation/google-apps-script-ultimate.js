@@ -753,26 +753,40 @@ class BulkEmailSender {
       const sheet = ss.getSheetByName(sheetName);
 
       if (!sheet) {
-        return { success: false, error: `Sheet "${sheetName}" not found` };
+        const availableSheets = ss.getSheets().map(s => s.getName()).join(', ');
+        return { success: false, error: `Sheet "${sheetName}" not found. Available: ${availableSheets}` };
       }
 
       const data = sheet.getDataRange().getValues();
-      const headers = data[0];
-      const emailIndex = headers.indexOf('Email');
-      const nameIndex = headers.indexOf('First Name');
+      if (data.length < 2) {
+        return { success: false, error: 'Sheet is empty or has no data' };
+      }
+
+      // Flexible column matching (case-insensitive, trimmed)
+      const headers = data[0].map(h => h.toString().trim().toLowerCase());
+      const emailIndex = headers.findIndex(h => h === 'email');
+      const nameIndex = headers.findIndex(h => h === 'first name');
 
       if (emailIndex === -1 || nameIndex === -1) {
-        return { success: false, error: 'Sheet must have "Email" and "First Name" columns' };
+        const actualHeaders = data[0].map(h => '"' + h + '"').join(', ');
+        return { success: false, error: `Required columns not found. Sheet has: ${actualHeaders}` };
       }
 
       let count = 0;
       let firstCustomer = '';
 
       for (let i = 1; i < data.length; i++) {
-        if (data[i][emailIndex]) {
+        const email = data[i][emailIndex] ? data[i][emailIndex].toString().trim() : '';
+        const name = data[i][nameIndex] ? data[i][nameIndex].toString().trim() : '';
+
+        if (email && name) {
           count++;
-          if (count === 1) firstCustomer = data[i][nameIndex] + ' (' + data[i][emailIndex] + ')';
+          if (count === 1) firstCustomer = name + ' (' + email + ')';
         }
+      }
+
+      if (count === 0) {
+        return { success: false, error: 'No valid email/name pairs found in sheet' };
       }
 
       return { success: true, count: count, firstCustomer: firstCustomer };
@@ -786,16 +800,21 @@ class BulkEmailSender {
       const ss = SpreadsheetApp.getActiveSpreadsheet();
       const sheet = ss.getSheetByName(sheetName);
 
-      if (!sheet) throw new Error(`Sheet "${sheetName}" not found`);
+      if (!sheet) throw new Error(`Sheet "${sheetName}" not found. Available sheets: ${ss.getSheets().map(s => s.getName()).join(', ')}`);
 
       const data = sheet.getDataRange().getValues();
-      const headers = data[0];
-      const emailIndex = headers.indexOf('Email');
-      const nameIndex = headers.indexOf('First Name');
-      const customMsgIndex = headers.indexOf('Custom Message');
+      if (data.length < 2) {
+        throw new Error('Sheet is empty or has no data rows');
+      }
+
+      // Flexible column matching (case-insensitive, trimmed)
+      const headers = data[0].map(h => h.toString().trim().toLowerCase());
+      const emailIndex = headers.findIndex(h => h === 'email');
+      const nameIndex = headers.findIndex(h => h === 'first name');
+      const customMsgIndex = headers.findIndex(h => h === 'custom message');
 
       if (emailIndex === -1 || nameIndex === -1) {
-        throw new Error('Sheet must have "Email" and "First Name" columns');
+        throw new Error(`Required columns not found. Sheet has: ${data[0].map(h => '"' + h + '"').join(', ')}`);
       }
 
       let sent = 0;
@@ -1067,12 +1086,17 @@ class FileUploadImporter {
         sheet.setColumnWidth(i + 1, 150);
       }
 
+      // Auto-load the imported data into importedData variable
+      const loadResult = loadDataFromSheet(sheetName);
+
       return {
         success: true,
         sheetName: sheetName,
         rowCount: validRows,
         invalidRows: invalidRows,
-        columns: headers
+        columns: headers,
+        dataLoaded: loadResult.success,
+        loadedCount: loadResult.count || 0
       };
     } catch (error) {
       return { success: false, error: error.message };
@@ -1091,6 +1115,63 @@ function loadTemplatesFromStorage() {
   const savedTemplates = templateStorage.loadAllTemplates();
   for (let templateName in savedTemplates) {
     emailSystem.addTemplate(templateName, savedTemplates[templateName]);
+  }
+}
+
+// ===== LOAD DATA FROM SHEET =====
+function loadDataFromSheet(sheetName) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(sheetName);
+
+    if (!sheet) {
+      return { success: false, error: `Sheet "${sheetName}" not found` };
+    }
+
+    const data = sheet.getDataRange().getValues();
+    if (data.length < 2) {
+      return { success: false, error: 'Sheet is empty or has no data' };
+    }
+
+    // Get headers and find column indices (flexible matching)
+    const headers = data[0].map(h => h.toString().trim().toLowerCase());
+    const emailIndex = headers.findIndex(h => h === 'email');
+    const nameIndex = headers.findIndex(h => h === 'first name');
+    const lastNameIndex = headers.findIndex(h => h === 'last name');
+    const companyIndex = headers.findIndex(h => h === 'company');
+    const customMsgIndex = headers.findIndex(h => h === 'custom message');
+
+    if (emailIndex === -1 || nameIndex === -1) {
+      return { success: false, error: 'Sheet must have "Email" and "First Name" columns' };
+    }
+
+    // Load data into importedData
+    importedData = [];
+    let validCount = 0;
+
+    for (let i = 1; i < data.length; i++) {
+      const email = data[i][emailIndex] ? data[i][emailIndex].toString().trim() : '';
+      const firstName = data[i][nameIndex] ? data[i][nameIndex].toString().trim() : '';
+
+      if (email && firstName) {
+        importedData.push({
+          email: email,
+          firstName: firstName,
+          lastName: lastNameIndex !== -1 ? (data[i][lastNameIndex] || '') : '',
+          company: companyIndex !== -1 ? (data[i][companyIndex] || '') : '',
+          customMessage: customMsgIndex !== -1 ? (data[i][customMsgIndex] || '') : ''
+        });
+        validCount++;
+      }
+    }
+
+    if (validCount === 0) {
+      return { success: false, error: 'No valid email/name pairs found in sheet' };
+    }
+
+    return { success: true, count: validCount, message: `Loaded ${validCount} customers` };
+  } catch (error) {
+    return { success: false, error: error.message };
   }
 }
 
