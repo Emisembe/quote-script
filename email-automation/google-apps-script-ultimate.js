@@ -322,7 +322,10 @@ class SheetPreparer {
     sheet.setColumnWidth(9, 200); // Link URL
     sheet.setColumnWidth(10, 150); // Notes
 
-    SpreadsheetApp.getUi().alert(`✅ Sheet "${sheetName}" created with sample data!\n\nColumns included:\n• Email\n• First Name\n• Custom Message\n• Quote ID\n• Video URL\n• And more!\n\nEdit the sample data and add your own customers.`);
+    // Load the sample data into importedData so user can send single emails
+    loadDataFromSheet(sheetName);
+
+    SpreadsheetApp.getUi().alert(`✅ Sheet "${sheetName}" created with sample data!\n\nYou can now:\n• Send bulk emails using this sheet (Email Tools → Send Emails to All in Sheet)\n• Send single emails to John or Jane (Email Tools → Send Email)\n\nEdit the sample data and add your own customers.`);
   }
 }
 
