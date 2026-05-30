@@ -674,10 +674,14 @@ class BulkEmailSender {
             additionalData,
             function(result) {
               if (result.success) {
-                alert('✅ Preview:\\n\\nSheet: ' + sheetName + '\\n' +
-                      'Customers found: ' + result.count + '\\n' +
-                      'First customer: ' + result.firstCustomer + '\\n\\n' +
-                      'Ready to send to all ' + result.count + ' customers?');
+                let msg = '✅ Preview:\n\nSheet: ' + sheetName + '\n' +
+                      'Customers found: ' + result.count + '\n' +
+                      'First customer: ' + result.firstCustomer;
+                if (result.emptyRows > 0) {
+                  msg += '\n\n⚠️ Note: ' + result.emptyRows + ' rows were skipped (empty email or name)';
+                }
+                msg += '\n\nReady to send to all ' + result.count + ' customers?';
+                alert(msg);
               } else {
                 alert('❌ Error: ' + result.error);
               }
@@ -759,7 +763,7 @@ class BulkEmailSender {
 
       const data = sheet.getDataRange().getValues();
       if (data.length < 2) {
-        return { success: false, error: 'Sheet is empty or has no data' };
+        return { success: false, error: 'Sheet is empty or has no data rows' };
       }
 
       // Flexible column matching (case-insensitive, trimmed)
@@ -769,27 +773,31 @@ class BulkEmailSender {
 
       if (emailIndex === -1 || nameIndex === -1) {
         const actualHeaders = data[0].map(h => '"' + h + '"').join(', ');
-        return { success: false, error: `Required columns not found. Sheet has: ${actualHeaders}` };
+        return { success: false, error: `Required columns not found. Sheet has: ${actualHeaders}. Columns must include "Email" and "First Name".` };
       }
 
       let count = 0;
       let firstCustomer = '';
+      let emptyCount = 0;
 
       for (let i = 1; i < data.length; i++) {
         const email = data[i][emailIndex] ? data[i][emailIndex].toString().trim() : '';
         const name = data[i][nameIndex] ? data[i][nameIndex].toString().trim() : '';
 
-        if (email && name) {
-          count++;
-          if (count === 1) firstCustomer = name + ' (' + email + ')';
+        if (!email || !name) {
+          emptyCount++;
+          continue;
         }
+
+        count++;
+        if (count === 1) firstCustomer = name + ' (' + email + ')';
       }
 
       if (count === 0) {
-        return { success: false, error: 'No valid email/name pairs found in sheet' };
+        return { success: false, error: `No valid customers found! Found ${emptyCount} rows with missing email or name. Check row 2 onwards.` };
       }
 
-      return { success: true, count: count, firstCustomer: firstCustomer };
+      return { success: true, count: count, firstCustomer: firstCustomer, emptyRows: emptyCount };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -820,16 +828,21 @@ class BulkEmailSender {
       let sent = 0;
       let failed = 0;
       let failedEmails = [];
+      let emptyRows = 0;
 
       for (let i = 1; i < data.length; i++) {
-        const email = data[i][emailIndex];
+        const email = data[i][emailIndex] ? data[i][emailIndex].toString().trim() : '';
+        const name = data[i][nameIndex] ? data[i][nameIndex].toString().trim() : '';
 
-        if (!email) continue;
+        if (!email || !name) {
+          emptyRows++;
+          continue;
+        }
 
         try {
           const emailData = {
-            firstName: data[i][nameIndex] || 'Customer',
-            customMessage: customMsgIndex !== -1 ? data[i][customMsgIndex] : '',
+            firstName: name,
+            customMessage: customMsgIndex !== -1 ? (data[i][customMsgIndex] || '') : '',
             ...additionalData
           };
 
@@ -846,8 +859,13 @@ class BulkEmailSender {
         } catch (error) {
           failed++;
           failedEmails.push({ email: email, error: error.message });
-          emailLogger.logEmail(email, data[i][nameIndex], templateName, businessKey, emailSubject, '❌ Failed', error.message, sheetName);
+          emailLogger.logEmail(email, name, templateName, businessKey, emailSubject, '❌ Failed', error.message, sheetName);
         }
+      }
+
+      // Return error if no valid rows were found
+      if (sent === 0 && failed === 0 && emptyRows > 0) {
+        return { sent: 0, failed: 0, failedEmails: [{ email: 'ALL', error: `All ${emptyRows} rows had empty email or first name. Check your data.` }] };
       }
 
       return { sent: sent, failed: failed, failedEmails: failedEmails };
@@ -969,14 +987,24 @@ class FileUploadImporter {
           document.getElementById('resultsSection').style.display = 'block';
 
           if (result.success) {
-            document.getElementById('resultsTitle').textContent = '✅ Import Successful!';
             let summary = '<strong>Sheet Name:</strong> ' + result.sheetName + '<br>';
             summary += '<strong>Rows Imported:</strong> ' + result.rowCount + '<br>';
             summary += '<strong>Columns:</strong> ' + result.columns.join(', ') + '<br>';
             if (result.invalidRows > 0) {
               summary += '<strong>Invalid Rows (skipped):</strong> ' + result.invalidRows + '<br>';
             }
-            summary += '<br><strong>Next Step:</strong> Go to Email Tools → Import from Sheets';
+
+            if (result.dataLoaded) {
+              document.getElementById('resultsTitle').textContent = '✅ Import Successful!';
+              summary += '<br><strong style="color: #4caf50;">✅ Data is ready! You can now:</strong><br>';
+              summary += '• Send emails to individual customers (Email Tools → Send Email)<br>';
+              summary += '• Send bulk emails to all (Email Tools → Send Emails to All in Sheet)';
+            } else {
+              document.getElementById('resultsTitle').textContent = '⚠️ Sheet Created, But Data Failed to Load';
+              summary += '<br><strong style="color: #ff9800;">⚠️ Error:</strong> ' + (result.loadError || 'Unknown error while loading data') + '<br>';
+              summary += '<br><strong>Next Step:</strong> Check your data and try importing again.';
+            }
+
             document.getElementById('resultsSummary').innerHTML = summary;
           } else {
             document.getElementById('resultsTitle').textContent = '❌ Import Failed';
@@ -1040,15 +1068,16 @@ class FileUploadImporter {
         return { success: false, error: 'File is empty' };
       }
 
-      const headers = rows[0];
+      const headers = rows[0].map(h => h.toString().trim());
 
       const emailIndex = headers.findIndex(h => h.toLowerCase() === 'email');
       const firstNameIndex = headers.findIndex(h => h.toLowerCase() === 'first name');
 
       if (emailIndex === -1 || firstNameIndex === -1) {
+        const actualHeaders = headers.map(h => '"' + h + '"').join(', ');
         return {
           success: false,
-          error: 'File must contain "Email" and "First Name" columns'
+          error: `File must contain "Email" and "First Name" columns. Found: ${actualHeaders}`
         };
       }
 
@@ -1096,7 +1125,8 @@ class FileUploadImporter {
         invalidRows: invalidRows,
         columns: headers,
         dataLoaded: loadResult.success,
-        loadedCount: loadResult.count || 0
+        loadedCount: loadResult.count || 0,
+        loadError: loadResult.error || null
       };
     } catch (error) {
       return { success: false, error: error.message };
