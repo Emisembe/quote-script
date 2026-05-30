@@ -574,6 +574,8 @@ function onOpen() {
     .addItem('🔢 Generate Member Numbers', 'openMemberNumberGenerator')
     .addItem('👥 View Contacts', 'goToContacts')
     .addItem('📋 View Email Log', 'goToLog')
+    .addSeparator()
+    .addItem('🧪 Test System', 'testEmailSystemUI')
     .addToUi();
 }
 
@@ -1218,4 +1220,127 @@ function composeDialogHtml_() {
     }
   </script>
   </body></html>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  DIAGNOSTIC FUNCTION - Test email system
+// ═══════════════════════════════════════════════════════════════════════════
+
+function testEmailSystemUI() {
+  const result = testEmailSystem();
+  const html = HtmlService.createHtmlOutput(`
+    <!DOCTYPE html><html><head><style>
+    body { font-family: Arial, sans-serif; font-size: 14px; margin: 0; padding: 20px; background: #f5f5f5; }
+    .container { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 500px; margin: 0 auto; }
+    h2 { color: #0D47A1; margin-top: 0; }
+    .success { background: #E8F5E9; border-left: 4px solid #4CAF50; padding: 15px; border-radius: 4px; color: #1B5E20; }
+    .error { background: #FFCDD2; border-left: 4px solid #F44336; padding: 15px; border-radius: 4px; color: #B71C1C; }
+    .info { background: #E3F2FD; border-left: 4px solid #2196F3; padding: 15px; border-radius: 4px; color: #1565C0; margin: 12px 0; }
+    button { background: #0D47A1; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 13px; margin-top: 15px; width: 100%; }
+    button:hover { background: #0B3D91; }
+    .code { background: #f0f0f0; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px; overflow-x: auto; margin: 10px 0; }
+    </style></head><body>
+    <div class="container">
+      <h2>🧪 System Diagnostic Test</h2>
+      ${result.success ?
+        `<div class="success"><strong>✓ Success!</strong><br>${result.message}</div>
+         <p>Your email system is working correctly. You should receive a test email shortly.</p>` :
+        `<div class="error"><strong>✗ Error Detected</strong><br>${result.error}</div>
+         <div class="info">
+           <strong>Troubleshooting:</strong>
+           <ul>
+             <li>Make sure you have at least one contact in the Contacts sheet</li>
+             <li>Ensure each contact has a valid email address</li>
+             <li>Check that the "default" business is configured in CONFIG</li>
+             <li>Open the Apps Script Editor (Extensions > Apps Script) and check the Logs to see detailed error messages</li>
+           </ul>
+         </div>`
+      }
+      <div class="info">
+        <strong>Next Steps:</strong>
+        <ul>
+          <li>Check your email inbox for the test message</li>
+          <li>If the test failed, review the troubleshooting steps above</li>
+          <li>For detailed debugging, check the Apps Script Logs (Ctrl+Enter)</li>
+        </ul>
+      </div>
+      <button onclick="google.script.host.close()">Close</button>
+    </div>
+    </body></html>
+  `);
+  SpreadsheetApp.getUi().showModalDialog(html, '🧪 System Diagnostic');
+}
+
+function testEmailSystem() {
+  Logger.log("=== EMAIL SYSTEM DIAGNOSTIC START ===");
+
+  // Initialize systems
+  if (!emailSystem) emailSystem = new EmailAutomationSystem();
+  if (!emailLogger) emailLogger = new EmailLogger();
+
+  Logger.log("✓ Systems initialized");
+
+  // Check Contacts sheet
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const contactsSheet = ss.getSheetByName(SHEET_CONTACTS);
+
+  if (!contactsSheet) {
+    Logger.log("✗ Contacts sheet not found");
+    return { success: false, error: "Contacts sheet not found" };
+  }
+  Logger.log("✓ Contacts sheet found");
+
+  const lastRow = contactsSheet.getLastRow();
+  Logger.log("Contacts sheet has " + (lastRow - 1) + " contact rows");
+
+  if (lastRow < 2) {
+    Logger.log("✗ No contacts in sheet");
+    return { success: false, error: "No contacts found. Add contacts first." };
+  }
+
+  // Get first contact
+  const firstContact = contactsSheet.getRange(2, 1, 1, 6).getValues()[0];
+  const testEmail = (firstContact[1] || '').toString().trim();
+  const testName = (firstContact[0] || '').toString().trim();
+
+  Logger.log("Test contact: " + testName + " (" + testEmail + ")");
+
+  if (!testEmail || testEmail.indexOf('@') === -1) {
+    Logger.log("✗ Invalid email in first contact");
+    return { success: false, error: "First contact has invalid email" };
+  }
+
+  // Test sending
+  Logger.log("Attempting to send test email...");
+
+  try {
+    const testData = {
+      firstName: testName.split(/\s+/)[0] || 'Friend',
+      body: "This is a test email from the Email Automation System. If you received this, the system is working correctly!",
+      customMessage: "",
+      headline: "System Test",
+      memberNo: ""
+    };
+
+    const result = emailSystem.sendEmail(
+      testEmail,
+      "general-update",
+      "default",
+      "🧪 Email Automation System Test",
+      testData
+    );
+
+    Logger.log("Send result: " + JSON.stringify(result));
+
+    if (result.success) {
+      Logger.log("✓ Test email sent successfully");
+      return { success: true, message: "Test email sent to " + testEmail };
+    } else {
+      Logger.log("✗ Test email failed: " + result.error);
+      return { success: false, error: "Send failed: " + result.error };
+    }
+  } catch (e) {
+    Logger.log("✗ Exception during test: " + e.message);
+    return { success: false, error: "Exception: " + e.message };
+  }
 }
