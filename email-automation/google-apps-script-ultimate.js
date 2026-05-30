@@ -1,10 +1,11 @@
-// ===== EMAIL AUTOMATION SYSTEM v3.0 =====
-// Configuration-driven, flawless email automation with personalization
-// Based on proven Election Manager architectural patterns
+// ═══════════════════════════════════════════════════════════════════════════
+//  EMAIL AUTOMATION SYSTEM v4.0  —  Production Ready
+//  Based on proven architectural patterns from Election Manager + Template System
+// ═══════════════════════════════════════════════════════════════════════════
 
-// ===== CONFIGURATION =====
+// ── §CONFIG ───────────────────────────────────────────────────────────────────
 const CONFIG = {
-  // Business information
+  // ── Business information ──────────────────────────────────────────────────
   BUSINESS: {
     "default": {
       name: "Your Business Name",
@@ -18,60 +19,67 @@ const CONFIG = {
     }
   },
 
-  // Email templates
+  // ── Email templates ───────────────────────────────────────────────────────
   TEMPLATES: {
-    "quote-sent": "Quote notification with custom message support",
-    "follow-up": "Follow-up reminder with call scheduling",
-    "special-offer": "Limited-time offer with urgency",
-    "payment-reminder": "Payment due reminder with amount",
-    "video-demo": "Video demo with embedded player"
+    "general-update": "Standard update with headline and message",
+    "video-update": "Video sharing with YouTube thumbnail detection",
+    "announcement": "Important announcement with urgent styling",
+    "newsletter": "Multi-section newsletter with sections",
+    "form-request": "Form/Survey with CTA button"
   },
 
-  // Column definitions for imported data
-  DATA_COL: {
-    EMAIL: 1,
-    FIRST_NAME: 2,
-    LAST_NAME: 3,
-    AMOUNT: 4,
-    CUSTOM_MESSAGE: 5,
-    ADDITIONAL_DATA: 6
+  // ── Contact sheet columns ─────────────────────────────────────────────────
+  CONTACT_COL: {
+    NAME: 1,
+    EMAIL: 2,
+    GROUP: 3,
+    ACTIVE: 4,
+    TAGS: 5,
+    MEMBER_NO: 6
   },
 
-  // Sheet names for system sheets
-  SYSTEM_SHEETS: [
-    "📊 Email Logs",
-    "📋 Templates Storage",
-    "📋 Instructions"
-  ],
+  // ── Email log columns ─────────────────────────────────────────────────────
+  LOG_COL: {
+    TIMESTAMP: 1,
+    TEMPLATE: 2,
+    SUBJECT: 3,
+    COUNT: 4,
+    STATUS: 5
+  },
 
-  // Campaign sheet pattern
-  CAMPAIGN_PATTERN: "📧",
+  // ── Sheet names ───────────────────────────────────────────────────────────
+  SHEET_CONTACTS: 'Contacts',
+  SHEET_LOG: 'Email Log',
 
-  // Validation rules
+  // ── Validation rules ──────────────────────────────────────────────────────
   VALIDATION: {
     MIN_EMAIL_LENGTH: 5,
     MAX_EMAIL_LENGTH: 254,
     EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   },
 
-  // Email sending limits (per execution)
+  // ── Limits ────────────────────────────────────────────────────────────────
   LIMITS: {
     MAX_BATCH_SIZE: 50,
     MAX_RETRIES: 3
   }
 };
 
-// ===== GLOBAL VARIABLES =====
+// ── SHEET NAMES ────────────────────────────────────────────────────────────
+const SHEET_CONTACTS = CONFIG.SHEET_CONTACTS;
+const SHEET_LOG = CONFIG.SHEET_LOG;
+const CON_COL = CONFIG.CONTACT_COL;
+const LOG_COL = CONFIG.LOG_COL;
+
+// ── GLOBAL VARIABLES ───────────────────────────────────────────────────────
 let emailSystem = null;
 let emailLogger = null;
 let templateStorage = null;
-let importedData = {
-  data: [],
-  dataLoaded: false,
-  errorMessage: null
-};
 
-// ===== EMAIL SYSTEM CLASS =====
+// ═══════════════════════════════════════════════════════════════════════════
+//  EMAIL SYSTEM CLASS
+// ═══════════════════════════════════════════════════════════════════════════
+
 class EmailAutomationSystem {
   constructor() {
     this.businesses = CONFIG.BUSINESS;
@@ -81,35 +89,34 @@ class EmailAutomationSystem {
 
   loadTemplates() {
     this.templates = {
-      "quote-sent": this.getQuoteSentTemplate(),
-      "follow-up": this.getFollowUpTemplate(),
-      "special-offer": this.getSpecialOfferTemplate(),
-      "payment-reminder": this.getPaymentReminderTemplate(),
-      "video-demo": this.getVideoDemoTemplate()
+      "general-update": this.getGeneralTemplate(),
+      "video-update": this.getVideoTemplate(),
+      "announcement": this.getAnnouncementTemplate(),
+      "newsletter": this.getNewsletterTemplate(),
+      "form-request": this.getFormTemplate()
     };
   }
 
-  getQuoteSentTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{businessName}}</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Your Quote is Ready!</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold; color: #333;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">Thank you for reaching out to {{businessName}}! We're excited to provide you with a quote tailored to your needs.</p>{{#if customMessage}}<div style="background-color: #fff3cd; border-left: 4px solid {{accentColor}}; padding: 15px; margin: 20px 0;"><p style="color: #333; font-style: italic;">{{customMessage}}</p></div>{{/if}}<div style="background-color: #f5f5f5; border-left: 4px solid {{accentColor}}; padding: 15px; margin: 20px 0;"><p style="margin: 5px 0;"><strong>Quote ID:</strong> {{quoteId}}</p><p style="margin: 5px 0;"><strong>Date:</strong> {{quoteDate}}</p><p style="margin: 5px 0;"><strong>Total:</strong> {{totalAmount}}</p></div><p style="color: #666; line-height: 1.6;">Please review the attached quote. If you have any questions, feel free to reach out to us.</p><div style="text-align: center; margin: 30px 0;"><a href="{{quoteLink}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">View Full Quote</a></div></div><div style="background-color: #f9f9f9; padding: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #666; text-align: center;"><p style="margin: 5px 0;">📧 {{businessEmail}} | 📞 {{businessPhone}}</p></div></div></body></html>`;
+  getGeneralTemplate() {
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{businessName}}</h1></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold; color: #333;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">{{body}}</p>{{#if customMessage}}<div style="background-color: #fff3cd; border-left: 4px solid {{accentColor}}; padding: 15px; margin: 20px 0;"><p style="color: #333; font-style: italic;">{{customMessage}}</p></div>{{/if}}{{#if ctaUrl}}<div style="text-align: center; margin: 30px 0;"><a href="{{ctaUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">{{ctaText}}</a></div>{{/if}}</div><div style="background-color: #f9f9f9; padding: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #666; text-align: center;"><p style="margin: 5px 0;">{{businessEmail}} | {{businessPhone}}</p></div></div></body></html>`;
   }
 
-  getFollowUpTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{businessName}}</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Following Up on Your Quote</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">I hope this finds you well! I wanted to follow up on quote <strong>{{quoteId}}</strong>.</p>{{#if customMessage}}<div style="background-color: #e3f2fd; border-left: 4px solid {{primaryColor}}; padding: 15px; margin: 20px 0;"><p style="color: #333; font-style: italic;">💬 {{customMessage}}</p></div>{{/if}}<p style="color: #666; line-height: 1.6;">If you have questions or want to discuss, I'm here to help!</p><div style="text-align: center; margin: 30px 0;"><a href="{{calendarLink}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Schedule a Call</a></div></div></div></body></html>`;
+  getVideoTemplate() {
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{businessName}}</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Watch This Video</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">{{body}}</p>{{#if videoUrl}}<div style="background-color: #000; border-radius: 8px; overflow: hidden; margin: 20px 0; text-align: center;"><a href="{{videoUrl}}" style="display: inline-block;"><img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Watch video" style="width: 100%; display: block; border-radius: 8px;"></a></div>{{/if}}{{#if customMessage}}<div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;"><p style="color: #333;">{{customMessage}}</p></div>{{/if}}</div></div></body></html>`;
   }
 
-  getSpecialOfferTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background: linear-gradient(135deg, {{primaryColor}}, {{accentColor}}); color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">🎉 SPECIAL OFFER</h1></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">We have an exclusive offer just for you!</p><div style="background-color: #fff3cd; border: 2px solid {{accentColor}}; border-radius: 5px; padding: 20px; margin: 20px 0; text-align: center;"><p style="font-size: 24px; font-weight: bold; color: {{primaryColor}};">{{offerTitle}}</p><p style="font-size: 14px; color: #666;">{{offerDescription}}</p><p style="font-size: 12px; color: #666;"><strong>Valid until:</strong> {{offerExpiry}}</p></div>{{#if customMessage}}<p style="color: #333; background-color: #f5f5f5; padding: 15px; border-radius: 5px;">{{customMessage}}</p>{{/if}}<div style="text-align: center; margin: 30px 0;"><a href="{{offerLink}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Claim Offer</a></div></div></div></body></html>`;
+  getAnnouncementTemplate() {
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background: linear-gradient(135deg, {{primaryColor}}, {{accentColor}}); color: white; padding: 40px 30px; text-align: center;"><div style="color: rgba(255,255,255,0.9); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;">Important Announcement</div><h1 style="margin: 0; font-size: 28px;">{{headline}}</h1></div><div style="padding: 30px;"><p style="color: #666; line-height: 1.6;">{{body}}</p>{{#if ctaUrl}}<div style="text-align: center; margin: 30px 0;"><a href="{{ctaUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">{{ctaText}}</a></div>{{/if}}</div></div></body></html>`;
   }
 
-  getPaymentReminderTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background-color: #d32f2f; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">💳 Payment Reminder</h1></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">This is a friendly reminder that your payment is now due.</p><div style="background-color: #fff3cd; border-left: 4px solid #d32f2f; padding: 20px; margin: 20px 0; border-radius: 5px;"><p style="margin: 5px 0;"><strong>Amount Due:</strong> {{amount}}</p><p style="margin: 5px 0;"><strong>Customer #:</strong> {{customerNumber}}</p><p style="margin: 5px 0;"><strong>Due Date:</strong> {{dueDate}}</p></div>{{#if customMessage}}<div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #d32f2f;"><p style="color: #333;">{{customMessage}}</p></div>{{/if}}<p style="color: #666; line-height: 1.6;">Thank you for your prompt attention to this matter. If you have questions, please contact us immediately.</p><div style="text-align: center; margin: 30px 0;"><a href="{{paymentLink}}" style="background-color: #d32f2f; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Make Payment</a></div></div></div></body></html>`;
+  getNewsletterTemplate() {
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{headline}}</h1></div><div style="padding: 30px;"><p style="color: #666; line-height: 1.6;">{{body}}</p></div>{{#if section2}}<div style="background-color: #f5f5f5; border-top: 1px solid #e0e0e0; padding: 28px 30px;"><h2 style="color: {{primaryColor}}; font-size: 18px; margin: 0 0 12px;">{{section2headline}}</h2><p style="color: #666; line-height: 1.6;">{{section2body}}</p></div>{{/if}}{{#if section3}}<div style="padding: 28px 30px; border-top: 1px solid #e0e0e0;"><h2 style="color: {{primaryColor}}; font-size: 18px; margin: 0 0 12px;">{{section3headline}}</h2><p style="color: #666; line-height: 1.6;">{{section3body}}</p></div>{{/if}}</div></body></html>`;
   }
 
-  getVideoDemoTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{businessName}}</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Check Out Our Demo Video</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">I wanted to show you a quick demo of our service!</p>{{#if videoUrl}}<div style="background-color: #000; border-radius: 8px; overflow: hidden; margin: 20px 0; max-width: 100%;"><iframe width="100%" height="315" src="{{videoUrl}}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display: block;"></iframe></div>{{/if}}{{#if customMessage}}<div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;"><p style="color: #333;">{{customMessage}}</p></div>{{/if}}<p style="color: #666; line-height: 1.6;">Let me know if you have any questions!</p><div style="text-align: center; margin: 30px 0;"><a href="{{demoLink}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">Learn More</a></div></div></div></body></html>`;
+  getFormTemplate() {
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{headline}}</h1></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">{{body}}</p><div style="background-color: #F3F6FD; border: 2px solid {{primaryColor}}; border-radius: 8px; padding: 28px; margin: 26px 0; text-align: center;">{{#if formTitle}}<div style="font-size: 15px; font-weight: bold; color: #333; margin-bottom: 14px;">{{formTitle}}</div>{{/if}}<a href="{{formUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 14px 36px; border-radius: 5px; text-decoration: none; font-size: 15px; font-weight: bold; display: inline-block;">{{formButtonText}}</a>{{#if formNote}}<div style="font-size: 12px; color: #777; margin-top: 14px;">{{formNote}}</div>{{/if}}</div></div></div></body></html>`;
   }
 
-  // Send email with validation
   sendEmail(recipientEmail, templateName, businessKey, emailSubject, data) {
     const validationError = this.validateEmail_(recipientEmail);
     if (validationError) {
@@ -154,7 +161,6 @@ class EmailAutomationSystem {
       });
 
       GmailApp.sendEmail(recipientEmail, emailSubject, '', { htmlBody: htmlContent });
-
       emailLogger.logSuccess(recipientEmail, businessKey, templateName, emailSubject);
       return { success: true, message: `Email sent to ${recipientEmail}` };
     } catch (error) {
@@ -165,26 +171,10 @@ class EmailAutomationSystem {
 
   validateEmail_(email) {
     if (!email) return "Email is required";
-    if (email.length < CONFIG.VALIDATION.MIN_EMAIL_LENGTH) return `Email too short (min ${CONFIG.VALIDATION.MIN_EMAIL_LENGTH} chars)`;
-    if (email.length > CONFIG.VALIDATION.MAX_EMAIL_LENGTH) return `Email too long (max ${CONFIG.VALIDATION.MAX_EMAIL_LENGTH} chars)`;
-    if (!CONFIG.VALIDATION.EMAIL_REGEX.test(email)) return `Invalid email format: ${email}`;
+    if (email.length < CONFIG.VALIDATION.MIN_EMAIL_LENGTH) return `Email too short`;
+    if (email.length > CONFIG.VALIDATION.MAX_EMAIL_LENGTH) return `Email too long`;
+    if (!CONFIG.VALIDATION.EMAIL_REGEX.test(email)) return `Invalid email format`;
     return null;
-  }
-
-  addTemplate(templateName, htmlContent) {
-    if (!templateName || templateName.trim() === '') return { success: false, error: "Template name required" };
-    if (!htmlContent || htmlContent.trim() === '') return { success: false, error: "Template content required" };
-    this.templates[templateName] = htmlContent;
-    templateStorage.saveTemplate(templateName, htmlContent);
-    return { success: true, message: `Template "${templateName}" saved` };
-  }
-
-  addBusiness(businessKey, businessData) {
-    if (!businessKey || businessKey.trim() === '') return { success: false, error: "Business key required" };
-    if (!businessData.name) return { success: false, error: "Business name required" };
-    if (!businessData.email) return { success: false, error: "Business email required" };
-    this.businesses[businessKey] = businessData;
-    return { success: true, message: `Business "${businessKey}" added` };
   }
 
   getTemplateList() {
@@ -200,7 +190,10 @@ class EmailAutomationSystem {
   }
 }
 
-// ===== EMAIL LOGGER CLASS =====
+// ═══════════════════════════════════════════════════════════════════════════
+//  EMAIL LOGGER CLASS
+// ═══════════════════════════════════════════════════════════════════════════
+
 class EmailLogger {
   constructor() {
     this.sheet = null;
@@ -209,985 +202,742 @@ class EmailLogger {
 
   ensureSheet_() {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    let sheet = ss.getSheetByName("📊 Email Logs");
+    let sheet = ss.getSheetByName(SHEET_LOG);
     if (!sheet) {
-      sheet = ss.insertSheet("📊 Email Logs");
-      sheet.appendRow(["Timestamp", "Email", "Business", "Template", "Subject", "Status", "Details"]);
-      sheet.getRange(1, 1, 1, 7).setFontWeight("bold").setBackground("#0066cc").setFontColor("white");
+      sheet = ss.insertSheet(SHEET_LOG);
+      sheet.appendRow(["Timestamp", "Template", "Subject", "Count", "Status"]);
+      sheet.getRange(1, 1, 1, 5).setFontWeight("bold").setBackground("#0066cc").setFontColor("white");
     }
     this.sheet = sheet;
   }
 
   logSuccess(email, business, template, subject) {
-    this.sheet.appendRow([
-      new Date(),
-      email,
-      business,
-      template,
-      subject,
-      "✅ Sent",
-      ""
-    ]);
+    this.sheet.appendRow([new Date(), template, subject, 1, "✅ Sent"]);
   }
 
   logError(email, business, template, subject, error) {
-    this.sheet.appendRow([
-      new Date(),
-      email,
-      business,
-      template,
-      subject,
-      "❌ Failed",
-      error
-    ]);
-  }
-
-  logImport(filename, recordCount, successCount, errorCount) {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    let sheet = ss.getSheetByName("📊 Email Logs");
-    if (sheet) {
-      sheet.appendRow([
-        new Date(),
-        `[IMPORT: ${filename}]`,
-        "-",
-        "-",
-        `${recordCount} records`,
-        `${successCount}✅ ${errorCount}❌`,
-        ""
-      ]);
-    }
+    this.sheet.appendRow([new Date(), template, subject, 0, "❌ Failed: " + error]);
   }
 }
 
-// ===== TEMPLATE STORAGE CLASS =====
-class TemplateStorage {
-  constructor() {
-    this.sheet = null;
-    this.ensureSheet_();
-    this.loadTemplates_();
-  }
+// ═══════════════════════════════════════════════════════════════════════════
+//  CONTACT MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
 
-  ensureSheet_() {
+class ContactManager {
+  static ensureContactsSheet() {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    let sheet = ss.getSheetByName("📋 Templates Storage");
-    if (!sheet) {
-      sheet = ss.insertSheet("📋 Templates Storage");
-      sheet.appendRow(["Template Name", "HTML Content", "Created", "Modified"]);
-      sheet.getRange(1, 1, 1, 4).setFontWeight("bold").setBackground("#ff6600").setFontColor("white");
-      sheet.setColumnWidth(1, 200);
-      sheet.setColumnWidth(2, 800);
-    }
-    this.sheet = sheet;
-  }
-
-  loadTemplates_() {
-    const data = this.sheet.getDataRange().getValues();
-    for (let i = 1; i < data.length; i++) {
-      const [name, content] = data[i];
-      if (name && content) {
-        emailSystem.templates[name] = content;
-      }
-    }
-  }
-
-  saveTemplate(name, content) {
-    const data = this.sheet.getDataRange().getValues();
-    let found = false;
-    for (let i = 1; i < data.length; i++) {
-      if (data[i][0] === name) {
-        this.sheet.getRange(i + 1, 2).setValue(content);
-        this.sheet.getRange(i + 1, 4).setValue(new Date());
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      this.sheet.appendRow([name, content, new Date(), new Date()]);
-    }
-  }
-
-  getTemplate(name) {
-    const data = this.sheet.getDataRange().getValues();
-    for (let i = 1; i < data.length; i++) {
-      if (data[i][0] === name) return data[i][1];
-    }
-    return null;
-  }
-}
-
-// ===== SHEET PREPARER CLASS =====
-class SheetPreparer {
-  static createDataSheet() {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    let sheet = ss.getSheetByName("📧 Email Campaign Data");
+    let sheet = ss.getSheetByName(SHEET_CONTACTS);
 
     if (!sheet) {
-      sheet = ss.insertSheet("📧 Email Campaign Data");
-
-      // Headers
-      const headers = ["Email", "First Name", "Last Name", "Amount", "Custom Message", "Additional Data"];
-      sheet.appendRow(headers);
+      sheet = ss.insertSheet(SHEET_CONTACTS);
+      sheet.appendRow(["Name", "Email", "Group", "Active (Y/N)", "Tags", "Member / Customer No."]);
       sheet.getRange(1, 1, 1, 6).setFontWeight("bold").setBackground("#0066cc").setFontColor("white");
 
       // Sample data
-      const sampleData = [
-        ["emisembe@gmail.com", "Emisembe", "Smith", "5000", "Special note about the quote", ""],
-        ["emisembe@gmail.com", "John", "Doe", "3500", "First-time customer - needs explanation", ""],
-        ["emisembe@gmail.com", "Jane", "Johnson", "7200", "", ""],
-        ["emisembe@gmail.com", "Michael", "Brown", "4100", "Referred by Jane Johnson", ""]
-      ];
+      sheet.appendRow(["Alice Johnson", "alice@example.com", "Members", "Y", "Finance,Events", "MEM-0001"]);
+      sheet.appendRow(["Bob Mensah", "bob@example.com", "Members", "Y", "Events", "MEM-0002"]);
+      sheet.appendRow(["Carol Osei", "carol@example.com", "Board", "Y", "Finance", "MEM-0003"]);
 
-      sampleData.forEach(row => sheet.appendRow(row));
-
-      // Format columns
-      sheet.setColumnWidth(1, 200);
-      sheet.setColumnWidth(2, 120);
-      sheet.setColumnWidth(3, 120);
-      sheet.setColumnWidth(4, 100);
-      sheet.setColumnWidth(5, 300);
-      sheet.setColumnWidth(6, 200);
+      sheet.setColumnWidth(1, 180);
+      sheet.setColumnWidth(2, 230);
+      sheet.setColumnWidth(3, 130);
+      sheet.setColumnWidth(4, 110);
+      sheet.setColumnWidth(5, 200);
+      sheet.setColumnWidth(6, 170);
     }
-
     return sheet;
   }
 
-  static createInstructionsSheet() {
+  static addContact(data) {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    let sheet = ss.getSheetByName("📋 Instructions");
+    const sh = this.ensureContactsSheet();
 
-    if (!sheet) {
-      sheet = ss.insertSheet("📋 Instructions");
-
-      sheet.appendRow(["EMAIL AUTOMATION SYSTEM - INSTRUCTIONS"]);
-      sheet.getRange(1, 1).setFontSize(16).setFontWeight("bold");
-
-      sheet.appendRow([""]);
-      sheet.appendRow(["QUICK START:"]);
-      sheet.getRange(3, 1).setFontSize(12).setFontWeight("bold");
-
-      sheet.appendRow(["1. Click 'Prepare Email Campaign Sheet' to see a sample data format"]);
-      sheet.appendRow(["2. Edit the sample data with your recipients' emails and details"]);
-      sheet.appendRow(["3. Select a template (or create a new one using 'Add Custom Template')"]);
-      sheet.appendRow(["4. Configure your business settings"]);
-      sheet.appendRow(["5. Click 'Send Bulk Emails' and select your campaign sheet"]);
-
-      sheet.appendRow([""]);
-      sheet.appendRow(["COLUMN DEFINITIONS:"]);
-      sheet.getRange(9, 1).setFontSize(12).setFontWeight("bold");
-
-      const columnDefs = [
-        ["Email", "REQUIRED", "Recipient email address", "john@example.com"],
-        ["First Name", "REQUIRED", "Recipient's first name for personalization", "John"],
-        ["Last Name", "OPTIONAL", "Recipient's last name", "Doe"],
-        ["Amount", "OPTIONAL", "Amount/value field (e.g., payment due)", "5000"],
-        ["Custom Message", "OPTIONAL", "Custom message specific to this recipient", "VIP customer - special pricing"],
-        ["Additional Data", "OPTIONAL", "Extra data as JSON (e.g., {'id': '123'})", ""]
-      ];
-
-      columnDefs.forEach((row, idx) => {
-        sheet.appendRow(row);
-        if (idx === 0) sheet.getRange(10 + idx, 1, 1, 4).setFontWeight("bold").setBackground("#f0f0f0");
-      });
-
-      // Format
-      sheet.setColumnWidth(1, 150);
-      sheet.setColumnWidth(2, 120);
-      sheet.setColumnWidth(3, 300);
-      sheet.setColumnWidth(4, 200);
+    const email = (data.email || '').toString().trim().toLowerCase();
+    if (!email || email.indexOf('@') === -1) {
+      return { success: false, error: 'Please enter a valid email address.' };
     }
 
-    return sheet;
+    // Check if exists
+    const lastRow = sh.getLastRow();
+    if (lastRow >= 2) {
+      const emails = sh.getRange(2, CON_COL.EMAIL, lastRow - 1, 1).getValues();
+      for (let i = 0; i < emails.length; i++) {
+        if ((emails[i][0] || '').toString().trim().toLowerCase() === email) {
+          const row = i + 2;
+          sh.getRange(row, 1, 1, 6).setValues([[
+            data.name || '',
+            email,
+            data.group || '',
+            (data.active || 'Y').toUpperCase(),
+            data.tags || '',
+            data.memberNo || ''
+          ]]);
+          return { success: true, action: 'updated' };
+        }
+      }
+    }
+
+    sh.appendRow([
+      data.name || '',
+      email,
+      data.group || '',
+      (data.active || 'Y').toUpperCase(),
+      data.tags || '',
+      data.memberNo || ''
+    ]);
+    return { success: true, action: 'added' };
+  }
+
+  static getGroups() {
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_CONTACTS);
+    if (!sh || sh.getLastRow() < 2) return [];
+    const vals = sh.getRange(2, CON_COL.GROUP, sh.getLastRow() - 1, 1).getValues();
+    const seen = {};
+    vals.forEach(r => {
+      const g = (r[0] || '').toString().trim();
+      if (g) seen[g] = 1;
+    });
+    return Object.keys(seen).sort();
+  }
+
+  static getTags() {
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_CONTACTS);
+    if (!sh || sh.getLastRow() < 2) return [];
+    const vals = sh.getRange(2, CON_COL.TAGS, sh.getLastRow() - 1, 1).getValues();
+    const seen = {};
+    vals.forEach(r => {
+      (r[0] || '').toString().split(',').forEach(t => {
+        const tag = t.trim();
+        if (tag) seen[tag] = 1;
+      });
+    });
+    return Object.keys(seen).sort();
+  }
+
+  static resolveRecipients(mode, targetGroup, targetTag, manualEmails) {
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_CONTACTS);
+    if (!sh || sh.getLastRow() < 2) return [];
+
+    const data = sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues();
+
+    switch (mode) {
+      case 'active':
+        return data
+          .filter(r => (r[CON_COL.EMAIL - 1] || '').toString().trim().indexOf('@') !== -1 && (r[CON_COL.ACTIVE - 1] || '').toString().toUpperCase() === 'Y')
+          .map(r => ({
+            name: (r[CON_COL.NAME - 1] || '').toString().trim(),
+            email: (r[CON_COL.EMAIL - 1] || '').toString().trim(),
+            group: (r[CON_COL.GROUP - 1] || '').toString().trim(),
+            memberNo: (r[CON_COL.MEMBER_NO - 1] || '').toString().trim()
+          }));
+
+      case 'all':
+        return data
+          .filter(r => (r[CON_COL.EMAIL - 1] || '').toString().trim().indexOf('@') !== -1)
+          .map(r => ({
+            name: (r[CON_COL.NAME - 1] || '').toString().trim(),
+            email: (r[CON_COL.EMAIL - 1] || '').toString().trim(),
+            group: (r[CON_COL.GROUP - 1] || '').toString().trim(),
+            memberNo: (r[CON_COL.MEMBER_NO - 1] || '').toString().trim()
+          }));
+
+      case 'group':
+        const gTarget = targetGroup.trim().toLowerCase();
+        return data
+          .filter(r => {
+            const email = (r[CON_COL.EMAIL - 1] || '').toString().trim();
+            const group = (r[CON_COL.GROUP - 1] || '').toString().trim().toLowerCase();
+            const active = (r[CON_COL.ACTIVE - 1] || '').toString().toUpperCase();
+            return email.indexOf('@') !== -1 && active === 'Y' && group === gTarget;
+          })
+          .map(r => ({
+            name: (r[CON_COL.NAME - 1] || '').toString().trim(),
+            email: (r[CON_COL.EMAIL - 1] || '').toString().trim(),
+            group: (r[CON_COL.GROUP - 1] || '').toString().trim(),
+            memberNo: (r[CON_COL.MEMBER_NO - 1] || '').toString().trim()
+          }));
+
+      case 'tag':
+        const tTarget = targetTag.trim().toLowerCase();
+        return data
+          .filter(r => {
+            const email = (r[CON_COL.EMAIL - 1] || '').toString().trim();
+            const tags = (r[CON_COL.TAGS - 1] || '').toString().toLowerCase();
+            const active = (r[CON_COL.ACTIVE - 1] || '').toString().toUpperCase();
+            const tagList = tags.split(',').map(t => t.trim());
+            return email.indexOf('@') !== -1 && active === 'Y' && tagList.indexOf(tTarget) !== -1;
+          })
+          .map(r => ({
+            name: (r[CON_COL.NAME - 1] || '').toString().trim(),
+            email: (r[CON_COL.EMAIL - 1] || '').toString().trim(),
+            group: (r[CON_COL.GROUP - 1] || '').toString().trim(),
+            memberNo: (r[CON_COL.MEMBER_NO - 1] || '').toString().trim()
+          }));
+
+      case 'manual':
+        return (manualEmails || '')
+          .split(/[\n,;]+/)
+          .map(e => e.trim())
+          .filter(e => e.indexOf('@') !== -1)
+          .map(e => ({ name: '', email: e, group: '', memberNo: '' }));
+
+      default:
+        return [];
+    }
   }
 }
 
-// ===== FILE IMPORT CLASS =====
-class FileImporter {
-  static parseCSV(csvContent) {
-    const lines = csvContent.split('\n');
-    if (lines.length < 2) {
-      return { success: false, error: "CSV file is empty or has no headers", data: [] };
+// ═══════════════════════════════════════════════════════════════════════════
+//  SCHEDULING SYSTEM
+// ═══════════════════════════════════════════════════════════════════════════
+
+function scheduleEmail(data) {
+  try {
+    const fireAt = new Date(data.scheduledTime);
+    if (isNaN(fireAt.getTime())) {
+      return { success: false, error: 'Invalid date/time value.' };
+    }
+    if (fireAt <= new Date()) {
+      return { success: false, error: 'Scheduled time must be in the future.' };
     }
 
-    const headers = lines[0].split(',').map(h => h.toString().trim().toLowerCase());
-    const emailIndex = headers.findIndex(h => h === 'email');
+    const trigger = ScriptApp.newTrigger('runScheduledEmail')
+      .timeBased()
+      .at(fireAt)
+      .create();
 
-    if (emailIndex === -1) {
-      return { success: false, error: "CSV must have an 'Email' column", data: [] };
+    const key = 'SCHED_' + trigger.getUniqueId();
+    data._schedKey = key;
+    data._schedTime = fireAt.toISOString();
+    PropertiesService.getScriptProperties().setProperty(key, JSON.stringify(data));
+
+    const formatted = Utilities.formatDate(fireAt, Session.getScriptTimeZone(), 'EEE d MMM yyyy \'at\' HH:mm');
+    return { success: true, scheduledTime: formatted };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+function runScheduledEmail() {
+  const props = PropertiesService.getScriptProperties();
+  const allKeys = props.getKeys();
+  const cfg = CONFIG;
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  allKeys.forEach(key => {
+    if (key.indexOf('SCHED_') !== 0) return;
+
+    let raw;
+    try {
+      raw = JSON.parse(props.getProperty(key));
+    } catch (e) {
+      props.deleteProperty(key);
+      return;
     }
 
-    const data = [];
-    const errors = [];
+    const fireAt = new Date(raw._schedTime);
+    if (fireAt > new Date(new Date().getTime() + 5 * 60 * 1000)) return;
 
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue; // Skip blank lines
+    try {
+      const recipients = ContactManager.resolveRecipients(raw.recipientMode, raw.targetGroup, raw.targetTag, raw.manualEmails);
+      let sent = 0;
 
-      try {
-        const values = this.parseCSVLine_(line);
-        if (values.length === 0) continue;
-
-        const email = values[emailIndex] ? values[emailIndex].trim() : '';
-        if (!email) {
-          errors.push(`Row ${i + 1}: Missing email`);
-          continue;
-        }
-
-        const record = {
-          email: email,
-          firstName: values[1] ? values[1].trim() : '',
-          lastName: values[2] ? values[2].trim() : '',
-          amount: values[3] ? values[3].trim() : '',
-          customMessage: values[4] ? values[4].trim() : '',
-          additionalData: values[5] ? values[5].trim() : ''
+      recipients.forEach(contact => {
+        const emailData = {
+          ...raw,
+          firstName: contact.name.split(/\s+/)[0] || 'Member',
+          customMessage: raw.customMessage || '',
+          memberNo: contact.memberNo || ''
         };
 
-        const emailError = emailSystem.validateEmail_(record.email);
-        if (emailError) {
-          errors.push(`Row ${i + 1}: ${emailError}`);
-          continue;
-        }
-
-        data.push(record);
-      } catch (e) {
-        errors.push(`Row ${i + 1}: ${e.message}`);
-      }
-    }
-
-    return {
-      success: data.length > 0,
-      data: data,
-      errors: errors,
-      message: `Loaded ${data.length} records${errors.length > 0 ? `, ${errors.length} errors` : ''}`
-    };
-  }
-
-  static parseCSVLine_(line) {
-    const result = [];
-    let current = '';
-    let inQuotes = false;
-
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-
-      if (char === '"') {
-        if (inQuotes && line[i + 1] === '"') {
-          current += '"';
-          i++;
-        } else {
-          inQuotes = !inQuotes;
-        }
-      } else if (char === ',' && !inQuotes) {
-        result.push(current);
-        current = '';
-      } else {
-        current += char;
-      }
-    }
-    result.push(current);
-
-    return result;
-  }
-}
-
-// ===== BULK EMAIL SENDER CLASS =====
-class BulkEmailSender {
-  static previewEmails(sheetName, templateName, businessKey, subject) {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-    if (!sheet) return { success: false, error: `Sheet "${sheetName}" not found` };
-
-    const data = sheet.getDataRange().getValues();
-    if (data.length < 2) return { success: false, error: "Sheet has no data rows" };
-
-    const preview = [];
-    for (let i = 1; i < Math.min(data.length, 4); i++) {
-      preview.push({
-        email: data[i][CONFIG.DATA_COL.EMAIL - 1] || '',
-        firstName: data[i][CONFIG.DATA_COL.FIRST_NAME - 1] || ''
+        const result = emailSystem.sendEmail(contact.email, raw.template, raw.business, raw.subject, emailData);
+        if (result.success) sent++;
+        Utilities.sleep(100);
       });
+
+      emailLogger.logSuccess('', raw.business, raw.template, raw.subject);
+    } catch (sendErr) {
+      emailLogger.logError('', '', raw.template, raw.subject, sendErr.message);
     }
 
-    return {
-      success: true,
-      totalRecords: data.length - 1,
-      preview: preview,
-      templateName: templateName,
-      businessKey: businessKey,
-      subject: subject
-    };
-  }
+    ScriptApp.getProjectTriggers().forEach(t => {
+      if ('SCHED_' + t.getUniqueId() === key) ScriptApp.deleteTrigger(t);
+    });
+    props.deleteProperty(key);
+  });
+}
 
-  static sendBulkEmails(sheetName, templateName, businessKey, subject) {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
-    if (!sheet) {
-      return { success: false, error: `Sheet "${sheetName}" not found`, sent: 0, failed: 0 };
-    }
-
-    const data = sheet.getDataRange().getValues();
-    if (data.length < 2) {
-      return { success: false, error: "Sheet has no data rows", sent: 0, failed: 0 };
-    }
-
-    let sent = 0;
-    let failed = 0;
-    const errors = [];
-
-    for (let i = 1; i < data.length; i++) {
-      const email = data[i][CONFIG.DATA_COL.EMAIL - 1];
-      const firstName = data[i][CONFIG.DATA_COL.FIRST_NAME - 1];
-      const lastName = data[i][CONFIG.DATA_COL.LAST_NAME - 1];
-      const amount = data[i][CONFIG.DATA_COL.AMOUNT - 1];
-      const customMessage = data[i][CONFIG.DATA_COL.CUSTOM_MESSAGE - 1];
-      const additionalData = data[i][CONFIG.DATA_COL.ADDITIONAL_DATA - 1];
-
-      if (!email) continue;
-
-      const emailData = {
-        firstName: firstName || '',
-        lastName: lastName || '',
-        amount: amount || '',
-        customMessage: customMessage || '',
-        additionalData: additionalData || ''
-      };
-
-      const result = emailSystem.sendEmail(email, templateName, businessKey, subject, emailData);
-
-      if (result.success) {
-        sent++;
-      } else {
-        failed++;
-        errors.push(result.error);
-      }
-
-      if (sent + failed >= CONFIG.LIMITS.MAX_BATCH_SIZE) break;
-    }
-
-    const timestamp = new Date().toLocaleString();
-    emailLogger.logImport(sheetName, data.length - 1, sent, failed);
-
-    return {
-      success: failed === 0,
-      sent: sent,
-      failed: failed,
-      totalAttempted: sent + failed,
-      timestamp: timestamp,
-      errors: errors.length > 0 ? errors.slice(0, 5) : []
-    };
+function cancelScheduledEmail(schedKey) {
+  try {
+    const uid = schedKey.replace('SCHED_', '');
+    ScriptApp.getProjectTriggers().forEach(t => {
+      if (t.getUniqueId() === uid) ScriptApp.deleteTrigger(t);
+    });
+    PropertiesService.getScriptProperties().deleteProperty(schedKey);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message };
   }
 }
 
-// ===== UI DIALOGS =====
-function showMainMenu() {
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; }
-        .container { background: white; border-radius: 10px; padding: 30px; max-width: 500px; margin: 0 auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
-        h1 { color: #667eea; text-align: center; margin-top: 0; }
-        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
-        button { padding: 12px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.3s; }
-        .btn-primary { background: #667eea; color: white; grid-column: 1 / -1; }
-        .btn-primary:hover { background: #5568d3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
-        .btn-secondary { background: #f0f0f0; color: #333; border: 2px solid #667eea; }
-        .btn-secondary:hover { background: #667eea; color: white; }
-        .section-title { font-weight: bold; margin-top: 20px; margin-bottom: 10px; color: #667eea; font-size: 14px; text-transform: uppercase; }
-        .info-box { background: #e3f2fd; border-left: 4px solid #667eea; padding: 12px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h1>📧 Email Automation</h1>
-        <p style="text-align: center; color: #666;">Manage your email campaigns with ease</p>
+function getScheduledEmails() {
+  const props = PropertiesService.getScriptProperties();
+  const allKeys = props.getKeys();
+  const list = [];
+  const tz = Session.getScriptTimeZone();
 
-        <div class="section-title">📋 Data Management</div>
-        <div class="button-group">
-          <button class="btn-secondary" onclick="google.script.run.showPrepareSheetDialog()">📊 Prepare Sheet</button>
-          <button class="btn-secondary" onclick="google.script.run.showImportDialog()">📥 Import CSV</button>
-        </div>
+  allKeys.forEach(key => {
+    if (key.indexOf('SCHED_') !== 0) return;
+    let raw;
+    try {
+      raw = JSON.parse(props.getProperty(key));
+    } catch (e) {
+      return;
+    }
 
-        <div class="section-title">✉️ Email Sending</div>
-        <div class="button-group">
-          <button class="btn-secondary" onclick="google.script.run.showSendBulkDialog()">🚀 Send Bulk</button>
-          <button class="btn-secondary" onclick="google.script.run.showConfigDialog()">⚙️ Config</button>
-        </div>
+    const fireAt = new Date(raw._schedTime);
+    const formatted = Utilities.formatDate(fireAt, tz, 'EEE d MMM yyyy \'at\' HH:mm');
 
-        <div class="section-title">🎨 Templates</div>
-        <div class="button-group">
-          <button class="btn-secondary" onclick="google.script.run.showTemplateDialog()">📝 View Templates</button>
-          <button class="btn-secondary" onclick="google.script.run.showAddTemplateDialog()">➕ Add Template</button>
-        </div>
-
-        <div class="info-box">
-          💡 New to this system? Start by clicking "Prepare Sheet" to see sample data format
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
-
-  const ui = HtmlService.createHtmlOutput(html);
-  SpreadsheetApp.getUi().showModelessDialog(ui, "Email Automation System");
-}
-
-function showPrepareSheetDialog() {
-  SheetPreparer.createDataSheet();
-  SheetPreparer.createInstructionsSheet();
-
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-        .container { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        h2 { color: #0066cc; margin-top: 0; }
-        .success { background: #e8f5e9; border-left: 4px solid #4caf50; padding: 15px; border-radius: 4px; color: #2e7d32; }
-        p { line-height: 1.6; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h2>✅ Sheet Prepared Successfully!</h2>
-        <div class="success">
-          <p><strong>Two sheets have been created:</strong></p>
-          <ul>
-            <li><strong>📧 Email Campaign Data</strong> - Your data sheet with sample recipients</li>
-            <li><strong>📋 Instructions</strong> - Complete guide on how to format your data</li>
-          </ul>
-          <p><strong>Next steps:</strong></p>
-          <ul>
-            <li>Edit the email addresses and replace with your actual recipients</li>
-            <li>Fill in First Name, Last Name, Amount, and Custom Message for each row</li>
-            <li>Go to "Send Bulk Emails" to configure and send</li>
-          </ul>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
-
-  const ui = HtmlService.createHtmlOutput(html);
-  SpreadsheetApp.getUi().showModalDialog(ui, "Sheet Prepared");
-}
-
-function showImportDialog() {
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-        .container { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; }
-        h2 { color: #0066cc; margin-top: 0; text-align: center; }
-        input[type="file"] { padding: 8px; margin: 10px 0; border: 2px solid #e0e0e0; border-radius: 4px; width: 100%; box-sizing: border-box; }
-        button { background: #0066cc; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; width: 100%; }
-        button:hover { background: #0052a3; }
-        .info { background: #e3f2fd; border-left: 4px solid #0066cc; padding: 12px; margin: 15px 0; border-radius: 4px; font-size: 13px; }
-        .status { margin-top: 15px; padding: 10px; border-radius: 4px; display: none; }
-        .status.success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #4caf50; }
-        .status.error { background: #ffebee; color: #c62828; border-left: 4px solid #f44336; }
-        .loading { display: none; text-align: center; color: #666; margin: 10px 0; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h2>📥 Import Data from CSV</h2>
-        <div class="info">
-          <strong>Supported formats:</strong> CSV or Excel files with columns: Email, First Name, Last Name, Amount, Custom Message, Additional Data
-        </div>
-
-        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" onchange="handleFileSelect(event)">
-
-        <button onclick="uploadFile()">📤 Upload & Import</button>
-
-        <div class="loading" id="loading">⏳ Processing file... this may take a moment</div>
-        <div class="status" id="status"></div>
-      </div>
-
-      <script>
-        function handleFileSelect(event) {
-          const file = event.target.files[0];
-          if (!file) return;
-          if (!file.name.match(/\\.(csv|xlsx|xls)$/)) {
-            showStatus('❌ Invalid file type. Please upload CSV or Excel file.', 'error');
-            event.target.value = '';
-          }
-        }
-
-        function uploadFile() {
-          const file = document.getElementById('fileInput').files[0];
-          if (!file) {
-            showStatus('❌ Please select a file first', 'error');
-            return;
-          }
-
-          document.getElementById('loading').style.display = 'block';
-          document.getElementById('status').style.display = 'none';
-
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            const content = e.target.result;
-            google.script.run.withSuccessHandler(function(result) {
-              document.getElementById('loading').style.display = 'none';
-              if (result.success) {
-                showStatus('✅ Data loaded: ' + result.message, 'success');
-              } else {
-                showStatus('⚠️ ' + result.message + (result.errors && result.errors.length > 0 ? '\\n' + result.errors.join('\\n') : ''), 'error');
-              }
-            }).processImportedFile(file.name, content);
-          };
-          reader.readAsText(file);
-        }
-
-        function showStatus(msg, type) {
-          const status = document.getElementById('status');
-          status.textContent = msg;
-          status.className = 'status ' + type;
-          status.style.display = 'block';
-        }
-      </script>
-    </body>
-    </html>
-  `;
-
-  const ui = HtmlService.createHtmlOutput(html);
-  SpreadsheetApp.getUi().showModalDialog(ui, "Import CSV Data");
-}
-
-function showSendBulkDialog() {
-  const sheets = getSheetList_();
-  const templates = emailSystem.getTemplateList();
-  const businesses = emailSystem.getBusinessList();
-
-  let html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-        .container { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 700px; margin: 0 auto; }
-        h2 { color: #0066cc; margin-top: 0; text-align: center; }
-        .form-group { margin: 20px 0; }
-        label { display: block; font-weight: bold; color: #333; margin-bottom: 6px; font-size: 14px; }
-        select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
-        select:focus, input[type="text"]:focus { outline: none; border-color: #0066cc; box-shadow: 0 0 5px rgba(0, 102, 204, 0.3); }
-        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        button { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; }
-        .btn-preview { background: #ff9800; color: white; }
-        .btn-preview:hover { background: #f57c00; }
-        .btn-send { background: #4caf50; color: white; grid-column: 1 / -1; }
-        .btn-send:hover { background: #45a049; }
-        .info { background: #e3f2fd; border-left: 4px solid #0066cc; padding: 12px; margin: 15px 0; border-radius: 4px; font-size: 13px; }
-        .error { background: #ffebee; border-left: 4px solid #f44336; color: #c62828; }
-        .status { margin-top: 15px; padding: 10px; border-radius: 4px; display: none; }
-        .status.success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #4caf50; }
-        .status.error { background: #ffebee; color: #c62828; border-left: 4px solid #f44336; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h2>🚀 Send Bulk Emails</h2>
-
-        <div class="form-group">
-          <label for="sheet">📋 Select Data Sheet:</label>
-          <select id="sheet" onchange="validateForm()">
-            <option value="">-- Choose a sheet --</option>`;
-
-  sheets.forEach(name => {
-    html += `<option value="${name}">${name}</option>`;
+    list.push({
+      schedKey: key,
+      subject: raw.subject || '(no subject)',
+      template: raw.template || '',
+      scheduledTime: formatted,
+      recipientMode: raw.recipientMode || ''
+    });
   });
 
-  html += `
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="template">✉️ Select Template:</label>
-          <select id="template" onchange="validateForm()">
-            <option value="">-- Choose a template --</option>`;
-
-  templates.forEach(name => {
-    html += `<option value="${name}">${name}</option>`;
-  });
-
-  html += `
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="business">🏢 Select Business:</label>
-          <select id="business" onchange="validateForm()">
-            <option value="">-- Choose a business --</option>`;
-
-  businesses.forEach(key => {
-    const biz = google.script.run.getBusiness(key);
-    html += `<option value="${key}">${key} (${biz.name})</option>`;
-  });
-
-  html += `
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="subject">📌 Email Subject:</label>
-          <input type="text" id="subject" placeholder="e.g., Your Quote is Ready!">
-        </div>
-
-        <div class="info">
-          💡 <strong>Tip:</strong> Click "Preview" first to see how many emails will be sent and verify your selection
-        </div>
-
-        <div class="button-group">
-          <button class="btn-preview" onclick="previewSend()">👁️ Preview</button>
-          <button class="btn-send" id="sendBtn" onclick="sendEmails()" disabled>🚀 Send Now</button>
-        </div>
-
-        <div class="status" id="status"></div>
-      </div>
-
-      <script>
-        function validateForm() {
-          const sheet = document.getElementById('sheet').value;
-          const template = document.getElementById('template').value;
-          const subject = document.getElementById('subject').value.trim();
-          document.getElementById('sendBtn').disabled = !(sheet && template && subject);
-        }
-
-        function previewSend() {
-          const sheet = document.getElementById('sheet').value;
-          const template = document.getElementById('template').value;
-          const subject = document.getElementById('subject').value;
-
-          if (!sheet || !template || !subject) {
-            showStatus('❌ Please fill in all fields first', 'error');
-            return;
-          }
-
-          google.script.run.withSuccessHandler(function(result) {
-            if (result.success) {
-              let msg = '✅ Preview: ' + result.totalRecords + ' emails ready to send\\n\\nFirst 3 recipients:\\n';
-              result.preview.forEach((p, i) => {
-                msg += '- ' + p.firstName + ' (' + p.email + ')\\n';
-              });
-              showStatus(msg, 'success');
-            } else {
-              showStatus('❌ ' + result.error, 'error');
-            }
-          }).previewBulkSend(sheet, template, document.getElementById('business').value, subject);
-        }
-
-        function sendEmails() {
-          const sheet = document.getElementById('sheet').value;
-          const template = document.getElementById('template').value;
-          const business = document.getElementById('business').value;
-          const subject = document.getElementById('subject').value;
-
-          if (confirm('Are you sure you want to send ' + document.getElementById('sheet').options[document.getElementById('sheet').selectedIndex].text + '?')) {
-            google.script.run.withSuccessHandler(function(result) {
-              if (result.success) {
-                showStatus('✅ SUCCESS: ' + result.sent + ' emails sent\\n📧 Timestamp: ' + result.timestamp, 'success');
-              } else {
-                showStatus('⚠️ Completed with ' + result.failed + ' failures out of ' + result.totalAttempted + '\\n✅ Sent: ' + result.sent, 'error');
-              }
-              setTimeout(() => google.script.host.close(), 2000);
-            }).sendBulkEmails(sheet, template, business, subject);
-          }
-        }
-
-        function showStatus(msg, type) {
-          const status = document.getElementById('status');
-          status.textContent = msg;
-          status.className = 'status ' + type;
-          status.style.display = 'block';
-        }
-      </script>
-    </body>
-    </html>
-  `;
-
-  const ui = HtmlService.createHtmlOutput(html);
-  SpreadsheetApp.getUi().showModalDialog(ui, "Send Bulk Emails");
+  list.sort((a, b) => a.scheduledTime < b.scheduledTime ? -1 : 1);
+  return list;
 }
 
-function showConfigDialog() {
-  const businesses = CONFIG.BUSINESS;
+// ═══════════════════════════════════════════════════════════════════════════
+//  MENU & INITIALIZATION
+// ═══════════════════════════════════════════════════════════════════════════
 
-  let html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-        .container { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 700px; margin: 0 auto; }
-        h2 { color: #0066cc; margin-top: 0; text-align: center; }
-        .business-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin: 15px 0; background: #f9f9f9; }
-        .business-card h3 { margin-top: 0; color: #333; }
-        .field { margin: 12px 0; }
-        label { display: block; font-weight: bold; color: #555; margin-bottom: 5px; font-size: 13px; }
-        input, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; box-sizing: border-box; }
-        button { background: #0066cc; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 100%; }
-        button:hover { background: #0052a3; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h2>⚙️ Business Configuration</h2>
-        <p style="color: #666; text-align: center;">Edit your business settings that appear in emails</p>`;
-
-  Object.keys(businesses).forEach(key => {
-    const biz = businesses[key];
-    html += `
-      <div class="business-card">
-        <h3>${key}</h3>
-        <div class="field">
-          <label>Business Name:</label>
-          <input type="text" id="name_${key}" value="${biz.name || ''}">
-        </div>
-        <div class="field">
-          <label>Email:</label>
-          <input type="email" id="email_${key}" value="${biz.email || ''}">
-        </div>
-        <div class="field">
-          <label>Phone:</label>
-          <input type="text" id="phone_${key}" value="${biz.phone || ''}">
-        </div>
-        <div class="field">
-          <label>Website:</label>
-          <input type="url" id="website_${key}" value="${biz.website || ''}">
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-          <div class="field" style="margin: 0;">
-            <label>Primary Color:</label>
-            <input type="color" id="primary_${key}" value="${biz.colors.primary || '#0066cc'}">
-          </div>
-          <div class="field" style="margin: 0;">
-            <label>Accent Color:</label>
-            <input type="color" id="accent_${key}" value="${biz.colors.accent || '#ff6600'}">
-          </div>
-        </div>
-      </div>`;
-  });
-
-  html += `
-        <button onclick="saveConfig()">💾 Save Configuration</button>
-      </div>
-
-      <script>
-        function saveConfig() {
-          const businesses = ${JSON.stringify(Object.keys(businesses))};
-          const config = {};
-
-          businesses.forEach(key => {
-            config[key] = {
-              name: document.getElementById('name_' + key).value,
-              email: document.getElementById('email_' + key).value,
-              phone: document.getElementById('phone_' + key).value,
-              website: document.getElementById('website_' + key).value,
-              colors: {
-                primary: document.getElementById('primary_' + key).value,
-                accent: document.getElementById('accent_' + key).value
-              }
-            };
-          });
-
-          google.script.run.saveBusinessConfig(config);
-          alert('✅ Configuration saved successfully!');
-          google.script.host.close();
-        }
-      </script>
-    </body>
-    </html>
-  `;
-
-  const ui = HtmlService.createHtmlOutput(html);
-  SpreadsheetApp.getUi().showModalDialog(ui, "Business Configuration");
-}
-
-function showTemplateDialog() {
-  const templates = emailSystem.getTemplateList();
-
-  let html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-        .container { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
-        h2 { color: #0066cc; margin-top: 0; text-align: center; }
-        .template-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
-        .template-item { padding: 12px; background: #f5f5f5; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: all 0.3s; }
-        .template-item:hover { border-color: #0066cc; background: #e3f2fd; }
-        .info { background: #e3f2fd; border-left: 4px solid #0066cc; padding: 12px; margin: 15px 0; border-radius: 4px; font-size: 13px; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h2>📝 Email Templates</h2>
-        <p style="color: #666;">Click a template to edit or view its content</p>
-
-        <div class="template-list">`;
-
-  templates.forEach(name => {
-    html += `<div class="template-item" onclick="google.script.run.editTemplate('${name}')">${name}</div>`;
-  });
-
-  html += `
-        </div>
-
-        <div class="info">
-          💡 Templates use placeholders like {{firstName}}, {{amount}}, {{customMessage}}<br>
-          Use {{#if variable}}...{{/if}} for conditional content
-        </div>
-
-        <button style="background: #0066cc; color: white; padding: 12px; width: 100%; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;" onclick="google.script.run.showAddTemplateDialog()">➕ Create New Template</button>
-      </div>
-    </body>
-    </html>
-  `;
-
-  const ui = HtmlService.createHtmlOutput(html);
-  SpreadsheetApp.getUi().showModalDialog(ui, "Templates");
-}
-
-function showAddTemplateDialog() {
-  const html = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-        .container { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 900px; margin: 0 auto; }
-        h2 { color: #0066cc; margin-top: 0; }
-        .form-group { margin: 20px 0; }
-        label { display: block; font-weight: bold; color: #333; margin-bottom: 8px; }
-        input[type="text"], textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box; font-family: monospace; }
-        textarea { min-height: 300px; }
-        .info { background: #fff3cd; border-left: 4px solid #ff9800; padding: 12px; margin: 15px 0; border-radius: 4px; font-size: 13px; }
-        button { background: #4caf50; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #45a049; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <h2>➕ Create New Template</h2>
-
-        <div class="form-group">
-          <label for="templateName">Template Name:</label>
-          <input type="text" id="templateName" placeholder="e.g., welcome-email">
-        </div>
-
-        <div class="form-group">
-          <label for="templateContent">HTML Content:</label>
-          <textarea id="templateContent" placeholder="Enter HTML template..."></textarea>
-        </div>
-
-        <div class="info">
-          <strong>Available placeholders:</strong><br>
-          {{firstName}}, {{lastName}}, {{email}}, {{amount}}, {{customMessage}}<br>
-          {{businessName}}, {{businessEmail}}, {{businessPhone}}, {{businessWebsite}}<br>
-          {{primaryColor}}, {{accentColor}}<br><br>
-          <strong>Conditionals:</strong> {{#if customMessage}}...{{/if}}
-        </div>
-
-        <button onclick="saveTemplate()">💾 Save Template</button>
-      </div>
-
-      <script>
-        function saveTemplate() {
-          const name = document.getElementById('templateName').value.trim();
-          const content = document.getElementById('templateContent').value.trim();
-
-          if (!name) { alert('❌ Template name required'); return; }
-          if (!content) { alert('❌ Template content required'); return; }
-
-          google.script.run.saveCustomTemplate(name, content);
-          alert('✅ Template saved!');
-          google.script.host.close();
-        }
-      </script>
-    </body>
-    </html>
-  `;
-
-  const ui = HtmlService.createHtmlOutput(html);
-  SpreadsheetApp.getUi().showModalDialog(ui, "Create Template");
-}
-
-// ===== GOOGLE APPS SCRIPT ENTRY POINTS =====
 function onOpen() {
-  initializeSystems_();
+  emailSystem = new EmailAutomationSystem();
+  emailLogger = new EmailLogger();
+  ContactManager.ensureContactsSheet();
+
   const ui = SpreadsheetApp.getUi();
-  ui.createMenu("📧 Email Automation")
-    .addItem("📧 Open Main Menu", "showMainMenu")
+  ui.createMenu('📧 Email Automation')
+    .addItem('✉️ Compose & Send', 'openComposeDialog')
+    .addItem('📅 Scheduled Emails', 'openScheduleManager')
     .addSeparator()
-    .addItem("📋 Prepare Email Sheet", "showPrepareSheetDialog")
-    .addItem("📥 Import CSV", "showImportDialog")
-    .addSeparator()
-    .addItem("🚀 Send Bulk Emails", "showSendBulkDialog")
-    .addItem("⚙️ Business Config", "showConfigDialog")
-    .addSeparator()
-    .addItem("📝 Manage Templates", "showTemplateDialog")
+    .addItem('👤 Add Contact', 'openAddContactDialog')
+    .addItem('👥 View Contacts', 'goToContacts')
+    .addItem('📋 View Email Log', 'goToLog')
     .addToUi();
 }
 
-function initializeSystems_() {
-  emailSystem = new EmailAutomationSystem();
-  emailLogger = new EmailLogger();
-  templateStorage = new TemplateStorage();
+function goToContacts() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_CONTACTS);
+  if (sh) SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(sh);
 }
 
-function processImportedFile(filename, csvContent) {
-  const result = FileImporter.parseCSV(csvContent);
+function goToLog() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_LOG);
+  if (sh) SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(sh);
+}
 
-  if (result.success && result.data.length > 0) {
-    importedData.data = result.data;
-    importedData.dataLoaded = true;
-    importedData.errorMessage = null;
-  } else {
-    importedData.dataLoaded = false;
-    importedData.errorMessage = result.message;
+// ═══════════════════════════════════════════════════════════════════════════
+//  DIALOGS
+// ═══════════════════════════════════════════════════════════════════════════
+
+function openAddContactDialog() {
+  const html = HtmlService.createHtmlOutput(`
+    <!DOCTYPE html><html><head><style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; font-size: 13px; margin: 0; padding: 16px 20px; background: #f5f5f5; color: #333; }
+    label { display: block; font-weight: bold; margin: 10px 0 3px; }
+    label span { font-weight: normal; color: #777; }
+    input, select { width: 100%; padding: 7px 10px; border: 1px solid #CCC; border-radius: 4px; font-size: 13px; }
+    .row { display: flex; gap: 12px; margin-bottom: 10px; }
+    .row > div { flex: 1; }
+    .btn { padding: 9px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .btn-primary { background: #0D47A1; color: white; width: 100%; margin-top: 10px; }
+    .btn-cancel { background: #DDD; color: #444; }
+    .status { margin-top: 10px; padding: 9px; border-radius: 4px; display: none; }
+    .ok { background: #E8F5E9; color: #1B5E20; }
+    .err { background: #FFCDD2; color: #B71C1C; }
+    </style></head><body>
+    <h2 style="color: #0D47A1; margin-top: 0;">Add / Update Contact</h2>
+    <div class="row">
+      <div><label>Full Name</label><input id="name" placeholder="Alice Johnson"></div>
+      <div><label>Email</label><input id="email" type="email" placeholder="alice@example.com"></div>
+    </div>
+    <div class="row">
+      <div><label>Group</label><input id="group" placeholder="Members, Board, etc."></div>
+      <div><label>Active</label><select id="active"><option value="Y">Y — Yes</option><option value="N">N — No</option></select></div>
+    </div>
+    <label>Tags <span>(comma-separated)</span></label>
+    <input id="tags" placeholder="Finance,Events">
+    <label style="margin-top: 8px;">Member / Customer No.</label>
+    <input id="memberNo" placeholder="MEM-0001">
+    <div style="display: flex; gap: 10px; margin-top: 12px;">
+      <button class="btn btn-cancel" onclick="google.script.host.close()">Cancel</button>
+      <button class="btn btn-primary" id="saveBtn" onclick="doSave()">💾 Save</button>
+    </div>
+    <div class="status" id="statusBox"></div>
+
+    <script>
+      function doSave() {
+        const email = document.getElementById('email').value.trim();
+        if (!email || email.indexOf('@') === -1) { show('❌ Invalid email', 'err'); return; }
+        const btn = document.getElementById('saveBtn');
+        btn.disabled = true;
+        google.script.run
+          .withSuccessHandler(r => {
+            if (r.success) { show('✅ Contact ' + r.action, 'ok'); btn.textContent = '✅ Done'; }
+            else { show('❌ ' + r.error, 'err'); btn.disabled = false; }
+          })
+          .addContactData({
+            name: document.getElementById('name').value.trim(),
+            email: email,
+            group: document.getElementById('group').value.trim(),
+            active: document.getElementById('active').value,
+            tags: document.getElementById('tags').value.trim(),
+            memberNo: document.getElementById('memberNo').value.trim()
+          });
+      }
+      function show(msg, cls) {
+        const s = document.getElementById('statusBox');
+        s.className = 'status ' + cls;
+        s.textContent = msg;
+        s.style.display = 'block';
+      }
+    </script>
+    </body></html>
+  `).setWidth(500).setHeight(400);
+  SpreadsheetApp.getUi().showModalDialog(html, '👤 Add Contact');
+}
+
+function addContactData(data) {
+  return ContactManager.addContact(data);
+}
+
+function openComposeDialog() {
+  const html = HtmlService.createHtmlOutput(composeDialogHtml_())
+    .setWidth(720).setHeight(800);
+  SpreadsheetApp.getUi().showModalDialog(html, '✉️ Compose & Send Email');
+}
+
+function getContactGroups() {
+  return ContactManager.getGroups();
+}
+
+function getContactTags() {
+  return ContactManager.getTags();
+}
+
+function sendEmailNow(data) {
+  const recipients = ContactManager.resolveRecipients(data.recipientMode, data.targetGroup, data.targetTag, data.manualEmails);
+
+  if (!recipients.length) {
+    return { success: false, error: 'No valid recipients found.' };
   }
 
-  return {
-    success: importedData.dataLoaded,
-    message: result.message,
-    errors: result.errors.slice(0, 10),
-    dataLoaded: importedData.dataLoaded
-  };
+  let sent = 0, failed = [];
+
+  recipients.forEach(contact => {
+    const firstName = contact.name.split(/\s+/)[0] || 'Member';
+    const emailData = {
+      firstName: firstName,
+      body: data.body || '',
+      customMessage: data.customMessage || '',
+      headline: data.headline || '',
+      ctaText: data.ctaText || '',
+      ctaUrl: data.ctaUrl || '',
+      videoUrl: data.videoUrl || '',
+      section2headline: data.section2headline || '',
+      section2body: data.section2body || '',
+      section3headline: data.section3headline || '',
+      section3body: data.section3body || '',
+      formUrl: data.formUrl || '',
+      formButtonText: data.formButtonText || '',
+      formTitle: data.formTitle || '',
+      formNote: data.formNote || '',
+      memberNo: contact.memberNo || ''
+    };
+
+    const result = emailSystem.sendEmail(contact.email, data.template, data.business, data.subject, emailData);
+    if (result.success) sent++;
+    else failed.push(contact.email);
+
+    Utilities.sleep(100);
+  });
+
+  return { success: failed.length === 0, sent: sent, failed: failed.length, total: recipients.length };
 }
 
-function previewBulkSend(sheetName, templateName, businessKey, subject) {
-  return BulkEmailSender.previewEmails(sheetName, templateName, businessKey, subject);
+function openScheduleManager() {
+  const html = HtmlService.createHtmlOutput(scheduleManagerHtml_())
+    .setWidth(700).setHeight(450);
+  SpreadsheetApp.getUi().showModalDialog(html, '📅 Scheduled Emails');
 }
 
-function sendBulkEmails(sheetName, templateName, businessKey, subject) {
-  return BulkEmailSender.sendBulkEmails(sheetName, templateName, businessKey, subject);
+function scheduleManagerHtml_() {
+  return `<!DOCTYPE html><html><head><style>
+  body { font-family: Arial, sans-serif; font-size: 13px; color: #333; margin: 0; padding: 16px; background: #FAFAFA; }
+  table { width: 100%; border-collapse: collapse; background: white; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+  th { background: #0D47A1; color: white; padding: 9px 10px; text-align: left; font-size: 12px; }
+  td { padding: 9px 10px; border-bottom: 1px solid #EEE; }
+  button { background: #C62828; color: white; border: none; border-radius: 4px; padding: 5px 12px; cursor: pointer; font-size: 12px; font-weight: bold; }
+  button:hover { background: #B71C1C; }
+  .empty { text-align: center; padding: 40px; color: #888; }
+  </style></head><body>
+  <h2 style="color: #0D47A1; margin: 0 0 12px;">📅 Scheduled Emails</h2>
+  <div id="tableArea"><div class="empty">Loading...</div></div>
+
+  <script>
+    function load() {
+      google.script.run.withSuccessHandler(render).getScheduledEmails();
+    }
+    function render(list) {
+      const area = document.getElementById('tableArea');
+      if (!list || list.length === 0) {
+        area.innerHTML = '<div class="empty">No scheduled emails</div>';
+        return;
+      }
+      const rows = list.map(item =>
+        '<tr><td>' + item.subject + '</td><td>' + item.scheduledTime +
+        '</td><td><button onclick="cancel(this, \'' + item.schedKey + '\')">Cancel</button></td></tr>'
+      ).join('');
+      area.innerHTML = '<table><thead><tr><th>Subject</th><th>Scheduled For</th><th>Action</th></tr></thead><tbody>' + rows + '</tbody></table>';
+    }
+    function cancel(btn, key) {
+      if (!confirm('Cancel this scheduled email?')) return;
+      btn.disabled = true;
+      google.script.run.withSuccessHandler(r => { if (r.success) load(); else alert('Error: ' + r.error); }).cancelScheduledEmail(key);
+    }
+    load();
+  </script>
+  </body></html>`;
 }
 
-function saveBusinessConfig(config) {
-  Object.assign(emailSystem.businesses, config);
-  CONFIG.BUSINESS = config;
-}
+function composeDialogHtml_() {
+  return `<!DOCTYPE html><html><head><style>
+  * { box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; font-size: 13px; margin: 0; padding: 14px 18px; background: #F8F8F8; color: #333; }
+  label { display: block; font-weight: bold; margin: 10px 0 3px; color: #222; }
+  label span { font-weight: normal; color: #777; }
+  input, textarea, select { width: 100%; padding: 7px 10px; border: 1px solid #CCC; border-radius: 4px; font-size: 13px; }
+  .row { display: flex; gap: 12px; }
+  .row > div { flex: 1; }
+  .section { display: none; }
+  .panel { background: white; border: 1px solid #E0E0E0; border-radius: 6px; padding: 14px; margin: 10px 0; }
+  .hint { font-size: 11px; color: #888; margin-top: 3px; }
+  hr { border: none; border-top: 1px solid #E0E0E0; margin: 10px 0; }
+  .btn { padding: 9px 22px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+  .btn-primary { background: #0D47A1; color: white; width: 100%; margin-top: 10px; }
+  .btn-cancel { background: #DDD; color: #444; width: 100%; margin-top: 10px; }
+  .status { padding: 10px; margin-top: 10px; border-radius: 4px; display: none; }
+  .ok { background: #E8F5E9; color: #1B5E20; }
+  .err { background: #FFCDD2; color: #B71C1C; }
+  </style></head><body>
 
-function getBusiness(key) {
-  return emailSystem.getBusiness(key);
-}
+  <div class="panel">
+    <div class="row">
+      <div><label>Template</label><select id="tmpl" onchange="switchTemplate()">
+        <option value="general-update">General Update</option>
+        <option value="video-update">Video Update</option>
+        <option value="announcement">Announcement</option>
+        <option value="newsletter">Newsletter</option>
+        <option value="form-request">Form / Survey</option>
+      </select></div>
+      <div><label>Subject</label><input id="subject" placeholder="Email subject..."></div>
+    </div>
 
-function saveCustomTemplate(name, content) {
-  emailSystem.addTemplate(name, content);
-}
+    <label>Business</label>
+    <select id="business">
+      <option value="default">Default Business</option>
+    </select>
 
-function editTemplate(name) {
-  alert(`Edit "${name}" template - Feature coming soon`);
-}
+    <label style="margin-top: 10px;">Headline</label>
+    <input id="headline" placeholder="Main heading...">
 
-function getSheetList_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheets = ss.getSheets();
-  const systemSheets = CONFIG.SYSTEM_SHEETS;
+    <label style="margin-top: 10px;">Main Message</label>
+    <textarea id="body" rows="3" placeholder="Email body text..."></textarea>
 
-  return sheets
-    .map(s => s.getName())
-    .filter(name => !systemSheets.includes(name));
+    <div id="sec-video" class="section">
+      <label>Video URL</label>
+      <input id="videoUrl" placeholder="https://youtube.com/watch?v=...">
+      <div class="hint">YouTube links show real thumbnail</div>
+    </div>
+
+    <div id="sec-newsletter" class="section">
+      <hr>
+      <label>Section 2 Headline</label>
+      <input id="s2headline" placeholder="Optional second section">
+      <label style="margin-top: 8px;">Section 2 Body</label>
+      <textarea id="s2body" rows="2"></textarea>
+      <label style="margin-top: 8px;">Section 3 Headline</label>
+      <input id="s3headline" placeholder="Optional third section">
+      <label style="margin-top: 8px;">Section 3 Body</label>
+      <textarea id="s3body" rows="2"></textarea>
+    </div>
+
+    <div id="sec-form" class="section">
+      <hr>
+      <label>Form URL</label>
+      <input id="formUrl" placeholder="https://forms.gle/...">
+      <label style="margin-top: 8px;">Button Text</label>
+      <input id="formButtonText" placeholder="Open the Form">
+      <label style="margin-top: 8px;">Panel Title</label>
+      <input id="formTitle" placeholder="Optional panel title">
+      <label style="margin-top: 8px;">Note under button</label>
+      <input id="formNote" placeholder="Optional note">
+    </div>
+
+    <div id="sec-cta">
+      <hr>
+      <div class="row">
+        <div><label>Button Text</label><input id="ctaText" placeholder="Learn More"></div>
+        <div><label>Button URL</label><input id="ctaUrl" placeholder="https://..."></div>
+      </div>
+    </div>
+
+    <hr>
+    <label>Send To</label>
+    <select id="recipMode" onchange="switchRecip()">
+      <option value="active">All Active Contacts</option>
+      <option value="all">All Contacts</option>
+      <option value="group">Specific Group</option>
+      <option value="tag">Specific Tag</option>
+      <option value="manual">Manual Email Addresses</option>
+    </select>
+
+    <div id="sec-group" class="section" style="margin-top: 6px;">
+      <input id="targetGroup" list="groupList" placeholder="Select group...">
+      <datalist id="groupList"></datalist>
+    </div>
+
+    <div id="sec-tag" class="section" style="margin-top: 6px;">
+      <input id="targetTag" list="tagList" placeholder="Select tag...">
+      <datalist id="tagList"></datalist>
+    </div>
+
+    <div id="sec-manual" class="section" style="margin-top: 8px;">
+      <textarea id="manualEmails" rows="3" placeholder="Email addresses (comma or newline separated)"></textarea>
+    </div>
+
+    <hr>
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 6px;">
+      <label style="margin: 0; display: flex; gap: 7px; cursor: pointer;">
+        <input type="checkbox" id="scheduleToggle" onchange="toggleSchedule()" style="width: auto; margin: 0;">
+        Schedule for later
+      </label>
+    </div>
+
+    <div id="sec-schedule" class="section">
+      <input type="datetime-local" id="scheduleTime">
+      <div class="hint">Email will send automatically at this time</div>
+    </div>
+
+    <button class="btn btn-primary" id="sendBtn" onclick="doSendNow()">✉️ Send Now</button>
+    <button class="btn btn-primary" id="schedBtn" onclick="doSchedule()" style="background: #6A1B9A; display: none;">📅 Schedule Email</button>
+    <button class="btn btn-cancel" onclick="google.script.host.close()">Cancel</button>
+  </div>
+
+  <div class="status" id="statusBox"></div>
+
+  <script>
+    google.script.run.withSuccessHandler(g => {
+      const dl = document.getElementById('groupList');
+      g.forEach(gr => { const o = document.createElement('option'); o.value = gr; dl.appendChild(o); });
+    }).getContactGroups();
+
+    google.script.run.withSuccessHandler(t => {
+      const dl = document.getElementById('tagList');
+      t.forEach(tag => { const o = document.createElement('option'); o.value = tag; dl.appendChild(o); });
+    }).getContactTags();
+
+    function switchTemplate() {
+      const t = document.getElementById('tmpl').value;
+      document.getElementById('sec-video').style.display = (t === 'video-update') ? 'block' : 'none';
+      document.getElementById('sec-newsletter').style.display = (t === 'newsletter') ? 'block' : 'none';
+      document.getElementById('sec-form').style.display = (t === 'form-request') ? 'block' : 'none';
+      document.getElementById('sec-cta').style.display = (t === 'form-request') ? 'none' : 'block';
+    }
+
+    function switchRecip() {
+      const m = document.getElementById('recipMode').value;
+      document.getElementById('sec-group').style.display = (m === 'group') ? 'block' : 'none';
+      document.getElementById('sec-tag').style.display = (m === 'tag') ? 'block' : 'none';
+      document.getElementById('sec-manual').style.display = (m === 'manual') ? 'block' : 'none';
+    }
+
+    function toggleSchedule() {
+      const on = document.getElementById('scheduleToggle').checked;
+      document.getElementById('sec-schedule').style.display = on ? 'block' : 'none';
+      document.getElementById('sendBtn').style.display = on ? 'none' : 'block';
+      document.getElementById('schedBtn').style.display = on ? 'block' : 'none';
+    }
+
+    function doSendNow() {
+      const data = collectData();
+      if (!data) return;
+      const btn = document.getElementById('sendBtn');
+      btn.disabled = true;
+      google.script.run
+        .withSuccessHandler(r => {
+          if (r.success) show('✅ Sent to ' + r.sent + ' recipients', 'ok');
+          else show('❌ ' + r.error, 'err');
+          btn.disabled = false;
+        })
+        .sendEmailNow(data);
+    }
+
+    function doSchedule() {
+      const data = collectData();
+      if (!data) return;
+      const time = document.getElementById('scheduleTime').value;
+      if (!time) { show('❌ Pick a date/time', 'err'); return; }
+      data.scheduledTime = time;
+      const btn = document.getElementById('schedBtn');
+      btn.disabled = true;
+      google.script.run
+        .withSuccessHandler(r => {
+          if (r.success) show('✅ Scheduled for ' + r.scheduledTime, 'ok');
+          else show('❌ ' + r.error, 'err');
+          btn.disabled = false;
+        })
+        .scheduleEmail(data);
+    }
+
+    function collectData() {
+      return {
+        template: document.getElementById('tmpl').value,
+        subject: document.getElementById('subject').value.trim(),
+        business: document.getElementById('business').value,
+        headline: document.getElementById('headline').value.trim(),
+        body: document.getElementById('body').value.trim(),
+        videoUrl: document.getElementById('videoUrl').value.trim(),
+        section2headline: document.getElementById('s2headline').value.trim(),
+        section2body: document.getElementById('s2body').value.trim(),
+        section3headline: document.getElementById('s3headline').value.trim(),
+        section3body: document.getElementById('s3body').value.trim(),
+        formUrl: document.getElementById('formUrl').value.trim(),
+        formButtonText: document.getElementById('formButtonText').value.trim(),
+        formTitle: document.getElementById('formTitle').value.trim(),
+        formNote: document.getElementById('formNote').value.trim(),
+        ctaText: document.getElementById('ctaText').value.trim(),
+        ctaUrl: document.getElementById('ctaUrl').value.trim(),
+        recipientMode: document.getElementById('recipMode').value,
+        targetGroup: document.getElementById('targetGroup').value.trim(),
+        targetTag: document.getElementById('targetTag').value.trim(),
+        manualEmails: document.getElementById('manualEmails').value
+      };
+    }
+
+    function show(msg, cls) {
+      const s = document.getElementById('statusBox');
+      s.className = 'status ' + cls;
+      s.textContent = msg;
+      s.style.display = 'block';
+    }
+  </script>
+  </body></html>`;
 }
