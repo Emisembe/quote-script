@@ -1,12 +1,20 @@
 # ⚙️ Email Configuration Guide
 
-This guide explains how to customize your business information that appears in all email footers.
+This guide explains how to customize your business information that appears in all professional, responsive email footers.
 
 ---
 
 ## Quick Configuration
 
-All email templates now include a **professional footer** with your company information, social media links, and app download buttons.
+All email templates now include a **professional, responsive footer** that looks amazing on desktop and mobile devices. The footer automatically adapts to screen size and includes:
+- Company branding with description
+- Contact and office information  
+- Multi-column links sections
+- Company legal information
+- Feature highlights
+- App download buttons
+- Social media links
+- Copyright notice
 
 ### Step 1: Open the Apps Script Editor
 
@@ -48,6 +56,153 @@ address: "456 Oak Avenue, Denver, CO 80202"  // Your address
 colors: {
   primary: "#0066cc",    // Main color (headers, buttons)
   accent: "#ff6600"      // Accent color (highlights)
+}
+```
+
+---
+
+## Professional Footer Configuration
+
+Your emails now include a sophisticated, responsive footer with multiple configurable sections.
+
+### What's Included:
+
+**1. Company Branding Section**
+- Business name
+- Company tagline/description
+
+**2. Contact & Office Section** (Two columns)
+- Email, phone, website
+- Office address (street, city, country)
+
+**3. Multi-Column Links** (Customizable)
+- Create as many link columns as you want
+- Organize by: Quick Links, Resources, Support, Follow Us, etc.
+- Each column is a separate section with up to 10 links
+
+**4. Company Information** (Legal/Registration)
+- Managing Director name
+- Registration number (e.g., HRB 123456)
+- VAT ID (e.g., DE123456789)
+
+**5. Features Section** (Highlights)
+- Show up to 4 key features with descriptions
+- Displays in responsive grid (2x2 on desktop, 1x4 on mobile)
+
+**6. App Download Buttons**
+- App Store link
+- Google Play link
+- Styled buttons that look professional
+
+**7. Social Media Links**
+- All social platforms in one line
+- Separated by bullet points (•)
+
+**8. Copyright Footer**
+- Auto-updates year
+- Shows company name
+
+---
+
+## Detailed Configuration
+
+Find the `BUSINESS` section in the code and edit it like this:
+
+```javascript
+BUSINESS: {
+  "default": {
+    // Company name and description
+    name: "EFIC Consultancy",
+    tagline: "We help organizations grow through technology, strategy and innovation.",
+
+    // Contact information
+    email: "hello@efic-consultancy.com",
+    phone: "+49 69 1234 5678",
+    website: "https://www.efic-consultancy.com",
+
+    // Address (leave blank/empty to hide)
+    address: {
+      street: "Musterstraße 10",
+      city: "60311 Frankfurt am Main",
+      country: "Germany"
+    },
+
+    // Company info - legal/registration details (leave blank to hide)
+    company: {
+      managingDirector: "John Doe",
+      registrationNo: "HRB 123456",
+      vatId: "DE123456789"
+    },
+
+    // Colors
+    colors: {
+      primary: "#0066cc",    // Main footer color
+      accent: "#ff6600"      // Not used in new footer, kept for compatibility
+    },
+
+    // Footer link columns (customize as needed)
+    footerColumns: [
+      {
+        title: "QUICK LINKS",
+        links: [
+          { text: "Home", url: "https://example.com" },
+          { text: "About Us", url: "https://example.com/about" },
+          { text: "Services", url: "https://example.com/services" },
+          { text: "Pricing", url: "https://example.com/pricing" }
+        ]
+      },
+      {
+        title: "RESOURCES",
+        links: [
+          { text: "Blog", url: "https://example.com/blog" },
+          { text: "FAQ", url: "https://example.com/faq" },
+          { text: "Privacy Policy", url: "https://example.com/privacy" },
+          { text: "Terms & Conditions", url: "https://example.com/terms" }
+        ]
+      },
+      {
+        title: "SUPPORT",
+        links: [
+          { text: "Help Center", url: "https://example.com/help" },
+          { text: "Contact", url: "https://example.com/contact" },
+          { text: "Documentation", url: "https://example.com/docs" },
+          { text: "Support", url: "https://example.com/support" }
+        ]
+      },
+      {
+        title: "FOLLOW US",
+        links: [
+          { text: "Facebook", url: "https://facebook.com/efic" },
+          { text: "Twitter", url: "https://twitter.com/efic" },
+          { text: "LinkedIn", url: "https://linkedin.com/company/efic" },
+          { text: "Instagram", url: "https://instagram.com/efic" }
+        ]
+      }
+    ],
+
+    // Features section (optional - hide by setting to empty array [])
+    features: [
+      { title: "Easy Access", description: "All services in one place." },
+      { title: "Real-time Updates", description: "Get the latest updates instantly." },
+      { title: "Secure & Reliable", description: "Your data is always protected." },
+      { title: "24/7 Support", description: "We're here whenever you need us." }
+    ],
+
+    // Social media links
+    social: {
+      facebook: "https://facebook.com/efic",
+      twitter: "https://twitter.com/efic",
+      instagram: "https://instagram.com/efic",
+      linkedin: "https://linkedin.com/company/efic",
+      youtube: ""  // Leave empty to hide
+    },
+
+    // App store links (leave empty to hide)
+    apps: {
+      appStoreUrl: "https://apps.apple.com/app/efic",
+      googlePlayUrl: "https://play.google.com/store/apps/details?id=com.efic"
+    }
+  }
 }
 ```
 
@@ -295,6 +450,101 @@ BUSINESS: {
 ```
 
 Then when composing emails, select "company-b" from the Business dropdown.
+
+---
+
+## Responsive Design
+
+The footer automatically adapts to different screen sizes:
+
+### Desktop View (Wide Screen)
+```
+┌─────────────────────────────────────────────────────┐
+│ COMPANY NAME                                        │
+│ Company description here                            │
+├─────────────────────────────────────────────────────┤
+│ CONTACT              │ OFFICE                       │
+│ email@...            │ Street                       │
+│ Phone: +XX           │ City, Country                │
+│ Website link         │                              │
+├─────────────────────────────────────────────────────┤
+│ QUICK LINKS  │ RESOURCES │ SUPPORT  │ FOLLOW US   │
+│ Link 1       │ Link 1    │ Link 1   │ Link 1      │
+│ Link 2       │ Link 2    │ Link 2   │ Link 2      │
+│ ...          │ ...       │ ...      │ ...         │
+├─────────────────────────────────────────────────────┤
+│ GET OUR APP                                         │
+│ [App Store] [Google Play]                          │
+├─────────────────────────────────────────────────────┤
+│ FEATURE 1    │ FEATURE 2 │ FEATURE 3 │ FEATURE 4  │
+│ Description  │ Descrip.. │ Descrip.. │ Descrip.. │
+├─────────────────────────────────────────────────────┤
+│ Facebook • Twitter • LinkedIn • Instagram          │
+├─────────────────────────────────────────────────────┤
+│ © 2026 Company Name. All rights reserved.          │
+└─────────────────────────────────────────────────────┘
+```
+
+### Mobile View (Narrow Screen)
+```
+┌────────────────────────────────┐
+│ COMPANY NAME                   │
+│ Company description here       │
+├────────────────────────────────┤
+│ CONTACT                        │
+│ email@...                      │
+│ Phone: +XX                     │
+│ Website link                   │
+│                                │
+│ OFFICE                         │
+│ Street                         │
+│ City, Country                  │
+├────────────────────────────────┤
+│ QUICK LINKS                    │
+│ Link 1                         │
+│ Link 2                         │
+│ Link 3                         │
+│                                │
+│ RESOURCES                      │
+│ Link 1                         │
+│ Link 2                         │
+│ ...                            │
+│                                │
+│ SUPPORT                        │
+│ Link 1                         │
+│ Link 2                         │
+│ ...                            │
+│                                │
+│ FOLLOW US                      │
+│ Link 1                         │
+│ Link 2                         │
+│ ...                            │
+├────────────────────────────────┤
+│ GET OUR APP                    │
+│ [App Store]                    │
+│ [Google Play]                  │
+├────────────────────────────────┤
+│ FEATURE 1                      │
+│ Description text here          │
+│                                │
+│ FEATURE 2                      │
+│ Description text here          │
+│ ...                            │
+├────────────────────────────────┤
+│ Facebook • Twitter • LinkedIn   │
+├────────────────────────────────┤
+│ © 2026 Company Name.           │
+│ All rights reserved.           │
+└────────────────────────────────┘
+```
+
+**Works on all email clients:**
+- ✅ Gmail (Desktop & Mobile)
+- ✅ Outlook (Desktop & Web)
+- ✅ Apple Mail (macOS & iOS)
+- ✅ Yahoo Mail
+- ✅ Thunderbird
+- ✅ Most mobile email apps
 
 ---
 
