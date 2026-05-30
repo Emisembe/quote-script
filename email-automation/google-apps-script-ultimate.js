@@ -260,7 +260,7 @@ class SheetPreparer {
     // Create new sheet
     sheet = ss.insertSheet(sheetName, 0); // Insert at beginning
 
-    // Add headers
+    // Add headers with descriptions
     const headers = [
       "Email",
       "First Name",
@@ -283,32 +283,47 @@ class SheetPreparer {
     headerRange.setFontWeight("bold");
     headerRange.setFontSize(12);
 
-    // Add sample data
-    sheet.appendRow([
-      "john@example.com",
-      "John",
-      "Smith",
-      "ACME Corp",
-      "Q-001",
-      "5000",
-      "John, I have a special offer for you as a valued client!",
-      "https://www.youtube.com/embed/dQw4w9WgXcQ",
-      "https://example.com/demo",
-      "Hot lead"
-    ]);
+    // Add sample data with variations to show user different formats
+    const sampleData = [
+      [
+        "john@example.com",
+        "John",
+        "Smith",
+        "ACME Corp",
+        "Q-001",
+        "5000",
+        "John, I have a special offer for you as a valued client!",
+        "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        "https://example.com/demo",
+        "Hot lead"
+      ],
+      [
+        "jane@example.com",
+        "Jane",
+        "Doe",
+        "Tech Inc",
+        "Q-002",
+        "7500",
+        "Jane, this quote includes our premium features!",
+        "",
+        "https://example.com/jane",
+        "Warm lead"
+      ],
+      [
+        "bob@example.com",
+        "Bob",
+        "Johnson",
+        "StartUp Ltd",
+        "Q-003",
+        "3200",
+        "",
+        "",
+        "",
+        "Cold lead"
+      ]
+    ];
 
-    sheet.appendRow([
-      "jane@example.com",
-      "Jane",
-      "Doe",
-      "Tech Inc",
-      "Q-002",
-      "7500",
-      "Jane, this quote includes our premium features!",
-      "",
-      "",
-      "Warm lead"
-    ]);
+    sampleData.forEach(data => sheet.appendRow(data));
 
     // Set column widths
     sheet.setColumnWidth(1, 200); // Email
@@ -322,10 +337,116 @@ class SheetPreparer {
     sheet.setColumnWidth(9, 200); // Link URL
     sheet.setColumnWidth(10, 150); // Notes
 
+    // Create an INSTRUCTIONS sheet to guide the user
+    SheetPreparer.createInstructionsSheet(ss);
+
     // Load the sample data into importedData so user can send single emails
     loadDataFromSheet(sheetName);
 
-    SpreadsheetApp.getUi().alert(`✅ Sheet "${sheetName}" created with sample data!\n\nYou can now:\n• Send bulk emails using this sheet (Email Tools → Send Emails to All in Sheet)\n• Send single emails to John or Jane (Email Tools → Send Email)\n\nEdit the sample data and add your own customers.`);
+    SpreadsheetApp.getUi().alert(
+      `✅ Email Campaign Data Sheet Created!\n\n` +
+      `SAMPLE DATA:\n` +
+      `📊 3 example customers (John, Jane, Bob)\n` +
+      `📋 Shows all possible columns you can use\n` +
+      `💡 Shows which columns are optional (Video URL, Notes, etc.)\n\n` +
+      `WHAT TO DO:\n` +
+      `1. Check the "📋 Instructions" tab for column descriptions\n` +
+      `2. Replace sample data with your real customer list\n` +
+      `3. Keep the same column headers\n` +
+      `4. Add as many rows as you have customers\n\n` +
+      `THEN:\n` +
+      `• Send individual emails (Email Tools → Send Email)\n` +
+      `• Or send bulk emails (Email Tools → Send Emails to All in Sheet)`
+    );
+  }
+
+  static createInstructionsSheet(ss) {
+    // Remove existing instructions sheet if it exists
+    const existingInstructions = ss.getSheetByName("📋 Instructions");
+    if (existingInstructions) {
+      ss.deleteSheet(existingInstructions);
+    }
+
+    // Create instructions sheet
+    const instructionsSheet = ss.insertSheet("📋 Instructions", 1);
+
+    // Title
+    const titleRange = instructionsSheet.getRange("A1:C1");
+    titleRange.merge();
+    titleRange.setValue("📋 HOW TO USE THIS SHEET");
+    titleRange.setFontSize(14).setFontWeight("bold").setBackground("#667eea").setFontColor("white");
+    titleRange.setVerticalAlignment("middle");
+    instructionsSheet.setRowHeight(1, 25);
+
+    let row = 3;
+
+    // Column descriptions
+    const columnInfo = [
+      ["Email", "REQUIRED ✅", "Customer's email address (must be valid)\nExample: john@example.com"],
+      ["First Name", "REQUIRED ✅", "Customer's first name\nExample: John"],
+      ["Last Name", "Optional", "Customer's last name (will appear in templates if you use {{lastName}})\nExample: Smith"],
+      ["Company", "Optional", "Company name\nExample: ACME Corp"],
+      ["Quote ID", "Optional", "Quote or order ID (use in templates with {{quoteId}})\nExample: Q-001"],
+      ["Amount", "Optional", "Price, quote amount, or any number\nExample: 5000 (templates will show as {{totalAmount}})"],
+      ["Custom Message", "Optional", "Personalized note for THIS customer (shows as {{customMessage}})\nExample: 'John, special offer for you!'"],
+      ["Video URL", "Optional", "YouTube embed URL (for video templates)\nExample: https://www.youtube.com/embed/dQw4w9WgXcQ"],
+      ["Link URL", "Optional", "Website link, demo link, etc (shows as {{demoLink}} or {{quoteLink}})\nExample: https://example.com/demo"],
+      ["Notes", "Optional", "Internal notes (won't appear in emails)\nExample: 'Hot lead', 'Follow up in 3 days'"]
+    ];
+
+    columnInfo.forEach(info => {
+      // Column name (bold)
+      const cellName = instructionsSheet.getRange("A" + row);
+      cellName.setValue(info[0]).setFontWeight("bold").setBackground("#f0f4ff");
+
+      // Required/Optional
+      const cellRequired = instructionsSheet.getRange("B" + row);
+      cellRequired.setValue(info[1]).setBackground("#f0f4ff");
+      if (info[1].includes("REQUIRED")) {
+        cellRequired.setFontColor("#d32f2f");
+      }
+
+      // Description
+      const cellDesc = instructionsSheet.getRange("C" + row);
+      cellDesc.setValue(info[2]).setWrap(true).setBackground("#f0f4ff");
+
+      // Set row height
+      instructionsSheet.setRowHeight(row, 50);
+      row++;
+    });
+
+    // Add spacing
+    row++;
+
+    // Tips section
+    const tipsTitle = instructionsSheet.getRange("A" + row);
+    tipsTitle.setValue("💡 TIPS FOR SUCCESS").setFontWeight("bold").setFontSize(12).setBackground("#fff3cd");
+    tipsTitle.setFontColor("#856404");
+    row++;
+
+    const tips = [
+      "✅ MINIMUM: Only Email and First Name are REQUIRED",
+      "✅ Add other columns only if you need them",
+      "✅ Column order doesn't matter - only the names matter",
+      "✅ Use the same column names as shown above (case doesn't matter)",
+      "✅ You can have EXTRA columns beyond these - they won't break anything",
+      "✅ Leave cells empty if you don't have data (like Video URL for some customers)",
+      "⚠️ Don't delete the header row - it tells the system what each column is",
+      "⚠️ If Email or First Name is missing, that row will be skipped"
+    ];
+
+    tips.forEach(tip => {
+      const tipCell = instructionsSheet.getRange("A" + row + ":C" + row);
+      tipCell.merge();
+      tipCell.setValue(tip).setBackground("#fff3cd").setFontColor("#856404").setWrap(true);
+      instructionsSheet.setRowHeight(row, 25);
+      row++;
+    });
+
+    // Set column widths for instructions
+    instructionsSheet.setColumnWidth(1, 150);
+    instructionsSheet.setColumnWidth(2, 150);
+    instructionsSheet.setColumnWidth(3, 400);
   }
 }
 
