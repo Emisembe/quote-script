@@ -704,12 +704,24 @@ class BulkEmailSender {
             return;
           }
 
+          const templateSelect = document.getElementById('bulkTemplateSelect').value;
+          if (!templateSelect) {
+            alert('❌ Please select an email template!');
+            return;
+          }
+
+          const businessSelect = document.getElementById('bulkBusinessSelect').value;
+          if (!businessSelect) {
+            alert('❌ Please select a business!');
+            return;
+          }
+
           let additionalData = {};
           try {
             const data = document.getElementById('bulkAdditionalData').value;
             if (data) additionalData = JSON.parse(data);
           } catch (e) {
-            alert('❌ Invalid JSON in Additional Data!');
+            alert('❌ Invalid JSON in Additional Data!\n\nExample format:\n{"quoteId": "Q-001", "amount": "5000"}');
             return;
           }
 
@@ -742,10 +754,64 @@ class BulkEmailSender {
             return;
           }
 
-          const count = prompt('How many customers are in this sheet? (This is a safety check)', '');
-          if (!count) return;
+          const templateSelect = document.getElementById('bulkTemplateSelect').value;
+          if (!templateSelect) {
+            alert('❌ Please select an email template!');
+            return;
+          }
 
-          if (confirm('⚠️ You are about to send ' + count + ' emails to all customers in "' + sheetName + '"!\\n\\nThis cannot be undone.\\n\\nAre you SURE?')) {
+          const businessSelect = document.getElementById('bulkBusinessSelect').value;
+          if (!businessSelect) {
+            alert('❌ Please select a business!');
+            return;
+          }
+
+          let additionalData = {};
+          try {
+            const data = document.getElementById('bulkAdditionalData').value;
+            if (data) additionalData = JSON.parse(data);
+          } catch (e) {
+            alert('❌ Invalid JSON in Additional Data!\n\nExample format:\n{"quoteId": "Q-001", "amount": "5000"}');
+            return;
+          }
+
+          google.script.run.previewBulkSend(
+            sheetName,
+            templateSelect,
+            businessSelect,
+            additionalData,
+            function(result) {
+              if (result.success) {
+                // Store count for next step
+                window.previewCount = result.count;
+                let msg = '✅ PREVIEW - Ready to send?\n\n' +
+                      '📊 Sheet: ' + sheetName + '\n' +
+                      '👥 Customers: ' + result.count + '\n' +
+                      '📧 First: ' + result.firstCustomer;
+                if (result.emptyRows > 0) {
+                  msg += '\n\n⚠️ ' + result.emptyRows + ' rows will be skipped (empty email/name)';
+                }
+                msg += '\n\n✅ Click OK to proceed to final confirmation.';
+                if (confirm(msg)) {
+                  sendBulkEmailsWithConfirmation(result.count);
+                }
+              } else {
+                alert('❌ Error: ' + result.error);
+              }
+            }
+          );
+        }
+
+        function sendBulkEmailsWithConfirmation(actualCount) {
+          const sheetName = document.getElementById('sheetNameSelect').value;
+          const finalConfirm = confirm(
+            '⚠️ FINAL CONFIRMATION\n\n' +
+            'You are about to send ' + actualCount + ' emails to all customers in "' + sheetName + '".\n\n' +
+            'This action CANNOT be undone.\n\n' +
+            'Click OK to send now, or Cancel to review.'
+          );
+
+          if (finalConfirm) {
             sendBulkEmails();
           }
         }
@@ -1261,6 +1327,8 @@ function onOpen() {
   loadTemplatesFromStorage();
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('📧 Email Tools')
+    .addItem('🚀 Getting Started', 'showGettingStarted')
+    .addSeparator()
     .addItem('🆕 Prepare Email Campaign Sheet', 'prepareSheet')
     .addItem('📝 Create Google Form', 'createCustomerForm')
     .addItem('🔗 View Form Link', 'viewFormLink')
@@ -1279,6 +1347,88 @@ function onOpen() {
     .addItem('📧 View Businesses', 'showBusinessesList')
     .addItem('📧 View Templates', 'showTemplatesList')
     .addToUi();
+}
+
+// ===== GETTING STARTED GUIDE =====
+function showGettingStarted() {
+  const html = HtmlService.createHtmlOutput(`
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 0; background: #f9f9f9; }
+      .container { max-width: 700px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+      .header-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; text-align: center; }
+      .header-section h2 { font-size: 2em; margin: 0; font-weight: 700; }
+      .header-section p { font-size: 1em; margin: 10px 0 0 0; opacity: 0.95; }
+      .content { padding: 40px; }
+      .workflow { margin: 30px 0; }
+      .step { background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); padding: 20px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #667eea; }
+      .step-num { background: #667eea; color: white; width: 35px; height: 35px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; font-size: 1.1em; }
+      .step-content { display: inline-block; vertical-align: middle; }
+      .step h3 { margin: 0; color: #667eea; font-size: 1.1em; }
+      .step p { margin: 5px 0 0 0; color: #555; font-size: 0.95em; }
+      .arrow { text-align: center; color: #667eea; font-size: 1.5em; margin: 10px 0; }
+      .tips { background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 6px; margin-top: 20px; }
+      .tips h4 { color: #856404; margin: 0 0 10px 0; }
+      .tips li { color: #856404; margin: 5px 0; }
+      button { background-color: #667eea; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; margin-top: 20px; width: 100%; }
+      button:hover { background-color: #5568d3; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
+    </style>
+    <div class="container">
+      <div class="header-section">
+        <h2>🚀 Getting Started</h2>
+        <p>Send personalized emails in 3 steps</p>
+      </div>
+      <div class="content">
+        <div class="workflow">
+          <div class="step">
+            <span class="step-num">1</span>
+            <div class="step-content">
+              <h3>📋 Prepare Your Data</h3>
+              <p><strong>Option A:</strong> Click "Prepare Email Campaign Sheet" (uses sample data)<br>
+              <strong>Option B:</strong> Click "Import File from Computer" (upload your CSV)<br>
+              <strong>Option C:</strong> Click "Import from Sheets" (use existing sheet data)</p>
+            </div>
+          </div>
+
+          <div class="arrow">↓</div>
+
+          <div class="step">
+            <span class="step-num">2</span>
+            <div class="step-content">
+              <h3>⚙️ Setup Your Business</h3>
+              <p>Click "Setup Business Info" to set your business name, email, phone, and brand colors.<br>
+              (Uses defaults if you skip this)</p>
+            </div>
+          </div>
+
+          <div class="arrow">↓</div>
+
+          <div class="step">
+            <span class="step-num">3</span>
+            <div class="step-content">
+              <h3>📤 Send Emails</h3>
+              <p><strong>Single Email:</strong> Click "Send Email" to send to one customer<br>
+              <strong>Bulk Send:</strong> Click "Send Emails to All in Sheet" to send to everyone</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="tips">
+          <h4>💡 Pro Tips:</h4>
+          <ul>
+            <li><strong>Templates:</strong> Click "Manage Templates" to create custom email templates</li>
+            <li><strong>Google Forms:</strong> Click "Create Google Form" to auto-collect customer data</li>
+            <li><strong>Custom Messages:</strong> Add a "Custom Message" column to your data for personalized notes</li>
+            <li><strong>Email Variables:</strong> Use {{firstName}}, {{customMessage}}, {{totalAmount}}, etc. in templates</li>
+            <li><strong>Required Columns:</strong> Your data must have "Email" and "First Name" columns</li>
+          </ul>
+        </div>
+
+        <button onclick="window.parent.google.script.host.close()">✅ Got It! Let's Go</button>
+      </div>
+    </div>
+  `);
+  SpreadsheetApp.getUi().showModelessDialog(html, '🚀 Getting Started');
 }
 
 // ===== SHEET PREPARATION =====
@@ -1752,12 +1902,30 @@ function showSendEmailDialog() {
           return;
         }
 
+        const templateSelect = document.getElementById('templateSelect').value;
+        if (!templateSelect) {
+          alert('❌ Please select an email template!');
+          return;
+        }
+
+        const businessSelect = document.getElementById('businessSelect').value;
+        if (!businessSelect) {
+          alert('❌ Please select a business!');
+          return;
+        }
+
+        const emailSubject = document.getElementById('emailSubject').value.trim();
+        if (!emailSubject) {
+          alert('❌ Please enter an email subject!');
+          return;
+        }
+
         let additionalData = {};
         try {
           const data = document.getElementById('additionalData').value;
           if (data) additionalData = JSON.parse(data);
         } catch (e) {
-          alert('❌ Invalid JSON in Additional Data!');
+          alert('❌ Invalid JSON in Additional Data!\n\nExample format:\n{"quoteId": "Q-001", "amount": "5000"}');
           return;
         }
 
@@ -1786,12 +1954,30 @@ function showSendEmailDialog() {
           return;
         }
 
+        const templateSelect = document.getElementById('templateSelect').value;
+        if (!templateSelect) {
+          alert('❌ Please select an email template!');
+          return;
+        }
+
+        const businessSelect = document.getElementById('businessSelect').value;
+        if (!businessSelect) {
+          alert('❌ Please select a business!');
+          return;
+        }
+
+        const emailSubject = document.getElementById('emailSubject').value.trim();
+        if (!emailSubject) {
+          alert('❌ Please enter an email subject!');
+          return;
+        }
+
         let additionalData = {};
         try {
           const data = document.getElementById('additionalData').value;
           if (data) additionalData = JSON.parse(data);
         } catch (e) {
-          alert('❌ Invalid JSON in Additional Data!');
+          alert('❌ Invalid JSON in Additional Data!\n\nExample format:\n{"quoteId": "Q-001", "amount": "5000"}');
           return;
         }
 
