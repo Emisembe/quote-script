@@ -12,9 +12,23 @@ const CONFIG = {
       email: "your-email@example.com",
       phone: "+1 (555) 000-0000",
       website: "https://yourwebsite.com",
+      address: "123 Business Street, City, State 12345",
       colors: {
         primary: "#0066cc",
         accent: "#ff6600"
+      },
+      // Social media links (leave blank to hide)
+      social: {
+        facebook: "https://facebook.com/yourbusiness",
+        twitter: "https://twitter.com/yourbusiness",
+        instagram: "https://instagram.com/yourbusiness",
+        linkedin: "https://linkedin.com/company/yourbusiness",
+        youtube: ""
+      },
+      // App store links (leave blank to hide)
+      apps: {
+        iosApp: "https://apps.apple.com/app/yourbusiness",
+        androidApp: "https://play.google.com/store/apps/details?id=com.yourbusiness"
       }
     }
   },
@@ -108,35 +122,107 @@ class EmailAutomationSystem {
   }
 
   getGeneralTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{businessName}}</h1></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold; color: #333;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">{{body}}</p>{{#if customMessage}}<div style="background-color: #fff3cd; border-left: 4px solid {{accentColor}}; padding: 15px; margin: 20px 0;"><p style="color: #333; font-style: italic;">{{customMessage}}</p></div>{{/if}}{{#if ctaUrl}}<div style="text-align: center; margin: 30px 0;"><a href="{{ctaUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">{{ctaText}}</a></div>{{/if}}</div><div style="background-color: #f9f9f9; padding: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #666; text-align: center;"><p style="margin: 5px 0;">{{businessEmail}} | {{businessPhone}}</p></div></div></body></html>`;
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{businessName}}</h1></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold; color: #333;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">{{body}}</p>{{#if customMessage}}<div style="background-color: #fff3cd; border-left: 4px solid {{accentColor}}; padding: 15px; margin: 20px 0;"><p style="color: #333; font-style: italic;">{{customMessage}}</p></div>{{/if}}{{#if ctaUrl}}<div style="text-align: center; margin: 30px 0;"><a href="{{ctaUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">{{ctaText}}</a></div>{{/if}}</div>{{emailFooter}}</div></body></html>`;
   }
 
   getVideoTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{businessName}}</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Watch This Video</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">{{body}}</p>{{#if videoUrl}}<div style="background-color: #000; border-radius: 8px; overflow: hidden; margin: 20px 0; text-align: center;"><a href="{{videoUrl}}" style="display: inline-block;"><img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Watch video" style="width: 100%; display: block; border-radius: 8px;"></a></div>{{/if}}{{#if customMessage}}<div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;"><p style="color: #333;">{{customMessage}}</p></div>{{/if}}</div></div></body></html>`;
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{businessName}}</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Watch This Video</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">{{body}}</p>{{#if videoUrl}}<div style="background-color: #000; border-radius: 8px; overflow: hidden; margin: 20px 0; text-align: center;"><a href="{{videoUrl}}" style="display: inline-block;"><img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Watch video" style="width: 100%; display: block; border-radius: 8px;"></a></div>{{/if}}{{#if customMessage}}<div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;"><p style="color: #333;">{{customMessage}}</p></div>{{/if}}</div>{{emailFooter}}</div></body></html>`;
   }
 
   getAnnouncementTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background: linear-gradient(135deg, {{primaryColor}}, {{accentColor}}); color: white; padding: 40px 30px; text-align: center;"><div style="color: rgba(255,255,255,0.9); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;">Important Announcement</div><h1 style="margin: 0; font-size: 28px;">{{headline}}</h1></div><div style="padding: 30px;"><p style="color: #666; line-height: 1.6;">{{body}}</p>{{#if ctaUrl}}<div style="text-align: center; margin: 30px 0;"><a href="{{ctaUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">{{ctaText}}</a></div>{{/if}}</div></div></body></html>`;
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background: linear-gradient(135deg, {{primaryColor}}, {{accentColor}}); color: white; padding: 40px 30px; text-align: center;"><div style="color: rgba(255,255,255,0.9); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;">Important Announcement</div><h1 style="margin: 0; font-size: 28px;">{{headline}}</h1></div><div style="padding: 30px;"><p style="color: #666; line-height: 1.6;">{{body}}</p>{{#if ctaUrl}}<div style="text-align: center; margin: 30px 0;"><a href="{{ctaUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">{{ctaText}}</a></div>{{/if}}</div>{{emailFooter}}</div></body></html>`;
   }
 
   getNewsletterTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{headline}}</h1></div><div style="padding: 30px;"><p style="color: #666; line-height: 1.6;">{{body}}</p></div>{{#if section2}}<div style="background-color: #f5f5f5; border-top: 1px solid #e0e0e0; padding: 28px 30px;"><h2 style="color: {{primaryColor}}; font-size: 18px; margin: 0 0 12px;">{{section2headline}}</h2><p style="color: #666; line-height: 1.6;">{{section2body}}</p></div>{{/if}}{{#if section3}}<div style="padding: 28px 30px; border-top: 1px solid #e0e0e0;"><h2 style="color: {{primaryColor}}; font-size: 18px; margin: 0 0 12px;">{{section3headline}}</h2><p style="color: #666; line-height: 1.6;">{{section3body}}</p></div>{{/if}}</div></body></html>`;
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{headline}}</h1></div><div style="padding: 30px;"><p style="color: #666; line-height: 1.6;">{{body}}</p></div>{{#if section2}}<div style="background-color: #f5f5f5; border-top: 1px solid #e0e0e0; padding: 28px 30px;"><h2 style="color: {{primaryColor}}; font-size: 18px; margin: 0 0 12px;">{{section2headline}}</h2><p style="color: #666; line-height: 1.6;">{{section2body}}</p></div>{{/if}}{{#if section3}}<div style="padding: 28px 30px; border-top: 1px solid #e0e0e0;"><h2 style="color: {{primaryColor}}; font-size: 18px; margin: 0 0 12px;">{{section3headline}}</h2><p style="color: #666; line-height: 1.6;">{{section3body}}</p></div>{{/if}}{{emailFooter}}</div></body></html>`;
   }
 
   getFormTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{headline}}</h1></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">{{body}}</p><div style="background-color: #F3F6FD; border: 2px solid {{primaryColor}}; border-radius: 8px; padding: 28px; margin: 26px 0; text-align: center;">{{#if formTitle}}<div style="font-size: 15px; font-weight: bold; color: #333; margin-bottom: 14px;">{{formTitle}}</div>{{/if}}<a href="{{formUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 14px 36px; border-radius: 5px; text-decoration: none; font-size: 15px; font-weight: bold; display: inline-block;">{{formButtonText}}</a>{{#if formNote}}<div style="font-size: 12px; color: #777; margin-top: 14px;">{{formNote}}</div>{{/if}}</div></div></div></body></html>`;
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{headline}}</h1></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">{{body}}</p><div style="background-color: #F3F6FD; border: 2px solid {{primaryColor}}; border-radius: 8px; padding: 28px; margin: 26px 0; text-align: center;">{{#if formTitle}}<div style="font-size: 15px; font-weight: bold; color: #333; margin-bottom: 14px;">{{formTitle}}</div>{{/if}}<a href="{{formUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 14px 36px; border-radius: 5px; text-decoration: none; font-size: 15px; font-weight: bold; display: inline-block;">{{formButtonText}}</a>{{#if formNote}}<div style="font-size: 12px; color: #777; margin-top: 14px;">{{formNote}}</div>{{/if}}</div></div>{{emailFooter}}</div></body></html>`;
   }
 
   getPaymentReminderFriendlyTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">Payment Reminder</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Invoice {{invoiceNumber}}</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">Thank you for your business! We wanted to remind you that payment for invoice <strong>{{invoiceNumber}}</strong> is now due.</p><div style="background-color: #e3f2fd; border-left: 4px solid {{primaryColor}}; padding: 20px; margin: 20px 0; border-radius: 5px;"><p style="margin: 5px 0;"><strong>Amount Due:</strong> {{amount}}</p><p style="margin: 5px 0;"><strong>Due Date:</strong> {{dueDate}}</p><p style="margin: 5px 0;"><strong>Customer #:</strong> {{memberNo}}</p></div>{{#if customMessage}}<p style="color: #666; line-height: 1.6;">{{customMessage}}</p>{{/if}}<p style="color: #666; line-height: 1.6;">Please arrange payment at your earliest convenience. Payment can be made via the link below or contact us with any questions.</p><div style="text-align: center; margin: 30px 0;"><a href="{{paymentUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">💳 Make Payment</a></div></div><div style="background-color: #f9f9f9; padding: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #666; text-align: center;"><p style="margin: 5px 0;">{{businessEmail}} | {{businessPhone}}</p></div></div></body></html>`;
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">Payment Reminder</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Invoice {{invoiceNumber}}</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">Thank you for your business! We wanted to remind you that payment for invoice <strong>{{invoiceNumber}}</strong> is now due.</p><div style="background-color: #e3f2fd; border-left: 4px solid {{primaryColor}}; padding: 20px; margin: 20px 0; border-radius: 5px;"><p style="margin: 5px 0;"><strong>Amount Due:</strong> {{amount}}</p><p style="margin: 5px 0;"><strong>Due Date:</strong> {{dueDate}}</p><p style="margin: 5px 0;"><strong>Customer #:</strong> {{memberNo}}</p></div>{{#if customMessage}}<p style="color: #666; line-height: 1.6;">{{customMessage}}</p>{{/if}}<p style="color: #666; line-height: 1.6;">Please arrange payment at your earliest convenience. Payment can be made via the link below or contact us with any questions.</p><div style="text-align: center; margin: 30px 0;"><a href="{{paymentUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">💳 Make Payment</a></div></div>{{emailFooter}}</div></body></html>`;
   }
 
   getPaymentReminderUrgentTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: #e67e22; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">⚠️ Urgent Payment Notice</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Invoice {{invoiceNumber}} is now overdue</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold; color: #d32f2f;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">This is a second notice regarding your outstanding payment. Invoice <strong>{{invoiceNumber}}</strong> is now <strong>overdue</strong> and requires immediate attention.</p><div style="background-color: #fff3e0; border-left: 4px solid #e67e22; padding: 20px; margin: 20px 0; border-radius: 5px;"><p style="margin: 5px 0;"><strong>Amount Due:</strong> {{amount}}</p><p style="margin: 5px 0;"><strong>Original Due Date:</strong> {{dueDate}}</p><p style="margin: 5px 0;"><strong>Days Overdue:</strong> {{daysOverdue}}</p><p style="margin: 5px 0;"><strong>Customer #:</strong> {{memberNo}}</p></div>{{#if customMessage}}<p style="color: #d32f2f; font-weight: bold;">{{customMessage}}</p>{{/if}}<p style="color: #666; line-height: 1.6;">To avoid any disruption to your account, please settle this payment immediately.</p><div style="text-align: center; margin: 30px 0;"><a href="{{paymentUrl}}" style="background-color: #e67e22; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">💳 Pay Now</a></div></div><div style="background-color: #f9f9f9; padding: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #666; text-align: center;"><p style="margin: 5px 0;">{{businessEmail}} | {{businessPhone}}</p></div></div></body></html>`;
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: #e67e22; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">⚠️ Urgent Payment Notice</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Invoice {{invoiceNumber}} is now overdue</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold; color: #d32f2f;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">This is a second notice regarding your outstanding payment. Invoice <strong>{{invoiceNumber}}</strong> is now <strong>overdue</strong> and requires immediate attention.</p><div style="background-color: #fff3e0; border-left: 4px solid #e67e22; padding: 20px; margin: 20px 0; border-radius: 5px;"><p style="margin: 5px 0;"><strong>Amount Due:</strong> {{amount}}</p><p style="margin: 5px 0;"><strong>Original Due Date:</strong> {{dueDate}}</p><p style="margin: 5px 0;"><strong>Days Overdue:</strong> {{daysOverdue}}</p><p style="margin: 5px 0;"><strong>Customer #:</strong> {{memberNo}}</p></div>{{#if customMessage}}<p style="color: #d32f2f; font-weight: bold;">{{customMessage}}</p>{{/if}}<p style="color: #666; line-height: 1.6;">To avoid any disruption to your account, please settle this payment immediately.</p><div style="text-align: center; margin: 30px 0;"><a href="{{paymentUrl}}" style="background-color: #e67e22; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">💳 Pay Now</a></div></div>{{emailFooter}}</div></body></html>`;
   }
 
   getPaymentReminderFinalTemplate() {
-    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: #c62828; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">🚨 FINAL NOTICE</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Invoice {{invoiceNumber}} — Immediate Action Required</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold; color: #c62828;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">This is our <strong>final notice</strong> regarding your outstanding payment. Invoice <strong>{{invoiceNumber}}</strong> remains unpaid and is significantly overdue.</p><div style="background-color: #ffebee; border-left: 4px solid #c62828; padding: 20px; margin: 20px 0; border-radius: 5px;"><p style="margin: 5px 0;"><strong>Amount Due:</strong> {{amount}}</p><p style="margin: 5px 0;"><strong>Original Due Date:</strong> {{dueDate}}</p><p style="margin: 5px 0;"><strong>Days Overdue:</strong> {{daysOverdue}}</p><p style="margin: 5px 0;"><strong>Customer #:</strong> {{memberNo}}</p></div>{{#if customMessage}}<p style="color: #c62828; font-weight: bold;">{{customMessage}}</p>{{/if}}<p style="color: #c62828; line-height: 1.6; font-weight: bold;">Failure to settle this payment within 48 hours will result in further action, which may include suspension of services or referral to a collection agency.</p><div style="text-align: center; margin: 30px 0;"><a href="{{paymentUrl}}" style="background-color: #c62828; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">💳 Settle Payment Now</a></div><p style="color: #666; line-height: 1.6; font-size: 14px; text-align: center; margin-top: 20px;">If payment has already been made, please contact us immediately to reconcile this account.</p></div><div style="background-color: #f9f9f9; padding: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #666; text-align: center;"><p style="margin: 5px 0;">{{businessEmail}} | {{businessPhone}}</p></div></div></body></html>`;
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: #c62828; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">🚨 FINAL NOTICE</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Invoice {{invoiceNumber}} — Immediate Action Required</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold; color: #c62828;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">This is our <strong>final notice</strong> regarding your outstanding payment. Invoice <strong>{{invoiceNumber}}</strong> remains unpaid and is significantly overdue.</p><div style="background-color: #ffebee; border-left: 4px solid #c62828; padding: 20px; margin: 20px 0; border-radius: 5px;"><p style="margin: 5px 0;"><strong>Amount Due:</strong> {{amount}}</p><p style="margin: 5px 0;"><strong>Original Due Date:</strong> {{dueDate}}</p><p style="margin: 5px 0;"><strong>Days Overdue:</strong> {{daysOverdue}}</p><p style="margin: 5px 0;"><strong>Customer #:</strong> {{memberNo}}</p></div>{{#if customMessage}}<p style="color: #c62828; font-weight: bold;">{{customMessage}}</p>{{/if}}<p style="color: #c62828; line-height: 1.6; font-weight: bold;">Failure to settle this payment within 48 hours will result in further action, which may include suspension of services or referral to a collection agency.</p><div style="text-align: center; margin: 30px 0;"><a href="{{paymentUrl}}" style="background-color: #c62828; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">💳 Settle Payment Now</a></div><p style="color: #666; line-height: 1.6; font-size: 14px; text-align: center; margin-top: 20px;">If payment has already been made, please contact us immediately to reconcile this account.</p></div>{{emailFooter}}</div></body></html>`;
+  }
+
+  getEmailFooter_(business) {
+    const colors = business.colors || { primary: "#0066cc", accent: "#ff6600" };
+    const social = business.social || {};
+    const apps = business.apps || {};
+
+    let footerHtml = `<div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center; margin-top: 30px;">`;
+
+    // Social media icons
+    let hasSocial = false;
+    if (social.facebook || social.twitter || social.instagram || social.linkedin || social.youtube) {
+      footerHtml += `<div style="margin-bottom: 20px;">`;
+      if (social.facebook) {
+        footerHtml += `<a href="${social.facebook}" style="color: white; text-decoration: none; font-size: 20px; margin: 0 8px; display: inline-block;">f</a>`;
+        hasSocial = true;
+      }
+      if (social.twitter) {
+        footerHtml += `<a href="${social.twitter}" style="color: white; text-decoration: none; font-size: 20px; margin: 0 8px; display: inline-block;">𝕏</a>`;
+        hasSocial = true;
+      }
+      if (social.instagram) {
+        footerHtml += `<a href="${social.instagram}" style="color: white; text-decoration: none; font-size: 20px; margin: 0 8px; display: inline-block;">📷</a>`;
+        hasSocial = true;
+      }
+      if (social.linkedin) {
+        footerHtml += `<a href="${social.linkedin}" style="color: white; text-decoration: none; font-size: 20px; margin: 0 8px; display: inline-block;">in</a>`;
+        hasSocial = true;
+      }
+      if (social.youtube) {
+        footerHtml += `<a href="${social.youtube}" style="color: white; text-decoration: none; font-size: 20px; margin: 0 8px; display: inline-block;">▶️</a>`;
+        hasSocial = true;
+      }
+      if (hasSocial) {
+        footerHtml += `</div>`;
+      }
+    }
+
+    // Company info
+    footerHtml += `<div style="border-top: 1px solid rgba(255,255,255,0.3); padding-top: 20px; margin-top: 20px;">`;
+    footerHtml += `<p style="margin: 8px 0; font-size: 13px; font-weight: bold;">{{businessName}}</p>`;
+    if (business.address) {
+      footerHtml += `<p style="margin: 8px 0; font-size: 12px;">{{businessAddress}}</p>`;
+    }
+    footerHtml += `<p style="margin: 8px 0; font-size: 12px;">{{businessEmail}} | {{businessPhone}}</p>`;
+    footerHtml += `<p style="margin: 8px 0;"><a href="{{businessWebsite}}" style="color: white; text-decoration: none; font-size: 12px;">Visit our website</a></p>`;
+    footerHtml += `</div>`;
+
+    // App downloads
+    if (apps.iosApp || apps.androidApp) {
+      footerHtml += `<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3);">`;
+      footerHtml += `<p style="margin: 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Download Our App</p>`;
+      if (apps.iosApp) {
+        footerHtml += `<a href="${apps.iosApp}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-size: 12px;">📱 iOS</a>`;
+      }
+      if (apps.androidApp) {
+        footerHtml += `<a href="${apps.androidApp}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-size: 12px;">🤖 Android</a>`;
+      }
+      footerHtml += `</div>`;
+    }
+
+    // Footer links
+    footerHtml += `<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3); font-size: 11px;">`;
+    footerHtml += `<a href="{{businessWebsite}}/privacy" style="color: white; text-decoration: underline; margin: 0 8px;">Privacy Policy</a>`;
+    footerHtml += `<a href="{{businessWebsite}}/unsubscribe" style="color: white; text-decoration: underline; margin: 0 8px;">Unsubscribe</a>`;
+    footerHtml += `<a href="{{businessWebsite}}/preferences" style="color: white; text-decoration: underline; margin: 0 8px;">Preferences</a>`;
+    footerHtml += `</div>`;
+
+    footerHtml += `<p style="margin: 12px 0 0 0; font-size: 11px; opacity: 0.8;">© ${new Date().getFullYear()} {{businessName}}. All rights reserved.</p>`;
+    footerHtml += `</div>`;
+
+    return footerHtml;
   }
 
   sendEmail(recipientEmail, templateName, businessKey, emailSubject, data) {
@@ -175,8 +261,10 @@ class EmailAutomationSystem {
         businessEmail: business.email,
         businessPhone: business.phone,
         businessWebsite: business.website,
+        businessAddress: business.address || '',
         primaryColor: business.colors.primary,
-        accentColor: business.colors.accent
+        accentColor: business.colors.accent,
+        emailFooter: this.getEmailFooter_(business)
       };
 
       if (!emailData.firstName) emailData.firstName = 'Friend';
