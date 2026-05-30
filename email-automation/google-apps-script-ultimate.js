@@ -8,16 +8,82 @@ const CONFIG = {
   // ── Business information ──────────────────────────────────────────────────
   BUSINESS: {
     "default": {
+      // Basic company info
       name: "Your Business Name",
+      tagline: "Your company description or tagline here",
       email: "your-email@example.com",
       phone: "+1 (555) 000-0000",
       website: "https://yourwebsite.com",
-      address: "123 Business Street, City, State 12345",
+
+      // Address (leave blank to hide)
+      address: {
+        street: "123 Business Street",
+        city: "City, State 12345",
+        country: "Country"
+      },
+
+      // Company info (leave blank to hide)
+      company: {
+        managingDirector: "Your Name",
+        registrationNo: "HRB 123456",
+        vatId: "DE123456789"
+      },
+
+      // Colors
       colors: {
         primary: "#0066cc",
         accent: "#ff6600"
       },
-      // Social media links (leave blank to hide)
+
+      // Footer columns (customize as needed)
+      footerColumns: [
+        {
+          title: "QUICK LINKS",
+          links: [
+            { text: "Home", url: "https://yourwebsite.com" },
+            { text: "About Us", url: "https://yourwebsite.com/about" },
+            { text: "Services", url: "https://yourwebsite.com/services" },
+            { text: "Products", url: "https://yourwebsite.com/products" }
+          ]
+        },
+        {
+          title: "RESOURCES",
+          links: [
+            { text: "Blog", url: "https://yourwebsite.com/blog" },
+            { text: "FAQ", url: "https://yourwebsite.com/faq" },
+            { text: "Privacy Policy", url: "https://yourwebsite.com/privacy" },
+            { text: "Terms & Conditions", url: "https://yourwebsite.com/terms" }
+          ]
+        },
+        {
+          title: "SUPPORT",
+          links: [
+            { text: "Help Center", url: "https://yourwebsite.com/help" },
+            { text: "Contact", url: "https://yourwebsite.com/contact" },
+            { text: "Documentation", url: "https://yourwebsite.com/docs" },
+            { text: "Support", url: "https://yourwebsite.com/support" }
+          ]
+        },
+        {
+          title: "FOLLOW US",
+          links: [
+            { text: "Facebook", url: "https://facebook.com/yourbusiness" },
+            { text: "Twitter", url: "https://twitter.com/yourbusiness" },
+            { text: "LinkedIn", url: "https://linkedin.com/company/yourbusiness" },
+            { text: "Instagram", url: "https://instagram.com/yourbusiness" }
+          ]
+        }
+      ],
+
+      // Features section (leave empty to hide)
+      features: [
+        { title: "Easy to Use", description: "Simple and intuitive interface" },
+        { title: "Fast & Reliable", description: "Lightning quick performance" },
+        { title: "Secure", description: "Your data is always protected" },
+        { title: "24/7 Support", description: "Always here when you need us" }
+      ],
+
+      // Social media links (use in Follow Us column)
       social: {
         facebook: "https://facebook.com/yourbusiness",
         twitter: "https://twitter.com/yourbusiness",
@@ -25,10 +91,11 @@ const CONFIG = {
         linkedin: "https://linkedin.com/company/yourbusiness",
         youtube: ""
       },
+
       // App store links (leave blank to hide)
       apps: {
-        iosApp: "https://apps.apple.com/app/yourbusiness",
-        androidApp: "https://play.google.com/store/apps/details?id=com.yourbusiness"
+        appStoreUrl: "https://apps.apple.com/app/yourbusiness",
+        googlePlayUrl: "https://play.google.com/store/apps/details?id=com.yourbusiness"
       }
     }
   },
@@ -161,71 +228,140 @@ class EmailAutomationSystem {
     const email = business.email || 'contact@example.com';
     const phone = business.phone || '(555) 000-0000';
     const website = business.website || 'https://example.com';
-    const address = business.address || '';
+    const address = business.address || {};
+    const company = business.company || {};
+    const features = business.features || [];
+    const columns = business.footerColumns || [];
 
-    let footerHtml = `<div style="background-color: ${colors.primary}; color: white; padding: 30px; text-align: center; margin-top: 30px;">`;
+    // Responsive footer HTML with mobile-friendly design
+    let footerHtml = `<div style="background-color: ${colors.primary}; color: white; font-family: Arial, sans-serif; width: 100%; margin-top: 40px;">`;
 
-    // Social media icons
-    let hasSocial = false;
-    if (social.facebook || social.twitter || social.instagram || social.linkedin || social.youtube) {
-      footerHtml += `<div style="margin-bottom: 20px;">`;
-      if (social.facebook) {
-        footerHtml += `<a href="${social.facebook}" style="color: white; text-decoration: none; font-size: 20px; margin: 0 8px; display: inline-block;">f</a>`;
-        hasSocial = true;
-      }
-      if (social.twitter) {
-        footerHtml += `<a href="${social.twitter}" style="color: white; text-decoration: none; font-size: 20px; margin: 0 8px; display: inline-block;">𝕏</a>`;
-        hasSocial = true;
-      }
-      if (social.instagram) {
-        footerHtml += `<a href="${social.instagram}" style="color: white; text-decoration: none; font-size: 20px; margin: 0 8px; display: inline-block;">📷</a>`;
-        hasSocial = true;
-      }
-      if (social.linkedin) {
-        footerHtml += `<a href="${social.linkedin}" style="color: white; text-decoration: none; font-size: 20px; margin: 0 8px; display: inline-block;">in</a>`;
-        hasSocial = true;
-      }
-      if (social.youtube) {
-        footerHtml += `<a href="${social.youtube}" style="color: white; text-decoration: none; font-size: 20px; margin: 0 8px; display: inline-block;">▶️</a>`;
-        hasSocial = true;
-      }
-      if (hasSocial) {
-        footerHtml += `</div>`;
-      }
-    }
-
-    // Company info section
-    footerHtml += `<div style="border-top: 1px solid rgba(255,255,255,0.3); padding-top: 20px; margin-top: 20px;">`;
-    footerHtml += `<p style="margin: 8px 0; font-size: 13px; font-weight: bold;">${name}</p>`;
-    if (address) {
-      footerHtml += `<p style="margin: 8px 0; font-size: 12px;">${address}</p>`;
-    }
-    footerHtml += `<p style="margin: 8px 0; font-size: 12px;">${email} | ${phone}</p>`;
-    footerHtml += `<p style="margin: 8px 0;"><a href="${website}" style="color: white; text-decoration: none; font-size: 12px;">Visit our website</a></p>`;
+    // Company branding section
+    footerHtml += `<div style="padding: 30px 20px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2);">`;
+    footerHtml += `<h2 style="margin: 0 0 10px 0; font-size: 20px; font-weight: bold; color: white;">${name}</h2>`;
+    footerHtml += `<p style="margin: 0; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.9);">${business.tagline || ''}</p>`;
     footerHtml += `</div>`;
 
-    // App downloads section
-    if (apps.iosApp || apps.androidApp) {
-      footerHtml += `<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3);">`;
-      footerHtml += `<p style="margin: 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Download Our App</p>`;
-      if (apps.iosApp) {
-        footerHtml += `<a href="${apps.iosApp}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-size: 12px; font-weight: bold;">📱 iOS</a>`;
+    // Contact and Office section (stacks on mobile)
+    footerHtml += `<div style="padding: 30px 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">`;
+    footerHtml += `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+      <tr>
+        <td width="50%" style="padding-right: 20px; vertical-align: top; padding-bottom: 20px;">
+          <h3 style="margin: 0 0 12px 0; font-size: 12px; font-weight: bold; color: #4da6ff; text-transform: uppercase; letter-spacing: 1px;">CONTACT</h3>
+          <p style="margin: 5px 0; font-size: 13px;"><a href="mailto:${email}" style="color: white; text-decoration: underline;">${email}</a></p>
+          <p style="margin: 5px 0; font-size: 13px;">Phone: ${phone}</p>
+          <p style="margin: 5px 0; font-size: 13px;"><a href="${website}" style="color: white; text-decoration: underline;">Visit website</a></p>
+        </td>
+        <td width="50%" style="padding-left: 20px; vertical-align: top; padding-bottom: 20px; border-left: 1px solid rgba(255,255,255,0.2);">
+          <h3 style="margin: 0 0 12px 0; font-size: 12px; font-weight: bold; color: #4da6ff; text-transform: uppercase; letter-spacing: 1px;">OFFICE</h3>
+          ${address.street ? `<p style="margin: 5px 0; font-size: 13px;">${address.street}</p>` : ''}
+          ${address.city ? `<p style="margin: 5px 0; font-size: 13px;">${address.city}</p>` : ''}
+          ${address.country ? `<p style="margin: 5px 0; font-size: 13px;">${address.country}</p>` : ''}
+        </td>
+      </tr>
+    </table>`;
+    footerHtml += `</div>`;
+
+    // Multi-column links section (responsive grid)
+    if (columns.length > 0) {
+      footerHtml += `<div style="padding: 30px 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">`;
+      footerHtml += `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+        <tr>`;
+
+      columns.forEach((col, idx) => {
+        const colWidth = 100 / columns.length;
+        const isLastCol = idx === columns.length - 1;
+        const borderRight = isLastCol ? '' : `border-right: 1px solid rgba(255,255,255,0.2);`;
+
+        footerHtml += `<td width="${colWidth}%" style="padding: 0 20px 0 0; vertical-align: top; ${borderRight}">`;
+        footerHtml += `<h3 style="margin: 0 0 12px 0; font-size: 12px; font-weight: bold; color: #4da6ff; text-transform: uppercase; letter-spacing: 1px;">${col.title}</h3>`;
+
+        col.links.forEach(link => {
+          if (link.url) {
+            footerHtml += `<p style="margin: 8px 0; font-size: 13px;"><a href="${link.url}" style="color: white; text-decoration: underline;">${link.text}</a></p>`;
+          } else {
+            footerHtml += `<p style="margin: 8px 0; font-size: 13px; color: rgba(255,255,255,0.9);">${link.text}</p>`;
+          }
+        });
+
+        footerHtml += `</td>`;
+      });
+
+      footerHtml += `</tr></table>`;
+      footerHtml += `</div>`;
+    }
+
+    // Company information (legal, director, etc)
+    if (company.managingDirector || company.registrationNo || company.vatId) {
+      footerHtml += `<div style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 12px;">`;
+      if (company.managingDirector) {
+        footerHtml += `<p style="margin: 5px 0;">Managing Director: ${company.managingDirector}</p>`;
       }
-      if (apps.androidApp) {
-        footerHtml += `<a href="${apps.androidApp}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-size: 12px; font-weight: bold;">🤖 Android</a>`;
+      if (company.registrationNo) {
+        footerHtml += `<p style="margin: 5px 0;">Registration No.: ${company.registrationNo}</p>`;
+      }
+      if (company.vatId) {
+        footerHtml += `<p style="margin: 5px 0;">VAT ID: ${company.vatId}</p>`;
       }
       footerHtml += `</div>`;
     }
 
-    // Footer legal links
-    footerHtml += `<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3); font-size: 11px;">`;
-    footerHtml += `<a href="${website}/privacy" style="color: white; text-decoration: underline; margin: 0 8px;">Privacy Policy</a>`;
-    footerHtml += ` | <a href="${website}/unsubscribe" style="color: white; text-decoration: underline;">Unsubscribe</a>`;
-    footerHtml += ` | <a href="${website}/preferences" style="color: white; text-decoration: underline;">Preferences</a>`;
+    // App download section
+    if (apps.appStoreUrl || apps.googlePlayUrl) {
+      footerHtml += `<div style="padding: 30px 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">`;
+      footerHtml += `<h3 style="margin: 0 0 12px 0; font-size: 12px; font-weight: bold; color: #4da6ff; text-transform: uppercase; letter-spacing: 1px;">GET OUR APP</h3>`;
+      footerHtml += `<p style="margin: 0 0 12px 0; font-size: 13px;">Stay connected on the go. Download our app.</p>`;
+      footerHtml += `<div>`;
+      if (apps.appStoreUrl) {
+        footerHtml += `<a href="${apps.appStoreUrl}" style="color: white; text-decoration: none; display: inline-block; margin-right: 15px; font-size: 13px; font-weight: bold; border: 1px solid rgba(255,255,255,0.5); padding: 8px 12px; border-radius: 4px;">📱 App Store</a>`;
+      }
+      if (apps.googlePlayUrl) {
+        footerHtml += `<a href="${apps.googlePlayUrl}" style="color: white; text-decoration: none; display: inline-block; font-size: 13px; font-weight: bold; border: 1px solid rgba(255,255,255,0.5); padding: 8px 12px; border-radius: 4px;">🤖 Google Play</a>`;
+      }
+      footerHtml += `</div>`;
+      footerHtml += `</div>`;
+    }
+
+    // Features section (4 columns that stack on mobile)
+    if (features && features.length > 0) {
+      footerHtml += `<div style="padding: 30px 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">`;
+      footerHtml += `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+        <tr>`;
+
+      features.forEach((feature, idx) => {
+        const isNotLast = idx < features.length - 1;
+        const borderRight = isNotLast ? `border-right: 1px solid rgba(255,255,255,0.2);` : '';
+        const colWidth = 100 / features.length;
+
+        footerHtml += `<td width="${colWidth}%" style="padding: 0 ${colWidth > 25 ? '15px' : '8px'}; vertical-align: top; ${borderRight}">`;
+        footerHtml += `<h4 style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #4da6ff;">${feature.title}</h4>`;
+        footerHtml += `<p style="margin: 0; font-size: 12px; line-height: 1.4; color: rgba(255,255,255,0.85);">${feature.description}</p>`;
+        footerHtml += `</td>`;
+      });
+
+      footerHtml += `</tr></table>`;
+      footerHtml += `</div>`;
+    }
+
+    // Social media links
+    if (social.facebook || social.twitter || social.instagram || social.linkedin || social.youtube) {
+      footerHtml += `<div style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 13px;">`;
+      const socialLinks = [];
+      if (social.facebook) socialLinks.push(`<a href="${social.facebook}" style="color: white; text-decoration: none;">Facebook</a>`);
+      if (social.twitter) socialLinks.push(`<a href="${social.twitter}" style="color: white; text-decoration: none;">X</a>`);
+      if (social.instagram) socialLinks.push(`<a href="${social.instagram}" style="color: white; text-decoration: none;">Instagram</a>`);
+      if (social.linkedin) socialLinks.push(`<a href="${social.linkedin}" style="color: white; text-decoration: none;">LinkedIn</a>`);
+      if (social.youtube) socialLinks.push(`<a href="${social.youtube}" style="color: white; text-decoration: none;">YouTube</a>`);
+
+      footerHtml += socialLinks.join(' • ');
+      footerHtml += `</div>`;
+    }
+
+    // Copyright
+    footerHtml += `<div style="padding: 20px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.7);">`;
+    footerHtml += `© ${new Date().getFullYear()} ${name}. All rights reserved.`;
     footerHtml += `</div>`;
 
-    // Copyright with actual year and company name
-    footerHtml += `<p style="margin: 12px 0 0 0; font-size: 11px; opacity: 0.8;">© ${new Date().getFullYear()} ${name}. All rights reserved.</p>`;
     footerHtml += `</div>`;
 
     return footerHtml;
