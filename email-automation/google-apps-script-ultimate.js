@@ -1073,13 +1073,30 @@ function composeDialogHtml_() {
     function doSendNow() {
       const data = collectData();
       if (!data) return;
+
+      // Validate required fields
+      if (!data.subject || !data.subject.trim()) { show('❌ Subject line is required', 'err'); return; }
+      if (!data.body || !data.body.trim()) { show('❌ Main message is required', 'err'); return; }
+
       const btn = document.getElementById('sendBtn');
       btn.disabled = true;
+      btn.textContent = '⏳ Sending...';
+
       google.script.run
         .withSuccessHandler(r => {
-          if (r.success) show('✅ Sent to ' + r.sent + ' recipients', 'ok');
-          else show('❌ ' + r.error, 'err');
+          if (r.success) {
+            show('✅ Sent to ' + r.sent + ' recipients', 'ok');
+            btn.textContent = '✅ Done';
+          } else {
+            show('❌ ' + r.error, 'err');
+            btn.disabled = false;
+            btn.textContent = '✉️ Send Now';
+          }
+        })
+        .withFailureHandler(e => {
+          show('❌ Error: ' + e.message, 'err');
           btn.disabled = false;
+          btn.textContent = '✉️ Send Now';
         })
         .sendEmailNow(data);
     }
@@ -1087,16 +1104,34 @@ function composeDialogHtml_() {
     function doSchedule() {
       const data = collectData();
       if (!data) return;
+
+      // Validate required fields
+      if (!data.subject || !data.subject.trim()) { show('❌ Subject line is required', 'err'); return; }
+      if (!data.body || !data.body.trim()) { show('❌ Main message is required', 'err'); return; }
+
       const time = document.getElementById('scheduleTime').value;
       if (!time) { show('❌ Pick a date/time', 'err'); return; }
       data.scheduledTime = time;
+
       const btn = document.getElementById('schedBtn');
       btn.disabled = true;
+      btn.textContent = '⏳ Scheduling...';
+
       google.script.run
         .withSuccessHandler(r => {
-          if (r.success) show('✅ Scheduled for ' + r.scheduledTime, 'ok');
-          else show('❌ ' + r.error, 'err');
+          if (r.success) {
+            show('✅ Scheduled for ' + r.scheduledTime, 'ok');
+            btn.textContent = '✅ Scheduled';
+          } else {
+            show('❌ ' + r.error, 'err');
+            btn.disabled = false;
+            btn.textContent = '📅 Schedule Email';
+          }
+        })
+        .withFailureHandler(e => {
+          show('❌ Error: ' + e.message, 'err');
           btn.disabled = false;
+          btn.textContent = '📅 Schedule Email';
         })
         .scheduleEmail(data);
     }
