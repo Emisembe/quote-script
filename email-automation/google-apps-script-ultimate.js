@@ -665,8 +665,9 @@ class FormBuilder {
 class BulkEmailSender {
   static showBulkSendDialog() {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const systemSheets = ["📊 Email Logs", "📋 Templates Storage", "📋 Instructions"];
     const sheets = ss.getSheets().map(s => s.getName()).filter(name =>
-      !name.includes("📊") && !name.includes("📋") && !name.includes("📧")
+      !systemSheets.includes(name)
     );
 
     let sheetOptions = sheets.map(s => `<option value="${s}">${s}</option>`).join('');
@@ -1767,7 +1768,8 @@ function showMultiSheetImportDialog() {
 
 function getSheetList() {
   const sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
-  return sheets.map(sheet => sheet.getName()).filter(name => !name.includes("📊") && !name.includes("📧"));
+  const systemSheets = ["📊 Email Logs", "📋 Templates Storage", "📋 Instructions"];
+  return sheets.map(sheet => sheet.getName()).filter(name => !systemSheets.includes(name));
 }
 
 function importSheetData(sheetName, emailColumn, nameColumn, sheetList) {
