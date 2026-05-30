@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Automation UI Options</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .container-main {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .tabs-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .tab-btn {
+      padding: 12px 24px;
+      border: 2px solid white;
+      background: transparent;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: #667eea;
+    }
+
+    .mockup-wrapper {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .mockup-wrapper.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ===== OPTION 1: ENHANCED CSS ===== */
+    .option1 {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 600px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .option1 .header-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .option1 .header-section h2 {
+      font-size: 1.8em;
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .option1 .header-section p {
+      font-size: 0.95em;
+      margin: 8px 0 0 0;
+      opacity: 0.9;
+    }
+
+    .option1 .content {
+      padding: 30px;
+    }
+
+    .option1 .section {
+      margin-bottom: 30px;
+    }
+
+    .option1 .section h3 {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .option1 label {
+      display: block;
+      margin-top: 12px;
+      font-weight: 500;
+      color: #555;
+      font-size: 0.95em;
+    }
+
+    .option1 input, .option1 select, .option1 textarea {
+      width: 100%;
+      padding: 10px 12px;
+      margin-top: 6px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.95em;
+      transition: border 0.3s ease;
+    }
+
+    .option1 input:focus, .option1 select:focus, .option1 textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .option1 .info-box {
+      background: #f0f4ff;
+      border-left: 4px solid #667eea;
+      padding: 12px;
+      border-radius: 4px;
+      margin-top: 8px;
+      font-size: 0.9em;
+      color: #555;
+    }
+
+    .option1 .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      color: #856404;
+      font-size: 0.95em;
+    }
+
+    .option1 .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .option1 button {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.95em;
+      transition: all 0.3s ease;
+    }
+
+    .option1 .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .option1 .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .option1 .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .option1 .btn-danger:hover {
+      background: #c0392b;
+    }
+
+    /* ===== OPTION 2: MATERIAL DESIGN ===== */
+    .option2 {
+      background: #fafafa;
+    }
+
+    .option2-card {
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .option2 .header-section {
+      background: white;
+      padding: 24px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .option2 .header-section h2 {
+      font-size: 1.5em;
+      margin: 0;
+      color: #212121;
+      font-weight: 500;
+    }
+
+    .option2 .content {
+      padding: 24px;
+    }
+
+    .option2 .section {
+      margin-bottom: 24px;
+    }
+
+    .option2 .section h3 {
+      font-size: 1em;
+      font-weight: 500;
+      color: #212121;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.85em;
+      color: #757575;
+    }
+
+    .option2 label {
+      display: block;
+      margin-top: 16px;
+      font-weight: 500;
+      color: #212121;
+      font-size: 0.9em;
+    }
+
+    .option2 input, .option2 select, .option2 textarea {
+      width: 100%;
+      padding: 8px 0;
+      margin-top: 4px;
+      border: none;
+      border-bottom: 1px solid #bdbdbd;
+      font-family: inherit;
+      font-size: 0.95em;
+      background: transparent;
+      transition: border 0.3s ease;
+    }
+
+    .option2 input:focus, .option2 select:focus, .option2 textarea:focus {
+      outline: none;
+      border-bottom-color: #1976d2;
+    }
+
+    .option2 .info-box {
+      background: #e3f2fd;
+      padding: 12px;
+      border-radius: 2px;
+      margin-top: 8px;
+      font-size: 0.9em;
+      color: #1565c0;
+    }
+
+    .option2 .warning-box {
+      background: #fff3e0;
+      padding: 12px;
+      border-radius: 2px;
+      margin-bottom: 20px;
+      color: #e65100;
+      font-size: 0.9em;
+    }
+
+    .option2 .button-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 24px;
+      justify-content: flex-end;
+    }
+
+    .option2 button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 2px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+
+    .option2 .btn-primary {
+      background: #1976d2;
+      color: white;
+    }
+
+    .option2 .btn-primary:hover {
+      background: #1565c0;
+    }
+
+    .option2 .btn-danger {
+      background: #d32f2f;
+      color: white;
+    }
+
+    .option2 .btn-danger:hover {
+      background: #c62828;
+    }
+
+    /* ===== OPTION 3: BOOTSTRAP PROFESSIONAL ===== */
+    .option3 {
+      background: #f8f9fa;
+    }
+
+    .option3-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+      max-width: 600px;
+      margin: 0 auto;
+      border: 1px solid #dee2e6;
+    }
+
+    .option3 .header-section {
+      background: linear-gradient(135deg, #004085 0%, #003d7a 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .option3 .header-section h2 {
+      font-size: 1.75em;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .option3 .content {
+      padding: 25px;
+    }
+
+    .option3 .section {
+      margin-bottom: 25px;
+    }
+
+    .option3 .section h3 {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #212529;
+      margin-bottom: 15px;
+    }
+
+    .option3 label {
+      display: block;
+      margin-top: 12px;
+      font-weight: 500;
+      color: #495057;
+      font-size: 0.95em;
+      margin-bottom: 6px;
+    }
+
+    .option3 input, .option3 select, .option3 textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.95em;
+      transition: border 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .option3 input:focus, .option3 select:focus, .option3 textarea:focus {
+      outline: none;
+      border-color: #80bdff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .option3 .info-box {
+      background: #cfe2ff;
+      border: 1px solid #b6d4fe;
+      padding: 12px;
+      border-radius: 4px;
+      margin-top: 8px;
+      font-size: 0.9em;
+      color: #004085;
+    }
+
+    .option3 .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffecb5;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      color: #664d03;
+      font-size: 0.95em;
+    }
+
+    .option3 .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .option3 button {
+      flex: 1;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.95em;
+      transition: all 0.2s ease;
+    }
+
+    .option3 .btn-primary {
+      background: #007bff;
+      color: white;
+    }
+
+    .option3 .btn-primary:hover {
+      background: #0056b3;
+    }
+
+    .option3 .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .option3 .btn-danger:hover {
+      background: #c82333;
+    }
+
+    /* Comparison table */
+    .comparison-section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-top: 40px;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .comparison-section h2 {
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .comparison-table th {
+      background: #f5f5f5;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .feature {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .check { color: #4caf50; font-weight: bold; }
+    .cross { color: #e74c3c; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<div class="container-main">
+  <div class="header">
+    <h1>📧 Email Automation UI Options</h1>
+    <p>Choose which design style you prefer for your email system</p>
+  </div>
+
+  <div class="tabs-container">
+    <button class="tab-btn active" onclick="showTab('option1')">Option 1: Enhanced CSS</button>
+    <button class="tab-btn" onclick="showTab('option2')">Option 2: Material Design</button>
+    <button class="tab-btn" onclick="showTab('option3')">Option 3: Bootstrap Pro</button>
+  </div>
+
+  <!-- OPTION 1 -->
+  <div id="option1" class="mockup-wrapper active">
+    <div class="option1">
+      <div class="header-section">
+        <h2>📤 Bulk Send Emails</h2>
+        <p>Send emails to all customers in a sheet</p>
+      </div>
+
+      <div class="content">
+        <div class="warning-box">
+          ⚠️ <strong>Warning:</strong> This will send emails to ALL customers in the selected sheet!
+        </div>
+
+        <div class="section">
+          <h3>📋 Step 1: Select Sheet</h3>
+          <label>Which sheet contains your customer data?</label>
+          <select>
+            <option>-- Choose a sheet --</option>
+            <option>Payment Reminders</option>
+            <option>Q1 Leads</option>
+            <option>Newsletter List</option>
+          </select>
+          <div class="info-box">
+            ℹ️ The sheet must have columns: Email, First Name
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>⚙️ Step 2: Configure Email</h3>
+          <label>Email Template:</label>
+          <select>
+            <option>first-reminder</option>
+            <option>follow-up</option>
+            <option>special-offer</option>
+          </select>
+
+          <label>Business:</label>
+          <select>
+            <option>default</option>
+            <option>Company A</option>
+          </select>
+
+          <label>Email Subject:</label>
+          <input type="text" placeholder="Payment Reminder" value="First Payment Reminder">
+
+          <label>Additional Data (JSON - optional):</label>
+          <textarea rows="3" placeholder='{"amountDue": "$500"}' style="resize: vertical;"></textarea>
+        </div>
+
+        <div class="section">
+          <h3>📤 Step 3: Send</h3>
+          <div class="button-group">
+            <button class="btn-primary">👁️ Preview</button>
+            <button class="btn-danger">📤 Send to All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION 2 -->
+  <div id="option2" class="mockup-wrapper">
+    <div class="option2-card">
+      <div class="header-section">
+        <h2>📤 Bulk Send Emails</h2>
+      </div>
+
+      <div class="content">
+        <div class="warning-box">
+          ⚠️ <strong>Warning:</strong> This will send emails to ALL customers in the selected sheet!
+        </div>
+
+        <div class="section">
+          <h3>Step 1: Select Sheet</h3>
+          <label>Which sheet contains your customer data?</label>
+          <select>
+            <option>-- Choose a sheet --</option>
+            <option>Payment Reminders</option>
+            <option>Q1 Leads</option>
+            <option>Newsletter List</option>
+          </select>
+          <div class="info-box">
+            ℹ️ The sheet must have columns: Email, First Name
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Step 2: Configure Email</h3>
+          <label>Email Template:</label>
+          <select>
+            <option>first-reminder</option>
+            <option>follow-up</option>
+            <option>special-offer</option>
+          </select>
+
+          <label>Business:</label>
+          <select>
+            <option>default</option>
+            <option>Company A</option>
+          </select>
+
+          <label>Email Subject:</label>
+          <input type="text" placeholder="Payment Reminder" value="First Payment Reminder">
+
+          <label>Additional Data (JSON - optional):</label>
+          <textarea rows="3" placeholder='{"amountDue": "$500"}' style="resize: vertical;"></textarea>
+        </div>
+
+        <div class="section">
+          <h3>Step 3: Send</h3>
+          <div class="button-group">
+            <button class="btn-primary">PREVIEW</button>
+            <button class="btn-danger">SEND</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION 3 -->
+  <div id="option3" class="mockup-wrapper">
+    <div class="option3-card">
+      <div class="header-section">
+        <h2>📤 Bulk Send Emails to Sheet</h2>
+      </div>
+
+      <div class="content">
+        <div class="warning-box">
+          ⚠️ <strong>Warning:</strong> This will send emails to ALL customers in the selected sheet!
+        </div>
+
+        <div class="section">
+          <h3>Step 1: Select Sheet</h3>
+          <label>Which sheet contains your customer data?</label>
+          <select>
+            <option>-- Choose a sheet --</option>
+            <option>Payment Reminders</option>
+            <option>Q1 Leads</option>
+            <option>Newsletter List</option>
+          </select>
+          <div class="info-box">
+            ℹ️ The sheet must have columns: Email, First Name
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Step 2: Configure Email</h3>
+          <label>Email Template:</label>
+          <select>
+            <option>first-reminder</option>
+            <option>follow-up</option>
+            <option>special-offer</option>
+          </select>
+
+          <label>Business:</label>
+          <select>
+            <option>default</option>
+            <option>Company A</option>
+          </select>
+
+          <label>Email Subject:</label>
+          <input type="text" placeholder="Payment Reminder" value="First Payment Reminder">
+
+          <label>Additional Data (JSON - optional):</label>
+          <textarea rows="3" placeholder='{"amountDue": "$500"}' style="resize: vertical;"></textarea>
+        </div>
+
+        <div class="section">
+          <h3>Step 3: Preview & Send</h3>
+          <div class="button-group">
+            <button class="btn-primary">👁️ Preview</button>
+            <button class="btn-danger">📤 Send to All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison -->
+  <div class="comparison-section">
+    <h2 style="color: #333; margin-bottom: 25px;">📊 Feature Comparison</h2>
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Option 1: Enhanced CSS</th>
+          <th>Option 2: Material Design</th>
+          <th>Option 3: Bootstrap Pro</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="feature">Modern Look</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td class="feature">Smooth Animations</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td class="feature">Professional Feel</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td class="feature">Colorful & Vibrant</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+        </tr>
+        <tr>
+          <td class="feature">Google-like (Material)</td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="cross">✗</span></td>
+        </tr>
+        <tr>
+          <td class="feature">Bootstrap Compatible</td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td class="feature">Easy to Customize</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td class="feature">External Dependencies</td>
+          <td><span class="check">None</span></td>
+          <td><span class="check">None</span></td>
+          <td><span class="cross">Bootstrap CDN</span></td>
+        </tr>
+        <tr>
+          <td class="feature">Mobile Responsive</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td class="feature">Recommended For</td>
+          <td><span class="check">Modern & Fun</span></td>
+          <td><span class="check">Corporate/Google</span></td>
+          <td><span class="check">Enterprise/Web</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+      <h3 style="margin-bottom: 15px;">💡 My Recommendations:</h3>
+      <ul style="margin: 0; padding-left: 20px;">
+        <li><strong>Option 1:</strong> Best if you want something modern, colorful, and fun while keeping it simple</li>
+        <li><strong>Option 2:</strong> Best if you prefer a clean, minimal, Google-like design (professional)</li>
+        <li><strong>Option 3:</strong> Best if you want maximum compatibility and polish with established framework</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function showTab(tabName) {
+    // Hide all tabs
+    const tabs = document.querySelectorAll('.mockup-wrapper');
+    tabs.forEach(tab => tab.classList.remove('active'));
+
+    // Show selected tab
+    document.getElementById(tabName).classList.add('active');
+
+    // Update button states
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

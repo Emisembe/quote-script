@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <style>
+      body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; }
+      .container { max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+      .header { background: linear-gradient(135deg, {{primaryColor}}, {{accentColor}}); color: white; padding: 20px; text-align: center; }
+      .logo { height: 50px; margin-bottom: 10px; }
+      .banner { background-color: {{accentColor}}; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; }
+      .content { padding: 30px; }
+      .greeting { font-size: 18px; font-weight: bold; margin-bottom: 20px; }
+      .body-text { margin-bottom: 20px; }
+      .offer-box { background-color: #fff3cd; border: 2px solid {{accentColor}}; border-radius: 5px; padding: 20px; margin: 20px 0; text-align: center; }
+      .offer-text { font-size: 24px; font-weight: bold; color: {{primaryColor}}; margin: 10px 0; }
+      .offer-details { font-size: 14px; color: #666; }
+      .cta-button { display: inline-block; background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+      .footer { background-color: #f9f9f9; padding: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #666; }
+      .contact-info { margin: 10px 0; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        {{#if businessLogo}}<img src="{{businessLogo}}" alt="Logo" class="logo">{{/if}}
+        <h1>{{businessName}}</h1>
+      </div>
+      <div class="banner">🎉 LIMITED TIME OFFER 🎉</div>
+      <div class="content">
+        <div class="greeting">Hi {{firstName}},</div>
+        <div class="body-text">
+          We have an exclusive offer just for you!
+        </div>
+        <div class="offer-box">
+          <div class="offer-text">{{offerTitle}}</div>
+          <div class="offer-details">{{offerDescription}}</div>
+          <div class="offer-details">Valid until: {{offerExpiry}}</div>
+        </div>
+        <div class="body-text">
+          This is a limited-time opportunity to take advantage of our special pricing. Don't miss out!
+        </div>
+        <a href="{{offerLink}}" class="cta-button">Claim Your Offer</a>
+      </div>
+      <div class="footer">
+        <div class="contact-info">{{businessSignature}}</div>
+        <div class="contact-info">📧 {{businessEmail}}</div>
+        <div class="contact-info">📞 {{businessPhone}}</div>
+        <div class="contact-info">🌐 {{businessWebsite}}</div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "emailService": {
+    "provider": "gmail",
+    "senderEmail": "your-email@gmail.com",
+    "senderName": "Your Business Name"
+  },
+  "businesses": {
+    "default": {
+      "name": "Default Business",
+      "logo": "https://example.com/logo.png",
+      "colors": {
+        "primary": "#0066cc",
+        "accent": "#ff6600"
+      },
+      "contact": {
+        "email": "info@example.com",
+        "phone": "+1 (555) 000-0000",
+        "website": "https://example.com"
+      },
+      "signature": "Best regards,\nThe Team"
+    },
+    "acme-corp": {
+      "name": "ACME Corporation",
+      "logo": "https://acme.com/logo.png",
+      "colors": {
+        "primary": "#1a1a1a",
+        "accent": "#ff0000"
+      },
+      "contact": {
+        "email": "sales@acme.com",
+        "phone": "+1 (555) 123-4567",
+        "website": "https://acme.com"
+      },
+      "signature": "Thank you for your business,\nACME Sales Team"
+    }
+  }
+}
