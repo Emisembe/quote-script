@@ -157,8 +157,13 @@ class EmailAutomationSystem {
     const colors = business.colors || { primary: "#0066cc", accent: "#ff6600" };
     const social = business.social || {};
     const apps = business.apps || {};
+    const name = business.name || 'Company';
+    const email = business.email || 'contact@example.com';
+    const phone = business.phone || '(555) 000-0000';
+    const website = business.website || 'https://example.com';
+    const address = business.address || '';
 
-    let footerHtml = `<div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center; margin-top: 30px;">`;
+    let footerHtml = `<div style="background-color: ${colors.primary}; color: white; padding: 30px; text-align: center; margin-top: 30px;">`;
 
     // Social media icons
     let hasSocial = false;
@@ -189,37 +194,38 @@ class EmailAutomationSystem {
       }
     }
 
-    // Company info
+    // Company info section
     footerHtml += `<div style="border-top: 1px solid rgba(255,255,255,0.3); padding-top: 20px; margin-top: 20px;">`;
-    footerHtml += `<p style="margin: 8px 0; font-size: 13px; font-weight: bold;">{{businessName}}</p>`;
-    if (business.address) {
-      footerHtml += `<p style="margin: 8px 0; font-size: 12px;">{{businessAddress}}</p>`;
+    footerHtml += `<p style="margin: 8px 0; font-size: 13px; font-weight: bold;">${name}</p>`;
+    if (address) {
+      footerHtml += `<p style="margin: 8px 0; font-size: 12px;">${address}</p>`;
     }
-    footerHtml += `<p style="margin: 8px 0; font-size: 12px;">{{businessEmail}} | {{businessPhone}}</p>`;
-    footerHtml += `<p style="margin: 8px 0;"><a href="{{businessWebsite}}" style="color: white; text-decoration: none; font-size: 12px;">Visit our website</a></p>`;
+    footerHtml += `<p style="margin: 8px 0; font-size: 12px;">${email} | ${phone}</p>`;
+    footerHtml += `<p style="margin: 8px 0;"><a href="${website}" style="color: white; text-decoration: none; font-size: 12px;">Visit our website</a></p>`;
     footerHtml += `</div>`;
 
-    // App downloads
+    // App downloads section
     if (apps.iosApp || apps.androidApp) {
       footerHtml += `<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3);">`;
       footerHtml += `<p style="margin: 8px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Download Our App</p>`;
       if (apps.iosApp) {
-        footerHtml += `<a href="${apps.iosApp}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-size: 12px;">📱 iOS</a>`;
+        footerHtml += `<a href="${apps.iosApp}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-size: 12px; font-weight: bold;">📱 iOS</a>`;
       }
       if (apps.androidApp) {
-        footerHtml += `<a href="${apps.androidApp}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-size: 12px;">🤖 Android</a>`;
+        footerHtml += `<a href="${apps.androidApp}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-size: 12px; font-weight: bold;">🤖 Android</a>`;
       }
       footerHtml += `</div>`;
     }
 
-    // Footer links
+    // Footer legal links
     footerHtml += `<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.3); font-size: 11px;">`;
-    footerHtml += `<a href="{{businessWebsite}}/privacy" style="color: white; text-decoration: underline; margin: 0 8px;">Privacy Policy</a>`;
-    footerHtml += `<a href="{{businessWebsite}}/unsubscribe" style="color: white; text-decoration: underline; margin: 0 8px;">Unsubscribe</a>`;
-    footerHtml += `<a href="{{businessWebsite}}/preferences" style="color: white; text-decoration: underline; margin: 0 8px;">Preferences</a>`;
+    footerHtml += `<a href="${website}/privacy" style="color: white; text-decoration: underline; margin: 0 8px;">Privacy Policy</a>`;
+    footerHtml += ` | <a href="${website}/unsubscribe" style="color: white; text-decoration: underline;">Unsubscribe</a>`;
+    footerHtml += ` | <a href="${website}/preferences" style="color: white; text-decoration: underline;">Preferences</a>`;
     footerHtml += `</div>`;
 
-    footerHtml += `<p style="margin: 12px 0 0 0; font-size: 11px; opacity: 0.8;">© ${new Date().getFullYear()} {{businessName}}. All rights reserved.</p>`;
+    // Copyright with actual year and company name
+    footerHtml += `<p style="margin: 12px 0 0 0; font-size: 11px; opacity: 0.8;">© ${new Date().getFullYear()} ${name}. All rights reserved.</p>`;
     footerHtml += `</div>`;
 
     return footerHtml;
@@ -257,10 +263,10 @@ class EmailAutomationSystem {
 
       const emailData = {
         ...data,
-        businessName: business.name,
-        businessEmail: business.email,
-        businessPhone: business.phone,
-        businessWebsite: business.website,
+        businessName: business.name || 'Company',
+        businessEmail: business.email || 'contact@example.com',
+        businessPhone: business.phone || '(555) 000-0000',
+        businessWebsite: business.website || 'https://example.com',
         businessAddress: business.address || '',
         primaryColor: business.colors.primary,
         accentColor: business.colors.accent,
@@ -268,35 +274,39 @@ class EmailAutomationSystem {
       };
 
       if (!emailData.firstName) emailData.firstName = 'Friend';
-      if (!emailData.body) {
-        Logger.log(`[SEND] Email body is empty for ${recipientEmail}`);
-        throw new Error('Email body is empty');
-      }
+      if (!emailData.body) emailData.body = '';
+      if (!emailData.memberNo) emailData.memberNo = '';
+      if (!emailData.customMessage) emailData.customMessage = '';
+      if (!emailData.headline) emailData.headline = '';
 
       let htmlContent = template;
       Logger.log(`[SEND] Template HTML length: ${htmlContent.length} characters`);
 
-      // Replace all {{placeholder}} with actual values
+      // Replace all {{placeholder}} with actual values - convert to string to handle null/undefined
       Object.keys(emailData).forEach(key => {
         const value = emailData[key];
-        if (value !== null && value !== undefined) {
-          const regex = new RegExp(`{{${key}}}`, 'g');
-          const beforeLen = htmlContent.length;
-          htmlContent = htmlContent.replace(regex, String(value));
-          const replaced = beforeLen !== htmlContent.length;
-          if (replaced) Logger.log(`[SEND] Replaced placeholder {{${key}}}`);
-        }
+        const stringValue = value === null || value === undefined ? '' : String(value);
+        const regex = new RegExp(`{{${key}}}`, 'g');
+        const beforeLen = htmlContent.length;
+        htmlContent = htmlContent.replace(regex, stringValue);
+        const replaced = beforeLen !== htmlContent.length && stringValue;
+        if (replaced) Logger.log(`[SEND] Replaced {{${key}}} with value`);
+        if (stringValue === '' && beforeLen !== htmlContent.length) Logger.log(`[SEND] Cleared {{${key}}} (empty value)`);
       });
 
       // Handle conditionals: {{#if fieldName}}...{{/if}}
       htmlContent = htmlContent.replace(/{{#if (\w+)}}(.*?){{\/if}}/gs, (match, key, content) => {
-        return emailData[key] ? content : '';
+        const val = emailData[key];
+        const shouldShow = val !== null && val !== undefined && val !== '';
+        return shouldShow ? content : '';
       });
 
-      // Remove any remaining unreplaced placeholders
-      const unreplacedBefore = (htmlContent.match(/{{[^}]+}}/g) || []).length;
-      htmlContent = htmlContent.replace(/{{[^}]+}}/g, '');
-      if (unreplacedBefore > 0) Logger.log(`[SEND] Removed ${unreplacedBefore} unreplaced placeholders`);
+      // Remove any remaining unreplaced placeholders (should be very few)
+      const unreplacedMatches = htmlContent.match(/{{[^}]+}}/g) || [];
+      if (unreplacedMatches.length > 0) {
+        Logger.log(`[SEND] Found ${unreplacedMatches.length} unreplaced: ${unreplacedMatches.join(', ')}`);
+        htmlContent = htmlContent.replace(/{{[^}]+}}/g, '');
+      }
 
       Logger.log(`[SEND] Final HTML length: ${htmlContent.length} characters`);
       Logger.log(`[SEND] Attempting to call GmailApp.sendEmail()`);
