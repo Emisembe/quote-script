@@ -415,6 +415,9 @@ class ContactManager {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function scheduleEmail(data) {
+  // Initialize systems if not already done
+  if (!emailSystem) emailSystem = new EmailAutomationSystem();
+
   try {
     const fireAt = new Date(data.scheduledTime);
     if (isNaN(fireAt.getTime())) {
@@ -800,6 +803,10 @@ function getContactTags() {
 }
 
 function sendEmailNow(data) {
+  // Initialize systems if not already done
+  if (!emailSystem) emailSystem = new EmailAutomationSystem();
+  if (!emailLogger) emailLogger = new EmailLogger();
+
   const recipients = ContactManager.resolveRecipients(data.recipientMode, data.targetGroup, data.targetTag, data.manualEmails);
 
   if (!recipients.length) {
@@ -937,6 +944,24 @@ function composeDialogHtml_() {
 
     <label style="margin-top: 10px;">Main Message</label>
     <textarea id="body" rows="3" placeholder="Email body text..."></textarea>
+
+    <div style="background: #EFF3FF; border: 1px solid #C5CAE9; border-radius: 5px; padding: 12px; margin-top: 12px; font-size: 12px; color: #333;">
+      <div style="font-weight: bold; color: #283593; margin-bottom: 8px;">✨ Personalise your email — use placeholders</div>
+      <div style="line-height: 1.8;">
+        Each recipient gets their own copy with details substituted in.<br>
+        <span style="display: inline-block; margin-top: 6px;">
+          <code style="background: white; border: 1px solid #C5CAE9; border-radius: 3px; padding: 2px 6px; margin-right: 8px;">{{NAME}}</code> full name
+          <code style="background: white; border: 1px solid #C5CAE9; border-radius: 3px; padding: 2px 6px; margin-right: 8px; margin-left: 8px;">{{FIRST_NAME}}</code> first name
+        </span><br>
+        <span style="display: inline-block; margin-top: 4px;">
+          <code style="background: white; border: 1px solid #C5CAE9; border-radius: 3px; padding: 2px 6px; margin-right: 8px;">{{EMAIL}}</code> email
+          <code style="background: white; border: 1px solid #C5CAE9; border-radius: 3px; padding: 2px 6px; margin-right: 8px; margin-left: 8px;">{{MEMBER_NO}}</code> member number
+        </span>
+      </div>
+      <div style="margin-top: 8px; font-style: italic; color: #555;">
+        Example: "Dear {{FIRST_NAME}}, your member number is {{MEMBER_NO}}"
+      </div>
+    </div>
 
     <div id="sec-video" class="section">
       <label>Video URL</label>
