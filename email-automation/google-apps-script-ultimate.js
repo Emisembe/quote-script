@@ -140,20 +140,26 @@ class EmailAutomationSystem {
   }
 
   sendEmail(recipientEmail, templateName, businessKey, emailSubject, data) {
+    Logger.log(`[SEND] Starting sendEmail: to=${recipientEmail}, template=${templateName}, business=${businessKey}`);
+
     const validationError = this.validateEmail_(recipientEmail);
     if (validationError) {
+      Logger.log(`[SEND] Email validation failed: ${validationError}`);
       return { success: false, error: validationError, email: recipientEmail };
     }
 
     if (!this.businesses[businessKey]) {
+      Logger.log(`[SEND] Business not found: ${businessKey}`);
       return { success: false, error: `Business "${businessKey}" not found`, email: recipientEmail };
     }
 
     if (!this.templates[templateName]) {
+      Logger.log(`[SEND] Template not found: ${templateName}`);
       return { success: false, error: `Template "${templateName}" not found`, email: recipientEmail };
     }
 
     if (!emailSubject || emailSubject.trim() === '') {
+      Logger.log(`[SEND] Subject is empty`);
       return { success: false, error: "Subject cannot be empty", email: recipientEmail };
     }
 
@@ -161,9 +167,7 @@ class EmailAutomationSystem {
       const business = this.businesses[businessKey];
       const template = this.templates[templateName];
 
-      // Validate business and template exist
-      if (!business) throw new Error(`Business "${businessKey}" not configured`);
-      if (!template) throw new Error(`Template "${templateName}" not found`);
+      Logger.log(`[SEND] Business loaded: ${business.name}, Template loaded`);
 
       const emailData = {
         ...data,
@@ -175,18 +179,24 @@ class EmailAutomationSystem {
         accentColor: business.colors.accent
       };
 
-      // Validate required placeholders are filled
       if (!emailData.firstName) emailData.firstName = 'Friend';
-      if (!emailData.body) throw new Error('Email body is empty');
+      if (!emailData.body) {
+        Logger.log(`[SEND] Email body is empty for ${recipientEmail}`);
+        throw new Error('Email body is empty');
+      }
 
       let htmlContent = template;
+      Logger.log(`[SEND] Template HTML length: ${htmlContent.length} characters`);
 
       // Replace all {{placeholder}} with actual values
       Object.keys(emailData).forEach(key => {
         const value = emailData[key];
         if (value !== null && value !== undefined) {
           const regex = new RegExp(`{{${key}}}`, 'g');
+          const beforeLen = htmlContent.length;
           htmlContent = htmlContent.replace(regex, String(value));
+          const replaced = beforeLen !== htmlContent.length;
+          if (replaced) Logger.log(`[SEND] Replaced placeholder {{${key}}}`);
         }
       });
 
@@ -196,15 +206,28 @@ class EmailAutomationSystem {
       });
 
       // Remove any remaining unreplaced placeholders
+      const unreplacedBefore = (htmlContent.match(/{{[^}]+}}/g) || []).length;
       htmlContent = htmlContent.replace(/{{[^}]+}}/g, '');
+      if (unreplacedBefore > 0) Logger.log(`[SEND] Removed ${unreplacedBefore} unreplaced placeholders`);
 
-      // Send the email
-      GmailApp.sendEmail(recipientEmail, emailSubject, '', { htmlBody: htmlContent });
+      Logger.log(`[SEND] Final HTML length: ${htmlContent.length} characters`);
+      Logger.log(`[SEND] Attempting to call GmailApp.sendEmail()`);
+
+      // Send the email - wrap in try-catch to capture any runtime issues
+      try {
+        GmailApp.sendEmail(recipientEmail, emailSubject, '', { htmlBody: htmlContent });
+        Logger.log(`[SEND] ✓ GmailApp.sendEmail() completed without exception`);
+      } catch (gmailError) {
+        Logger.log(`[SEND] ✗ GmailApp.sendEmail() threw exception: ${gmailError.message}`);
+        throw gmailError;
+      }
+
+      Logger.log(`[SEND] ✓ Email sent successfully to ${recipientEmail}`);
       emailLogger.logSuccess(recipientEmail, businessKey, templateName, emailSubject);
       return { success: true, message: `Email sent to ${recipientEmail}` };
     } catch (error) {
       const errorMsg = error.message || 'Unknown error sending email';
-      Logger.log(`Email send failed for ${recipientEmail}: ${errorMsg}`);
+      Logger.log(`[SEND] ✗ Error: ${errorMsg}`);
       emailLogger.logError(recipientEmail, businessKey, templateName, emailSubject, errorMsg);
       return { success: false, error: errorMsg, email: recipientEmail };
     }
@@ -828,15 +851,24 @@ function sendEmailNow(data) {
   if (!emailSystem) emailSystem = new EmailAutomationSystem();
   if (!emailLogger) emailLogger = new EmailLogger();
 
+  Logger.log(`[SEND_BULK] Starting bulk send: mode=${data.recipientMode}, group=${data.targetGroup}, tag=${data.targetTag}`);
+
   const recipients = ContactManager.resolveRecipients(data.recipientMode, data.targetGroup, data.targetTag, data.manualEmails);
 
+  Logger.log(`[SEND_BULK] Recipients resolved: ${recipients.length} total`);
+
   if (!recipients.length) {
+    Logger.log(`[SEND_BULK] ✗ No recipients found!`);
     return { success: false, error: 'No valid recipients found.' };
   }
 
   let sent = 0, failed = [];
 
-  recipients.forEach(contact => {
+  Logger.log(`[SEND_BULK] Beginning to send ${recipients.length} emails...`);
+
+  recipients.forEach((contact, idx) => {
+    Logger.log(`[SEND_BULK] Processing recipient ${idx + 1}/${recipients.length}: ${contact.email}`);
+
     const firstName = contact.name.split(/\s+/)[0] || 'Member';
     const emailData = {
       firstName: firstName,
@@ -863,12 +895,18 @@ function sendEmailNow(data) {
     };
 
     const result = emailSystem.sendEmail(contact.email, data.template, data.business, data.subject, emailData);
-    if (result.success) sent++;
-    else failed.push(contact.email);
+    if (result.success) {
+      sent++;
+      Logger.log(`[SEND_BULK]   ✓ Success`);
+    } else {
+      failed.push(contact.email);
+      Logger.log(`[SEND_BULK]   ✗ Failed: ${result.error}`);
+    }
 
     Utilities.sleep(100);
   });
 
+  Logger.log(`[SEND_BULK] ✓ Bulk send complete: ${sent} sent, ${failed.length} failed`);
   return { success: failed.length === 0, sent: sent, failed: failed.length, total: recipients.length };
 }
 
