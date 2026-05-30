@@ -25,8 +25,15 @@ const CONFIG = {
     "video-update": "Video sharing with YouTube thumbnail detection",
     "announcement": "Important announcement with urgent styling",
     "newsletter": "Multi-section newsletter with sections",
-    "form-request": "Form/Survey with CTA button"
+    "form-request": "Form/Survey with CTA button",
+    "payment-reminder-friendly": "Friendly payment reminder - first notice",
+    "payment-reminder-urgent": "Urgent payment reminder - second notice",
+    "payment-reminder-final": "Final payment reminder - last notice"
   },
+
+  // ── Member number prefix (customize as needed) ─────────────────────────
+  MEMBER_PREFIX: 'MEM',
+  CUSTOMER_PREFIX: 'CUST',
 
   // ── Contact sheet columns ─────────────────────────────────────────────────
   CONTACT_COL: {
@@ -93,7 +100,10 @@ class EmailAutomationSystem {
       "video-update": this.getVideoTemplate(),
       "announcement": this.getAnnouncementTemplate(),
       "newsletter": this.getNewsletterTemplate(),
-      "form-request": this.getFormTemplate()
+      "form-request": this.getFormTemplate(),
+      "payment-reminder-friendly": this.getPaymentReminderFriendlyTemplate(),
+      "payment-reminder-urgent": this.getPaymentReminderUrgentTemplate(),
+      "payment-reminder-final": this.getPaymentReminderFinalTemplate()
     };
   }
 
@@ -115,6 +125,18 @@ class EmailAutomationSystem {
 
   getFormTemplate() {
     return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">{{headline}}</h1></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">{{body}}</p><div style="background-color: #F3F6FD; border: 2px solid {{primaryColor}}; border-radius: 8px; padding: 28px; margin: 26px 0; text-align: center;">{{#if formTitle}}<div style="font-size: 15px; font-weight: bold; color: #333; margin-bottom: 14px;">{{formTitle}}</div>{{/if}}<a href="{{formUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 14px 36px; border-radius: 5px; text-decoration: none; font-size: 15px; font-weight: bold; display: inline-block;">{{formButtonText}}</a>{{#if formNote}}<div style="font-size: 12px; color: #777; margin-top: 14px;">{{formNote}}</div>{{/if}}</div></div></div></body></html>`;
+  }
+
+  getPaymentReminderFriendlyTemplate() {
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: {{primaryColor}}; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">Payment Reminder</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Invoice {{invoiceNumber}}</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">Thank you for your business! We wanted to remind you that payment for invoice <strong>{{invoiceNumber}}</strong> is now due.</p><div style="background-color: #e3f2fd; border-left: 4px solid {{primaryColor}}; padding: 20px; margin: 20px 0; border-radius: 5px;"><p style="margin: 5px 0;"><strong>Amount Due:</strong> {{amount}}</p><p style="margin: 5px 0;"><strong>Due Date:</strong> {{dueDate}}</p><p style="margin: 5px 0;"><strong>Customer #:</strong> {{memberNo}}</p></div>{{#if customMessage}}<p style="color: #666; line-height: 1.6;">{{customMessage}}</p>{{/if}}<p style="color: #666; line-height: 1.6;">Please arrange payment at your earliest convenience. Payment can be made via the link below or contact us with any questions.</p><div style="text-align: center; margin: 30px 0;"><a href="{{paymentUrl}}" style="background-color: {{primaryColor}}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">💳 Make Payment</a></div></div><div style="background-color: #f9f9f9; padding: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #666; text-align: center;"><p style="margin: 5px 0;">{{businessEmail}} | {{businessPhone}}</p></div></div></body></html>`;
+  }
+
+  getPaymentReminderUrgentTemplate() {
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: #e67e22; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">⚠️ Urgent Payment Notice</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Invoice {{invoiceNumber}} is now overdue</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold; color: #d32f2f;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">This is a second notice regarding your outstanding payment. Invoice <strong>{{invoiceNumber}}</strong> is now <strong>overdue</strong> and requires immediate attention.</p><div style="background-color: #fff3e0; border-left: 4px solid #e67e22; padding: 20px; margin: 20px 0; border-radius: 5px;"><p style="margin: 5px 0;"><strong>Amount Due:</strong> {{amount}}</p><p style="margin: 5px 0;"><strong>Original Due Date:</strong> {{dueDate}}</p><p style="margin: 5px 0;"><strong>Days Overdue:</strong> {{daysOverdue}}</p><p style="margin: 5px 0;"><strong>Customer #:</strong> {{memberNo}}</p></div>{{#if customMessage}}<p style="color: #d32f2f; font-weight: bold;">{{customMessage}}</p>{{/if}}<p style="color: #666; line-height: 1.6;">To avoid any disruption to your account, please settle this payment immediately.</p><div style="text-align: center; margin: 30px 0;"><a href="{{paymentUrl}}" style="background-color: #e67e22; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">💳 Pay Now</a></div></div><div style="background-color: #f9f9f9; padding: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #666; text-align: center;"><p style="margin: 5px 0;">{{businessEmail}} | {{businessPhone}}</p></div></div></body></html>`;
+  }
+
+  getPaymentReminderFinalTemplate() {
+    return `<html><body style="font-family: Arial, sans-serif; color: #333; background-color: #f9f9f9;"><div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden;"><div style="background-color: #c62828; color: white; padding: 30px; text-align: center;"><h1 style="margin: 0;">🚨 FINAL NOTICE</h1><p style="margin: 10px 0 0 0; font-size: 14px;">Invoice {{invoiceNumber}} — Immediate Action Required</p></div><div style="padding: 30px;"><p style="font-size: 18px; font-weight: bold; color: #c62828;">Hi {{firstName}},</p><p style="color: #666; line-height: 1.6;">This is our <strong>final notice</strong> regarding your outstanding payment. Invoice <strong>{{invoiceNumber}}</strong> remains unpaid and is significantly overdue.</p><div style="background-color: #ffebee; border-left: 4px solid #c62828; padding: 20px; margin: 20px 0; border-radius: 5px;"><p style="margin: 5px 0;"><strong>Amount Due:</strong> {{amount}}</p><p style="margin: 5px 0;"><strong>Original Due Date:</strong> {{dueDate}}</p><p style="margin: 5px 0;"><strong>Days Overdue:</strong> {{daysOverdue}}</p><p style="margin: 5px 0;"><strong>Customer #:</strong> {{memberNo}}</p></div>{{#if customMessage}}<p style="color: #c62828; font-weight: bold;">{{customMessage}}</p>{{/if}}<p style="color: #c62828; line-height: 1.6; font-weight: bold;">Failure to settle this payment within 48 hours will result in further action, which may include suspension of services or referral to a collection agency.</p><div style="text-align: center; margin: 30px 0;"><a href="{{paymentUrl}}" style="background-color: #c62828; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">💳 Settle Payment Now</a></div><p style="color: #666; line-height: 1.6; font-size: 14px; text-align: center; margin-top: 20px;">If payment has already been made, please contact us immediately to reconcile this account.</p></div><div style="background-color: #f9f9f9; padding: 20px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #666; text-align: center;"><p style="margin: 5px 0;">{{businessEmail}} | {{businessPhone}}</p></div></div></body></html>`;
   }
 
   sendEmail(recipientEmail, templateName, businessKey, emailSubject, data) {
@@ -527,6 +549,7 @@ function onOpen() {
     .addItem('📅 Scheduled Emails', 'openScheduleManager')
     .addSeparator()
     .addItem('👤 Add Contact', 'openAddContactDialog')
+    .addItem('🔢 Generate Member Numbers', 'openMemberNumberGenerator')
     .addItem('👥 View Contacts', 'goToContacts')
     .addItem('📋 View Email Log', 'goToLog')
     .addToUi();
@@ -540,6 +563,150 @@ function goToContacts() {
 function goToLog() {
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_LOG);
   if (sh) SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(sh);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  MEMBER NUMBER GENERATOR
+// ═══════════════════════════════════════════════════════════════════════════
+
+function openMemberNumberGenerator() {
+  const html = HtmlService.createHtmlOutput(`
+    <!DOCTYPE html><html><head><style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; font-size: 13px; margin: 0; padding: 16px 20px; background: #f5f5f5; color: #333; }
+    h2 { color: #0D47A1; margin-top: 0; }
+    label { display: block; font-weight: bold; margin: 12px 0 4px; }
+    label span { font-weight: normal; color: #777; }
+    input, select { width: 100%; padding: 8px 10px; border: 1px solid #CCC; border-radius: 4px; font-size: 13px; }
+    .row { display: flex; gap: 12px; margin-bottom: 10px; }
+    .row > div { flex: 1; }
+    .info { background: #e3f2fd; border-left: 4px solid #0D47A1; padding: 12px; margin: 12px 0; border-radius: 4px; font-size: 12px; }
+    .btn { padding: 9px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 12px; width: 100%; }
+    .btn-primary { background: #0D47A1; color: white; }
+    .btn-cancel { background: #DDD; color: #444; }
+    .status { margin-top: 12px; padding: 10px; border-radius: 4px; display: none; font-size: 13px; }
+    .ok { background: #E8F5E9; color: #1B5E20; }
+    .err { background: #FFCDD2; color: #B71C1C; }
+    </style></head><body>
+
+    <h2>🔢 Generate Member / Customer Numbers</h2>
+    <p style="color: #666; font-size: 12px;">Auto-generate formatted member or customer numbers for all contacts without one.</p>
+
+    <div class="info">
+      💡 This will automatically assign unique numbers to all contacts that don't have a Member/Customer No. yet.<br>
+      Format: <strong>PREFIX-0001, PREFIX-0002, etc.</strong>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Prefix Type</label>
+        <select id="prefixType">
+          <option value="MEM">MEM (Member)</option>
+          <option value="CUST">CUST (Customer)</option>
+          <option value="custom">Custom Prefix</option>
+        </select>
+      </div>
+      <div>
+        <label>Starting Number</label>
+        <input id="startNumber" type="number" value="1" min="1">
+      </div>
+    </div>
+
+    <div id="customPrefixDiv" style="display: none;">
+      <label>Custom Prefix</label>
+      <input id="customPrefix" placeholder="e.g. CLIENT, ACCOUNT, etc.">
+      <div style="font-size: 11px; color: #777; margin-top: 3px;">Letters only, max 10 characters</div>
+    </div>
+
+    <div style="display: flex; gap: 10px; margin-top: 16px;">
+      <button class="btn btn-cancel" onclick="google.script.host.close()" style="flex: 1;">Cancel</button>
+      <button class="btn btn-primary" id="generateBtn" onclick="doGenerate()" style="flex: 1;">✨ Generate & Assign</button>
+    </div>
+
+    <div class="status" id="statusBox"></div>
+
+    <script>
+      document.getElementById('prefixType').addEventListener('change', function() {
+        document.getElementById('customPrefixDiv').style.display = this.value === 'custom' ? 'block' : 'none';
+      });
+
+      function doGenerate() {
+        const prefixType = document.getElementById('prefixType').value;
+        let prefix = prefixType;
+
+        if (prefixType === 'custom') {
+          prefix = document.getElementById('customPrefix').value.trim().toUpperCase();
+          if (!prefix) { show('❌ Please enter a custom prefix', 'err'); return; }
+          if (!/^[A-Z]+$/.test(prefix)) { show('❌ Prefix must contain letters only', 'err'); return; }
+          if (prefix.length > 10) { show('❌ Prefix must be 10 characters or less', 'err'); return; }
+        }
+
+        const startNum = parseInt(document.getElementById('startNumber').value) || 1;
+        if (startNum < 1) { show('❌ Starting number must be 1 or greater', 'err'); return; }
+
+        const btn = document.getElementById('generateBtn');
+        btn.disabled = true;
+        btn.textContent = 'Generating...';
+
+        google.script.run
+          .withSuccessHandler(r => {
+            if (r.success) {
+              show('✅ Generated ' + r.count + ' member numbers. Numbers assigned: ' + r.numbers.join(', '), 'ok');
+              btn.textContent = '✨ Done';
+            } else {
+              show('❌ ' + r.error, 'err');
+              btn.disabled = false;
+              btn.textContent = '✨ Generate & Assign';
+            }
+          })
+          .withFailureHandler(e => {
+            show('❌ Error: ' + e.message, 'err');
+            btn.disabled = false;
+            btn.textContent = '✨ Generate & Assign';
+          })
+          .generateMemberNumbers(prefix, startNum);
+      }
+
+      function show(msg, cls) {
+        const s = document.getElementById('statusBox');
+        s.className = 'status ' + cls;
+        s.textContent = msg;
+        s.style.display = 'block';
+      }
+    </script>
+    </body></html>
+  `).setWidth(520).setHeight(430);
+  SpreadsheetApp.getUi().showModalDialog(html, '🔢 Generate Member Numbers');
+}
+
+function generateMemberNumbers(prefix, startNum) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sh = ss.getSheetByName(SHEET_CONTACTS);
+  if (!sh) return { success: false, error: 'Contacts sheet not found' };
+
+  const data = sh.getDataRange().getValues();
+  if (data.length < 2) return { success: false, error: 'No contacts to generate numbers for' };
+
+  let count = 0;
+  const assignedNumbers = [];
+  let nextNum = startNum;
+
+  for (let i = 1; i < data.length; i++) {
+    const memberNo = (data[i][CON_COL.MEMBER_NO - 1] || '').toString().trim();
+    if (!memberNo) {
+      const newNumber = prefix + '-' + String(nextNum).padStart(4, '0');
+      sh.getRange(i + 1, CON_COL.MEMBER_NO, 1, 1).setValue(newNumber);
+      assignedNumbers.push(newNumber);
+      count++;
+      nextNum++;
+    }
+  }
+
+  if (count === 0) {
+    return { success: false, error: 'All contacts already have member numbers' };
+  }
+
+  return { success: true, count: count, numbers: assignedNumbers };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -659,6 +826,11 @@ function sendEmailNow(data) {
       formButtonText: data.formButtonText || '',
       formTitle: data.formTitle || '',
       formNote: data.formNote || '',
+      invoiceNumber: data.invoiceNumber || '',
+      amount: data.amount || '',
+      dueDate: data.dueDate || '',
+      daysOverdue: data.daysOverdue || '',
+      paymentUrl: data.paymentUrl || '',
       memberNo: contact.memberNo || ''
     };
 
@@ -746,6 +918,11 @@ function composeDialogHtml_() {
         <option value="announcement">Announcement</option>
         <option value="newsletter">Newsletter</option>
         <option value="form-request">Form / Survey</option>
+        <optgroup label="Payment Reminders">
+          <option value="payment-reminder-friendly">💳 Friendly Reminder (1st Notice)</option>
+          <option value="payment-reminder-urgent">⚠️ Urgent Notice (2nd Notice)</option>
+          <option value="payment-reminder-final">🚨 Final Notice (Last Notice)</option>
+        </optgroup>
       </select></div>
       <div><label>Subject</label><input id="subject" placeholder="Email subject..."></div>
     </div>
@@ -789,6 +966,21 @@ function composeDialogHtml_() {
       <input id="formTitle" placeholder="Optional panel title">
       <label style="margin-top: 8px;">Note under button</label>
       <input id="formNote" placeholder="Optional note">
+    </div>
+
+    <div id="sec-payment" class="section">
+      <hr>
+      <div class="row">
+        <div><label>Invoice Number</label><input id="invoiceNumber" placeholder="INV-2024-001"></div>
+        <div><label>Amount Due</label><input id="amount" placeholder="$5,000.00"></div>
+      </div>
+      <div class="row">
+        <div><label>Due Date</label><input id="dueDate" placeholder="May 31, 2024"></div>
+        <div><label>Days Overdue <span>(for urgent/final)</span></label><input id="daysOverdue" placeholder="5 days" type="number" min="0"></div>
+      </div>
+      <label>Payment Link / URL</label>
+      <input id="paymentUrl" placeholder="https://payment.example.com/...">
+      <div style="font-size: 11px; color: #777; margin-top: 3px;">Users click this button to make payment</div>
     </div>
 
     <div id="sec-cta">
@@ -856,10 +1048,12 @@ function composeDialogHtml_() {
 
     function switchTemplate() {
       const t = document.getElementById('tmpl').value;
+      const isPayment = t.startsWith('payment-reminder-');
       document.getElementById('sec-video').style.display = (t === 'video-update') ? 'block' : 'none';
       document.getElementById('sec-newsletter').style.display = (t === 'newsletter') ? 'block' : 'none';
       document.getElementById('sec-form').style.display = (t === 'form-request') ? 'block' : 'none';
-      document.getElementById('sec-cta').style.display = (t === 'form-request') ? 'none' : 'block';
+      document.getElementById('sec-payment').style.display = isPayment ? 'block' : 'none';
+      document.getElementById('sec-cta').style.display = (t === 'form-request' || isPayment) ? 'none' : 'block';
     }
 
     function switchRecip() {
@@ -923,6 +1117,11 @@ function composeDialogHtml_() {
         formButtonText: document.getElementById('formButtonText').value.trim(),
         formTitle: document.getElementById('formTitle').value.trim(),
         formNote: document.getElementById('formNote').value.trim(),
+        invoiceNumber: document.getElementById('invoiceNumber').value.trim(),
+        amount: document.getElementById('amount').value.trim(),
+        dueDate: document.getElementById('dueDate').value.trim(),
+        daysOverdue: document.getElementById('daysOverdue').value.trim(),
+        paymentUrl: document.getElementById('paymentUrl').value.trim(),
         ctaText: document.getElementById('ctaText').value.trim(),
         ctaUrl: document.getElementById('ctaUrl').value.trim(),
         recipientMode: document.getElementById('recipMode').value,
