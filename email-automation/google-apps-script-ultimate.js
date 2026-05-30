@@ -583,11 +583,14 @@ class BulkEmailSender {
         #resultsSection { display: none; margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); border-left: 4px solid #667eea; border-radius: 6px; }
         #resultsSection h3 { color: #667eea; margin-bottom: 10px; }
         #resultsSummary { color: #555; line-height: 1.6; }
+        .available-list { background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); padding: 12px; border-radius: 6px; margin-top: 8px; max-height: 180px; overflow-y: auto; border-left: 4px solid #667eea; }
+        .available-item { padding: 8px; margin: 4px 0; background-color: white; border-radius: 4px; cursor: pointer; transition: all 0.2s ease; font-size: 0.9em; color: #555; }
+        .available-item:hover { background-color: #e3ecff; color: #667eea; font-weight: 500; }
       </style>
       <div class="container">
         <div class="header-section">
           <h2>📤 Bulk Send Emails</h2>
-          <p>Send personalized emails to all customers</p>
+          <p>Send personalized emails to all customers in a sheet</p>
         </div>
         <div class="content">
 
@@ -596,38 +599,54 @@ class BulkEmailSender {
         </div>
 
         <div class="section">
-          <h3>Step 1: Select Sheet</h3>
-          <label>Sheet name (type the exact name):</label>
+          <h3>📋 Step 1: Select Your Sheet</h3>
+          <label>Type or click to select a sheet:</label>
           <input type="text" id="sheetNameSelect" placeholder="e.g., Payment Reminders" value="">
           <div class="info">
-            ℹ️ Type your sheet name exactly as it appears in the tabs. Must have: Email, First Name columns
+            💡 <strong>Your available sheets:</strong>
+          </div>
+          <div class="available-list" id="availableSheets">
+            <div class="available-item">Loading sheets...</div>
+          </div>
+          <div class="info" style="margin-top: 12px;">
+            ℹ️ Click a sheet name above to select it, or type the exact name. Sheet must have "Email" and "First Name" columns.
           </div>
         </div>
 
         <div class="section">
-          <h3>Step 2: Configure Email</h3>
+          <h3>⚙️ Step 2: Configure Email</h3>
 
-          <label>Email Template:</label>
+          <label><strong>Email Template:</strong> (required)</label>
           <select id="bulkTemplateSelect">
+            <option value="">-- Choose a template --</option>
             ${templateOptions}
           </select>
+          <div class="info">
+            💡 Example: "quote-sent", "follow-up", or any template you created
+          </div>
 
-          <label>Business:</label>
+          <label><strong>Business:</strong> (required)</label>
           <select id="bulkBusinessSelect">
+            <option value="">-- Choose a business --</option>
             ${businessOptions}
           </select>
+          <div class="info">
+            💡 This determines the business name, email, phone, and colors in the email
+          </div>
 
-          <label>Email Subject:</label>
+          <label><strong>Email Subject:</strong> (required)</label>
           <input type="text" id="bulkEmailSubject" placeholder="Your Quote is Ready!" value="Your Quote is Ready!">
+          <div class="info">
+            💡 Example: "Your quote is ready", "Payment reminder", "Special offer for you"
+          </div>
 
-          <label>Additional Data (JSON - optional):</label>
-          <textarea id="bulkAdditionalData" placeholder='{"quoteId": "Q-001", "totalAmount": "5000"}
-(Leave empty to use data from sheet)
-(Or provide static data for all emails)'></textarea>
+          <label><strong>Additional Data:</strong> (optional)</label>
+          <textarea id="bulkAdditionalData" placeholder='Example: {"quoteId": "Q-001", "totalAmount": "5000", "demoLink": "https://..."}'></textarea>
 
           <div class="info">
-            💡 Additional data will be added to EVERY email.
-            Leave empty if your sheet has the data in columns.
+            💡 <strong>Leave empty</strong> if your sheet columns have the data (recommended)<br>
+            <strong>Or paste JSON</strong> to add the same data to ALL emails, like quotation IDs or demo links<br>
+            <strong>Format:</strong> {"variableName": "value", "another": "value"}
           </div>
         </div>
 
@@ -654,6 +673,30 @@ class BulkEmailSender {
       </div>
 
       <script>
+        // Load available sheets on dialog open
+        function loadAvailableSheets() {
+          google.script.run.getSheetList(function(sheets) {
+            const container = document.getElementById('availableSheets');
+            if (sheets.length === 0) {
+              container.innerHTML = '<div class="available-item" style="color: #999;">No sheets available</div>';
+              return;
+            }
+            container.innerHTML = sheets.map(sheet =>
+              '<div class="available-item" onclick="selectSheet(\'' + sheet.replace(/'/g, "\\'") + '\')">' +
+              '📄 ' + sheet +
+              '</div>'
+            ).join('');
+          });
+        }
+
+        function selectSheet(sheetName) {
+          document.getElementById('sheetNameSelect').value = sheetName;
+          document.getElementById('sheetNameSelect').focus();
+        }
+
+        // Load sheets when dialog opens
+        loadAvailableSheets();
+
         function previewBulkEmail() {
           const sheetName = document.getElementById('sheetNameSelect').value;
           if (!sheetName) {
@@ -899,6 +942,7 @@ class FileUploadImporter {
         button { background-color: #667eea; color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; margin-top: 15px; }
         button:hover { background-color: #5568d3; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
         .info { background-color: #f0f4ff; border-left: 4px solid #667eea; padding: 12px; border-radius: 6px; margin-top: 8px; color: #555; font-size: 0.9em; line-height: 1.6; }
+        code { background-color: #e8ecf5; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.85em; color: #333; }
         .progress { display: none; margin-top: 20px; }
         .progress-text { color: #667eea; font-weight: 600; }
         #resultsSection { display: none; margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); border-left: 4px solid #667eea; border-radius: 6px; }
@@ -913,26 +957,30 @@ class FileUploadImporter {
         <div class="content">
 
         <div class="section">
-          <h3>📥 Choose File</h3>
-          <label>Select a CSV or Excel file:</label>
+          <h3>📥 Step 1: Choose Your File</h3>
+          <label><strong>Select a CSV or Excel file:</strong></label>
           <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" />
 
           <div class="info">
-            ✅ Supported formats: CSV, Excel (.xlsx, .xls)<br>
-            ✅ Required columns: Email, First Name<br>
-            ✅ Optional columns: Last Name, Company, Custom Message, etc.
+            <strong>✅ Your CSV should look like:</strong><br>
+            <code>Email, First Name, Last Name, Company, Custom Message</code><br>
+            <code>john@example.com, John, Smith, ACME Corp, Custom note here</code><br>
+            <code>jane@example.com, Jane, Doe, Tech Inc, Another note</code><br><br>
+            <strong>✅ Supported formats:</strong> CSV (.csv), Excel (.xlsx, .xls)<br>
+            <strong>✅ Required columns:</strong> Email, First Name<br>
+            <strong>✅ Optional columns:</strong> Last Name, Company, Custom Message, Amount, Quote ID, Video URL, Link URL, Notes
           </div>
         </div>
 
         <div class="section">
-          <h3>⚙️ Configure Import</h3>
+          <h3>⚙️ Step 2: Configure Sheet Name</h3>
 
-          <label>New Sheet Name:</label>
-          <input type="text" id="sheetNameInput" placeholder="Imported Customers" value="Imported Customers">
+          <label><strong>What should the new sheet be called?</strong></label>
+          <input type="text" id="sheetNameInput" placeholder="e.g., Imported Customers" value="Imported Customers">
 
           <div class="info">
-            💡 The data will be imported into a new sheet with this name.
-            If the sheet exists, it will be overwritten.
+            💡 <strong>Example names:</strong> "Payment Reminders", "Q3 Leads", "Newsletter List", "Imported Data"<br>
+            💡 The data will import into a new sheet with this name. If it exists, it will be overwritten.
           </div>
         </div>
 
@@ -1645,30 +1693,47 @@ function showSendEmailDialog() {
       </div>
       <div class="content">
 
-      <label>Select Customer:</label>
+      <label><strong>Select Customer:</strong> (required)</label>
       <select id="customerSelect">
         <option value="">-- Choose a customer --</option>
         ${customerOptions}
       </select>
+      <div class="info">
+        💡 Customers are loaded from your imported data. Shows email and custom message.
+      </div>
 
-      <label>Email Template:</label>
+      <label><strong>Email Template:</strong> (required)</label>
       <select id="templateSelect">
+        <option value="">-- Choose a template --</option>
         ${templateOptions}
       </select>
+      <div class="info">
+        💡 Example: "quote-sent" uses {{firstName}}, {{customMessage}}, {{totalAmount}}, etc.
+      </div>
 
-      <label>Business:</label>
+      <label><strong>Business:</strong> (required)</label>
       <select id="businessSelect">
+        <option value="">-- Choose a business --</option>
         ${businessOptions}
       </select>
+      <div class="info">
+        💡 Determines email signature, colors, and branding in the email
+      </div>
 
-      <label>Email Subject:</label>
+      <label><strong>Email Subject:</strong> (required)</label>
       <input type="text" id="emailSubject" placeholder="Your Quote is Ready!" value="Your Quote is Ready!">
+      <div class="info">
+        💡 Example: "Your quote is ready", "Thank you for your inquiry", "Special offer inside"
+      </div>
 
-      <label>Additional Data (JSON - optional):</label>
-      <textarea id="additionalData" placeholder='{"quoteId": "Q-001", "totalAmount": "5000", "videoUrl": "https://..."}'></textarea>
+      <label><strong>Additional Data:</strong> (optional)</label>
+      <textarea id="additionalData" placeholder='Example: {"quoteId": "Q-001", "totalAmount": "5000", "demoLink": "https://..."}'></textarea>
 
       <div class="info">
-        ℹ️ Custom message will be auto-filled from sheet if available
+        💡 Add extra information to personalize this email<br>
+        <strong>Leave empty</strong> to use only the customer data from your sheet<br>
+        <strong>Or provide JSON</strong> like: {"variableName": "value"}<br>
+        💡 {{customMessage}} auto-fills from sheet if available
       </div>
 
       <div class="button-group">
