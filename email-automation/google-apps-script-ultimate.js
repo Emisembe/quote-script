@@ -161,6 +161,10 @@ class EmailAutomationSystem {
       const business = this.businesses[businessKey];
       const template = this.templates[templateName];
 
+      // Validate business and template exist
+      if (!business) throw new Error(`Business "${businessKey}" not configured`);
+      if (!template) throw new Error(`Template "${templateName}" not found`);
+
       const emailData = {
         ...data,
         businessName: business.name,
@@ -171,23 +175,38 @@ class EmailAutomationSystem {
         accentColor: business.colors.accent
       };
 
+      // Validate required placeholders are filled
+      if (!emailData.firstName) emailData.firstName = 'Friend';
+      if (!emailData.body) throw new Error('Email body is empty');
+
       let htmlContent = template;
+
+      // Replace all {{placeholder}} with actual values
       Object.keys(emailData).forEach(key => {
-        const regex = new RegExp(`{{${key}}}`, 'g');
-        htmlContent = htmlContent.replace(regex, emailData[key] || '');
+        const value = emailData[key];
+        if (value !== null && value !== undefined) {
+          const regex = new RegExp(`{{${key}}}`, 'g');
+          htmlContent = htmlContent.replace(regex, String(value));
+        }
       });
 
-      // Handle conditionals
+      // Handle conditionals: {{#if fieldName}}...{{/if}}
       htmlContent = htmlContent.replace(/{{#if (\w+)}}(.*?){{\/if}}/gs, (match, key, content) => {
         return emailData[key] ? content : '';
       });
 
+      // Remove any remaining unreplaced placeholders
+      htmlContent = htmlContent.replace(/{{[^}]+}}/g, '');
+
+      // Send the email
       GmailApp.sendEmail(recipientEmail, emailSubject, '', { htmlBody: htmlContent });
       emailLogger.logSuccess(recipientEmail, businessKey, templateName, emailSubject);
       return { success: true, message: `Email sent to ${recipientEmail}` };
     } catch (error) {
-      emailLogger.logError(recipientEmail, businessKey, templateName, emailSubject, error.message);
-      return { success: false, error: error.message, email: recipientEmail };
+      const errorMsg = error.message || 'Unknown error sending email';
+      Logger.log(`Email send failed for ${recipientEmail}: ${errorMsg}`);
+      emailLogger.logError(recipientEmail, businessKey, templateName, emailSubject, errorMsg);
+      return { success: false, error: errorMsg, email: recipientEmail };
     }
   }
 
