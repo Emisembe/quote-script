@@ -35,7 +35,7 @@ const CONFIG = {
         accent: "#ff6600"
       },
 
-      // Footer columns (customize as needed)
+      // Footer columns (customize as needed) - FOLLOW US moved to dedicated social section below
       footerColumns: [
         {
           title: "QUICK LINKS",
@@ -62,15 +62,6 @@ const CONFIG = {
             { text: "Contact", url: "https://yourwebsite.com/contact" },
             { text: "Documentation", url: "https://yourwebsite.com/docs" },
             { text: "Support", url: "https://yourwebsite.com/support" }
-          ]
-        },
-        {
-          title: "FOLLOW US",
-          links: [
-            { text: "Facebook", url: "https://facebook.com/yourbusiness" },
-            { text: "Twitter", url: "https://twitter.com/yourbusiness" },
-            { text: "LinkedIn", url: "https://linkedin.com/company/yourbusiness" },
-            { text: "Instagram", url: "https://instagram.com/yourbusiness" }
           ]
         }
       ],
@@ -322,11 +313,11 @@ class EmailAutomationSystem {
     footerHtml += `<p style="margin: 0; font-size: ${fontSize}; line-height: 1.5; color: rgba(255,255,255,0.9);">${business.tagline || ''}</p>`;
     footerHtml += `</div>`;
 
-    // NEW THREE-COLUMN LAYOUT: Company Info | Office | Contact (spread out)
+    // NEW FOUR-COLUMN LAYOUT: Company | Office | Contact | Space (consolidates 3 sections into 1)
     footerHtml += `<div style="padding: ${padding} 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">`;
     footerHtml += `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
       <tr>
-        <td width="33%" style="padding-right: ${colGap}; vertical-align: top;">
+        <td width="25%" style="padding-right: ${colGap}; vertical-align: top;">
           <h3 style="margin: 0 0 8px 0; font-size: ${fontSizeLabel}; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">COMPANY</h3>`;
 
     if (company.managingDirector) {
@@ -340,17 +331,19 @@ class EmailAutomationSystem {
     }
 
     footerHtml += `</td>
-        <td width="33%" style="padding-right: ${colGap}; padding-left: ${colGap}; vertical-align: top; border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">
+        <td width="25%" style="padding-right: ${colGap}; padding-left: ${colGap}; vertical-align: top; border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">
           <h3 style="margin: 0 0 8px 0; font-size: ${fontSizeLabel}; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">OFFICE</h3>
           ${address.street ? `<p style="margin: 4px 0; font-size: ${fontSizeSmall};">${address.street}</p>` : ''}
           ${address.city ? `<p style="margin: 4px 0; font-size: ${fontSizeSmall};">${address.city}</p>` : ''}
           ${address.country ? `<p style="margin: 4px 0; font-size: ${fontSizeSmall};">${address.country}</p>` : ''}
         </td>
-        <td width="33%" style="padding-left: ${colGap}; vertical-align: top;">
+        <td width="25%" style="padding-right: ${colGap}; padding-left: ${colGap}; vertical-align: top; border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">
           <h3 style="margin: 0 0 8px 0; font-size: ${fontSizeLabel}; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">CONTACT</h3>
           <p style="margin: 4px 0; font-size: ${fontSizeSmall};"><a href="mailto:${email}" style="color: white; text-decoration: underline;">${email}</a></p>
           <p style="margin: 4px 0; font-size: ${fontSizeSmall};">${phone}</p>
           <p style="margin: 4px 0; font-size: ${fontSizeSmall};"><a href="${website}" style="color: white; text-decoration: underline;">Website</a></p>
+        </td>
+        <td width="25%" style="padding-left: ${colGap}; vertical-align: top;">
         </td>
       </tr>
     </table>`;
