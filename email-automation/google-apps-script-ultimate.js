@@ -88,7 +88,8 @@ const CONFIG = {
       // App store links (leave blank to hide)
       apps: {
         appStoreUrl: "https://apps.apple.com/app/yourbusiness",
-        googlePlayUrl: "https://play.google.com/store/apps/details?id=com.yourbusiness"
+        googlePlayUrl: "https://play.google.com/store/apps/details?id=com.yourbusiness",
+        donationUrl: "" // e.g., "https://donate.example.com" or "https://paypal.me/yourbusiness"
       }
     }
   },
@@ -349,7 +350,7 @@ class EmailAutomationSystem {
     </table>`;
     footerHtml += `</div>`;
 
-    // Multi-column links section (Quick Links, Resources, Support, Follow Us)
+    // Multi-column links section (Quick Links, Resources, Support)
     if (columns.length > 0) {
       footerHtml += `<div style="padding: ${padding} 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">`;
       footerHtml += `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
@@ -359,15 +360,16 @@ class EmailAutomationSystem {
         const colWidth = 100 / columns.length;
         const isLastCol = idx === columns.length - 1;
         const borderRight = isLastCol ? '' : `border-right: 1px solid rgba(255,255,255,0.2);`;
+        const colPadding = `0 ${colGap} 0 ${idx === 0 ? '0' : colGap}`;
 
-        footerHtml += `<td width="${colWidth}%" style="padding: 0 ${colGap} 0 0; vertical-align: top; ${borderRight}">`;
-        footerHtml += `<h3 style="margin: 0 0 8px 0; font-size: ${fontSizeLabel}; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">${col.title}</h3>`;
+        footerHtml += `<td width="${colWidth}%" style="padding: ${colPadding}; vertical-align: top; ${borderRight}">`;
+        footerHtml += `<h3 style="margin: 0 0 12px 0; font-size: ${fontSizeLabel}; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">${col.title}</h3>`;
 
         col.links.forEach(link => {
           if (link.url) {
-            footerHtml += `<p style="margin: ${brand.spacing.footerRowGap} 0; font-size: ${fontSize};"><a href="${link.url}" style="color: white; text-decoration: underline;">${link.text}</a></p>`;
+            footerHtml += `<p style="margin: 0 0 10px 0; font-size: ${fontSize};"><a href="${link.url}" style="color: white; text-decoration: underline; display: block; padding: 2px 0;">${link.text}</a></p>`;
           } else {
-            footerHtml += `<p style="margin: ${brand.spacing.footerRowGap} 0; font-size: ${fontSize}; color: rgba(255,255,255,0.9);">${link.text}</p>`;
+            footerHtml += `<p style="margin: 0 0 10px 0; font-size: ${fontSize}; color: rgba(255,255,255,0.9);">${link.text}</p>`;
           }
         });
 
@@ -378,19 +380,33 @@ class EmailAutomationSystem {
       footerHtml += `</div>`;
     }
 
-    // App download section
-    if (apps.appStoreUrl || apps.googlePlayUrl) {
+    // App download section and donation button
+    if (apps.appStoreUrl || apps.googlePlayUrl || apps.donationUrl) {
       footerHtml += `<div style="padding: ${padding} 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">`;
-      footerHtml += `<h3 style="margin: 0 0 8px 0; font-size: ${fontSizeLabel}; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">GET OUR APP</h3>`;
-      footerHtml += `<p style="margin: 0 0 12px 0; font-size: ${fontSize};">Stay connected on the go. Download our app.</p>`;
-      footerHtml += `<div style="text-align: center;">`;
-      if (apps.appStoreUrl) {
-        footerHtml += `<a href="${apps.appStoreUrl}" style="color: white; text-decoration: none; display: inline-block; margin-right: 12px; font-size: ${fontSizeSmall}; font-weight: bold; border: 1px solid rgba(255,255,255,0.5); padding: 10px 14px; border-radius: 4px;">Download on App Store</a>`;
+
+      // App downloads
+      if (apps.appStoreUrl || apps.googlePlayUrl) {
+        footerHtml += `<h3 style="margin: 0 0 8px 0; font-size: ${fontSizeLabel}; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">GET OUR APP</h3>`;
+        footerHtml += `<p style="margin: 0 0 12px 0; font-size: ${fontSize};">Stay connected on the go. Download our app.</p>`;
+        footerHtml += `<div style="text-align: center; margin-bottom: 16px;">`;
+        if (apps.appStoreUrl) {
+          footerHtml += `<a href="${apps.appStoreUrl}" style="color: white; text-decoration: none; display: inline-block; margin-right: 12px; font-size: ${fontSizeSmall}; font-weight: bold; border: 1px solid rgba(255,255,255,0.5); padding: 10px 14px; border-radius: 4px;">Download on App Store</a>`;
+        }
+        if (apps.googlePlayUrl) {
+          footerHtml += `<a href="${apps.googlePlayUrl}" style="color: white; text-decoration: none; display: inline-block; font-size: ${fontSizeSmall}; font-weight: bold; border: 1px solid rgba(255,255,255,0.5); padding: 10px 14px; border-radius: 4px;">Get on Google Play</a>`;
+        }
+        footerHtml += `</div>`;
       }
-      if (apps.googlePlayUrl) {
-        footerHtml += `<a href="${apps.googlePlayUrl}" style="color: white; text-decoration: none; display: inline-block; font-size: ${fontSizeSmall}; font-weight: bold; border: 1px solid rgba(255,255,255,0.5); padding: 10px 14px; border-radius: 4px;">Get on Google Play</a>`;
+
+      // Donation button
+      if (apps.donationUrl) {
+        footerHtml += `<h3 style="margin: 16px 0 8px 0; font-size: ${fontSizeLabel}; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">SUPPORT OUR MISSION</h3>`;
+        footerHtml += `<p style="margin: 0 0 12px 0; font-size: ${fontSize};">Your generous donation helps us continue our work.</p>`;
+        footerHtml += `<div style="text-align: center;">`;
+        footerHtml += `<a href="${apps.donationUrl}" style="background-color: rgba(255,255,255,0.2); color: white; text-decoration: none; display: inline-block; font-size: ${fontSizeSmall}; font-weight: bold; border: 2px solid rgba(255,255,255,0.8); padding: 12px 28px; border-radius: 4px; transition: all 0.3s ease;">💝 DONATE NOW</a>`;
+        footerHtml += `</div>`;
       }
-      footerHtml += `</div>`;
+
       footerHtml += `</div>`;
     }
 
@@ -1114,7 +1130,21 @@ function openAddContactDialog() {
         btn.disabled = true;
         google.script.run
           .withSuccessHandler(r => {
-            if (r.success) { show('✅ Contact ' + r.action, 'ok'); btn.textContent = '✅ Done'; }
+            if (r.success) {
+              show('✅ Contact ' + r.action + ' successfully!', 'ok');
+              btn.textContent = '✅ Done';
+              setTimeout(() => {
+                document.getElementById('name').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('group').value = '';
+                document.getElementById('active').value = 'Y';
+                document.getElementById('tags').value = '';
+                document.getElementById('memberNo').value = '';
+                btn.textContent = '💾 Save';
+                btn.disabled = false;
+                document.getElementById('statusBox').style.display = 'none';
+              }, 1500);
+            }
             else { show('❌ ' + r.error, 'err'); btn.disabled = false; }
           })
           .addContactData({
