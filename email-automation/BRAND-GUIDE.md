@@ -122,7 +122,44 @@ fontSizes: {
 }
 ```
 
-### Step 4: Define Color Palette
+### Step 4: Configure Social Media & Contact Methods
+Add your social media and messaging app links:
+
+```javascript
+social: {
+  facebook: "https://facebook.com/yourbusiness",
+  twitter: "https://twitter.com/yourbusiness",
+  instagram: "https://instagram.com/yourbusiness",
+  linkedin: "https://linkedin.com/company/yourbusiness",
+  youtube: "",              // Leave empty to hide
+  whatsapp: "",             // NEW: WhatsApp business link
+  telegram: ""              // NEW: Telegram channel link
+}
+```
+
+**How to format links:**
+- **WhatsApp:** `https://wa.me/1234567890` (use your phone number with country code)
+- **Telegram:** `https://t.me/yourbusiness` (your Telegram handle)
+- **Facebook:** `https://facebook.com/yourpage`
+- **Twitter/X:** `https://twitter.com/yourhandle`
+- **Instagram:** `https://instagram.com/youraccount`
+- **LinkedIn:** `https://linkedin.com/company/yourcompany`
+- **YouTube:** `https://youtube.com/@yourchannel`
+
+Social media links are displayed in an **ENLARGED, PROMINENT "FOLLOW US" section** at the bottom of the footer. Only configured links appear.
+
+### Step 5: Configure App Download Links (Optional)
+
+```javascript
+apps: {
+  appStoreUrl: "https://apps.apple.com/app/yourbusiness",
+  googlePlayUrl: "https://play.google.com/store/apps/details?id=com.yourbusiness"
+}
+```
+
+Leave URLs blank to hide the app section entirely.
+
+### Step 7: Define Color Palette
 Create a cohesive color scheme:
 
 ```javascript
@@ -149,7 +186,7 @@ colors: {
 }
 ```
 
-### Step 5: Adjust Spacing for Concise Footer
+### Step 8: Adjust Spacing for Concise Footer
 Make the footer more compact:
 
 ```javascript
@@ -161,10 +198,69 @@ spacing: {
 }
 ```
 
-### Step 6: Save and Test
+### Step 9: Save and Test
 1. Press **Ctrl+S** to save
 2. Press **F5** to refresh your Google Sheet
 3. Send a test email to see your new brand styling
+
+---
+
+## Footer Sections Explained
+
+### Header Section
+Your company name and tagline (customizable via BUSINESS config)
+
+### Contact & Office Section
+**Now COMPACT and efficient** - Takes minimal space while showing:
+- Email, phone, website
+- Street address, city, country
+
+Useful for legal compliance and customer inquiries.
+
+### Link Columns
+Organize navigation into categories:
+- Quick Links (Home, About, Services, Products)
+- Resources (Blog, FAQ, Policies, Terms)
+- Support (Help, Contact, Documentation)
+- Follow Us (Social media links)
+
+You can customize these in the `footerColumns` configuration.
+
+### Social Media Section (ENLARGED & PROMINENT)
+**New Feature:** Dedicated "FOLLOW US" section with:
+- Larger heading and centered layout
+- All 7 platforms supported:
+  - Facebook, X (Twitter), Instagram, LinkedIn, YouTube
+  - **NEW:** WhatsApp, Telegram
+- Only configured links appear
+- Bold, clickable links for easy engagement
+
+This section is MORE prominent to encourage social media following.
+
+### Company Information
+Legal details (optional):
+- Managing Director name
+- Registration number
+- VAT/Tax ID
+
+### App Download Buttons
+Professional buttons for:
+- Apple App Store
+- Google Play Store
+
+Clear text labels (no emojis) for professional appearance.
+
+### Features Section
+4-column showcase of:
+- Easy to Use
+- Fast & Reliable
+- Secure
+- 24/7 Support
+
+(Customize in BUSINESS config)
+
+### Copyright
+Auto-generated with current year and company name.
 
 ---
 
@@ -404,6 +500,71 @@ High-end/luxury company with minimalist style:
     accent: "#fffef8"
   }
 }
+```
+
+---
+
+## Social Media Configuration Examples
+
+### Example: Full Social Media Presence
+```javascript
+social: {
+  facebook: "https://facebook.com/mybusiness",
+  twitter: "https://twitter.com/mybusiness",
+  instagram: "https://instagram.com/mybusiness",
+  linkedin: "https://linkedin.com/company/mybusiness",
+  youtube: "https://youtube.com/@mybusiness",
+  whatsapp: "https://wa.me/1234567890",      // Phone number with country code
+  telegram: "https://t.me/mybusiness"        // Your Telegram handle
+}
+```
+
+**Result:** All 7 platforms appear in the "FOLLOW US" section
+
+### Example: B2B Professional Focus
+```javascript
+social: {
+  facebook: "",                               // Not used
+  twitter: "https://twitter.com/mybusiness",
+  instagram: "",                              // Not used
+  linkedin: "https://linkedin.com/company/mybusiness",
+  youtube: "",
+  whatsapp: "https://wa.me/1234567890",
+  telegram: ""
+}
+```
+
+**Result:** Only Twitter, LinkedIn, and WhatsApp appear (professional channels)
+
+### Example: B2C Retail Focus
+```javascript
+social: {
+  facebook: "https://facebook.com/mybusiness",
+  twitter: "",                                // Not used
+  instagram: "https://instagram.com/mybusiness",
+  linkedin: "",                               // Not used
+  youtube: "https://youtube.com/@mybusiness",
+  whatsapp: "https://wa.me/1234567890",      // Customer support
+  telegram: "https://t.me/mybusiness"        // Announcements
+}
+```
+
+**Result:** Facebook, Instagram, YouTube, WhatsApp, Telegram appear
+
+### WhatsApp Link Format
+Use your phone number with country code:
+```
+https://wa.me/1234567890
+```
+- Replace `1234567890` with your WhatsApp business number
+- Include country code (1 = USA, 44 = UK, 91 = India, etc.)
+- No + or - symbols, just digits
+
+### Telegram Link Format
+Use your Telegram handle (without @):
+```
+https://t.me/mybusiness
+https://t.me/yourusername
 ```
 
 ---
