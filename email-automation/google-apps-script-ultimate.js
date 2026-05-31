@@ -316,33 +316,47 @@ class EmailAutomationSystem {
     // Responsive footer HTML with mobile-friendly design
     let footerHtml = `<div style="background-color: ${colors.primary}; color: white; font-family: ${footerFont}; width: 100%; margin-top: 40px;">`;
 
-    // Company branding section (compact)
+    // Company branding section
     footerHtml += `<div style="padding: ${padding} 20px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.2);">`;
     footerHtml += `<h2 style="margin: 0 0 8px 0; font-size: 18px; font-weight: bold; color: white; font-family: ${brand.fonts.header};">${name}</h2>`;
     footerHtml += `<p style="margin: 0; font-size: ${fontSize}; line-height: 1.5; color: rgba(255,255,255,0.9);">${business.tagline || ''}</p>`;
     footerHtml += `</div>`;
 
-    // Contact and Office section (compact, stacks on mobile)
-    footerHtml += `<div style="padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">`;
+    // NEW THREE-COLUMN LAYOUT: Company Info | Office | Contact (spread out)
+    footerHtml += `<div style="padding: ${padding} 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">`;
     footerHtml += `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
       <tr>
-        <td width="50%" style="padding-right: 10px; vertical-align: top;">
-          <h3 style="margin: 0 0 6px 0; font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">CONTACT</h3>
-          <p style="margin: 3px 0; font-size: 11px;"><a href="mailto:${email}" style="color: white; text-decoration: underline;">${email}</a></p>
-          <p style="margin: 3px 0; font-size: 11px;">${phone}</p>
-          <p style="margin: 3px 0; font-size: 11px;"><a href="${website}" style="color: white; text-decoration: underline;">Website</a></p>
+        <td width="33%" style="padding-right: ${colGap}; vertical-align: top;">
+          <h3 style="margin: 0 0 8px 0; font-size: ${fontSizeLabel}; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">COMPANY</h3>`;
+
+    if (company.managingDirector) {
+      footerHtml += `<p style="margin: 4px 0; font-size: ${fontSizeSmall};">Managing Director: ${company.managingDirector}</p>`;
+    }
+    if (company.registrationNo) {
+      footerHtml += `<p style="margin: 4px 0; font-size: ${fontSizeSmall};">Registration No.: ${company.registrationNo}</p>`;
+    }
+    if (company.vatId) {
+      footerHtml += `<p style="margin: 4px 0; font-size: ${fontSizeSmall};">VAT ID: ${company.vatId}</p>`;
+    }
+
+    footerHtml += `</td>
+        <td width="33%" style="padding-right: ${colGap}; padding-left: ${colGap}; vertical-align: top; border-left: 1px solid rgba(255,255,255,0.2); border-right: 1px solid rgba(255,255,255,0.2);">
+          <h3 style="margin: 0 0 8px 0; font-size: ${fontSizeLabel}; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">OFFICE</h3>
+          ${address.street ? `<p style="margin: 4px 0; font-size: ${fontSizeSmall};">${address.street}</p>` : ''}
+          ${address.city ? `<p style="margin: 4px 0; font-size: ${fontSizeSmall};">${address.city}</p>` : ''}
+          ${address.country ? `<p style="margin: 4px 0; font-size: ${fontSizeSmall};">${address.country}</p>` : ''}
         </td>
-        <td width="50%" style="padding-left: 10px; vertical-align: top; border-left: 1px solid rgba(255,255,255,0.2);">
-          <h3 style="margin: 0 0 6px 0; font-size: 11px; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">OFFICE</h3>
-          ${address.street ? `<p style="margin: 3px 0; font-size: 11px;">${address.street}</p>` : ''}
-          ${address.city ? `<p style="margin: 3px 0; font-size: 11px;">${address.city}</p>` : ''}
-          ${address.country ? `<p style="margin: 3px 0; font-size: 11px;">${address.country}</p>` : ''}
+        <td width="33%" style="padding-left: ${colGap}; vertical-align: top;">
+          <h3 style="margin: 0 0 8px 0; font-size: ${fontSizeLabel}; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">CONTACT</h3>
+          <p style="margin: 4px 0; font-size: ${fontSizeSmall};"><a href="mailto:${email}" style="color: white; text-decoration: underline;">${email}</a></p>
+          <p style="margin: 4px 0; font-size: ${fontSizeSmall};">${phone}</p>
+          <p style="margin: 4px 0; font-size: ${fontSizeSmall};"><a href="${website}" style="color: white; text-decoration: underline;">Website</a></p>
         </td>
       </tr>
     </table>`;
     footerHtml += `</div>`;
 
-    // Multi-column links section (responsive grid)
+    // Multi-column links section (Quick Links, Resources, Support, Follow Us)
     if (columns.length > 0) {
       footerHtml += `<div style="padding: ${padding} 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">`;
       footerHtml += `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
@@ -368,21 +382,6 @@ class EmailAutomationSystem {
       });
 
       footerHtml += `</tr></table>`;
-      footerHtml += `</div>`;
-    }
-
-    // Company information (legal, director, etc)
-    if (company.managingDirector || company.registrationNo || company.vatId) {
-      footerHtml += `<div style="padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: ${fontSizeSmall};">`;
-      if (company.managingDirector) {
-        footerHtml += `<p style="margin: ${brand.spacing.footerRowGap} 0;">Managing Director: ${company.managingDirector}</p>`;
-      }
-      if (company.registrationNo) {
-        footerHtml += `<p style="margin: ${brand.spacing.footerRowGap} 0;">Registration No.: ${company.registrationNo}</p>`;
-      }
-      if (company.vatId) {
-        footerHtml += `<p style="margin: ${brand.spacing.footerRowGap} 0;">VAT ID: ${company.vatId}</p>`;
-      }
       footerHtml += `</div>`;
     }
 
@@ -425,17 +424,17 @@ class EmailAutomationSystem {
 
     // Social media links (ENLARGED and more prominent)
     if (social.facebook || social.twitter || social.instagram || social.linkedin || social.youtube || social.whatsapp || social.telegram) {
-      footerHtml += `<div style="padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: ${fontSize}; text-align: center;">`;
+      footerHtml += `<div style="padding: ${padding} 20px; border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center;">`;
       footerHtml += `<h3 style="margin: 0 0 12px 0; font-size: ${fontSizeLabel}; font-weight: bold; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 1px;">FOLLOW US</h3>`;
 
       const socialLinks = [];
-      if (social.facebook) socialLinks.push(`<a href="${social.facebook}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-weight: bold;">Facebook</a>`);
-      if (social.twitter) socialLinks.push(`<a href="${social.twitter}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-weight: bold;">X</a>`);
-      if (social.instagram) socialLinks.push(`<a href="${social.instagram}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-weight: bold;">Instagram</a>`);
-      if (social.linkedin) socialLinks.push(`<a href="${social.linkedin}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-weight: bold;">LinkedIn</a>`);
-      if (social.youtube) socialLinks.push(`<a href="${social.youtube}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-weight: bold;">YouTube</a>`);
-      if (social.whatsapp) socialLinks.push(`<a href="${social.whatsapp}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-weight: bold;">WhatsApp</a>`);
-      if (social.telegram) socialLinks.push(`<a href="${social.telegram}" style="color: white; text-decoration: none; margin: 0 8px; display: inline-block; font-weight: bold;">Telegram</a>`);
+      if (social.facebook) socialLinks.push(`<a href="${social.facebook}" style="color: white; text-decoration: none; margin: 0 10px; display: inline-block; font-weight: bold; font-size: ${fontSize};">Facebook</a>`);
+      if (social.twitter) socialLinks.push(`<a href="${social.twitter}" style="color: white; text-decoration: none; margin: 0 10px; display: inline-block; font-weight: bold; font-size: ${fontSize};">X</a>`);
+      if (social.instagram) socialLinks.push(`<a href="${social.instagram}" style="color: white; text-decoration: none; margin: 0 10px; display: inline-block; font-weight: bold; font-size: ${fontSize};">Instagram</a>`);
+      if (social.linkedin) socialLinks.push(`<a href="${social.linkedin}" style="color: white; text-decoration: none; margin: 0 10px; display: inline-block; font-weight: bold; font-size: ${fontSize};">LinkedIn</a>`);
+      if (social.youtube) socialLinks.push(`<a href="${social.youtube}" style="color: white; text-decoration: none; margin: 0 10px; display: inline-block; font-weight: bold; font-size: ${fontSize};">YouTube</a>`);
+      if (social.whatsapp) socialLinks.push(`<a href="${social.whatsapp}" style="color: white; text-decoration: none; margin: 0 10px; display: inline-block; font-weight: bold; font-size: ${fontSize};">WhatsApp</a>`);
+      if (social.telegram) socialLinks.push(`<a href="${social.telegram}" style="color: white; text-decoration: none; margin: 0 10px; display: inline-block; font-weight: bold; font-size: ${fontSize};">Telegram</a>`);
 
       footerHtml += `<p style="margin: 0;">${socialLinks.join('')}</p>`;
       footerHtml += `</div>`;
