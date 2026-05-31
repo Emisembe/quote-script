@@ -89,7 +89,7 @@ const CONFIG = {
       apps: {
         appStoreUrl: "https://apps.apple.com/app/yourbusiness",
         googlePlayUrl: "https://play.google.com/store/apps/details?id=com.yourbusiness",
-        donationUrl: "" // e.g., "https://donate.example.com" or "https://paypal.me/yourbusiness"
+        donationUrl: "https://donate.example.com" // e.g., "https://donate.example.com" or "https://paypal.me/yourbusiness"
       }
     }
   },
@@ -1506,23 +1506,34 @@ function composeDialogHtml_() {
       btn.disabled = true;
       btn.textContent = '⏳ Sending...';
 
-      google.script.run
-        .withSuccessHandler(r => {
-          if (r.success) {
-            show('✅ Sent to ' + r.sent + ' recipients', 'ok');
-            btn.textContent = '✅ Done';
-          } else {
-            show('❌ ' + r.error, 'err');
+      try {
+        google.script.run
+          .withSuccessHandler(r => {
+            if (r && r.success) {
+              show('✅ Sent to ' + r.sent + ' recipients', 'ok');
+              btn.textContent = '✅ Done';
+            } else if (r && r.error) {
+              show('❌ ' + r.error, 'err');
+              btn.disabled = false;
+              btn.textContent = '✉️ Send Now';
+            } else {
+              show('❌ Unknown error sending emails', 'err');
+              btn.disabled = false;
+              btn.textContent = '✉️ Send Now';
+            }
+          })
+          .withFailureHandler(e => {
+            const errMsg = e && e.message ? e.message : (e ? e.toString() : 'Unknown error');
+            show('❌ Error: ' + errMsg, 'err');
             btn.disabled = false;
             btn.textContent = '✉️ Send Now';
-          }
-        })
-        .withFailureHandler(e => {
-          show('❌ Error: ' + e.message, 'err');
-          btn.disabled = false;
-          btn.textContent = '✉️ Send Now';
-        })
-        .sendEmailNow(data);
+          })
+          .sendEmailNow(data);
+      } catch (ex) {
+        show('❌ ' + (ex.message || 'An unexpected error occurred'), 'err');
+        btn.disabled = false;
+        btn.textContent = '✉️ Send Now';
+      }
     }
 
     function doSchedule() {
@@ -1541,23 +1552,34 @@ function composeDialogHtml_() {
       btn.disabled = true;
       btn.textContent = '⏳ Scheduling...';
 
-      google.script.run
-        .withSuccessHandler(r => {
-          if (r.success) {
-            show('✅ Scheduled for ' + r.scheduledTime, 'ok');
-            btn.textContent = '✅ Scheduled';
-          } else {
-            show('❌ ' + r.error, 'err');
+      try {
+        google.script.run
+          .withSuccessHandler(r => {
+            if (r && r.success) {
+              show('✅ Scheduled for ' + r.scheduledTime, 'ok');
+              btn.textContent = '✅ Scheduled';
+            } else if (r && r.error) {
+              show('❌ ' + r.error, 'err');
+              btn.disabled = false;
+              btn.textContent = '📅 Schedule Email';
+            } else {
+              show('❌ Unknown error scheduling email', 'err');
+              btn.disabled = false;
+              btn.textContent = '📅 Schedule Email';
+            }
+          })
+          .withFailureHandler(e => {
+            const errMsg = e && e.message ? e.message : (e ? e.toString() : 'Unknown error');
+            show('❌ Error: ' + errMsg, 'err');
             btn.disabled = false;
             btn.textContent = '📅 Schedule Email';
-          }
-        })
-        .withFailureHandler(e => {
-          show('❌ Error: ' + e.message, 'err');
-          btn.disabled = false;
-          btn.textContent = '📅 Schedule Email';
-        })
-        .scheduleEmail(data);
+          })
+          .scheduleEmail(data);
+      } catch (ex) {
+        show('❌ ' + (ex.message || 'An unexpected error occurred'), 'err');
+        btn.disabled = false;
+        btn.textContent = '📅 Schedule Email';
+      }
     }
 
     function collectData() {
