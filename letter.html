@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document Generator</title>
+<style>
+
+/* ═══════════════════════ RESET ═══════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ═══════════════════════ SCREEN UI ═══════════════════ */
+@media screen {
+  body {
+    font-family: Arial, "Microsoft YaHei", sans-serif;
+    background: #e8ecf2; color: #2d2d2d; min-height: 100vh;
+  }
+  .topbar {
+    background: #162d4a; color: #fff; padding: 0 22px; height: 50px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,.3);
+  }
+  .topbar h1 { font-size: 15px; font-weight: 700; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .topbar-sub { font-size: 11px; opacity: .55; }
+  #lang-select {
+    background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28);
+    color: #fff; padding: 5px 10px; border-radius: 5px; font-size: 13px; cursor: pointer;
+  }
+  #lang-select option { background: #162d4a; }
+
+  .app { display: flex; height: calc(100vh - 50px); overflow: hidden; }
+
+  /* Form panel */
+  .panel {
+    width: 390px; min-width: 330px; background: #fff;
+    border-right: 1px solid #d8dde5; overflow-y: auto; padding: 18px 16px 60px; flex-shrink: 0;
+  }
+  .sec {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .9px;
+    color: #162d4a; margin: 20px 0 9px; padding-bottom: 5px; border-bottom: 2px solid #e2e8ef;
+  }
+  .sec:first-child { margin-top: 2px; }
+  label { display: block; font-size: 11px; color: #556; margin: 8px 0 2px; font-weight: 600; }
+  input[type="text"], input[type="date"], input[type="email"],
+  input[type="url"], input[type="tel"], select, textarea {
+    width: 100%; padding: 7px 9px; border: 1px solid #cdd3dc; border-radius: 5px;
+    font-size: 12.5px; font-family: Arial, "Microsoft YaHei", sans-serif;
+    background: #fafbfc; color: #1a1a1a; transition: border .15s, box-shadow .15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none; border-color: #162d4a; box-shadow: 0 0 0 2px rgba(22,45,74,.1); background: #fff;
+  }
+  textarea { resize: vertical; line-height: 1.5; }
+  .row2 { display: flex; gap: 7px; }
+  .row2 > div { flex: 1; min-width: 0; }
+
+  /* Upload */
+  .upload-wrap { position: relative; width: 100%; }
+  .upload-face {
+    display: flex; align-items: center; gap: 7px; padding: 7px 11px;
+    background: #f1f5f9; border: 1.5px dashed #a8b8cc; border-radius: 5px;
+    font-size: 11.5px; color: #445566; cursor: pointer; transition: background .15s;
+  }
+  .upload-face:hover { background: #e2eaf4; border-color: #162d4a; color: #162d4a; }
+  .upload-wrap input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; padding: 0; border: none; background: none; }
+  .upload-thumb { display: none; margin-top: 5px; align-items: center; gap: 7px; padding: 5px 8px; background: #f0faf0; border: 1px solid #aadaaa; border-radius: 5px; font-size: 11px; color: #2a7a2a; }
+  .upload-thumb.show { display: flex; }
+  .upload-thumb img { max-height: 32px; max-width: 70px; object-fit: contain; border-radius: 3px; }
+  .btn-clear { margin-left: auto; background: none; border: none; color: #c00; cursor: pointer; font-size: 14px; padding: 0 2px; }
+  .or-line { display: flex; align-items: center; gap: 7px; margin: 6px 0 2px; font-size: 10px; color: #aaa; }
+  .or-line::before, .or-line::after { content:""; flex:1; height:1px; background:#e0e4e8; }
+
+  /* Checkbox */
+  .chkrow { display: flex; align-items: center; gap: 7px; margin-top: 9px; }
+  .chkrow input[type="checkbox"] { width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
+  .chkrow label { margin: 0; font-size: 12px; color: #333; font-weight: 400; cursor: pointer; }
+  .slide { display: none; margin-top: 5px; }
+  .slide.open { display: block; }
+
+  /* Footer col builder */
+  .fcol-block { background: #f6f8fb; border: 1px solid #d8e0ea; border-radius: 6px; padding: 9px 11px; margin-bottom: 7px; }
+  .fcol-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+  .fcol-head span { font-size: 9.5px; font-weight: 700; color: #99a; text-transform: uppercase; }
+  .btn-rmcol { background: none; border: none; color: #c00; cursor: pointer; font-size: 14px; padding: 0; }
+  .btn-addcol { display: flex; align-items: center; gap: 5px; background: #e8f0f8; border: 1px solid #adc4dc; color: #162d4a; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 11.5px; font-weight: 600; margin-top: 4px; }
+  .btn-addcol:hover { background: #d0e3f0; }
+
+  /* Sig thumbnail */
+  .sig-thumb { display: none; margin-top: 5px; text-align: center; }
+  .sig-thumb.show { display: block; }
+  .sig-thumb img { max-height: 55px; max-width: 180px; object-fit: contain; border-bottom: 1px solid #ccc; padding-bottom: 3px; }
+
+  /* Action buttons */
+  .actions { margin-top: 22px; display: flex; flex-direction: column; gap: 8px; }
+  .btn-prev { background: #162d4a; color: #fff; border: none; padding: 11px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; width: 100%; }
+  .btn-prev:hover { background: #0f2035; }
+  .btn-print { background: #1a7a40; color: #fff; border: none; padding: 11px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; width: 100%; }
+  .btn-print:hover { background: #14632f; }
+  .btn-print:disabled { background: #8899aa; cursor: not-allowed; }
+
+  /* Preview panel */
+  .preview-panel { flex: 1; background: #cdd3dc; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 24px 16px 40px; gap: 20px; }
+  .preview-label { font-size: 10px; color: #889; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Placeholder */
+  #preview-placeholder {
+    display: flex; align-items: center; justify-content: center;
+    width: 794px; /* ≈ 210mm at 96dpi */ height: 120px;
+    background: #fff; box-shadow: 0 2px 16px rgba(0,0,0,.12);
+    border-radius: 2px; font-size: 13px; color: #bbb; font-style: italic;
+  }
+
+  /* Page cards container */
+  #preview-frame { display: none; flex-direction: column; align-items: center; gap: 20px; }
+  #preview-frame.active { display: flex; }
+
+} /* end @media screen */
+
+/* ═══════════════════════ PRINT ═══════════════════════ */
+@media print {
+  /*
+   * Layout maths (all from paper top):
+   *   @page top margin    : 20mm
+   *   Content area height : 221mm  ← matches preview CVH exactly
+   *   Footer zone         : 26mm   ← sits in the bottom margin, NOT over content
+   *   Page-number zone    : 30mm   ← @bottom-center renders here
+   *   Total bottom margin : 56mm   (= 26 + 30)
+   *   Paper total         : 20 + 221 + 56 = 297mm ✓
+   *
+   * Footer is pushed to bottom:-26mm so its TOP EDGE aligns with the
+   * content-area bottom — zero content is ever covered by the footer.
+   */
+  @page {
+    size: A4;
+    margin: 20mm 20mm 56mm 26mm;
+    @bottom-center {
+      content: "— " counter(page) " / " counter(pages) " —";
+      font-family: Arial, sans-serif; font-size: 7.5pt; color: #888;
+    }
+  }
+  @page :first {
+    margin: 20mm 20mm 56mm 26mm;
+  }
+  body > * { display: none !important; }
+  #print-letter        { display: block !important; }
+  #print-footer-fixed  { display: flex   !important; }
+  #print-serial-fixed  { display: block  !important; }
+  #print-cont-fixed    { display: flex   !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* No padding-bottom needed — footer is below content area, never overlaps */
+  #print-letter { padding-bottom: 0 !important; }
+
+  /* ── Fixed overlays — top-level body children ── */
+  #print-footer-fixed {
+    position: fixed; bottom: 30mm; left: 0; right: 0;
+    height: 26mm; background: #fff; z-index: 10;
+    flex-direction: row; align-items: flex-start;
+    gap: 4mm;
+    padding: 2.5mm 20mm 0 26mm;
+    border-top: .5pt solid #bec8d4;
+    font: 7pt/1.7 Arial,'Microsoft YaHei',sans-serif; color: #555;
+  }
+  #print-footer-fixed .f-row {
+    display: flex; gap: 4mm; flex: 1; align-items: flex-start;
+  }
+  #print-serial-fixed {
+    position: fixed; left: 0; top: 50%; width: 8mm;
+    transform: translateY(-50%) rotate(-90deg);
+    font: 6pt Arial,sans-serif; color: #c8d0d8; letter-spacing: 2.5px;
+    text-transform: uppercase; white-space: nowrap;
+    border-top: .4pt solid #dde2e8; padding-top: 1mm; z-index: 5;
+    text-align: center; padding-left: 1mm;
+    transform-origin: center;
+  }
+  #print-cont-fixed {
+    position: fixed; top: 20mm; left: 0; right: 0;
+    height: 12mm; background: #fff; z-index: 9;
+    align-items: center; justify-content: space-between;
+    font: 7.5pt Arial,sans-serif; color: #666;
+    border-bottom: .4pt solid #dde2e8; padding: 0 20mm 0 26mm;
+  }
+  /* Push all content down by 14mm so page 2+ text starts below the cont-header */
+  #print-letter { padding-top: 14mm !important; margin: 0; }
+  /* But page 1 letter-header must cancel that padding (it's already at the top) */
+  #print-letter .letter-header:first-child { margin-top: -14mm; }
+  /* Page-1 letter header covers the cont-header on page 1 */
+  .letter-header { position: relative; z-index: 10; background: #fff; }
+  /* Ensure content doesn't get cut off */
+  #print-letter p { page-break-inside: avoid; break-inside: avoid-page; }
+  #print-letter .sig-block { page-break-inside: avoid; break-inside: avoid-page; }
+  #print-letter .subject-ln { page-break-after: avoid; break-after: avoid-page; }
+}
+
+/* ═══════════════════════ SHARED LETTER STYLES ════════ */
+.side-serial {
+  position: absolute; left: -17mm; top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  font-size: 6pt; color: #c8d0d8; letter-spacing: 2.5px; text-transform: uppercase;
+  white-space: nowrap; font-family: Arial, sans-serif; user-select: none;
+  border-top: .4pt solid #dde2e8; padding-top: 1mm;
+  width: 150mm; text-align: center; z-index: 1;
+}
+.letter-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  width: 100%; min-height: 52mm; page-break-inside: avoid; break-inside: avoid;
+}
+.window-zone { width: 85mm; min-height: 45mm; display: flex; flex-direction: column; padding-top: 2mm; }
+.return-addr { font-size: 6.5pt; color: #aaa; border-bottom: .3pt solid #ccc; padding-bottom: 1.5mm; margin-bottom: 2.5mm; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.recip-block { font-size: 10pt; line-height: 1.6; }
+.recip-block .r-co { font-weight: 700; }
+.info-block { width: 66mm; display: flex; flex-direction: column; align-items: flex-end; gap: 3mm; text-align: right; }
+.org-logo { max-height: 18mm; max-width: 55mm; object-fit: contain; }
+.org-logo-txt { font-size: 12pt; font-weight: 700; color: #162d4a; }
+.meta-tbl { border-collapse: collapse; font-size: 8pt; width: 100%; }
+.meta-tbl td { padding: .45mm 0; vertical-align: top; }
+.meta-tbl td.lbl { color: #999; padding-right: 2mm; white-space: nowrap; }
+.meta-tbl td.val { font-weight: 600; text-align: right; color: #222; }
+
+.letter-body { margin-top: 10mm; }
+.subject-ln { font-size: 11pt; font-weight: 700; margin-bottom: 6mm; color: #111; break-inside: avoid; page-break-inside: avoid; }
+.body-txt p { margin-bottom: 4.5mm; text-align: justify; orphans: 3; widows: 3; break-inside: avoid; }
+
+.sig-block { margin-top: 12mm; break-inside: avoid; page-break-inside: avoid; }
+.sig-when  { font-size: 9pt; color: #666; margin-bottom: 13mm; }
+.sig-img   { min-height: 13mm; display: flex; align-items: flex-end; margin-bottom: 1mm; }
+.sig-img img { max-height: 18mm; max-width: 58mm; object-fit: contain; }
+.sig-line  { border-top: .5pt solid #666; width: 60mm; margin-bottom: 2mm; }
+.sig-name  { font-size: 9.5pt; font-weight: 700; color: #111; }
+.sig-title { font-size: 8.5pt; color: #666; }
+.sig-lbl   { font-size: 7.5pt; color: #aaa; margin-top: 1mm; }
+
+.letter-footer {
+  margin-top: 14mm; border-top: .5pt solid #bec8d4; padding-top: 2.5mm;
+  display: flex; gap: 4mm; font-size: 7pt; color: #555; align-items: flex-start; width: 100%;
+}
+.f-col { flex: 1; line-height: 1.7; min-width: 0; }
+.f-col strong { display: block; font-size: 7.5pt; color: #1a1a1a; margin-bottom: .5mm; }
+.f-qr { flex: 0 0 auto; width: 22mm; text-align: center; }
+.f-qr img { width: 20mm; height: 20mm; display: block; margin: 0 auto; }
+.f-qr span { display: block; font-size: 6pt; color: #aaa; margin-top: .5mm; }
+
+</style>
+</head>
+<body>
+
+<!-- PRINT TARGETS — top-level body children so position:fixed works reliably -->
+<div id="print-letter" style="display:none;
+  font-family:Arial,'Microsoft YaHei','SimHei',sans-serif;
+  font-size:10pt;line-height:1.45;color:#1a1a1a;"></div>
+
+<!-- Fixed footer: repeats on every printed page -->
+<div id="print-footer-fixed" style="display:none;">
+  <div class="f-row" id="print-footer-row"></div>
+</div>
+
+<!-- Fixed side serial: repeats on every printed page -->
+<div id="print-serial-fixed" style="display:none;"></div>
+
+<!-- Fixed continuation header: shows org + ref on every page; page-1 letter-header covers it -->
+<div id="print-cont-fixed" style="display:none;">
+  <span id="print-cont-org"></span>
+  <span id="print-cont-ref"></span>
+</div>
+
+<!-- UI -->
+<div class="topbar">
+  <h1 id="t-title">✎ Document Generator</h1>
+  <div class="topbar-right">
+    <span class="topbar-sub" id="t-sub">DIN 5008 · Multi-Language · PDF Ready</span>
+    <select id="lang-select" onchange="setLang(this.value)">
+      <option value="en">🇬🇧 English</option>
+      <option value="de">🇩🇪 Deutsch</option>
+      <option value="fr">🇫🇷 Français</option>
+      <option value="zh">🇨🇳 中文</option>
+      <option value="sw">🇹🇿 Kiswahili</option>
+    </select>
+  </div>
+</div>
+
+<div class="app">
+  <div class="panel">
+
+    <div class="sec" id="t-sOrg">Organisation</div>
+    <label id="t-lOrgName">Organisation Name *</label>
+    <input type="text" id="org_name" placeholder="Acme GmbH">
+    <label id="t-lLogo">Upload Logo</label>
+    <div class="upload-wrap">
+      <div class="upload-face"><span>📁</span><span id="t-logo-txt">Choose image file…</span>
+        <input type="file" accept="image/*" id="logo_file" onchange="handleFile('logo',this)">
+      </div>
+    </div>
+    <div class="upload-thumb" id="logo-thumb">
+      <img id="logo-thumb-img" src="" alt="">
+      <span id="logo-thumb-name"></span>
+      <button class="btn-clear" onclick="clearFile('logo')">✕</button>
+    </div>
+    <div class="or-line"><span id="t-orDiv">or paste URL</span></div>
+    <input type="url" id="org_logo_url" placeholder="https://…/logo.png">
+    <label id="t-lReturn">Return Address (envelope window)</label>
+    <input type="text" id="org_return" placeholder="Acme GmbH · Hauptstr. 1 · 10115 Berlin">
+    <div class="row2">
+      <div><label id="t-lPhone">Phone</label><input type="tel" id="org_phone" placeholder="+49 30 123456"></div>
+      <div><label id="t-lFax">Fax</label><input type="tel" id="org_fax" placeholder="+49 30 123457"></div>
+    </div>
+    <label id="t-lEmail">Email</label><input type="email" id="org_email" placeholder="info@acme.de">
+    <label id="t-lWeb">Website</label><input type="url" id="org_web" placeholder="https://acme.de">
+    <div class="row2">
+      <div><label id="t-lContact">Contact Person</label><input type="text" id="org_contact" placeholder="Max Mustermann"></div>
+      <div><label id="t-lRoom">Room / Dept.</label><input type="text" id="org_room" placeholder="Room 2.04"></div>
+    </div>
+
+    <div class="sec" id="t-sRec">Recipient</div>
+    <div class="row2">
+      <div><label id="t-lSal">Salutation</label><select id="rec_sal"></select></div>
+      <div><label id="t-lName">Full Name</label><input type="text" id="rec_name" placeholder="Erika Musterfrau"></div>
+    </div>
+    <label id="t-lCo">Company / Organisation</label><input type="text" id="rec_company" placeholder="Musterfirma AG">
+    <label id="t-lStreet">Street Address *</label><input type="text" id="rec_street" placeholder="Musterstraße 42">
+    <div class="row2">
+      <div><label id="t-lZip">Postal Code</label><input type="text" id="rec_zip" placeholder="10115"></div>
+      <div><label id="t-lCity">City</label><input type="text" id="rec_city" placeholder="Berlin"></div>
+    </div>
+    <label id="t-lCountry">Country (leave blank for Germany)</label>
+    <input type="text" id="rec_country" placeholder="">
+
+    <div class="sec" id="t-sDoc">Document</div>
+    <div class="row2">
+      <div><label id="t-lRef">Reference Number *</label><input type="text" id="doc_ref" placeholder="2026-001"></div>
+      <div><label id="t-lDate">Date *</label><input type="date" id="doc_date"></div>
+    </div>
+    <label id="t-lSubject">Subject Line *</label><input type="text" id="doc_subject" placeholder="Re: Invoice No. 2026-001">
+    <label id="t-lBody">Letter Body *</label>
+    <textarea id="doc_body" rows="9"></textarea>
+
+    <div class="sec" id="t-sSig">Signature</div>
+    <label id="t-lSigPlace">Place</label><input type="text" id="sig_place" placeholder="Berlin">
+    <label id="t-lSigName">Signatory Name</label><input type="text" id="sig_name" placeholder="Max Mustermann">
+    <label id="t-lSigTitle">Title / Role</label><input type="text" id="sig_title" placeholder="Managing Director">
+    <label id="t-lSigUp">Upload Signature Image (optional)</label>
+    <div class="upload-wrap">
+      <div class="upload-face"><span>✍️</span><span id="t-sig-txt">Choose signature image…</span>
+        <input type="file" accept="image/*" id="sig_file" onchange="handleFile('sig',this)">
+      </div>
+    </div>
+    <div class="sig-thumb" id="sig-thumb">
+      <img id="sig-thumb-img" src="" alt="Signature">
+      <button class="btn-clear" id="t-sigClear" onclick="clearFile('sig')" style="display:block;margin:.4rem auto 0;font-size:11px;color:#c00;background:none;border:none;cursor:pointer;">✕ Remove</button>
+    </div>
+
+    <div class="sec" id="t-sFooter">Footer Columns</div>
+    <div id="fcols"></div>
+    <button class="btn-addcol" onclick="addCol()"><span>+</span><span id="t-addCol">Add Column</span></button>
+
+    <div class="sec" id="t-sQR">Payment QR Code (GiroCode)</div>
+    <div class="chkrow">
+      <input type="checkbox" id="qr_on" onchange="document.getElementById('qr-slide').classList.toggle('open',this.checked)">
+      <label for="qr_on" id="t-lQR">Include GiroCode QR in footer</label>
+    </div>
+    <div class="slide" id="qr-slide">
+      <div class="row2">
+        <div><label id="t-lIBAN">IBAN *</label><input type="text" id="qr_iban" placeholder="DE89 3704 0044 0532 0130 00"></div>
+        <div><label id="t-lBIC">BIC *</label><input type="text" id="qr_bic" placeholder="COBADEFFXXX"></div>
+      </div>
+      <div class="row2">
+        <div><label id="t-lAmt">Amount (EUR)</label><input type="text" id="qr_amt" placeholder="250.00"></div>
+        <div><label id="t-lRef2">Payment Reference</label><input type="text" id="qr_ref" placeholder="INV-2026-001"></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-prev"  id="t-btnPrev"  onclick="buildPreview()">👁 Preview Letter</button>
+      <button class="btn-print" id="t-btnPrint" onclick="doPrint()" disabled>🖨 Print / Save as PDF</button>
+    </div>
+  </div>
+
+  <div class="preview-panel">
+    <div class="preview-label" id="t-prevLabel">A4 Letter Preview</div>
+    <div id="preview-placeholder"><span id="t-prevHint">Fill the form and click "Preview Letter"</span></div>
+    <div id="preview-frame"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* ═══════════════ LANGUAGE DATA ═══════════════ */
+const T = {
+  en:{title:"Document Generator",sub:"DIN 5008 · Multi-Language · PDF Ready",
+    sOrg:"Organisation",sRec:"Recipient",sDoc:"Document",sSig:"Signature",sFooter:"Footer Columns",sQR:"Payment QR Code (GiroCode)",
+    lOrgName:"Organisation Name *",lLogo:"Upload Logo",orDiv:"or paste URL",lReturn:"Return Address (envelope window)",
+    lPhone:"Phone",lFax:"Fax",lEmail:"Email",lWeb:"Website",lContact:"Contact Person",lRoom:"Room / Dept.",
+    lSal:"Salutation",lName:"Full Name",lCo:"Company / Organisation",
+    lStreet:"Street Address *",lZip:"Postal Code",lCity:"City",lCountry:"Country (leave blank for Germany)",
+    lRef:"Reference Number *",lDate:"Date *",lSubject:"Subject Line *",lBody:"Letter Body *",
+    lSigPlace:"Place",lSigName:"Signatory Name",lSigTitle:"Title / Role",lSigUp:"Upload Signature Image (optional)",
+    addCol:"Add Column",colHead:"Column Heading",colLines:"Lines (one per line)",
+    lQR:"Include GiroCode QR in footer",lIBAN:"IBAN *",lBIC:"BIC *",lAmt:"Amount (EUR)",lRef2:"Payment Reference",
+    btnPrev:"👁 Preview Letter",btnPrint:"🖨 Print / Save as PDF",
+    prevLabel:"A4 Letter Preview",prevHint:'Fill the form and click "Preview Letter"',
+    logoTxt:"Choose image file…",sigTxt:"Choose signature image…",sigClear:"✕ Remove",
+    mDate:"Date",mRef:"Ref.",mContact:"Contact",mRoom:"Room",mPhone:"Phone",mFax:"Fax",mEmail:"Email",mWeb:"Web",
+    sigLbl:"Signature",
+    sal:["–","Mr.","Mrs.","Dr.","Prof. Dr.","To Whom It May Concern"],
+    body:"Dear Sir or Madam,\n\nWe hereby send you our invoice for services rendered in May 2026.\n\nPlease transfer the outstanding amount to the bank account listed below within 14 days of receipt of this letter.\n\nShould you have any questions, please do not hesitate to contact us.\n\nYours sincerely,"
+  },
+  de:{title:"Dokumentengenerator",sub:"DIN 5008 · Mehrsprachig · PDF-Bereit",
+    sOrg:"Organisation",sRec:"Empfänger",sDoc:"Dokument",sSig:"Unterschrift",sFooter:"Fußzeilen-Spalten",sQR:"Zahlungs-QR (GiroCode)",
+    lOrgName:"Organisationsname *",lLogo:"Logo hochladen",orDiv:"oder URL einfügen",lReturn:"Rücksendeadresse (Fensterumschlag)",
+    lPhone:"Telefon",lFax:"Fax",lEmail:"E-Mail",lWeb:"Website",lContact:"Ansprechpartner",lRoom:"Zimmer / Abteilung",
+    lSal:"Anrede",lName:"Vollständiger Name",lCo:"Unternehmen / Organisation",
+    lStreet:"Straße und Hausnummer *",lZip:"PLZ",lCity:"Stadt",lCountry:"Land (leer = Deutschland)",
+    lRef:"Referenznummer *",lDate:"Datum *",lSubject:"Betreff *",lBody:"Brieftext *",
+    lSigPlace:"Ort",lSigName:"Name des Unterzeichners",lSigTitle:"Position / Titel",lSigUp:"Unterschriftsbild hochladen (optional)",
+    addCol:"Spalte hinzufügen",colHead:"Spaltenüberschrift",colLines:"Zeilen (eine pro Zeile)",
+    lQR:"GiroCode-QR in Fußzeile einfügen",lIBAN:"IBAN *",lBIC:"BIC *",lAmt:"Betrag (EUR)",lRef2:"Verwendungszweck",
+    btnPrev:"👁 Vorschau anzeigen",btnPrint:"🖨 Drucken / Als PDF speichern",
+    prevLabel:"A4-Brief Vorschau",prevHint:"Formular ausfüllen und Vorschau klicken",
+    logoTxt:"Bilddatei auswählen…",sigTxt:"Unterschriftsbild auswählen…",sigClear:"✕ Entfernen",
+    mDate:"Datum",mRef:"Ref.",mContact:"Kontakt",mRoom:"Zimmer",mPhone:"Tel.",mFax:"Fax",mEmail:"E-Mail",mWeb:"Web",
+    sigLbl:"Unterschrift",
+    sal:["–","Herr","Frau","Dr.","Prof. Dr.","Sehr geehrte Damen und Herren"],
+    body:"Sehr geehrte Damen und Herren,\n\nwir übersenden Ihnen hiermit unsere Rechnung für die im Mai 2026 erbrachten Leistungen.\n\nBitte überweisen Sie den ausstehenden Betrag innerhalb von 14 Tagen auf das unten genannte Konto.\n\nFür Rückfragen stehen wir Ihnen gerne zur Verfügung.\n\nMit freundlichen Grüßen,"
+  },
+  fr:{title:"Générateur de Documents",sub:"DIN 5008 · Multilingue · Prêt PDF",
+    sOrg:"Organisation",sRec:"Destinataire",sDoc:"Document",sSig:"Signature",sFooter:"Colonnes du Pied de Page",sQR:"QR Code de Paiement",
+    lOrgName:"Nom de l'organisation *",lLogo:"Télécharger le logo",orDiv:"ou coller l'URL",lReturn:"Adresse de retour (fenêtre d'enveloppe)",
+    lPhone:"Téléphone",lFax:"Fax",lEmail:"E-mail",lWeb:"Site web",lContact:"Personne de contact",lRoom:"Bureau / Département",
+    lSal:"Civilité",lName:"Nom complet",lCo:"Entreprise / Organisation",
+    lStreet:"Adresse *",lZip:"Code postal",lCity:"Ville",lCountry:"Pays (vide = Allemagne)",
+    lRef:"Numéro de référence *",lDate:"Date *",lSubject:"Objet *",lBody:"Corps de la lettre *",
+    lSigPlace:"Lieu",lSigName:"Nom du signataire",lSigTitle:"Titre / Fonction",lSigUp:"Télécharger la signature (optionnel)",
+    addCol:"Ajouter une colonne",colHead:"Titre de colonne",colLines:"Lignes (une par ligne)",
+    lQR:"Inclure QR GiroCode dans le pied de page",lIBAN:"IBAN *",lBIC:"BIC *",lAmt:"Montant (EUR)",lRef2:"Référence de paiement",
+    btnPrev:"👁 Aperçu de la lettre",btnPrint:"🖨 Imprimer / Enregistrer en PDF",
+    prevLabel:"Aperçu lettre A4",prevHint:"Remplissez le formulaire et cliquez sur Aperçu",
+    logoTxt:"Choisir un fichier image…",sigTxt:"Choisir une image de signature…",sigClear:"✕ Supprimer",
+    mDate:"Date",mRef:"Réf.",mContact:"Contact",mRoom:"Bureau",mPhone:"Tél.",mFax:"Fax",mEmail:"E-mail",mWeb:"Web",
+    sigLbl:"Signature",
+    sal:["–","M.","Mme","Dr.","Prof. Dr.","À qui de droit"],
+    body:"Madame, Monsieur,\n\nNous vous adressons ci-joint notre facture pour les services rendus en mai 2026.\n\nNous vous prions de régler le montant dû dans un délai de 14 jours.\n\nPour toute question, n'hésitez pas à nous contacter.\n\nCordialement,"
+  },
+  zh:{title:"文件生成器",sub:"DIN 5008 · 多语言 · PDF就绪",
+    sOrg:"机构信息",sRec:"收件人",sDoc:"文件内容",sSig:"签名",sFooter:"页脚栏目",sQR:"付款二维码",
+    lOrgName:"机构名称 *",lLogo:"上传标志",orDiv:"或粘贴网址",lReturn:"退信地址（信封窗口）",
+    lPhone:"电话",lFax:"传真",lEmail:"电子邮件",lWeb:"网站",lContact:"联系人",lRoom:"房间 / 部门",
+    lSal:"称谓",lName:"全名",lCo:"公司 / 机构",
+    lStreet:"街道地址 *",lZip:"邮政编码",lCity:"城市",lCountry:"国家（留空为德国）",
+    lRef:"参考编号 *",lDate:"日期 *",lSubject:"主题 *",lBody:"信件正文 *",
+    lSigPlace:"地点",lSigName:"签署人姓名",lSigTitle:"职位 / 头衔",lSigUp:"上传签名图片（可选）",
+    addCol:"添加栏目",colHead:"栏目标题",colLines:"各行内容（每行一条）",
+    lQR:"在页脚中添加付款二维码",lIBAN:"IBAN *",lBIC:"BIC *",lAmt:"金额（欧元）",lRef2:"付款参考",
+    btnPrev:"👁 预览信件",btnPrint:"🖨 打印 / 保存为PDF",
+    prevLabel:"A4信件预览",prevHint:"填写表格后点击预览信件",
+    logoTxt:"选择图片文件…",sigTxt:"选择签名图片…",sigClear:"✕ 删除",
+    mDate:"日期",mRef:"编号",mContact:"联系人",mRoom:"房间",mPhone:"电话",mFax:"传真",mEmail:"电邮",mWeb:"网址",
+    sigLbl:"签名",
+    sal:["–","先生","女士","博士","教授","敬启者"],
+    body:"尊敬的女士/先生，\n\n随函附上我们2026年5月份服务的发票，请查收。\n\n请在收到本函后14天内将款项转至以下账户。\n\n如有任何疑问，请随时与我们联系。\n\n此致，"
+  },
+  sw:{title:"Jenereta ya Hati",sub:"DIN 5008 · Lugha Nyingi · Tayari PDF",
+    sOrg:"Shirika",sRec:"Mpokeaji",sDoc:"Hati",sSig:"Saini",sFooter:"Safu za Chini ya Ukurasa",sQR:"Msimbo wa QR wa Malipo",
+    lOrgName:"Jina la Shirika *",lLogo:"Pakia Nembo",orDiv:"au bandika URL",lReturn:"Anwani ya Kurudi (dirisha la bahasha)",
+    lPhone:"Simu",lFax:"Faksi",lEmail:"Barua pepe",lWeb:"Tovuti",lContact:"Mtu wa Mawasiliano",lRoom:"Chumba / Idara",
+    lSal:"Salamu",lName:"Jina Kamili",lCo:"Kampuni / Shirika",
+    lStreet:"Anwani ya Mtaa *",lZip:"Nambari ya Posta",lCity:"Mji",lCountry:"Nchi (tupu = Ujerumani)",
+    lRef:"Nambari ya Kumbukumbu *",lDate:"Tarehe *",lSubject:"Mada *",lBody:"Maudhui ya Barua *",
+    lSigPlace:"Mahali",lSigName:"Jina la Msainiaji",lSigTitle:"Cheo / Wadhifa",lSigUp:"Pakia Picha ya Saini (hiari)",
+    addCol:"Ongeza Safu",colHead:"Kichwa cha Safu",colLines:"Mistari (moja kwa mstari)",
+    lQR:"Jumuisha QR ya GiroCode kwenye chini ya ukurasa",lIBAN:"IBAN *",lBIC:"BIC *",lAmt:"Kiasi (EUR)",lRef2:"Kumbukumbu ya Malipo",
+    btnPrev:"👁 Angalia Barua",btnPrint:"🖨 Chapisha / Hifadhi kama PDF",
+    prevLabel:"Muonekano wa Barua A4",prevHint:"Jaza fomu kisha bonyeza Angalia Barua",
+    logoTxt:"Chagua faili ya picha…",sigTxt:"Chagua picha ya saini…",sigClear:"✕ Ondoa",
+    mDate:"Tarehe",mRef:"Kumb.",mContact:"Mawasiliano",mRoom:"Chumba",mPhone:"Simu",mFax:"Faksi",mEmail:"Barua pepe",mWeb:"Tovuti",
+    sigLbl:"Saini",
+    sal:["–","Bwana","Bibi","Dkt.","Prof. Dkt.","Kwa Anayehusika"],
+    body:"Ndugu,\n\nTunakutumia ankara yetu kwa huduma zilizoombwa mwezi Mei 2026.\n\nTafadhali lipa kiasi kinachohusika ndani ya siku 14 tangu kupokea barua hii.\n\nIwapo una maswali, tafadhali wasiliana nasi.\n\nKwa heshima,"
+  }
+};
+
+/* ═══════════════ STATE ═══════════════ */
+let lang = "en", logoB64 = "", sigB64 = "", colCount = 0, letterHTML = "", _lastQr = null;
+
+/* ═══════════════ setLang ═══════════════ */
+function s(id, txt) { const e = document.getElementById(id); if (e) e.textContent = txt; }
+function setLang(l) {
+  lang = l;
+  const L = T[l];
+  s("t-title","✎ "+L.title); s("t-sub",L.sub);
+  s("t-sOrg",L.sOrg); s("t-sRec",L.sRec); s("t-sDoc",L.sDoc);
+  s("t-sSig",L.sSig); s("t-sFooter",L.sFooter); s("t-sQR",L.sQR);
+  s("t-lOrgName",L.lOrgName); s("t-lLogo",L.lLogo); s("t-orDiv",L.orDiv);
+  s("t-lReturn",L.lReturn); s("t-lPhone",L.lPhone); s("t-lFax",L.lFax);
+  s("t-lEmail",L.lEmail); s("t-lWeb",L.lWeb); s("t-lContact",L.lContact); s("t-lRoom",L.lRoom);
+  s("t-lSal",L.lSal); s("t-lName",L.lName); s("t-lCo",L.lCo);
+  s("t-lStreet",L.lStreet); s("t-lZip",L.lZip); s("t-lCity",L.lCity); s("t-lCountry",L.lCountry);
+  s("t-lRef",L.lRef); s("t-lDate",L.lDate); s("t-lSubject",L.lSubject); s("t-lBody",L.lBody);
+  s("t-lSigPlace",L.lSigPlace); s("t-lSigName",L.lSigName); s("t-lSigTitle",L.lSigTitle); s("t-lSigUp",L.lSigUp);
+  s("t-addCol",L.addCol); s("t-lQR",L.lQR);
+  s("t-lIBAN",L.lIBAN); s("t-lBIC",L.lBIC); s("t-lAmt",L.lAmt); s("t-lRef2",L.lRef2);
+  s("t-logo-txt",L.logoTxt); s("t-sig-txt",L.sigTxt); s("t-sigClear",L.sigClear);
+  s("t-btnPrev",L.btnPrev); s("t-btnPrint",L.btnPrint);
+  s("t-prevLabel",L.prevLabel); s("t-prevHint",L.prevHint);
+
+  // ── Salutation dropdown reflects language ──
+  const sal = document.getElementById("rec_sal");
+  if (sal) sal.innerHTML = L.sal.map((o,i) =>
+    `<option value="${i===0?'':o}">${o}</option>`).join("");
+
+  const bd = document.getElementById("doc_body");
+  if (bd) bd.placeholder = L.body;
+}
+
+/* ═══════════════ FILE UPLOADS ═══════════════ */
+function handleFile(type, input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const data = e.target.result;
+    if (type === "logo") {
+      logoB64 = data;
+      document.getElementById("logo-thumb-img").src = data;
+      document.getElementById("logo-thumb-name").textContent = file.name;
+      document.getElementById("logo-thumb").classList.add("show");
+      const u = document.getElementById("org_logo_url"); if (u) u.value = "";
+    } else {
+      sigB64 = data;
+      document.getElementById("sig-thumb-img").src = data;
+      document.getElementById("sig-thumb").classList.add("show");
+    }
+  };
+  reader.readAsDataURL(file);
+}
+function clearFile(type) {
+  if (type === "logo") {
+    logoB64 = ""; document.getElementById("logo_file").value = "";
+    document.getElementById("logo-thumb").classList.remove("show");
+  } else {
+    sigB64 = ""; document.getElementById("sig_file").value = "";
+    document.getElementById("sig-thumb").classList.remove("show");
+  }
+}
+
+/* ═══════════════ FOOTER COLUMNS ═══════════════ */
+function addCol() {
+  if (colCount >= 4) { alert("Maximum 4 columns."); return; }
+  colCount++;
+  const L = T[lang], n = colCount;
+  const d = document.createElement("div");
+  d.className = "fcol-block"; d.id = "fcol-"+n;
+  d.innerHTML = `<div class="fcol-head"><span>Column ${n}</span>
+    <button class="btn-rmcol" onclick="rmCol(${n})">✕</button></div>
+    <label>${L.colHead}</label>
+    <input type="text" id="fc_h${n}" placeholder="${L.colHead}">
+    <label>${L.colLines}</label>
+    <textarea id="fc_l${n}" rows="4" placeholder="Line 1&#10;Line 2&#10;Line 3"></textarea>`;
+  document.getElementById("fcols").appendChild(d);
+}
+function rmCol(n) { const e = document.getElementById("fcol-"+n); if (e) e.remove(); }
+function getCols() {
+  const cols = [];
+  document.querySelectorAll(".fcol-block").forEach(b => {
+    const n = b.id.replace("fcol-","");
+    const hd = (document.getElementById("fc_h"+n)||{}).value||"";
+    const raw = (document.getElementById("fc_l"+n)||{}).value||"";
+    const lines = raw.split("\n").filter(l=>l.trim());
+    if (hd||lines.length) cols.push({hd,lines});
+  });
+  return cols;
+}
+
+/* ═══════════════ HELPERS ═══════════════ */
+function h(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function v(id) { const e=document.getElementById(id); return e?(e.value||""):""; }
+function toParas(text) {
+  return String(text||"").split(/\n{2,}/).map(p =>
+    "<p>"+p.split("\n").map(h).join("<br>")+"</p>"
+  ).join("");
+}
+
+/* ═══════════════ QR CODE ═══════════════ */
+function epcPayload() {
+  return ["BCD","002","1","SCT",
+    v("qr_bic").trim(), v("org_name").substring(0,70),
+    v("qr_iban").replace(/\s/g,""),
+    "EUR"+(parseFloat(v("qr_amt")||"0")).toFixed(2),
+    "", v("qr_ref").substring(0,35), "",""].join("\n");
+}
+function makeQR(text, cb) {
+  if (typeof QRCode==="undefined"){cb(null);return;}
+  const tmp=document.createElement("div");
+  tmp.style.cssText="position:absolute;left:-9999px;";
+  document.body.appendChild(tmp);
+  try {
+    new QRCode(tmp,{text,width:160,height:160,correctLevel:QRCode.CorrectLevel.M});
+    setTimeout(()=>{
+      const c=tmp.querySelector("canvas");
+      document.body.removeChild(tmp);
+      cb(c?c.toDataURL("image/png"):null);
+    },160);
+  } catch(e){document.body.removeChild(tmp);cb(null);}
+}
+
+/* ═══════════════ LETTER BUILDERS ═══════════════ */
+
+// Build letter body content (no footer, no serial, no cont-header)
+function buildContentHTML() {
+  const L = T[lang];
+  const src = logoB64 || v("org_logo_url");
+  const logoHTML = src
+    ? `<img class="org-logo" src="${h(src)}" alt="${h(v("org_name"))}">`
+    : `<div class="org-logo-txt">${h(v("org_name"))}</div>`;
+
+  const metaHTML = [
+    [L.mDate,v("doc_date")],[L.mRef,v("doc_ref")],
+    [L.mContact,v("org_contact")],[L.mRoom,v("org_room")],
+    [L.mPhone,v("org_phone")],[L.mFax,v("org_fax")],
+    [L.mEmail,v("org_email")],[L.mWeb,v("org_web")],
+  ].filter(r=>r[1]).map(r=>
+    `<tr><td class="lbl">${h(r[0])}</td><td class="val">${h(r[1])}</td></tr>`
+  ).join("");
+
+  const ctry = v("rec_country");
+  const ctryLine = (ctry&&ctry.toLowerCase()!=="germany")
+    ? `<div><strong>${h(ctry.toUpperCase())}</strong></div>` : "";
+
+  const sigWhen = [v("sig_place"),v("doc_date")].filter(Boolean).join(", ");
+  const sigName=v("sig_name"), sigTitle=v("sig_title");
+  const sigBlock = (sigName||sigTitle||sigB64) ? `
+    <div class="sig-block">
+      ${sigWhen?`<div class="sig-when">${h(sigWhen)}</div>`:""}
+      <div class="sig-img">${sigB64?`<img src="${sigB64}" alt="sig">`:""}</div>
+      <div class="sig-line"></div>
+      ${sigName?`<div class="sig-name">${h(sigName)}</div>`:""}
+      ${sigTitle?`<div class="sig-title">${h(sigTitle)}</div>`:""}
+      <div class="sig-lbl">${h(L.sigLbl)}</div>
+    </div>` : "";
+
+  return `
+    <div class="letter-header">
+      <div class="window-zone">
+        <div class="return-addr">${h(v("org_return"))}</div>
+        <div class="recip-block">
+          ${v("rec_company")?`<div class="r-co">${h(v("rec_company"))}</div>`:""}
+          ${(v("rec_sal")||v("rec_name"))?`<div>${h(v("rec_sal"))} ${h(v("rec_name"))}</div>`:""}
+          <div>${h(v("rec_street"))}</div>
+          <div>${h(v("rec_zip"))} ${h(v("rec_city"))}</div>
+          ${ctryLine}
+        </div>
+      </div>
+      <div class="info-block">
+        ${logoHTML}
+        <table class="meta-tbl"><tbody>${metaHTML}</tbody></table>
+      </div>
+    </div>
+    <div class="letter-body">
+      <h3 class="subject-ln">${h(v("doc_subject"))}</h3>
+      <div class="body-txt">${toParas(v("doc_body"))}</div>
+      ${sigBlock}
+    </div>`;
+}
+
+// Footer inner HTML only (no wrapper)
+function buildFooterInner(qrImg) {
+  const cols = getCols();
+  const colsHTML = cols.map(c=>`
+    <div class="f-col">
+      ${c.hd?`<strong>${h(c.hd)}</strong>`:""}
+      ${c.lines.map(h).join("<br>")}
+    </div>`).join("");
+  const qrOn = document.getElementById("qr_on").checked;
+  const qrHTML = (qrOn&&qrImg)
+    ? `<div class="f-qr"><img src="${qrImg}" alt="QR"><span>GiroCode</span></div>` : "";
+  return colsHTML+qrHTML;
+}
+
+// For print: just content — fixed overlays are separate top-level divs
+function buildLetterHTML(qrImg) {
+  return buildContentHTML();
+}
+
+/* ═══════════════ PREVIEW — paginated A4 cards ═══════════════
+   Technique: "sliding window"
+   - Each page card is exactly 210mm × 297mm with overflow:hidden
+   - The full content div is absolutely positioned inside each card
+     with a negative top offset equal to (pageIndex × usableHeight)
+   - This means each card "sees" a different window of the same content
+   - Footer, page number, and serial are pinned separately per card
+═══════════════════════════════════════════════════════════════ */
+function buildPreview() {
+  function render(qr) {
+    try {
+      _lastQr = qr;
+      letterHTML = buildLetterHTML(qr); // stored for print
+
+      // ── Page geometry matching @page CSS exactly ──
+      // @page { margin: 20mm 20mm 56mm 26mm }
+      // Per-page layout (all from paper top):
+      //   [20mm  top margin]
+      //   [221mm content area]  ← footer is BELOW this, never covers text
+      //   [26mm  footer strip]  ← position:fixed; top:221mm (in bottom margin)
+      //   [30mm  page-number]   ← @bottom-center
+      //   Total: 20+221+26+30 = 297mm ✓
+      const mm   = n => Math.round(n * 3.7795);
+      const PW   = mm(210), PH = mm(297);
+      const MT   = mm(20);              // @page top margin
+      const ML   = mm(26), MR = mm(20);// @page left/right margins
+      const MB   = mm(30);              // page-number zone (bottom of 56mm margin)
+      const FH   = mm(26);              // footer height (matches print CSS)
+      const CVH  = PH - MT - MB - FH;  // = mm(221) — visible content per page
+
+      // Probe: measure content at the exact same column width as print
+      const contentHTML = buildContentHTML();
+      const probe = document.createElement("div");
+      probe.style.cssText =
+        `position:absolute;visibility:hidden;left:-9999px;top:0;`+
+        `width:${PW-ML-MR}px;font:10pt/1.45 Arial,'Microsoft YaHei',sans-serif;`+
+        `color:#1a1a1a;line-height:1.45;`;
+      probe.innerHTML = contentHTML;
+      document.body.appendChild(probe);
+      const contentH = probe.scrollHeight;
+      document.body.removeChild(probe);
+
+      const numPages  = Math.max(1, Math.ceil(contentH / CVH));
+      const footInner = buildFooterInner(qr);
+      const serial    = h(v("doc_ref")||v("org_name")||"REF");
+      const orgName   = h(v("org_name"));
+      const docRef    = h(v("doc_ref"));
+      const docDate   = h(v("doc_date"));
+
+      // Build one card per page — layout mirrors the printed page exactly
+      let cards = "";
+      for (let p = 0; p < numPages; p++) {
+        const contentTop = -(p * CVH); // shift content up each page
+
+        cards += `
+        <div style="width:${PW}px;height:${PH}px;background:#fff;overflow:hidden;
+          position:relative;box-shadow:0 4px 28px rgba(0,0,0,.22);flex-shrink:0;">
+
+          <!-- ① Visible content viewport — clipped to CVH (221mm) -->
+          <div style="position:absolute;top:${MT}px;left:${ML}px;right:${MR}px;
+            height:${CVH}px;overflow:hidden;">
+            <div style="position:absolute;top:${contentTop}px;left:0;right:0;
+              font:10pt/1.45 Arial,'Microsoft YaHei',sans-serif;color:#1a1a1a;line-height:1.45;">
+              ${contentHTML}
+            </div>
+          </div>
+
+          <!-- ② Footer strip (matches print: height FH, sits right below CVH) -->
+          <div style="position:absolute;top:${MT+CVH}px;left:0;right:0;height:${FH}px;
+            background:#fff;z-index:3;border-top:.5pt solid #bec8d4;
+            display:flex;gap:${mm(4)}px;align-items:flex-start;
+            padding:${mm(2.5)}px ${MR}px 0 ${ML}px;
+            font:7pt/1.7 Arial,'Microsoft YaHei',sans-serif;color:#555;">
+            ${footInner}
+          </div>
+
+          <!-- ③ Page-number margin zone (matches @page 30mm bottom margin) -->
+          <div style="position:absolute;bottom:0;left:0;right:0;height:${MB}px;
+            background:#f0f2f5;display:flex;align-items:center;justify-content:center;
+            font:7.5pt Arial,sans-serif;color:#999;z-index:3;
+            border-top:1px solid #e0e4ea;">
+            — ${p+1} / ${numPages} —
+          </div>
+
+          <!-- ④ Continuation header on page 2+ (covers top margin zone) -->
+          ${p > 0 ? `
+          <div style="position:absolute;top:0;left:0;right:0;height:${MT}px;
+            background:#fff;display:flex;align-items:center;justify-content:space-between;
+            padding:0 ${MR}px 0 ${ML}px;font:7.5pt Arial,sans-serif;color:#666;
+            border-bottom:.4pt solid #dde2e8;z-index:4;">
+            <strong>${orgName||docRef||"&nbsp;"}</strong>
+            <span>${docRef}${docRef&&docDate?" &nbsp;·&nbsp; ":""}${docDate}</span>
+          </div>` : ""}
+
+          <!-- ⑤ Side serial strip -->
+          <div style="position:absolute;left:${mm(5)}px;top:50%;
+            transform:translateY(-50%) rotate(-90deg);
+            font:6pt Arial,sans-serif;color:#d0d8e0;letter-spacing:2px;
+            text-transform:uppercase;white-space:nowrap;z-index:2;">
+            ${serial} &nbsp;·&nbsp; ${docDate}
+          </div>
+        </div>`;
+      }
+
+      const frame = document.getElementById("preview-frame");
+      frame.innerHTML = cards;
+      frame.classList.add("active");
+      document.getElementById("preview-placeholder").style.display = "none";
+      document.getElementById("t-btnPrint").disabled = false;
+
+    } catch(e) {
+      alert("Preview error: " + e.message);
+      console.error(e);
+    }
+  }
+
+  const qrOn = document.getElementById("qr_on").checked;
+  if (qrOn) makeQR(epcPayload(), render);
+  else render(null);
+}
+
+/* ═══════════════ PRINT ═══════════════ */
+function doPrint() {
+  const orgName = h(v("org_name"));
+  const docRef  = h(v("doc_ref"));
+  const docDate = h(v("doc_date"));
+  const serial  = h(v("doc_ref")||v("org_name")||"REF");
+
+  // Content
+  document.getElementById("print-letter").innerHTML = letterHTML;
+
+  // Fixed footer columns row
+  document.getElementById("print-footer-row").innerHTML = buildFooterInner(_lastQr);
+
+  // Fixed side serial
+  document.getElementById("print-serial-fixed").innerHTML =
+    `${serial} &nbsp;·&nbsp; ${docDate}`;
+
+  // Fixed continuation header
+  document.getElementById("print-cont-org").innerHTML = `<strong>${orgName}</strong>`;
+  document.getElementById("print-cont-ref").textContent =
+    docRef + (docRef && docDate ? " · " : "") + docDate;
+
+  window.print();
+}
+
+/* ═══════════════ INIT ═══════════════ */
+document.getElementById("doc_date").valueAsDate = new Date();
+setLang("en");
+addCol();
+</script>
+</body>
+</html>
