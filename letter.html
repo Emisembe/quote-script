@@ -804,29 +804,180 @@ function buildPreview() {
   else render(null);
 }
 
-/* ═══════════════ PRINT ═══════════════ */
+/* ═══════════════ PRINT — Paginated (PDF-safe) ═══════════════ */
 function doPrint() {
-  const orgName = h(v("org_name"));
-  const docRef  = h(v("doc_ref"));
-  const docDate = h(v("doc_date"));
-  const serial  = h(v("doc_ref")||v("org_name")||"REF");
+  try {
+    const contentHTML = buildContentHTML();
+    const orgName = h(v("org_name"));
+    const docRef  = h(v("doc_ref"));
+    const docDate = h(v("doc_date"));
+    const serial  = h(v("doc_ref")||v("org_name")||"REF");
+    const footInner = buildFooterInner(_lastQr);
 
-  // Content
-  document.getElementById("print-letter").innerHTML = letterHTML;
+    // ── Same page geometry as preview ──
+    const mm   = n => Math.round(n * 3.7795);
+    const PW   = mm(210), PH = mm(297);
+    const MT   = mm(20);
+    const ML   = mm(26), MR = mm(20);
+    const MB   = mm(30);
+    const FH   = mm(26);
+    const CVH  = PH - MT - MB - FH;
 
-  // Fixed footer columns row
-  document.getElementById("print-footer-row").innerHTML = buildFooterInner(_lastQr);
+    // ── Measure content ──
+    const probe = document.createElement("div");
+    probe.style.cssText =
+      `position:absolute;visibility:hidden;left:-9999px;top:0;`+
+      `width:${PW-ML-MR}px;font:10pt/1.45 Arial,'Microsoft YaHei',sans-serif;`+
+      `color:#1a1a1a;line-height:1.45;`;
+    probe.innerHTML = contentHTML;
+    document.body.appendChild(probe);
+    const contentH = probe.scrollHeight;
+    document.body.removeChild(probe);
 
-  // Fixed side serial
-  document.getElementById("print-serial-fixed").innerHTML =
-    `${serial} &nbsp;·&nbsp; ${docDate}`;
+    const numPages = Math.max(1, Math.ceil(contentH / CVH));
 
-  // Fixed continuation header
-  document.getElementById("print-cont-org").innerHTML = `<strong>${orgName}</strong>`;
-  document.getElementById("print-cont-ref").textContent =
-    docRef + (docRef && docDate ? " · " : "") + docDate;
+    // ── Generate printable HTML with embedded footers ──
+    let printHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: Arial, 'Microsoft YaHei', sans-serif; }
+          @page { size: A4; margin: 0; }
+          .page { width: 210mm; height: 297mm; page-break-after: always;
+                  position: relative; background: white; overflow: hidden; }
+          .page:last-child { page-break-after: avoid; }
 
-  window.print();
+          /* Content area */
+          .page-content { position: absolute; top: ${MT}px; left: ${ML}px; right: ${MR}px;
+                          height: ${CVH}px; overflow: hidden;
+                          font: 10pt/1.45 Arial,'Microsoft YaHei',sans-serif; color: #1a1a1a; }
+
+          /* Footer on every page */
+          .page-footer { position: absolute; top: ${MT+CVH}px; left: 0; right: 0;
+                        height: ${FH}px; background: white; border-top: 0.5pt solid #bec8d4;
+                        display: flex; gap: 4mm; align-items: flex-start;
+                        padding: 2.5mm 20mm 0 26mm; font: 7pt/1.7 Arial,'Microsoft YaHei',sans-serif;
+                        color: #555; }
+
+          /* Page number zone */
+          .page-number { position: absolute; bottom: 0; left: 0; right: 0; height: ${MB}px;
+                        display: flex; align-items: center; justify-content: center;
+                        font: 7.5pt Arial, sans-serif; color: #999;
+                        border-top: 1px solid #e0e4ea; background: #f0f2f5; }
+
+          /* Continuation header (page 2+) */
+          .cont-header { position: absolute; top: 0; left: 0; right: 0; height: ${MT}px;
+                        display: flex; align-items: center; justify-content: space-between;
+                        padding: 0 20mm 0 26mm; font: 7.5pt Arial, sans-serif; color: #666;
+                        border-bottom: 0.4pt solid #dde2e8; background: white; }
+
+          /* Side serial */
+          .side-serial { position: absolute; left: 1mm; top: 50%;
+                        transform: translateY(-50%) rotate(-90deg);
+                        font: 6pt Arial, sans-serif; color: #d0d8e0; letter-spacing: 2px;
+                        text-transform: uppercase; white-space: nowrap; z-index: 1; }
+
+          /* Letter styles */
+          .letter-header { display: flex; justify-content: space-between; align-items: flex-start;
+                          width: 100%; min-height: 52mm; page-break-inside: avoid; }
+          .window-zone { width: 85mm; display: flex; flex-direction: column; padding-top: 2mm; }
+          .return-addr { font-size: 6.5pt; color: #aaa; border-bottom: 0.3pt solid #ccc;
+                        padding-bottom: 1.5mm; margin-bottom: 2.5mm; white-space: nowrap;
+                        overflow: hidden; text-overflow: ellipsis; }
+          .recip-block { font-size: 10pt; line-height: 1.6; }
+          .recip-block .r-co { font-weight: 700; }
+          .info-block { width: 66mm; display: flex; flex-direction: column; align-items: flex-end;
+                       gap: 3mm; text-align: right; }
+          .org-logo { max-height: 18mm; max-width: 55mm; object-fit: contain; }
+          .org-logo-txt { font-size: 12pt; font-weight: 700; color: #162d4a; }
+          .meta-tbl { border-collapse: collapse; font-size: 8pt; width: 100%; }
+          .meta-tbl td { padding: 0.45mm 0; vertical-align: top; }
+          .meta-tbl td.lbl { color: #999; padding-right: 2mm; white-space: nowrap; }
+          .meta-tbl td.val { font-weight: 600; text-align: right; color: #222; }
+
+          .letter-body { margin-top: 10mm; }
+          .subject-ln { font-size: 11pt; font-weight: 700; margin-bottom: 6mm; color: #111;
+                       page-break-inside: avoid; }
+          .body-txt p { margin-bottom: 4.5mm; text-align: justify; orphans: 3; widows: 3;
+                       page-break-inside: avoid; }
+
+          .sig-block { margin-top: 12mm; page-break-inside: avoid; }
+          .sig-when { font-size: 9pt; color: #666; margin-bottom: 13mm; }
+          .sig-img { min-height: 13mm; display: flex; align-items: flex-end; margin-bottom: 1mm; }
+          .sig-img img { max-height: 18mm; max-width: 58mm; object-fit: contain; }
+          .sig-line { border-top: 0.5pt solid #666; width: 60mm; margin-bottom: 2mm; }
+          .sig-name { font-size: 9.5pt; font-weight: 700; color: #111; }
+          .sig-title { font-size: 8.5pt; color: #666; }
+          .sig-lbl { font-size: 7.5pt; color: #aaa; margin-top: 1mm; }
+
+          .letter-footer { margin-top: 14mm; border-top: 0.5pt solid #bec8d4; padding-top: 2.5mm;
+                          display: flex; gap: 4mm; font-size: 7pt; color: #555;
+                          align-items: flex-start; width: 100%; }
+          .f-col { flex: 1; line-height: 1.7; min-width: 0; }
+          .f-col strong { display: block; font-size: 7.5pt; color: #1a1a1a; margin-bottom: 0.5mm; }
+          .f-qr { flex: 0 0 auto; width: 22mm; text-align: center; }
+          .f-qr img { width: 20mm; height: 20mm; display: block; margin: 0 auto; }
+          .f-qr span { display: block; font-size: 6pt; color: #aaa; margin-top: 0.5mm; }
+        </style>
+      </head>
+      <body>
+    `;
+
+    // ── Generate each page ──
+    for (let p = 0; p < numPages; p++) {
+      const contentTop = -(p * CVH);
+      printHTML += `
+        <div class="page">
+          <!-- Content viewport -->
+          <div class="page-content">
+            <div style="position: absolute; top: ${contentTop}px; left: 0; right: 0;">
+              ${contentHTML}
+            </div>
+          </div>
+
+          <!-- Footer (on all pages) -->
+          <div class="page-footer">${footInner}</div>
+
+          <!-- Page number -->
+          <div class="page-number">— ${p+1} / ${numPages} —</div>
+
+          <!-- Continuation header (page 2+) -->
+          ${p > 0 ? `
+            <div class="cont-header">
+              <strong>${orgName || docRef || '&nbsp;'}</strong>
+              <span>${docRef}${docRef&&docDate?" · ":""}${docDate}</span>
+            </div>
+          ` : ''}
+
+          <!-- Side serial -->
+          <div class="side-serial">${serial} &nbsp;·&nbsp; ${docDate}</div>
+        </div>
+      `;
+    }
+
+    printHTML += `
+      </body>
+      </html>
+    `;
+
+    // ── Open in new window for printing ──
+    const printWin = window.open('', '_blank');
+    printWin.document.write(printHTML);
+    printWin.document.close();
+
+    // Wait for images/styles to load before printing
+    printWin.setTimeout(() => {
+      printWin.print();
+      printWin.close();
+    }, 500);
+
+  } catch(e) {
+    alert("Print error: " + e.message);
+    console.error(e);
+  }
 }
 
 /* ═══════════════ INIT ═══════════════ */
