@@ -1,0 +1,311 @@
+:root {
+  color-scheme: dark;
+  --bar-bg: rgba(20, 20, 20, 0.72);
+  --accent: #3ea6ff;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #0b0b0b;
+  color: #f2f2f2;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overscroll-behavior: none;
+}
+
+/* When the prompter is running we drop the page background entirely so a
+   fully-transparent scrim (opacity slider at 0) is genuinely see-through —
+   e.g. when this page is used as an OBS Browser Source with alpha support. */
+html.prompter-active, html.prompter-active body {
+  background: transparent !important;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+.view { display: none; height: 100%; }
+.view.active { display: flex; flex-direction: column; height: 100%; }
+
+/* ---------- Editor view ---------- */
+
+#editor-view {
+  padding: 16px;
+  gap: 14px;
+  max-width: 900px;
+  margin: 0 auto;
+  overflow-y: auto;
+}
+
+#editor-view h1 {
+  font-size: 1.4rem;
+  margin: 4px 0 0;
+}
+
+#editor-view .subtitle {
+  margin: 0 0 8px;
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+.panel {
+  background: #171717;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#script-text {
+  width: 100%;
+  min-height: 240px;
+  resize: vertical;
+  background: #0f0f0f;
+  color: #f2f2f2;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.btn {
+  background: #262626;
+  color: #f2f2f2;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+}
+.btn:hover { background: #313131; }
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #06202f;
+  font-weight: 600;
+}
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.danger { border-color: #7a2e2e; color: #ff8a8a; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+#file-input { display: none; }
+
+#script-library {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+#script-library li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0f0f0f;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+#script-library li .name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#script-library li .meta {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+.empty-note { opacity: 0.5; font-size: 0.85rem; padding: 6px 2px; }
+
+label.field-label {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ---------- Prompter view ---------- */
+
+#prompter-view {
+  position: relative;
+  background: transparent;
+  overflow: hidden;
+}
+
+#camera-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+#camera-bg.on { display: block; }
+
+#scrim {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+  z-index: 1;
+}
+
+#prompter-stage {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+#prompter-stage.mirror-h { transform: scaleX(-1); }
+#prompter-stage.mirror-v { transform: scaleY(-1); }
+#prompter-stage.mirror-hv { transform: scale(-1, -1); }
+
+#center-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1px dashed rgba(255, 80, 80, 0.55);
+  pointer-events: none;
+  display: none;
+}
+#center-line.on { display: block; }
+
+#script-track {
+  width: 100%;
+  max-width: 900px;
+  padding: 100vh 24px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  text-align: center;
+  will-change: transform;
+}
+
+#prompter-controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bar-bg);
+  backdrop-filter: blur(6px);
+  padding: 10px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  z-index: 5;
+}
+#prompter-controls.hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.controls-top {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 6px 10px;
+  flex: 1;
+  min-width: 130px;
+}
+.control-group span.ico { font-size: 0.9rem; opacity: 0.8; white-space: nowrap; }
+
+.controls-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.icon-btn {
+  background: rgba(255,255,255,0.08);
+  color: #f2f2f2;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 10px 12px;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1rem;
+}
+.icon-btn.active { background: var(--accent); border-color: var(--accent); color: #06202f; }
+.icon-btn:hover { background: rgba(255,255,255,0.16); }
+
+#show-controls-tab {
+  position: absolute;
+  bottom: 0;
+  right: 12px;
+  background: var(--bar-bg);
+  border: none;
+  border-radius: 8px 8px 0 0;
+  color: #f2f2f2;
+  padding: 8px 14px;
+  z-index: 4;
+  display: none;
+}
+#show-controls-tab.show { display: block; }
+
+#camera-error {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(120, 20, 20, 0.85);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  display: none;
+  z-index: 6;
+  max-width: 90%;
+  text-align: center;
+}
+#camera-error.show { display: block; }
+
+.select-native {
+  background: #171717;
+  color: #f2f2f2;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+
+footer.hint {
+  font-size: 0.78rem;
+  opacity: 0.55;
+  text-align: center;
+  padding: 4px 0 10px;
+}
+
+@media (max-width: 560px) {
+  .control-group { min-width: 100%; }
+  #editor-view { padding: 12px; }
+}

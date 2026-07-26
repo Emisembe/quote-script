@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Teleprompter</title>
+<link rel="stylesheet" href="teleprompter.css">
+</head>
+<body>
+
+<!-- ============= EDITOR VIEW ============= -->
+<div id="editor-view" class="view active">
+  <h1>Teleprompter</h1>
+  <p class="subtitle">Write or load a script, tune it to taste, then hit Start.</p>
+
+  <div class="panel">
+    <label class="field-label" for="script-text">Script</label>
+    <textarea id="script-text" placeholder="Paste or type your script here...">Welcome to your teleprompter.
+
+Type or paste your script here, or load a .txt file with the button below.
+
+Once you hit Start, this text will scroll smoothly. You can change the font size, scroll speed, mirror it for a beamsplitter rig, or turn on the camera background to see through the screen while you read.</textarea>
+
+    <div class="row" style="margin-top:10px;">
+      <button class="btn" id="upload-btn">Upload .txt file</button>
+      <input type="file" id="file-input" accept=".txt,.md,text/plain">
+      <button class="btn" id="clear-btn">Clear</button>
+      <button class="btn" id="download-btn">Download as .txt</button>
+      <div style="flex:1"></div>
+      <button class="btn primary" id="start-btn">Start Teleprompter ▶</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="row" style="justify-content: space-between;">
+      <label class="field-label" style="margin-bottom:0;">Saved scripts</label>
+    </div>
+    <div class="row" style="margin-top:6px;">
+      <input type="text" id="save-name" placeholder="Name this script..." class="btn" style="flex:1; cursor:text; background:#0f0f0f;">
+      <button class="btn" id="save-btn">Save to library</button>
+    </div>
+    <ul id="script-library"></ul>
+    <p class="empty-note" id="library-empty">No saved scripts yet — saved scripts stay on this device (browser local storage).</p>
+  </div>
+
+  <div class="panel">
+    <label class="field-label">Starting settings</label>
+    <div class="row">
+      <div style="flex:1; min-width:160px;">
+        <label class="field-label">Font size (<span id="font-size-label">48</span>px)</label>
+        <input type="range" id="font-size-range" min="20" max="140" value="48">
+      </div>
+      <div style="flex:1; min-width:160px;">
+        <label class="field-label">Scroll speed (<span id="speed-label">40</span>)</label>
+        <input type="range" id="speed-range" min="5" max="150" value="40">
+      </div>
+      <div style="flex:1; min-width:160px;">
+        <label class="field-label">Font</label>
+        <select id="font-family" class="select-native" style="width:100%;">
+          <option value="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif">Sans-serif</option>
+          <option value="Georgia,'Times New Roman',serif">Serif</option>
+          <option value="'Courier New',monospace">Monospace</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <footer class="hint">
+    Tip: for camera see-through mode you'll need to allow camera access, and most mobile browsers only allow that over HTTPS (or localhost).
+  </footer>
+</div>
+
+<!-- ============= PROMPTER VIEW ============= -->
+<div id="prompter-view" class="view">
+  <video id="camera-bg" autoplay playsinline muted></video>
+  <div id="scrim"></div>
+  <div id="camera-error"></div>
+
+  <div id="prompter-stage">
+    <div id="center-line"></div>
+    <div id="script-track"></div>
+  </div>
+
+  <button id="show-controls-tab">⚙ Controls</button>
+
+  <div id="prompter-controls">
+    <div class="controls-top">
+      <div class="control-group">
+        <span class="ico">🔤</span>
+        <input type="range" id="p-font-size" min="20" max="140" value="48">
+      </div>
+      <div class="control-group">
+        <span class="ico">⏩</span>
+        <input type="range" id="p-speed" min="5" max="150" value="40">
+      </div>
+      <div class="control-group">
+        <span class="ico">🌓</span>
+        <input type="range" id="p-opacity" min="0" max="100" value="100">
+      </div>
+    </div>
+
+    <div class="controls-buttons">
+      <button class="icon-btn" id="back-btn" title="Back to editor">← Back</button>
+      <button class="icon-btn" id="play-btn" title="Play / Pause (Space)">▶ Play</button>
+      <button class="icon-btn" id="reset-btn" title="Reset to top">⟲ Reset</button>
+      <button class="icon-btn" id="mirror-btn" title="Mirror for beamsplitter glass (M)">🪞 Mirror</button>
+      <button class="icon-btn" id="camera-btn" title="Toggle camera see-through background (C)">📷 Camera</button>
+      <button class="icon-btn" id="flip-cam-btn" title="Switch front/back camera" style="display:none;">🔄 Flip cam</button>
+      <button class="icon-btn" id="centerline-btn" title="Toggle center guide line">➖ Guide</button>
+      <button class="icon-btn" id="fullscreen-btn" title="Fullscreen (F)">⛶ Fullscreen</button>
+      <button class="icon-btn" id="hide-controls-btn" title="Hide this bar">▾ Hide</button>
+    </div>
+  </div>
+</div>
+
+<script src="teleprompter.js"></script>
+</body>
+</html>
