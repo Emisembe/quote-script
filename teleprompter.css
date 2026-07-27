@@ -216,7 +216,13 @@ label.field-label {
   border-radius: 10px;
   white-space: nowrap;
   text-transform: uppercase;
+  opacity: 1;
+  transition: opacity 0.6s ease;
 }
+/* It sits right on the reading line, so it would otherwise cover whatever
+   text scrolls under it — show it as a brief orientation hint, then fade
+   it out and leave just the thin line + edge markers in place. */
+.eye-line-label.faded { opacity: 0; }
 
 /* Reading-guide spotlight: dim text away from the center line, like a
    physical teleprompter's read zone. Toggled together with #center-line. */

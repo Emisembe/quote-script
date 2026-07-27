@@ -560,10 +560,21 @@
   });
 
   // ---------- Eye-line reading guide ----------
+  const eyeLineLabel = document.querySelector('.eye-line-label');
+  let labelFadeTimer = null;
+
   centerlineBtn.addEventListener('click', () => {
+    const turningOn = !centerLine.classList.contains('on');
     centerLine.classList.toggle('on');
     prompterStage.classList.toggle('spotlight-on');
     centerlineBtn.classList.toggle('active');
+    clearTimeout(labelFadeTimer);
+    if (turningOn) {
+      // Show the "look here" label as a one-time hint, then fade it so it
+      // stops sitting on top of (and blocking) the text scrolling past it.
+      eyeLineLabel.classList.remove('faded');
+      labelFadeTimer = setTimeout(() => eyeLineLabel.classList.add('faded'), 2500);
+    }
   });
 
   // ---------- Fullscreen ----------
