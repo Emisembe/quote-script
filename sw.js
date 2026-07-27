@@ -1,8 +1,11 @@
-const CACHE = 'teleprompter-v1';
+const CACHE = 'teleprompter-v2';
 const ASSETS = [
   'teleprompter.html',
   'teleprompter.css',
   'teleprompter.js',
+  'remote.html',
+  'remote.css',
+  'remote.js',
   'manifest.webmanifest',
   'icon-180.png',
   'icon-512.png'

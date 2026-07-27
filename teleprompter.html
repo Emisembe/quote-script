@@ -147,7 +147,30 @@ Once you hit Start, this text will scroll smoothly. You can change the font size
       <button class="icon-btn" id="flip-cam-btn" title="Switch front/back camera" style="display:none;">🔄 Flip cam</button>
       <button class="icon-btn" id="centerline-btn" title="Toggle reading guide">➖ Guide</button>
       <button class="icon-btn" id="fullscreen-btn" title="Fullscreen (F) — limited on iPhone, use Add to Home Screen instead">⛶ Fullscreen</button>
+      <button class="icon-btn" id="remote-btn" title="Pair a wireless remote control">🔗 Remote</button>
       <button class="icon-btn" id="hide-controls-btn" title="Hide this bar">▾ Hide</button>
+    </div>
+  </div>
+
+  <div id="remote-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h2>Pair a remote control</h2>
+      <p>Open <code>remote.html</code> on your other phone or laptop, then follow the two steps below — they only happen once per session.</p>
+      <p id="remote-status" class="remote-status">Not connected</p>
+
+      <label class="field-label">Step 1 — generate a code and copy it to the other device</label>
+      <button class="btn" id="gen-offer-btn">Generate pairing code</button>
+      <textarea id="offer-output" readonly rows="3" placeholder="Your code will appear here..."></textarea>
+      <button class="btn" id="copy-offer-btn">Copy code</button>
+
+      <label class="field-label" style="margin-top:14px;">Step 2 — paste the code the other device shows you</label>
+      <textarea id="answer-input" rows="3" placeholder="Paste the remote's code here..."></textarea>
+      <button class="btn primary" id="connect-answer-btn">Connect</button>
+
+      <div class="row" style="margin-top:14px; justify-content:flex-end;">
+        <button class="btn danger" id="disconnect-remote-btn" style="display:none;">Disconnect</button>
+        <button class="btn" id="close-remote-modal">Close</button>
+      </div>
     </div>
   </div>
 </div>

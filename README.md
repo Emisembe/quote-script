@@ -3,9 +3,10 @@
 This repo has two unrelated tools in it:
 
 - `quote.js` — a price-quote calculator, the original purpose of this repo. Not used by the teleprompter.
-- `teleprompter.html` (+ `teleprompter.css`, `teleprompter.js`) — the teleprompter app, described below. All three files must stay in the same folder — the HTML file loads the other two by relative filename. `teleprompter.html` is the only file you open.
+- `teleprompter.html` (+ `teleprompter.css`, `teleprompter.js`) — the teleprompter app, described below. `teleprompter.html` is the file you open on the device doing the reading.
+- `remote.html` (+ `remote.css`, `remote.js`) — a wireless remote control, described below. Open this on a *second* device.
 
-`manifest.webmanifest`, `icon-180.png`, `icon-512.png`, and `sw.js` support installing the teleprompter to a phone's home screen and let it run offline (see below) — they're only used by the teleprompter, you can ignore them otherwise.
+All of those files need to stay in the same folder — each HTML file loads its matching CSS/JS by relative filename. `manifest.webmanifest`, `icon-180.png`, `icon-512.png`, and `sw.js` support installing the teleprompter to a phone's home screen and let it run offline (see below) — they're only used by the teleprompter, you can ignore them otherwise.
 
 ## Teleprompter
 
@@ -23,6 +24,20 @@ This repo has two unrelated tools in it:
 
 Keyboard / remote-clicker shortcuts while the prompter is running: `Space`/`Enter` play/pause, `↑`/`↓` speed, `Page Up`/`Page Down` jump paragraph, `+`/`-` font size, `M` mirror, `C` camera, `F` fullscreen, `Esc` back to editor. Most Bluetooth presentation clickers send these same key codes, so they work without any extra setup.
 
+### Wireless remote control
+
+Open `remote.html` on a second phone or laptop to control the teleprompter without touching the screen doing the reading — play/pause, speed, font size, jump paragraph, mirror, guide, reset.
+
+It connects the two devices directly (WebRTC), with no account, app, or server of ours in the middle — you pair them once per session by copying a short code from one screen to the other:
+
+1. On the teleprompter, tap **🔗 Remote** → **Generate pairing code** → copy the code shown.
+2. On the remote device, open `remote.html`, paste that code, tap **Generate my code** → copy the code it shows you.
+3. Paste that back into the teleprompter's Step 2 box and tap **Connect**.
+
+After that the two stay connected for the session; the remote also mirrors the teleprompter's play state, speed, font size, and progress so you can see what's happening from across the room. This only needs the two devices to be reachable from each other (same Wi-Fi covers the normal case) — a STUN lookup to a public Google server helps them find each other through NAT, but no script content or script text ever leaves the two devices.
+
+If pairing seems stuck, it's almost always a restrictive network (hotel/corporate Wi-Fi, or client isolation) blocking that discovery step — try a different network, or connect both devices' hotspot to each other directly.
+
 ### Using it on an iPhone
 
 Safari (and every other iOS browser, which are all required by Apple to use Safari's engine) has a few quirks:
@@ -32,4 +47,4 @@ Safari (and every other iOS browser, which are all required by Apple to use Safa
 
 ### Running it locally without HTTPS
 
-Everything except camera passthrough and wake lock works by just double-clicking `teleprompter.html`.
+Everything except camera passthrough and wake lock works by just double-clicking `teleprompter.html` — that includes the wireless remote, which doesn't require HTTPS.

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Teleprompter Remote</title>
+<link rel="stylesheet" href="remote.css">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b0b0b">
+</head>
+<body>
+
+<div id="pairing-screen" class="screen active">
+  <h1>Teleprompter Remote</h1>
+  <p class="subtitle">Pairs directly with the teleprompter screen — no account, no app.</p>
+  <p id="status" class="status">Not connected</p>
+
+  <div class="panel">
+    <label class="field-label">Step 1 — paste the code from the teleprompter</label>
+    <textarea id="offer-input" rows="3" placeholder="Paste the teleprompter's code here..."></textarea>
+    <button class="btn primary" id="gen-answer-btn">Generate my code</button>
+  </div>
+
+  <div class="panel" id="answer-panel" style="display:none;">
+    <label class="field-label">Step 2 — copy this code back into the teleprompter</label>
+    <textarea id="answer-output" readonly rows="3"></textarea>
+    <button class="btn" id="copy-answer-btn">Copy code</button>
+    <p class="hint">Paste it into the teleprompter's "Step 2" box, then this screen will switch to the remote automatically.</p>
+  </div>
+</div>
+
+<div id="control-screen" class="screen">
+  <div class="status-row">
+    <span id="control-status" class="status connected">🟢 Connected</span>
+    <span id="time-readout">0:00 / 0:00</span>
+  </div>
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+
+  <button id="toggle-btn" class="big-btn play">▶ Play</button>
+
+  <div class="grid">
+    <button class="tile" id="prev-btn">⏮<br>Prev ¶</button>
+    <button class="tile" id="reset-btn">⟲<br>Reset</button>
+    <button class="tile" id="next-btn">⏭<br>Next ¶</button>
+
+    <button class="tile" id="speed-down-btn">➖<br>Speed</button>
+    <span class="tile readout" id="speed-readout">40</span>
+    <button class="tile" id="speed-up-btn">➕<br>Speed</button>
+
+    <button class="tile" id="font-down-btn">A−<br>Font</button>
+    <span class="tile readout" id="font-readout">48px</span>
+    <button class="tile" id="font-up-btn">A+<br>Font</button>
+
+    <button class="tile" id="mirror-btn">🪞<br>Mirror</button>
+    <button class="tile" id="guide-btn">➖<br>Guide</button>
+    <button class="tile danger" id="disconnect-btn">✕<br>Disconnect</button>
+  </div>
+</div>
+
+<script src="remote.js"></script>
+</body>
+</html>

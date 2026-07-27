@@ -382,6 +382,7 @@
     const elapsed = settings.speed ? scrollPos / settings.speed : 0;
     const total = settings.speed ? maxScroll / settings.speed : 0;
     timeReadout.textContent = `${fmtTime(elapsed)} / ${fmtTime(total)}`;
+    sendStateThrottled();
   }
 
   function tick(ts) {
@@ -414,6 +415,7 @@
     } else {
       releaseWakeLock();
     }
+    sendStateNow();
   }
 
   function beginCountdownThenPlay() {
@@ -601,6 +603,157 @@
   });
   prompterStage.addEventListener('click', () => {
     if (controlsBar.classList.contains('hidden')) showControls();
+  });
+
+  // ---------- Wireless remote control (WebRTC, no server) ----------
+  // Two devices pair by manually copying a short code once; after that,
+  // control messages flow directly between them (no relay, no account).
+  const ICE_SERVERS = [{ urls: 'stun:stun.l.google.com:19302' }];
+
+  const remoteBtn = document.getElementById('remote-btn');
+  const remoteModal = document.getElementById('remote-modal');
+  const closeRemoteModalBtn = document.getElementById('close-remote-modal');
+  const remoteStatusEl = document.getElementById('remote-status');
+  const genOfferBtn = document.getElementById('gen-offer-btn');
+  const offerOutput = document.getElementById('offer-output');
+  const copyOfferBtn = document.getElementById('copy-offer-btn');
+  const answerInput = document.getElementById('answer-input');
+  const connectAnswerBtn = document.getElementById('connect-answer-btn');
+  const disconnectRemoteBtn = document.getElementById('disconnect-remote-btn');
+
+  let rtcPc = null;
+  let rtcDc = null;
+  let lastStateSend = 0;
+
+  // Don't wait forever for a STUN round-trip that a restrictive network
+  // might silently drop — after 4s, proceed with whatever candidates
+  // (usually at least a local-network one) have been gathered so far.
+  function waitForIceGatheringComplete(pc, timeoutMs = 4000) {
+    if (pc.iceGatheringState === 'complete') return Promise.resolve();
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        pc.removeEventListener('icegatheringstatechange', check);
+        resolve();
+      }, timeoutMs);
+      function check() {
+        if (pc.iceGatheringState === 'complete') {
+          clearTimeout(timer);
+          pc.removeEventListener('icegatheringstatechange', check);
+          resolve();
+        }
+      }
+      pc.addEventListener('icegatheringstatechange', check);
+    });
+  }
+
+  function setRemoteStatus(text, connected) {
+    remoteStatusEl.textContent = text;
+    remoteStatusEl.classList.toggle('connected', !!connected);
+    disconnectRemoteBtn.style.display = connected ? 'inline-block' : 'none';
+    remoteBtn.classList.toggle('active', !!connected);
+  }
+
+  function wireHostDataChannel(channel) {
+    rtcDc = channel;
+    rtcDc.onopen = () => {
+      setRemoteStatus('🟢 Remote connected', true);
+      sendStateNow();
+    };
+    rtcDc.onclose = () => setRemoteStatus('Disconnected', false);
+    rtcDc.onerror = () => setRemoteStatus('Connection error', false);
+    rtcDc.onmessage = (e) => {
+      let msg;
+      try { msg = JSON.parse(e.data); } catch { return; }
+      switch (msg.type) {
+        case 'toggle': playBtn.click(); break;
+        case 'reset': resetBtn.click(); break;
+        case 'speedUp': setSpeed(Math.min(150, settings.speed + 5)); break;
+        case 'speedDown': setSpeed(Math.max(5, settings.speed - 5)); break;
+        case 'fontUp': setFontSize(Math.min(200, settings.fontSize + 4)); break;
+        case 'fontDown': setFontSize(Math.max(20, settings.fontSize - 4)); break;
+        case 'nextPara': jumpToParagraph(currentParaIndex() + 1); break;
+        case 'prevPara': jumpToParagraph(currentParaIndex() - 1); break;
+        case 'mirror': mirrorBtn.click(); break;
+        case 'guide': centerlineBtn.click(); break;
+      }
+      sendStateNow();
+    };
+  }
+
+  function sendStateNow() {
+    if (!rtcDc || rtcDc.readyState !== 'open') return;
+    lastStateSend = performance.now();
+    rtcDc.send(JSON.stringify({
+      type: 'state',
+      playing,
+      speed: settings.speed,
+      fontSize: settings.fontSize,
+      time: timeReadout.textContent,
+      pct: parseFloat(progressFill.style.width) || 0
+    }));
+  }
+
+  function sendStateThrottled() {
+    if (!rtcDc || rtcDc.readyState !== 'open') return;
+    if (performance.now() - lastStateSend < 200) return;
+    sendStateNow();
+  }
+
+  remoteBtn.addEventListener('click', () => remoteModal.classList.add('show'));
+  closeRemoteModalBtn.addEventListener('click', () => remoteModal.classList.remove('show'));
+
+  genOfferBtn.addEventListener('click', async () => {
+    genOfferBtn.disabled = true;
+    genOfferBtn.textContent = 'Generating…';
+    try {
+      if (rtcPc) rtcPc.close();
+      rtcPc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+      wireHostDataChannel(rtcPc.createDataChannel('control'));
+      rtcPc.onconnectionstatechange = () => {
+        if (rtcPc.connectionState === 'failed' || rtcPc.connectionState === 'disconnected') {
+          setRemoteStatus('Disconnected', false);
+        }
+      };
+      const offer = await rtcPc.createOffer();
+      await rtcPc.setLocalDescription(offer);
+      await waitForIceGatheringComplete(rtcPc);
+      offerOutput.value = btoa(JSON.stringify(rtcPc.localDescription));
+    } catch (err) {
+      setRemoteStatus('Could not start pairing: ' + err.message, false);
+    } finally {
+      genOfferBtn.disabled = false;
+      genOfferBtn.textContent = 'Generate pairing code';
+    }
+  });
+
+  copyOfferBtn.addEventListener('click', () => {
+    if (!offerOutput.value) return;
+    offerOutput.select();
+    navigator.clipboard?.writeText(offerOutput.value).catch(() => {});
+  });
+
+  connectAnswerBtn.addEventListener('click', async () => {
+    if (!rtcPc) {
+      setRemoteStatus('Generate a pairing code first (Step 1)', false);
+      return;
+    }
+    try {
+      const answer = JSON.parse(atob(answerInput.value.trim()));
+      await rtcPc.setRemoteDescription(answer);
+      setRemoteStatus('Connecting…', false);
+    } catch {
+      setRemoteStatus('That code looks invalid — copy it again from the remote device', false);
+    }
+  });
+
+  disconnectRemoteBtn.addEventListener('click', () => {
+    if (rtcDc) rtcDc.close();
+    if (rtcPc) rtcPc.close();
+    rtcPc = null;
+    rtcDc = null;
+    offerOutput.value = '';
+    answerInput.value = '';
+    setRemoteStatus('Not connected', false);
   });
 
   // ---------- Keyboard shortcuts ----------
