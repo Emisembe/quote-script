@@ -4,12 +4,16 @@
   const LIBRARY_KEY = 'teleprompter.library';
   const SETTINGS_KEY = 'teleprompter.settings';
 
+  const DRAFT_KEY = 'teleprompter.draft';
+
   const defaultSettings = {
     fontSize: 48,
     speed: 40,
     opacity: 100,
     fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif",
-    mirrorMode: 0 // 0 none, 1 horizontal, 2 vertical, 3 both
+    mirrorMode: 0, // 0 none, 1 horizontal, 2 vertical, 3 both
+    backdropColor: '#000000',
+    countdownEnabled: true
   };
 
   let settings = loadSettings();
@@ -44,6 +48,9 @@
   const pFontSize = document.getElementById('p-font-size');
   const pSpeed = document.getElementById('p-speed');
   const pOpacity = document.getElementById('p-opacity');
+  const pFontSizeValue = document.getElementById('p-font-size-value');
+  const pSpeedValue = document.getElementById('p-speed-value');
+  const pOpacityValue = document.getElementById('p-opacity-value');
 
   const backBtn = document.getElementById('back-btn');
   const playBtn = document.getElementById('play-btn');
@@ -56,6 +63,18 @@
   const hideControlsBtn = document.getElementById('hide-controls-btn');
   const showControlsTab = document.getElementById('show-controls-tab');
   const controlsBar = document.getElementById('prompter-controls');
+
+  const countdownToggle = document.getElementById('countdown-toggle');
+  const countdownOverlay = document.getElementById('countdown-overlay');
+  const countdownNumber = document.getElementById('countdown-number');
+  const progressFill = document.getElementById('progress-fill');
+  const timeReadout = document.getElementById('time-readout');
+  const fontDecBtn = document.getElementById('font-dec');
+  const fontIncBtn = document.getElementById('font-inc');
+  const backdropBlackBtn = document.getElementById('backdrop-black');
+  const backdropGreenBtn = document.getElementById('backdrop-green');
+  const prevParaBtn = document.getElementById('prev-para-btn');
+  const nextParaBtn = document.getElementById('next-para-btn');
 
   // ---------- Settings persistence ----------
   function loadSettings() {
@@ -81,9 +100,31 @@
     pFontSize.value = settings.fontSize;
     pSpeed.value = settings.speed;
     pOpacity.value = settings.opacity;
+    pFontSizeValue.textContent = settings.fontSize + 'px';
+    pSpeedValue.textContent = settings.speed;
+    pOpacityValue.textContent = settings.opacity + '%';
+    countdownToggle.checked = settings.countdownEnabled;
+    backdropBlackBtn.classList.toggle('active', settings.backdropColor === '#000000');
+    backdropGreenBtn.classList.toggle('active', settings.backdropColor !== '#000000');
   }
 
   applySettingsToUI();
+
+  // ---------- Draft autosave (so a stray refresh never loses typed work) ----------
+  const savedDraft = localStorage.getItem(DRAFT_KEY);
+  if (savedDraft && savedDraft.trim()) {
+    scriptText.value = savedDraft;
+  }
+  let draftTimer = null;
+  scriptText.addEventListener('input', () => {
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(() => localStorage.setItem(DRAFT_KEY, scriptText.value), 400);
+  });
+
+  countdownToggle.addEventListener('change', () => {
+    settings.countdownEnabled = countdownToggle.checked;
+    saveSettings();
+  });
 
   // ---------- Script library (localStorage) ----------
   function loadLibrary() {
@@ -202,16 +243,31 @@
   pOpacity.addEventListener('input', () => {
     settings.opacity = +pOpacity.value;
     scrim.style.opacity = settings.opacity / 100;
+    pOpacityValue.textContent = settings.opacity + '%';
     saveSettings();
   });
+
+  backdropBlackBtn.addEventListener('click', () => setBackdropColor('#000000'));
+  backdropGreenBtn.addEventListener('click', () => setBackdropColor('#00b140'));
+
+  function setBackdropColor(color) {
+    settings.backdropColor = color;
+    scrim.style.background = color;
+    backdropBlackBtn.classList.toggle('active', color === '#000000');
+    backdropGreenBtn.classList.toggle('active', color !== '#000000');
+    saveSettings();
+  }
 
   function setFontSize(v) {
     settings.fontSize = v;
     fontSizeRange.value = v;
     pFontSize.value = v;
     fontSizeLabel.textContent = v;
+    pFontSizeValue.textContent = v + 'px';
     scriptTrack.style.fontSize = v + 'px';
     saveSettings();
+    recomputeMaxScroll();
+    updateProgressUI();
   }
 
   function setSpeed(v) {
@@ -219,7 +275,9 @@
     speedRange.value = v;
     pSpeed.value = v;
     speedLabel.textContent = v;
+    pSpeedValue.textContent = v;
     saveSettings();
+    updateProgressUI();
   }
 
   // ---------- View switching ----------
@@ -248,23 +306,40 @@
     }
   });
 
+  function renderScript(text) {
+    scriptTrack.innerHTML = '';
+    paragraphEls = text.split(/\n{2,}/).map(para => {
+      const div = document.createElement('div');
+      div.className = 'para';
+      div.textContent = para;
+      scriptTrack.appendChild(div);
+      return div;
+    });
+  }
+
   startBtn.addEventListener('click', () => {
     if (!scriptText.value.trim()) {
       scriptText.focus();
       return;
     }
-    scriptTrack.textContent = scriptText.value;
+    renderScript(scriptText.value);
     scriptTrack.style.fontSize = settings.fontSize + 'px';
     scriptTrack.style.fontFamily = settings.fontFamily;
+    scrim.style.background = settings.backdropColor;
     scrim.style.opacity = settings.opacity / 100;
     applyMirrorClass();
     scrollPos = 0;
+    hasStartedOnce = false;
     applyScrollTransform();
     editorView.classList.remove('active');
     prompterView.classList.add('active');
     document.documentElement.classList.add('prompter-active');
     setPlaying(false);
     showControls();
+    requestAnimationFrame(() => {
+      recomputeMaxScroll();
+      updateProgressUI();
+    });
   });
 
   backBtn.addEventListener('click', exitToEditor);
@@ -282,9 +357,31 @@
   let playing = false;
   let scrollPos = 0;
   let lastTs = null;
+  let paragraphEls = [];
+  let maxScroll = 1;
+  let hasStartedOnce = false;
 
   function applyScrollTransform() {
     scriptTrack.style.transform = `translateY(-${scrollPos}px)`;
+  }
+
+  function recomputeMaxScroll() {
+    maxScroll = Math.max(1, scriptTrack.scrollHeight - prompterStage.clientHeight);
+  }
+
+  function fmtTime(s) {
+    s = Math.max(0, Math.round(s));
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  }
+
+  function updateProgressUI() {
+    const pct = maxScroll ? Math.min(100, (scrollPos / maxScroll) * 100) : 0;
+    progressFill.style.width = pct + '%';
+    const elapsed = settings.speed ? scrollPos / settings.speed : 0;
+    const total = settings.speed ? maxScroll / settings.speed : 0;
+    timeReadout.textContent = `${fmtTime(elapsed)} / ${fmtTime(total)}`;
   }
 
   function tick(ts) {
@@ -292,7 +389,15 @@
     if (lastTs !== null) {
       const dt = (ts - lastTs) / 1000;
       scrollPos += settings.speed * dt;
+      if (scrollPos >= maxScroll) {
+        scrollPos = maxScroll;
+        applyScrollTransform();
+        updateProgressUI();
+        setPlaying(false);
+        return;
+      }
       applyScrollTransform();
+      updateProgressUI();
     }
     lastTs = ts;
     requestAnimationFrame(tick);
@@ -311,11 +416,76 @@
     }
   }
 
-  playBtn.addEventListener('click', () => setPlaying(!playing));
+  function beginCountdownThenPlay() {
+    if (!settings.countdownEnabled) {
+      setPlaying(true);
+      return;
+    }
+    let n = 3;
+    countdownNumber.textContent = n;
+    countdownOverlay.classList.add('show');
+    const iv = setInterval(() => {
+      n--;
+      if (n <= 0) {
+        clearInterval(iv);
+        countdownOverlay.classList.remove('show');
+        setPlaying(true);
+      } else {
+        countdownNumber.textContent = n;
+      }
+    }, 800);
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (playing) {
+      setPlaying(false);
+      return;
+    }
+    if (!hasStartedOnce) {
+      hasStartedOnce = true;
+      beginCountdownThenPlay();
+    } else {
+      setPlaying(true);
+    }
+  });
 
   resetBtn.addEventListener('click', () => {
     scrollPos = 0;
+    hasStartedOnce = false;
     applyScrollTransform();
+    updateProgressUI();
+  });
+
+  // ---------- Paragraph navigation (jump by blank-line-separated section) ----------
+  function currentParaIndex() {
+    const centerLocal = scrollPos + prompterStage.clientHeight / 2;
+    let idx = 0;
+    for (let i = 0; i < paragraphEls.length; i++) {
+      if (paragraphEls[i].offsetTop <= centerLocal) idx = i;
+      else break;
+    }
+    return idx;
+  }
+
+  function jumpToParagraph(idx) {
+    if (!paragraphEls.length) return;
+    idx = Math.max(0, Math.min(paragraphEls.length - 1, idx));
+    const el = paragraphEls[idx];
+    const target = el.offsetTop - prompterStage.clientHeight / 2 + el.offsetHeight / 2;
+    scrollPos = Math.max(0, Math.min(maxScroll, target));
+    applyScrollTransform();
+    updateProgressUI();
+  }
+
+  prevParaBtn.addEventListener('click', () => jumpToParagraph(currentParaIndex() - 1));
+  nextParaBtn.addEventListener('click', () => jumpToParagraph(currentParaIndex() + 1));
+
+  // ---------- Quick on-screen font size nudge ----------
+  fontDecBtn.addEventListener('click', () => setFontSize(Math.max(20, settings.fontSize - 4)));
+  fontIncBtn.addEventListener('click', () => setFontSize(Math.min(200, settings.fontSize + 4)));
+
+  window.addEventListener('resize', () => {
+    if (prompterView.classList.contains('active')) recomputeMaxScroll();
   });
 
   // ---------- Mirror ----------
@@ -387,9 +557,10 @@
     startCamera();
   });
 
-  // ---------- Center guide line ----------
+  // ---------- Eye-line reading guide ----------
   centerlineBtn.addEventListener('click', () => {
     centerLine.classList.toggle('on');
+    prompterStage.classList.toggle('spotlight-on');
     centerlineBtn.classList.toggle('active');
   });
 
@@ -437,8 +608,9 @@
     if (!prompterView.classList.contains('active')) return;
     switch (e.key) {
       case ' ':
+      case 'Enter':
         e.preventDefault();
-        setPlaying(!playing);
+        playBtn.click();
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -448,9 +620,17 @@
         e.preventDefault();
         setSpeed(Math.max(5, settings.speed - 5));
         break;
+      case 'PageDown':
+        e.preventDefault();
+        jumpToParagraph(currentParaIndex() + 1);
+        break;
+      case 'PageUp':
+        e.preventDefault();
+        jumpToParagraph(currentParaIndex() - 1);
+        break;
       case '+':
       case '=':
-        setFontSize(Math.min(140, settings.fontSize + 4));
+        setFontSize(Math.min(200, settings.fontSize + 4));
         break;
       case '-':
         setFontSize(Math.max(20, settings.fontSize - 4));

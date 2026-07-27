@@ -186,20 +186,133 @@ label.field-label {
   left: 0;
   right: 0;
   top: 50%;
-  border-top: 1px dashed rgba(255, 80, 80, 0.55);
+  border-top: 2px dashed rgba(255, 80, 80, 0.75);
   pointer-events: none;
   display: none;
+  z-index: 3;
 }
 #center-line.on { display: block; }
+
+.eye-marker {
+  position: absolute;
+  top: -15px;
+  font-size: 22px;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.9));
+}
+.eye-marker-left { left: 10px; }
+.eye-marker-right { right: 10px; }
+
+.eye-line-label {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 80, 80, 0.9);
+  color: #1a0000;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 2px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+/* Reading-guide spotlight: dim text away from the center line, like a
+   physical teleprompter's read zone. Toggled together with #center-line. */
+#prompter-stage.spotlight-on #script-track {
+  -webkit-mask-image: linear-gradient(to bottom,
+    rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.15) 30%,
+    rgba(0,0,0,1) 47%, rgba(0,0,0,1) 53%,
+    rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.15) 100%);
+  mask-image: linear-gradient(to bottom,
+    rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.15) 30%,
+    rgba(0,0,0,1) 47%, rgba(0,0,0,1) 53%,
+    rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.15) 100%);
+}
+
+#progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255,255,255,0.12);
+  z-index: 6;
+}
+#progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+}
+#time-readout {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
+  background: rgba(0,0,0,0.5);
+  padding: 3px 8px;
+  border-radius: 6px;
+  z-index: 6;
+}
+
+#quick-font-controls {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 6;
+}
+.icon-btn.small {
+  min-width: 38px;
+  min-height: 38px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+}
+
+#countdown-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.55);
+  z-index: 9;
+  pointer-events: none;
+}
+#countdown-overlay.show { display: flex; }
+#countdown-number {
+  font-size: 25vw;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 30px rgba(0,0,0,0.6);
+}
+
+.swatch-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 2px solid rgba(255,255,255,0.25);
+  cursor: pointer;
+}
+.swatch-btn.active { border-color: var(--accent); }
+.swatch-black { background: #000; }
+.swatch-green { background: #0b7a1e; }
 
 #script-track {
   width: 100%;
   max-width: 900px;
   padding: 100vh 24px;
-  white-space: pre-wrap;
   word-wrap: break-word;
   text-align: center;
   will-change: transform;
+}
+
+#script-track .para {
+  white-space: pre-wrap;
+  margin: 0 0 1.2em;
 }
 
 #prompter-controls {
@@ -239,6 +352,14 @@ label.field-label {
   min-width: 130px;
 }
 .control-group span.ico { font-size: 0.9rem; opacity: 0.8; white-space: nowrap; }
+.control-group .value-readout {
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+  min-width: 2.6em;
+  text-align: right;
+  white-space: nowrap;
+}
 
 .controls-buttons {
   display: flex;

@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Teleprompter</title>
 <link rel="stylesheet" href="teleprompter.css">
+
+<!-- Add-to-Home-Screen support (iPhone/Android): launches without browser chrome -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0b0b0b">
 </head>
 <body>
 
@@ -48,7 +57,7 @@ Once you hit Start, this text will scroll smoothly. You can change the font size
     <div class="row">
       <div style="flex:1; min-width:160px;">
         <label class="field-label">Font size (<span id="font-size-label">48</span>px)</label>
-        <input type="range" id="font-size-range" min="20" max="140" value="48">
+        <input type="range" id="font-size-range" min="20" max="200" value="48">
       </div>
       <div style="flex:1; min-width:160px;">
         <label class="field-label">Scroll speed (<span id="speed-label">40</span>)</label>
@@ -63,10 +72,16 @@ Once you hit Start, this text will scroll smoothly. You can change the font size
         </select>
       </div>
     </div>
+    <div class="row" style="margin-top:12px;">
+      <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+        <input type="checkbox" id="countdown-toggle" checked>
+        Start with a 3-2-1 countdown
+      </label>
+    </div>
   </div>
 
   <footer class="hint">
-    Tip: for camera see-through mode you'll need to allow camera access, and most mobile browsers only allow that over HTTPS (or localhost).
+    Tip: for camera see-through mode you'll need to allow camera access, and most mobile browsers only allow that over HTTPS (or localhost). On iPhone, use Share → "Add to Home Screen" to run this full-screen without Safari's address bar.
   </footer>
 </div>
 
@@ -76,10 +91,24 @@ Once you hit Start, this text will scroll smoothly. You can change the font size
   <div id="scrim"></div>
   <div id="camera-error"></div>
 
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+  <div id="time-readout">0:00 / 0:00</div>
+
   <div id="prompter-stage">
-    <div id="center-line"></div>
+    <div id="center-line">
+      <span class="eye-marker eye-marker-left">👁</span>
+      <span class="eye-line-label">Look here — eye line</span>
+      <span class="eye-marker eye-marker-right">👁</span>
+    </div>
     <div id="script-track"></div>
   </div>
+
+  <div id="quick-font-controls">
+    <button class="icon-btn small" id="font-dec" title="Smaller text">A−</button>
+    <button class="icon-btn small" id="font-inc" title="Bigger text">A+</button>
+  </div>
+
+  <div id="countdown-overlay"><span id="countdown-number">3</span></div>
 
   <button id="show-controls-tab">⚙ Controls</button>
 
@@ -87,32 +116,49 @@ Once you hit Start, this text will scroll smoothly. You can change the font size
     <div class="controls-top">
       <div class="control-group">
         <span class="ico">🔤</span>
-        <input type="range" id="p-font-size" min="20" max="140" value="48">
+        <input type="range" id="p-font-size" min="20" max="200" value="48">
+        <span class="value-readout" id="p-font-size-value">48px</span>
       </div>
       <div class="control-group">
         <span class="ico">⏩</span>
         <input type="range" id="p-speed" min="5" max="150" value="40">
+        <span class="value-readout" id="p-speed-value">40</span>
       </div>
       <div class="control-group">
         <span class="ico">🌓</span>
         <input type="range" id="p-opacity" min="0" max="100" value="100">
+        <span class="value-readout" id="p-opacity-value">100%</span>
+      </div>
+      <div class="control-group" style="flex:0 0 auto; gap:8px;">
+        <span class="ico">Backdrop</span>
+        <button class="swatch-btn swatch-black active" id="backdrop-black" title="Black"></button>
+        <button class="swatch-btn swatch-green" id="backdrop-green" title="Green screen"></button>
       </div>
     </div>
 
     <div class="controls-buttons">
       <button class="icon-btn" id="back-btn" title="Back to editor">← Back</button>
+      <button class="icon-btn" id="prev-para-btn" title="Previous paragraph">⏮ Prev ¶</button>
       <button class="icon-btn" id="play-btn" title="Play / Pause (Space)">▶ Play</button>
+      <button class="icon-btn" id="next-para-btn" title="Next paragraph">Next ¶ ⏭</button>
       <button class="icon-btn" id="reset-btn" title="Reset to top">⟲ Reset</button>
       <button class="icon-btn" id="mirror-btn" title="Mirror for beamsplitter glass (M)">🪞 Mirror</button>
       <button class="icon-btn" id="camera-btn" title="Toggle camera see-through background (C)">📷 Camera</button>
       <button class="icon-btn" id="flip-cam-btn" title="Switch front/back camera" style="display:none;">🔄 Flip cam</button>
-      <button class="icon-btn" id="centerline-btn" title="Toggle center guide line">➖ Guide</button>
-      <button class="icon-btn" id="fullscreen-btn" title="Fullscreen (F)">⛶ Fullscreen</button>
+      <button class="icon-btn" id="centerline-btn" title="Toggle reading guide">➖ Guide</button>
+      <button class="icon-btn" id="fullscreen-btn" title="Fullscreen (F) — limited on iPhone, use Add to Home Screen instead">⛶ Fullscreen</button>
       <button class="icon-btn" id="hide-controls-btn" title="Hide this bar">▾ Hide</button>
     </div>
   </div>
 </div>
 
 <script src="teleprompter.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
 </body>
 </html>
