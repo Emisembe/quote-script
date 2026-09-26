@@ -4,17 +4,26 @@
  * Histogram, Control Chart.
  *
  * ONE-TIME SETUP (about 2 minutes)
- *   1. Create a blank Google Sheet  ->  Extensions  ->  Apps Script.
+ *   1. Open YOUR Google Sheet (new or one you already use)
+ *      ->  Extensions  ->  Apps Script.
  *   2. Delete everything in Code.gs, paste this whole file, click Save.
  *   3. In the toolbar pick the function "setup" and click Run.
  *      Approve the permissions (Sheets, Forms, triggers).
- *   4. Go back to the Sheet and reload it: a "QC Tools" menu appears.
+ *   4. Go back to the Sheet: the QC tabs are added to THIS Sheet (your own
+ *      tabs are never touched) and a "QC Tools" menu appears (reload once
+ *      if you don't see it). Start at the "QC Guide" tab.
  *      QC Tools -> Open dashboard      (works right away inside the Sheet)
  *      QC Tools -> Load demo data      (optional: the toaster example)
  *   5. Optional, to open the dashboard on a phone or share it:
  *      Deploy -> New deployment -> type "Web app" -> Deploy, open the URL.
+ * Running setup again never duplicates anything: existing QC tabs, data,
+ * the form and the trigger are reused.
  *
- * THE DATABASE (sheet "Records") is one generic table. Every row is one
+ * TABS ADDED: QC Guide, QC Summary (live totals + charts), QC Records (the
+ * data), QC Lists, QC Specs, QC Events. Form answers go straight into
+ * QC Records, so there is no separate "Form Responses" tab.
+ *
+ * THE DATABASE (tab "QC Records") is one generic table. Every row is one
  * observation:  Date | Project | Area | Shift | Recorded By | Kind | Item | Value
  *   Kind = Count     -> a defect / event count        (Item = defect type)
  *   Kind = Measure   -> a measured number             (Item = what was measured)
@@ -22,7 +31,7 @@
  * Because every tool reads the same table and filters it by Project, Area,
  * Shift and dates, the same data serves every tool and any process: a
  * production line, a restaurant, a warehouse, a call centre, a clinic.
- * Change the "Lists" sheet (defect types, measurements, areas...) and use
+ * Change the "QC Lists" tab (defect types, measurements, areas...) and use
  * QC Tools -> Rebuild form to adapt the check sheet to a new situation.
  */
 
@@ -31,7 +40,11 @@
 // =====================================================================
 
 var QC = {
-  SHEETS: { RECORDS: 'Records', LISTS: 'Lists', SPECS: 'Specs', EVENTS: 'Events', HELP: 'How to use' },
+  // All tabs are prefixed "QC" so they never collide with your own tabs.
+  SHEETS: { GUIDE: 'QC Guide', SUMMARY: 'QC Summary', RECORDS: 'QC Records', LISTS: 'QC Lists', SPECS: 'QC Specs', EVENTS: 'QC Events' },
+  // Tab names used by the first version; setup renames them instead of creating duplicates.
+  OLD_SHEETS: { RECORDS: 'Records', LISTS: 'Lists', SPECS: 'Specs', EVENTS: 'Events', GUIDE: 'How to use' },
+  TAB_COLOR: '#2f5fd0',
   RECORD_HEADERS: ['Record ID', 'Timestamp', 'Date', 'Project', 'Area', 'Shift', 'Recorded By', 'Kind', 'Item', 'Value', 'Notes', 'Source'],
   LIST_HEADERS: ['Projects', 'Areas', 'Shifts', 'Defect Types', 'Measurements'],
   SPEC_HEADERS: ['Measurement', 'Unit', 'LSL', 'Target', 'USL'],
@@ -54,14 +67,21 @@ var QC = {
 // Setup and admin actions (menu)
 // =====================================================================
 
-/** Run this once from the Apps Script editor. Safe to run again. */
+/**
+ * Run this once from the Apps Script editor of your Sheet. Safe to run again:
+ * it only adds what is missing and never creates a second copy of anything.
+ */
 function setup() {
-  var props = PropertiesService.getScriptProperties();
-  var bound = SpreadsheetApp.getActiveSpreadsheet();
-  var ss = bound;
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss) {
-    var id = props.getProperty('SPREADSHEET_ID');
-    ss = id ? SpreadsheetApp.openById(id) : SpreadsheetApp.create('QC Tools');
+    throw new Error('Open the Google Sheet you want to use, then Extensions -> Apps Script, ' +
+      'and paste this code there. QC Tools works inside that Sheet and does not create a new file.');
+  }
+  var props = PropertiesService.getScriptProperties();
+  var savedId = props.getProperty('SPREADSHEET_ID');
+  if (savedId && savedId !== ss.getId()) {
+    // This Sheet is a copy: its script still remembers the original Sheet's form. Start fresh here.
+    ['FORM_ID', 'FORM_URL', 'FORM_MAP', 'OWNER'].forEach(function (k) { props.deleteProperty(k); });
   }
   if (props.getProperty('OWNER')) assertOwner_();
   else props.setProperty('OWNER', Session.getEffectiveUser().getEmail());
@@ -69,14 +89,17 @@ function setup() {
 
   ensureSheets_(ss);
   var form = buildForm_(ss);
-  installTriggers_(ss, form, !bound);
+  detachResponseTabs_(ss, form);
+  installTriggers_(form);
+  buildSummary_(ss);
+  buildGuide_(ss, form);
+  ss.setActiveSheet(ss.getSheetByName(QC.SHEETS.GUIDE));
 
-  var msg = 'QC Tools is ready.\n' +
-    'Data sheet: ' + ss.getUrl() + '\n' +
+  var msg = 'QC Tools is ready in "' + ss.getName() + '".\n' +
     'Check sheet form: ' + form.getPublishedUrl() + '\n' +
-    'Reload the Sheet to see the "QC Tools" menu.';
+    'Start at the "QC Guide" tab. Reload the Sheet if the "QC Tools" menu is missing.';
   Logger.log(msg);
-  try { ss.toast('Setup complete. Reload the Sheet to see the QC Tools menu.', 'QC Tools', 10); } catch (e) { /* no UI */ }
+  try { ss.toast('Setup complete. Start at the QC Guide tab.', 'QC Tools', 10); } catch (e) { /* no UI */ }
   return msg;
 }
 
@@ -109,21 +132,27 @@ function showFormLink() {
   SpreadsheetApp.getUi().showModalDialog(HtmlService.createHtmlOutput(body).setWidth(520).setHeight(160), 'Check sheet form');
 }
 
-/** Rebuild the Google Form after you edit the Lists sheet. */
+/** Rebuild the Google Form after you edit the QC Lists tab. */
 function rebuildForm() {
   assertOwner_();
   var ss = getSpreadsheet_();
   var form = buildForm_(ss);
-  ss.toast('Form rebuilt from the Lists sheet.', 'QC Tools', 6);
+  ss.toast('Form rebuilt from the QC Lists tab.', 'QC Tools', 6);
   return form.getPublishedUrl();
 }
 
-/** Copies any form responses that are not yet in Records (e.g. from before the trigger existed). */
+/** Copies any form responses that are not yet in QC Records (e.g. from before the trigger existed). */
 function syncFormResponses() {
   assertOwner_();
   var ss = getSpreadsheet_();
   var form = getForm_();
   if (!form) throw new Error('No form found. Run setup first.');
+  var n = syncResponses_(ss, form);
+  ss.toast(n + ' record rows imported.', 'QC Tools', 6);
+  return n;
+}
+
+function syncResponses_(ss, form) {
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
@@ -136,7 +165,6 @@ function syncFormResponses() {
       rows = rows.concat(answersToRecords_(responseToSubmission_(resp, ss), map));
     });
     appendRecords_(ss, rows);
-    ss.toast(rows.length + ' record rows imported.', 'QC Tools', 6);
     return rows.length;
   } finally {
     lock.releaseLock();
@@ -296,8 +324,9 @@ function buildForm_(ss) {
   var specs = readSpecs_(ss);
   var form = getForm_();
   if (!form) {
+    // No setDestination: answers are written straight to QC Records by handleFormSubmit,
+    // so no duplicate "Form Responses" tab is created.
     form = FormApp.create('QC Check Sheet - ' + ss.getName());
-    form.setDestination(FormApp.DestinationType.SPREADSHEET, ss.getId());
     props.setProperty('FORM_ID', form.getId());
   }
   form.getItems().forEach(function (it) { form.deleteItem(it); });
@@ -344,25 +373,49 @@ function buildForm_(ss) {
   return form;
 }
 
-function installTriggers_(ss, form, needOpenTrigger) {
+function installTriggers_(form) {
   ScriptApp.getProjectTriggers().forEach(function (t) {
+    // Also removes an installable onOpen from older versions (it would show the menu twice).
     var fn = t.getHandlerFunction();
-    if (fn === 'handleFormSubmit' || (needOpenTrigger && fn === 'onOpen')) ScriptApp.deleteTrigger(t);
+    if (fn === 'handleFormSubmit' || fn === 'onOpen') ScriptApp.deleteTrigger(t);
   });
   ScriptApp.newTrigger('handleFormSubmit').forForm(form).onFormSubmit().create();
-  if (needOpenTrigger) ScriptApp.newTrigger('onOpen').forSpreadsheet(ss).onOpen().create();
+}
+
+/**
+ * Older versions linked the form to the Sheet, which adds a "Form Responses" tab that
+ * duplicates QC Records. Copy anything missing into QC Records, unlink, delete that tab.
+ */
+function detachResponseTabs_(ss, form) {
+  var ids = [form.getId()];
+  var linked = ss.getSheets().filter(function (sh) {
+    var url = sh.getFormUrl();
+    return url && ids.some(function (id) { return url.indexOf(id) >= 0; });
+  });
+  var hasDest = false;
+  try { hasDest = !!form.getDestinationId(); } catch (e) { hasDest = false; }
+  if (!linked.length && !hasDest) return 0;
+  syncResponses_(ss, form);
+  if (hasDest) form.removeDestination();
+  SpreadsheetApp.flush();
+  linked.forEach(function (sh) { ss.deleteSheet(sh); });
+  return linked.length;
 }
 
 // =====================================================================
 // Sheets: create, read, write
 // =====================================================================
 
+/** Creates the QC tabs that are missing. Existing tabs and data are kept; your own tabs are never touched. */
 function ensureSheets_(ss) {
+  migrateOldTabs_(ss);
   var make = function (name, headers, seedRows) {
     var sh = ss.getSheetByName(name);
-    var fresh = !sh;
-    if (fresh) sh = ss.insertSheet(name);
-    if (!sh.getRange(1, 1).getValue()) {
+    if (!sh) {
+      sh = ss.insertSheet(name, ss.getSheets().length);
+      sh.setTabColor(QC.TAB_COLOR);
+    }
+    if (headers && !sh.getRange(1, 1).getValue()) {
       sh.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold').setBackground('#e8eefc');
       sh.setFrozenRows(1);
       if (seedRows && seedRows.length) sh.getRange(2, 1, seedRows.length, seedRows[0].length).setValues(seedRows);
@@ -370,6 +423,8 @@ function ensureSheets_(ss) {
     return sh;
   };
 
+  make(QC.SHEETS.GUIDE);
+  make(QC.SHEETS.SUMMARY);
   var rec = make(QC.SHEETS.RECORDS, QC.RECORD_HEADERS);
   rec.getRange('B:B').setNumberFormat('yyyy-mm-dd hh:mm');
   rec.getRange('C:C').setNumberFormat('yyyy-mm-dd');
@@ -387,35 +442,148 @@ function ensureSheets_(ss) {
   var ev = make(QC.SHEETS.EVENTS, QC.EVENT_HEADERS);
   ev.getRange('A:A').setNumberFormat('yyyy-mm-dd');
   ev.getRange('A1').setNumberFormat('@');
+}
 
-  var help = ss.getSheetByName(QC.SHEETS.HELP) || ss.insertSheet(QC.SHEETS.HELP);
-  help.clear();
-  var lines = [
-    ['QC Tools - how to use'],
-    [''],
-    ['Records', 'The database. One row = one observation. Form entries land here automatically; you can also paste rows from other systems.'],
-    ['', 'Kind = Count (defects/events), Measure (a measured number) or Inspected (units checked, Item = "Units inspected").'],
-    ['Lists', 'Your projects, areas, shifts, defect types and measurements. Edit, then QC Tools -> Rebuild form.'],
-    ['Specs', 'Spec limits (LSL / Target / USL) per measurement. Used by the histogram for capability.'],
-    ['Events', 'Process changes (e.g. "Humidity control installed"). The control chart starts a new phase with new limits at each event.'],
-    [''],
-    ['Tools', 'Check Sheet: tally of counts by day/area/shift/person.'],
-    ['', 'Pareto: which few categories cause most of the defects (80/20).'],
-    ['', 'Scatter: does one thing move with another? Pairs two daily series, shows r.'],
-    ['', 'Histogram: shape and spread of a measurement vs spec limits (Pp/Ppk).'],
-    ['', 'Control Chart: is the process stable, and did a change work? (c, u or I-MR chart).'],
-    [''],
-    ['Reuse', 'Use Project/Area/Shift and the date filters to point every tool at a different process. New situation = new Project name + new Lists.']
+/** Renames tabs from the first version ("Records", "Lists"...) when their headers prove they are ours. */
+function migrateOldTabs_(ss) {
+  var headersOf = { RECORDS: QC.RECORD_HEADERS, LISTS: QC.LIST_HEADERS, SPECS: QC.SPEC_HEADERS, EVENTS: QC.EVENT_HEADERS };
+  Object.keys(QC.OLD_SHEETS).forEach(function (key) {
+    var old = ss.getSheetByName(QC.OLD_SHEETS[key]);
+    if (!old || ss.getSheetByName(QC.SHEETS[key])) return;
+    var ours;
+    if (key === 'GUIDE') {
+      ours = old.getRange(1, 1).getValue() === 'QC Tools - how to use';
+    } else {
+      var h = headersOf[key];
+      ours = old.getRange(1, 1, 1, h.length).getValues()[0].join('|') === h.join('|');
+    }
+    if (ours) old.setName(QC.SHEETS[key]).setTabColor(QC.TAB_COLOR);
+  });
+}
+
+/** "QC Guide" tab: start-here steps, links to every QC tab and the form. Rewritten on every setup. */
+function buildGuide_(ss, form) {
+  var sh = ss.getSheetByName(QC.SHEETS.GUIDE);
+  sh.clear();
+  var tab = function (name) {
+    var t = ss.getSheetByName(name);
+    return '=HYPERLINK("#gid=' + t.getSheetId() + '","' + name + '")';
+  };
+  var url = form.getPublishedUrl();
+  var S = 'section';
+  var rows = [
+    ['QC Tools', ''],
+    ['Five quality tools (Check Sheet, Pareto, Scatter, Histogram, Control Chart) working on one data table in this Sheet. Your own tabs are not changed.', ''],
+    ['', ''],
+    [S, 'Start here'],
+    ['1. Try it', 'Menu QC Tools -> Load demo data adds the toaster example from the video. QC Tools -> Remove demo data deletes it again.'],
+    ['2. Your lists', 'Put your projects, areas, shifts, defect types and measurements in QC Lists, then QC Tools -> Rebuild form.'],
+    ['3. Collect data', 'Share the check sheet form below. Every answer is written to QC Records within seconds.'],
+    ['4. Analyse', 'QC Tools -> Open dashboard for all five tools with filters. QC Summary shows live totals and charts.'],
+    ['5. Log changes', 'When you change the process, add a row to QC Events. The control chart then shows before vs after.'],
+    ['', ''],
+    [S, 'Links'],
+    ['Check sheet form', '=HYPERLINK("' + url + '","' + url + '")'],
+    ['Dashboard', 'Menu QC Tools -> Open dashboard. For a phone link: Extensions -> Apps Script -> Deploy -> New deployment -> Web app.'],
+    ['', ''],
+    [S, 'Tabs'],
+    [tab(QC.SHEETS.SUMMARY), 'Live numbers: totals, defects per day, Pareto table, measurement averages and two charts. Updates by itself.'],
+    [tab(QC.SHEETS.RECORDS), 'The database. One row = one observation. The form fills it; you can also type or paste rows from other systems.'],
+    [tab(QC.SHEETS.LISTS), 'Choices shown in the form: projects, areas, shifts, defect types, measurements.'],
+    [tab(QC.SHEETS.SPECS), 'Spec limits (LSL / Target / USL) per measurement, used by the histogram for capability (Pp / Ppk).'],
+    [tab(QC.SHEETS.EVENTS), 'Process changes (date + label). Each one starts a new phase with new control limits.'],
+    ['', ''],
+    [S, 'Kind column in QC Records'],
+    [QC.KIND.COUNT, 'A number of defects, errors or complaints. Item = the defect type.'],
+    [QC.KIND.MEASURE, 'A measured value (temperature, weight, waiting time...). Item = what was measured.'],
+    [QC.KIND.INSPECTED, 'How many units were checked. Item = "' + QC.UNITS_ITEM + '". Enables defects-per-unit (u) charts.'],
+    ['', ''],
+    [S, 'Reuse'],
+    ['Other situations', 'New process, department or client = a new Project name plus its items in QC Lists, then Rebuild form. Filter the dashboard by Project.'],
+    ['Run setup again', 'Safe at any time: nothing is duplicated and no data is deleted.']
   ];
-  lines = lines.map(function (l) { return [l[0], l[1] || '']; });
-  help.getRange(1, 1, lines.length, 2).setValues(lines);
-  help.getRange('A1').setFontWeight('bold').setFontSize(14);
-  help.getRange('A:A').setFontWeight('bold');
-  help.setColumnWidth(1, 110);
-  help.setColumnWidth(2, 760);
+  var sections = [];
+  var values = rows.map(function (r, i) {
+    if (r[0] === S) { sections.push(i + 1); return [r[1], '']; }
+    return r;
+  });
+  sh.getRange(1, 1, values.length, 2).setValues(values);
+  sh.getRange('A1').setFontSize(18).setFontWeight('bold');
+  sh.getRange('A2:B2').merge().setFontColor('#5b6475').setWrap(true);
+  sh.getRange(5, 1, values.length - 4, 1).setFontWeight('bold').setVerticalAlignment('top');
+  sh.getRange(5, 2, values.length - 4, 1).setWrap(true).setVerticalAlignment('top');
+  sections.forEach(function (r) {
+    sh.getRange(r, 1, 1, 2).setBackground('#e8eefc').setFontWeight('bold').setFontColor('#2f5fd0');
+  });
+  sh.setColumnWidth(1, 170);
+  sh.setColumnWidth(2, 720);
+  sh.setHiddenGridlines(true);
+}
 
-  var s1 = ss.getSheetByName('Sheet1');
-  if (s1 && s1.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(s1);
+/** "QC Summary" tab: live formulas and charts on QC Records. Rewritten on every setup (charts are replaced, not added). */
+function buildSummary_(ss) {
+  var sh = ss.getSheetByName(QC.SHEETS.SUMMARY);
+  sh.getCharts().forEach(function (c) { sh.removeChart(c); });
+  sh.clear();
+  var R = "'" + QC.SHEETS.RECORDS + "'!";
+  var q = function (sql) { return '=IFERROR(QUERY(' + R + 'A1:L,"' + sql + '",1),"No data yet")'; };
+
+  sh.getRange('A1').setValue('QC Summary').setFontSize(18).setFontWeight('bold');
+  sh.getRange('A2').setValue('Live: updates automatically from QC Records. For filters and all five tools use QC Tools -> Open dashboard.')
+    .setFontColor('#5b6475');
+
+  var kpis = [
+    ['Records', '=COUNTA(' + R + 'H2:H)'],
+    ['Total defects', '=SUMIF(' + R + 'H2:H,"Count",' + R + 'J2:J)'],
+    ['Days with defect checks', '=IFERROR(COUNTUNIQUE(FILTER(' + R + 'C2:C,' + R + 'H2:H="Count")),0)'],
+    ['Average defects per day', '=IFERROR(ROUND(B5/B6,2),0)'],
+    ['Units inspected', '=SUMIF(' + R + 'H2:H,"Inspected",' + R + 'J2:J)'],
+    ['Defects per 100 units', '=IF(B8>0,ROUND(B5/B8*100,2),"-")'],
+    ['Last entry', '=IF(COUNT(' + R + 'C2:C)=0,"",MAX(' + R + 'C2:C))']
+  ];
+  sh.getRange(4, 1, kpis.length, 2).setValues(kpis);
+  sh.getRange(4, 1, kpis.length, 1).setFontWeight('bold');
+  sh.getRange(4, 2, kpis.length, 1).setFontSize(12).setHorizontalAlignment('right');
+  sh.getRange('B10').setNumberFormat('yyyy-mm-dd');
+
+  var title = function (a1, text) { sh.getRange(a1).setValue(text).setFontWeight('bold').setFontColor('#2f5fd0'); };
+  title('A12', 'Pareto: defects by type');
+  sh.getRange('A13').setFormula(q("select I, sum(J) where H = 'Count' group by I order by sum(J) desc label I 'Defect type', sum(J) 'Count'"));
+  sh.getRange('C13').setValue('Cumulative %');
+  sh.getRange('C14').setFormula('=ARRAYFORMULA(IF(ISNUMBER(B14:B),SUMIF(ROW(B14:B),"<="&ROW(B14:B),B14:B)/SUM(B14:B),""))');
+  sh.getRange('C14:C').setNumberFormat('0.0%');
+
+  title('E12', 'Defects per day');
+  sh.getRange('E13').setFormula(q("select C, sum(J) where H = 'Count' and C is not null group by C order by C label C 'Date', sum(J) 'Defects'"));
+  sh.getRange('E14:E').setNumberFormat('yyyy-mm-dd');
+
+  title('H12', 'Measurements');
+  sh.getRange('H13').setFormula(q("select I, count(J), avg(J), min(J), max(J) where H = 'Measure' group by I " +
+    "label I 'Measurement', count(J) 'Readings', avg(J) 'Average', min(J) 'Min', max(J) 'Max'"));
+  sh.getRange('J14:L').setNumberFormat('0.00');
+  sh.getRange('A13:L13').setFontWeight('bold').setBackground('#e8eefc');
+
+  sh.insertChart(sh.newChart().asComboChart()
+    .addRange(sh.getRange('A13:C200'))
+    .setNumHeaders(1)
+    .setOption('title', 'Pareto')
+    .setOption('seriesType', 'bars')
+    .setOption('series', { 1: { type: 'line', targetAxisIndex: 1 } })
+    .setOption('vAxes', { 0: { title: 'Count' }, 1: { title: 'Cumulative %', format: 'percent', viewWindow: { min: 0, max: 1 } } })
+    .setOption('legend', { position: 'bottom' })
+    .setOption('width', 620).setOption('height', 340)
+    .setPosition(1, 14, 0, 0)
+    .build());
+  sh.insertChart(sh.newChart().asLineChart()
+    .addRange(sh.getRange('E13:F2000'))
+    .setNumHeaders(1)
+    .setOption('title', 'Defects per day')
+    .setOption('legend', { position: 'none' })
+    .setOption('width', 620).setOption('height', 300)
+    .setPosition(19, 14, 0, 0)
+    .build());
+  sh.setColumnWidth(1, 190);
+  sh.setColumnWidth(5, 100);
 }
 
 function readRecords_(ss) {
@@ -523,12 +691,13 @@ function removeDemoRows_(ss) {
 // Helpers
 // =====================================================================
 
+/** Always the Sheet this script is attached to. The saved ID is only a fallback for the web app. */
 function getSpreadsheet_() {
-  var id = PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID');
-  if (id) return SpreadsheetApp.openById(id);
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   if (ss) return ss;
-  throw new Error('QC Tools is not set up yet. Run the "setup" function first.');
+  var id = PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID');
+  if (id) return SpreadsheetApp.openById(id);
+  throw new Error('QC Tools is not set up yet. Run the "setup" function from your Sheet (Extensions -> Apps Script).');
 }
 
 function getForm_() {
@@ -822,7 +991,7 @@ var RULES_ = {
 /**
  * Measurements -> I-MR chart (every reading). Counts -> c chart (defects per day)
  * or u chart (defects per unit, when "Units inspected" exists for every day).
- * Each event in the Events sheet starts a new phase with its own limits.
+ * Each event in the QC Events tab starts a new phase with its own limits.
  */
 function controlChart_(records, key, type, events) {
   var s = parseSeriesKey_(key);
@@ -1239,7 +1408,7 @@ function renderScatter(r) {
 function renderHistogram(r) {
   if (!r.n) return empty('No values for this series in the selected filters.');
   var sp = r.spec || {};
-  var cap = r.ppk === null ? 'Add LSL/USL for this measurement in the Specs sheet to see capability.' :
+  var cap = r.ppk === null ? 'Add LSL/USL for this measurement in the QC Specs tab to see capability.' :
     (r.ppk >= 1.33 ? '<span class="good">Capable</span> (Ppk ≥ 1.33).' : r.ppk >= 1 ? '<span class="bad">Marginal</span> (1.0 ≤ Ppk < 1.33).' : '<span class="bad">Not capable</span> (Ppk < 1.0): the process spread does not fit inside the spec.');
   show('insight', '<h2>Histogram · ' + esc(r.label) + '</h2>' +
     '<p>' + r.n + ' ' + esc(r.basis) + '. Mean ' + fmt(r.mean, 2) + (sp.unit ? ' ' + esc(sp.unit) : '') + ', standard deviation ' + fmt(r.sd, 2) + '. ' + cap + '</p>' +
@@ -1274,7 +1443,7 @@ function renderControl(r) {
     ? '<p class="bad">' + r.signals.length + ' out-of-control signal(s): investigate these points for a special cause.</p>'
     : '<p class="good">No out-of-control signals: only normal (common-cause) variation.</p>';
   show('insight', '<h2>' + esc(names[r.chartType]) + ' · ' + esc(r.label) + '</h2>' + (r.note ? '<p class="muted">' + esc(r.note) + '</p>' : '') + change + sig +
-    '<p class="muted">Phases come from the Events sheet: add a row (date + label) whenever you change the process, and the chart recalculates the limits from that day.</p>');
+    '<p class="muted">Phases come from the QC Events tab: add a row (date + label) whenever you change the process, and the chart recalculates the limits from that day.</p>');
 
   var labels = r.points.map(function (p) { return r.chartType === 'I-MR' ? p.label : p.day; });
   var colors = r.points.map(function (p) { return p.rules.length ? C.bad : C.point; });
@@ -1318,7 +1487,7 @@ function init(meta) {
   fillSelect($('oY'), meta.countSeries.concat(meta.measureSeries));
   fillSelect($('oHist'), all);
   fillSelect($('oCtrl'), meta.countSeries.concat(meta.measureSeries));
-  if (!meta.recordCount) $('status').innerHTML = 'No records yet. Use the check sheet form, paste rows into the Records sheet, or run QC Tools → Load demo data.';
+  if (!meta.recordCount) $('status').innerHTML = 'No records yet. Use the check sheet form, paste rows into the QC Records tab, or run QC Tools → Load demo data.';
   setTool('check');
 }
 

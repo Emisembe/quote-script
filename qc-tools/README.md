@@ -5,19 +5,38 @@ One `setup` run creates the database sheets, the check sheet Google Form, the fo
 
 ## Setup (one time, about 2 minutes)
 
-1. Create a blank Google Sheet, then open **Extensions → Apps Script**.
+1. Open **your** Google Sheet (a new one or one you already use), then **Extensions → Apps Script**.
 2. Delete what is in `Code.gs`, paste the whole of [`Code.gs`](Code.gs), and click **Save**.
 3. Choose `setup` in the function dropdown and click **Run**. Approve the permissions.
-4. Reload the Sheet. A **QC Tools** menu appears:
-   - **Open dashboard** opens all five tools inside the Sheet. No deployment is needed.
+4. Go back to your Sheet. The QC tabs are added to **this** Sheet and the **QC Tools** menu appears (reload once if you don't see it). Start at the **QC Guide** tab.
+   - **Open dashboard** shows all five tools inside the Sheet. No deployment is needed.
    - **Open check sheet form** gives you the link to share with whoever collects data.
    - **Load demo data** adds 5 weeks of the toaster example from the video. **Remove demo data** deletes it again.
 5. Optional: to use the dashboard on a phone or share it, go to **Deploy → New deployment → Web app → Deploy** and open the URL.
    "Execute as: Me" with "Who has access: Only myself" (or your organisation) keeps the data private.
 
+What setup does, and doesn't do:
+- It never creates a new spreadsheet. If the code isn't attached to a Sheet, it stops and tells you what to do.
+- It never changes your own tabs. Every tab it adds starts with `QC`.
+- Running it again duplicates nothing. It reuses the tabs, data, form and trigger, and refreshes QC Guide and QC Summary.
+- Form answers go straight into **QC Records**, so there is no separate "Form Responses" tab.
+- Upgrading from the first version: the old `Records`, `Lists`, `Specs`, `Events` and `How to use` tabs are renamed to their `QC` names. The old "Form Responses" copy is removed after its rows are safely in QC Records.
+- A copied Sheet gets its own new form, instead of sending answers to the original Sheet.
+
+## Tabs added to your Sheet
+
+| Tab | What it holds |
+|---|---|
+| QC Guide | Start here: steps, a link to the form, links to every QC tab. |
+| QC Summary | Live numbers and charts: totals, defects per day, Pareto table with cumulative %, measurement averages. Updates by itself. |
+| QC Records | The data. Form entries arrive here automatically. You can also type or paste rows. |
+| QC Lists | Projects, areas, shifts, defect types and measurements. These drive the form. |
+| QC Specs | LSL, target and USL per measurement. The histogram uses them for Pp/Ppk. |
+| QC Events | Process changes (date + label). The control chart starts a new phase with new limits at each one. |
+
 ## The database is reusable
 
-Every tool reads one generic table, the **Records** sheet:
+Every tool reads one generic table, the **QC Records** tab:
 
 | Date | Project | Area | Shift | Recorded By | Kind | Item | Value |
 |---|---|---|---|---|---|---|---|
@@ -30,15 +49,8 @@ Every tool reads one generic table, the **Records** sheet:
 - **Inspected** is how many units were checked. When it exists, the control chart switches to a u chart (defects per unit).
 
 The same data powers every tool, and the filters (Project, Area, Shift, dates) point each tool at a different situation.
-A new process, department or client only needs a new **Project** name plus its items in the **Lists** sheet, then **QC Tools → Rebuild form**.
-You can also paste rows from other systems straight into Records.
-
-| Sheet | What it holds |
-|---|---|
-| Records | The data. Form entries arrive here automatically. |
-| Lists | Projects, areas, shifts, defect types and measurements. These drive the form. |
-| Specs | LSL, target and USL per measurement. The histogram uses them for Pp/Ppk. |
-| Events | Process changes (date + label). The control chart starts a new phase with new limits at each one. |
+A new process, department or client only needs a new **Project** name plus its items in the **QC Lists** tab, then **QC Tools → Rebuild form**.
+You can also paste rows from other systems straight into QC Records.
 
 ## What each tool does
 
@@ -52,10 +64,10 @@ You can also paste rows from other systems straight into Records.
 
 ## Development
 
-The tool logic is made of pure functions that are tested in Node, without Google:
+The tool logic and `setup` are tested in Node, without Google. `test/gas-mock.js` imitates the Sheets, Forms and trigger services:
 
 ```
-node --test test/tools.test.js
+node --test test/*.test.js
 ```
 
 `appsscript.json` and `.claspignore` let you push with [clasp](https://github.com/google/clasp) instead of pasting the file.
