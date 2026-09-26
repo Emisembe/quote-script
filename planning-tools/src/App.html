@@ -1,0 +1,1011 @@
+<script>
+  // ================================================================ helpers
+
+  function $(sel) { return document.querySelector(sel); }
+  function $$(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+
+  function esc(v) {
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  /** Promise wrapper around google.script.run. */
+  function server(fn) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return new Promise(function (resolve, reject) {
+      var runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+      runner[fn].apply(runner, args);
+    });
+  }
+
+  function toast(text) {
+    var el = $('#toast');
+    el.textContent = text;
+    el.hidden = false;
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(function () { el.hidden = true; }, 2400);
+  }
+
+  function showMessages(tool, result, failure) {
+    var el = $('#msg-' + tool);
+    if (failure) {
+      el.innerHTML = '<div class="msg">Something went wrong: ' + esc(failure.message || failure) + '</div>';
+      return;
+    }
+    var list = ((result && result.errors) || []).concat((result && result.warnings) || []);
+    el.innerHTML = list.length
+      ? '<div class="msg"><strong>Please check:</strong><ul>' +
+        list.map(function (e) { return '<li>' + esc(e) + '</li>'; }).join('') + '</ul></div>'
+      : '';
+  }
+
+  function fmt(n) {
+    return Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
+  }
+
+  function clip(s, n) {
+    s = String(s || '');
+    return s.length > n ? s.slice(0, n - 1) + '…' : s;
+  }
+
+  function ok(result) { return result && !result.errors.length; }
+
+  /** Next free ID: numbers (1, 2, 3…) or letters (A…Z, AA…). */
+  function nextId(rows, letters) {
+    var used = {};
+    rows.forEach(function (r) { used[String(r.id).trim().toUpperCase()] = true; });
+    for (var n = 0; ; n++) {
+      var id;
+      if (letters) {
+        id = '';
+        var k = n;
+        do { id = String.fromCharCode(65 + (k % 26)) + id; k = Math.floor(k / 26) - 1; } while (k >= 0);
+      } else {
+        id = String(n + 1);
+      }
+      if (!used[id]) return id;
+    }
+  }
+
+  var settings = {};
+
+  // ================================================================ tabs & saving
+
+  function openTab(name) {
+    $$('.tab').forEach(function (t) { t.classList.toggle('active', t.dataset.tab === name); });
+    $$('.panel').forEach(function (p) { p.hidden = p.id !== 'tab-' + name; });
+    try { localStorage.setItem('planningTab', name); } catch (e) { /* storage blocked */ }
+  }
+  $$('.tab').forEach(function (tab) {
+    tab.addEventListener('click', function () { openTab(tab.dataset.tab); });
+  });
+
+  /** Each tool registers how to save itself: { api, payload(), done(result), message }. */
+  var tools = {};
+
+  $$('button.save').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var name = btn.dataset.save, tool = tools[name];
+      var label = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Working…';
+      server(tool.api, tool.payload())
+        .then(function (result) {
+          showMessages(name, result);
+          tool.done(result);
+          if (ok(result)) toast(tool.message);
+        })
+        .catch(function (err) { showMessages(name, null, err); })
+        .then(function () { btn.disabled = false; btn.textContent = label; });
+    });
+  });
+
+  /**
+   * Editable row table used by several tools.
+   * cols: [{ key, label, cls, width, ph, type }]; extra: { head: [html], cells(i) -> [html], rowClass(i) }
+   */
+  function rowTable(el, cols, rows, extra) {
+    extra = extra || {};
+    var head = '<tr>' + cols.map(function (c) {
+      return '<th class="' + (c.type === 'number' ? 'num' : '') + '">' + esc(c.label) + '</th>';
+    }).join('') + (extra.head || []).map(function (h) { return '<th class="num">' + h + '</th>'; }).join('') + '<th></th></tr>';
+    var body = rows.map(function (r, i) {
+      var cls = extra.rowClass ? extra.rowClass(i) : '';
+      return '<tr' + (cls ? ' class="' + cls + '"' : '') + '>' +
+        cols.map(function (c) {
+          return '<td><input data-i="' + i + '" data-k="' + c.key + '"' +
+            (c.type ? ' type="' + c.type + '" min="0"' : '') +
+            ' class="' + (c.cls || '') + '"' + (c.width ? ' style="max-width:' + c.width + 'px"' : '') +
+            ' placeholder="' + esc(c.ph || '') + '" value="' + esc(r[c.key]) + '"></td>';
+        }).join('') +
+        (extra.cells ? extra.cells(i) : []).map(function (h) { return '<td class="num">' + h + '</td>'; }).join('') +
+        '<td><button class="icon" title="Remove row" data-del="' + i + '">×</button></td></tr>';
+    }).join('');
+    el.innerHTML = '<thead>' + head + '</thead><tbody>' + body + '</tbody>';
+  }
+
+  /** Wires typing and row removal for a rowTable. */
+  function bindRowTable(el, getRows, onRemove) {
+    el.addEventListener('input', function (e) {
+      var d = e.target.dataset;
+      if (d.i != null && d.k) getRows()[d.i][d.k] = e.target.value;
+    });
+    el.addEventListener('click', function (e) {
+      var i = e.target.dataset.del;
+      if (i == null) return;
+      getRows().splice(+i, 1);
+      onRemove();
+    });
+  }
+
+  // ================================================================ Guide
+
+  function renderGuide(guide) {
+    $('#guide').innerHTML = guide.map(function (section) {
+      return '<div class="card guide"><h2>' + esc(section.title) + '</h2><dl>' +
+        section.items.map(function (it) { return '<dt>' + esc(it[0]) + '</dt><dd>' + esc(it[1]) + '</dd>'; }).join('') +
+        '</dl></div>';
+    }).join('');
+  }
+
+  // ================================================================ 1. Affinity Diagram
+
+  var aff = { ideas: [], groups: [], form: null, result: null };
+
+  function affGroups() {
+    var names = [], seen = {};
+    aff.ideas.concat(aff.groups.map(function (g) { return { category: g }; })).forEach(function (i) {
+      var c = String(i.category || '').trim();
+      if (c && !seen[c.toLowerCase()]) { seen[c.toLowerCase()] = true; names.push(c); }
+    });
+    return names;
+  }
+
+  function affRender() {
+    var groups = affGroups();
+    var columns = [''].concat(groups);
+    $('#aff-board').innerHTML = columns.map(function (g) {
+      var cards = aff.ideas.map(function (idea, i) { return { idea: idea, i: i }; })
+        .filter(function (x) { return String(x.idea.category || '').trim().toLowerCase() === g.toLowerCase(); });
+      return '<div class="lane' + (g ? '' : ' unsorted') + '" data-group="' + esc(g) + '">' +
+        '<div class="lane-head">' + (g ? esc(g) : 'Unsorted') + ' <span>' + cards.length + '</span></div>' +
+        cards.map(function (x) {
+          return '<div class="note" draggable="true" data-i="' + x.i + '">' +
+            '<div>' + esc(x.idea.idea) + '</div>' +
+            (x.idea.source ? '<div class="src">' + esc(x.idea.source) + '</div>' : '') +
+            '<div class="note-foot"><select data-move="' + x.i + '" aria-label="Move to group">' +
+              columns.map(function (c) {
+                return '<option value="' + esc(c) + '"' + (c === g ? ' selected' : '') + '>' + (c ? esc(c) : 'Unsorted') + '</option>';
+              }).join('') +
+            '</select><button class="icon" title="Remove idea" data-del="' + x.i + '">×</button></div></div>';
+        }).join('') + '</div>';
+    }).join('');
+    affRenderResults();
+    affRenderForm();
+  }
+
+  function affRenderResults() {
+    var counts = affGroups().map(function (g) {
+      return { name: g, n: aff.ideas.filter(function (i) { return String(i.category || '').trim().toLowerCase() === g.toLowerCase(); }).length };
+    }).filter(function (c) { return c.n; }).sort(function (a, b) { return b.n - a.n; });
+    var unsorted = aff.ideas.filter(function (i) { return !String(i.category || '').trim(); }).length;
+    if (!aff.ideas.length) { $('#aff-results').innerHTML = ''; return; }
+    $('#aff-results').innerHTML = '<div class="card"><div class="kpis">' +
+      kpi(aff.ideas.length, 'Ideas') + kpi(counts.length, 'Groups') + kpi(unsorted, 'Still unsorted') +
+      '</div></div>' + (counts.length ? '<div class="card"><h2>Biggest groups — usually where to focus</h2>' +
+      bars(counts.map(function (c) { return { label: c.name, value: c.n }; })) + '</div>' : '');
+  }
+
+  function affRenderForm() {
+    var f = aff.form;
+    $('#aff-form').innerHTML = f
+      ? '<strong>Brainstorm form:</strong> <a href="' + esc(f.url) + '" target="_blank" rel="noopener">' + esc(f.url) + '</a>' +
+        ' <button id="aff-import" class="secondary">Import new answers</button>'
+      : '<strong>Collect ideas with a Google Form.</strong> <input id="aff-question" class="grow" value="' + esc(settings.formQuestion || '') + '">' +
+        ' <button id="aff-create-form" class="secondary">Create form</button>';
+  }
+
+  $('#aff-form').addEventListener('click', function (e) {
+    var btn = e.target;
+    if (btn.id !== 'aff-import' && btn.id !== 'aff-create-form') return;
+    btn.disabled = true;
+    var call = btn.id === 'aff-import'
+      ? server('apiImportFormIdeas').then(function (r) {
+          toast(r.message);
+          if (r.affinity) affLoad(r.affinity);
+        })
+      : server('apiCreateForm', $('#aff-question').value).then(function (form) {
+          aff.form = form;
+          affRenderForm();
+          toast('Form created — share the link');
+        });
+    call.catch(function (err) { showMessages('aff', null, err); }).then(function () { btn.disabled = false; });
+  });
+
+  $('#aff-board').addEventListener('change', function (e) {
+    var i = e.target.dataset.move;
+    if (i == null) return;
+    aff.ideas[i].category = e.target.value;
+    affRender();
+  });
+  $('#aff-board').addEventListener('click', function (e) {
+    var i = e.target.dataset.del;
+    if (i == null) return;
+    aff.ideas.splice(+i, 1);
+    affRender();
+  });
+  $('#aff-board').addEventListener('dragstart', function (e) {
+    var note = e.target.closest && e.target.closest('.note');
+    if (note) e.dataTransfer.setData('text/plain', note.dataset.i);
+  });
+  $('#aff-board').addEventListener('dragover', function (e) {
+    if (e.target.closest('.lane')) e.preventDefault();
+  });
+  $('#aff-board').addEventListener('drop', function (e) {
+    var lane = e.target.closest('.lane');
+    var i = e.dataTransfer.getData('text/plain');
+    if (!lane || i === '') return;
+    e.preventDefault();
+    aff.ideas[i].category = lane.dataset.group;
+    affRender();
+  });
+
+  function affAddIdea() {
+    var input = $('#aff-new-idea');
+    var text = input.value.trim();
+    if (!text) return;
+    aff.ideas.push({ idea: text, category: '', source: '' });
+    input.value = '';
+    affRender();
+    input.focus();
+  }
+  $('#aff-add-idea').addEventListener('click', affAddIdea);
+  $('#aff-new-idea').addEventListener('keydown', function (e) { if (e.key === 'Enter') affAddIdea(); });
+  $('#aff-add-group').addEventListener('click', function () {
+    var name = $('#aff-new-group').value.trim();
+    if (!name) return;
+    aff.groups.push(name);
+    $('#aff-new-group').value = '';
+    affRender();
+  });
+
+  function affLoad(result) {
+    aff.result = result;
+    aff.ideas = result.ideas.map(function (i) { return { idea: i.idea, category: i.category, source: i.source }; });
+    affRender();
+  }
+
+  tools.aff = {
+    api: 'apiSaveAffinity',
+    payload: function () { return aff.ideas; },
+    done: affLoad,
+    message: 'Ideas saved to the sheet'
+  };
+
+  // ================================================================ 2. Interrelationship Diagram
+
+  var rel = { rows: [], result: null };
+  var REL_COLS = [
+    { key: 'id', label: 'ID', width: 60 },
+    { key: 'idea', label: 'Idea', cls: 'wide', ph: 'Problem, fact or idea' },
+    { key: 'causes', label: 'Causes (IDs)', ph: 'e.g. 4, 7' }
+  ];
+
+  function relRender() {
+    var r = ok(rel.result) ? rel.result : null;
+    var byId = {};
+    if (r) r.items.forEach(function (i) { byId[i.id] = i; });
+    var item = function (i) { return byId[String(rel.rows[i].id).trim().toUpperCase()]; };
+    rowTable($('#rel-table'), REL_COLS, rel.rows, {
+      head: ['Out', 'In', 'Role'],
+      cells: function (i) {
+        var it = item(i);
+        return it ? [it.out, it['in'], '<span class="role ' + roleClass(it.role) + '">' + esc(it.role) + '</span>'] : ['–', '–', ''];
+      },
+      rowClass: function (i) { var it = item(i); return it && it.role.indexOf('Key') === 0 ? 'key' : ''; }
+    });
+    relRenderResults();
+  }
+
+  function roleClass(role) {
+    return { 'Key driver': 'driver', 'Key outcome': 'outcome', Driver: 'driver-soft', Outcome: 'outcome-soft' }[role] || '';
+  }
+
+  function relRenderResults() {
+    var r = rel.result;
+    if (!ok(r) || !r.items.length) { $('#rel-results').innerHTML = ''; return; }
+    var name = function (ids) {
+      return ids.map(function (id) {
+        var it = r.items.filter(function (x) { return x.id === id; })[0];
+        return id + ' ' + it.idea;
+      }).join(' / ') || '–';
+    };
+    $('#rel-results').innerHTML =
+      '<div class="card"><div class="kpis">' +
+        '<div class="kpi driver"><div class="value">' + esc(name(r.keyDrivers)) + '</div><div class="label">Key driver — root cause, fix this first</div></div>' +
+        '<div class="kpi outcome"><div class="value">' + esc(name(r.keyOutcomes)) + '</div><div class="label">Key outcome — the main effect</div></div>' +
+      '</div></div>' +
+      chartCard('Diagram', 'interrelationship-diagram', relSvg(r),
+        legend([['var(--driver)', 'Key driver'], ['var(--outcome)', 'Key outcome'], ['var(--muted)', 'Arrow points from cause to effect']]));
+  }
+
+  /** Classic circular layout: ideas around a circle, arrows from cause to effect. */
+  function relSvg(r) {
+    var n = r.items.length, NODE = 22, R = Math.max(110, n * 26), LABEL = 190, VPAD = 24;
+    var width = 2 * (R + NODE + LABEL), height = 2 * (R + NODE + VPAD);
+    var pos = {};
+    r.items.forEach(function (it, i) {
+      var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+      pos[it.id] = { x: width / 2 + R * Math.cos(a), y: height / 2 + R * Math.sin(a), a: a };
+    });
+    var edges = r.links.map(function (l) {
+      var a = pos[l.from], b = pos[l.to];
+      var dx = b.x - a.x, dy = b.y - a.y, len = Math.sqrt(dx * dx + dy * dy) || 1;
+      var x1 = a.x + dx / len * NODE, y1 = a.y + dy / len * NODE;
+      var x2 = b.x - dx / len * (NODE + 4), y2 = b.y - dy / len * (NODE + 4);
+      return '<line class="edge" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" marker-end="url(#rel-arrow)"/>';
+    }).join('');
+    var nodes = r.items.map(function (it) {
+      var p = pos[it.id], right = Math.cos(p.a) >= -0.01;
+      var lx = p.x + Math.cos(p.a) * (NODE + 8), ly = p.y + Math.sin(p.a) * (NODE + 8) + 4;
+      return '<g class="node ' + roleClass(it.role) + '"><title>' + esc(it.id + ' ' + it.idea + ' — out ' + it.out + ', in ' + it['in']) + '</title>' +
+        '<circle cx="' + p.x + '" cy="' + p.y + '" r="' + NODE + '"/>' +
+        '<text class="id" x="' + p.x + '" y="' + (p.y + 4) + '" text-anchor="middle">' + esc(it.id) + '</text>' +
+        '<text x="' + lx + '" y="' + ly + '" text-anchor="' + (right ? 'start' : 'end') + '">' + esc(clip(it.idea, 26)) + '</text></g>';
+    }).join('');
+    return '<svg class="diagram" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '">' +
+      '<defs>' + marker('rel-arrow', 'var(--muted)') + '</defs>' + edges + nodes + '</svg>';
+  }
+
+  bindRowTable($('#rel-table'), function () { return rel.rows; }, function () { rel.result = null; relRender(); });
+  $('#rel-add').addEventListener('click', function () {
+    rel.rows.push({ id: nextId(rel.rows), idea: '', causes: '' });
+    rel.result = null;
+    relRender();
+  });
+  $('#rel-import').addEventListener('click', function () {
+    var have = {};
+    rel.rows.forEach(function (r) { have[String(r.idea).trim().toLowerCase()] = true; });
+    var added = 0;
+    aff.ideas.forEach(function (i) {
+      if (have[i.idea.toLowerCase()]) return;
+      rel.rows.push({ id: nextId(rel.rows), idea: i.idea, causes: '' });
+      have[i.idea.toLowerCase()] = true;
+      added++;
+    });
+    rel.result = null;
+    relRender();
+    toast(added ? added + ' ideas copied — now fill in Causes' : 'All Affinity ideas are already here');
+  });
+
+  function relLoad(result) {
+    rel.result = result;
+    rel.rows = result.items.map(function (i) { return { id: i.id, idea: i.idea, causes: i.causes.join(', ') }; });
+    relRender();
+  }
+
+  tools.rel = { api: 'apiSaveRelations', payload: function () { return rel.rows; }, done: relLoad, message: 'Analyzed and saved' };
+
+  // ================================================================ 3. Matrix Diagram
+
+  var mx = { rows: [], columns: [], cells: [], symbols: [], result: null };
+
+  function mxRender() {
+    var r = ok(mx.result) ? mx.result : null;
+    var opts = [{ symbol: '', label: 'None' }].concat(mx.symbols);
+    var head = '<tr><th></th>' + mx.columns.map(function (c, j) {
+      return '<th><div class="with-x"><input class="colname" data-col="' + j + '" value="' + esc(c) + '" placeholder="Column">' +
+        '<button class="icon" title="Remove column" data-del-col="' + j + '">×</button></div></th>';
+    }).join('') + '<th class="num">Total</th></tr>';
+    var body = mx.rows.map(function (row, i) {
+      return '<tr><td><div class="with-x"><button class="icon" title="Remove row" data-del-row="' + i + '">×</button>' +
+        '<input class="wide" data-row="' + i + '" value="' + esc(row) + '" placeholder="Row"></div></td>' +
+        mx.columns.map(function (c, j) {
+          var v = mx.cells[i][j] || '';
+          var neg = mx.symbols.some(function (s) { return s.symbol === v && s.value < 0; });
+          return '<td class="cell' + (neg ? ' conflict' : '') + '"><select data-r="' + i + '" data-c="' + j + '" aria-label="' + esc(row + ' / ' + c) + '">' +
+            opts.map(function (s) {
+              return '<option value="' + esc(s.symbol) + '"' + (s.symbol === v ? ' selected' : '') + '>' + (s.symbol || '·') + '</option>';
+            }).join('') + '</select></td>';
+        }).join('') +
+        '<td class="num strong">' + (r ? fmt(r.rowTotals[i]) + (r.rowConflicts[i] ? ' <span class="bad">✕' + r.rowConflicts[i] + '</span>' : '') : '–') + '</td></tr>';
+    }).join('');
+    var foot = '<tr class="total"><td>Total</td>' + mx.columns.map(function (c, j) {
+      return '<td class="num strong center">' + (r ? fmt(r.columnTotals[j]) + (r.columnConflicts[j] ? ' <span class="bad">✕' + r.columnConflicts[j] + '</span>' : '') : '–') + '</td>';
+    }).join('') + '<td></td></tr>';
+    $('#mx-table').innerHTML = '<thead>' + head + '</thead><tbody>' + body + foot + '</tbody>';
+    $('#mx-legend').innerHTML = 'Rows down the left, columns across the top. Pick a symbol for each relationship: ' +
+      mx.symbols.map(function (s) { return '<strong>' + s.symbol + '</strong> ' + esc(s.label) + ' (' + s.value + ')'; }).join(' · ') +
+      '. Totals show what matters most; ✕ marks trade-offs to plan for.';
+    mxRenderResults();
+  }
+
+  function mxRenderResults() {
+    var r = mx.result;
+    if (!ok(r) || !r.rows.length) { $('#mx-results').innerHTML = ''; return; }
+    var rows = r.rows.map(function (n, i) { return { label: n, value: r.rowTotals[i] }; }).sort(function (a, b) { return b.value - a.value; });
+    var cols = r.columns.map(function (n, j) { return { label: n, value: r.columnTotals[j] }; }).sort(function (a, b) { return b.value - a.value; });
+    var conflicts = [];
+    r.cells.forEach(function (line, i) {
+      line.forEach(function (s, j) {
+        if (r.symbols.some(function (x) { return x.symbol === s && x.value < 0; })) conflicts.push(r.rows[i] + ' ↔ ' + r.columns[j]);
+      });
+    });
+    $('#mx-results').innerHTML =
+      '<div class="two"><div class="card"><h2>Rows by total</h2>' + bars(rows) + '</div>' +
+      '<div class="card"><h2>Columns by total</h2>' + bars(cols) + '</div></div>' +
+      (conflicts.length ? '<div class="card"><h2>Trade-offs (✕)</h2><ul class="plain">' +
+        conflicts.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></div>' : '');
+  }
+
+  $('#mx-table').addEventListener('input', function (e) {
+    var d = e.target.dataset;
+    if (d.col != null) mx.columns[d.col] = e.target.value;
+    else if (d.row != null) mx.rows[d.row] = e.target.value;
+  });
+  $('#mx-table').addEventListener('change', function (e) {
+    var d = e.target.dataset;
+    if (d.r == null) return;
+    mx.cells[d.r][d.c] = e.target.value;
+    e.target.parentNode.classList.toggle('conflict', mx.symbols.some(function (s) { return s.symbol === e.target.value && s.value < 0; }));
+  });
+  $('#mx-table').addEventListener('click', function (e) {
+    var d = e.target.dataset;
+    if (d.delRow != null) {
+      mx.rows.splice(+d.delRow, 1);
+      mx.cells.splice(+d.delRow, 1);
+    } else if (d.delCol != null) {
+      mx.columns.splice(+d.delCol, 1);
+      mx.cells.forEach(function (line) { line.splice(+d.delCol, 1); });
+    } else return;
+    mx.result = null;
+    mxRender();
+  });
+  $('#mx-add-row').addEventListener('click', function () {
+    mx.rows.push('');
+    mx.cells.push(mx.columns.map(function () { return ''; }));
+    mx.result = null;
+    mxRender();
+  });
+  $('#mx-add-col').addEventListener('click', function () {
+    mx.columns.push('');
+    mx.cells.forEach(function (line) { line.push(''); });
+    mx.result = null;
+    mxRender();
+  });
+
+  function mxLoad(result) {
+    mx.result = result;
+    mx.symbols = result.symbols;
+    mx.rows = result.rows.slice();
+    mx.columns = result.columns.slice();
+    mx.cells = result.cells.map(function (l) { return l.slice(); });
+    mxRender();
+  }
+
+  tools.mx = {
+    api: 'apiSaveMatrix',
+    payload: function () { return { rows: mx.rows, columns: mx.columns, cells: mx.cells }; },
+    done: mxLoad,
+    message: 'Totals calculated and saved'
+  };
+
+  // ================================================================ 4. Prioritization Matrix
+
+  var pm = { criteria: [], options: [], result: null };
+
+  function pmRender() {
+    var r = ok(pm.result) ? pm.result : null;
+    var head = '<tr><th>Option</th>' +
+      pm.criteria.map(function (c, i) {
+        return '<th><div class="with-x"><input class="wide" data-c="' + i + '" data-f="name" value="' + esc(c.name) + '" placeholder="Criterion">' +
+          '<button class="icon" title="Remove criterion" data-remove-c="' + i + '">×</button></div></th>';
+      }).join('') +
+      '<th class="num">Weighted total</th><th class="num">Rank</th><th></th></tr>';
+
+    var weights = '<tr><td class="row-label">Weight (%)</td>' +
+      pm.criteria.map(function (c, i) {
+        return '<td><input class="num" type="number" min="0" step="10" data-c="' + i + '" data-f="weight" value="' + esc(c.weight) + '"></td>';
+      }).join('') + '<td></td><td></td><td></td></tr>';
+
+    var rows = pm.options.map(function (o, i) {
+      var scored = r && r.options[i];
+      return '<tr' + (scored && scored.rank === 1 ? ' class="winner"' : '') + '>' +
+        '<td><input class="wide" data-o="' + i + '" data-f="name" value="' + esc(o.name) + '" placeholder="Option"></td>' +
+        pm.criteria.map(function (c, j) {
+          return '<td><input class="num" type="number" data-o="' + i + '" data-s="' + j + '" value="' + esc(o.scores[j]) + '"></td>';
+        }).join('') +
+        '<td class="num">' + (scored ? fmt(scored.total) : '–') + '</td>' +
+        '<td class="num">' + (scored ? scored.rank : '–') + '</td>' +
+        '<td><button class="icon" title="Remove option" data-remove-o="' + i + '">×</button></td></tr>';
+    }).join('');
+
+    $('#pm-table').innerHTML = '<thead>' + head + '</thead><tbody>' + weights + rows + '</tbody>';
+    pmRenderResults();
+  }
+
+  function pmRenderResults() {
+    var r = pm.result;
+    if (!ok(r) || !r.ranking.length) { $('#pm-results').innerHTML = ''; return; }
+    var tied = r.ranking.filter(function (o) { return o.rank === 1; });
+    $('#pm-results').innerHTML =
+      '<div class="card"><div class="kpis">' +
+        '<div class="kpi win"><div class="value">' + esc(tied.map(function (o) { return o.name; }).join(' / ')) + '</div>' +
+        '<div class="label">' + (tied.length > 1 ? 'Tied for first' : 'Top choice') + '</div></div>' +
+        kpi(fmt(r.ranking[0].total), 'Weighted score') +
+      '</div></div>' +
+      '<div class="card"><h2>Ranking</h2>' + bars(r.ranking.map(function (o) {
+        return { label: o.rank + '. ' + o.name, value: o.total, top: o.rank === 1 };
+      })) + '</div>';
+  }
+
+  $('#pm-table').addEventListener('input', function (e) {
+    var d = e.target.dataset;
+    if (d.c != null) pm.criteria[d.c][d.f] = e.target.value;
+    else if (d.s != null) pm.options[d.o].scores[d.s] = e.target.value;
+    else if (d.o != null) pm.options[d.o].name = e.target.value;
+  });
+  $('#pm-table').addEventListener('click', function (e) {
+    var d = e.target.dataset;
+    if (d.removeC != null) {
+      pm.criteria.splice(+d.removeC, 1);
+      pm.options.forEach(function (o) { o.scores.splice(+d.removeC, 1); });
+    } else if (d.removeO != null) {
+      pm.options.splice(+d.removeO, 1);
+    } else return;
+    pm.result = null;
+    pmRender();
+  });
+  $('#pm-add-criterion').addEventListener('click', function () {
+    pm.criteria.push({ name: '', weight: settings.defaultWeight || 100 });
+    pm.options.forEach(function (o) { o.scores.push(''); });
+    pm.result = null;
+    pmRender();
+  });
+  $('#pm-add-option').addEventListener('click', function () {
+    pm.options.push({ name: '', scores: pm.criteria.map(function () { return ''; }) });
+    pm.result = null;
+    pmRender();
+  });
+
+  function pmLoad(result) {
+    pm.criteria = result.criteria.map(function (c) { return { name: c.name, weight: c.weight }; });
+    pm.options = result.options.map(function (o) { return { name: o.name, scores: o.scores.slice() }; });
+    pm.result = result;
+    pmRender();
+  }
+
+  tools.pm = {
+    api: 'apiSavePrioritization',
+    payload: function () { return { criteria: pm.criteria, options: pm.options }; },
+    done: pmLoad,
+    message: 'Scored and saved to the sheet'
+  };
+
+  // ================================================================ tree drawing (Tree Diagram & PDPC)
+
+  /**
+   * Draws a left-to-right tree. roots: [{ label, sub, kind, children: [...] }].
+   * kind: '' | 'risk' | 'cm' | 'open' changes the box style.
+   */
+  function treeSvg(roots) {
+    var W = 190, H = 46, GX = 50, GY = 12, PAD = 10;
+    var leaf = 0, maxDepth = 0, boxes = [], lines = [];
+    function place(node, depth) {
+      maxDepth = Math.max(maxDepth, depth);
+      var ys = node.children.map(function (c) { return place(c, depth + 1); });
+      var y = ys.length ? (ys[0] + ys[ys.length - 1]) / 2 : PAD + (leaf++) * (H + GY);
+      var x = PAD + depth * (W + GX);
+      ys.forEach(function (cy) {
+        var x1 = x + W, x2 = x + W + GX, mx = x1 + GX / 2;
+        lines.push('<path class="edge" d="M' + x1 + ',' + (y + H / 2) + ' H' + mx + ' V' + (cy + H / 2) + ' H' + x2 + '"/>');
+      });
+      boxes.push('<g class="node ' + (node.kind || '') + '" transform="translate(' + x + ',' + y + ')">' +
+        '<title>' + esc(node.label + (node.sub ? ' — ' + node.sub : '')) + '</title>' +
+        '<rect width="' + W + '" height="' + H + '" rx="6"/>' +
+        '<text x="10" y="' + (node.sub ? 19 : 28) + '">' + esc(clip(node.label, 27)) + '</text>' +
+        (node.sub ? '<text class="meta" x="10" y="36">' + esc(clip(node.sub, 30)) + '</text>' : '') + '</g>');
+      return y;
+    }
+    roots.forEach(function (r) { place(r, 0); });
+    var width = PAD * 2 + (maxDepth + 1) * W + maxDepth * GX;
+    var height = PAD * 2 + Math.max(leaf, 1) * (H + GY) - GY;
+    return '<svg class="diagram" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '">' +
+      lines.join('') + boxes.join('') + '</svg>';
+  }
+
+  /** Turns a buildTree() result into drawable roots. decorate(node) may add extra children. */
+  function toDisplayTree(result, decorate) {
+    var byId = {};
+    result.nodes.forEach(function (n) { byId[n.id] = n; });
+    function build(id) {
+      var n = byId[id];
+      var kids = n.children.map(build);
+      return { label: n.id + '  ' + n.text, kind: '', children: decorate ? decorate(n).concat(kids) : kids };
+    }
+    return result.roots.map(build);
+  }
+
+  // ================================================================ 5. Tree Diagram
+
+  var tree = { rows: [], result: null };
+  var TREE_COLS = [
+    { key: 'id', label: 'ID', width: 60 },
+    { key: 'parent', label: 'Parent ID', width: 90, ph: 'empty = top' },
+    { key: 'text', label: 'Item', cls: 'wide', ph: 'Goal, step or task' }
+  ];
+
+  function treeRender() {
+    var r = ok(tree.result) ? tree.result : null;
+    var depth = {};
+    if (r) r.nodes.forEach(function (n) { depth[n.id] = n.depth + 1; });
+    rowTable($('#tree-table'), TREE_COLS, tree.rows, {
+      head: ['Level'],
+      cells: function (i) { return [depth[String(tree.rows[i].id).trim().toUpperCase()] || '–']; }
+    });
+    if (!r || !r.nodes.length) { $('#tree-results').innerHTML = ''; return; }
+    var leaves = r.nodes.filter(function (n) { return !n.children.length; }).length;
+    $('#tree-results').innerHTML =
+      '<div class="card"><div class="kpis">' + kpi(r.nodes.length, 'Items') + kpi(leaves, 'Tasks at the ends') +
+        kpi(Math.max.apply(null, r.nodes.map(function (n) { return n.depth + 1; })), 'Levels') + '</div></div>' +
+      chartCard('Tree', 'tree-diagram', treeSvg(toDisplayTree(r)), '');
+  }
+
+  bindRowTable($('#tree-table'), function () { return tree.rows; }, function () { tree.result = null; treeRender(); });
+  $('#tree-add').addEventListener('click', function () {
+    var root = tree.rows.filter(function (r) { return !String(r.parent).trim(); })[0];
+    tree.rows.push({ id: nextId(tree.rows), parent: root ? root.id : '', text: '' });
+    tree.result = null;
+    treeRender();
+  });
+
+  function treeLoad(result) {
+    tree.result = result;
+    tree.rows = result.nodes.map(function (n) { return { id: n.id, parent: n.parent, text: n.text }; });
+    treeRender();
+  }
+
+  tools.tree = { api: 'apiSaveTree', payload: function () { return tree.rows; }, done: treeLoad, message: 'Tree drawn and saved' };
+
+  // ================================================================ 6. PDPC
+
+  var pdpc = { rows: [], result: null };
+  var PDPC_COLS = [
+    { key: 'id', label: 'ID', width: 60 },
+    { key: 'parent', label: 'Parent ID', width: 90 },
+    { key: 'text', label: 'Task', cls: 'wide' },
+    { key: 'risks', label: 'Risks (what could go wrong?)', cls: 'wide' },
+    { key: 'countermeasures', label: 'Countermeasures (same order)', cls: 'wide' }
+  ];
+
+  function pdpcRender() {
+    var r = ok(pdpc.result) ? pdpc.result : null;
+    var open = {};
+    if (r) r.openRisks.forEach(function (o) { open[o.id] = (open[o.id] || 0) + 1; });
+    rowTable($('#pdpc-table'), PDPC_COLS, pdpc.rows, {
+      head: ['Open'],
+      cells: function (i) { var n = open[String(pdpc.rows[i].id).trim().toUpperCase()]; return [n ? '<span class="bad">' + n + '</span>' : (r ? '0' : '–')]; },
+      rowClass: function (i) { return open[String(pdpc.rows[i].id).trim().toUpperCase()] ? 'critical' : ''; }
+    });
+    if (!r || !r.nodes.length) { $('#pdpc-results').innerHTML = ''; return; }
+    var display = toDisplayTree(r, function (n) {
+      return n.pairs.map(function (p) {
+        return {
+          label: '⚠ ' + p.risk, kind: 'risk',
+          children: [p.countermeasure
+            ? { label: '✓ ' + p.countermeasure, kind: 'cm', children: [] }
+            : { label: 'No countermeasure yet', kind: 'open', children: [] }]
+        };
+      });
+    });
+    $('#pdpc-results').innerHTML =
+      '<div class="card"><div class="kpis">' + kpi(r.totalRisks, 'Risks found') +
+        '<div class="kpi ' + (r.openRisks.length ? 'critical' : 'win') + '"><div class="value">' + r.openRisks.length + '</div><div class="label">Open (no countermeasure)</div></div>' +
+      '</div>' + (r.openRisks.length ? '<ul class="plain open-list">' + r.openRisks.map(function (o) {
+        return '<li><strong>' + esc(o.id + ' ' + o.text) + ':</strong> ' + esc(o.risk) + '</li>';
+      }).join('') + '</ul>' : '') + '</div>' +
+      chartCard('Chart', 'pdpc-chart', treeSvg(display),
+        legend([['var(--border)', 'Task'], ['var(--warn)', 'Risk'], ['var(--win)', 'Countermeasure'], ['var(--critical)', 'Open risk']]));
+  }
+
+  bindRowTable($('#pdpc-table'), function () { return pdpc.rows; }, function () { pdpc.result = null; pdpcRender(); });
+  $('#pdpc-add').addEventListener('click', function () {
+    var root = pdpc.rows.filter(function (r) { return !String(r.parent).trim(); })[0];
+    pdpc.rows.push({ id: nextId(pdpc.rows), parent: root ? root.id : '', text: '', risks: '', countermeasures: '' });
+    pdpc.result = null;
+    pdpcRender();
+  });
+  $('#pdpc-import').addEventListener('click', function () {
+    var byId = {};
+    pdpc.rows.forEach(function (r) { byId[String(r.id).trim().toUpperCase()] = r; });
+    var added = 0;
+    tree.rows.forEach(function (t) {
+      var id = String(t.id).trim().toUpperCase();
+      if (!id) return;
+      if (byId[id]) {
+        byId[id].parent = t.parent;
+        byId[id].text = t.text;
+      } else {
+        pdpc.rows.push({ id: id, parent: t.parent, text: t.text, risks: '', countermeasures: '' });
+        added++;
+      }
+    });
+    pdpc.result = null;
+    pdpcRender();
+    toast(added ? added + ' tasks copied from the Tree Diagram' : 'Tasks updated from the Tree Diagram');
+  });
+
+  function pdpcLoad(result) {
+    pdpc.result = result;
+    pdpc.rows = result.nodes.map(function (n) {
+      return { id: n.id, parent: n.parent, text: n.text, risks: n.risks || '', countermeasures: n.countermeasures || '' };
+    });
+    pdpcRender();
+  }
+
+  tools.pdpc = { api: 'apiSavePdpc', payload: function () { return pdpc.rows; }, done: pdpcLoad, message: 'Risks checked and saved' };
+
+  // ================================================================ 7. Activity Network
+
+  var an = { rows: [], result: null };
+  var AN_COLS = [
+    { key: 'id', label: 'ID', width: 60 },
+    { key: 'name', label: 'Task', cls: 'wide', ph: 'Task description' },
+    { key: 'duration', label: 'Duration', type: 'number', cls: 'num' },
+    { key: 'predecessors', label: 'Predecessors', ph: 'e.g. A, B' }
+  ];
+
+  function unit() { return settings.timeUnit || 'days'; }
+
+  function anRender() {
+    var r = ok(an.result) ? an.result : null;
+    var byId = {};
+    if (r) r.tasks.forEach(function (t) { byId[t.id] = t; });
+    var task = function (i) { return byId[String(an.rows[i].id).trim().toUpperCase()]; };
+    rowTable($('#an-table'), AN_COLS, an.rows, {
+      head: ['ES', 'EF', 'LS', 'LF', 'Slack'],
+      cells: function (i) {
+        var t = task(i);
+        return t ? [t.es, t.ef, t.ls, t.lf, t.slack].map(fmt) : ['–', '–', '–', '–', '–'];
+      },
+      rowClass: function (i) { var t = task(i); return t && t.critical ? 'critical' : ''; }
+    });
+    anRenderResults();
+  }
+
+  function anRenderResults() {
+    var r = an.result;
+    if (!ok(r) || !r.tasks.length) { $('#an-results').innerHTML = ''; return; }
+    var critical = r.criticalPaths.map(function (p) { return p.ids.join(' → '); });
+    $('#an-results').innerHTML =
+      '<div class="card"><div class="kpis">' +
+        '<div class="kpi critical"><div class="value">' + fmt(r.duration) + ' ' + esc(unit()) + '</div><div class="label">Project duration</div></div>' +
+        kpi(esc(critical.join('  |  ')), 'Critical path' + (critical.length > 1 ? 's' : '') + ' — these tasks cannot slip', true) +
+      '</div></div>' +
+      chartCard('Network diagram', 'activity-network', anNetworkSvg(r),
+        legend([['var(--critical)', 'Critical path'], ['var(--muted)', 'Other dependency']])) +
+      '<div class="card"><h2>Schedule</h2><div class="gantt">' + anGantt(r) + '</div>' +
+        legend([['var(--critical)', 'Critical task'], ['var(--accent)', 'Task'], ['var(--slack)', 'Slack (can slip this much)']]) + '</div>' +
+      '<div class="card"><h2>All paths</h2><ul class="paths">' +
+        r.paths.map(function (p) {
+          return '<li class="' + (p.critical ? 'critical' : '') + '"><span>' + esc(p.ids.join(' → ')) + '</span><span>' + fmt(p.duration) + ' ' + esc(unit()) + '</span></li>';
+        }).join('') +
+      '</ul></div>';
+  }
+
+  /** Columns = dependency depth, so arrows always flow left to right. */
+  function anNetworkSvg(r) {
+    var W = 150, H = 58, GX = 60, GY = 22, PAD = 12;
+    var columns = [], pos = {}, rowsMax = 0, byId = {};
+    r.tasks.forEach(function (t) { byId[t.id] = t; (columns[t.level] = columns[t.level] || []).push(t); });
+    columns.forEach(function (col, x) {
+      col.forEach(function (t, y) { pos[t.id] = { x: PAD + x * (W + GX), y: PAD + y * (H + GY) }; });
+      rowsMax = Math.max(rowsMax, col.length);
+    });
+    var width = PAD * 2 + columns.length * W + (columns.length - 1) * GX;
+    var height = PAD * 2 + rowsMax * H + (rowsMax - 1) * GY;
+
+    var edges = '';
+    r.tasks.forEach(function (t) {
+      t.predecessors.forEach(function (pid) {
+        var p = byId[pid], a = pos[pid], b = pos[t.id];
+        var crit = p.critical && t.critical && Math.abs(p.ef - t.es) < 1e-9;
+        var x1 = a.x + W, y1 = a.y + H / 2, x2 = b.x - 2, y2 = b.y + H / 2, m = (x1 + x2) / 2;
+        edges += '<path class="edge' + (crit ? ' critical' : '') + '" marker-end="url(#an-arrow' + (crit ? '-crit' : '') + ')" ' +
+          'd="M' + x1 + ',' + y1 + ' C' + m + ',' + y1 + ' ' + m + ',' + y2 + ' ' + x2 + ',' + y2 + '"/>';
+      });
+    });
+    var nodes = r.tasks.map(function (t) {
+      var p = pos[t.id];
+      return '<g class="node' + (t.critical ? ' critical' : '') + '" transform="translate(' + p.x + ',' + p.y + ')">' +
+        '<title>' + esc(t.id + ' ' + t.name + ' — ES ' + t.es + ', EF ' + t.ef + ', slack ' + t.slack) + '</title>' +
+        '<rect width="' + W + '" height="' + H + '" rx="6"/>' +
+        '<text x="10" y="20"><tspan class="id">' + esc(t.id) + '</tspan> ' + esc(clip(t.name, 20)) + '</text>' +
+        '<text class="meta" x="10" y="40">' + fmt(t.duration) + ' ' + esc(unit()) + ' · slack ' + fmt(t.slack) + '</text></g>';
+    }).join('');
+    return '<svg class="diagram" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '">' +
+      '<defs>' + marker('an-arrow', 'var(--muted)') + marker('an-arrow-crit', 'var(--critical)') + '</defs>' + edges + nodes + '</svg>';
+  }
+
+  function anGantt(r) {
+    var total = r.duration || 1;
+    return r.tasks.slice().sort(function (a, b) { return a.es - b.es || a.id.localeCompare(b.id); }).map(function (t) {
+      var left = t.es / total * 100, width = t.duration / total * 100, slack = t.slack / total * 100;
+      return '<div class="gantt-row' + (t.critical ? ' critical' : '') + '">' +
+        '<div class="ellipsis"><strong>' + esc(t.id) + '</strong> ' + esc(t.name) + '</div>' +
+        '<div class="gantt-track" title="' + esc(unit()) + ' ' + fmt(t.es) + '–' + fmt(t.ef) + (t.slack ? ', slack ' + fmt(t.slack) : '') + '">' +
+          (slack ? '<div class="gantt-slack" style="left:' + (left + width) + '%;width:' + slack + '%"></div>' : '') +
+          '<div class="gantt-bar" style="left:' + left + '%;width:' + Math.max(width, 0.5) + '%"></div>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  bindRowTable($('#an-table'), function () { return an.rows; }, function () { an.result = null; anRender(); });
+  $('#an-add').addEventListener('click', function () {
+    an.rows.push({ id: nextId(an.rows, true), name: '', duration: '', predecessors: '' });
+    an.result = null;
+    anRender();
+  });
+
+  function anLoad(result) {
+    an.result = result;
+    an.rows = result.tasks.map(function (t) {
+      return { id: t.id, name: t.name, duration: t.duration, predecessors: t.predecessors.join(', ') };
+    });
+    anRender();
+  }
+
+  tools.an = { api: 'apiSaveActivities', payload: function () { return an.rows; }, done: anLoad, message: 'Critical path calculated and saved' };
+
+  // ================================================================ shared bits of markup
+
+  function kpi(value, label, raw) {
+    return '<div class="kpi"><div class="value">' + (raw ? value : esc(value)) + '</div><div class="label">' + esc(label) + '</div></div>';
+  }
+
+  function bars(items) {
+    var max = Math.max.apply(null, items.map(function (i) { return Math.abs(i.value); }).concat([1]));
+    return '<div class="bars">' + items.map(function (i, n) {
+      var top = i.top != null ? i.top : n === 0;
+      return '<div class="bar-row' + (top ? ' top' : '') + (i.value < 0 ? ' neg' : '') + '">' +
+        '<div class="ellipsis" title="' + esc(i.label) + '">' + esc(i.label) + '</div>' +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + Math.abs(i.value) / max * 100 + '%"></div></div>' +
+        '<div class="num">' + fmt(i.value) + '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  function legend(items) {
+    return '<div class="legend">' + items.map(function (i) {
+      return '<span style="--c:' + i[0] + '">' + esc(i[1]) + '</span>';
+    }).join('') + '</div>';
+  }
+
+  /** A card holding one diagram, with download buttons. */
+  function chartCard(title, fileName, svg, legendHtml) {
+    return '<div class="card chart" data-file="' + esc(fileName) + '" data-title="' + esc(title) + '">' +
+      '<div class="card-head"><h2>' + esc(title) + '</h2><div class="chart-actions">' +
+        '<button class="secondary small" data-export="png">Download PNG</button>' +
+        '<button class="secondary small" data-export="svg">Download SVG</button>' +
+        '<button class="secondary small" data-export="drive">Save to Drive</button>' +
+      '</div></div><div class="scroll">' + svg + '</div>' + legendHtml + '</div>';
+  }
+
+  // ---------------------------------------------------------------- chart export
+
+  var EXPORT_STYLES = ['fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'opacity',
+    'font-size', 'font-weight', 'font-family'];
+
+  /**
+   * Turns an on-screen diagram into a standalone SVG: colours from the stylesheet are copied
+   * onto each element, and a title (project name + chart name) and background are added.
+   */
+  function standaloneSvg(svg, title) {
+    var w = +svg.getAttribute('width'), h = +svg.getAttribute('height');
+    var clone = svg.cloneNode(true);
+    var from = svg.querySelectorAll('*'), to = clone.querySelectorAll('*');
+    for (var i = 0; i < from.length; i++) {
+      var cs = getComputedStyle(from[i]);
+      to[i].setAttribute('style', EXPORT_STYLES.map(function (p) { return p + ':' + cs.getPropertyValue(p).replace(/"/g, "'"); }).join(';'));
+      to[i].removeAttribute('class');
+    }
+    var root = getComputedStyle(document.documentElement);
+    var bg = root.getPropertyValue('--surface').trim() || '#ffffff';
+    var ink = root.getPropertyValue('--text').trim() || '#1d2330';
+    var font = getComputedStyle(document.body).fontFamily.replace(/"/g, "'");
+    var head = 40, pad = 16, W = w + pad * 2, H = h + head + pad;
+    var heading = (settings.projectName ? settings.projectName + ' — ' : '') + title;
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '">' +
+      '<rect width="100%" height="100%" fill="' + bg + '"/>' +
+      '<text x="' + pad + '" y="27" style="font-family:' + font + ';font-size:16px;font-weight:700;fill:' + ink + '">' + esc(heading) + '</text>' +
+      '<g transform="translate(' + pad + ',' + head + ')">' + clone.innerHTML + '</g></svg>';
+  }
+
+  function svgToPng(svgText, callback) {
+    var img = new Image();
+    img.onload = function () {
+      var scale = 2, canvas = document.createElement('canvas');
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      var ctx = canvas.getContext('2d');
+      ctx.scale(scale, scale);
+      ctx.drawImage(img, 0, 0);
+      callback(canvas.toDataURL('image/png'));
+    };
+    img.onerror = function () { toast('Could not create the image'); };
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgText);
+  }
+
+  function download(dataUrl, fileName) {
+    var a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  document.addEventListener('click', function (e) {
+    var kind = e.target.dataset && e.target.dataset.export;
+    if (!kind) return;
+    var card = e.target.closest('.card.chart');
+    var svgText = standaloneSvg(card.querySelector('svg'), card.dataset.title);
+    var name = card.dataset.file + '-' + new Date().toISOString().slice(0, 10);
+    if (kind === 'svg') {
+      download('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgText), name + '.svg');
+      return;
+    }
+    svgToPng(svgText, function (png) {
+      if (kind === 'png') return download(png, name + '.png');
+      var btn = e.target;
+      btn.disabled = true;
+      server('apiSaveChartToDrive', name + '.png', png)
+        .then(function (file) {
+          toast('Saved to Drive: ' + file.name);
+          window.open(file.url, '_blank');
+        })
+        .catch(function (err) { toast('Could not save: ' + (err.message || err)); })
+        .then(function () { btn.disabled = false; });
+    });
+  });
+
+  function marker(id, color) {
+    return '<marker id="' + id + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">' +
+      '<path d="M0,0 L10,5 L0,10 z" fill="' + color + '"/></marker>';
+  }
+
+  // ================================================================ start
+
+  function applySettings(s) {
+    settings = s || {};
+    $('#project-name').textContent = settings.projectName || 'Planning Tools';
+    $('#project-team').textContent = settings.team || '';
+    $('#pm-scale').textContent = settings.scoreScale || 'any numbers';
+    if (settings.accentColor) document.documentElement.style.setProperty('--accent', settings.accentColor);
+  }
+
+  server('apiGetAll')
+    .then(function (all) {
+      $('#loading').hidden = true;
+      applySettings(all.settings);
+      renderGuide(all.guide);
+      aff.form = all.form;
+      affLoad(all.affinity);
+      relLoad(all.relations);
+      mxLoad(all.matrix);
+      pmLoad(all.prioritization);
+      treeLoad(all.tree);
+      pdpcLoad(all.pdpc);
+      anLoad(all.activities);
+      ['rel', 'mx', 'pm', 'tree', 'pdpc', 'an'].forEach(function (t) {
+        var key = { rel: 'relations', mx: 'matrix', pm: 'prioritization', tree: 'tree', pdpc: 'pdpc', an: 'activities' }[t];
+        if (all[key].errors.length) showMessages(t, all[key]);
+      });
+      var last = 'guide';
+      try { last = localStorage.getItem('planningTab') || 'guide'; } catch (e) { /* storage blocked */ }
+      openTab($('#tab-' + last) ? last : 'guide');
+    })
+    .catch(function (err) {
+      $('#loading').textContent = 'Could not load the project: ' + (err.message || err);
+    });
+</script>

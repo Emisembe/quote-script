@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Planning Tools</title>
+    <!--STYLES-->
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <h1 id="project-name">Planning Tools</h1>
+        <div id="project-team" class="team"></div>
+      </div>
+      <nav class="tabs" role="tablist">
+        <button class="tab" data-tab="guide">Guide</button>
+        <button class="tab" data-tab="aff">1 Affinity</button>
+        <button class="tab" data-tab="rel">2 Interrelationship</button>
+        <button class="tab" data-tab="mx">3 Matrix</button>
+        <button class="tab" data-tab="pm">4 Prioritization</button>
+        <button class="tab" data-tab="tree">5 Tree</button>
+        <button class="tab" data-tab="pdpc">6 PDPC</button>
+        <button class="tab" data-tab="an">7 Activity Network</button>
+      </nav>
+    </header>
+
+    <main>
+      <div id="loading" class="hint">Loading your project…</div>
+
+      <section id="tab-guide" class="panel" hidden>
+        <div id="guide" class="results"></div>
+      </section>
+
+      <section id="tab-aff" class="panel" hidden>
+        <h2 class="panel-title">Affinity Diagram <span>sort many ideas into groups</span></h2>
+        <div class="card form-card" id="aff-form"></div>
+        <div class="actions">
+          <input id="aff-new-idea" class="grow" placeholder="Type an idea and press Enter">
+          <button id="aff-add-idea" class="secondary">+ Idea</button>
+          <input id="aff-new-group" placeholder="New group name">
+          <button id="aff-add-group" class="secondary">+ Group</button>
+          <button class="primary save" data-save="aff">Save</button>
+        </div>
+        <div id="msg-aff"></div>
+        <div id="aff-board" class="board"></div>
+        <div id="aff-results" class="results"></div>
+      </section>
+
+      <section id="tab-rel" class="panel" hidden>
+        <h2 class="panel-title">Interrelationship Diagram <span>find the root cause</span></h2>
+        <p class="hint">Give each idea an ID. Under <em>Causes</em>, list the IDs this idea leads to (e.g. <code>4, 7</code>).
+          Most arrows out = <strong>key driver</strong> (root cause). Most arrows in = <strong>key outcome</strong>.</p>
+        <div class="table-wrap"><table id="rel-table" class="grid"></table></div>
+        <div class="actions">
+          <button id="rel-add" class="secondary">+ Idea</button>
+          <button id="rel-import" class="secondary">Copy ideas from Affinity</button>
+          <span class="spacer"></span>
+          <button class="primary save" data-save="rel">Analyze &amp; save</button>
+        </div>
+        <div id="msg-rel"></div>
+        <div id="rel-results" class="results"></div>
+      </section>
+
+      <section id="tab-mx" class="panel" hidden>
+        <h2 class="panel-title">Matrix Diagram <span>how two lists relate</span></h2>
+        <p class="hint" id="mx-legend"></p>
+        <div class="table-wrap"><table id="mx-table" class="grid matrix"></table></div>
+        <div class="actions">
+          <button id="mx-add-row" class="secondary">+ Row</button>
+          <button id="mx-add-col" class="secondary">+ Column</button>
+          <span class="spacer"></span>
+          <button class="primary save" data-save="mx">Total &amp; save</button>
+        </div>
+        <div id="msg-mx"></div>
+        <div id="mx-results" class="results"></div>
+      </section>
+
+      <section id="tab-pm" class="panel" hidden>
+        <h2 class="panel-title">Prioritization Matrix <span>make an objective decision</span></h2>
+        <p class="hint">Weight 100% = normal importance, more = matters more. Score each option per criterion —
+          <strong>higher is better</strong>. Scale: <span id="pm-scale"></span>.</p>
+        <div class="table-wrap"><table id="pm-table" class="grid"></table></div>
+        <div class="actions">
+          <button id="pm-add-criterion" class="secondary">+ Criterion</button>
+          <button id="pm-add-option" class="secondary">+ Option</button>
+          <span class="spacer"></span>
+          <button class="primary save" data-save="pm">Score &amp; save</button>
+        </div>
+        <div id="msg-pm"></div>
+        <div id="pm-results" class="results"></div>
+      </section>
+
+      <section id="tab-tree" class="panel" hidden>
+        <h2 class="panel-title">Tree Diagram <span>break a goal into steps</span></h2>
+        <p class="hint">The top item has no parent. Every other item names its parent's ID. Keep breaking down until each end is a task someone can do.</p>
+        <div class="table-wrap"><table id="tree-table" class="grid"></table></div>
+        <div class="actions">
+          <button id="tree-add" class="secondary">+ Item</button>
+          <span class="spacer"></span>
+          <button class="primary save" data-save="tree">Draw &amp; save</button>
+        </div>
+        <div id="msg-tree"></div>
+        <div id="tree-results" class="results"></div>
+      </section>
+
+      <section id="tab-pdpc" class="panel" hidden>
+        <h2 class="panel-title">PDPC <span>plan for what could go wrong</span></h2>
+        <p class="hint">For each task ask: what could go wrong? Write risks and a countermeasure for each, in the same order,
+          separated by <code>;</code>. A risk without a countermeasure is <strong>open</strong>.</p>
+        <div class="table-wrap"><table id="pdpc-table" class="grid"></table></div>
+        <div class="actions">
+          <button id="pdpc-add" class="secondary">+ Task</button>
+          <button id="pdpc-import" class="secondary">Copy from Tree Diagram</button>
+          <span class="spacer"></span>
+          <button class="primary save" data-save="pdpc">Check &amp; save</button>
+        </div>
+        <div id="msg-pdpc"></div>
+        <div id="pdpc-results" class="results"></div>
+      </section>
+
+      <section id="tab-an" class="panel" hidden>
+        <h2 class="panel-title">Activity Network Diagram <span>schedule and critical path</span></h2>
+        <p class="hint">List every task, how long it takes, and which tasks must finish first (e.g. <code>A, C</code>).
+          The critical path is the longest chain — those tasks cannot slip without delaying the project.</p>
+        <div class="table-wrap"><table id="an-table" class="grid"></table></div>
+        <div class="actions">
+          <button id="an-add" class="secondary">+ Task</button>
+          <span class="spacer"></span>
+          <button class="primary save" data-save="an">Calculate &amp; save</button>
+        </div>
+        <div id="msg-an"></div>
+        <div id="an-results" class="results"></div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" hidden></div>
+    <!--APP-->
+  </body>
+</html>
