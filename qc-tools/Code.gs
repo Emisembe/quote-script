@@ -32,7 +32,7 @@
  * Shift and dates, the same data serves every tool and any process: a
  * production line, a restaurant, a warehouse, a call centre, a clinic.
  * Change the "QC Lists" tab (defect types, measurements, areas...) and use
- * QC Tools -> Rebuild form to adapt the check sheet to a new situation.
+ * menu -> "Apply settings and lists" to adapt the check sheet to a new situation.
  */
 
 // =====================================================================
