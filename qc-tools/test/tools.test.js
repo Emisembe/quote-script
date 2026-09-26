@@ -175,3 +175,11 @@ test('runTool_ dispatches and rejects unknown tools', () => {
   assert.equal(G.runTool_('pareto', [], {}, {}).tool, 'pareto');
   assert.throws(() => G.runTool_('nope', [], {}, {}));
 });
+
+test('resolveSettings_ fills defaults and {org}', () => {
+  const st = G.resolveSettings_({ org: 'ACME', labelArea: 'Line', formTitle: '' }, 'Sheet name');
+  assert.equal(st.formTitle, 'ACME - QC Check Sheet');
+  assert.equal(st.labelArea, 'Line');
+  assert.equal(st.labelProject, 'Project');
+  assert.equal(G.resolveSettings_({}, 'My Sheet').org, 'My Sheet');
+});

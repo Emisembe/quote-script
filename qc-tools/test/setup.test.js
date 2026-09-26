@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { Spreadsheet, createEnv } = require('./gas-mock');
 
-const QC_TABS = ['QC Guide', 'QC Summary', 'QC Records', 'QC Lists', 'QC Specs', 'QC Events'];
+const QC_TABS = ['QC Guide', 'QC Settings', 'QC Summary', 'QC Records', 'QC Lists', 'QC Specs', 'QC Events'];
 
 test('setup adds the QC tabs to the current Sheet and leaves your tabs alone', () => {
   const ss = new Spreadsheet('ss1', 'My business');
@@ -17,7 +17,10 @@ test('setup adds the QC tabs to the current Sheet and leaves your tabs alone', (
   assert.equal(ss.getSheetByName('QC Lists').get(2, 4), 'Scratch');
   assert.equal(ss.getSheetByName('QC Summary').charts.length, 2);
   assert.match(String(ss.getSheetByName('QC Summary').get(13, 1)), /^=IFERROR\(QUERY\('QC Records'!A1:L/);
-  assert.match(String(ss.getSheetByName('QC Guide').get(12, 2)), /HYPERLINK\("https:\/\/docs.google.com\/forms\/d\/form1/);
+  const guide = ss.getSheetByName('QC Guide');
+  let formRow = 0;
+  for (let r = 1; r <= guide.getLastRow(); r++) if (guide.get(r, 1) === 'Check sheet form') formRow = r;
+  assert.match(String(guide.get(formRow, 2)), /HYPERLINK\("https:\/\/docs.google.com\/forms\/d\/form1/);
   assert.equal(ss.active, 'QC Guide');
   assert.equal(env.formsCreated, 1);
   assert.equal(env.forms.form1.dest, null, 'form must not add a Form Responses tab');
@@ -68,7 +71,7 @@ test('upgrading from the first version renames its tabs and removes the Form Res
   assert.ok(ss.names().includes('Form Responses 1'));
 
   env.ctx.setup();
-  assert.deepEqual(ss.names(), ['QC Records', 'QC Lists', 'QC Specs', 'QC Events', 'QC Guide', 'QC Summary']);
+  assert.deepEqual(ss.names(), ['QC Records', 'QC Lists', 'QC Specs', 'QC Events', 'QC Guide', 'QC Settings', 'QC Summary']);
   assert.equal(ss.getSheetByName('QC Records'), oldRec);
   assert.equal(oldRec.get(2, 9), 'Dent');
   assert.equal(ss.getSheetByName('QC Lists').get(2, 4), 'Dent');
@@ -105,4 +108,90 @@ test('setup outside a Sheet explains what to do and creates nothing', () => {
   env.active = null;
   assert.throws(() => env.ctx.setup(), /Open the Google Sheet you want to use/);
   assert.equal(env.formsCreated, 0);
+});
+
+const settingsRow = (ss, key) => {
+  const sh = ss.getSheetByName('QC Settings');
+  for (let r = 2; r <= sh.getLastRow(); r++) if (sh.get(r, 4) === key) return r;
+  return -1;
+};
+const setSetting = (ss, key, value) => ss.getSheetByName('QC Settings').set(settingsRow(ss, key), 2, value);
+
+test('QC Settings is created with defaults and the Sheet name as organisation', () => {
+  const ss = new Spreadsheet('ss1', 'Bakery Nord');
+  const env = createEnv(ss);
+  env.ctx.setup();
+  const form = env.forms.form1;
+  assert.equal(ss.getSheetByName('QC Settings').get(settingsRow(ss, 'org'), 2), 'Bakery Nord');
+  assert.equal(form.title, 'Bakery Nord - QC Check Sheet');
+  assert.equal(env.driveNames.form1, 'Bakery Nord - QC Check Sheet');
+  assert.equal(form.accepting, true);
+  assert.equal(form.titles()[1], 'Project');
+  assert.equal(ss.getSheetByName('QC Guide').get(1, 1), 'Bakery Nord - QC Tools');
+  assert.equal(ss.getSheetByName('QC Summary').get(1, 1), 'Bakery Nord - QC Summary');
+});
+
+test('Apply settings renames the form, questions, guide and summary in place', () => {
+  const ss = new Spreadsheet('ss1', 'Bakery Nord');
+  const env = createEnv(ss);
+  env.ctx.setup();
+  const form = env.forms.form1;
+  const idsBefore = form.items.map(i => i.getId());
+  const scratchId = form.items.find(i => i.getTitle() === 'Scratch').getId();
+
+  setSetting(ss, 'org', 'ACME GmbH');
+  setSetting(ss, 'formTitle', '{org} Daily Inspection');
+  setSetting(ss, 'labelProject', 'Customer');
+  setSetting(ss, 'labelArea', 'Department');
+  setSetting(ss, 'formOpen', 'No');
+  setSetting(ss, 'menuName', 'ACME Quality');
+  const lists = ss.getSheetByName('QC Lists');
+  lists.set(3, 4, 'Burnt');          // rename "Dent" -> "Burnt"
+  lists.set(7, 4, 'Too small');      // add a defect type
+  env.ctx.applySettings();
+
+  assert.equal(env.formsCreated, 1, 'same form, no new one');
+  assert.equal(form.title, 'ACME GmbH Daily Inspection');
+  assert.equal(env.driveNames.form1, 'ACME GmbH Daily Inspection');
+  assert.equal(form.accepting, false);
+  const titles = form.titles();
+  assert.deepEqual(titles.slice(0, 5), ['Date', 'Customer', 'Department', 'Shift', 'Recorded by']);
+  assert.ok(titles.includes('Burnt') && titles.includes('Too small') && !titles.includes('Dent'));
+  assert.equal(form.items.find(i => i.getTitle() === 'Scratch').getId(), scratchId, 'unchanged questions keep their id');
+  assert.equal(titles[titles.length - 1], 'Notes');
+  assert.ok(idsBefore.filter(id => form.items.some(i => i.getId() === id)).length >= idsBefore.length - 1);
+  assert.equal(ss.getSheetByName('QC Guide').get(1, 1), 'ACME GmbH - QC Tools');
+  assert.equal(ss.getSheetByName('QC Summary').get(1, 1), 'ACME GmbH - QC Summary');
+  assert.equal(env.ctx.apiMeta().labels.project, 'Customer');
+  assert.equal(env.ctx.apiMeta().title, 'ACME GmbH - QC Dashboard');
+  assert.equal(ss.getSheetByName('QC Settings').get(settingsRow(ss, 'labelArea'), 2), 'Department', 'your values are kept');
+
+  // A blank value falls back to the default
+  setSetting(ss, 'labelProject', '');
+  env.ctx.applySettings();
+  assert.equal(form.titles()[1], 'Project');
+});
+
+test('the form map still identifies renamed questions when answers arrive', () => {
+  const ss = new Spreadsheet('ss1', 'Shop');
+  const env = createEnv(ss);
+  env.ctx.setup();
+  setSetting(ss, 'labelProject', 'Customer');
+  env.ctx.applySettings();
+  const form = env.forms.form1;
+  const byTitle = t => form.items.find(i => i.getTitle() === t).getId();
+  const rows = env.ctx.answersToRecords_({ responseId: 'R', timestamp: 'T', fallbackDay: '2026-09-26',
+    answers: { [byTitle('Customer')]: 'General', [byTitle('Scratch')]: '4' } }, JSON.parse(env.props.FORM_MAP));
+  const scratch = rows.find(r => r[8] === 'Scratch');
+  assert.equal(scratch[3], 'General');
+  assert.equal(scratch[9], 4);
+});
+
+test('an existing install gets QC Settings placed right after QC Guide', () => {
+  const ss = new Spreadsheet('ss1', 'Old');
+  const env = createEnv(ss);
+  env.ctx.setup();
+  ss.sheets = ss.sheets.filter(s => s.getName() !== 'QC Settings');
+  env.ctx.setup();
+  assert.deepEqual(ss.names(), QC_TABS);
 });

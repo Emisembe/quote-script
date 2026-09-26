@@ -27,12 +27,22 @@ What setup does, and doesn't do:
 
 | Tab | What it holds |
 |---|---|
-| QC Guide | Start here: steps, a link to the form, links to every QC tab. |
+| QC Guide | Start here: first steps, daily routine, which tool answers which question and how to read it, PDCA cycle, adding data by hand, menu reference, troubleshooting. Written with your own names from QC Settings. |
+| QC Settings | Your names: organisation, form name, form description, thank-you message, form open/closed, dashboard title, menu name, and what "Project / Area / Shift / Recorded by" are called in your business. |
 | QC Summary | Live numbers and charts: totals, defects per day, Pareto table with cumulative %, measurement averages. Updates by itself. |
 | QC Records | The data. Form entries arrive here automatically. You can also type or paste rows. |
 | QC Lists | Projects, areas, shifts, defect types and measurements. These drive the form. |
 | QC Specs | LSL, target and USL per measurement. The histogram uses them for Pp/Ppk. |
 | QC Events | Process changes (date + label). The control chart starts a new phase with new limits at each one. |
+
+## Renaming everything from QC Settings
+
+1. Type your values in the **Value** column of **QC Settings**. `{org}` is replaced with your organisation name, and a blank cell means "use the default".
+2. Click **menu → Apply settings and lists**.
+
+This renames the Google Form (its title and its file name in Drive) and rewords its questions. It also updates the dashboard title and filter labels, the guide, the summary and the menu name (reload the Sheet to see the new menu name).
+The form is edited in place, so its link keeps working and earlier answers are kept. Questions for defect types you removed from QC Lists are deleted, and new ones are added.
+The QC tab names and the QC Records columns stay fixed, so formulas, links and the data format keep working.
 
 ## The database is reusable
 
@@ -49,7 +59,7 @@ Every tool reads one generic table, the **QC Records** tab:
 - **Inspected** is how many units were checked. When it exists, the control chart switches to a u chart (defects per unit).
 
 The same data powers every tool, and the filters (Project, Area, Shift, dates) point each tool at a different situation.
-A new process, department or client only needs a new **Project** name plus its items in the **QC Lists** tab, then **QC Tools → Rebuild form**.
+A new process, department or client only needs a new **Project** name plus its items in the **QC Lists** tab, then **menu → Apply settings and lists**.
 You can also paste rows from other systems straight into QC Records.
 
 ## What each tool does

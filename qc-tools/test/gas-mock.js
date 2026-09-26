@@ -27,6 +27,7 @@ class Sheet {
   getName() { return this.name; }
   setName(n) { this.name = n; return chain(this); }
   getSheetId() { return this.id; }
+  getIndex() { return this.ss.sheets.findIndex(x => x.getSheetId() === this.id) + 1; }
   getFormUrl() { return this.formUrl; }
   getLastRow() { let m = 0; for (const k of this.cells.keys()) m = Math.max(m, +k.split(',')[0]); return m; }
   getLastColumn() { let m = 0; for (const k of this.cells.keys()) m = Math.max(m, +k.split(',')[1]); return m; }
@@ -92,14 +93,36 @@ class Form {
     this.dest = null; return this;
   }
 }
-['addDateItem', 'addListItem', 'addTextItem', 'addParagraphTextItem', 'addSectionHeaderItem'].forEach(m => {
-  Form.prototype[m] = function () { const id = this.id + '-' + this.nextItem++; const it = chain({ getId: () => id }); this.items.push(it); return it; };
+const ITEM_TYPES = { addDateItem: 'DATE', addListItem: 'LIST', addTextItem: 'TEXT', addParagraphTextItem: 'PARAGRAPH_TEXT', addSectionHeaderItem: 'SECTION_HEADER' };
+Object.keys(ITEM_TYPES).forEach(m => {
+  Form.prototype[m] = function () {
+    const form = this, id = this.id + '-' + this.nextItem++;
+    const item = { id, type: ITEM_TYPES[m], title: '', help: '', choices: null, required: false };
+    const api = chain({
+      getId: () => id,
+      getType: () => item.type,
+      getIndex: () => form.items.findIndex(x => x.getId() === id),
+      getTitle: () => item.title,
+      setTitle(t) { item.title = t; return api; },
+      setHelpText(t) { item.help = t; return api; },
+      setChoiceValues(c) { item.choices = c.slice(); return api; },
+      setRequired(r) { item.required = r; return api; },
+      asDateItem: () => api, asListItem: () => api, asTextItem: () => api, asParagraphTextItem: () => api, asSectionHeaderItem: () => api,
+      _item: item
+    });
+    this.items.push(api);
+    return api;
+  };
 });
-Form.prototype.setTitle = function () { return this; };
-Form.prototype.setDescription = function () { return this; };
+Form.prototype.moveItem = function (from, to) { const [it] = this.items.splice(from, 1); this.items.splice(to, 0, it); };
+Form.prototype.setConfirmationMessage = function (m) { this.confirmation = m; return this; };
+Form.prototype.setAcceptingResponses = function (b) { this.accepting = b; return this; };
+Form.prototype.titles = function () { return this.items.map(i => i.getTitle()); };
+Form.prototype.setTitle = function (t) { this.title = t; return this; };
+Form.prototype.setDescription = function (d) { this.description = d; return this; };
 
 function createEnv(ss) {
-  const env = { props: {}, triggers: [], forms: {}, formsCreated: 0, sheetsById: { [ss.getId()]: ss }, user: 'owner@example.com' };
+  const env = { props: {}, triggers: [], forms: {}, formsCreated: 0, driveNames: {}, sheetsById: { [ss.getId()]: ss }, user: 'owner@example.com' };
   const ctx = {
     console, Logger: { log() {} },
     SpreadsheetApp: {
@@ -113,7 +136,8 @@ function createEnv(ss) {
       create: () => { const id = 'form' + (++env.formsCreated); env.forms[id] = new Form(env, id); return env.forms[id]; },
       openById: id => { if (!env.forms[id]) throw new Error('no form'); return env.forms[id]; },
       createTextValidation: () => chain({}),
-      DestinationType: { SPREADSHEET: 'SPREADSHEET' }
+      DestinationType: { SPREADSHEET: 'SPREADSHEET' },
+      ItemType: { DATE: 'DATE', LIST: 'LIST', TEXT: 'TEXT', PARAGRAPH_TEXT: 'PARAGRAPH_TEXT', SECTION_HEADER: 'SECTION_HEADER' }
     },
     ScriptApp: {
       getProjectTriggers: () => env.triggers.slice(),
@@ -126,6 +150,7 @@ function createEnv(ss) {
       deleteProperty: k => { delete env.props[k]; }
     }) },
     Session: { getEffectiveUser: () => ({ getEmail: () => env.user }), getActiveUser: () => ({ getEmail: () => env.user }), getScriptTimeZone: () => 'UTC' },
+    DriveApp: { getFileById: id => ({ getName: () => env.driveNames[id] || '', setName: n => { env.driveNames[id] = n; } }) },
     LockService: { getScriptLock: () => ({ waitLock() {}, releaseLock() {} }) },
     Utilities: { formatDate: (d, tz, p) => p === 'yyyy-MM-dd' ? d.toISOString().slice(0, 10) : d.toISOString().slice(0, 16).replace('T', ' ') }
   };
