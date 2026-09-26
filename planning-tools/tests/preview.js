@@ -18,7 +18,7 @@ const stub = `<script>
     var api = {};
     Object.keys(this || {}).length; // keep strict-mode linters quiet
     ['apiGetAll', 'apiSaveAffinity', 'apiSaveRelations', 'apiSaveMatrix', 'apiSavePrioritization', 'apiSaveTree',
-     'apiSavePdpc', 'apiSaveActivities', 'apiCreateForm', 'apiImportFormIdeas', 'apiSaveChartToDrive'].forEach(function (k) { api[k] = eval(k); });
+     'apiSavePdpc', 'apiSaveActivities', 'apiCreateForm', 'apiImportFormIdeas', 'apiSaveChartToDrive', 'apiSetSetting'].forEach(function (k) { api[k] = eval(k); });
     return { api: api, fake: fake };
   })();
   function runner(ok, fail) {

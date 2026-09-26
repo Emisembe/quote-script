@@ -20,8 +20,29 @@
     --slack: #c9d3e3;
     --note: #fffbe6;
   }
+  /* Dark colours: used when the theme is Dark, or Automatic on a device in dark mode. */
+  :root[data-theme="dark"] {
+    --bg: #14171d;
+    --surface: #1d222b;
+    --text: #e6e9ef;
+    --muted: #9aa3b5;
+    --border: #333a47;
+    --accent-soft: #23304a;
+    --critical: #f07166;
+    --critical-soft: #43231f;
+    --win: #5cc98a;
+    --win-soft: #1c3526;
+    --warn: #e5b44a;
+    --warn-soft: #3d3419;
+    --driver: #e5b44a;
+    --driver-soft: #3d3419;
+    --outcome: #ec7fab;
+    --outcome-soft: #43222f;
+    --slack: #3a4456;
+    --note: #2b2a1f;
+  }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
+    :root[data-theme="auto"] {
       --bg: #14171d;
       --surface: #1d222b;
       --text: #e6e9ef;
@@ -59,6 +80,9 @@
   }
   .brand h1 { font-size: 17px; margin: 0; }
   .brand .team { color: var(--muted); font-size: 12px; }
+  .theme-switch { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-left: auto; }
+  .theme-switch button { border: 0; border-radius: 0; background: var(--surface); color: var(--muted); padding: 5px 10px; font-size: 12px; }
+  .theme-switch button.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
   .tabs { display: flex; gap: 4px; overflow-x: auto; max-width: 100%; scrollbar-width: thin; }
   .tab {
     flex: none; border: 1px solid transparent; background: none; color: var(--muted);

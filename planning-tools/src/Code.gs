@@ -6,7 +6,7 @@
  */
 
 /** Bump this when publishing a new version, so "Update" can tell what changed. */
-var PT_VERSION = '1.2.0';
+var PT_VERSION = '1.3.0';
 
 /**
  * Counts how many copies of this code are in the project. Apps Script runs every file,
@@ -143,6 +143,7 @@ function upgradeSettings_() {
       labels.push(s[1]);
       sheet.getRange(labels.length + 1, 1, 1, 3).setValues([[s[1], s[2], s[3]]]);
       sheet.getRange(labels.length + 1, 2).setBackground('#fffbe6').setFontWeight('bold');
+      addChoices_(sheet, labels.length + 1, s);
       added.push(s[1]);
     } else {
       sheet.getRange(row + 2, 3).setValue(s[3]); // refresh the help text only
@@ -529,8 +530,9 @@ function setupSheets() {
 
 // ---------------------------------------------------------------- Settings tab
 
-/** key, label, default, help. Values live in column B of the Settings tab. */
+/** key, label, default, help, [allowed values]. Values live in column B of the Settings tab. */
 var SETTINGS = [
+  ['theme', 'Colour theme', 'Light', 'How the app looks. Light = white background. Dark = dark background. Automatic = follows your phone or computer.', ['Light', 'Dark', 'Automatic']],
   ['projectName', 'Project name', 'My improvement project', 'Shown as the app title and on the brainstorm form.'],
   ['team', 'Company / team', '', 'Optional. Shown under the project name.'],
   ['timeUnit', 'Time unit', 'days', 'Unit for task durations in the Activity Network (days, weeks, hours…).'],
@@ -538,7 +540,7 @@ var SETTINGS = [
   ['scoreScale', 'Score scale', '1–5 (higher is better)', 'Reminder shown above the Prioritization Matrix.'],
   ['formQuestion', 'Brainstorm question', 'What stops us from reaching our goal?', 'Default question for a new brainstorm form.'],
   ['accentColor', 'App colour', '#2f6fdb', 'Main colour of the app, as a hex code like #2f6fdb.'],
-  ['includeExamples', 'Example data in new tabs', 'Yes', 'Yes = new tabs start with example data. No = start empty.']
+  ['includeExamples', 'Example data in new tabs', 'Yes', 'Yes = new tabs start with example data. No = start empty.', ['Yes', 'No']]
 ];
 
 function readSettings_() {
@@ -557,16 +559,36 @@ function readSettings_() {
   out.defaultWeight = Number(out.defaultWeight) >= 0 ? Number(out.defaultWeight) : 100;
   out.includeExamples = !/^(no|false|0|n)$/i.test(cleanText(out.includeExamples));
   out.accentColor = /^#[0-9a-f]{3,8}$/i.test(cleanText(out.accentColor)) ? cleanText(out.accentColor) : '#2f6fdb';
+  var theme = cleanText(out.theme).toLowerCase();
+  out.theme = theme === 'dark' ? 'dark' : /^auto/.test(theme) ? 'auto' : 'light';
   return out;
+}
+
+/** Gives a setting with fixed choices a drop-down in the Settings tab. */
+function addChoices_(sheet, row, setting) {
+  if (!setting[4]) return;
+  sheet.getRange(row, 2).setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(setting[4], true).build());
+}
+
+/** Lets the app change a setting (e.g. the theme switch). Only known settings, only allowed values. */
+function apiSetSetting(key, value) {
+  var setting = SETTINGS.filter(function (s) { return s[0] === key; })[0];
+  if (!setting) throw new Error('Unknown setting: ' + key);
+  if (setting[4] && setting[4].indexOf(value) === -1) throw new Error('Not allowed: ' + value);
+  ensureSetup_();
+  upgradeSettings_();
+  var sheet = getSheet_(SHEETS.SETTINGS);
+  var labels = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues().map(function (r) { return cleanText(r[0]); });
+  sheet.getRange(labels.indexOf(setting[1]) + 2, 2).setValue(value);
+  return readSettings_();
 }
 
 function writeSettings_() {
   var sheet = writeTable_(SHEETS.SETTINGS, ['Setting', 'Value', 'What it does'],
     SETTINGS.map(function (s) { return [s[1], s[2], s[3]]; }));
   sheet.getRange(2, 2, SETTINGS.length, 1).setBackground('#fffbe6').setFontWeight('bold');
-  var examples = SETTINGS.map(function (s) { return s[0]; }).indexOf('includeExamples');
-  sheet.getRange(examples + 2, 2).setDataValidation(
-    SpreadsheetApp.newDataValidation().requireValueInList(['Yes', 'No'], true).build());
+  SETTINGS.forEach(function (s, i) { addChoices_(sheet, i + 2, s); });
   sheet.setColumnWidth(2, 260);
   sheet.setColumnWidth(3, 460);
 }

@@ -22,7 +22,7 @@
  */
 
 /** Bump this when publishing a new version, so "Update" can tell what changed. */
-var PT_VERSION = '1.2.0';
+var PT_VERSION = '1.3.0';
 
 /**
  * Counts how many copies of this code are in the project. Apps Script runs every file,
@@ -159,6 +159,7 @@ function upgradeSettings_() {
       labels.push(s[1]);
       sheet.getRange(labels.length + 1, 1, 1, 3).setValues([[s[1], s[2], s[3]]]);
       sheet.getRange(labels.length + 1, 2).setBackground('#fffbe6').setFontWeight('bold');
+      addChoices_(sheet, labels.length + 1, s);
       added.push(s[1]);
     } else {
       sheet.getRange(row + 2, 3).setValue(s[3]); // refresh the help text only
@@ -545,8 +546,9 @@ function setupSheets() {
 
 // ---------------------------------------------------------------- Settings tab
 
-/** key, label, default, help. Values live in column B of the Settings tab. */
+/** key, label, default, help, [allowed values]. Values live in column B of the Settings tab. */
 var SETTINGS = [
+  ['theme', 'Colour theme', 'Light', 'How the app looks. Light = white background. Dark = dark background. Automatic = follows your phone or computer.', ['Light', 'Dark', 'Automatic']],
   ['projectName', 'Project name', 'My improvement project', 'Shown as the app title and on the brainstorm form.'],
   ['team', 'Company / team', '', 'Optional. Shown under the project name.'],
   ['timeUnit', 'Time unit', 'days', 'Unit for task durations in the Activity Network (days, weeks, hours…).'],
@@ -554,7 +556,7 @@ var SETTINGS = [
   ['scoreScale', 'Score scale', '1–5 (higher is better)', 'Reminder shown above the Prioritization Matrix.'],
   ['formQuestion', 'Brainstorm question', 'What stops us from reaching our goal?', 'Default question for a new brainstorm form.'],
   ['accentColor', 'App colour', '#2f6fdb', 'Main colour of the app, as a hex code like #2f6fdb.'],
-  ['includeExamples', 'Example data in new tabs', 'Yes', 'Yes = new tabs start with example data. No = start empty.']
+  ['includeExamples', 'Example data in new tabs', 'Yes', 'Yes = new tabs start with example data. No = start empty.', ['Yes', 'No']]
 ];
 
 function readSettings_() {
@@ -573,16 +575,36 @@ function readSettings_() {
   out.defaultWeight = Number(out.defaultWeight) >= 0 ? Number(out.defaultWeight) : 100;
   out.includeExamples = !/^(no|false|0|n)$/i.test(cleanText(out.includeExamples));
   out.accentColor = /^#[0-9a-f]{3,8}$/i.test(cleanText(out.accentColor)) ? cleanText(out.accentColor) : '#2f6fdb';
+  var theme = cleanText(out.theme).toLowerCase();
+  out.theme = theme === 'dark' ? 'dark' : /^auto/.test(theme) ? 'auto' : 'light';
   return out;
+}
+
+/** Gives a setting with fixed choices a drop-down in the Settings tab. */
+function addChoices_(sheet, row, setting) {
+  if (!setting[4]) return;
+  sheet.getRange(row, 2).setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(setting[4], true).build());
+}
+
+/** Lets the app change a setting (e.g. the theme switch). Only known settings, only allowed values. */
+function apiSetSetting(key, value) {
+  var setting = SETTINGS.filter(function (s) { return s[0] === key; })[0];
+  if (!setting) throw new Error('Unknown setting: ' + key);
+  if (setting[4] && setting[4].indexOf(value) === -1) throw new Error('Not allowed: ' + value);
+  ensureSetup_();
+  upgradeSettings_();
+  var sheet = getSheet_(SHEETS.SETTINGS);
+  var labels = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues().map(function (r) { return cleanText(r[0]); });
+  sheet.getRange(labels.indexOf(setting[1]) + 2, 2).setValue(value);
+  return readSettings_();
 }
 
 function writeSettings_() {
   var sheet = writeTable_(SHEETS.SETTINGS, ['Setting', 'Value', 'What it does'],
     SETTINGS.map(function (s) { return [s[1], s[2], s[3]]; }));
   sheet.getRange(2, 2, SETTINGS.length, 1).setBackground('#fffbe6').setFontWeight('bold');
-  var examples = SETTINGS.map(function (s) { return s[0]; }).indexOf('includeExamples');
-  sheet.getRange(examples + 2, 2).setDataValidation(
-    SpreadsheetApp.newDataValidation().requireValueInList(['Yes', 'No'], true).build());
+  SETTINGS.forEach(function (s, i) { addChoices_(sheet, i + 2, s); });
   sheet.setColumnWidth(2, 260);
   sheet.setColumnWidth(3, 460);
 }
@@ -773,116 +795,253 @@ function getSheet_(name) {
 /**
  * Guide content. Written to the "Guide" tab and shown in the app's Guide page.
  * Each section: { title, items: [[heading, text], ...] }.
+ * Written for someone who has never used these tools: short sentences, no jargon without explanation.
  */
 var GUIDE = [
   {
-    title: 'Getting started',
+    title: 'Welcome — read this first',
     items: [
-      ['What this is', 'Seven planning tools in one spreadsheet. They help a team understand a complex problem, decide what to do about it, and plan the fix. This spreadsheet is one project; make a copy for each new project.'],
-      ['Open the app', 'Menu bar: Planning Tools → Open planning app. The app shows every tool with charts. Everything you save there is written to the tabs of this spreadsheet.'],
-      ['Or work in the tabs', 'Every tool has its own tab and you can type in it directly. Afterwards use Planning Tools → Recalculate all tabs to update the results.'],
-      ['Settings', 'The Settings tab holds your project name, time unit, default weight and more. Change the yellow cells in column B.'],
-      ['Start fresh', 'Delete a tool tab and run Planning Tools → Set up / repair project tabs. The tab comes back (empty if "Example data in new tabs" is No).']
+      ['What this is', 'A toolbox of seven planning tools that teams use to solve problems and deliver improvements. You do not need any training to use it. This guide explains every button and every column.'],
+      ['Who it is for', 'Anyone: team leaders, engineers, office staff, small business owners, students. It works for factories, offices, shops, hospitals, schools and personal projects.'],
+      ['One sheet = one project', 'This spreadsheet holds one project (for example "Reduce late deliveries"). For a new project, make a copy: File → Make a copy. Each copy has its own data.'],
+      ['Two ways to work', 'A) The app: Planning Tools menu → Open planning app. Easiest, with charts and buttons. B) The tabs at the bottom of the spreadsheet: type directly into the cells. Both show the same data. What you save in the app appears in the tabs, and what you type in the tabs appears in the app.'],
+      ['Nothing is lost', 'Your data is stored in this spreadsheet in your own Google Drive. Google keeps a version history (File → Version history) if you ever need to go back.']
     ]
   },
   {
-    title: 'The usual order',
+    title: 'Contents',
     items: [
-      ['1. Understand the problem', 'Collect ideas with the Brainstorm form, sort them in the Affinity Diagram, then find cause and effect in the Interrelationship Diagram. Use the Matrix Diagram to see how two lists relate.'],
-      ['2. Decide', 'Compare possible solutions, vendors or projects in the Prioritization Matrix.'],
-      ['3. Plan and deliver', 'Break the chosen solution into tasks with the Tree Diagram, find risks with the PDPC, and schedule the tasks with the Activity Network.'],
-      ['Tip', 'You do not need every tool every time. Use the ones that fit the size of the problem.']
+      ['Getting started', 'First-time setup, the menu, the app, the Settings tab.'],
+      ['The seven tools', '1 Affinity Diagram · 2 Interrelationship Diagram · 3 Matrix Diagram · 4 Prioritization Matrix · 5 Tree Diagram · 6 PDPC · 7 Activity Network Diagram.'],
+      ['More', 'Brainstorm form · Charts and downloads · Updating to a new version · Sharing · Troubleshooting · Glossary.']
     ]
   },
   {
-    title: 'Brainstorm form (Google Forms)',
+    title: 'Getting started — first time (5 minutes)',
     items: [
-      ['Create', 'Planning Tools → Brainstorm form → Create brainstorm form. Type your question, then share the link. People can answer from their phone, as often as they like.'],
-      ['Import', 'Planning Tools → Brainstorm form → Import ideas from form (or the button in the app). New answers arrive in the Affinity Diagram as unsorted ideas. Each answer is imported only once.'],
-      ['Link again', 'Planning Tools → Brainstorm form → Show form link.']
+      ['Step 1', 'Look at the top of the spreadsheet for the menu called "Planning Tools" (next to Help). If you do not see it, reload the page and wait a few seconds.'],
+      ['Step 2', 'Click Planning Tools → Set up / repair project tabs. The first time, Google asks for permission. Click Continue, choose your Google account, click "Advanced", then "Go to … (unsafe)", then "Allow". This warning appears because the script is your own and not published by a company. It only works inside your spreadsheet.'],
+      ['Step 3', 'Run Planning Tools → Set up / repair project tabs once more. Nine tabs appear: Guide, Settings and one tab per tool, filled with example data so you can see how everything works.'],
+      ['Step 4', 'Click Planning Tools → Open planning app. Try each tool with the example data. Then replace the examples with your own information.'],
+      ['Start empty instead', 'If you prefer no example data: in the Settings tab set "Example data in new tabs" to No, delete the tool tabs, and run Set up / repair project tabs again.']
+    ]
+  },
+  {
+    title: 'The Planning Tools menu',
+    items: [
+      ['Open planning app', 'Opens the app in a window over the spreadsheet. All seven tools, with charts, in one place.'],
+      ['Go to tool', 'Jumps to a tool\'s tab in the spreadsheet.'],
+      ['Brainstorm form', 'Create a Google Form so people can send ideas from their phone, import the answers, or show the form link again.'],
+      ['Recalculate all tabs', 'Use this after typing directly in the tabs. It updates every result (totals, ranks, critical path…) and colours.'],
+      ['Guide / Settings', 'Opens this guide or the Settings tab.'],
+      ['Set up / repair project tabs', 'Creates any tab that is missing. It never changes or deletes tabs that already exist.'],
+      ['Update after pasting new code', 'Only needed when you install a newer version of Planning Tools. See "Updating to a new version".']
+    ]
+  },
+  {
+    title: 'Using the app',
+    items: [
+      ['Tabs along the top', 'Guide and the seven tools, numbered in the order you would normally use them.'],
+      ['Light / Dark / Auto', 'The switch at the top right changes how the app looks. Light = white background. Dark = dark background. Auto = follows your phone or computer. Your choice is saved in the Settings tab.'],
+      ['Editing', 'Click into any box and type. Use "+" buttons to add rows, and × to remove a row.'],
+      ['Saving', 'Nothing is stored until you click the blue button (Save, Analyze & save, Score & save…). The results and charts update, and the matching tab in the spreadsheet is updated too.'],
+      ['Messages', 'If something is missing or wrong, a yellow box lists what to fix, for example "Task B depends on Z, which does not exist". Your typing is still saved; only the results wait until it is fixed.']
+    ]
+  },
+  {
+    title: 'The Settings tab',
+    items: [
+      ['How to change a setting', 'Open the Settings tab and change the yellow cells in column B. Some cells have a small arrow: click it and pick from the list. The app uses the new value the next time it opens.'],
+      ['Colour theme', 'Light (white background), Dark, or Automatic (follows your device). You can also change it with the switch at the top of the app.'],
+      ['Project name / Company', 'Shown at the top of the app, on downloaded charts and on the brainstorm form.'],
+      ['Time unit', 'The unit for task durations in the Activity Network: days, weeks, hours… Just type the word.'],
+      ['Default criterion weight', 'The weight a new criterion gets in the Prioritization Matrix. 100 means normal importance.'],
+      ['Score scale', 'A reminder of the scoring scale your team agreed on, e.g. "1–5 (higher is better)".'],
+      ['Brainstorm question', 'The question used when you create a brainstorm form.'],
+      ['App colour', 'The main colour of buttons and highlights, written as a colour code like #2f6fdb. Search "color picker" on Google to find codes.'],
+      ['Example data in new tabs', 'Yes = new tool tabs start with an example. No = they start empty.']
+    ]
+  },
+  {
+    title: 'Which tool should I use?',
+    items: [
+      ['"We have lots of ideas and it is messy"', '1 Affinity Diagram — groups ideas into themes.'],
+      ['"Many problems are connected; what is the real cause?"', '2 Interrelationship Diagram — finds the root cause.'],
+      ['"How do these two lists affect each other?"', '3 Matrix Diagram — e.g. customer wishes versus product features.'],
+      ['"Which option should we choose?"', '4 Prioritization Matrix — scores options fairly.'],
+      ['"This goal is too big; what exactly must we do?"', '5 Tree Diagram — breaks it into tasks.'],
+      ['"What could go wrong with our plan?"', '6 PDPC — lists risks and backup plans.'],
+      ['"How long will it take and what must not be late?"', '7 Activity Network — schedule and critical path.'],
+      ['The usual order', 'Understand the problem (1, 2, 3) → decide (4) → plan and deliver (5, 6, 7). Small problems may need only one or two tools.']
     ]
   },
   {
     title: '1. Affinity Diagram — sort many ideas into groups',
     items: [
-      ['Use it when', 'You have a long, messy list of ideas, complaints or facts and need to see the main themes.'],
-      ['Fill in', 'Tab columns: Idea, Category, Source. Write one idea per row. Leave Category empty until the team agrees where it belongs.'],
-      ['In the app', 'Each group is a column of cards. Move a card with its drop-down, or drag it on a computer. Add new groups with + Group.'],
-      ['Read the result', 'The biggest groups are usually where to focus first.']
+      ['What it is', 'A board of sticky notes. Each note is one idea. You move notes that belong together into the same group, then name each group. The groups show the main themes hidden in a long list.'],
+      ['When to use it', 'After a brainstorm, a customer survey, a list of complaints, or any time you have more than about 15 ideas and cannot see the big picture.'],
+      ['Step 1 — collect ideas', 'Type each idea in the box "Type an idea and press Enter", or collect them from your team with the brainstorm form (see "Brainstorm form"). One idea per note. Short and specific: "Forklifts block the aisle" is better than "Layout".'],
+      ['Step 2 — sort', 'New ideas land in "Unsorted". Move each note to a group with its drop-down menu (or drag it on a computer). Create a new group by typing a name in "New group name" and clicking + Group.'],
+      ['Step 3 — name the groups', 'Give each group a clear name that describes what the notes have in common, e.g. Maintenance, Training, Layout.'],
+      ['Step 4 — save', 'Click Save. The Affinity Diagram tab now lists every idea with its group.'],
+      ['Reading the result', 'The chart "Biggest groups" shows how many ideas each group has. Big groups usually deserve attention first. "Still unsorted" tells you how many notes still need a group.'],
+      ['Example', 'Problem: "We keep missing production targets." 11 ideas were collected and sorted into Maintenance (3), Training (2), Quality (2), Layout (2), Equipment (1). Maintenance is the biggest theme.'],
+      ['In the tab', 'Columns: Idea, Category (the group), Source (who or where it came from). Leave Category empty for unsorted ideas.'],
+      ['Common mistakes', 'Putting two ideas on one note. Creating a group for every single note. Arguing for too long: if a note fits two groups, pick one and move on.']
     ]
   },
   {
-    title: '2. Interrelationship Diagram — find root causes',
+    title: '2. Interrelationship Diagram — find the root cause',
     items: [
-      ['Use it when', 'Several problems are tangled together and you need to know which ones drive the others.'],
-      ['Fill in', 'Give each idea an ID (1, 2, 3…). In "Causes (IDs)" list the ideas this one leads to, e.g. "4, 7". Ask for every pair: does A cause B, or B cause A? Keep only the stronger direction.'],
-      ['Read the result', 'Out = arrows going out, In = arrows coming in. The KEY DRIVER has the most arrows out: it is the root cause to fix first. The KEY OUTCOME has the most arrows in: it is the main effect or symptom.']
+      ['What it is', 'A picture of cause and effect. Each idea is a circle. An arrow from A to B means "A causes (or makes worse) B". Counting arrows shows which problems drive the others.'],
+      ['When to use it', 'When several problems are tangled together and fixing symptoms has not worked.'],
+      ['Step 1 — list the ideas', 'Add 5 to 10 ideas, each with an ID (1, 2, 3…). Tip: the button "Copy ideas from Affinity" brings in ideas you already collected.'],
+      ['Step 2 — ask about every pair', 'Take two ideas, say 1 and 2, and ask: "Does 1 cause 2, or does 2 cause 1, or neither?" If 1 causes 2, write 2 in the "Causes (IDs)" box of idea 1. Several are allowed: "4, 7".'],
+      ['Only one direction', 'If both seem true, keep only the stronger direction. The app warns you if two ideas point at each other.'],
+      ['Step 3 — analyze', 'Click Analyze & save. The table shows Out (arrows leaving) and In (arrows arriving) and a Role for each idea.'],
+      ['Reading the result', 'KEY DRIVER (orange) = most arrows out. This is the likely root cause: fixing it improves many other things. KEY OUTCOME (pink) = most arrows in. This is the main symptom or result — usually what the customer or the boss sees. Driver / Outcome = more arrows out than in, or the opposite. Link = equal in and out.'],
+      ['Example', '"No standard work instructions" causes preventive maintenance to be skipped, scrap, and operator mistakes (3 arrows out) → key driver. "Production targets missed" receives 3 arrows → key outcome. So: write the work instructions first.'],
+      ['In the tab', 'Columns: ID, Idea, Causes (IDs). Out, In and Role are filled in automatically.'],
+      ['Common mistakes', 'Drawing arrows in both directions. Using vague ideas ("communication") that cause everything. Too many ideas at once — start with the 10 most important.']
     ]
   },
   {
     title: '3. Matrix Diagram — how two lists relate',
     items: [
-      ['Use it when', 'You want to compare two lists, e.g. customer needs against design features, problems against departments, or tasks against people.'],
-      ['Fill in', 'Row names down column A, column names across row 1. In each cell put a symbol: ◎ strong (9), ○ medium (3), △ weak (1), ✕ negative / conflict (−3). You can also type S, M, W or X.'],
-      ['Read the result', 'Totals show which rows and columns matter most. ✕ marks trade-offs: improving one thing makes the other worse, so plan for it.']
+      ['What it is', 'A grid. One list goes down the left side (rows), another across the top (columns). In each box you mark how strongly the row and the column are connected.'],
+      ['When to use it', 'Comparing any two lists: customer wishes vs. product features, problems vs. departments, tasks vs. people, skills vs. team members, risks vs. controls.'],
+      ['The symbols', '◎ Strong relationship (counts 9). ○ Medium (counts 3). △ Weak (counts 1). ✕ Negative or conflict (counts −3): improving one makes the other worse. Leave the box empty when there is no relationship. In the tab you may also type S, M, W or X.'],
+      ['Step 1', 'Click + Row for each item of your first list and + Column for each item of the second list. Type their names.'],
+      ['Step 2', 'For each box, pick a symbol from the small menu. Ask: "If we change this column, how much does it affect this row?"'],
+      ['Step 3', 'Click Total & save.'],
+      ['Reading the result', 'Row and column totals show what matters most — high totals deserve attention. Red boxes (✕) are trade-offs: the app lists them so you can plan for them instead of being surprised.'],
+      ['Example', 'Customer wishes (Easy to carry, Long battery life, Low price, Durable) vs. design features (Weight, Battery capacity, Housing material, Part count). A bigger battery helps battery life (◎) but makes the product heavier and more expensive (✕).'],
+      ['Common mistakes', 'Marking every box — most boxes should be empty. Mixing up rows and columns halfway through.']
     ]
   },
   {
-    title: '4. Prioritization Matrix — make an objective decision',
+    title: '4. Prioritization Matrix — make a fair decision',
     items: [
-      ['Use it when', 'You must choose between options: solutions, vendors, designs, projects to work on.'],
-      ['Fill in', 'Options down column A, criteria across row 1 (quality, cost, time…). Row 2 is the weight: 100% = normal, 150% = 1.5 times as important, 50% = half. Score each option per criterion. Higher is always better: for cost, give the cheapest option the highest score.'],
-      ['Read the result', 'Weighted total = each score × its weight, added up. Highest total wins (highlighted green). If the top two are close, discuss them before deciding.']
+      ['What it is', 'A scoring table. Options are compared on several criteria, each criterion has a weight, and the option with the highest weighted score wins. It turns opinions into a transparent decision.'],
+      ['When to use it', 'Choosing a supplier, a solution, a design, a project to start, a candidate, a location — any choice with more than one thing to consider.'],
+      ['Step 1 — options', 'Click + Option for each choice you are considering and type its name (e.g. Vendor A, Vendor B).'],
+      ['Step 2 — criteria', 'Click + Criterion for each thing that matters (e.g. Quality, Cost, Delivery time, Service).'],
+      ['Step 3 — weights', 'In the "Weight (%)" row give each criterion a weight. 100 = normal importance. 150 = one and a half times as important. 50 = half as important. Agree the weights BEFORE scoring, so nobody adjusts them to favour an option.'],
+      ['Step 4 — scores', 'Score every option on every criterion using the same scale (e.g. 1 to 5). HIGHER IS ALWAYS BETTER. For cost, the cheapest option gets the highest score. For delivery time, the fastest option gets the highest score.'],
+      ['Step 5', 'Click Score & save.'],
+      ['How the total is calculated', 'For each criterion: score × weight ÷ 100. Add these up. Example: Quality score 4 with weight 150 → 6. Cost score 2 with weight 100 → 2. Service score 3 with weight 80 → 2.4. Total = 10.4.'],
+      ['Reading the result', 'Rank 1 (green) is the best option. The bar chart shows how close the options are. If the top two are very close, discuss them before deciding — small scoring differences can change the order.'],
+      ['Common mistakes', 'Giving cost a high score for the most expensive option (remember: higher is better). Changing weights after seeing the result. Too many criteria — 3 to 6 is usually enough.']
     ]
   },
   {
-    title: '5. Tree Diagram — break a goal into steps',
+    title: '5. Tree Diagram — break a goal into tasks',
     items: [
-      ['Use it when', 'A goal is too big to act on and needs to be broken into smaller tasks. Also works as a fault tree: put a failure at the top and its possible causes below.'],
-      ['Fill in', 'Each row has an ID, a Parent ID and the item text. The top item has no parent. Example: "Design product" has parent 1 ("Launch new product").'],
-      ['Read the result', 'Keep breaking down until every end of the tree is a task someone can do. Level shows how deep an item sits.']
+      ['What it is', 'A diagram that starts with one goal on the left and splits it into smaller and smaller parts to the right, until each end is a concrete task someone can do.'],
+      ['When to use it', 'When a goal feels too big ("Launch a new product") and you need to know exactly what to do. It can also be used as a fault tree: put a failure at the top and its possible causes below it.'],
+      ['How IDs and parents work', 'Every item has an ID (1, 2, 3…). Every item except the goal names its Parent ID — the item it belongs to. The goal has an empty parent.'],
+      ['Step 1', 'Write your goal as item 1 with no parent.'],
+      ['Step 2', 'Ask "What do we need to achieve this?" Add each answer with Parent ID 1.'],
+      ['Step 3', 'Repeat for each new item: "What do we need to achieve this?" Keep going until each end is a task a person can start this week.'],
+      ['Step 4', 'Click Draw & save. The tree appears, and the tab shows the Level of each item (1 = the goal).'],
+      ['Example', 'Goal 1 "Launch new product" → 2 "Design product", 3 "Set up production", 4 "Marketing". Then 2 → 5 "Define requirements", 6 "Build prototype". And so on.'],
+      ['Common mistakes', 'Stopping too early ("Marketing" is not a task yet). Giving an item a parent ID that does not exist. Making an item its own parent. The app points these out.']
     ]
   },
   {
-    title: '6. PDPC (Process Decision Program Chart) — plan for what could go wrong',
+    title: '6. PDPC — plan for what could go wrong',
     items: [
-      ['Use it when', 'A plan has risk: late parts, unavailable people, a test that might fail.'],
-      ['Fill in', 'Same ID / Parent ID tree as the Tree Diagram. The app can copy it for you with "Copy from Tree Diagram". For each task, ask: what could go wrong? What have we assumed? What went wrong last time? Write the risks and, in the same order, a countermeasure for each. Separate several with ";".'],
-      ['Read the result', 'Risks without a countermeasure are OPEN and shown in red. Close them before the project starts.']
+      ['What it is', 'PDPC stands for Process Decision Program Chart. It takes your task tree and adds, for each task, what could go wrong (risks) and what you will do about it (countermeasures).'],
+      ['When to use it', 'Before starting a plan where a problem would be expensive or embarrassing: a launch, a move, an event, an audit, a new process.'],
+      ['Step 1', 'Click "Copy from Tree Diagram" to bring in your tasks. (Or add tasks with + Task using the same ID / Parent ID system as the Tree.)'],
+      ['Step 2 — find risks', 'For each task ask: What could go wrong? What are we assuming? What went wrong last time? What do we need that we might not get (people, money, parts, approval)? Write the risks in "Risks". Separate several with a semicolon ; like this: "Parts arrive late; Test fails".'],
+      ['Step 3 — countermeasures', 'In "Countermeasures", write what you will do for each risk, in the SAME ORDER, also separated by ;. Example: "Order from two suppliers; Plan a second test".'],
+      ['Step 4', 'Click Check & save.'],
+      ['Reading the result', 'The chart shows tasks, risks (yellow ⚠) and countermeasures (green ✓). A risk without a countermeasure is OPEN and shown in red. "Open" counts them. Before starting the project, every open risk should have a countermeasure, or the team should agree to accept it.'],
+      ['Common mistakes', 'Writing countermeasures in a different order than the risks. Listing risks nobody can influence (the weather) without any backup plan.']
     ]
   },
   {
     title: '7. Activity Network Diagram — schedule and critical path',
     items: [
-      ['Use it when', 'You need to know how long a project takes and which tasks must not slip.'],
-      ['Fill in', 'One row per task: ID (A, B, C…), description, duration, and predecessors (tasks that must finish first, e.g. "A, C").'],
-      ['Read the result', 'The critical path is the longest chain of tasks from start to finish. Its length is the project duration. Critical tasks (red) have zero slack: if one is late, the whole project is late. Slack shows how much any other task can slip.'],
-      ['Columns', 'ES / EF = earliest start / finish. LS / LF = latest start / finish without delaying the project. Slack = LS − ES.']
+      ['What it is', 'A diagram of all tasks in the order they must happen, with their durations. It calculates how long the whole project takes and which tasks must not be late.'],
+      ['When to use it', 'Whenever someone asks "When will it be finished?" or when several people work on tasks that depend on each other.'],
+      ['Step 1', 'Add every task with + Task. Give it an ID (A, B, C… is filled in for you), a description, and a duration (in the time unit from Settings, normally days).'],
+      ['Step 2 — predecessors', 'For each task, list the tasks that must be FINISHED before it can start, e.g. "A, C". Tasks that can start straight away have no predecessors.'],
+      ['Step 3', 'Click Calculate & save.'],
+      ['Critical path', 'The longest chain of tasks from start to finish. Its length is the project duration. Critical tasks are red. If a critical task is one day late, the whole project is one day late.'],
+      ['Slack', 'How much a task can be late without delaying the project. Critical tasks have 0 slack. A task with slack 10 can start up to 10 days later than planned.'],
+      ['The columns', 'ES = earliest start. EF = earliest finish. LS = latest start without delaying the project. LF = latest finish without delaying the project. Slack = LS − ES.'],
+      ['The charts', 'Network diagram: boxes are tasks, arrows show the order, red is the critical path. Schedule: each bar shows when a task happens; the light grey part shows its slack. All paths: every route from start to finish with its total length.'],
+      ['Example', 'Tasks A to K. The path A → B → F → H → K takes 73 days and is the critical path. Task J (train operators) has 29 days of slack, so it can wait while the team focuses on the prototype.'],
+      ['How to shorten a project', 'Only shortening a CRITICAL task makes the project shorter. Add people, work in parallel or remove steps on the red path. Speeding up a task with slack does not help.'],
+      ['Common mistakes', 'Forgetting a predecessor (the plan looks faster than reality). Loops: A needs B and B needs A — the app warns you.']
     ]
   },
   {
-    title: 'Charts',
+    title: 'Brainstorm form (Google Forms)',
     items: [
-      ['Download', 'Each diagram in the app has Download PNG (a picture for slides, email or reports) and Download SVG (sharp at any size, for printing).'],
-      ['Save to Drive', 'If your browser blocks the download inside the spreadsheet dialog, use Save to Drive. The image goes to a "Planning Tools charts" folder in your Google Drive and a link opens.']
+      ['Why', 'People often share more ideas when they can write them privately, from their phone, in their own time.'],
+      ['Create the form', 'Planning Tools → Brainstorm form → Create brainstorm form (or the "Create form" button in the Affinity tool). Type the question, e.g. "What stops us from delivering on time?". A link appears.'],
+      ['Share it', 'Send the link by email, chat or as a QR code. Anyone with the link can answer; they can submit the form as many times as they like, one idea each time.'],
+      ['Bring answers in', 'Planning Tools → Brainstorm form → Import ideas from form (or the "Import new answers" button). New ideas appear in the Affinity Diagram as Unsorted, with the person\'s name if they gave one. Each answer is imported only once, so you can import as often as you like.'],
+      ['Find the link again', 'Planning Tools → Brainstorm form → Show form link.']
+    ]
+  },
+  {
+    title: 'Charts and downloads',
+    items: [
+      ['Download PNG', 'A picture of the chart, ready for PowerPoint, Word, email or WhatsApp.'],
+      ['Download SVG', 'A drawing that stays sharp at any size — best for printing posters or large screens.'],
+      ['Save to Drive', 'Saves the picture to a folder called "Planning Tools charts" in your Google Drive and opens it. Use this if the Download buttons do nothing (some browsers block downloads inside the spreadsheet window). Google asks for Drive permission the first time.'],
+      ['Colours', 'Charts are downloaded with the current theme. For white charts, switch the app to Light first.']
     ]
   },
   {
     title: 'Updating to a new version',
     items: [
-      ['1. Replace the code', 'Extensions → Apps Script. Click into the existing code file, select everything (Ctrl+A / Cmd+A), paste the new version over it, and click Save. Replace; do not add a second file.'],
-      ['2. Run Update', 'Back in the spreadsheet, reload the page, then Planning Tools → Update after pasting new code.'],
-      ['What Update does', 'Adds any new tabs and new settings, refreshes this Guide, and recalculates every tool. Your data, your setting values and your existing tabs are kept. Nothing is duplicated. Running it twice is harmless.'],
-      ['Your own notes', 'You can keep notes in a tool tab to the right of the tool’s columns, with one empty column in between. They survive saving and updating.'],
-      ['Pasted twice?', 'If the code ended up in two files, a message says so and Update changes nothing until you delete the older file.'],
-      ['New permissions', 'A new version may ask for permission again (for example Google Drive for saving charts). That is normal.']
+      ['1. Replace the code', 'Extensions → Apps Script. Click into the existing code, select everything (Ctrl+A on Windows, Cmd+A on Mac), paste the new version over it, and click Save (the disk icon). Replace it — do not create a second file.'],
+      ['2. Run Update', 'Go back to the spreadsheet, reload the page, then Planning Tools → Update after pasting new code.'],
+      ['What Update does', 'Adds new tabs and new settings, refreshes this Guide, and recalculates every tool. Your data, your setting values and your own tabs are kept. Nothing is duplicated. Running it twice is harmless.'],
+      ['Your own notes', 'You can keep notes in a tool tab to the right of the tool\'s columns, with one empty column in between. They survive saving and updating.'],
+      ['Pasted twice by mistake?', 'A message tells you. Delete the older copy in Apps Script, save, and run Update again. Until then Update changes nothing.'],
+      ['Permissions again', 'A new version may ask for permission again. That is normal.']
     ]
   },
   {
-    title: 'Sharing and using on the phone',
+    title: 'Sharing, teams and phones',
     items: [
-      ['Web app', 'Extensions → Apps Script → Deploy → New deployment → Web app. Execute as: Me. Who has access: Only myself, or Anyone with a Google account for your team. Anyone with access can change this project’s data through the app.'],
-      ['Another business or project', 'File → Make a copy. The copy has its own data and its own script.']
+      ['Share the spreadsheet', 'Click Share (top right) and add your team. People with edit access can use the menu and the app.'],
+      ['Web app (phone and bookmark)', 'Extensions → Apps Script → Deploy → New deployment → click the gear → Web app. "Execute as": Me. "Who has access": Only myself, or Anyone with a Google account for your team. Click Deploy and copy the link. Anyone with access to the link can change this project\'s data through the app.'],
+      ['Another project or business', 'File → Make a copy. The copy carries the tool and starts with its own data. Delete the old data or set "Example data in new tabs" to No and recreate the tabs.']
+    ]
+  },
+  {
+    title: 'Troubleshooting',
+    items: [
+      ['I do not see the Planning Tools menu', 'Reload the spreadsheet and wait 5–10 seconds. Check that the code was saved in Extensions → Apps Script.'],
+      ['"Authorization required" or a permission screen', 'Follow the steps in "Getting started — Step 2". It is needed once, and again when a new version needs new permissions.'],
+      ['The app says "Please check"', 'Read the yellow box; it names the row and the problem (missing ID, unknown predecessor, loop…). Fix it and save again.'],
+      ['My changes in the tab do not show in the app', 'Close and reopen the app. If results look old, use Planning Tools → Recalculate all tabs.'],
+      ['I deleted a tab by accident', 'Planning Tools → Set up / repair project tabs brings it back (empty or with examples). To recover your data use File → Version history.'],
+      ['Downloads do nothing', 'Use Save to Drive instead.'],
+      ['The app is dark', 'Click ☀ Light at the top of the app, or set "Colour theme" to Light in the Settings tab.']
+    ]
+  },
+  {
+    title: 'Glossary',
+    items: [
+      ['Brainstorm', 'Collecting as many ideas as possible without judging them yet.'],
+      ['Root cause', 'The underlying reason for a problem. Fixing it stops the problem coming back.'],
+      ['Symptom / outcome', 'What you can see happening because of a cause, e.g. late deliveries.'],
+      ['Criterion (plural: criteria)', 'Something you judge options on, e.g. price or quality.'],
+      ['Weight', 'How important a criterion is compared with the others.'],
+      ['Predecessor', 'A task that must be finished before another task can start.'],
+      ['Critical path', 'The longest chain of dependent tasks; it decides the project end date.'],
+      ['Slack (float)', 'How long a task can be delayed without delaying the project.'],
+      ['Risk', 'Something that might go wrong.'],
+      ['Countermeasure', 'What you will do to prevent a risk or limit its damage.'],
+      ['Trade-off', 'When improving one thing makes another thing worse.']
     ]
   }
 ];
@@ -1401,7 +1560,7 @@ function round2(n) {
 // ================================================================ the app page (HTML, CSS, JS)
 
 var APP_HTML = `<!DOCTYPE html>
-<html>
+<html data-theme="light">
   <head>
     <base target="_top">
     <meta charset="utf-8">
@@ -1429,8 +1588,29 @@ var APP_HTML = `<!DOCTYPE html>
     --slack: #c9d3e3;
     --note: #fffbe6;
   }
+  /* Dark colours: used when the theme is Dark, or Automatic on a device in dark mode. */
+  :root[data-theme="dark"] {
+    --bg: #14171d;
+    --surface: #1d222b;
+    --text: #e6e9ef;
+    --muted: #9aa3b5;
+    --border: #333a47;
+    --accent-soft: #23304a;
+    --critical: #f07166;
+    --critical-soft: #43231f;
+    --win: #5cc98a;
+    --win-soft: #1c3526;
+    --warn: #e5b44a;
+    --warn-soft: #3d3419;
+    --driver: #e5b44a;
+    --driver-soft: #3d3419;
+    --outcome: #ec7fab;
+    --outcome-soft: #43222f;
+    --slack: #3a4456;
+    --note: #2b2a1f;
+  }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
+    :root[data-theme="auto"] {
       --bg: #14171d;
       --surface: #1d222b;
       --text: #e6e9ef;
@@ -1468,6 +1648,9 @@ var APP_HTML = `<!DOCTYPE html>
   }
   .brand h1 { font-size: 17px; margin: 0; }
   .brand .team { color: var(--muted); font-size: 12px; }
+  .theme-switch { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-left: auto; }
+  .theme-switch button { border: 0; border-radius: 0; background: var(--surface); color: var(--muted); padding: 5px 10px; font-size: 12px; }
+  .theme-switch button.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
   .tabs { display: flex; gap: 4px; overflow-x: auto; max-width: 100%; scrollbar-width: thin; }
   .tab {
     flex: none; border: 1px solid transparent; background: none; color: var(--muted);
@@ -1620,6 +1803,11 @@ var APP_HTML = `<!DOCTYPE html>
       <div class="brand">
         <h1 id="project-name">Planning Tools</h1>
         <div id="project-team" class="team"></div>
+      </div>
+      <div class="theme-switch" role="group" aria-label="Colour theme">
+        <button data-theme-set="light" title="White background">☀ Light</button>
+        <button data-theme-set="dark" title="Dark background">☾ Dark</button>
+        <button data-theme-set="auto" title="Follow your device">Auto</button>
       </div>
       <nav class="tabs" role="tablist">
         <button class="tab" data-tab="guide">Guide</button>
@@ -2721,8 +2909,27 @@ var APP_HTML = `<!DOCTYPE html>
 
   // ================================================================ start
 
+  var THEME_VALUE = { light: 'Light', dark: 'Dark', auto: 'Automatic' };
+
+  function applyTheme(theme) {
+    theme = THEME_VALUE[theme] ? theme : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    $$('[data-theme-set]').forEach(function (b) { b.classList.toggle('on', b.dataset.themeSet === theme); });
+  }
+
+  $$('[data-theme-set]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var theme = btn.dataset.themeSet;
+      applyTheme(theme);
+      server('apiSetSetting', 'theme', THEME_VALUE[theme])
+        .then(function () { toast('Theme saved: ' + THEME_VALUE[theme]); })
+        .catch(function (err) { toast('Could not save the theme: ' + (err.message || err)); });
+    });
+  });
+
   function applySettings(s) {
     settings = s || {};
+    applyTheme(settings.theme);
     $('#project-name').textContent = settings.projectName || 'Planning Tools';
     $('#project-team').textContent = settings.team || '';
     $('#pm-scale').textContent = settings.scoreScale || 'any numbers';

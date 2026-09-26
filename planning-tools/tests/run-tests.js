@@ -331,6 +331,52 @@ test('saving after removing a criterion leaves no stale column behind', () => {
   assert.deepStrictEqual(header, ['Option', 'Quality', 'Cost', 'Weighted Total', 'Rank', '', '', '']);
 });
 
+// ---------------------------------------------------------------- Theme
+console.log('Theme');
+test('theme defaults to Light (white) and can be changed from the app and the Settings tab', () => {
+  const p = load();
+  assert.strictEqual(plain(p.apiGetAll()).settings.theme, 'light');
+  assert.strictEqual(plain(p.apiSetSetting('theme', 'Dark')).theme, 'dark');
+  const sheet = p.fake.ss.getSheetByName('Settings');
+  const row = sheet.getDataRange().getValues().findIndex(r => r[0] === 'Colour theme') + 1;
+  assert.strictEqual(sheet.getRange(row, 2).getValues()[0][0], 'Dark');
+  sheet.getRange(row, 2).setValue('automatic');
+  assert.strictEqual(plain(p.readSettings_()).theme, 'auto');
+  sheet.getRange(row, 2).setValue('purple');
+  assert.strictEqual(plain(p.readSettings_()).theme, 'light'); // unknown -> Light
+  assert.throws(() => p.apiSetSetting('theme', 'Purple'));
+  assert.throws(() => p.apiSetSetting('notASetting', 'x'));
+});
+test('Update adds the theme setting to an older project without touching other settings', () => {
+  const p = load();
+  p.apiGetAll();
+  const sheet = p.fake.ss.getSheetByName('Settings');
+  const rows = sheet.getDataRange().getValues();
+  const row = rows.findIndex(r => r[0] === 'Colour theme') + 1;
+  sheet.getRange(row, 1, 1, 3).setValues([['', '', '']]);
+  sheet.getRange(rows.findIndex(r => r[0] === 'Time unit') + 1, 2).setValue('weeks');
+  const report = plain(p.updateProject_()).join('\n');
+  assert.match(report, /New settings: Colour theme/);
+  const s = plain(p.readSettings_());
+  assert.strictEqual(s.theme, 'light');
+  assert.strictEqual(s.timeUnit, 'weeks');
+});
+test('app page starts white and has the theme switch', () => {
+  const html = load().doGet().html;
+  assert.ok(html.includes('<html data-theme="light">'));
+  assert.ok(html.includes('data-theme-set="dark"'));
+});
+test('guide covers every tool with steps and has troubleshooting and a glossary', () => {
+  const g = plain(load().GUIDE);
+  const titles = g.map(s => s.title).join(' | ');
+  ['Affinity', 'Interrelationship', 'Matrix Diagram', 'Prioritization', 'Tree', 'PDPC', 'Activity Network', 'Troubleshooting', 'Glossary', 'Settings', 'Updating']
+    .forEach(t => assert.ok(titles.includes(t), t));
+  g.filter(s => /^\d\./.test(s.title)).forEach(s => {
+    const heads = s.items.map(i => i[0]).join(' ');
+    assert.ok(/What it is/.test(heads) && /Step 1/.test(heads) && /Common mistakes/.test(heads), s.title);
+  });
+});
+
 // ---------------------------------------------------------------- Chart export
 console.log('Charts');
 test('Save to Drive puts the PNG in a "Planning Tools charts" folder (created once)', () => {

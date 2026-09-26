@@ -976,8 +976,27 @@
 
   // ================================================================ start
 
+  var THEME_VALUE = { light: 'Light', dark: 'Dark', auto: 'Automatic' };
+
+  function applyTheme(theme) {
+    theme = THEME_VALUE[theme] ? theme : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    $$('[data-theme-set]').forEach(function (b) { b.classList.toggle('on', b.dataset.themeSet === theme); });
+  }
+
+  $$('[data-theme-set]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var theme = btn.dataset.themeSet;
+      applyTheme(theme);
+      server('apiSetSetting', 'theme', THEME_VALUE[theme])
+        .then(function () { toast('Theme saved: ' + THEME_VALUE[theme]); })
+        .catch(function (err) { toast('Could not save the theme: ' + (err.message || err)); });
+    });
+  });
+
   function applySettings(s) {
     settings = s || {};
+    applyTheme(settings.theme);
     $('#project-name').textContent = settings.projectName || 'Planning Tools';
     $('#project-team').textContent = settings.team || '';
     $('#pm-scale').textContent = settings.scoreScale || 'any numbers';

@@ -50,7 +50,7 @@ Every diagram has **Download PNG**, **Download SVG** and **Save to Drive** (fold
 
 ### Settings tab
 
-Project name, company/team, time unit (days, weeks…), default criterion weight, score scale,
+Colour theme (Light = white, Dark, Automatic; also switchable at the top of the app), project name, company/team, time unit (days, weeks…), default criterion weight, score scale,
 brainstorm question, app colour, and whether new tabs start with example data.
 
 ### Web app / phone / team
