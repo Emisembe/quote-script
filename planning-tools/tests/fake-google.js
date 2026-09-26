@@ -57,6 +57,15 @@ function createFakeGoogle() {
     return this;
   };
   Range.prototype.setValue = function (v) { return this.setValues([[v]]); };
+  Range.prototype.getSheet = function () { return this.s; };
+  Range.prototype.getRow = function () { return this.r; };
+  Range.prototype.getColumn = function () { return this.c; };
+  /** Test helper: store a raw value (e.g. a Date) exactly as given. */
+  Range.prototype.setRaw = function (v) {
+    var row = this.s.data[this.r - 1] = this.s.data[this.r - 1] || [];
+    row[this.c - 1] = v;
+    return this;
+  };
   Range.prototype.getDisplayValues = function () {
     return this.getValues().map(function (row) {
       return row.map(function (v) {
@@ -102,6 +111,9 @@ function createFakeGoogle() {
   var ss = {
     sheets: [], active: null, id: 'sheet-' + Math.random().toString(36).slice(2),
     getId: function () { return this.id; },
+    locale: 'en_US',
+    getSpreadsheetLocale: function () { return this.locale; },
+    getSpreadsheetTimeZone: function () { return 'Europe/Berlin'; },
     getName: function () { return 'Test project'; },
     getSheets: function () { return this.sheets.slice(); },
     getSheetByName: function (n) { return this.sheets.filter(function (s) { return s.name === n; })[0] || null; },
@@ -182,7 +194,10 @@ function createFakeGoogle() {
       },
       Utilities: {
         base64Decode: function (b64) { return typeof Buffer !== 'undefined' ? Array.from(Buffer.from(b64, 'base64')) : Array.from(atob(b64), function (c) { return c.charCodeAt(0); }); },
-        newBlob: function (bytes, type, name) { return { bytes: bytes, type: type, name: name }; }
+        newBlob: function (bytes, type, name) { return { bytes: bytes, type: type, name: name }; },
+        formatDate: function (d, tz, fmt) {
+          return { M: d.getMonth() + 1, d: d.getDate(), yyyy: d.getFullYear() }[fmt];
+        }
       },
       SpreadsheetApp: {
         getActiveSpreadsheet: function () { return ss; },

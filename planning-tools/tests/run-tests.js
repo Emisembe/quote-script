@@ -426,6 +426,38 @@ test('a date typed into a tab does not break the app', () => {
   assert.ok(!hasDate(all), 'a Date object would make the app fail to load');
   assert.strictEqual(plain(all).affinity.input[0].idea, '3.4.');
 });
+test('lists that Google Sheets turned into dates are recovered (the "TUE APR 07" problem)', () => {
+  const p = load();
+  p.apiGetAll();
+  const rel = p.fake.ss.getSheetByName('Interrelationship');
+  const rowOf = id => rel.getDataRange().getValues().findIndex(r => String(r[0]) === id) + 1;
+  // What an older version left behind in a US-format sheet: "4, 7" -> 7 April 2026, "1, 5, 6" -> 5 January 2006
+  rel.getRange(rowOf('2'), 3).setRaw(new Date(2026, 3, 7));
+  rel.getRange(rowOf('3'), 3).setRaw(new Date(2006, 0, 5));
+  rel.getRange(rowOf('5'), 3).setRaw(new Date(2026, 3, 7));
+  const all = plain(p.apiGetAll());
+  assert.deepStrictEqual(all.relations.errors, []);
+  assert.deepStrictEqual(all.relations.keyDrivers, ['3']);
+  assert.strictEqual(all.relations.warnings.filter(w => /turned into a date/.test(w)).length, 3);
+  const report = plain(p.updateProject_()).join('\n');
+  assert.match(report, /Fixed 3 cells that Google Sheets had turned into dates/);
+  assert.match(report, /Interrelationship C\d+ → 4, 7/);
+  assert.match(report, /Interrelationship C\d+ → 1, 5, 6/);
+  assert.doesNotMatch(report, /Please check these tabs/);
+  // stored as text now, so a second update has nothing to fix
+  assert.strictEqual(rel.getRange(rowOf('3'), 3).getValues()[0][0], '1, 5, 6');
+  assert.doesNotMatch(plain(p.updateProject_()).join('\n'), /Fixed/);
+});
+test('IDs turned into dates in day-first countries are recovered (1.2 -> 1 February)', () => {
+  const p = load();
+  p.fake.ss.locale = 'de_DE';
+  p.apiGetAll();
+  const tree = p.fake.ss.getSheetByName('Tree Diagram');
+  tree.getRange(3, 1).setRaw(new Date(2026, 1, 1));
+  const ids = plain(p.readTree_()).map(r => r.id);
+  assert.strictEqual(ids[1], '1.2');
+});
+
 test('prioritization keeps what was typed when a score is not a number', () => {
   const p = load();
   const all = plain(p.apiGetAll()).prioritization.input;

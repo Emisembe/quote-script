@@ -297,6 +297,7 @@ var GUIDE = [
       ['I deleted a tab by accident', 'Planning Tools → Set up / repair project tabs brings it back (empty or with examples). To recover your data use File → Version history.'],
       ['Downloads do nothing', 'Use Save to Drive instead.'],
       ['The app is dark', 'Click ☀ Light at the top of the app, or set "Colour theme" to Light in the Settings tab.'],
+      ['Messages like "causes TUE", "APR", "2026", "GMT"', 'Google Sheets had turned a list such as "4, 7" into a date (older versions of Planning Tools did not prevent this). Install the latest version and run Update: it turns those dates back into the lists they were, lists the cells it fixed, and stores them as text so it cannot happen again. Check the listed cells.'],
       ['A tab is empty but I had data', 'Check whether the tab was renamed. The tool uses the exact names: Affinity Diagram, Interrelationship, Matrix Diagram, Prioritization Matrix, Tree Diagram, PDPC, Activity Network. Rename your tab back and delete the new empty one.'],
       ['"Service invoked too many times" or a timeout', 'Google limits how much a free account can run per day. Wait a few minutes and try again. Saving one tool in the app does less work than Recalculate all tabs.'],
       ['Something else', 'Note what you clicked and the exact message, take a screenshot, and send it to whoever maintains your copy of Planning Tools.']

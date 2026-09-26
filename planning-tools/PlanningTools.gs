@@ -22,7 +22,7 @@
  */
 
 /** Bump this when publishing a new version, so "Update" can tell what changed. */
-var PT_VERSION = '1.4.0';
+var PT_VERSION = '1.4.1';
 
 /**
  * Counts how many copies of this code are in the project. Apps Script runs every file,
@@ -124,6 +124,7 @@ function menuUpdate() {
  * Safe to run any number of times.
  */
 function updateProject_() {
+  RECOVERED_ = [];
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var props = PropertiesService.getDocumentProperties();
   var from = props.getProperty(VERSION_KEY);
@@ -144,6 +145,8 @@ function updateProject_() {
   lines.push(newTabs.length ? 'New tabs: ' + newTabs.join(', ') + '.' : 'No tabs added — all your tabs were kept.');
   lines.push(addedSettings.length ? 'New settings: ' + addedSettings.join(', ') + '.' : 'Your settings were kept.');
   lines.push('The Guide was refreshed.');
+  var fixed = recoveredReport_();
+  if (fixed.length) lines = lines.concat([''], fixed);
   if (problems.length) lines.push('', 'Please check these tabs:', problems.join('\n\n'));
   return lines;
 }
@@ -227,9 +230,12 @@ function menuImportFormIdeas() {
 
 /** Recomputes every tool from what is currently typed in the tabs. */
 function menuRecalculate() {
+  RECOVERED_ = [];
   ensureSetup_();
   var problems = recalculateAll_();
-  SpreadsheetApp.getUi().alert(problems.length ? 'Please fix:\n\n' + problems.join('\n\n') : 'All tabs recalculated.');
+  var fixed = recoveredReport_();
+  SpreadsheetApp.getUi().alert((fixed.length ? fixed.join('\n') + '\n\n' : '') +
+    (problems.length ? 'Please fix:\n\n' + problems.join('\n\n') : 'All tabs recalculated.'));
 }
 
 /** Re-reads every tool tab and writes it back with fresh results. Returns problems found. */
@@ -254,10 +260,11 @@ function recalculateAll_() {
 
 /** Everything the app needs, in one round trip. */
 function apiGetAll() {
+  RECOVERED_ = [];
   ensureSetup_();
   var aff = readAffinity_(), rel = readRelations_(), mx = readMatrix_(), p = readPrioritization_();
   var tree = readTree_(), pdpc = readPdpc_(), an = readActivities_();
-  return {
+  var all = {
     affinity: withInput_(groupAffinity(aff), aff),
     relations: withInput_(analyzeInterrelationships(rel), rel),
     matrix: withInput_(analyzeMatrix(mx), mx),
@@ -269,6 +276,18 @@ function apiGetAll() {
     settings: readSettings_(),
     guide: GUIDE
   };
+  // Cells turned back from dates are shown in the app; saving the tool stores them as text.
+  var toolOf = {};
+  toolOf[SHEETS.RELATIONS] = 'relations';
+  toolOf[SHEETS.TREE] = 'tree';
+  toolOf[SHEETS.PDPC] = 'pdpc';
+  toolOf[SHEETS.ACTIVITIES] = 'activities';
+  RECOVERED_.forEach(function (r) {
+    var result = all[toolOf[r.sheet]];
+    result.warnings = (result.warnings || []).concat(['Cell ' + r.cell + ' had been turned into a date by Google Sheets. ' +
+      'It was read as "' + r.value + '". Check it, then click the save button to store it correctly.']);
+  });
+  return all;
 }
 
 /**
@@ -882,23 +901,73 @@ function writeTable_(name, header, rows, fills, textCols) {
  * Cell values with dates turned into the text shown in the cell. (Sheets turns some typed
  * text into dates, e.g. "1.2" in many countries, and dates cannot be sent to the app.)
  */
-function cellValues_(range) {
+function cellValues_(range, recover) {
   var values = range.getValues();
   var display = null;
   return values.map(function (row, i) {
     return row.map(function (v, j) {
       if (Object.prototype.toString.call(v) !== '[object Date]') return v;
+      if (recover && recover[j]) {
+        var fixed = recoverFromDate_(v, recover[j]);
+        var where = { sheet: range.getSheet().getName(), cell: columnLetter_(range.getColumn() + j) + (range.getRow() + i), value: fixed };
+        var seen = RECOVERED_.some(function (r) { return r.sheet === where.sheet && r.cell === where.cell; });
+        if (!seen) RECOVERED_.push(where);
+        return fixed;
+      }
       display = display || range.getDisplayValues();
       return display[i][j];
     });
   });
 }
 
+/**
+ * Cells that Google Sheets had turned into dates and that were turned back into IDs
+ * during this run (older versions did not protect ID columns). Reported to the user.
+ */
+var RECOVERED_ = [];
+
+/**
+ * Rebuilds what was typed from a date Sheets created out of it:
+ *   "4, 7" became 7 April -> "4, 7";  "1, 5, 6" became 5 January 2006 -> "1, 5, 6";
+ *   "1.2" became 1 February (day-first countries) -> "1.2".
+ * Sheets fills in the current year when none was typed, so a recent year is dropped.
+ */
+function recoverFromDate_(date, kind) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var tz = ss.getSpreadsheetTimeZone();
+  var monthFirst = /_(US|PH|FM|MH|PW)$/.test(String(ss.getSpreadsheetLocale()));
+  var month = Number(Utilities.formatDate(date, tz, 'M'));
+  var day = Number(Utilities.formatDate(date, tz, 'd'));
+  var year = Number(Utilities.formatDate(date, tz, 'yyyy'));
+  var parts = monthFirst ? [month, day] : [day, month];
+  var thisYear = new Date().getFullYear();
+  if (kind === 'list' && (year < 2020 || year > thisYear + 1)) parts.push(year % 100);
+  return parts.join(kind === 'list' ? ', ' : '.');
+}
+
+function columnLetter_(n) {
+  var s = '';
+  for (; n > 0; n = Math.floor((n - 1) / 26)) s = String.fromCharCode(65 + (n - 1) % 26) + s;
+  return s;
+}
+
+/** A readable list of the cells fixed so far, for messages. */
+function recoveredReport_() {
+  if (!RECOVERED_.length) return [];
+  return ['Fixed ' + RECOVERED_.length + ' cell' + (RECOVERED_.length === 1 ? '' : 's') +
+    ' that Google Sheets had turned into dates (please check they are right):']
+    .concat(RECOVERED_.map(function (r) { return '  ' + r.sheet + ' ' + r.cell + ' → ' + r.value; }));
+}
+
+/** Columns holding IDs ('id') or ID lists ('list'), which Sheets may have turned into dates. */
+var ID_COLUMNS = { id: 'id', parent: 'id', causes: 'list', predecessors: 'list' };
+
 function readTable_(name, keys) {
   var sheet = getSheet_(name);
   var last = sheet.getLastRow();
   if (last < 2) return [];
-  return cellValues_(sheet.getRange(2, 1, last - 1, keys.length))
+  var recover = keys.map(function (k) { return ID_COLUMNS[k] || null; });
+  return cellValues_(sheet.getRange(2, 1, last - 1, keys.length), recover)
     .map(function (row) {
       var o = {};
       keys.forEach(function (k, i) { o[k] = row[i]; });
@@ -1224,6 +1293,7 @@ var GUIDE = [
       ['I deleted a tab by accident', 'Planning Tools → Set up / repair project tabs brings it back (empty or with examples). To recover your data use File → Version history.'],
       ['Downloads do nothing', 'Use Save to Drive instead.'],
       ['The app is dark', 'Click ☀ Light at the top of the app, or set "Colour theme" to Light in the Settings tab.'],
+      ['Messages like "causes TUE", "APR", "2026", "GMT"', 'Google Sheets had turned a list such as "4, 7" into a date (older versions of Planning Tools did not prevent this). Install the latest version and run Update: it turns those dates back into the lists they were, lists the cells it fixed, and stores them as text so it cannot happen again. Check the listed cells.'],
       ['A tab is empty but I had data', 'Check whether the tab was renamed. The tool uses the exact names: Affinity Diagram, Interrelationship, Matrix Diagram, Prioritization Matrix, Tree Diagram, PDPC, Activity Network. Rename your tab back and delete the new empty one.'],
       ['"Service invoked too many times" or a timeout', 'Google limits how much a free account can run per day. Wait a few minutes and try again. Saving one tool in the app does less work than Recalculate all tabs.'],
       ['Something else', 'Note what you clicked and the exact message, take a screenshot, and send it to whoever maintains your copy of Planning Tools.']
