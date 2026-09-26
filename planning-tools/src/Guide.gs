@@ -19,7 +19,8 @@ var GUIDE = [
     items: [
       ['Getting started', 'First-time setup, the menu, the app, the Settings tab.'],
       ['The seven tools', '1 Affinity Diagram · 2 Interrelationship Diagram · 3 Matrix Diagram · 4 Prioritization Matrix · 5 Tree Diagram · 6 PDPC · 7 Activity Network Diagram.'],
-      ['More', 'Brainstorm form · Charts and downloads · Updating to a new version · Sharing · Troubleshooting · Glossary.']
+      ['Before you start', 'Rules for the tabs · Colours at a glance · Running a session with your team.'],
+      ['More', 'A complete example · Brainstorm form · Charts and downloads · Updating to a new version · Sharing · Frequently asked questions · Troubleshooting · Glossary.']
     ]
   },
   {
@@ -66,6 +67,42 @@ var GUIDE = [
       ['Brainstorm question', 'The question used when you create a brainstorm form.'],
       ['App colour', 'The main colour of buttons and highlights, written as a colour code like #2f6fdb. Search "color picker" on Google to find codes.'],
       ['Example data in new tabs', 'Yes = new tool tabs start with an example. No = they start empty.']
+    ]
+  },
+  {
+    title: 'Rules for the tabs — keep your data safe',
+    items: [
+      ['Do not rename the tool tabs', 'The tool finds its data by the tab name (e.g. "Activity Network"). If you rename a tab, the tool no longer sees it and creates a new, empty one. Rename it back to fix this.'],
+      ['Do not change row 1', 'Row 1 of each tool tab holds the column titles. Leave them as they are. Type your data from row 2 downwards.'],
+      ['Do not insert columns inside a tool', 'Add your own columns only to the RIGHT of the tool\'s columns, with one empty column in between. Everything there is kept.'],
+      ['Formulas become values', 'If you type a formula in a tool column, the tool keeps its result, not the formula, the next time it saves. Keep formulas in your own columns on the right.'],
+      ['Rows with a mistake are kept', 'If a row has a problem (for example two tasks with the same ID), the tool keeps the row, shows a yellow "Please check" message, and waits for you to fix it. Nothing is deleted.'],
+      ['Result columns', 'Columns such as Out, In, Role, Level, ES, EF, Slack, Weighted Total and Rank are filled in by the tool. Anything you type there is replaced on the next save.'],
+      ['IDs are text', 'IDs such as 1.1 or A2 are stored as text, so the spreadsheet will not turn them into dates or numbers.']
+    ]
+  },
+  {
+    title: 'Colours at a glance',
+    items: [
+      ['Blue', 'Buttons and normal bars. The colour can be changed in Settings → App colour.'],
+      ['Green', 'The best option (Prioritization Matrix) or a countermeasure (PDPC).'],
+      ['Red', 'Needs attention: critical tasks (Activity Network), open risks (PDPC), conflicts ✕ (Matrix).'],
+      ['Orange', 'Key driver — the root cause (Interrelationship Diagram). Also risks in the PDPC.'],
+      ['Pink', 'Key outcome — the main effect (Interrelationship Diagram).'],
+      ['Light grey bar', 'Slack: how much a task may slip (Activity Network schedule).'],
+      ['Yellow box', 'A message listing what to check or fix.']
+    ]
+  },
+  {
+    title: 'Running a session with your team',
+    items: [
+      ['Before', 'Write the problem or goal in one sentence everyone agrees with, e.g. "Orders ship late more than twice a week." Invite the people who do the work, not only managers. Book 60–90 minutes.'],
+      ['Share the screen', 'Open the app on a projector or shared screen so everyone sees the same thing. One person types; everyone else talks.'],
+      ['Collect first, judge later', 'During brainstorming no idea is criticised. Quantity first. The brainstorm form lets quiet people contribute too.'],
+      ['Timebox', 'Give each step a time limit, e.g. 10 minutes of ideas, 15 minutes of sorting. Move on when time is up.'],
+      ['Agree before scoring', 'Agree criteria and weights (Prioritization Matrix) before anyone scores, so the result is fair.'],
+      ['End with actions', 'Finish every session with who does what by when. The Tree Diagram and Activity Network are good places to record it.'],
+      ['Share the result', 'Download the charts (PNG) and send them with a short summary, or share the spreadsheet.']
     ]
   },
   {
@@ -185,6 +222,20 @@ var GUIDE = [
     ]
   },
   {
+    title: 'A complete example — from problem to plan',
+    items: [
+      ['The problem', 'A small workshop keeps missing its weekly production target.'],
+      ['1. Affinity', 'The team sends 11 ideas through the brainstorm form. Sorted into groups, Maintenance, Training, Quality and Layout stand out.'],
+      ['2. Interrelationship', 'Arrows between 7 key ideas show "No standard work instructions" as the key driver and "Production targets missed" as the key outcome.'],
+      ['3. Matrix', 'The team checks which departments are involved in each problem, to know who must take part in the fix.'],
+      ['4. Prioritization', 'Three possible fixes are scored on cost, speed and impact. "Write and train standard work instructions" wins.'],
+      ['5. Tree', 'The winning fix is broken down: pick the first 5 processes, write the instructions, test them, train each shift.'],
+      ['6. PDPC', 'Risks are added: "Trainer not available" → "Train two internal trainers". One risk stays open and is discussed with the manager.'],
+      ['7. Activity Network', 'Durations and order are entered. The critical path shows the project takes 6 weeks and that writing the instructions must not slip.'],
+      ['Result', 'In one afternoon the team moved from a vague complaint to a root cause, a chosen solution, a risk plan and a schedule — with charts to show the manager.']
+    ]
+  },
+  {
     title: 'Brainstorm form (Google Forms)',
     items: [
       ['Why', 'People often share more ideas when they can write them privately, from their phone, in their own time.'],
@@ -223,6 +274,20 @@ var GUIDE = [
     ]
   },
   {
+    title: 'Frequently asked questions',
+    items: [
+      ['Does it cost anything?', 'No. It runs on your normal Google account (free or Workspace).'],
+      ['Can several people work at the same time?', 'Yes. Share the spreadsheet. Saves are handled one after the other so they do not overwrite each other half-way. If two people edit the same tool at the same moment, the last save wins, so agree who edits which tool.'],
+      ['Does it work on a phone?', 'Yes, through the web app link (see "Sharing, teams and phones"). The Google Sheets phone app does not show custom menus, so use the web app there.'],
+      ['Does it work offline?', 'No. It needs an internet connection, like Google Sheets.'],
+      ['Who can see my data?', 'Only people you share the spreadsheet or web app with. The data never leaves your Google account.'],
+      ['How many rows can I use?', 'Plenty for normal projects: hundreds of ideas or tasks. Very large lists (thousands) make the app slower.'],
+      ['Can I print?', 'Yes. Download a chart as SVG or PNG and print it, or print the tab with File → Print.'],
+      ['Can I use my own language for the data?', 'Yes. Ideas, tasks, criteria and names can be in any language. The menus and this guide are in English.'],
+      ['I made a mistake. Can I undo?', 'In the tabs use Ctrl+Z / Cmd+Z. For bigger changes use File → Version history → See version history and restore an earlier version.']
+    ]
+  },
+  {
     title: 'Troubleshooting',
     items: [
       ['I do not see the Planning Tools menu', 'Reload the spreadsheet and wait 5–10 seconds. Check that the code was saved in Extensions → Apps Script.'],
@@ -231,7 +296,10 @@ var GUIDE = [
       ['My changes in the tab do not show in the app', 'Close and reopen the app. If results look old, use Planning Tools → Recalculate all tabs.'],
       ['I deleted a tab by accident', 'Planning Tools → Set up / repair project tabs brings it back (empty or with examples). To recover your data use File → Version history.'],
       ['Downloads do nothing', 'Use Save to Drive instead.'],
-      ['The app is dark', 'Click ☀ Light at the top of the app, or set "Colour theme" to Light in the Settings tab.']
+      ['The app is dark', 'Click ☀ Light at the top of the app, or set "Colour theme" to Light in the Settings tab.'],
+      ['A tab is empty but I had data', 'Check whether the tab was renamed. The tool uses the exact names: Affinity Diagram, Interrelationship, Matrix Diagram, Prioritization Matrix, Tree Diagram, PDPC, Activity Network. Rename your tab back and delete the new empty one.'],
+      ['"Service invoked too many times" or a timeout', 'Google limits how much a free account can run per day. Wait a few minutes and try again. Saving one tool in the app does less work than Recalculate all tabs.'],
+      ['Something else', 'Note what you clicked and the exact message, take a screenshot, and send it to whoever maintains your copy of Planning Tools.']
     ]
   },
   {

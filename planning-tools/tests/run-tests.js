@@ -289,6 +289,7 @@ test('Update keeps data, settings and notes; adds only what is missing', () => {
   const after = plain(p.apiGetAll());
   assert.strictEqual(after.settings.projectName, 'Line 3 downtime');
   for (const k of ['affinity', 'relations', 'matrix', 'prioritization', 'tree', 'activities']) {
+    delete after[k].input;
     assert.deepStrictEqual(after[k], before[k], k + ' changed during update');
   }
   assert.strictEqual(p.fake.props.planningToolsVersion, p.PT_VERSION);
@@ -375,6 +376,116 @@ test('guide covers every tool with steps and has troubleshooting and a glossary'
     const heads = s.items.map(i => i[0]).join(' ');
     assert.ok(/What it is/.test(heads) && /Step 1/.test(heads) && /Common mistakes/.test(heads), s.title);
   });
+});
+
+// ---------------------------------------------------------------- Audit: data safety
+console.log('Data safety (audit)');
+function hasDate(v) {
+  if (v instanceof Date || Object.prototype.toString.call(v) === '[object Date]') return true;
+  if (v && typeof v === 'object') return Object.keys(v).some(k => hasDate(v[k]));
+  return false;
+}
+test('a row with a mistake is shown in the app and survives saving', () => {
+  const p = load();
+  p.apiGetAll();
+  const tasks = plain(p.readActivities_()).concat([{ id: 'B', name: 'Duplicate ID', duration: 3, predecessors: '' }]);
+  p.apiSaveActivities(tasks);
+  const all = plain(p.apiGetAll());
+  assert.ok(all.activities.errors.some(e => /more than once/.test(e)));
+  assert.ok(all.activities.input.some(t => t.name === 'Duplicate ID'), 'app does not get the faulty row');
+  p.apiSaveActivities(all.activities.input); // what the app sends back
+  assert.ok(plain(p.readActivities_()).some(t => t.name === 'Duplicate ID'), 'faulty row was deleted');
+});
+test('IDs like 1.1 and lists like 4, 7 stay text (not dates or numbers)', () => {
+  const p = load();
+  p.apiGetAll();
+  p.apiSaveTree([{ id: '1', parent: '', text: 'Goal' }, { id: '1.1', parent: '1', text: 'Part' }, { id: '1.2', parent: '1', text: 'Part 2' }]);
+  const tree = plain(p.apiGetAll()).tree;
+  assert.deepStrictEqual(tree.errors, []);
+  assert.deepStrictEqual(tree.nodes.map(n => n.id), ['1', '1.1', '1.2']);
+  p.apiSaveRelations([{ id: '1', idea: 'a', causes: '2, 3' }, { id: '2', idea: 'b' }, { id: '3', idea: 'c' }]);
+  assert.strictEqual(plain(p.readRelations_())[0].causes, '2, 3');
+});
+test('text starting with = + - is stored as text, not as a formula', () => {
+  const p = load();
+  p.apiGetAll();
+  p.apiSaveAffinity([{ idea: '=more training', category: '' }, { idea: '- fewer changeovers', category: '+Quick wins' }]);
+  assert.deepStrictEqual(p.fake.formulasWritten, []);
+  const ideas = plain(p.readAffinity_());
+  assert.deepStrictEqual(ideas.map(i => i.idea), ['=more training', '- fewer changeovers']);
+  assert.strictEqual(ideas[1].category, '+Quick wins');
+});
+test('a date typed into a tab does not break the app', () => {
+  const p = load();
+  p.apiGetAll();
+  const sheet = p.fake.ss.getSheetByName('Affinity Diagram');
+  sheet.getRange(2, 1).setValue('3.4'); // becomes a date in German-language Sheets
+  const pd = p.fake.ss.getSheetByName('Prioritization Matrix');
+  pd.getRange(3, 2).setValue('1.5');
+  const all = p.apiGetAll();
+  assert.ok(!hasDate(all), 'a Date object would make the app fail to load');
+  assert.strictEqual(plain(all).affinity.input[0].idea, '3.4.');
+});
+test('prioritization keeps what was typed when a score is not a number', () => {
+  const p = load();
+  const all = plain(p.apiGetAll()).prioritization.input;
+  all.options[0].scores[0] = 'high';
+  const r = plain(p.apiSavePrioritization(all));
+  assert.ok(r.errors.length);
+  assert.strictEqual(plain(p.readPrioritization_()).options[0].scores[0], 'high');
+});
+test('matrix keeps an unknown symbol as typed instead of erasing it', () => {
+  const p = load();
+  const mx = plain(p.apiGetAll()).matrix.input;
+  mx.cells[0][0] = '?';
+  const r = plain(p.apiSaveMatrix(mx));
+  assert.ok(r.errors.length);
+  assert.strictEqual(plain(p.readMatrix_()).cells[0][0], '?');
+});
+test('a copied spreadsheet does not use the original project\'s form', () => {
+  const p = load();
+  p.apiGetAll();
+  p.apiCreateForm('Q?');
+  assert.ok(plain(p.apiGetAll()).form);
+  p.fake.ss.id = 'a-copy'; // File → Make a copy keeps the stored properties
+  assert.strictEqual(plain(p.apiGetAll()).form, null);
+  assert.match(plain(p.apiImportFormIdeas()).message, /Create a brainstorm form first/);
+});
+test('a deleted form gives a clear message', () => {
+  const p = load();
+  p.apiGetAll();
+  p.apiCreateForm('Q?');
+  Object.keys(p.fake.forms).forEach(k => delete p.fake.forms[k]);
+  assert.match(plain(p.apiImportFormIdeas()).message, /deleted/);
+  assert.strictEqual(plain(p.apiGetAll()).form, null);
+});
+test('first setup removes the empty starter tab in any language, never a tab with content', () => {
+  const p = load();
+  p.fake.ss.insertSheet('Meine Notizen').getRange(1, 1).setValue('keep me');
+  p.apiGetAll();
+  const names = p.fake.ss.getSheets().map(s => s.getName());
+  assert.ok(!names.includes('Tabellenblatt1'), names.join());
+  assert.ok(names.includes('Meine Notizen'));
+  p.fake.ss.insertSheet('Leer'); // empty tab added later by the user
+  p.setupSheets();
+  assert.ok(p.fake.ss.getSheetByName('Leer'), 'later setups must not delete user tabs');
+});
+test('the Guide can be rewritten repeatedly (update)', () => {
+  const p = load();
+  p.apiGetAll();
+  p.writeGuide_();
+  p.writeGuide_();
+  const col = p.fake.ss.getSheetByName('Guide').getDataRange().getValues().map(r => r[0]);
+  assert.strictEqual(col.filter(t => t === 'Glossary').length, 1);
+});
+test('Activity Network header shows the time unit from Settings', () => {
+  const p = load();
+  p.apiGetAll();
+  const s = p.fake.ss.getSheetByName('Settings');
+  s.getRange(s.getDataRange().getValues().findIndex(r => r[0] === 'Time unit') + 1, 2).setValue('weeks');
+  p.menuRecalculate();
+  assert.strictEqual(p.fake.ss.getSheetByName('Activity Network').getRange(1, 3).getValues()[0][0], 'Duration (weeks)');
+  assert.strictEqual(plain(p.apiGetAll()).activities.duration, 73);
 });
 
 // ---------------------------------------------------------------- Chart export

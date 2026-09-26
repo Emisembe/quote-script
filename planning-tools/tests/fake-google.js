@@ -1,14 +1,21 @@
 // In-memory stand-ins for SpreadsheetApp, PropertiesService, FormApp and HtmlService,
 // enough to run PlanningTools.gs in Node (tests) and in a browser (preview).
 function createFakeGoogle() {
-  function toCell(v) {
-    // Like Sheets: numeric text becomes a number.
-    if (typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v)) && /^-?[\d.]+$/.test(v.trim())) return Number(v);
-    return v == null ? '' : v;
+  var formulasWritten = [];
+  /** Like Sheets (German locale): numbers, "1.2" becomes a date, "=x" becomes a formula, unless the cell is plain text. */
+  function toCell(v, isText) {
+    if (typeof v !== 'string') return v == null ? '' : v;
+    if (v.charAt(0) === "'") return v.slice(1);
+    if (isText) return v;
+    if (/^[=+]/.test(v) || (/^-/.test(v) && isNaN(Number(v)))) { formulasWritten.push(v); return '#ERROR!'; }
+    var m = /^(\d{1,2})\.(\d{1,2})\.?$/.exec(v.trim());
+    if (m && +m[2] >= 1 && +m[2] <= 12) return new Date(2026, +m[2] - 1, +m[1]);
+    if (v.trim() !== '' && !isNaN(Number(v)) && /^-?[\d.]+$/.test(v.trim())) return Number(v);
+    return v;
   }
 
   function Sheet(ss, name) {
-    this.ss = ss; this.name = name; this.data = []; this.bg = {};
+    this.ss = ss; this.name = name; this.data = []; this.bg = {}; this.fmt = {};
   }
   Sheet.prototype = {
     getName: function () { return this.name; },
@@ -26,7 +33,7 @@ function createFakeGoogle() {
     },
     getRange: function (r, c, nr, nc) { return new Range(this, r, c, nr || 1, nc || 1); },
     getDataRange: function () { return new Range(this, 1, 1, Math.max(this.getLastRow(), 1), Math.max(this.getLastColumn(), 1)); },
-    clear: function () { this.data = []; this.bg = {}; return this; },
+    clear: function () { this.data = []; this.bg = {}; this.fmt = {}; return this; },
     getMaxRows: function () { return Math.max(this.data.length, 1000); },
     setFrozenRows: function () { return this; },
     setFrozenColumns: function () { return this; },
@@ -37,7 +44,7 @@ function createFakeGoogle() {
 
   function Range(sheet, r, c, nr, nc) { this.s = sheet; this.r = r; this.c = c; this.nr = nr; this.nc = nc; }
   var chain = ['setFontWeight', 'setFontStyle', 'setFontSize', 'setHorizontalAlignment', 'setVerticalAlignment',
-    'setWrap', 'merge', 'setDataValidation'];
+    'setWrap', 'merge', 'breakApart', 'setDataValidation', 'setFontWeights', 'setFontSizes'];
   chain.forEach(function (m) { Range.prototype[m] = function () { return this; }; });
   Range.prototype.setValues = function (values) {
     if (values.length !== this.nr || values.some(function (row) { return row.length !== this.nc; }, this)) {
@@ -45,11 +52,23 @@ function createFakeGoogle() {
     }
     for (var i = 0; i < this.nr; i++) {
       var row = this.s.data[this.r - 1 + i] = this.s.data[this.r - 1 + i] || [];
-      for (var j = 0; j < this.nc; j++) row[this.c - 1 + j] = toCell(values[i][j]);
+      for (var j = 0; j < this.nc; j++) row[this.c - 1 + j] = toCell(values[i][j], this.s.fmt[(this.r + i) + ':' + (this.c + j)] === '@');
     }
     return this;
   };
   Range.prototype.setValue = function (v) { return this.setValues([[v]]); };
+  Range.prototype.getDisplayValues = function () {
+    return this.getValues().map(function (row) {
+      return row.map(function (v) {
+        if (v instanceof Date) return (v.getDate() + '.' + (v.getMonth() + 1) + '.');
+        return String(v);
+      });
+    });
+  };
+  Range.prototype.setNumberFormat = function (f) {
+    for (var i = 0; i < this.nr; i++) for (var j = 0; j < this.nc; j++) this.s.fmt[(this.r + i) + ':' + (this.c + j)] = f;
+    return this;
+  };
   Range.prototype.clear = function () {
     for (var i = 0; i < this.nr; i++) {
       var row = this.s.data[this.r - 1 + i];
@@ -81,7 +100,8 @@ function createFakeGoogle() {
   };
 
   var ss = {
-    sheets: [], active: null,
+    sheets: [], active: null, id: 'sheet-' + Math.random().toString(36).slice(2),
+    getId: function () { return this.id; },
     getName: function () { return 'Test project'; },
     getSheets: function () { return this.sheets.slice(); },
     getSheetByName: function (n) { return this.sheets.filter(function (s) { return s.name === n; })[0] || null; },
@@ -95,7 +115,7 @@ function createFakeGoogle() {
       this.sheets.splice(pos - 1, 0, this.active);
     }
   };
-  ss.insertSheet('Sheet1');
+  ss.insertSheet('Tabellenblatt1'); // a German-language new spreadsheet
 
   var alerts = [];
   var menus = [];
@@ -149,7 +169,13 @@ function createFakeGoogle() {
 
   return {
     ss: ss, alerts: alerts, menus: menus, forms: forms, props: props, driveFiles: driveFiles, folders: folders,
+    formulasWritten: formulasWritten,
     globals: {
+      LockService: {
+        getDocumentLock: function () {
+          return { waitLock: function () {}, releaseLock: function () {} };
+        }
+      },
       DriveApp: {
         getFoldersByName: function (n) { return iter(folders.filter(function (f) { return f.name === n; })); },
         createFolder: function (n) { var f = new Folder(n); folders.push(f); return f; }
@@ -160,6 +186,7 @@ function createFakeGoogle() {
       },
       SpreadsheetApp: {
         getActiveSpreadsheet: function () { return ss; },
+        flush: function () {},
         getUi: function () {
           return {
             createMenu: function (t) { return new Menu(t); },

@@ -13,8 +13,15 @@ const stub = `<script>
     var fake = createFakeGoogle();
     var SpreadsheetApp = fake.globals.SpreadsheetApp, PropertiesService = fake.globals.PropertiesService,
         FormApp = fake.globals.FormApp, HtmlService = fake.globals.HtmlService,
-        DriveApp = fake.globals.DriveApp, Utilities = fake.globals.Utilities;
+        DriveApp = fake.globals.DriveApp, Utilities = fake.globals.Utilities, LockService = fake.globals.LockService;
     ${code.replace(/<\/script>/g, '<\\/script>')}
+    // preview.html#empty starts a project with "Example data in new tabs" = No.
+    if (location.hash === '#empty') {
+      writeSettings_();
+      var st = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Settings');
+      var labels = st.getDataRange().getValues().map(function (r) { return r[0]; });
+      st.getRange(labels.indexOf('Example data in new tabs') + 1, 2).setValue('No');
+    }
     var api = {};
     Object.keys(this || {}).length; // keep strict-mode linters quiet
     ['apiGetAll', 'apiSaveAffinity', 'apiSaveRelations', 'apiSaveMatrix', 'apiSavePrioritization', 'apiSaveTree',
@@ -39,5 +46,5 @@ const stub = `<script>
   window.google = { script: { run: runner() } };
 </script>`;
 
-fs.writeFileSync(path.join(__dirname, 'preview.html'), buildHtml().replace('</head>', stub + '\n</head>'));
+fs.writeFileSync(path.join(__dirname, 'preview.html'), buildHtml().replace('<head>', '<head>\n<meta charset="utf-8">').replace('</head>', stub + '\n</head>'));
 console.log('wrote tests/preview.html');

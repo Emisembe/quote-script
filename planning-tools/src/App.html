@@ -44,6 +44,8 @@
     return Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
   }
 
+  function str(v) { return v == null ? '' : String(v); }
+
   function clip(s, n) {
     s = String(s || '');
     return s.length > n ? s.slice(0, n - 1) + '…' : s;
@@ -272,7 +274,9 @@
 
   function affLoad(result) {
     aff.result = result;
-    aff.ideas = result.ideas.map(function (i) { return { idea: i.idea, category: i.category, source: i.source }; });
+    aff.ideas = (result.input || result.ideas).map(function (i) {
+      return { idea: str(i.idea), category: str(i.category), source: str(i.source) };
+    }).filter(function (i) { return i.idea.trim(); });
     affRender();
   }
 
@@ -381,7 +385,9 @@
 
   function relLoad(result) {
     rel.result = result;
-    rel.rows = result.items.map(function (i) { return { id: i.id, idea: i.idea, causes: i.causes.join(', ') }; });
+    rel.rows = result.input
+      ? result.input.map(function (r) { return { id: str(r.id), idea: str(r.idea), causes: str(r.causes) }; })
+      : result.items.map(function (i) { return { id: i.id, idea: i.idea, causes: i.causes.join(', ') }; });
     relRender();
   }
 
@@ -393,7 +399,7 @@
 
   function mxRender() {
     var r = ok(mx.result) ? mx.result : null;
-    var opts = [{ symbol: '', label: 'None' }].concat(mx.symbols);
+    var known = [{ symbol: '', label: 'None' }].concat(mx.symbols);
     var head = '<tr><th></th>' + mx.columns.map(function (c, j) {
       return '<th><div class="with-x"><input class="colname" data-col="' + j + '" value="' + esc(c) + '" placeholder="Column">' +
         '<button class="icon" title="Remove column" data-del-col="' + j + '">×</button></div></th>';
@@ -404,6 +410,7 @@
         mx.columns.map(function (c, j) {
           var v = mx.cells[i][j] || '';
           var neg = mx.symbols.some(function (s) { return s.symbol === v && s.value < 0; });
+          var opts = known.some(function (s) { return s.symbol === v; }) ? known : known.concat([{ symbol: v }]);
           return '<td class="cell' + (neg ? ' conflict' : '') + '"><select data-r="' + i + '" data-c="' + j + '" aria-label="' + esc(row + ' / ' + c) + '">' +
             opts.map(function (s) {
               return '<option value="' + esc(s.symbol) + '"' + (s.symbol === v ? ' selected' : '') + '>' + (s.symbol || '·') + '</option>';
@@ -478,9 +485,16 @@
   function mxLoad(result) {
     mx.result = result;
     mx.symbols = result.symbols;
-    mx.rows = result.rows.slice();
-    mx.columns = result.columns.slice();
-    mx.cells = result.cells.map(function (l) { return l.slice(); });
+    var input = result.input || result;
+    mx.rows = (input.rows || []).map(str);
+    mx.columns = (input.columns || []).map(str);
+    // Known symbols (also typed as S, M, W, X) are shown as symbols; anything else is kept as typed.
+    mx.cells = mx.rows.map(function (r, i) {
+      return mx.columns.map(function (c, j) {
+        var raw = str(input.cells && input.cells[i] ? input.cells[i][j] : '');
+        return (result.cells[i] && result.cells[i][j]) || raw.trim();
+      });
+    });
     mxRender();
   }
 
@@ -570,8 +584,11 @@
   });
 
   function pmLoad(result) {
-    pm.criteria = result.criteria.map(function (c) { return { name: c.name, weight: c.weight }; });
-    pm.options = result.options.map(function (o) { return { name: o.name, scores: o.scores.slice() }; });
+    var input = result.input || result;
+    pm.criteria = (input.criteria || []).map(function (c) { return { name: str(c.name), weight: str(c.weight) }; });
+    pm.options = (input.options || []).map(function (o) {
+      return { name: str(o.name), scores: pm.criteria.map(function (c, j) { return str(o.scores ? o.scores[j] : ''); }) };
+    });
     pm.result = result;
     pmRender();
   }
@@ -662,7 +679,7 @@
 
   function treeLoad(result) {
     tree.result = result;
-    tree.rows = result.nodes.map(function (n) { return { id: n.id, parent: n.parent, text: n.text }; });
+    tree.rows = (result.input || result.nodes).map(function (n) { return { id: str(n.id), parent: str(n.parent), text: str(n.text) }; });
     treeRender();
   }
 
@@ -738,8 +755,8 @@
 
   function pdpcLoad(result) {
     pdpc.result = result;
-    pdpc.rows = result.nodes.map(function (n) {
-      return { id: n.id, parent: n.parent, text: n.text, risks: n.risks || '', countermeasures: n.countermeasures || '' };
+    pdpc.rows = (result.input || result.nodes).map(function (n) {
+      return { id: str(n.id), parent: str(n.parent), text: str(n.text), risks: str(n.risks), countermeasures: str(n.countermeasures) };
     });
     pdpcRender();
   }
@@ -850,9 +867,9 @@
 
   function anLoad(result) {
     an.result = result;
-    an.rows = result.tasks.map(function (t) {
-      return { id: t.id, name: t.name, duration: t.duration, predecessors: t.predecessors.join(', ') };
-    });
+    an.rows = result.input
+      ? result.input.map(function (t) { return { id: str(t.id), name: str(t.name), duration: str(t.duration), predecessors: str(t.predecessors) }; })
+      : result.tasks.map(function (t) { return { id: t.id, name: t.name, duration: t.duration, predecessors: t.predecessors.join(', ') }; });
     anRender();
   }
 

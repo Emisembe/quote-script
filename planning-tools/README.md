@@ -43,6 +43,13 @@ setting values, your own tabs, and notes kept to the right of a tool's columns (
 column) are left alone. Running it twice changes nothing. If the code was pasted into a second
 file by mistake, you get a warning and nothing is changed.
 
+### Safe with your data
+
+- Rows with a mistake are kept and flagged, never dropped.
+- IDs like `1.1` stay text (no automatic dates); text starting with `=`, `+`, `-` stays text.
+- Saves are locked so two people saving at once do not overwrite each other half-way.
+- A copied spreadsheet does not reuse the original project's brainstorm form.
+
 ### Charts
 
 Every diagram has **Download PNG**, **Download SVG** and **Save to Drive** (folder

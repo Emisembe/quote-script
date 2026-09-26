@@ -6,7 +6,7 @@
  */
 
 /** Bump this when publishing a new version, so "Update" can tell what changed. */
-var PT_VERSION = '1.3.0';
+var PT_VERSION = '1.4.0';
 
 /**
  * Counts how many copies of this code are in the project. Apps Script runs every file,
@@ -43,6 +43,7 @@ var MATRIX_TOTAL = 'Total';
 var FILL = { header: '#e8eef7', critical: '#fde2e1', win: '#e3f4e8', driver: '#fff1d6', none: null };
 var FORM_ID_KEY = 'brainstormFormId';
 var FORM_IMPORTED_KEY = 'brainstormImportedUntil';
+var FORM_SHEET_KEY = 'brainstormSpreadsheetId';
 
 // ---------------------------------------------------------------- menu & web app
 
@@ -119,6 +120,7 @@ function updateProject_() {
     .filter(function (name) { return !before[name]; });
   var problems = recalculateAll_();
   props.setProperty(VERSION_KEY, PT_VERSION);
+  SpreadsheetApp.flush();
 
   var lines = [from && from !== PT_VERSION
     ? 'Updated from version ' + from + ' to ' + PT_VERSION + '.'
@@ -216,18 +218,20 @@ function menuRecalculate() {
 
 /** Re-reads every tool tab and writes it back with fresh results. Returns problems found. */
 function recalculateAll_() {
-  var problems = [];
-  function check(name, result) {
-    if (result.errors.length) problems.push(name + ':\n  ' + result.errors.join('\n  '));
-  }
-  check(SHEETS.AFFINITY, apiSaveAffinity(readAffinity_()));
-  check(SHEETS.RELATIONS, apiSaveRelations(readRelations_()));
-  check(SHEETS.MATRIX, apiSaveMatrix(readMatrix_()));
-  check(SHEETS.PRIORITIZATION, apiSavePrioritization(readPrioritization_()));
-  check(SHEETS.TREE, apiSaveTree(readTree_()));
-  check(SHEETS.PDPC, apiSavePdpc(readPdpc_()));
-  check(SHEETS.ACTIVITIES, apiSaveActivities(readActivities_()));
-  return problems;
+  return withLock_(function () {
+    var problems = [];
+    function check(name, result) {
+      if (result.errors.length) problems.push(name + ':\n  ' + result.errors.join('\n  '));
+    }
+    check(SHEETS.AFFINITY, saveAffinity_(readAffinity_()));
+    check(SHEETS.RELATIONS, saveRelations_(readRelations_()));
+    check(SHEETS.MATRIX, saveMatrix_(readMatrix_()));
+    check(SHEETS.PRIORITIZATION, savePrioritization_(readPrioritization_()));
+    check(SHEETS.TREE, saveTree_(readTree_()));
+    check(SHEETS.PDPC, savePdpc_(readPdpc_()));
+    check(SHEETS.ACTIVITIES, saveActivities_(readActivities_()));
+    return problems;
+  });
 }
 
 // ---------------------------------------------------------------- API used by the web app
@@ -235,30 +239,63 @@ function recalculateAll_() {
 /** Everything the app needs, in one round trip. */
 function apiGetAll() {
   ensureSetup_();
-  var p = readPrioritization_();
+  var aff = readAffinity_(), rel = readRelations_(), mx = readMatrix_(), p = readPrioritization_();
+  var tree = readTree_(), pdpc = readPdpc_(), an = readActivities_();
   return {
-    affinity: groupAffinity(readAffinity_()),
-    relations: analyzeInterrelationships(readRelations_()),
-    matrix: analyzeMatrix(readMatrix_()),
-    prioritization: scorePrioritization(p.criteria, p.options),
-    tree: buildTree(readTree_()),
-    pdpc: analyzePdpc(readPdpc_()),
-    activities: computeCriticalPath(readActivities_()),
+    affinity: withInput_(groupAffinity(aff), aff),
+    relations: withInput_(analyzeInterrelationships(rel), rel),
+    matrix: withInput_(analyzeMatrix(mx), mx),
+    prioritization: withInput_(scorePrioritization(p.criteria, p.options), p),
+    tree: withInput_(buildTree(tree), tree),
+    pdpc: withInput_(analyzePdpc(pdpc), pdpc),
+    activities: withInput_(computeCriticalPath(an), an),
     form: formInfo_(),
     settings: readSettings_(),
     guide: GUIDE
   };
 }
 
+/**
+ * Runs a change while holding the document lock, so two people saving at the same
+ * moment cannot overwrite each other half-way.
+ */
+function withLock_(fn) {
+  var lock = LockService.getDocumentLock();
+  lock.waitLock(30000);
+  try {
+    return fn();
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/**
+ * Adds the rows exactly as they are in the tab (or as the app sent them) to a result.
+ * The app edits these, not the cleaned-up result, so a row with a mistake is shown
+ * (and can be fixed) instead of silently disappearing on the next save.
+ */
+function withInput_(result, input) {
+  result.input = input;
+  return result;
+}
+
 function apiSaveAffinity(ideas) {
+  return withLock_(function () { return saveAffinity_(ideas); });
+}
+
+function saveAffinity_(ideas) {
   var result = groupAffinity(ideas);
   writeTable_(SHEETS.AFFINITY, HEADERS.AFFINITY, result.ideas.map(function (i) {
     return [i.idea, i.category, i.source];
   }));
-  return result;
+  return withInput_(result, ideas);
 }
 
 function apiSaveRelations(rows) {
+  return withLock_(function () { return saveRelations_(rows); });
+}
+
+function saveRelations_(rows) {
   var result = analyzeInterrelationships(rows);
   var byId = {};
   result.items.forEach(function (i) { byId[i.id] = i; });
@@ -270,34 +307,50 @@ function apiSaveRelations(rows) {
     return [cleanText(r.id).toUpperCase(), r.idea, parseIdList(r.causes).join(', ')]
       .concat(ok && i ? [i.out, i['in'], i.role] : ['', '', '']);
   });
-  writeTable_(SHEETS.RELATIONS, HEADERS.RELATIONS, values, fills);
-  return result;
+  writeTable_(SHEETS.RELATIONS, HEADERS.RELATIONS, values, fills, [1, 3]);
+  return withInput_(result, rows);
 }
 
 function apiSaveMatrix(data) {
+  return withLock_(function () { return saveMatrix_(data); });
+}
+
+function saveMatrix_(data) {
   var result = analyzeMatrix(data);
   writeMatrix_(data, result);
-  return result;
+  return withInput_(result, data);
 }
 
 function apiSavePrioritization(data) {
+  return withLock_(function () { return savePrioritization_(data); });
+}
+
+function savePrioritization_(data) {
   var result = scorePrioritization(data.criteria, data.options);
-  writePrioritization_(result, !result.errors.length);
-  return result;
+  writePrioritization_(data, result);
+  return withInput_(result, data);
 }
 
 function apiSaveTree(rows) {
+  return withLock_(function () { return saveTree_(rows); });
+}
+
+function saveTree_(rows) {
   var result = buildTree(rows);
   var depth = {};
   if (!result.errors.length) result.nodes.forEach(function (n) { depth[n.id] = n.depth + 1; });
   writeTable_(SHEETS.TREE, HEADERS.TREE, rows.filter(hasContent_).map(function (r) {
     var id = cleanText(r.id).toUpperCase();
     return [id, cleanText(r.parent).toUpperCase(), r.text, depth[id] || ''];
-  }));
-  return result;
+  }), null, [1, 2]);
+  return withInput_(result, rows);
 }
 
 function apiSavePdpc(rows) {
+  return withLock_(function () { return savePdpc_(rows); });
+}
+
+function savePdpc_(rows) {
   var result = analyzePdpc(rows);
   var open = {};
   result.openRisks.forEach(function (o) { open[o.id] = (open[o.id] || 0) + 1; });
@@ -307,11 +360,15 @@ function apiSavePdpc(rows) {
     fills.push(open[id] ? FILL.critical : FILL.none);
     return [id, cleanText(r.parent).toUpperCase(), r.text, r.risks, r.countermeasures, open[id] || ''];
   });
-  writeTable_(SHEETS.PDPC, HEADERS.PDPC, values, fills);
-  return result;
+  writeTable_(SHEETS.PDPC, HEADERS.PDPC, values, fills, [1, 2]);
+  return withInput_(result, rows);
 }
 
 function apiSaveActivities(tasks) {
+  return withLock_(function () { return saveActivities_(tasks); });
+}
+
+function saveActivities_(tasks) {
   var result = computeCriticalPath(tasks);
   var computed = {};
   if (!result.errors.length) result.tasks.forEach(function (t) { computed[t.id] = t; });
@@ -322,8 +379,10 @@ function apiSaveActivities(tasks) {
     return [normalizeTaskId(t.id), t.name, t.duration, parsePredecessors(t.predecessors).join(', ')]
       .concat(c ? [c.es, c.ef, c.ls, c.lf, c.slack, c.critical ? 'YES' : ''] : ['', '', '', '', '', '']);
   });
-  writeTable_(SHEETS.ACTIVITIES, HEADERS.ACTIVITIES, values, fills);
-  return result;
+  var header = HEADERS.ACTIVITIES.slice();
+  header[2] = 'Duration (' + readSettings_().timeUnit + ')';
+  writeTable_(SHEETS.ACTIVITIES, header, values, fills, [1, 4]);
+  return withInput_(result, tasks);
 }
 
 // ---------------------------------------------------------------- chart export
@@ -354,21 +413,32 @@ function apiCreateForm(question) {
     .setConfirmationMessage('Thanks! Your idea was added.');
   form.addParagraphTextItem().setTitle('Your idea').setHelpText('One idea per answer. Submit the form again for more ideas.').setRequired(true);
   form.addTextItem().setTitle('Your name (optional)');
-  PropertiesService.getDocumentProperties().setProperties({
-    brainstormFormId: form.getId(),
-    brainstormImportedUntil: String(Date.now())
-  });
+  var props = {};
+  props[FORM_ID_KEY] = form.getId();
+  props[FORM_IMPORTED_KEY] = String(Date.now());
+  props[FORM_SHEET_KEY] = ss.getId();
+  PropertiesService.getDocumentProperties().setProperties(props);
   return formInfo_();
 }
 
 /** Copies form answers submitted since the last import into the Affinity tab as unsorted ideas. */
 function apiImportFormIdeas() {
+  return withLock_(importFormIdeas_);
+}
+
+function importFormIdeas_() {
   var props = PropertiesService.getDocumentProperties();
-  var id = props.getProperty(FORM_ID_KEY);
+  var id = formId_();
   if (!id) return { imported: 0, message: 'Create a brainstorm form first.', affinity: null };
 
+  var form;
+  try {
+    form = FormApp.openById(id);
+  } catch (e) {
+    return { imported: 0, message: 'The brainstorm form was deleted or you have no access to it. Create a new one.', affinity: null };
+  }
   var since = new Date(Number(props.getProperty(FORM_IMPORTED_KEY) || 0));
-  var responses = FormApp.openById(id).getResponses(since);
+  var responses = form.getResponses(since);
   var ideas = readAffinity_();
   var newest = since.getTime();
   var added = 0;
@@ -383,7 +453,7 @@ function apiImportFormIdeas() {
     added += 1;
   });
   props.setProperty(FORM_IMPORTED_KEY, String(newest));
-  var affinity = apiSaveAffinity(ideas);
+  var affinity = saveAffinity_(ideas);
   return {
     imported: added,
     message: added ? added + ' new idea' + (added === 1 ? '' : 's') + ' added to the Affinity Diagram.' : 'No new ideas yet.',
@@ -391,8 +461,20 @@ function apiImportFormIdeas() {
   };
 }
 
+/**
+ * The brainstorm form of THIS spreadsheet. A copy made with File → Make a copy keeps the
+ * stored form id, so the spreadsheet id is checked too; a copy starts without a form.
+ */
+function formId_() {
+  var props = PropertiesService.getDocumentProperties();
+  var id = props.getProperty(FORM_ID_KEY);
+  var owner = props.getProperty(FORM_SHEET_KEY);
+  if (!id || (owner && owner !== SpreadsheetApp.getActiveSpreadsheet().getId())) return null;
+  return id;
+}
+
 function formInfo_() {
-  var id = PropertiesService.getDocumentProperties().getProperty(FORM_ID_KEY);
+  var id = formId_();
   if (!id) return null;
   try {
     var form = FormApp.openById(id);
@@ -418,10 +500,11 @@ function setupSheets() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var has = function (name) { return !!ss.getSheetByName(name); };
 
+  var props = PropertiesService.getDocumentProperties();
+  var firstRun = !props.getProperty(VERSION_KEY);
   writeGuide_();
   if (!has(SHEETS.SETTINGS)) writeSettings_();
-  var props = PropertiesService.getDocumentProperties();
-  if (!props.getProperty(VERSION_KEY)) props.setProperty(VERSION_KEY, PT_VERSION);
+  if (firstRun) props.setProperty(VERSION_KEY, PT_VERSION);
 
   var examples = readSettings_().includeExamples;
   var rows = function (keys, list) {
@@ -432,7 +515,7 @@ function setupSheets() {
     });
   };
 
-  if (!has(SHEETS.AFFINITY)) apiSaveAffinity(rows(['idea', 'category', 'source'], [
+  if (!has(SHEETS.AFFINITY)) saveAffinity_(rows(['idea', 'category', 'source'], [
     ['Machines break down during shifts', 'Maintenance', 'Example'],
     ['Preventive maintenance is often skipped', 'Maintenance', 'Example'],
     ['Spare parts are not in stock', 'Maintenance', 'Example'],
@@ -446,7 +529,7 @@ function setupSheets() {
     ['Changeovers take over an hour', '', 'Example']
   ]));
 
-  if (!has(SHEETS.RELATIONS)) apiSaveRelations(rows(['id', 'idea', 'causes'], [
+  if (!has(SHEETS.RELATIONS)) saveRelations_(rows(['id', 'idea', 'causes'], [
     ['1', 'Preventive maintenance skipped', '2'],
     ['2', 'Machines break down', '4, 7'],
     ['3', 'No standard work instructions', '1, 5, 6'],
@@ -456,7 +539,7 @@ function setupSheets() {
     ['7', 'Production targets missed', '']
   ]));
 
-  if (!has(SHEETS.MATRIX)) apiSaveMatrix(!examples ? { rows: [], columns: [], cells: [] } : {
+  if (!has(SHEETS.MATRIX)) saveMatrix_(!examples ? { rows: [], columns: [], cells: [] } : {
     rows: ['Easy to carry', 'Long battery life', 'Low price', 'Durable'],
     columns: ['Weight', 'Battery capacity', 'Housing material', 'Part count'],
     cells: [
@@ -467,7 +550,7 @@ function setupSheets() {
     ]
   });
 
-  if (!has(SHEETS.PRIORITIZATION)) apiSavePrioritization(!examples ? { criteria: [], options: [] } : {
+  if (!has(SHEETS.PRIORITIZATION)) savePrioritization_(!examples ? { criteria: [], options: [] } : {
     criteria: [{ name: 'Quality', weight: 150 }, { name: 'Cost', weight: 100 }, { name: 'Service', weight: 80 }],
     options: [
       { name: 'Vendor A', scores: [4, 2, 3] },
@@ -489,7 +572,7 @@ function setupSheets() {
     ['9', '4', 'Build website'],
     ['10', '4', 'Social media plan']
   ];
-  if (!has(SHEETS.TREE)) apiSaveTree(rows(['id', 'parent', 'text'], treeRows));
+  if (!has(SHEETS.TREE)) saveTree_(rows(['id', 'parent', 'text'], treeRows));
 
   if (!has(SHEETS.PDPC)) {
     var risks = {
@@ -498,12 +581,12 @@ function setupSheets() {
       8: ['Trainer not available', ''],
       9: ['Website not ready for launch', 'Start from a ready-made template']
     };
-    apiSavePdpc(rows(['id', 'parent', 'text', 'risks', 'countermeasures'], treeRows.map(function (r) {
+    savePdpc_(rows(['id', 'parent', 'text', 'risks', 'countermeasures'], treeRows.map(function (r) {
       return r.concat(risks[r[0]] || ['', '']);
     })));
   }
 
-  if (!has(SHEETS.ACTIVITIES)) apiSaveActivities(rows(['id', 'name', 'duration', 'predecessors'], [
+  if (!has(SHEETS.ACTIVITIES)) saveActivities_(rows(['id', 'name', 'duration', 'predecessors'], [
     ['A', 'Define scope', 5, ''],
     ['B', 'Design solution', 10, 'A'],
     ['C', 'Order materials', 8, 'A'],
@@ -517,15 +600,27 @@ function setupSheets() {
     ['K', 'Go live', 8, 'H, I, J']
   ]));
 
-  // Keep tabs in workflow order: Guide, Settings, then the tools.
-  Object.keys(SHEETS).forEach(function (k, i) {
-    ss.setActiveSheet(ss.getSheetByName(SHEETS[k]));
-    ss.moveActiveSheet(i + 1);
-  });
-  ss.setActiveSheet(ss.getSheetByName(SHEETS.GUIDE));
+  // Keep tabs in workflow order: Guide, Settings, then the tools. (Not possible from the
+  // web app, where there is no open spreadsheet window; the order is then left as it is.)
+  try {
+    Object.keys(SHEETS).forEach(function (k, i) {
+      ss.setActiveSheet(ss.getSheetByName(SHEETS[k]));
+      ss.moveActiveSheet(i + 1);
+    });
+    ss.setActiveSheet(ss.getSheetByName(SHEETS.GUIDE));
+  } catch (e) { /* no UI */ }
 
-  var blank = ss.getSheetByName('Sheet1');
-  if (blank && ss.getSheets().length > Object.keys(SHEETS).length && blank.getLastRow() === 0) ss.deleteSheet(blank);
+  // A brand-new spreadsheet starts with one empty tab ("Sheet1", "Tabellenblatt1", "Feuille 1"…
+  // depending on language). Remove it on the very first setup only, and only if it is empty.
+  if (firstRun) {
+    var ours = {};
+    Object.keys(SHEETS).forEach(function (k) { ours[SHEETS[k]] = true; });
+    ss.getSheets().forEach(function (sh) {
+      if (!ours[sh.getName()] && sh.getLastRow() === 0 && sh.getLastColumn() === 0 && ss.getSheets().length > 1) {
+        ss.deleteSheet(sh);
+      }
+    });
+  }
 }
 
 // ---------------------------------------------------------------- Settings tab
@@ -549,7 +644,7 @@ function readSettings_() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEETS.SETTINGS);
   if (sheet && sheet.getLastRow() > 1) {
     var byLabel = {};
-    sheet.getRange(2, 1, sheet.getLastRow() - 1, 2).getValues().forEach(function (r) {
+    cellValues_(sheet.getRange(2, 1, sheet.getLastRow() - 1, 2)).forEach(function (r) {
       byLabel[cleanText(r[0])] = r[1];
     });
     SETTINGS.forEach(function (s) {
@@ -595,6 +690,7 @@ function writeSettings_() {
 
 function writeGuide_() {
   var sheet = getSheet_(SHEETS.GUIDE);
+  sheet.getRange(1, 1, sheet.getMaxRows(), 2).breakApart();
   sheet.clear();
   var rows = [];
   var styles = [];
@@ -608,14 +704,13 @@ function writeGuide_() {
     rows.push(['', '']);
     styles.push('');
   });
-  sheet.getRange(1, 1, rows.length, 2).setValues(rows).setVerticalAlignment('top').setWrap(true);
-  styles.forEach(function (s, i) {
-    if (s === 'h') {
-      sheet.getRange(i + 1, 1, 1, 2).merge().setFontSize(13).setFontWeight('bold').setBackground(FILL.header);
-    } else if (s === 'p') {
-      sheet.getRange(i + 1, 1).setFontWeight('bold');
-    }
-  });
+  var range = sheet.getRange(1, 1, rows.length, 2);
+  range.setValues(rows.map(function (r) { return r.map(safeCell_); })).setVerticalAlignment('top').setWrap(true);
+  // One call per formatting type (fast), then merge the heading rows.
+  range.setFontWeights(styles.map(function (s) { return [s ? 'bold' : 'normal', 'normal']; }));
+  range.setFontSizes(styles.map(function (s) { return s === 'h' ? [13, 13] : [10, 10]; }));
+  range.setBackgrounds(styles.map(function (s) { return s === 'h' ? [FILL.header, FILL.header] : [null, null]; }));
+  styles.forEach(function (s, i) { if (s === 'h') sheet.getRange(i + 1, 1, 1, 2).merge(); });
   sheet.setColumnWidth(1, 220);
   sheet.setColumnWidth(2, 720);
   sheet.setHiddenGridlines(true);
@@ -650,7 +745,7 @@ function readActivities_() {
  *   Row 3+: option name and its scores
  */
 function readPrioritization_() {
-  var values = getSheet_(SHEETS.PRIORITIZATION).getDataRange().getValues();
+  var values = cellValues_(getSheet_(SHEETS.PRIORITIZATION).getDataRange());
   if (values.length < 2) return { criteria: [], options: [] };
   var header = values[0];
   var end = header.indexOf(PM_RESULT_HEADERS[0]);
@@ -672,7 +767,7 @@ function readPrioritization_() {
  *   Last row: Total (written by the tool)
  */
 function readMatrix_() {
-  var values = getSheet_(SHEETS.MATRIX).getDataRange().getValues();
+  var values = cellValues_(getSheet_(SHEETS.MATRIX).getDataRange());
   if (!values.length) return { rows: [], columns: [], cells: [] };
   var header = values[0];
   var end = header.indexOf(MATRIX_TOTAL);
@@ -693,13 +788,18 @@ function readMatrix_() {
 
 // ---------------------------------------------------------------- writing tabs
 
-function writePrioritization_(result, withResults) {
-  var header = ['Option'].concat(result.criteria.map(function (c) { return c.name; }), PM_RESULT_HEADERS);
-  var weights = [PM_WEIGHT_LABEL].concat(result.criteria.map(function (c) { return c.weight; }), ['', '']);
+/** Writes what the user entered; totals and ranks only when everything is valid. */
+function writePrioritization_(data, result) {
+  var withResults = !result.errors.length;
+  var criteria = data.criteria || [];
+  var header = ['Option'].concat(criteria.map(function (c) { return c.name; }), PM_RESULT_HEADERS);
+  var weights = [PM_WEIGHT_LABEL].concat(criteria.map(function (c) { return c.weight; }), ['', '']);
   var fills = [FILL.none];
-  var rows = result.options.map(function (o) {
-    fills.push(withResults && o.rank === 1 ? FILL.win : FILL.none);
-    return [o.name].concat(o.scores, withResults ? [o.total, o.rank] : ['', '']);
+  var rows = (data.options || []).map(function (o, i) {
+    var scored = result.options[i];
+    fills.push(withResults && scored.rank === 1 ? FILL.win : FILL.none);
+    var scores = criteria.map(function (c, j) { return o.scores ? o.scores[j] : ''; });
+    return [o.name].concat(scores, withResults ? [scored.total, scored.rank] : ['', '']);
   });
   var sheet = writeTable_(SHEETS.PRIORITIZATION, header, [weights].concat(rows), fills);
   sheet.getRange(2, 1, 1, header.length).setFontStyle('italic');
@@ -709,8 +809,8 @@ function writePrioritization_(result, withResults) {
 function writeMatrix_(data, result) {
   var ok = !result.errors.length;
   var cells = ok ? result.cells : (data.cells || []);
-  var header = [MATRIX_CORNER].concat(result.columns, [MATRIX_TOTAL]);
-  var rows = result.rows.map(function (r, i) {
+  var header = [MATRIX_CORNER].concat(data.columns || [], [MATRIX_TOTAL]);
+  var rows = (data.rows || []).map(function (r, i) {
     var line = result.columns.map(function (c, j) { return cells[i] ? cells[i][j] || '' : ''; });
     return [r].concat(line, [ok ? result.rowTotals[i] : '']);
   });
@@ -723,12 +823,17 @@ function writeMatrix_(data, result) {
   sheet.getRange(rows.length + 3, 1).setValue(legend).setFontStyle('italic');
 }
 
-/** Clears the tab and writes a header plus rows; `fills` optionally colours each data row. */
-function writeTable_(name, header, rows, fills) {
+/**
+ * Clears the tool's columns and writes a header plus rows.
+ * fills: optional background colour per data row.
+ * textCols: 1-based columns kept as plain text (IDs and ID lists), so Sheets does not turn
+ * "1.1" into a date or "4, 7" into a number.
+ */
+function writeTable_(name, header, rows, fills, textCols) {
   var sheet = getSheet_(name);
   var width = header.length;
   var all = [header].concat(rows.map(function (r) {
-    var line = r.slice(0, width);
+    var line = r.slice(0, width).map(safeCell_);
     while (line.length < width) line.push('');
     return line;
   }));
@@ -741,6 +846,9 @@ function writeTable_(name, header, rows, fills) {
     while (used < top.length && cleanText(top[used])) used++;
   }
   sheet.getRange(1, 1, sheet.getMaxRows(), Math.max(width, used)).clear();
+  (textCols || []).forEach(function (c) {
+    sheet.getRange(2, c, sheet.getMaxRows() - 1, 1).setNumberFormat('@');
+  });
   sheet.getRange(1, 1, all.length, width).setValues(all);
   sheet.getRange(1, 1, 1, width).setFontWeight('bold').setBackground(FILL.header);
   if (fills && rows.length) {
@@ -754,17 +862,42 @@ function writeTable_(name, header, rows, fills) {
   return sheet;
 }
 
+/**
+ * Cell values with dates turned into the text shown in the cell. (Sheets turns some typed
+ * text into dates, e.g. "1.2" in many countries, and dates cannot be sent to the app.)
+ */
+function cellValues_(range) {
+  var values = range.getValues();
+  var display = null;
+  return values.map(function (row, i) {
+    return row.map(function (v, j) {
+      if (Object.prototype.toString.call(v) !== '[object Date]') return v;
+      display = display || range.getDisplayValues();
+      return display[i][j];
+    });
+  });
+}
+
 function readTable_(name, keys) {
   var sheet = getSheet_(name);
   var last = sheet.getLastRow();
   if (last < 2) return [];
-  return sheet.getRange(2, 1, last - 1, keys.length).getValues()
+  return cellValues_(sheet.getRange(2, 1, last - 1, keys.length))
     .map(function (row) {
       var o = {};
       keys.forEach(function (k, i) { o[k] = row[i]; });
       return o;
     })
     .filter(hasContent_);
+}
+
+/**
+ * Text that starts with = + - or @ would be read by Sheets as a formula ("=more training"
+ * gives an error). A leading apostrophe keeps it as text; Sheets does not show it.
+ */
+function safeCell_(v) {
+  if (typeof v !== 'string' || !/^[=+\-@]/.test(v) || /^[-+]?\d+([.,]\d+)?$/.test(v.trim())) return v;
+  return "'" + v;
 }
 
 function hasContent_(obj) {
