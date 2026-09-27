@@ -23,7 +23,7 @@
     const e = (window.ChartTransitText || {})[`${mover}|${natal}`];
     const slot = aspectKey === 'conjunction' ? 0 : ['trine', 'sextile'].includes(aspectKey) ? 1 : 2;
     if (e && e[slot]) return e[slot] + (L.TRANSIT[mover] ? ' ' + L.TRANSIT[mover].length : '');
-    return L.TRANSIT[mover] ? `A period of ${L.TRANSIT[mover].theme} for your ${P(natal).name.toLowerCase()}. ${L.TRANSIT[mover].length}` : '';
+    return L.TRANSIT[mover] ? `A period of ${L.TRANSIT[mover].theme} for your ${P(natal).name}. ${L.TRANSIT[mover].length}` : '';
   }
   // Sun–Moon blend for the chart on screen.
   const sunMoonText = () => (window.ChartSunMoon || [])[E.signOf(pt('sun').lon).index]?.[E.signOf(pt('moon').lon).index] || '';
@@ -31,7 +31,7 @@
 
   const DEFAULT_PREFS = {
     houseSystem: 'placidus', nodeType: 'true', lines: true, minor: false, orbScale: 1,
-    glyphs: 'symbols', show: { nodes: true, chiron: true, lilith: true, vertex: true, fortune: false }
+    glyphs: 'symbols', show: { nodes: true, chiron: true, lilith: true, juno: true, vertex: true, fortune: false }
   };
 
   const store = {
@@ -47,13 +47,15 @@
     aspects: [],
     active: null,   // { kind, key } currently shown in the detail panel
     pinned: false,
-    timingCache: null
+    timingCache: null,
+    transit: { on: false, date: null, cache: null }
   };
+  const VB_T = 940; // viewBox size when the transit ring is shown (adds a 60-unit margin all round)
   state.prefs.show = Object.assign({}, DEFAULT_PREFS.show, state.prefs.show || {});
 
   // ---------- helpers ----------
   const P = key => C.POINTS[key] || { name: key, glyph: key, letters: key };
-  const GLYPHABLE = new Set(['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'nnode', 'snode', 'chiron', 'lilith', 'fortune']);
+  const GLYPHABLE = new Set(['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'nnode', 'snode', 'chiron', 'lilith', 'juno', 'fortune']);
   const glyphOf = key => (state.prefs.glyphs === 'letters' || !GLYPHABLE.has(key)) ? P(key).letters : P(key).glyph + VS;
   const signGlyph = s => s.glyph + VS;
   const pt = key => state.chart.points.find(p => p.key === key);
@@ -86,6 +88,7 @@
     if (s.nodes) keys.push('nnode', 'snode');
     if (s.chiron) keys.push('chiron');
     if (s.lilith) keys.push('lilith');
+    if (s.juno && state.chart.points.some(p => p.key === 'juno')) keys.push('juno');
     if (!state.chart.noHouses) {
       keys.push('asc', 'dsc', 'mc', 'ic');
       if (s.vertex) keys.push('vertex');
@@ -175,7 +178,7 @@
   // so text and symbols are sized from the rendered width to stay readable and tappable.
   function wheelMetrics() {
     const w = $('#wheel').getBoundingClientRect().width || 760;
-    const k = 820 / w; // viewBox units per screen pixel
+    const k = (state.transit.on ? VB_T : 820) / w; // viewBox units per screen pixel
     const compact = w < 560;
     return {
       w, k, compact,
@@ -275,10 +278,112 @@
         `</g>`);
     });
 
+    if (state.transit.on) out.push(...transitRing(M, keys));
     const svg = $('#wheel');
+    const off = state.transit.on ? (VB_T - 820) / 2 : 0;
+    svg.setAttribute('viewBox', `${-off} ${-off} ${820 + 2 * off} ${820 + 2 * off}`);
     svg.innerHTML = out.join('');
     svg.setAttribute('aria-label', `Birth chart wheel for ${state.input.name || 'this chart'}. ${shown.length} points.`);
     applyHighlight();
+  }
+
+  // ---------- transit ring ----------
+  function transitPositions() {
+    const t = state.transit;
+    const key = t.date.toISOString().slice(0, 10);
+    if (!t.cache || t.cache.key !== key) t.cache = { key, pts: E.positionsAt(new Date(key + 'T12:00:00Z')) };
+    return t.cache.pts;
+  }
+  // Aspects from one transiting planet to the natal points on the wheel.
+  function transitContacts(tp, keys) {
+    const out = [];
+    state.chart.points.filter(p => keys.includes(p.key) && !['dsc', 'ic', 'vertex', 'fortune', 'snode'].includes(p.key)).forEach(n => {
+      const sep = Math.abs(E.angDiff(tp.lon, n.lon));
+      for (const a of E.ASPECTS.filter(x => x.major)) {
+        const orb = Math.abs(sep - a.angle);
+        const limit = ['sun', 'mercury', 'venus', 'mars', 'moon'].includes(tp.key) ? 2 : 3;
+        if (orb <= limit) { out.push({ natal: n.key, aspect: a, orb }); break; }
+      }
+    });
+    return out.sort((a, b) => a.orb - b.orb);
+  }
+  function transitRing(M, keys) {
+    const out = [];
+    const rIn = R.out + 6, rOut = R.out + 56, rG = R.out + 31;
+    out.push(`<path class="transit-band" d="M${CX} ${CX - rOut} A${rOut} ${rOut} 0 1 0 ${CX} ${CX + rOut} A${rOut} ${rOut} 0 1 0 ${CX} ${CX - rOut} Z M${CX} ${CX - rIn} A${rIn} ${rIn} 0 1 1 ${CX} ${CX + rIn} A${rIn} ${rIn} 0 1 1 ${CX} ${CX - rIn} Z"/>`);
+    const pts = transitPositions();
+    const tr = Math.max(13, M.radius * 0.85);
+    const display = spread(pts, Math.max(6, (2 * tr + 3) / rG * 180 / Math.PI));
+    pts.forEach(p => {
+      const [x1, y1] = xy(p.lon, R.out), [x2, y2] = xy(p.lon, rIn + 2);
+      out.push(`<line class="transit-tick" x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}"/>`);
+      const [gx, gy] = xy(display[p.key], rG);
+      const hits = transitContacts(p, keys).length;
+      const size = state.prefs.glyphs === 'letters' ? M.letters : M.glyph * 0.85;
+      out.push(`<g class="pt transit${hits ? ' has-hits' : ''}" data-kind="transit" data-key="${p.key}" tabindex="0" role="button" aria-label="${esc(`Transiting ${P(p.key).name}, ${posText(p.lon)}${p.speed < 0 ? ', retrograde' : ''}`)}">` +
+        `<circle cx="${f(gx)}" cy="${f(gy)}" r="${f(tr)}"/>` +
+        `<text class="g${state.prefs.glyphs === 'letters' ? ' letters' : ''}" x="${f(gx)}" y="${f(gy)}" style="font-size:${f(size)}px">${esc(glyphOf(p.key))}</text>` +
+        (p.speed < 0 ? `<text class="rx" x="${f(gx + tr * 0.8)}" y="${f(gy - tr * 0.8)}" style="font-size:${f(Math.max(10, M.letters * 0.75))}px">R</text>` : '') +
+        `</g>`);
+    });
+    return out;
+  }
+
+  function detailTransit(key) {
+    const tp = transitPositions().find(p => p.key === key);
+    if (!tp) return detailEmpty();
+    const s = E.signOf(tp.lon);
+    const hits = transitContacts(tp, visibleKeys());
+    const when = state.transit.date.toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
+    const natalSameSign = state.chart.noHouses ? null : E.houseOf(tp.lon, state.chart.houses.cusps);
+    return `
+      <div class="detail-head">
+        <div class="badge-glyph transit-badge${GLYPHABLE.has(key) && state.prefs.glyphs !== 'letters' ? '' : ' text'}">${esc(glyphOf(key))}</div>
+        <div><div class="eyebrow">Sky on ${esc(when)}</div><h3>Transiting ${esc(P(key).name)} in ${s.sign.name}</h3></div>
+      </div>
+      <div class="chips"><span class="chip">${posText(tp.lon)}</span>${tp.speed < 0 ? '<span class="chip rx">Retrograde</span>' : ''}${natalSameSign ? `<span class="chip">In your house ${natalSameSign}</span>` : ''}</div>
+      ${natalSameSign ? `<p>It is passing through your ${ordinal(natalSameSign)} house, so ${esc(C.HOUSES[natalSameSign - 1].area)} ${L.TRANSIT[key] ? 'meet ' + esc(L.TRANSIT[key].theme) : 'are highlighted'} right now.</p>` : ''}
+      ${hits.length ? `<div class="eyebrow">Touching this chart · ${hits.length}</div><ul class="conn-list">${hits.map(h => `<li><button type="button" data-goto-point="${h.natal}"><span class="asp-g ${h.aspect.tone}">${h.aspect.glyph}${VS}</span><span>${esc(C.ASPECT_TEXT[h.aspect.key])} your <b>${esc(P(h.natal).name)}</b><br><span class="faint">${esc(transitText(key, h.natal, h.aspect.key))}</span></span><span class="num">${h.orb.toFixed(1)}°</span></button></li>`).join('')}</ul>` : '<p class="faint">Not in close aspect to this chart on this date.</p>'}`;
+  }
+
+  function setTransitDate(d) {
+    state.transit.date = d;
+    $('#transit-date').value = d.toISOString().slice(0, 10);
+    const days = Math.round((d - startOfToday()) / 86400e3);
+    $('#transit-slider').value = Math.max(-730, Math.min(730, days));
+    $('#transit-note').textContent = days === 0 ? 'Showing the sky today.' : `${Math.abs(days)} day${Math.abs(days) === 1 ? '' : 's'} ${days > 0 ? 'from now' : 'ago'}.`;
+    renderWheel();
+    if (state.active && state.active.kind === 'transit') renderDetail();
+  }
+  const startOfToday = () => { const n = new Date(); return new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate(), 12)); };
+
+  function bindTransits() {
+    state.transit.date = startOfToday();
+    const btn = $('#toggle-transits');
+    const toggle = on => {
+      state.transit.on = on;
+      btn.setAttribute('aria-pressed', on);
+      $('#transit-bar').hidden = !on;
+      store.set('transitOn', on);
+      if (!on && state.active && state.active.kind === 'transit') state.active = null;
+      setTransitDate(state.transit.date);
+      renderDetail();
+    };
+    btn.addEventListener('click', () => toggle(!state.transit.on));
+    $('#transit-date').addEventListener('change', e => { if (e.target.value) setTransitDate(new Date(e.target.value + 'T12:00:00Z')); });
+    let raf = null;
+    $('#transit-slider').addEventListener('input', e => {
+      const v = +e.target.value;
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => setTransitDate(new Date(startOfToday().getTime() + v * 86400e3)));
+    });
+    $('#transit-bar').addEventListener('click', e => {
+      const b = e.target.closest('[data-step]');
+      if (!b) return;
+      const step = +b.dataset.step;
+      setTransitDate(step === 0 ? startOfToday() : new Date(state.transit.date.getTime() + step * 86400e3));
+    });
+    if (store.get('transitOn', false)) toggle(true);
   }
 
   // Highlight the active item and everything connected to it.
@@ -289,7 +394,7 @@
     const a = state.active;
     if (!a) return;
     if (a.kind === 'point') {
-      const g = svg.querySelector(`.pt[data-key="${a.key}"]`);
+      const g = svg.querySelector(`.pt:not(.transit)[data-key="${a.key}"]`);
       if (!g) return;
       g.classList.add('is-active');
       svg.classList.add('focusing');
@@ -307,6 +412,13 @@
       line.querySelector('.asp').classList.add('is-related');
       svg.querySelector(`.pt[data-key="${line.dataset.a}"]`)?.classList.add('is-related');
       svg.querySelector(`.pt[data-key="${line.dataset.b}"]`)?.classList.add('is-related');
+    } else if (a.kind === 'transit') {
+      const g = svg.querySelector(`.pt.transit[data-key="${a.key}"]`);
+      if (!g) return;
+      g.classList.add('is-active');
+      svg.classList.add('focusing');
+      const tp = transitPositions().find(p => p.key === a.key);
+      if (tp) transitContacts(tp, visibleKeys()).forEach(h => svg.querySelector(`.pt:not(.transit)[data-key="${h.natal}"]`)?.classList.add('is-related'));
     } else if (a.kind === 'house') {
       svg.querySelector(`.house-hit[data-key="${a.key}"]`)?.classList.add('is-active');
       svg.classList.add('focusing');
@@ -465,6 +577,7 @@
     else if (a.kind === 'aspect') html = detailAspect(+a.key);
     else if (a.kind === 'house') html = detailHouse(+a.key);
     else if (a.kind === 'sign') html = detailSign(a.key);
+    else if (a.kind === 'transit') html = detailTransit(a.key);
     const touch = !window.matchMedia('(hover: hover)').matches;
     const foot = a ? `<div class="detail-foot"><span>${state.pinned ? (touch ? 'Tap another symbol to switch.' : 'Pinned. Press Esc to release.') : 'Click to keep this open.'}</span>${state.pinned ? '<button class="btn small" type="button" id="unpin">Close</button>' : ''}</div>` : '';
     // On narrow screens a pinned detail slides up as a bottom sheet so it is visible next to the wheel.
@@ -1073,6 +1186,7 @@
       body += sectionHtml('What you need to feel secure', para(signReading('moon', pt('moon').lon)));
       body += sectionHtml('What attracts you', para(signReading('mars', pt('mars').lon)) + (nh ? '' : para(signReading('dsc', pt('dsc').lon))));
       if (!nh) body += sectionHtml('The partner who suits you', para(houseLine(7)) + para(rulerLine(7, 'partnership')) + (occupants(7).length ? `<ul class="syn-list">${occupantLines(7)}</ul>` : '') + para(houseLine(5)));
+      if (pt('juno')) body += sectionHtml('Commitment and marriage (Juno)', para(signReading('juno', pt('juno').lon)) + para(houseReading('juno', pt('juno').house)) + `<ul class="syn-list">${aspectItems(aspectsInvolving(['juno'], 'flow').concat(aspectsInvolving(['juno'], 'tension')))}</ul>`);
       body += sectionHtml('Relationship strengths', `<ul class="syn-list">${aspectItems(aspectsInvolving(['venus', 'moon'], 'flow'))}</ul>`);
       body += sectionHtml('Patterns to watch', `<ul class="syn-list">${aspectItems(aspectsInvolving(['venus', 'moon', 'mars'], 'tension'))}</ul>`);
       body += sectionHtml('Signs that harmonise with your Venus', `<p>Traditionally ${compatibleSigns.join(', ')}. Real compatibility depends on the whole chart, so compare two charts on the <b>Compatibility</b> tab for a full answer.</p>`);
@@ -1223,7 +1337,7 @@
         <div class="field"><label for="${id}-date">Date of birth</label><input type="date" id="${id}-date" value="${esc(i.date || '')}" min="1800-01-01" max="2199-12-31"></div>
         <div class="field"><label for="${id}-time">Time of birth</label><input type="time" id="${id}-time" value="${i.timeUnknown ? '' : esc(i.time || '')}" ${i.timeUnknown ? 'disabled' : ''}></div>
         <div class="field full"><label class="checks"><input type="checkbox" id="${id}-unknown" ${i.timeUnknown ? 'checked' : ''}> Birth time unknown</label></div>
-        <div class="field full"><label for="${id}-place">Place of birth</label><input type="text" id="${id}-place" list="city-options" value="${esc(i.place || '')}" autocomplete="off" placeholder="Start typing a city"></div>
+        <div class="field full suggest"><label for="${id}-place">Place of birth</label><input type="text" id="${id}-place" value="${esc(i.place || '')}" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-places" placeholder="Start typing a city or town"><ul id="${id}-places" role="listbox" hidden></ul></div>
       </div>
       <details class="coords">
         <summary>Coordinates and time zone</summary>
@@ -1276,7 +1390,6 @@
       <div class="section no-print">
         <div><span class="eyebrow">Compatibility</span><h2>Compare two birth charts</h2></div>
         <p class="muted">Enter two people's birth data to see how their charts connect across seven areas of life, and how similar they are. It works for partners, friends, family or colleagues.</p>
-        <datalist id="city-options">${CITY.CITIES.map(c => `<option value="${esc(c.name)}, ${esc(c.country)}"></option>`).join('')}</datalist>
         <div class="grid-2">${personForm('pa', 'Person A', A)}${personForm('pb', 'Person B', B)}</div>
         <p class="form-error" id="compat-error" hidden></p>
         <div class="actions">
@@ -1286,6 +1399,12 @@
         </div>
       </div>
       <div id="compat-report"></div>`;
+    ['pa', 'pb'].forEach(id => attachPlaceSearch($(`#${id}-place`), $(`#${id}-places`), c => {
+      $(`#${id}-lat`).value = c.lat; $(`#${id}-lon`).value = c.lon;
+      const sel = $(`#${id}-tz`);
+      if (![...sel.options].some(o => o.value === c.tz)) { const o = document.createElement('option'); o.value = c.tz; o.textContent = c.tz.replace(/_/g, ' '); sel.appendChild(o); }
+      sel.value = c.tz;
+    }));
     runCompat(A, B);
   }
 
@@ -1368,6 +1487,8 @@
           ${r.overlaysAinB.length ? `<div class="card"><div class="eyebrow">${esc(nA)} in ${esc(nB)}'s chart</div><ul class="syn-list">${overlayList(r.overlaysAinB, nA, nB)}</ul></div>` : ''}
         </div>` : ''}
 
+        ${compositeSection(CA, CB, nA, nB)}
+
         <h3>Every connection between the charts</h3>
         <div class="table-wrap"><table><thead><tr><th>${esc(nA)}</th><th>Aspect</th><th>${esc(nB)}</th><th>Orb</th></tr></thead><tbody>
           ${r.aspects.map(x => `<tr class="static"><td><span class="glyph">${esc(glyphOf(x.a))}</span>${esc(P(x.a).name)}</td><td><span class="asp-g ${['trine', 'sextile'].includes(x.aspect.key) ? 'flow' : ['square', 'opposition'].includes(x.aspect.key) ? 'tension' : 'blend'}">${x.aspect.glyph}${VS}</span> ${x.aspect.name}</td><td><span class="glyph">${esc(glyphOf(x.b))}</span>${esc(P(x.b).name)}</td><td class="num">${x.orb.toFixed(1)}°</td></tr>`).join('')}
@@ -1376,6 +1497,54 @@
       </div>`;
   }
   const COMPATIBLE_EL = { fire: 'air', air: 'fire', earth: 'water', water: 'earth' };
+
+  // The composite chart: the relationship itself, read as one chart.
+  function compositeSection(CA, CB, nA, nB) {
+    const CC = E.compositeChart(CA, CB);
+    const CT = window.ChartComposite;
+    const order = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'juno', 'nnode', 'chiron', 'asc', 'mc'];
+    const cp = k => CC.points.find(p => p.key === k);
+    const items = order.map(cp).filter(Boolean).map(p => {
+      const sg = E.signOf(p.lon).sign;
+      const style = C.SIGN_STYLE[sg.key].replace(/^In \w+ it /, 'It ');
+      return `<li><b><span class="glyph">${esc(glyphOf(p.key))}</span> Composite ${esc(P(p.key).name)} in ${sg.name}${p.house ? `, house ${p.house}` : ''}</b> <span class="faint">${E.fmtDeg(p.lon, false)}</span><br><span class="muted">${esc(CT.POINT[p.key] || '')} ${esc(style)}${p.house && !['asc', 'mc'].includes(p.key) ? ' ' + esc(C.HOUSES[p.house - 1].area.charAt(0).toUpperCase() + C.HOUSES[p.house - 1].area.slice(1)) + ' is where this plays out.' : ''}</span></li>`;
+    }).join('');
+    const sun = cp('sun');
+    // Composite aspects between the relationship's own planets.
+    const pts = CC.points.filter(p => ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'juno'].includes(p.key));
+    const OUTER = ['uranus', 'neptune', 'pluto'];
+    // Outer-planet pairs are the same for everyone born in those years, so they say nothing about this couple.
+    const asp = E.findAspects(pts, { orbScale: 0.8 }).filter(a => !(OUTER.includes(a.a) && OUTER.includes(a.b))).slice(0, 6);
+    const junoA = CA.points.find(p => p.key === 'juno'), junoB = CB.points.find(p => p.key === 'juno');
+    const junoContacts = [];
+    [[junoA, CB, nA, nB], [junoB, CA, nB, nA]].forEach(([j, other, owner, partner]) => {
+      if (!j) return;
+      ['sun', 'moon', 'venus', 'asc'].forEach(k => {
+        const q = other.points.find(p => p.key === k);
+        if (!q) return;
+        const sep = Math.abs(E.angDiff(j.lon, q.lon));
+        const hit = [['conjunction', 0, 5], ['trine', 120, 4], ['sextile', 60, 3], ['opposition', 180, 5], ['square', 90, 4]].find(([, ang, orb]) => Math.abs(sep - ang) <= orb);
+        if (hit) junoContacts.push({ owner, partner, k, kind: hit[0], orb: Math.abs(sep - hit[1]) });
+      });
+    });
+    return `
+      <h3>The relationship as its own chart</h3>
+      <p class="muted">${esc(CT.intro)}</p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="eyebrow">Composite chart · ${esc(nA)} + ${esc(nB)}</div>
+          ${sun && sun.house ? `<p style="margin:8px 0"><b>Focus:</b> ${esc(CT.HOUSE_FOCUS[sun.house - 1])}</p>` : ''}
+          <ul class="syn-list">${items}</ul>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Commitment (Juno)</div>
+          ${junoA && junoB ? `<p style="margin-top:6px"><b>${esc(nA)}</b>: Juno in ${E.signOf(junoA.lon).sign.name}. ${esc(ST.juno[E.signOf(junoA.lon).index])}</p>
+          <p style="margin-top:6px"><b>${esc(nB)}</b>: Juno in ${E.signOf(junoB.lon).sign.name}. ${esc(ST.juno[E.signOf(junoB.lon).index])}</p>
+          ${junoContacts.length ? `<ul class="syn-list">${junoContacts.map(x => `<li><b>${esc(x.owner)}'s Juno ${x.kind} ${esc(x.partner)}'s ${P(x.k).name}</b> <span class="faint">(orb ${x.orb.toFixed(1)}°)</span>: ${['conjunction', 'trine', 'sextile'].includes(x.kind) ? `${esc(x.partner)} naturally fits what ${esc(x.owner)} looks for in a committed partner. This is a classic marriage indicator.` : `${esc(x.partner)} stirs ${esc(x.owner)}'s commitment needs, which is attractive but asks for honest negotiation about expectations.`}</li>`).join('')}</ul>` : '<p class="faint" style="margin-top:8px">No close contacts between one person\'s Juno and the other\'s Sun, Moon, Venus or Ascendant. Commitment rests on the other factors.</p>'}` : '<p class="muted">Juno is not available for these dates.</p>'}
+          ${asp.length ? `<div class="eyebrow" style="margin-top:14px">Inside the composite</div><ul class="syn-list">${asp.map(a => `<li><b>${esc(P(a.a).name)} ${a.aspect.name.toLowerCase()} ${esc(P(a.b).name)}</b>: ${esc(C.ASPECT_MEANING[a.aspect.key])}</li>`).join('')}</ul>` : ''}
+        </div>
+      </div>`;
+  }
 
   function bindCompat() {
     const panel = $('#panel-compat');
@@ -1575,23 +1744,47 @@
     return { value: { name, date, time: timeUnknown ? '12:00' : time, timeUnknown, place: $('#f-place').value.trim(), lat, lon, tz: $('#f-tz').value, utcOffset: off } };
   }
 
-  let suggestIdx = -1, suggestions = [];
-  function renderSuggest() {
-    const list = $('#place-list');
-    const input = $('#f-place');
-    if (!suggestions.length) { list.hidden = true; input.setAttribute('aria-expanded', 'false'); return; }
-    list.innerHTML = suggestions.map((c, i) => `<li role="option" id="opt-${i}" aria-selected="${i === suggestIdx}" data-i="${i}">${esc(c.name)}, <span class="faint">${esc(c.country)}</span></li>`).join('');
-    list.hidden = false;
-    input.setAttribute('aria-expanded', 'true');
-    if (suggestIdx >= 0) input.setAttribute('aria-activedescendant', 'opt-' + suggestIdx); else input.removeAttribute('aria-activedescendant');
-  }
-  function pickCity(c) {
-    $('#f-place').value = `${c.name}, ${c.country}`;
-    $('#f-lat').value = c.lat;
-    $('#f-lon').value = c.lon;
-    $('#f-tz').value = c.tz;
-    suggestions = []; suggestIdx = -1; renderSuggest();
-    updateOffsetNote();
+  // Place search used by every birth-place field: instant offline matches first, then
+  // worldwide results from the internet when a connection is available.
+  function attachPlaceSearch(input, list, onPick) {
+    let items = [], idx = -1, timer = null, ctrl = null;
+    const label = c => `${c.name}${c.region && c.region !== c.name ? ', ' + c.region : ''}, ${c.country}`;
+    const render = (status) => {
+      if (!items.length && !status) { list.hidden = true; input.setAttribute('aria-expanded', 'false'); return; }
+      list.innerHTML = items.map((c, i) => `<li role="option" id="${list.id}-${i}" aria-selected="${i === idx}" data-i="${i}">${esc(c.name)}<span class="faint">${c.region && c.region !== c.name ? ', ' + esc(c.region) : ''}, ${esc(c.country)}</span></li>`).join('')
+        + (status ? `<li class="status" aria-disabled="true">${esc(status)}</li>` : '');
+      list.hidden = false;
+      input.setAttribute('aria-expanded', 'true');
+      if (idx >= 0) input.setAttribute('aria-activedescendant', `${list.id}-${idx}`); else input.removeAttribute('aria-activedescendant');
+    };
+    const pick = c => { input.value = label(c); items = []; idx = -1; render(); onPick(c); };
+    input.addEventListener('input', () => {
+      const q = input.value;
+      items = CITY.searchCities(q); idx = -1;
+      clearTimeout(timer); if (ctrl) ctrl.abort();
+      if (q.trim().length < 3) { render(); return; }
+      render(items.length ? '' : 'Searching worldwide…');
+      timer = setTimeout(async () => {
+        ctrl = new AbortController();
+        const online = await CITY.searchOnline(q, ctrl.signal);
+        if (input.value !== q) return;
+        const seen = new Set(items.map(c => (c.name + c.country).toLowerCase()));
+        items = items.concat(online.filter(c => !seen.has((c.name + c.country).toLowerCase()))).slice(0, 10);
+        render(items.length ? '' : 'No match. Enter the coordinates under the place field.');
+      }, 300);
+    });
+    input.addEventListener('keydown', e => {
+      if (!items.length) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); idx = (idx + 1) % items.length; render(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); idx = (idx - 1 + items.length) % items.length; render(); }
+      else if (e.key === 'Enter' && idx >= 0) { e.preventDefault(); pick(items[idx]); }
+      else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); items = []; render(); }
+    });
+    list.addEventListener('mousedown', e => {
+      const li = e.target.closest('li[data-i]');
+      if (li) { e.preventDefault(); pick(items[+li.dataset.i]); }
+    });
+    input.addEventListener('blur', () => setTimeout(() => { items = []; render(); }, 150));
   }
 
   function renderSaved() {
@@ -1612,20 +1805,12 @@
     $('#f-date').addEventListener('change', updateOffsetNote);
     $('#f-time').addEventListener('change', updateOffsetNote);
     $('#f-offset').addEventListener('input', () => { $('#f-tz').value = ''; $('#offset-note').textContent = 'Using the UTC offset you entered.'; });
-    const place = $('#f-place');
-    place.addEventListener('input', () => { suggestions = CITY.searchCities(place.value); suggestIdx = -1; renderSuggest(); });
-    place.addEventListener('keydown', e => {
-      if (!suggestions.length) return;
-      if (e.key === 'ArrowDown') { e.preventDefault(); suggestIdx = (suggestIdx + 1) % suggestions.length; renderSuggest(); }
-      else if (e.key === 'ArrowUp') { e.preventDefault(); suggestIdx = (suggestIdx - 1 + suggestions.length) % suggestions.length; renderSuggest(); }
-      else if (e.key === 'Enter' && suggestIdx >= 0) { e.preventDefault(); pickCity(suggestions[suggestIdx]); }
-      else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); suggestions = []; renderSuggest(); }
+    attachPlaceSearch($('#f-place'), $('#place-list'), c => {
+      $('#f-lat').value = c.lat; $('#f-lon').value = c.lon;
+      if (!TZS.includes(c.tz)) { const o = document.createElement('option'); o.value = c.tz; o.textContent = c.tz.replace(/_/g, ' '); $('#f-tz').appendChild(o); }
+      $('#f-tz').value = c.tz;
+      updateOffsetNote();
     });
-    $('#place-list').addEventListener('mousedown', e => {
-      const li = e.target.closest('li');
-      if (li) { e.preventDefault(); pickCity(suggestions[+li.dataset.i]); }
-    });
-    place.addEventListener('blur', () => setTimeout(() => { suggestions = []; renderSuggest(); }, 120));
 
     $('#birth-form').addEventListener('submit', e => {
       e.preventDefault();
@@ -1686,16 +1871,16 @@
   // ---------- theme ----------
   // Cycles Auto (follow the device) -> Light -> Dark. Auto removes data-theme so prefers-color-scheme decides.
   const THEMES = [
-    { key: 'auto', label: 'Auto', icon: '◐' },
-    { key: 'light', label: 'Light', icon: '☀' + VS },
-    { key: 'dark', label: 'Dark', icon: '☾' + VS }
+    { key: 'auto', label: 'Auto' },
+    { key: 'light', label: 'Light' },
+    { key: 'dark', label: 'Dark' }
   ];
   function applyTheme(key) {
     const t = THEMES.find(x => x.key === key) || THEMES[0];
     if (t.key === 'auto') document.documentElement.removeAttribute('data-theme');
     else document.documentElement.setAttribute('data-theme', t.key);
     $('#theme-label').textContent = t.label;
-    $('#theme-icon').textContent = t.icon;
+    $('#theme-icon').dataset.mode = t.key;
     $('#theme-toggle').setAttribute('aria-label', `Colour theme: ${t.label}. Click to change.`);
     $('#theme-toggle').title = t.key === 'auto' ? 'Following your device setting' : `${t.label} mode`;
   }
@@ -1714,7 +1899,7 @@
   function boot() {
     bindTheme();
     if (!window.Astronomy) {
-      document.querySelector('main').innerHTML = '<div class="card"><h2>The astronomy library did not load</h2><p class="muted">Check your internet connection and reload. The chart is calculated in your browser with astronomy-engine, loaded from cdn.jsdelivr.net.</p></div>';
+      document.querySelector('main').innerHTML = '<div class="card"><h2>The chart engine did not load</h2><p class="muted">Reload the page. If it keeps happening, the file may be incomplete: upload the full index.html again.</p></div>';
       return;
     }
     bindWheel(); bindTabs(); bindCustomize(); bindDialog(); bindCompat(); bindGuide();
@@ -1735,6 +1920,7 @@
       console.error(err);
       state.input = EXAMPLE_INPUT; refresh();
     }
+    bindTransits();
     const tab = location.hash.replace('#', '');
     showTab(RENDER[tab] || tab === 'chart' ? tab : store.get('tab', 'chart'));
   }

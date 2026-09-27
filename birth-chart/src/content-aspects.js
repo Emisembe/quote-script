@@ -144,7 +144,7 @@
     sesquiquadrate: 'This is built-up tension that seeks release.'
   };
 
-  const ORDER = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'nnode', 'chiron', 'lilith', 'asc', 'mc'];
+  const ORDER = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'nnode', 'chiron', 'lilith', 'juno', 'asc', 'mc'];
 
   function pairTheme(a, b) {
     const [x, y] = ORDER.indexOf(a) <= ORDER.indexOf(b) ? [a, b] : [b, a];

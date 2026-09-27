@@ -149,5 +149,23 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     return CITIES.filter(c => c.name.toLowerCase().startsWith(q) || c.country.toLowerCase().startsWith(q) || c.name.toLowerCase().includes(q)).slice(0, 8);
   }
 
-  root.ChartCities = { CITIES, utcOffsetFor, searchCities };
+  // Worldwide search through the free Open-Meteo geocoding service (no key needed).
+  // Returns [] on any failure, so the offline list keeps working without a connection.
+  async function searchOnline(q, signal) {
+    q = q.trim();
+    if (q.length < 3 || typeof fetch !== 'function') return [];
+    try {
+      const url = 'https://geocoding-api.open-meteo.com/v1/search?count=8&language=en&format=json&name=' + encodeURIComponent(q);
+      const res = await fetch(url, { signal });
+      if (!res.ok) return [];
+      const json = await res.json();
+      return (json.results || []).filter(r => r.timezone).map(r => ({
+        name: r.name, country: r.country || '', region: r.admin1 || '', lat: +r.latitude.toFixed(4), lon: +r.longitude.toFixed(4), tz: r.timezone, online: true
+      }));
+    } catch (e) {
+      return [];
+    }
+  }
+
+  root.ChartCities = { CITIES, utcOffsetFor, searchCities, searchOnline };
 })(typeof window !== 'undefined' ? window : globalThis);

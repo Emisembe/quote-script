@@ -126,7 +126,10 @@ p { margin: 0; }
 .btn.primary { background: var(--plum); border-color: var(--plum); color: var(--on-plum); }
 .btn.primary:hover { background: var(--plum-2); }
 .btn.small { padding: 5px 11px; font-size: 13px; }
-.theme-btn #theme-icon { font-family: var(--glyph); font-size: 16px; line-height: 1; }
+.theme-icon { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid currentColor; flex: none; }
+.theme-icon[data-mode="auto"] { background: linear-gradient(90deg, currentColor 50%, transparent 50%); }
+.theme-icon[data-mode="dark"] { background: currentColor; box-shadow: inset -4px -2px 0 0 var(--surface); border-color: transparent; background: transparent; box-shadow: inset 4px -3px 0 0 currentColor; }
+.theme-icon[data-mode="light"] { background: transparent; box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px currentColor; width: 10px; height: 10px; margin: 2px; }
 html { transition: background-color .2s; }
 .btn[aria-pressed="true"] { background: var(--plum-tint); border-color: var(--plum-2); }
 
@@ -431,6 +434,39 @@ a.chip:hover { border-color: var(--plum-2); background: var(--plum-tint); }
 .dual-tracks .track.b .fill { opacity: .55; }
 tr.static { cursor: default; }
 .print-only { display: none; }
+
+/* ---------- transit ring ---------- */
+.tool-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.transit-bar {
+  display: grid; gap: 8px; margin-bottom: 10px; padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface);
+}
+.tb-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.tb-row label { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+.tb-row input[type="date"] { width: auto; }
+.step-buttons { display: flex; flex-wrap: wrap; gap: 4px; }
+.step-buttons .btn { padding: 5px 9px; min-width: 44px; justify-content: center; font-variant-numeric: tabular-nums; }
+.wheel .transit-band { fill: var(--surface-2); fill-rule: evenodd; stroke: var(--line-strong); stroke-width: .8; opacity: .85; }
+.wheel .transit-tick { stroke: var(--brass); stroke-width: 1.4; }
+.wheel .pt.transit circle { fill: var(--surface); stroke: var(--brass); stroke-width: 1.2; stroke-dasharray: 3 2; }
+.wheel .pt.transit.has-hits circle { stroke-dasharray: none; stroke-width: 1.8; }
+.wheel .pt.transit text.g { fill: var(--brass); }
+.wheel .pt.transit:hover circle, .wheel .pt.transit.is-active circle, .wheel .pt.transit:focus-visible circle { fill: var(--brass); stroke: var(--brass); }
+.wheel .pt.transit:hover text.g, .wheel .pt.transit.is-active text.g, .wheel .pt.transit:focus-visible text.g { fill: var(--surface); }
+.badge-glyph.transit-badge { border-color: var(--brass); color: var(--brass); }
+@media (max-width: 600px) {
+  .transit-bar { padding: 10px; }
+  .tb-row { gap: 6px; }
+  .tb-row input[type="date"] { flex: 1 1 140px; }
+  .step-buttons { width: 100%; display: grid; grid-template-columns: repeat(7, 1fr); }
+  .step-buttons .btn { min-width: 0; padding: 7px 0; font-size: 12px; }
+}
+
+/* ---------- place search ---------- */
+.suggest li .faint { margin-left: 2px; }
+.suggest li.status { color: var(--ink-3); cursor: default; font-size: 13px; }
+.suggest li.status:hover { background: none; }
+.person .suggest ul { z-index: 6; }
 
 /* ---------- life guidance ---------- */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

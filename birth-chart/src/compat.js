@@ -8,7 +8,7 @@
   const E = root.ChartEngine;
 
   const PLANETS = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
-  const SYN_POINTS = PLANETS.concat(['nnode', 'asc', 'mc']);
+  const SYN_POINTS = PLANETS.concat(['nnode', 'juno', 'asc', 'mc']);
 
   const SYN_ASPECTS = [
     { key: 'conjunction', name: 'Conjunction', angle: 0, orb: 7, glyph: '☌' },
@@ -47,7 +47,7 @@
     {
       key: 'commitment', name: 'Long-term commitment',
       about: 'Staying power, loyalty and the ability to build a future together. Saturn contacts and Sun–Moon links matter most.',
-      pairs: [['saturn', 'sun', 2.5], ['saturn', 'moon', 2.5], ['saturn', 'venus', 2.5], ['sun', 'moon', 2], ['nnode', 'sun', 1], ['nnode', 'moon', 1], ['nnode', 'venus', 1], ['saturn', 'asc', 1], ['saturn', 'mars', 1], ['jupiter', 'saturn', 1]],
+      pairs: [['saturn', 'sun', 2.5], ['saturn', 'moon', 2.5], ['saturn', 'venus', 2.5], ['sun', 'moon', 2], ['nnode', 'sun', 1], ['nnode', 'moon', 1], ['nnode', 'venus', 1], ['saturn', 'asc', 1], ['saturn', 'mars', 1], ['jupiter', 'saturn', 1], ['juno', 'sun', 2], ['juno', 'moon', 1.5], ['juno', 'venus', 2], ['juno', 'asc', 1]],
       elements: []
     },
     {
@@ -98,7 +98,7 @@
       for (const asp of SYN_ASPECTS) {
         let orb = asp.orb;
         if (['sun', 'moon'].includes(p.key) || ['sun', 'moon'].includes(q.key)) orb += 1;
-        if (['nnode', 'asc', 'mc'].includes(p.key) || ['nnode', 'asc', 'mc'].includes(q.key)) orb -= 2;
+        if (['nnode', 'juno', 'asc', 'mc'].includes(p.key) || ['nnode', 'juno', 'asc', 'mc'].includes(q.key)) orb -= 2;
         // Moon moves fast; without a birth time its position is uncertain, so tighten.
         if ((p.key === 'moon' && A.noHouses) || (q.key === 'moon' && B.noHouses)) orb -= 2;
         const off = Math.abs(sep - asp.angle);

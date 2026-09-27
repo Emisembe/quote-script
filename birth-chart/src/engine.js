@@ -107,7 +107,44 @@
   }
 
   // Mean Black Moon Lilith (mean lunar apogee).
+  // ---------- Swiss Ephemeris tables (Juno, Chiron, mean Lilith) ----------
+  // ephem-data.js holds geocentric longitudes every 10 days, 1800–2200, generated from the
+  // Swiss Ephemeris. Catmull-Rom interpolation keeps the error under one arcminute.
+  const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+  const decoded = {};
+  function tableFor(name) {
+    const src = root.ChartEphemData;
+    if (!src || !src.bodies[name]) return null;
+    if (!decoded[name]) {
+      const { start, data } = src.bodies[name];
+      const out = new Float64Array(data.length / 2 + 1);
+      let v = start; out[0] = v / 100;
+      for (let i = 0, k = 1; i < data.length; i += 2, k++) {
+        v += (B64.indexOf(data[i]) << 6 | B64.indexOf(data[i + 1])) - 2048;
+        out[k] = v / 100;
+      }
+      decoded[name] = out;
+    }
+    return decoded[name];
+  }
+  function tableLon(name, time) {
+    const t = tableFor(name);
+    if (!t) return null;
+    const src = root.ChartEphemData;
+    const x = (time.tt + 2451545.0 - src.j0) / src.step;
+    const i = Math.floor(x);
+    if (i < 1 || i + 2 >= t.length) return null;
+    const f = x - i, p0 = t[i - 1], p1 = t[i], p2 = t[i + 1], p3 = t[i + 2];
+    const v = 0.5 * (2 * p1 + (-p0 + p2) * f + (2 * p0 - 5 * p1 + 4 * p2 - p3) * f * f + (-p0 + 3 * p1 - 3 * p2 + p3) * f * f * f);
+    return norm(v);
+  }
+  const hasTable = name => !!(root.ChartEphemData && root.ChartEphemData.bodies[name]);
+
+  function junoLon(time) { return tableLon('juno', time); }
+
   function meanLilith(time) {
+    const fromTable = tableLon('lilith', time);
+    if (fromTable != null) return fromTable;
     const T = julianCenturies(time);
     const perigee = 83.3532465 + 4069.0137287 * T - 0.01032 * T * T - T ** 3 / 80053 + T ** 4 / 18999000;
     return norm(perigee + 180);
@@ -177,6 +214,12 @@
   }
 
   function chironLon(time) {
+    const fromTable = tableLon('chiron', time);
+    if (fromTable != null) return fromTable;
+    return chironLonIntegrated(time);
+  }
+
+  function chironLonIntegrated(time) {
     // Geocentric = heliocentric(Chiron) - heliocentric(Earth), with light time.
     let t = time;
     let lon;
@@ -373,7 +416,9 @@
     const nn = nodeFn(time);
     pts.push({ key: 'nnode', kind: 'point', lon: nn, speed: speedOf(nodeFn, time), pair: 'snode' });
     pts.push({ key: 'snode', kind: 'point', lon: norm(nn + 180), speed: speedOf(nodeFn, time), pair: 'nnode' });
-    pts.push({ key: 'chiron', kind: 'point', lon: chironLon(time), speed: speedOf(chironLon, time), approx: true });
+    pts.push({ key: 'chiron', kind: 'point', lon: chironLon(time), speed: speedOf(chironLon, time), approx: tableLon('chiron', time) == null });
+    const juno = junoLon(time);
+    if (juno != null) pts.push({ key: 'juno', kind: 'point', lon: juno, speed: speedOf(junoLon, time) });
     pts.push({ key: 'lilith', kind: 'point', lon: meanLilith(time), speed: speedOf(meanLilith, time) });
     pts.push({ key: 'asc', kind: 'angle', lon: asc, pair: 'dsc' });
     pts.push({ key: 'dsc', kind: 'angle', lon: norm(asc + 180), pair: 'asc' });
@@ -390,7 +435,7 @@
 
     for (const p of pts) {
       p.house = houseOf(p.lon, houses.cusps);
-      p.retrograde = p.speed != null && p.speed < 0 && p.kind === 'planet' || (p.key === 'nnode' || p.key === 'snode' || p.key === 'chiron') && p.speed < 0;
+      p.retrograde = p.speed != null && p.speed < 0 && p.kind === 'planet' || (p.key === 'nnode' || p.key === 'snode' || p.key === 'chiron' || p.key === 'juno') && p.speed < 0;
     }
     return { input, time, eps, ramc, houses, points: pts, isDay };
   }
@@ -522,9 +567,48 @@
     return out.sort((a, b) => a.dates[0] - b.dates[0]);
   }
 
+  // ---------- composite chart ----------
+  // Midpoint composite: each point is the nearer midpoint of the two positions.
+  const midpoint = (a, b) => norm(a + angDiff(b, a) / 2);
+  function compositeChart(A, B) {
+    const keys = A.points.map(p => p.key).filter(k => B.points.some(q => q.key === k));
+    const noHouses = !!(A.noHouses || B.noHouses);
+    const points = keys.filter(k => !noHouses || !['asc', 'dsc', 'mc', 'ic', 'vertex', 'fortune'].includes(k)).map(k => {
+      const p = A.points.find(x => x.key === k), q = B.points.find(x => x.key === k);
+      return { key: k, kind: p.kind, lon: midpoint(p.lon, q.lon), pair: p.pair };
+    });
+    // Keep the axes exactly opposite each other.
+    const fix = (a, b) => { const pa = points.find(p => p.key === a), pb = points.find(p => p.key === b); if (pa && pb) pb.lon = norm(pa.lon + 180); };
+    fix('asc', 'dsc'); fix('mc', 'ic'); fix('nnode', 'snode');
+    let houses = null;
+    if (!noHouses) {
+      // A plain midpoint can land on the far side of the wheel, so each cusp is flipped by 180°
+      // when needed to keep the houses in order: MC, then 11, 12, ASC, 2, 3, then the opposites.
+      const raw = A.houses.cusps.map((c, i) => midpoint(c, B.houses.cusps[i]));
+      const cusps = new Array(12);
+      cusps[9] = raw[9];
+      const between = (x, from, to) => norm(x - from) < norm(to - from);
+      cusps[0] = norm(raw[0] - cusps[9]) < 180 ? raw[0] : norm(raw[0] + 180);
+      const ic = norm(cusps[9] + 180);
+      [[10, cusps[9], cusps[0]], [11, cusps[9], cusps[0]], [1, cusps[0], ic], [2, cusps[0], ic]].forEach(([i, from, to]) => {
+        cusps[i] = between(raw[i], from, to) ? raw[i] : norm(raw[i] + 180);
+      });
+      if (norm(cusps[11] - cusps[10]) > 180) [cusps[10], cusps[11]] = [cusps[11], cusps[10]];
+      if (norm(cusps[2] - cusps[1]) > 180) [cusps[1], cusps[2]] = [cusps[2], cusps[1]];
+      cusps[3] = ic;
+      [4, 5, 6, 7, 8].forEach(i => { cusps[i] = norm(cusps[(i + 6) % 12] + 180); });
+      houses = { system: A.houses.system, cusps };
+      const asc = points.find(p => p.key === 'asc'), mc = points.find(p => p.key === 'mc');
+      if (asc) { asc.lon = cusps[0]; points.find(p => p.key === 'dsc').lon = norm(cusps[0] + 180); }
+      if (mc) { mc.lon = cusps[9]; points.find(p => p.key === 'ic').lon = ic; }
+      points.forEach(p => { p.house = houseOf(p.lon, cusps); });
+    }
+    return { points, houses, noHouses, composite: true };
+  }
+
   root.ChartEngine = {
     SIGNS, ASPECTS, norm, angDiff, signOf, fmtDeg, computeChart, positionsAt,
-    findAspects, findPatterns, houseOf, transitsBetween, activeTransits, lifeCycles,
-    _internal: { placidus, ascFrom, mcFrom, meanNode, trueNode, meanLilith, chironLon, makeTime }
+    findAspects, findPatterns, houseOf, compositeChart, hasTable, tableLon, transitsBetween, activeTransits, lifeCycles,
+    _internal: { placidus, ascFrom, mcFrom, meanNode, trueNode, meanLilith, chironLon, chironLonIntegrated, junoLon, makeTime }
   };
 })(typeof window !== 'undefined' ? window : globalThis);

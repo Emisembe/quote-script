@@ -26,7 +26,7 @@
       <button class="btn" id="edit-birth" type="button">Edit birth data</button>
       <button class="btn" id="save-chart" type="button">Save chart</button>
       <button class="btn" id="copy-code" type="button">Copy chart code</button>
-      <button class="btn theme-btn" id="theme-toggle" type="button" aria-label="Colour theme"><span aria-hidden="true" id="theme-icon">◐</span> <span id="theme-label">Auto</span></button>
+      <button class="btn theme-btn" id="theme-toggle" type="button" aria-label="Colour theme"><span class="theme-icon" aria-hidden="true" id="theme-icon" data-mode="auto"></span> <span id="theme-label">Auto</span></button>
     </div>
   </header>
 
@@ -55,7 +55,27 @@
         <div class="wheel-wrap">
           <div class="wheel-tools">
             <span class="hint" id="wheel-hint">Hover to explore. Tap or press Enter to keep a detail open. Arrow keys move between points.</span>
-            <button class="btn small" id="toggle-customize" type="button" aria-expanded="false" aria-controls="customize">Customize chart</button>
+            <div class="tool-buttons">
+              <button class="btn small" id="toggle-transits" type="button" aria-pressed="false" aria-controls="transit-bar"><span class="glyph" aria-hidden="true">☉︎</span> Today's sky</button>
+              <button class="btn small" id="toggle-customize" type="button" aria-expanded="false" aria-controls="customize">Customize chart</button>
+            </div>
+          </div>
+          <div class="transit-bar" id="transit-bar" hidden>
+            <div class="tb-row">
+              <label for="transit-date">Sky on</label>
+              <input type="date" id="transit-date" min="1800-01-01" max="2199-12-31">
+              <div class="step-buttons" role="group" aria-label="Move the date">
+                <button class="btn small" type="button" data-step="-30" aria-label="Back one month">−1M</button>
+                <button class="btn small" type="button" data-step="-7" aria-label="Back one week">−1W</button>
+                <button class="btn small" type="button" data-step="-1" aria-label="Back one day">−1D</button>
+                <button class="btn small primary" type="button" data-step="0">Today</button>
+                <button class="btn small" type="button" data-step="1" aria-label="Forward one day">+1D</button>
+                <button class="btn small" type="button" data-step="7" aria-label="Forward one week">+1W</button>
+                <button class="btn small" type="button" data-step="30" aria-label="Forward one month">+1M</button>
+              </div>
+            </div>
+            <input type="range" id="transit-slider" min="-730" max="730" step="1" value="0" aria-label="Days before or after today">
+            <p class="faint"><span id="transit-note"></span> The outer ring shows where the planets are on this date. Tap one to see how it touches this chart.</p>
           </div>
           <div class="customize" id="customize" hidden>
             <div class="customize-grid">
@@ -81,6 +101,7 @@
                   <label><input type="checkbox" id="pt-nodes" data-pt="nodes"> Nodes</label>
                   <label><input type="checkbox" id="pt-chiron" data-pt="chiron"> Chiron</label>
                   <label><input type="checkbox" id="pt-lilith" data-pt="lilith"> Lilith</label>
+                  <label><input type="checkbox" id="pt-juno" data-pt="juno"> Juno</label>
                   <label><input type="checkbox" id="pt-vertex" data-pt="vertex"> Vertex</label>
                   <label><input type="checkbox" id="pt-fortune" data-pt="fortune"> Fortune</label>
                 </div>
@@ -198,6 +219,7 @@
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="vendor/astronomy.browser.min.js"></script>
+<script src="ephem-data.js"></script>
 <script src="engine.js"></script>
 <script src="content.js"></script>
 <script src="content-signs.js"></script>
@@ -207,6 +229,7 @@
 <script src="content-aspects-natal.js"></script>
 <script src="content-sunmoon.js"></script>
 <script src="content-transits.js"></script>
+<script src="content-juno.js"></script>
 <script src="cities.js"></script>
 <script src="compat.js"></script>
 <script src="content-topics.js"></script>

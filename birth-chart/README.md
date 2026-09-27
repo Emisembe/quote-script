@@ -6,6 +6,26 @@ An interactive birth chart that runs entirely in the browser. It calculates the 
 
 It works for anyone. Press **New chart**, enter a name, date, time and city, and the chart is calculated. The city search fills in the historical UTC offset, including daylight saving time. For places not in the list, type the coordinates and choose any of the world's time zones.
 
+## Today's sky (transits on the wheel)
+
+**Today's sky** on the Chart tab draws an outer ring with the planets' positions on any date. You can move the date with the −1M, −1W, −1D, Today, +1D, +1W and +1M buttons, with a slider covering two years either side, or by typing a date. A transiting planet with a solid outline is in close aspect to the chart. Tap it to see which points it touches and what that means, and which house it is passing through.
+
+## Juno and the composite chart
+
+- **Juno**, the asteroid of committed partnership, appears on the wheel. It has a specific explanation for every sign and house, and a *Commitment and marriage* section in the Love answer of Life guidance.
+- **Compatibility** now includes:
+  - the **composite chart**, the relationship read as one chart built from the midpoints of both, with its focus house and a reading of every composite planet;
+  - each person's Juno and any Juno contacts to the partner's Sun, Moon, Venus or Ascendant, a classic marriage indicator;
+  - Juno in the *Long-term commitment* score.
+
+## Accuracy of Juno, Chiron and Lilith
+
+These three come from tables generated from the **Swiss Ephemeris** (`src/ephem-data.js`, 88 KB, built by `tools/make_ephemeris.py`). The tables hold geocentric longitudes every 10 days from 1800 to 2200. Against Swiss Ephemeris at 300 random dates, the largest error is 0.5′ for Juno, 0.3′ for Chiron and 0.3′ for mean Lilith.
+
+## Birth place search
+
+Every birth-place field searches the built-in list instantly. With an internet connection it also searches **every city and town worldwide** through the free Open-Meteo geocoding service. The result fills in the coordinates and the historical time zone. Without a connection, the built-in list and manual coordinates still work.
+
 ## Life guidance
 
 The **Life guidance** tab answers practical questions such as "What career suits me?", "What kind of partner suits me?", "How do I handle money?" or "What is my purpose?". Type a question, and it is matched by keywords to one of nine topics: career, love, money, home and family, wellbeing, purpose, friends, learning, and strengths and challenges. You can also pick a topic directly. Each answer:
@@ -48,6 +68,9 @@ python3 build.py
 | `src/content-signs.js`, `src/content-houses.js` | A specific explanation for every planet and point in every sign and every house |
 | `src/content-aspects.js` | A theme for every pair of points, plus how each one expresses itself in easy and hard aspects |
 | `src/content-topics.js` | Career fields, work style, love languages, money style, wellbeing, and question-to-topic routing |
+| `src/ephem-data.js` | Swiss Ephemeris tables for Juno, Chiron and mean Lilith (generated) |
+| `src/content-juno.js` | Juno in signs and houses, and composite-chart interpretations |
+| `tools/make_ephemeris.py` | Regenerates `ephem-data.js` from the Swiss Ephemeris |
 | `src/compat.js` | Compatibility scoring, similarity and house overlays |
 | `src/content-aspects-natal.js` | 213 paragraphs written for specific natal aspects: every planet pair plus key points, each as conjunction, flowing and challenging |
 | `src/content-sunmoon.js` | All 144 Sun–Moon sign combinations |
