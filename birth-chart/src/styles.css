@@ -463,7 +463,7 @@ tr.static { cursor: default; }
 }
 
 /* ---------- place search ---------- */
-.suggest li .faint { margin-left: 2px; }
+.suggest li .faint { margin-left: 0; }
 .suggest li.status { color: var(--ink-3); cursor: default; font-size: 13px; }
 .suggest li.status:hover { background: none; }
 .person .suggest ul { z-index: 6; }

@@ -116,10 +116,29 @@ Melbourne|Australia|-37.8136|144.9631|Australia/Melbourne
 Perth|Australia|-31.9505|115.8605|Australia/Perth
 Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
 
-  const CITIES = RAW.split('\n').map(line => {
+  const CURATED = RAW.split('\n').map(line => {
     const [name, country, lat, lon, tz] = line.split('|');
     return { name, country, lat: +lat, lon: +lon, tz };
   });
+
+  // The large generated list (cities-data.js) adds ~8,400 places; the curated list stays first.
+  const CITIES = CURATED.slice();
+  const data = root.ChartCityData;
+  if (data) {
+    const f0 = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    // Skip a generated place when the curated list already has the same name within ~30 km.
+    const byName = new Map();
+    CURATED.forEach(k => { const n = f0(k.name); byName.set(n, (byName.get(n) || []).concat(k)); });
+    const dup = c => (byName.get(f0(c.name)) || []).some(k => Math.abs(k.lat - c.lat) < 0.3 && Math.abs(k.lon - c.lon) < 0.3);
+    data.rows.split('\n').forEach(line => {
+      const [name, ci, lat, lon, ti, region] = line.split('|');
+      const c = { name, country: data.countries[+ci], region: region || '', lat: +lat, lon: +lon, tz: data.tzs[+ti] };
+      if (!dup(c)) CITIES.push(c);
+    });
+  }
+  // Accent- and case-insensitive text for matching ("sao paulo" finds "São Paulo").
+  const fold = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  CITIES.forEach(c => { c._n = fold(c.name); c._c = fold(c.country); });
 
   // UTC offset (hours) that a time zone used at a given local date and time.
   function utcOffsetFor(tz, dateStr, timeStr) {
@@ -143,10 +162,16 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     }
   }
 
-  function searchCities(q) {
-    q = q.trim().toLowerCase();
+  // Prefix matches first (in list order: curated, then largest places), then other matches.
+  function searchCities(q, limit = 8) {
+    q = fold(q.trim()).replace(/,.*$/, '').trim();
     if (!q) return [];
-    return CITIES.filter(c => c.name.toLowerCase().startsWith(q) || c.country.toLowerCase().startsWith(q) || c.name.toLowerCase().includes(q)).slice(0, 8);
+    const starts = [], contains = [];
+    for (const c of CITIES) {
+      if (c._n.startsWith(q)) { starts.push(c); if (starts.length >= limit) break; }
+      else if (contains.length < limit && q.length >= 3 && c._n.includes(q)) contains.push(c);
+    }
+    return starts.concat(contains).slice(0, limit);
   }
 
   // Worldwide search through the free Open-Meteo geocoding service (no key needed).
