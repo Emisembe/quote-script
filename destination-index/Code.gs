@@ -23,6 +23,12 @@
 // ============================================================================
 
 var APP_NAME = 'Destination Index';
+var VERSION = '1.2.0';
+
+// Where "Update code" downloads the newest version from (changeable in the menu).
+var DEFAULT_UPDATE_URL =
+  'https://raw.githubusercontent.com/emisembe/quote-script/claude/friendly-hopper-iizkrp/destination-index/Code.gs';
+var BACKUP_SHEET = '_CodeBackup';
 
 var SHEETS = {
   GUIDE: 'Guide',
@@ -138,6 +144,12 @@ function onOpen() {
     .addItem('Go to Data', 'goData')
     .addItem('Go to Sources', 'goSources')
     .addSeparator()
+    .addSubMenu(SpreadsheetApp.getUi().createMenu('Code updates')
+      .addItem('Update code to the latest version', 'updateCode')
+      .addItem('Restore previous code (undo last update)', 'restorePreviousCode')
+      .addItem('Update settings (link / token)', 'updateSettings')
+      .addItem('About / current version', 'showAbout'))
+    .addSeparator()
     .addItem('Reset everything (deletes your data)', 'resetEverything')
     .addToUi();
 }
@@ -230,6 +242,11 @@ function controlPanelHtml_(section) {
   '<div class="hint">Greece = EL in Eurostat.</div>' +
   '<button class="btn" onclick="addCountry()">Save country</button></details>' +
 
+  '<h3>Code updates</h3>' +
+  '<button class="btn sec" onclick="run(\'updateCode\')">Update code to the latest version</button>' +
+  '<button class="btn sec" onclick="run(\'restorePreviousCode\')">Restore previous code</button>' +
+  '<div class="hint">Version ' + VERSION + '. After an update, reload the Sheet.</div>' +
+
   '<h3>Danger zone</h3>' +
   '<button class="btn warn" onclick="run(\'resetEverything\')">Reset everything</button>' +
 
@@ -313,79 +330,368 @@ function resetEverything() {
 
 function buildGuide_(ss) {
   var sh = freshSheet_(ss, SHEETS.GUIDE);
-  var lines = [
-    ['African Talent Destination Index', 'title'],
-    ['Is this country a realistic destination for African university graduates? This sheet answers that with sourced data and a transparent formula.', 'text'],
-    ['', ''],
-    ['QUICK START', 'h'],
-    ['1. Menu "Destination Index" > "Open control panel (buttons)". Everything can be done from there.', 'text'],
-    ['2. Click "Fetch data from all sources". This fills the automatic indicators and logs each value in Evidence.', 'text'],
-    ['3. Open the Data tab. Fill the remaining yellow cells from the sources listed in the Indicators tab.', 'text'],
-    ['4. For every value you type yourself, add one row in the Evidence tab: country, indicator, value, year, source, link.', 'text'],
-    ['5. For 0-10 ratings (A1, A3, S3) use the Rubrics tab so every country is judged the same way.', 'text'],
-    ['6. Adjust the Weights tab to your own priorities, then read the Dashboard.', 'text'],
-    ['', ''],
-    ['ADDING YOUR OWN LINKS (SOURCES)', 'h'],
-    ['Control panel > "Add a source link", or type a new row in the Sources tab. Two types:', 'text'],
-    ['Eurostat - paste a data-browser link (ec.europa.eu/eurostat/databrowser/view/CODE/...), an API link, or just the dataset code.', 'text'],
-    ['    Filters A narrow the data, e.g.  unit=PPS&sex=T&age=TOTAL . The country filter is added automatically from the Data tab.', 'code'],
-    ['    Filters B (optional) makes the value a gap: value = A - B (for example native-born minus non-EU-born).', 'code'],
-    ['    Find filter codes: open the dataset in the Eurostat data browser; the codes are shown next to each dimension.', 'text'],
-    ['CSV link - any link that downloads a CSV file: a statistics office CSV, a GitHub "raw" file, or your own Google Sheet', 'text'],
-    ['    (File > Share > Publish to web > choose a tab > CSV). Tell the script which column holds the country and which holds the value.', 'code'],
-    ['    Country column may contain the code (DE) or the name (Germany). If you give a year column, the latest year per country is used.', 'code'],
-    ['Each fetched value is written into Data, gets a note with source and year, and is logged in Evidence automatically.', 'text'],
-    ['', ''],
-    ['ADDING YOUR OWN INDICATORS', 'h'],
-    ['Control panel > "Add an indicator" (or add a row in the Indicators tab, then click "Refresh scores & dashboard").', 'text'],
-    ['Choose the pillar and the direction (higher or lower is better). A new yellow column appears in Data and the scores include it.', 'text'],
-    ['To remove an indicator: delete its row in Indicators and its column in Data, then Refresh.', 'text'],
-    ['', ''],
-    ['THE FOUR PILLARS', 'h'],
-    ['Access - can I get in? (visa pathway, Blue Card threshold, degree recognition)', 'text'],
-    ['Fairness - is merit rewarded? (over-qualification gap, employment gap, hiring discrimination)', 'text'],
-    ['Reward - is it worth it financially? (income in purchasing power, your salary, price level)', 'text'],
-    ['Settlement - can I build a life? (years to permanent residence and citizenship, language, community)', 'text'],
-    ['', ''],
-    ['HOW THE SCORE IS CALCULATED', 'h'],
-    ['Step 1 - each indicator becomes 0-100 by comparing the countries: best country = 100, worst = 0.', 'text'],
-    ['    Higher is better:  (value - min) / (max - min) x 100', 'code'],
-    ['    Lower is better:   (max - value) / (max - min) x 100', 'code'],
-    ['Step 2 - pillar score = average of its indicator scores. Empty indicators are skipped, not counted as zero.', 'text'],
-    ['Step 3 - Destination Score = weighted average of the pillars that have data (weights in the Weights tab).', 'text'],
-    ['Step 4 - verdict: >= 70 Destination | 50-69 Conditional | < 50 Not recommended | too little data = Insufficient data.', 'text'],
-    ['', ''],
-    ['TABS', 'h'],
-    ['Dashboard - ranking, verdicts and chart. Read-only.', 'text'],
-    ['Data - the numbers (yellow cells). Row 2 = direction, row 3 = description (both come from Indicators).', 'text'],
-    ['Evidence - source log for every number. If it is not in Evidence, do not trust it.', 'text'],
-    ['Weights - pillar weights and verdict thresholds.', 'text'],
-    ['Scores - all calculations (green). Do not edit.', 'text'],
-    ['Indicators - list of indicators: pillar, direction, unit, source. Yours to edit.', 'text'],
-    ['Sources - links the script fetches from. Yours to edit. "Last status" shows the result of each fetch.', 'text'],
-    ['Rubrics - fixed rules for the 0-10 ratings.', 'text'],
-    ['Log - what the script did and any errors.', 'text'],
-    ['', ''],
-    ['WHEN A FETCH FAILS', 'h'],
-    ['Look at "Last status" in Sources and the Log tab. Usually a filter code or a CSV column name is wrong.', 'text'],
-    ['Fix it in the Sources tab and click Fetch again - or copy the value by hand into Data and log it in Evidence.', 'text'],
-    ['', ''],
-    ['LIMITS - READ BEFORE USING THE RESULT', 'h'],
-    ['- Scores are RELATIVE to the countries in the sheet. Add or remove a country and every score can shift.', 'text'],
-    ['- National averages are not your personal outcome. Profession, language level and recognition status matter more.', 'text'],
-    ['- Discrimination studies are few and use different methods; treat F3 as an approximate signal.', 'text'],
-    ['- Eurostat "non-EU" is broader than "African". Where African-specific data exists, prefer it and note it in Evidence.', 'text']
-  ];
+  var lines = guideLines_();
   var values = lines.map(function (l) { return [l[0]]; });
-  sh.getRange(1, 1, values.length, 1).setValues(values).setWrap(true).setVerticalAlignment('top');
+  sh.getRange(1, 1, values.length, 1).setValues(values).setWrap(true).setVerticalAlignment('top')
+    .setFontSize(10).setFontFamily('Arial').setFontColor('#222222').setBackground(null).setFontWeight('normal');
   lines.forEach(function (l, i) {
     var cell = sh.getRange(i + 1, 1);
-    if (l[1] === 'title') cell.setFontSize(18).setFontWeight('bold').setFontColor(COLORS.title);
-    else if (l[1] === 'h') cell.setFontWeight('bold').setFontColor(COLORS.headerText).setBackground(COLORS.header);
-    else if (l[1] === 'code') cell.setFontFamily('Roboto Mono').setFontSize(9);
+    switch (l[1]) {
+      case 'title': cell.setFontSize(20).setFontWeight('bold').setFontColor(COLORS.title); break;
+      case 'sub': cell.setFontStyle('italic').setFontColor('#555555'); break;
+      case 'h': cell.setFontSize(12).setFontWeight('bold').setFontColor(COLORS.headerText).setBackground(COLORS.header); break;
+      case 'h2': cell.setFontWeight('bold').setFontColor(COLORS.title).setBackground('#E8EEF5'); break;
+      case 'code': cell.setFontFamily('Roboto Mono').setFontSize(9).setBackground('#F4F4F4'); break;
+      case 'tip': cell.setBackground('#FFF8E1'); break;
+      case 'warn': cell.setBackground('#FDECEA'); break;
+    }
   });
-  sh.setColumnWidth(1, 950);
+  sh.setColumnWidth(1, 1000);
   sh.setHiddenGridlines(true);
+  sh.setFrozenRows(1);
+}
+
+/** The Guide text. Each entry: [text, style]. Styles: title, sub, h, h2, text, code, tip, warn. */
+function guideLines_() {
+  var I = function (code) {
+    for (var i = 0; i < DEFAULT_INDICATORS.length; i++) if (DEFAULT_INDICATORS[i][0] === code) return DEFAULT_INDICATORS[i];
+    return ['', '', '', '', '', '', '', ''];
+  };
+  var ind = function (code, what, why, where, enter) {
+    var x = I(code);
+    return [
+      [code + ' - ' + x[2] + '   [' + x[1] + ' | ' + x[3] + ' | unit: ' + x[4] + ']', 'h2'],
+      ['What it measures: ' + what, 'text'],
+      ['Why it matters: ' + why, 'text'],
+      ['Where to find it: ' + where + (x[7] ? '   Link: ' + x[7] : ''), 'text'],
+      ['How to enter it: ' + enter, 'text']
+    ];
+  };
+  var L = [];
+  var add = function (rows) { rows.forEach(function (r) { L.push(r); }); };
+  var blank = function () { L.push(['', '']); };
+
+  add([
+    ['African Talent Destination Index - Guide', 'title'],
+    ['Version ' + VERSION + '. This tab explains everything: setup, every button, every tab, every indicator, the maths, adding your own links, updating the code, and fixing problems.', 'sub'],
+    ['Contents: 1 What this tool is | 2 First-time setup | 3 Menu | 4 Control panel | 5 Recommended workflow | 6 The tabs | 7 The indicators | ' +
+     '8 Source links (Eurostat & CSV) | 9 Adding indicators & countries | 10 How the score is calculated | 11 Weights & thresholds | ' +
+     '12 Reading the Dashboard | 13 Evidence rules | 14 Updating the code | 15 Troubleshooting | 16 FAQ | 17 Glossary | 18 Limits', 'sub']
+  ]); blank();
+
+  // 1
+  add([
+    ['1. WHAT THIS TOOL IS', 'h'],
+    ['The question: is a given European country a realistic destination for an African university graduate who wants a career that matches their skills?', 'text'],
+    ['You cannot measure "meritocracy" directly. So the tool measures what a merit-based system should produce, and compares countries on it:', 'text'],
+    ['   Access - can I legally get in and have my degree accepted?', 'text'],
+    ['   Fairness - once there, are my skills used and rewarded like a local person\'s?', 'text'],
+    ['   Reward - is it financially worth it after the cost of living?', 'text'],
+    ['   Settlement - can I build a stable life (residence, citizenship, language, community)?', 'text'],
+    ['Every number comes from a source you can check (Eurostat, OECD, government sites, published studies). Each country gets a score from 0 to 100 and a verdict.', 'text'],
+    ['What it is NOT: a prediction of your personal success. It shows the terrain - your profession, language level and recognition status decide how you move on it.', 'warn']
+  ]); blank();
+
+  // 2
+  add([
+    ['2. FIRST-TIME SETUP', 'h'],
+    ['Step 1. Create a new, empty Google Sheet (sheets.new).', 'text'],
+    ['Step 2. Extensions > Apps Script. Delete everything in Code.gs, paste the full code, click Save (disk icon).', 'text'],
+    ['Step 3. Go back to the Sheet and reload the page (F5). After a few seconds the menu "Destination Index" appears next to "Help".', 'text'],
+    ['Step 4. Destination Index > Build / repair the sheet. Google asks for permission the first time:', 'text'],
+    ['   Click Continue > choose your account > "Google hasn\'t verified this app" > Advanced > Go to (project name) > Allow.', 'code'],
+    ['   This warning is normal for your own scripts. The script only works inside this Sheet and fetches data from the links in the Sources tab.', 'code'],
+    ['Step 5. Destination Index > Open control panel (buttons). A panel opens on the right with all actions.', 'text'],
+    ['Step 6 (optional, once). Set up automatic code updates - see section 14.', 'text'],
+    ['Tip: if the menu does not appear, reload the Sheet again, or in Apps Script select the function "onOpen" and click Run once.', 'tip']
+  ]); blank();
+
+  // 3
+  add([
+    ['3. THE MENU "Destination Index"', 'h'],
+    ['Open control panel (buttons) - opens the sidebar with buttons and forms (section 4).', 'text'],
+    ['Build / repair the sheet - creates any missing tab, rebuilds Guide, Rubrics, Scores and Dashboard. It NEVER deletes your Data, Evidence, Weights, Indicators or Sources. Use it any time something looks broken.', 'text'],
+    ['Fetch data from all sources - goes through every enabled row in Sources, downloads the data, writes the values into Data, adds a note on each cell and logs each value in Evidence.', 'text'],
+    ['Refresh scores & dashboard - regenerates all formulas for the current list of countries and indicators. Use after adding/removing rows or columns by hand.', 'text'],
+    ['Add a source link / Add an indicator / Add a country - open the control panel directly at that form.', 'text'],
+    ['Go to Guide / Dashboard / Data / Sources - jump to that tab.', 'text'],
+    ['Code updates > Update code to the latest version - downloads the newest code and installs it (section 14).', 'text'],
+    ['Code updates > Restore previous code - puts back the code from before the last update.', 'text'],
+    ['Code updates > Update settings - change the download link, or add a GitHub token for a private repository.', 'text'],
+    ['Code updates > About / current version - shows the installed version and the update link.', 'text'],
+    ['Reset everything - deletes ALL tool tabs including your data and rebuilds them with defaults. Asks for confirmation. Use only to start over.', 'warn']
+  ]); blank();
+
+  // 4
+  add([
+    ['4. THE CONTROL PANEL (SIDEBAR)', 'h'],
+    ['Actions: the same buttons as the menu. While a button is working, all buttons are greyed out; the result appears in the grey box at the bottom.', 'text'],
+    ['Add a source link:', 'h2'],
+    ['   Indicator - which indicator this link fills (A1, F2, ...).', 'text'],
+    ['   Type - "Eurostat" or "CSV link" (section 8 explains both).', 'text'],
+    ['   Link or dataset code - the link you copied, or a Eurostat code like ilc_di03.', 'text'],
+    ['   Filters A / Filters B / Since year - Eurostat only. B is optional; when filled, the value written = A minus B.', 'text'],
+    ['   CSV: country / value / year column - CSV only. Type the column header exactly as it appears in the file (upper/lower case does not matter).', 'text'],
+    ['   Note - your own comment. "Fetch it now" - downloads immediately after saving.', 'text'],
+    ['Add an indicator: code (short, unique, e.g. F4), pillar, name, direction (higher or lower is better), unit, source name and link.', 'text'],
+    ['Add a country: name and Eurostat code (two letters, Greece = EL).', 'text'],
+    ['Code updates: update / restore buttons, and the installed version number.', 'text']
+  ]); blank();
+
+  // 5
+  add([
+    ['5. RECOMMENDED WORKFLOW', 'h'],
+    ['1) Decide your profile: which profession/level are you scoring for? Write it in the Data "Notes" column so the ratings stay consistent.', 'text'],
+    ['2) Fetch data from all sources. Check the Sources "Last status" column: every row should say OK. Fix any ERROR (section 15).', 'text'],
+    ['3) Fill the manual indicators country by country, using the links in the Indicators tab and the Rubrics tab for 0-10 ratings.', 'text'],
+    ['4) Log every manual value in Evidence (section 13).', 'text'],
+    ['5) Set your Weights (section 11).', 'text'],
+    ['6) Read the Dashboard. Look at the pillar scores, not only the total: a country can be rich (Reward) but closed (Access).', 'text'],
+    ['7) Repeat once a year: fetch again, update manual values, compare with last year.', 'text'],
+    ['Tip: before changing anything big, make a copy of the whole Sheet (File > Make a copy) so you keep last year\'s result.', 'tip']
+  ]); blank();
+
+  // 6
+  add([
+    ['6. THE TABS IN DETAIL', 'h'],
+    ['Guide - this page. Rebuilt on every "Build / repair", so do not write your own notes here.', 'text'],
+    ['Dashboard - read-only. A ranked table (best first) with the Destination Score, the four pillar scores, data coverage and verdict, plus a bar chart. Countries with no score yet are listed underneath.', 'text'],
+    ['Data - the only place for numbers.', 'text'],
+    ['   Row 1 = indicator codes. Row 2 = direction (1 = higher is better, -1 = lower is better). Row 3 = description. Rows 2-3 are filled from the Indicators tab - edit them there, not here.', 'code'],
+    ['   Column A = country name, column B = Eurostat code (used by the automatic fetch and CSV matching). Yellow cells = your input. Last column = Notes.', 'code'],
+    ['   Rating columns (unit "rating 0-10") only accept numbers from 0 to 10. Hover over an auto-fetched cell to see its source and year.', 'code'],
+    ['Evidence - one row per value: country, indicator code, value, data year, source title, link, date accessed, notes. Auto-fetched values are logged here automatically.', 'text'],
+    ['Weights - row 2 = weight of each pillar. B5 = minimum score for "Destination", B6 = minimum for "Conditional", B7 = minimum share of indicators that must be filled before a verdict is given.', 'text'],
+    ['Scores - calculations only (green cells). One column per indicator (0-100), then the four pillar scores, the Destination Score, coverage, verdict and rank. Do not type here; it is rebuilt on Refresh.', 'text'],
+    ['Indicators - the list of indicators: code, pillar, name, direction, unit, how to get it, source, link. This tab is yours: edit names, directions or links, add rows. Then click Refresh.', 'text'],
+    ['Sources - the links the script downloads from. One row per link. Columns: Indicator, Type, Link, Filters A, Filters B, Since year, CSV country/value/year column, Enabled (tick box), Note, Last status (written by the script).', 'text'],
+    ['Rubrics - the fixed rules for 0-10 ratings (A1, A3, S3). Use them so every country is judged the same way.', 'text'],
+    ['Log - a diary of what the script did: setup, each fetch, errors, code updates.', 'text'],
+    ['_CodeBackup (hidden) - copy of the code from before the last update. Used by "Restore previous code". Do not edit.', 'text']
+  ]); blank();
+
+  // 7
+  L.push(['7. THE INDICATORS ONE BY ONE', 'h']);
+  L.push(['Direction tells the maths which way is good. "Lower is better" means a smaller number gives a higher score (e.g. a smaller discrimination gap).', 'text']);
+  add(ind('A1', 'whether there is a realistic legal route to work there in your profession.',
+    'without a visa route, nothing else matters.',
+    'EU Immigration Portal (country page > "EU Blue Card" and national work permits) and the national shortage-occupation list (Germany: Engpassberufe / make-it-in-germany.com; Netherlands: IND; France: "metiers en tension"; Ireland: Critical Skills Occupations List).',
+    'rating 0-10 using the Rubrics tab. Log the page you used in Evidence.'));
+  add(ind('A2', 'the minimum gross yearly salary an employer must pay for an EU Blue Card.',
+    'a lower threshold means more employers can hire you. Lower is better.',
+    'EU Immigration Portal > country > EU Blue Card. If there is a lower threshold for shortage occupations and you qualify, use the lower one and note it.',
+    'number in EUR per year, e.g. 45300. Use the current year\'s figure.'));
+  add(ind('A3', 'how hard it is to get an African degree accepted.',
+    'without recognition you may be forced into lower-skilled work (over-qualification).',
+    'the national ENIC-NARIC centre (Germany: anabin database + ZAB; Netherlands: Nuffic; France: ENIC-NARIC France; Ireland: QQI).',
+    'rating 0-10 using the Rubrics tab. Regulated professions (medicine, nursing, law, teaching, engineering titles) usually score lower.'));
+  add(ind('F1', 'how much more often non-EU workers with a degree end up in jobs below their level, compared with nationals.',
+    'this is the clearest sign that foreign skills are wasted ("brain waste").',
+    'Eurostat, over-qualification rates by citizenship or country of birth (migrant integration statistics). Filled automatically by the default Sources row.',
+    'percentage points: non-EU rate minus national rate. Example: 38% - 20% = 18.'));
+  add(ind('F2', 'the employment-rate difference between native-born and non-EU-born people with a degree (ISCED 5-8).',
+    'shows whether graduates from outside the EU get jobs at all.',
+    'Eurostat lfsa_ergaedcob. Filled automatically (A = native-born, B = non-EU-born, value = A - B).',
+    'percentage points. Example: 88% - 72% = 16. Smaller gap = better.'));
+  add(ind('F3', 'hiring discrimination: how many more call-backs a native applicant gets than an identical applicant with an African or minority-origin name.',
+    'measures bias at the door, the stage where the evidence shows the biggest gap.',
+    'published CV field experiments ("correspondence tests"), e.g. the GEMM project, national studies (Germany: SVR / DeZIM; France: DARES "testing"; Netherlands: SCP). Look for the call-back ratio or rates.',
+    'ratio = native call-back rate / minority call-back rate. Example: 24% / 16% = 1.5. 1.0 = no difference. Leave empty if no study exists for that country - empty is skipped, not counted as 0.'));
+  add(ind('R1', 'median disposable income per person, adjusted for prices (PPS = purchasing power standard).',
+    'shows what money is actually worth there, so rich-but-expensive countries are compared fairly.',
+    'Eurostat ilc_di03. Filled automatically.',
+    'PPS per year, e.g. 23500.'));
+  add(ind('R2', 'the typical gross yearly salary in YOUR profession.',
+    'national averages hide big differences between professions.',
+    'national statistics offices and salary surveys (Germany: Destatis / Entgeltatlas of the Bundesagentur fuer Arbeit; Netherlands: CBS; France: INSEE / APEC; Ireland: CSO).',
+    'EUR per year. Optional: leave empty for all countries if you have no reliable figure (then it is simply ignored).'));
+  add(ind('R3', 'overall price level compared with the EU average (EU27 = 100).',
+    'the same salary buys less in an expensive country. Lower is better.',
+    'Eurostat prc_ppp_ind. Filled automatically.',
+    'index, e.g. 108.'));
+  add(ind('S1', 'years of legal residence needed before permanent residence for a skilled worker (Blue Card routes are often shorter).',
+    'permanent residence ends dependence on one employer.',
+    'national immigration authority, EU Immigration Portal.',
+    'years, e.g. 2 or 5. Use the fastest route you would realistically qualify for, and note which one.'));
+  add(ind('S2', 'years of residence needed for citizenship under the standard route.',
+    'citizenship means full rights and free movement in the EU.',
+    'national citizenship law / authority website.',
+    'years. Note if dual citizenship is allowed - relevant for many Africans.'));
+  add(ind('S3', 'how usable English is at work before you master the local language.',
+    'language is the biggest practical barrier in the first years.',
+    'your own job-board sample (see Rubrics tab tip).',
+    'rating 0-10 using the Rubrics tab.'));
+  add(ind('S4', 'the size of the African-born population.',
+    'a community means networks, information, food, churches/mosques, and less isolation.',
+    'UN DESA International Migrant Stock (by destination and origin; sum the African countries of origin) or national statistics.',
+    'thousands of people, e.g. 850.'));
+  blank();
+
+  // 8
+  add([
+    ['8. SOURCE LINKS - ADDING YOUR OWN', 'h'],
+    ['A source is a row in the Sources tab that tells the script where to download values for one indicator. Add with the control panel ("Add a source link") or type a row directly. The Enabled tick box must be ticked.', 'text'],
+    ['A) EUROSTAT', 'h2'],
+    ['Paste any of these into "Link or dataset code":', 'text'],
+    ['   Data-browser link:  https://ec.europa.eu/eurostat/databrowser/view/ilc_di03/default/table?lang=en', 'code'],
+    ['   API link:           https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_di03?unit=PPS&sex=T', 'code'],
+    ['   Only the code:      ilc_di03', 'code'],
+    ['How to find a dataset: go to ec.europa.eu/eurostat, search (e.g. "over-qualification country of birth"), open the table, copy the link from the address bar.', 'text'],
+    ['Filters: a dataset has several "dimensions" (sex, age, unit, education...). You must choose ONE value for each, except country (geo) and year (time), which the script handles.', 'text'],
+    ['   Write filters as  dimension=code  joined with &.  Example:  sex=T&age=Y25-64&isced11=ED5-8&c_birth=NAT', 'code'],
+    ['   To find the codes: in the data browser click the settings/filter icon of each dimension, or download the table as CSV "with codes"; codes like T (total), Y25-64, ED5-8, PPS, NAT are shown there.', 'code'],
+    ['   If you forget a dimension, the fetch still works but "Last status" warns "... has N categories, first one used - add a filter for it". Fix it, because the first category may be the wrong one.', 'code'],
+    ['Filters B (gap): if you fill B, the script downloads A and B separately and writes A minus B, using the latest year both have. Used for F1 and F2 (e.g. A = native-born, B = non-EU-born).', 'text'],
+    ['Since year: the earliest year to look at. The script always takes the LATEST year available per country, and writes that year in the cell note and Evidence.', 'text'],
+    ['Country codes come from Data column B. Eurostat uses EL for Greece and two-letter codes for others.', 'text'],
+    ['B) CSV LINK (any other source)', 'h2'],
+    ['Any link that downloads a CSV file works: a statistics office "download CSV" link, an OECD CSV export, a GitHub "raw" file, or your own Google Sheet.', 'text'],
+    ['To use your own Google Sheet as a source: put a table with at least a country column and a value column in a tab, then File > Share > Publish to web > choose that tab > "Comma-separated values (.csv)" > Publish, and copy the link.', 'text'],
+    ['Fill: CSV country column = header of the column with countries; CSV value column = header of the column with numbers; CSV year column = optional header of the year column.', 'text'],
+    ['   Countries are matched by code (DE) or name (Germany), and "DE:Germany" style values also work.', 'code'],
+    ['   With a year column: the latest year per country is used. Without: the first row per country is used (and a warning shows if there were more).', 'code'],
+    ['   Numbers like 1,234.5 / 1.234,5 / 12,5 / 45% are understood. Empty, ":" or ".." is treated as missing.', 'code'],
+    ['   Separators , ; and tab are detected automatically.', 'code'],
+    ['C) AFTER ADDING', 'h2'],
+    ['Click Fetch data from all sources (or tick "Fetch it now"). Check "Last status": OK 2026-..: 7/7 countries means success; "No data: XX" lists countries the source does not cover.', 'text'],
+    ['A fetched value OVERWRITES what is in that Data cell. If you prefer your manual value for a country, untick Enabled for that source after the first fetch, or fix the value afterwards.', 'warn']
+  ]); blank();
+
+  // 9
+  add([
+    ['9. ADDING / REMOVING INDICATORS AND COUNTRIES', 'h'],
+    ['Add an indicator: control panel > "Add an indicator". A new row appears in Indicators and a new yellow column in Data (before Notes). The indicator is automatically part of its pillar\'s average.', 'text'],
+    ['   Choose the direction carefully: "Higher is better" (income, employment) or "Lower is better" (gaps, costs, waiting years).', 'code'],
+    ['Edit an indicator: change its row in the Indicators tab (name, pillar, direction, unit, links), then Refresh scores & dashboard.', 'text'],
+    ['Remove an indicator: delete its row in Indicators AND its column in Data, then Refresh. (Its Sources rows can be deleted or unticked.)', 'text'],
+    ['Add a country: control panel > "Add a country" (name + code). Then Fetch data to fill its automatic values.', 'text'],
+    ['Remove a country: delete its row in Data (right-click the row number > Delete row), then Refresh. Do not leave an empty row in the middle - countries after an empty row are ignored.', 'text'],
+    ['Changing the four pillars themselves requires editing the code (PILLARS and Weights) - ask for a code update instead.', 'tip']
+  ]); blank();
+
+  // 10
+  add([
+    ['10. HOW THE SCORE IS CALCULATED', 'h'],
+    ['Step 1 - each indicator becomes a score from 0 to 100 by comparing the listed countries (min-max scaling):', 'text'],
+    ['   Higher is better:  score = (value - lowest) / (highest - lowest) x 100', 'code'],
+    ['   Lower is better:   score = (highest - value) / (highest - lowest) x 100', 'code'],
+    ['   If all countries have the same value, everyone gets 100. Empty cells get no score (they are skipped).', 'code'],
+    ['Step 2 - pillar score = average of that pillar\'s indicator scores (only the ones that have data).', 'text'],
+    ['Step 3 - Destination Score = weighted average of the pillar scores, using the Weights tab. Pillars with no data are left out and the remaining weights are re-scaled.', 'text'],
+    ['Step 4 - Data coverage = share of indicators filled for that country. Below the minimum (Weights B7, default 60%) the verdict is "Insufficient data".', 'text'],
+    ['Step 5 - verdict: score >= 70 Destination | 50 to 69 Conditional | below 50 Not recommended. Rank 1 = highest score.', 'text'],
+    ['WORKED EXAMPLE (made-up numbers)', 'h2'],
+    ['F2 employment gap (lower is better): Germany 16, Netherlands 10, Spain 22. Highest 22, lowest 10.', 'text'],
+    ['   Germany = (22 - 16) / (22 - 10) x 100 = 50      Netherlands = (22 - 10) / 12 x 100 = 100      Spain = (22 - 22) / 12 x 100 = 0', 'code'],
+    ['If Germany\'s Fairness indicators score 40 (F1), 50 (F2) and F3 is empty, Fairness = (40 + 50) / 2 = 45.', 'text'],
+    ['With pillar scores Access 60, Fairness 45, Reward 80, Settlement 70 and weights 30/30/25/15:', 'text'],
+    ['   (60x30 + 45x30 + 80x25 + 70x15) / 100 = (1800 + 1350 + 2000 + 1050) / 100 = 62  ->  Conditional', 'code'],
+    ['Because scores are relative, "100" means best of the countries in this sheet, not perfect.', 'warn']
+  ]); blank();
+
+  // 11
+  add([
+    ['11. WEIGHTS AND THRESHOLDS', 'h'],
+    ['Weights say how much each pillar counts. Default: Access 30, Fairness 30, Reward 25, Settlement 15. They do not have to add up to 100.', 'text'],
+    ['Examples: career-first profile -> Fairness 40, Reward 30, Access 20, Settlement 10.  Family-first profile -> Settlement 30, Access 30, Fairness 25, Reward 15.', 'text'],
+    ['Set a weight to 0 to ignore a pillar completely.', 'text'],
+    ['Thresholds (B5, B6) decide the verdict labels; B7 decides how much data is needed before any verdict is given.', 'text'],
+    ['Good practice: decide the weights BEFORE looking at the results, and write your reason in the Weights tab, so you are not tempted to push a favourite country up.', 'tip']
+  ]); blank();
+
+  // 12
+  add([
+    ['12. READING THE DASHBOARD', 'h'],
+    ['Destination (green) - strong on most pillars relative to the others: worth serious planning.', 'text'],
+    ['Conditional (yellow) - possible, usually with conditions: language first, recognition first, or only in certain professions/cities. Look at which pillar is weak.', 'text'],
+    ['Not recommended (red) - weaker than the alternatives in this comparison. Not "impossible" - just not the best use of your effort.', 'text'],
+    ['Insufficient data (grey) - too many empty indicators to judge. Fill more data first.', 'text'],
+    ['Always compare pillar scores: e.g. Reward 90 but Fairness 20 means good money for those who get skilled jobs, but many graduates end up below their level.', 'tip']
+  ]); blank();
+
+  // 13
+  add([
+    ['13. EVIDENCE RULES', 'h'],
+    ['Every value in Data must be traceable. For manual values, add a row in Evidence: country, indicator code, value, the year the data refers to, source title, link, the date you looked, notes.', 'text'],
+    ['Prefer official sources (Eurostat, OECD, national statistics, government) over blogs and news. For studies, cite the study, not an article about it.', 'text'],
+    ['Write in Notes when a value is a proxy (e.g. "non-EU" instead of "African", "by citizenship" instead of "by country of birth").', 'text'],
+    ['If sources disagree, use the official one and mention the other in Notes.', 'text']
+  ]); blank();
+
+  // 14
+  add([
+    ['14. UPDATING THE CODE', 'h'],
+    ['When the code is improved, you do not need to copy-paste again: Destination Index > Code updates > Update code to the latest version.', 'text'],
+    ['What it does: downloads the newest Code.gs from the update link (GitHub), checks it is a valid version of this tool, saves your current code in the hidden _CodeBackup tab, installs the new code, and tells you the old and new version. Your data is not touched.', 'text'],
+    ['After updating: reload the Sheet (F5), then click Build / repair the sheet once so new tabs/formulas appear.', 'text'],
+    ['ONE-TIME SETUP (needed before the first update)', 'h2'],
+    ['Google only lets a script rewrite its own code if you allow it. Do this once:', 'text'],
+    ['a) Open https://script.google.com/home/usersettings and switch "Google Apps Script API" ON.', 'code'],
+    ['b) In the Apps Script editor: Project Settings (gear icon) > tick "Show appsscript.json manifest file in editor".', 'code'],
+    ['c) Open appsscript.json in the editor, replace its content with the appsscript.json provided with the code, Save.', 'code'],
+    ['d) Run any menu item once and accept the new permission ("Create and update Google Apps Script projects").', 'code'],
+    ['If the update button says "setup needed", one of these steps is missing - the message tells you which.', 'text'],
+    ['Restore previous code: Code updates > Restore previous code puts back the version saved before the last update.', 'text'],
+    ['Update settings: change the download link (e.g. to a different branch or your own copy) or add a GitHub token if the repository becomes private. The token is stored only for your Google account.', 'text'],
+    ['Manual fallback (always works): open the update link in a browser, copy all, paste over Code.gs in the editor, Save, reload.', 'tip']
+  ]); blank();
+
+  // 15
+  add([
+    ['15. TROUBLESHOOTING', 'h'],
+    ['Menu does not appear -> reload the Sheet; or in Apps Script run "onOpen" once.', 'text'],
+    ['"Authorization required" / permission screen -> accept it (section 2). It appears again after an update that needs new permissions.', 'text'],
+    ['Sources status "HTTP 400 ... " -> a filter code or dimension name is wrong. Check the codes in the Eurostat data browser.', 'text'],
+    ['Sources status "HTTP 404" -> dataset code or link is wrong, or the dataset was renamed by Eurostat.', 'text'],
+    ['Sources status "... has N categories, first one used" -> add a filter for that dimension.', 'text'],
+    ['Sources status "No data: XX" -> that source has no value for those countries in the chosen years. Lower "Since year" or fill by hand.', 'text'],
+    ['Sources status "Country column ... not found. Headers: ..." -> the CSV header is spelled differently; copy it exactly from the list shown.', 'text'],
+    ['Sources status "indicator XX not found" -> the code in Sources does not exist in the Indicators tab.', 'text'],
+    ['Scores all empty -> no numbers in Data yet, or the Data header codes do not match Indicators. Run Build / repair.', 'text'],
+    ['Dashboard says "No scores yet" -> fill Data or fetch; also check Weights row 2 is not all zero.', 'text'],
+    ['A country is missing from Scores -> there is an empty row above it in Data. Delete the empty row and Refresh.', 'text'],
+    ['"Exceeded maximum execution time" -> too many sources at once. Untick some, fetch, then tick the rest and fetch again.', 'text'],
+    ['Update says "setup needed" -> do the one-time setup in section 14. "HTTP 404" on update -> the update link is wrong; fix it in Update settings.', 'text'],
+    ['Everything is broken -> Build / repair first. If still broken, File > Version history to go back, or Restore previous code.', 'text'],
+    ['The Log tab records every action and error with a time stamp - check it first.', 'tip']
+  ]); blank();
+
+  // 16
+  add([
+    ['16. FAQ', 'h'],
+    ['Can I score a specific profession? Yes: rate A1/A3/S3 for that profession, fill R2 with its salary, and write the profession in Data Notes. Make a copy of the Sheet per profession.', 'text'],
+    ['Can I add non-EU countries (UK, Canada, Norway, Switzerland)? Yes, add them as countries. Eurostat covers Norway and Switzerland for many tables; for the UK or Canada use CSV links or manual values.', 'text'],
+    ['Why does adding a country change the others\' scores? Scores are relative (min-max). A new best or worst country stretches the scale.', 'text'],
+    ['Why "non-EU" and not "African"? Eurostat rarely publishes Africa-only breakdowns for these indicators. Where you find African-specific data, add it as a CSV source and note it.', 'text'],
+    ['Is my data shared? No. It stays in your Sheet. The script only downloads from the links you list and from the update link.', 'text']
+  ]); blank();
+
+  // 17
+  add([
+    ['17. GLOSSARY', 'h'],
+    ['Blue Card - EU residence and work permit for highly qualified non-EU workers with a job offer above a salary threshold.', 'text'],
+    ['Over-qualification - having a degree but working in a job that does not need one.', 'text'],
+    ['ISCED 5-8 - tertiary education: short-cycle, bachelor, master, doctorate.', 'text'],
+    ['PPS (purchasing power standard) - an artificial currency that removes price differences between countries.', 'text'],
+    ['Price level index - how expensive a country is compared with the EU average (100).', 'text'],
+    ['Percentage points (pp) - the difference between two percentages (30% - 20% = 10 pp).', 'text'],
+    ['Correspondence test / field experiment - researchers send identical CVs that differ only in name or origin and count the call-backs.', 'text'],
+    ['Min-max scaling - turning values into 0-100 by comparing with the lowest and highest.', 'text'],
+    ['Native-born / non-EU-born - born in the country / born outside the EU. Citizenship-based figures (nationals / non-EU citizens) are a close but different measure.', 'text'],
+    ['JSON-stat / CSV - data formats the script can read from Eurostat and other sources.', 'text']
+  ]); blank();
+
+  // 18
+  add([
+    ['18. LIMITS - READ BEFORE USING THE RESULT', 'h'],
+    ['- Scores are relative to the countries in the sheet.', 'text'],
+    ['- National averages are not your personal outcome; profession, language and recognition status matter more.', 'text'],
+    ['- Discrimination studies are few and use different methods; treat F3 as an approximate signal.', 'text'],
+    ['- Data is one to three years old by the time it is published.', 'text'],
+    ['- Ratings (0-10) contain your judgement - the Rubrics keep them consistent, not objective.', 'text'],
+    ['- Use the result to decide where to look deeper, not as the final answer.', 'warn']
+  ]);
+  return L;
 }
 
 function buildIndicators_(ss) {
@@ -1035,6 +1341,205 @@ function guessDelimiter_(text) {
 function shortHost_(url) {
   var m = String(url).match(/^https?:\/\/([^\/?#]+)/i);
   return m ? m[1] : url;
+}
+
+// ============================================================================
+// CODE UPDATES (self-update through the Apps Script API)
+// ============================================================================
+
+var SCRIPT_API = 'https://script.googleapis.com/v1/projects/';
+var CODE_MARKER = /var APP_NAME = 'Destination Index';/;
+
+function getUpdateUrl_() {
+  return PropertiesService.getDocumentProperties().getProperty('UPDATE_URL') || DEFAULT_UPDATE_URL;
+}
+
+function showAbout() {
+  var msg = APP_NAME + '\nInstalled version: ' + VERSION + '\nUpdate link: ' + getUpdateUrl_() +
+    '\nGitHub token set: ' + (PropertiesService.getUserProperties().getProperty('GITHUB_TOKEN') ? 'yes' : 'no');
+  SpreadsheetApp.getUi().alert('About', msg, SpreadsheetApp.getUi().ButtonSet.OK);
+  return msg;
+}
+
+function updateSettings() {
+  var ui = SpreadsheetApp.getUi();
+  var r = ui.prompt('Update link',
+    'Current link:\n' + getUpdateUrl_() + '\n\nPaste a new raw link to Code.gs, type "default" to reset, or leave empty to keep it.',
+    ui.ButtonSet.OK_CANCEL);
+  if (r.getSelectedButton() !== ui.Button.OK) return 'Cancelled.';
+  var url = r.getResponseText().trim();
+  var props = PropertiesService.getDocumentProperties();
+  if (url.toLowerCase() === 'default') props.deleteProperty('UPDATE_URL');
+  else if (url) {
+    if (!/^https:\/\//i.test(url)) { ui.alert('The link must start with https://'); return 'Invalid link.'; }
+    props.setProperty('UPDATE_URL', toRawGithubUrl_(url));
+  }
+  var t = ui.prompt('GitHub token (optional)',
+    'Only needed if the repository is private. Paste a token with read access, type "clear" to remove it, or leave empty to keep the current setting.',
+    ui.ButtonSet.OK_CANCEL);
+  if (t.getSelectedButton() === ui.Button.OK) {
+    var tok = t.getResponseText().trim(), up = PropertiesService.getUserProperties();
+    if (tok.toLowerCase() === 'clear') up.deleteProperty('GITHUB_TOKEN');
+    else if (tok) up.setProperty('GITHUB_TOKEN', tok);
+  }
+  log_('Update settings', 'Update link: ' + getUpdateUrl_());
+  return 'Saved. Update link: ' + getUpdateUrl_();
+}
+
+/** Turns a normal GitHub file link (github.com/.../blob/...) into its raw link. */
+function toRawGithubUrl_(url) {
+  var m = String(url).match(/^https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/(.+)$/i);
+  return m ? 'https://raw.githubusercontent.com/' + m[1] + '/' + m[2] + '/' + m[3] : url;
+}
+
+function updateCode() {
+  var ui = SpreadsheetApp.getUi();
+  var url = getUpdateUrl_();
+
+  // 1. Download the new code
+  var headers = {};
+  var tok = PropertiesService.getUserProperties().getProperty('GITHUB_TOKEN');
+  if (tok) headers.Authorization = 'token ' + tok;
+  var resp = UrlFetchApp.fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + 't=' + Date.now(),
+    { muteHttpExceptions: true, headers: headers, followRedirects: true });
+  if (resp.getResponseCode() !== 200) {
+    var m1 = 'Could not download the new code (HTTP ' + resp.getResponseCode() + ').\nLink: ' + url +
+      '\n\nCheck the link in Code updates > Update settings. If the repository is private, add a GitHub token there.';
+    ui.alert('Update failed', m1, ui.ButtonSet.OK); log_('Update', 'ERROR download HTTP ' + resp.getResponseCode());
+    return 'Update failed: download error.';
+  }
+  var newCode = resp.getContentText();
+  var check = validateCode_(newCode);
+  if (!check.ok) {
+    ui.alert('Update stopped', 'The downloaded file does not look like this tool (' + check.reason + '). Nothing was changed.', ui.ButtonSet.OK);
+    log_('Update', 'ERROR invalid code: ' + check.reason);
+    return 'Update stopped: invalid code.';
+  }
+  var newVersion = check.version;
+
+  // 2. Confirm
+  var same = newVersion === VERSION;
+  var answer = ui.alert(same ? 'Already up to date' : 'Update available',
+    'Installed: ' + VERSION + '\nAvailable: ' + newVersion + '\n\n' +
+    (same ? 'Reinstall this version anyway?' : 'Install the new version? Your data stays as it is; the current code is backed up first.'),
+    ui.ButtonSet.YES_NO);
+  if (answer !== ui.Button.YES) return 'Update cancelled.';
+
+  // 3. Read the current project, back it up, replace the code file
+  var project = readProject_();
+  if (!project.ok) { ui.alert('Setup needed', project.message, ui.ButtonSet.OK); return 'Update needs setup.'; }
+  var target = findCodeFile_(project.files);
+  backupCode_(target ? target.source : '', VERSION);
+
+  var files = project.files.map(function (f) { return { name: f.name, type: f.type, source: f.source }; });
+  if (target) files.forEach(function (f) { if (f.name === target.name && f.type === 'SERVER_JS') f.source = newCode; });
+  else files.push({ name: 'Code', type: 'SERVER_JS', source: newCode });
+
+  var result = writeProject_(files);
+  if (!result.ok) { ui.alert('Update failed', result.message, ui.ButtonSet.OK); return 'Update failed.'; }
+
+  log_('Update', 'Code updated from ' + VERSION + ' to ' + newVersion + ' (' + url + ').');
+  ui.alert('Updated to ' + newVersion,
+    'Done. Now:\n1. Reload this Sheet (F5).\n2. Destination Index > Build / repair the sheet.\n\nIf something is wrong: Code updates > Restore previous code.',
+    ui.ButtonSet.OK);
+  return 'Updated to ' + newVersion + '. Reload the Sheet, then Build / repair.';
+}
+
+function restorePreviousCode() {
+  var ui = SpreadsheetApp.getUi();
+  var backup = readBackup_();
+  if (!backup) { ui.alert('No backup found. A backup is made automatically before each update.'); return 'No backup.'; }
+  var ok = ui.alert('Restore previous code?', 'Restore version ' + backup.version + ' saved on ' + backup.date + '?', ui.ButtonSet.YES_NO);
+  if (ok !== ui.Button.YES) return 'Restore cancelled.';
+
+  var project = readProject_();
+  if (!project.ok) { ui.alert('Setup needed', project.message, ui.ButtonSet.OK); return 'Restore needs setup.'; }
+  var target = findCodeFile_(project.files);
+  var files = project.files.map(function (f) { return { name: f.name, type: f.type, source: f.source }; });
+  if (target) files.forEach(function (f) { if (f.name === target.name && f.type === 'SERVER_JS') f.source = backup.source; });
+  else files.push({ name: 'Code', type: 'SERVER_JS', source: backup.source });
+
+  var result = writeProject_(files);
+  if (!result.ok) { ui.alert('Restore failed', result.message, ui.ButtonSet.OK); return 'Restore failed.'; }
+  log_('Restore', 'Code restored to version ' + backup.version + '.');
+  ui.alert('Restored', 'Version ' + backup.version + ' restored. Reload the Sheet (F5).', ui.ButtonSet.OK);
+  return 'Restored ' + backup.version + '. Reload the Sheet.';
+}
+
+/** Pure check (testable): is this text a version of this tool? */
+function validateCode_(code) {
+  if (!code || code.length < 5000) return { ok: false, reason: 'file too small' };
+  if (!CODE_MARKER.test(code)) return { ok: false, reason: 'tool name marker missing' };
+  if (!/function onOpen\s*\(/.test(code)) return { ok: false, reason: 'onOpen missing' };
+  if (/^\s*</.test(code)) return { ok: false, reason: 'looks like a web page, not code' };
+  var v = code.match(/var VERSION = '([^']+)'/);
+  if (!v) return { ok: false, reason: 'VERSION missing' };
+  return { ok: true, version: v[1] };
+}
+
+/** Picks the project file that holds this tool (so other script files are left alone). */
+function findCodeFile_(files) {
+  var js = files.filter(function (f) { return f.type === 'SERVER_JS'; });
+  for (var i = 0; i < js.length; i++) if (CODE_MARKER.test(js[i].source || '')) return js[i];
+  for (var j = 0; j < js.length; j++) if (js[j].name === 'Code') return js[j];
+  return null;
+}
+
+var SETUP_HELP =
+  'One-time setup for code updates (see Guide, section 14):\n' +
+  '1. Open script.google.com/home/usersettings and switch "Google Apps Script API" ON.\n' +
+  '2. Apps Script editor > Project Settings > tick "Show appsscript.json manifest file in editor".\n' +
+  '3. Replace appsscript.json with the provided appsscript.json and Save.\n' +
+  '4. Run the update again and accept the new permission.\n\n' +
+  'Manual alternative: open the update link, copy all, paste over Code.gs, Save, reload.';
+
+function readProject_() {
+  var resp = UrlFetchApp.fetch(SCRIPT_API + ScriptApp.getScriptId() + '/content', {
+    headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() }, muteHttpExceptions: true
+  });
+  if (resp.getResponseCode() !== 200) return { ok: false, message: apiError_(resp) };
+  return { ok: true, files: JSON.parse(resp.getContentText()).files || [] };
+}
+
+function writeProject_(files) {
+  var resp = UrlFetchApp.fetch(SCRIPT_API + ScriptApp.getScriptId() + '/content', {
+    method: 'put', contentType: 'application/json',
+    headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+    payload: JSON.stringify({ files: files }), muteHttpExceptions: true
+  });
+  if (resp.getResponseCode() !== 200) return { ok: false, message: apiError_(resp) };
+  return { ok: true };
+}
+
+function apiError_(resp) {
+  var code = resp.getResponseCode(), text = resp.getContentText(), detail = text;
+  try { detail = JSON.parse(text).error.message; } catch (ignore) {}
+  log_('Update', 'Apps Script API HTTP ' + code + ': ' + String(detail).slice(0, 300));
+  return 'Google refused the code change (HTTP ' + code + '): ' + String(detail).slice(0, 300) + '\n\n' + SETUP_HELP;
+}
+
+/** Stores code in a hidden tab, in chunks (a cell holds max 50,000 characters). */
+function backupCode_(source, version) {
+  var ss = SpreadsheetApp.getActive();
+  var sh = ss.getSheetByName(BACKUP_SHEET) || ss.insertSheet(BACKUP_SHEET);
+  sh.clear();
+  var chunks = [];
+  // "|" prefix keeps Sheets from reading a chunk that starts with = + - @ as a formula
+  for (var i = 0; i < source.length; i += 40000) chunks.push(['|' + source.substr(i, 40000)]);
+  sh.getRange(1, 1, 1, 3).setValues([[version, new Date(), chunks.length]]);
+  if (chunks.length) sh.getRange(3, 1, chunks.length, 1).setNumberFormat('@').setValues(chunks);
+  sh.hideSheet();
+}
+
+function readBackup_() {
+  var sh = SpreadsheetApp.getActive().getSheetByName(BACKUP_SHEET);
+  if (!sh || sh.getLastRow() < 3) return null;
+  var head = sh.getRange(1, 1, 1, 3).getValues()[0];
+  var n = Number(head[2]) || 0;
+  if (!n) return null;
+  var source = sh.getRange(3, 1, n, 1).getValues().map(function (r) { return String(r[0]).substr(1); }).join('');
+  if (!validateCode_(source).ok) return null;
+  return { version: String(head[0]), date: String(head[1]), source: source };
 }
 
 // ============================================================================
