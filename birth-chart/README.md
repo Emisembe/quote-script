@@ -2,17 +2,31 @@
 
 An interactive birth chart that runs entirely in the browser. It calculates the chart from birth data. Nothing is typed in by hand.
 
-Open `index.html` in a browser. The only network requests are Google Fonts and `astronomy-engine`, loaded from cdn.jsdelivr.net.
+**`index.html` is the whole app in one file.** Upload just that file to any web host, or open it straight from your computer. It works offline: the astronomy library, styles, code and every explanation are inside it. Only the Google Fonts need a connection, and the page falls back to system fonts without them.
+
+It works for anyone. Press **New chart**, enter a name, date, time and city, and the chart is calculated. The city search fills in the historical UTC offset, including daylight saving time. For places not in the list, type the coordinates and choose any of the world's time zones.
+
+## Editing
+
+The sources live in `src/`. After changing them, rebuild the single file:
+
+```
+python3 build.py
+```
 
 ## Files
 
 | File | Job |
 | --- | --- |
-| `engine.js` | Astronomy and astrology maths: planets, nodes, Lilith, Chiron, angles, Vertex, Part of Fortune, four house systems, aspects, patterns, transits, life cycles |
-| `content.js` | Interpretation text for points, signs, houses, aspects, elements, modes, Moon phases and chart shapes |
-| `cities.js` | Offline city list with IANA time zones, plus a historical UTC offset lookup through `Intl` |
-| `app.js` | UI: SVG wheel, detail panel, tabs, customization, birth data form, saving and sharing |
-| `styles.css` | Light and dark theme tokens and all component styles |
+| `src/content-signs.js`, `src/content-houses.js` | A specific explanation for every planet and point in every sign and every house |
+| `src/content-aspects.js` | A theme for every pair of points, plus how each one expresses itself in easy and hard aspects |
+| `src/content-learn.js` | Glossary, retrograde meanings, transit themes, pattern explanations |
+| `src/vendor/astronomy.browser.min.js` | astronomy-engine 2.1.19 (MIT), bundled so no CDN is needed |
+| `src/engine.js` | Astronomy and astrology maths: planets, nodes, Lilith, Chiron, angles, Vertex, Part of Fortune, four house systems, aspects, patterns, transits, life cycles |
+| `src/content.js` | Interpretation text for points, signs, houses, aspects, elements, modes, Moon phases and chart shapes |
+| `src/cities.js` | Offline city list with IANA time zones, plus a historical UTC offset lookup through `Intl` |
+| `src/app.js` | UI: SVG wheel, detail panel, tabs, customization, birth data form, saving and sharing |
+| `src/styles.css` | Light and dark theme tokens and all component styles |
 
 ## How the calculation works
 

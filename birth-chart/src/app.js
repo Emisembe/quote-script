@@ -9,18 +9,16 @@
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const VS = '︎'; // force text (not emoji) presentation
 
-  // ---------- reference chart (reconstructed from the screenshots) ----------
-  const REFERENCE_INPUT = {
-    name: 'Murdock Emisembe', date: '1990-09-15', time: '23:00', timeUnknown: false,
-    place: 'Nairobi, Kenya', lat: -1.2864, lon: 36.8172, tz: 'Africa/Nairobi', utcOffset: 3
+  // Shown on first visit so the page opens in a working state. Clearly labelled as an example.
+  const EXAMPLE_INPUT = {
+    name: 'Example chart', date: '2000-01-01', time: '12:00', timeUnknown: false,
+    place: 'London, United Kingdom', lat: 51.5074, lon: -0.1278, tz: 'Europe/London', utcOffset: 0, example: true
   };
-  // Values read from the screenshots, used on the Chart data tab to verify the engine.
-  const REFERENCE_VALUES = {
-    sun: [172, 43], moon: [133, 40], mercury: [159, 49], venus: [160, 30], mars: [66, 55],
-    jupiter: [125, 42], saturn: [288, 45], uranus: [275, 36], neptune: [281, 49], pluto: [225, 43],
-    nnode: [306, 32], chiron: [115, 13], lilith: [245, 17], asc: [62, 57], mc: [329, 14], vertex: [177, 21],
-    cusp2: [90, 56], cusp3: [119, 4], cusp5: [181, 28], cusp6: [213, 24], cusp11: [1, 28], cusp12: [33, 24]
-  };
+  const EMPTY_INPUT = { name: '', date: '', time: '', timeUnknown: false, place: '', lat: '', lon: '', tz: '', utcOffset: 0 };
+
+  const ST = window.ChartSignText, HT = window.ChartHouseText, AT = window.ChartAspectText, L = window.ChartLearn;
+  const signReading = (key, lon) => ST[key] ? ST[key][E.signOf(lon).index] : null;
+  const houseReading = (key, h) => (HT[key] && h) ? HT[key][h - 1] : null;
 
   const DEFAULT_PREFS = {
     houseSystem: 'placidus', nodeType: 'true', lines: true, minor: false, orbScale: 1,
@@ -33,7 +31,7 @@
   };
 
   const state = {
-    input: store.get('input', REFERENCE_INPUT),
+    input: store.get('input', EXAMPLE_INPUT),
     prefs: Object.assign({}, DEFAULT_PREFS, store.get('prefs', {})),
     tab: 'chart',
     chart: null,
@@ -118,6 +116,7 @@
       i.timeUnknown ? '' : `<span>${sysName} houses</span>`
     ].join('');
     document.title = (i.name ? i.name + ' · ' : '') + 'Natal Chart Studio';
+    $('#example-banner').hidden = !i.example;
   }
 
   // ---------- wheel ----------
@@ -293,12 +292,18 @@
 
   function rulerOfSign(signKey) { return E.SIGNS.find(s => s.key === signKey).ruler; }
 
-  function pointNarrative(p) {
+  // Returns paragraphs: meaning of the point, the sign reading, the house reading, retrograde note.
+  function pointParagraphs(p) {
     const s = E.signOf(p.lon).sign;
-    const parts = [P(p.key).core, C.SIGN_STYLE[s.key]];
-    if (p.house) parts.push(`House ${p.house} points it toward ${C.HOUSES[p.house - 1].area}.`);
-    return parts.join(' ');
+    const out = [P(p.key).core];
+    out.push(signReading(p.key, p.lon) || C.SIGN_STYLE[s.key]);
+    if (p.house && !['asc', 'dsc', 'mc', 'ic'].includes(p.key)) {
+      out.push(houseReading(p.key, p.house) || `In house ${p.house} it points toward ${C.HOUSES[p.house - 1].area}.`);
+    }
+    if (p.retrograde && L.RETRO[p.key]) out.push(L.RETRO[p.key]);
+    return out;
   }
+  const pointNarrative = p => pointParagraphs(p).join(' ');
 
   function detailPoint(key) {
     const p = pt(key);
@@ -330,7 +335,7 @@
         </div>
       </div>
       <div class="chips">${chips}</div>
-      <p>${esc(pointNarrative(p))}</p>
+      ${pointParagraphs(p).map(t => `<p>${esc(t)}</p>`).join('')}
       ${extra}
       ${speed && p.kind !== 'angle' ? `<p class="faint">Moving ${p.speed < 0 ? 'backward' : 'forward'} at ${speed}.</p>` : ''}
       ${conns.length ? `<div class="eyebrow">Connections · ${conns.length}</div><ul class="conn-list">${conns.map(a => {
@@ -355,6 +360,7 @@
         <span class="chip">${a.aspect.major ? 'Major' : 'Minor'}</span>
       </div>
       <p>${esc(P(a.a).name)} ${esc(C.ASPECT_TEXT[a.aspect.key])} ${esc(P(a.b).name)}. ${esc(C.ASPECT_MEANING[a.aspect.key])}</p>
+      <p>${esc(AT.readAspect(a.a, a.b, a.aspect.key, a.aspect.major ? a.aspect.tone : 'adjust', [P(a.a).name, P(a.b).name]))}</p>
       <p class="faint">${esc(P(a.a).name)}: ${esc(P(a.a).keywords?.join(', ') || '')}. ${esc(P(a.b).name)}: ${esc(P(a.b).keywords?.join(', ') || '')}.</p>
       <div class="chips">
         <button class="chip" type="button" data-goto-point="${a.a}">${esc(P(a.a).name)} · ${posText(pa.lon)}</button>
@@ -559,33 +565,12 @@
       </div>
       <div class="section">
         <h3>Multi-planet patterns</h3>
-        ${patterns.length ? `<div class="grid-3">${patterns.map(pp => `<div class="card"><div class="eyebrow">${esc(pp.type)}</div><p style="margin:6px 0">${pp.members.map(m => `<span class="glyph">${esc(glyphOf(m))}</span> ${esc(P(m).name)}`).join(' · ')}</p><p class="faint">${esc(pp.note.replace(/^(\w+) is/, (x, k) => P(k).name + ' is'))}</p></div>`).join('')}</div>` : '<p class="muted">No grand trines, T-squares, yods or stelliums with the current orbs.</p>'}
+        ${patterns.length ? `<div class="grid-3">${patterns.map(pp => `<div class="card"><div class="eyebrow">${esc(pp.type)}</div><p style="margin:6px 0">${pp.members.map(m => `<span class="glyph">${esc(glyphOf(m))}</span> ${esc(P(m).name)}`).join(' · ')}</p><p class="faint">${esc(pp.note.replace(/^(\w+) is/, (x, k) => P(k).name + ' is'))}</p><p class="muted">${esc(L.PATTERN_INFO[pp.type] || '')}</p></div>`).join('')}</div>` : '<p class="muted">No grand trines, T-squares, yods or stelliums with the current orbs.</p>'}
       </div>
-      ${renderValidation()}
       <div class="section">
         <h3>Export</h3>
         <div class="actions"><button class="btn small" type="button" id="copy-csv">Copy positions as CSV</button><button class="btn small" type="button" id="copy-json">Copy full chart as JSON</button></div>
       </div>`;
-  }
-
-  function renderValidation() {
-    const i = state.input;
-    if (!(i.date === REFERENCE_INPUT.date && i.time === REFERENCE_INPUT.time && Math.abs(i.lat - REFERENCE_INPUT.lat) < 0.2 && Math.abs(i.lon - REFERENCE_INPUT.lon) < 0.2 && state.prefs.houseSystem === 'placidus' && state.prefs.nodeType === 'true' && !i.timeUnknown)) return '';
-    const cuspIdx = { cusp2: 1, cusp3: 2, cusp5: 4, cusp6: 5, cusp11: 10, cusp12: 11 };
-    const rows = Object.entries(REFERENCE_VALUES).map(([k, [d, m]]) => {
-      const ref = d + m / 60;
-      const mine = cuspIdx[k] != null ? state.chart.houses.cusps[cuspIdx[k]] : pt(k).lon;
-      const diff = Math.abs(E.angDiff(mine, ref)) * 60;
-      const cls = diff <= 2 ? 'ok' : diff <= 10 ? 'warn' : 'bad';
-      const name = cuspIdx[k] != null ? `House ${cuspIdx[k] + 1} cusp` : P(k).name;
-      return `<tr><td>${esc(name)}</td><td class="num">${E.fmtDeg(ref)}</td><td class="num">${E.fmtDeg(mine)}</td><td><span class="pill ${cls}">${diff.toFixed(1)}′</span></td></tr>`;
-    }).join('');
-    return `<div class="section">
-      <div><span class="eyebrow">Accuracy check</span><h3>This engine compared with your screenshots</h3></div>
-      <p class="muted">The screenshots show positions but no birth data. Solving for the time and place that reproduce them gives 15 September 1990 at about 23:00 in Nairobi (UTC+3). Differences are in arcminutes (1′ = 1/60 of a degree).</p>
-      <div class="table-wrap"><table><thead><tr><th>Point</th><th>Screenshot</th><th>This engine</th><th>Difference</th></tr></thead><tbody>${rows}</tbody></table></div>
-      <p class="note">Everything within a few arcminutes comes down to the exact birth minute and coordinates. Enter the time from your birth certificate to close the gap. The Vertex is very sensitive near the equator, and the other site uses a slightly different formula for mean Lilith.</p>
-    </div>`;
   }
 
   // ---------- Characteristics ----------
@@ -750,6 +735,7 @@
         <h3>${s.name}</h3>
         <div class="chips"><span class="chip">${posText(p.lon)}</span>${p.house ? `<span class="chip">House ${p.house}</span>` : ''}<span class="chip">${C.ELEMENTS[s.element].name} · ${C.MODES[s.mode].name}</span></div>
         <p class="muted">${it.lead} ${esc(C.SIGN_TEXT[s.key])}</p>
+        <p>${esc(signReading(it.key, p.lon) || '')}</p>
         ${p.house ? `<p class="faint">Lived out mainly through ${C.HOUSES[p.house - 1].area}.</p>` : ''}
       </div>`;
     }).join('');
@@ -804,7 +790,7 @@
     const t = state.timingCache;
     const now = Date.now();
     const act = t.active.map(a => `<li><button type="button" data-goto-point="${a.natal}"><span class="asp-g ${a.aspect.tone}">${a.aspect.glyph}${VS}</span><span>Transiting <b>${P(a.mover).name}</b>${a.retrograde ? ' (R)' : ''} ${esc(C.ASPECT_TEXT[a.aspect.key])} your <b>${P(a.natal).name}</b></span><span class="num">${a.orb.toFixed(1)}° ${a.applying ? 'ap' : 'sep'}</span></button></li>`).join('');
-    const up = t.upcoming.map(x => `<div class="tl-item${x.date.getTime() < now ? ' past' : ''}"><span class="when">${fmtDate(x.date)}</span><span><b>${P(x.mover).name}</b>${x.retrograde ? ' (R)' : ''} ${x.aspect.name.toLowerCase()} natal <b>${P(x.natal).name}</b></span><span class="faint">${esc(P(x.mover).keywords.join(', '))} meets ${esc(P(x.natal).keywords.join(', '))}.</span></div>`).join('');
+    const up = t.upcoming.map(x => `<div class="tl-item${x.date.getTime() < now ? ' past' : ''}"><span class="when">${fmtDate(x.date)}</span><span><b>${P(x.mover).name}</b>${x.retrograde ? ' (R)' : ''} ${x.aspect.name.toLowerCase()} natal <b>${P(x.natal).name}</b></span><span class="faint">${esc(L.TRANSIT[x.mover] ? `A period of ${L.TRANSIT[x.mover].theme} for your ${P(x.natal).name.toLowerCase()} (${P(x.natal).keywords.join(', ')}). ${L.TRANSIT[x.mover].length}` : '')}</span></div>`).join('');
     const cyc = t.cycles.map(c => {
       const label = c.angle === 90 ? `${c.name} (${c.angleSigned > 0 ? 'opening' : 'closing'})` : c.name;
       return `<div class="tl-item${c.dates[c.dates.length - 1].getTime() < now ? ' past' : ''}"><span class="when">Age ${Math.floor(c.age)} · ${c.dates.map(fmtDate).join(', ')}</span><span><b>${label}</b>${c.dates.length > 1 ? ` <span class="faint">(${c.dates.length} passes)</span>` : ''}</span><span class="faint">${esc(c.note)}</span></div>`;
@@ -865,8 +851,79 @@
       </div>`;
   }
 
+  // ---------- Full reading ----------
+  function renderReading() {
+    const keys = visibleKeys().filter(k => k !== 'dsc' && k !== 'ic');
+    const pts = keys.map(pt);
+    const section = p => {
+      const s = E.signOf(p.lon).sign;
+      const conns = aspectsOf(p.key);
+      const dig = p.kind === 'planet' ? dignity(p.key, s.key) : null;
+      return `<article class="card reading-item" id="read-${p.key}">
+        <div class="detail-head"><div class="badge-glyph${GLYPHABLE.has(p.key) && state.prefs.glyphs !== 'letters' ? '' : ' text'}">${esc(glyphOf(p.key))}</div>
+        <div><div class="eyebrow">${esc(P(p.key).group || '')}</div><h3>${esc(P(p.key).name)} in ${s.name}${p.house ? `, house ${p.house}` : ''}</h3></div></div>
+        <div class="chips" style="margin:10px 0"><span class="chip">${posText(p.lon)}</span>${p.retrograde ? '<span class="chip rx">Retrograde</span>' : ''}${dig ? `<span class="chip">${dig}</span>` : ''}</div>
+        ${pointParagraphs(p).map(t => `<p style="margin-top:6px">${esc(t)}</p>`).join('')}
+        ${conns.length ? `<div class="eyebrow" style="margin-top:12px">Aspects</div>${conns.map(a => {
+          const other = a.a === p.key ? a.b : a.a;
+          return `<p style="margin-top:6px"><b><span class="asp-g ${aspectTone(a.aspect)}">${a.aspect.glyph}${VS}</span> ${a.aspect.name} ${esc(P(other).name)}</b> <span class="faint">(orb ${a.orb.toFixed(1)}°)</span>. ${esc(AT.readAspect(p.key, other, a.aspect.key, a.aspect.major ? a.aspect.tone : 'adjust', [P(p.key).name, P(other).name]))}</p>`;
+        }).join('')}` : ''}
+      </article>`;
+    };
+    const groups = [
+      ['The lights', ['sun', 'moon']],
+      ['Angles', ['asc', 'mc']],
+      ['Personal planets', ['mercury', 'venus', 'mars']],
+      ['Social planets', ['jupiter', 'saturn']],
+      ['Outer planets', ['uranus', 'neptune', 'pluto']],
+      ['Points', ['nnode', 'snode', 'chiron', 'lilith', 'vertex', 'fortune']]
+    ];
+    const patterns = E.findPatterns(state.chart.points.filter(p => ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'chiron'].includes(p.key)), state.aspects);
+    const toc = pts.map(p => `<a class="chip" href="#read-${p.key}" data-scroll="read-${p.key}"><span class="glyph">${esc(glyphOf(p.key))}</span>${esc(P(p.key).name)}</a>`).join('');
+    $('#panel-reading').innerHTML = `
+      <div class="section">
+        <div><span class="eyebrow">Full reading</span><h2>Every placement, explained</h2></div>
+        <p class="muted">Each placement is read in layers: what the planet or point stands for, how its sign colours it, the area of life its house points to, and the aspects that connect it to the rest of the chart. Start with the lights and angles, then read outward.</p>
+        <div class="chips">${toc}</div>
+      </div>
+      ${groups.map(([title, ks]) => {
+        const items = ks.filter(k => keys.includes(k)).map(pt);
+        return items.length ? `<div class="section"><h3>${title}</h3><div class="reading-list">${items.map(section).join('')}</div></div>` : '';
+      }).join('')}
+      ${patterns.length ? `<div class="section"><h3>Patterns</h3><div class="grid-2">${patterns.map(pp => `<div class="card"><div class="eyebrow">${esc(pp.type)}</div><p style="margin:6px 0">${pp.members.map(m => esc(P(m).name)).join(' · ')}</p><p class="muted">${esc(L.PATTERN_INFO[pp.type] || '')}</p></div>`).join('')}</div></div>` : ''}`;
+  }
+
+  function renderLearn() {
+    $('#panel-learn').innerHTML = `
+      <div class="section">
+        <div><span class="eyebrow">Learn</span><h2>How to read a birth chart</h2></div>
+        <p class="muted">A chart is read by combining three things: planets (what), signs (how) and houses (where). Aspects show how the parts talk to each other.</p>
+        <div class="grid-2">${L.GLOSSARY.map(g => `<div class="card"><h3>${esc(g.term)}</h3><p class="muted" style="margin-top:6px">${esc(g.text)}</p></div>`).join('')}</div>
+      </div>
+      <div class="section">
+        <h3>The twelve houses</h3>
+        <div class="grid-3">${C.HOUSES.map((h, i) => `<div class="card"><div class="eyebrow">House ${i + 1}</div><h3>${esc(h.title)}</h3><p class="muted" style="margin-top:6px">Covers ${esc(h.area)}.</p></div>`).join('')}</div>
+      </div>
+      <div class="section">
+        <h3>The twelve signs</h3>
+        <div class="grid-3">${E.SIGNS.map(s => `<div class="card"><div class="big-glyph" style="font-size:30px">${signGlyph(s)}</div><h3>${s.name}</h3><p class="muted" style="margin-top:6px">${esc(C.SIGN_TEXT[s.key])} Ruled by ${P(s.ruler).name}.</p></div>`).join('')}</div>
+      </div>
+      <div class="section">
+        <h3>Aspects</h3>
+        <div class="grid-3">${E.ASPECTS.map(a => `<div class="card"><div class="big-glyph asp-g ${aspectTone(a)}" style="font-size:30px">${a.glyph}${VS}</div><h3>${a.name} · ${a.angle}°</h3><p class="muted" style="margin-top:6px">${esc(C.ASPECT_MEANING[a.key])} Default orb ${a.orb}°.</p></div>`).join('')}</div>
+      </div>
+      <div class="section">
+        <h3>Elements and modalities</h3>
+        <div class="grid-2">${Object.values(C.ELEMENTS).concat(Object.values(C.MODES)).map(x => `<div class="card"><h3>${esc(x.name)}</h3><p class="muted" style="margin-top:6px">${esc(x.text)}</p></div>`).join('')}</div>
+      </div>
+      <div class="section">
+        <h3>Planets and points</h3>
+        <div class="grid-3">${Object.entries(C.POINTS).map(([k, v]) => `<div class="card"><div class="eyebrow">${esc(v.group)}</div><h3><span class="glyph">${GLYPHABLE.has(k) ? esc(v.glyph + VS) : ''}</span> ${esc(v.name)}</h3><p class="muted" style="margin-top:6px">${esc(v.core)}</p></div>`).join('')}</div>
+      </div>`;
+  }
+
   // ---------- tabs ----------
-  const RENDER = { data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
+  const RENDER = { reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
 
   function showTab(tab) {
     state.tab = tab;
@@ -899,6 +956,10 @@
       else if (row.dataset.aspect) { showTab('chart'); setActive({ kind: 'aspect', key: row.dataset.aspect }, true); }
       else if (row.dataset.house) { showTab('chart'); setActive({ kind: 'house', key: row.dataset.house }, true); }
     });
+    document.querySelector('main').addEventListener('click', e => {
+      const a = e.target.closest('[data-scroll]');
+      if (a) { e.preventDefault(); document.getElementById(a.dataset.scroll)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    }, true);
     document.querySelector('main').addEventListener('change', e => {
       if (e.target.id === 'timing-date') renderTiming(true);
     });
@@ -961,7 +1022,10 @@
   }
 
   // ---------- birth data dialog ----------
-  const TZS = [...new Set(CITY.CITIES.map(c => c.tz))].sort();
+  const TZS = (() => {
+    try { if (Intl.supportedValuesOf) return Intl.supportedValuesOf('timeZone'); } catch (e) { /* older browser */ }
+    return [...new Set(CITY.CITIES.map(c => c.tz))].sort();
+  })();
 
   function fillForm(i) {
     $('#f-name').value = i.name || '';
@@ -972,11 +1036,12 @@
     $('#f-place').value = i.place || '';
     $('#f-lat').value = i.lat;
     $('#f-lon').value = i.lon;
+    $('#birth-title').textContent = i.date ? 'Birth data' : 'New chart';
     const sel = $('#f-tz');
     sel.innerHTML = `<option value="">Manual offset</option>` + TZS.map(z => `<option value="${z}">${z.replace(/_/g, ' ')}</option>`).join('');
     sel.value = TZS.includes(i.tz) ? i.tz : '';
     $('#f-offset').value = i.utcOffset;
-    updateOffsetNote();
+    if (i.date) updateOffsetNote(); else $('#offset-note').textContent = 'Pick a city and the offset, including daylight saving time, is filled in for you.';
     $('#form-error').hidden = true;
     renderSaved();
   }
@@ -1038,6 +1103,8 @@
   function bindDialog() {
     const dlg = $('#birth-dialog');
     $('#edit-birth').addEventListener('click', () => { fillForm(state.input); dlg.showModal(); });
+    $('#new-chart').addEventListener('click', () => { fillForm(EMPTY_INPUT); dlg.showModal(); $('#f-name').focus(); });
+    $('#example-new').addEventListener('click', () => { fillForm(EMPTY_INPUT); dlg.showModal(); $('#f-name').focus(); });
     $('#close-dialog').addEventListener('click', () => dlg.close());
     $('#f-unknown').addEventListener('change', e => { $('#f-time').disabled = e.target.checked; });
     $('#f-tz').addEventListener('change', updateOffsetNote);
@@ -1082,7 +1149,7 @@
         const raw = $('#f-code').value.trim();
         const obj = JSON.parse(decodeURIComponent(escape(atob(raw))));
         if (!obj.date || obj.lat == null || obj.lon == null) throw new Error('bad');
-        fillForm(Object.assign({}, REFERENCE_INPUT, obj));
+        fillForm(Object.assign({}, EMPTY_INPUT, obj));
         toast('Code loaded. Check the details, then draw the chart.');
       } catch (err) {
         const el = $('#form-error'); el.textContent = 'That code could not be read. Copy it again with Copy chart code.'; el.hidden = false;
@@ -1091,7 +1158,7 @@
 
     $('#save-chart').addEventListener('click', () => {
       const saved = store.get('saved', []);
-      const i = state.input;
+      const i = Object.assign({}, state.input); delete i.example;
       const idx = saved.findIndex(s => s.name === i.name && s.date === i.date && s.time === i.time);
       if (idx >= 0) saved[idx] = i; else saved.unshift(i);
       store.set('saved', saved.slice(0, 30));
@@ -1123,7 +1190,7 @@
     bindWheel(); bindTabs(); bindCustomize(); bindDialog();
     try { refresh(); } catch (err) {
       console.error(err);
-      state.input = REFERENCE_INPUT; refresh();
+      state.input = EXAMPLE_INPUT; refresh();
     }
     const tab = location.hash.replace('#', '');
     showTab(RENDER[tab] || tab === 'chart' ? tab : store.get('tab', 'chart'));

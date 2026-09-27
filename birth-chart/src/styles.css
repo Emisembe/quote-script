@@ -194,7 +194,7 @@ p { margin: 0; }
 .wheel .pt .rx { font-family: var(--sans); font-size: 10px; font-weight: 700; fill: var(--tension); pointer-events: none; }
 .wheel .pt:hover circle, .wheel .pt:focus-visible circle, .wheel .pt.is-active circle { fill: var(--plum); stroke: var(--plum); }
 .wheel .pt:hover text.g, .wheel .pt:focus-visible text.g, .wheel .pt.is-active text.g { fill: var(--on-plum); }
-.wheel .pt:focus-visible { outline: none; }
+.wheel .pt:focus, .wheel .pt:focus-visible { outline: none; }
 .wheel .center-dot { fill: var(--plum); }
 
 /* focus mode: dim everything unrelated to the active item */
@@ -357,3 +357,10 @@ details summary { cursor: pointer; font-weight: 650; }
   position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
   background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 600; z-index: 20;
 }
+
+.example-banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.reading-list { display: grid; gap: 12px; }
+.reading-item p { color: var(--ink-2); max-width: 75ch; }
+.reading-item { scroll-margin-top: 90px; }
+a.chip { text-decoration: none; }
+a.chip:hover { border-color: var(--plum-2); background: var(--plum-tint); }
