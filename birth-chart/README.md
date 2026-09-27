@@ -6,6 +6,19 @@ An interactive birth chart that runs entirely in the browser. It calculates the 
 
 It works for anyone. Press **New chart**, enter a name, date, time and city, and the chart is calculated. The city search fills in the historical UTC offset, including daylight saving time. For places not in the list, type the coordinates and choose any of the world's time zones.
 
+## Life guidance
+
+The **Life guidance** tab answers practical questions such as "What career suits me?", "What kind of partner suits me?", "How do I handle money?" or "What is my purpose?". Type a question, and it is matched by keywords to one of nine topics: career, love, money, home and family, wellbeing, purpose, friends, learning, and strengths and challenges. You can also pick a topic directly. Each answer:
+
+- names the chart factors it is based on, and each one opens that placement on the wheel,
+- combines the traditional significators for that topic. For career that means the Midheaven, the 10th and 6th houses and their rulers, the Sun, Saturn and the dominant planet. For love it means Venus, Mars, the Moon, the Descendant and the 7th and 5th houses,
+- gives concrete output where it makes sense: ranked career fields with reasons, an employed or self-employed lean, love language, and earning and spending style,
+- lists supportive and challenging aspects, upcoming slow-planet transits for that topic over the next 12 months, and questions to reflect on,
+- works without a birth time, using planets and signs only,
+- can be printed with **Print this answer**.
+
+Question matching is keyword-based and runs offline. No AI service is involved.
+
 ## Compatibility
 
 The **Compatibility** tab compares any two people. It scores seven areas of life from 0 to 100: emotional connection, romance and attraction, communication, values and lifestyle, long-term commitment, friendship and growth, and handling conflict. Each score combines:
@@ -34,6 +47,7 @@ python3 build.py
 | --- | --- |
 | `src/content-signs.js`, `src/content-houses.js` | A specific explanation for every planet and point in every sign and every house |
 | `src/content-aspects.js` | A theme for every pair of points, plus how each one expresses itself in easy and hard aspects |
+| `src/content-topics.js` | Career fields, work style, love languages, money style, wellbeing, and question-to-topic routing |
 | `src/compat.js` | Compatibility scoring, similarity and house overlays |
 | `src/content-learn.js` | Glossary, retrograde meanings, transit themes, pattern explanations |
 | `src/vendor/astronomy.browser.min.js` | astronomy-engine 2.1.19 (MIT), bundled so no CDN is needed |

@@ -962,6 +962,234 @@
       </div>`;
   }
 
+  // ---------- Life guidance ----------
+  const T = window.ChartTopics;
+  state.guide = { topic: store.get('guideTopic', 'career'), question: '' };
+
+  const cuspSign = h => E.signOf(state.chart.houses.cusps[h - 1]).sign;
+  const houseRuler = h => pt(cuspSign(h).ruler);
+  const PLANET_KEYS = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'chiron', 'nnode'];
+  const occupants = h => state.chart.points.filter(p => p.house === h && PLANET_KEYS.includes(p.key));
+  const sgn = k => E.signOf(pt(k).lon).sign;
+  function houseLine(h) {
+    const sg = cuspSign(h);
+    const style = C.SIGN_STYLE[sg.key].replace(/^In \w+ it (\w+?)s /, 'you tend to $1 ');
+    return `Your ${ordinal(h)} house (${C.HOUSES[h - 1].area}) begins in ${sg.name}: here ${style}`;
+  }
+  function rulerLine(h, label) {
+    const r = houseRuler(h);
+    return `The ruler of ${label}, ${P(r.key).name}, sits in ${E.signOf(r.lon).sign.name}${r.house ? ` in your ${ordinal(r.house)} house, which links ${label} to ${C.HOUSES[r.house - 1].area}` : ''}.`;
+  }
+  const occupantLines = h => occupants(h).map(p => `<li><b>${esc(P(p.key).name)} in house ${h}.</b> ${esc(houseReading(p.key, h) || '')}</li>`).join('');
+  function aspectsInvolving(keys, tone) {
+    return state.aspects.filter(a => a.aspect.major && (keys.includes(a.a) || keys.includes(a.b)) && (tone === 'flow' ? ['trine', 'sextile'].includes(a.aspect.key) : tone === 'tension' ? ['square', 'opposition'].includes(a.aspect.key) : a.aspect.key === 'conjunction')).slice(0, 4);
+  }
+  const aspectItems = list => list.map(a => `<li><b>${esc(P(a.a).name)} ${a.aspect.name.toLowerCase()} ${esc(P(a.b).name)}</b> <span class="faint">(orb ${a.orb.toFixed(1)}°)</span>. ${esc(AT.readAspect(a.a, a.b, a.aspect.key, aspectTone(a.aspect), [P(a.a).name, P(a.b).name]))}</li>`).join('');
+  const dominantEl = () => { const b = balance(); return Object.keys(b.el).sort((x, y) => b.el[y] - b.el[x])[0]; };
+  const dominantMd = () => { const b = balance(); return Object.keys(b.md).sort((x, y) => b.md[y] - b.md[x])[0]; };
+  const upcomingFor = keys => {
+    const natal = state.chart.points.filter(p => keys.includes(p.key));
+    if (!natal.length) return [];
+    const now = new Date();
+    return E.transitsBetween(natal, now, new Date(now.getTime() + 365 * 86400e3));
+  };
+  const timingList = list => list.length ? `<ul class="syn-list">${list.slice(0, 8).map(x => {
+    const good = x.mover === 'jupiter' || ['trine', 'sextile'].includes(x.aspect.key);
+    return `<li><span class="pill ${good ? 'ok' : 'warn'}">${good ? 'Opening' : 'Test'}</span> <b>${fmtDate(x.date)}</b>: ${P(x.mover).name}${x.retrograde ? ' (R)' : ''} ${x.aspect.name.toLowerCase()} your ${P(x.natal).name}. <span class="muted">${esc(L.TRANSIT[x.mover] ? 'A period of ' + L.TRANSIT[x.mover].theme + '.' : '')}</span></li>`;
+  }).join('')}</ul>` : '<p class="muted">No slow-planet transits to these points in the next 12 months. It is a steadier period for this area.</p>';
+  // Drops empty lists, and the whole section when nothing is left to say.
+  const sectionHtml = (title, body) => {
+    body = (body || '').replace(/<ul class="syn-list"><\/ul>/g, '').trim();
+    return body ? `<div class="card guide-section"><h3>${title}</h3>${body}</div>` : '';
+  };
+  const para = t => t ? `<p>${esc(t)}</p>` : '';
+
+  function careerFields() {
+    const score = {}, why = {};
+    const add = (list, w, reason) => list.forEach(f => { score[f] = (score[f] || 0) + w; (why[f] = why[f] || new Set()).add(reason); });
+    if (!state.chart.noHouses) {
+      add(T.CAREER_BY_SIGN[E.signOf(pt('mc').lon).index], 3, `Midheaven in ${sgn('mc').name}`);
+      const mr = houseRuler(10);
+      if (T.CAREER_BY_PLANET[mr.key]) add(T.CAREER_BY_PLANET[mr.key].fields, 2, `${P(mr.key).name} rules your career house`);
+      occupants(10).forEach(p => T.CAREER_BY_PLANET[p.key] && add(T.CAREER_BY_PLANET[p.key].fields, 2, `${P(p.key).name} in the 10th house`));
+      occupants(6).forEach(p => T.CAREER_BY_PLANET[p.key] && add(T.CAREER_BY_PLANET[p.key].fields, 1, `${P(p.key).name} in the 6th house`));
+    }
+    add(T.CAREER_BY_SIGN[E.signOf(pt('sun').lon).index], 1.5, `Sun in ${sgn('sun').name}`);
+    const dom = dominance()[0];
+    if (T.CAREER_BY_PLANET[dom.key]) add(T.CAREER_BY_PLANET[dom.key].fields, 1.5, `${P(dom.key).name} is your dominant planet`);
+    return Object.keys(score).sort((a, b) => score[b] - score[a]).slice(0, 9).map(f => ({ field: f, why: [...why[f]] }));
+  }
+
+  function independenceLean() {
+    let ind = 0, str = 0;
+    const b = balance();
+    ind += (b.el.fire + b.md.cardinal) / b.tot * 4;
+    str += (b.el.earth + b.md.fixed) / b.tot * 4;
+    ['sun', 'mars', 'uranus'].forEach(k => { const h = pt(k).house; if ([1, 10].includes(h)) ind += 1.5; });
+    ['saturn', 'moon'].forEach(k => { const h = pt(k).house; if ([6, 10].includes(h)) str += 1; });
+    if (!state.chart.noHouses && ['ari', 'leo', 'aqu', 'sag'].includes(sgn('mc').key)) ind += 1.5;
+    if (!state.chart.noHouses && ['cap', 'vir', 'tau', 'can'].includes(sgn('mc').key)) str += 1.5;
+    if (ind > str + 1) return 'Your chart leans toward independence. Self-employment, freelancing or roles with a lot of autonomy suit you better than tightly managed jobs.';
+    if (str > ind + 1) return 'Your chart leans toward structure. You tend to do well inside established organisations, where clear roles and steady advancement reward your reliability.';
+    return 'Your chart is balanced between independence and structure. A stable base plus a side project, or an autonomous role inside an organisation, often works best.';
+  }
+
+  function guideTopic(key) {
+    const nh = state.chart.noHouses;
+    const noTime = nh ? '<p class="note">No birth time, so houses, the Midheaven and the Ascendant are left out. The answer uses planets and signs only.</p>' : '';
+    const factor = (label, k) => `<button class="chip" type="button" data-goto-point="${k}"><span class="glyph">${esc(glyphOf(k))}</span>${esc(label)}</button>`;
+    let factors = [], body = '', timing = [], reflect = [];
+    if (key === 'career') {
+      factors = [factor(`Sun in ${sgn('sun').name}`, 'sun'), factor(`Saturn in ${sgn('saturn').name}`, 'saturn')];
+      if (!nh) factors.unshift(factor(`Midheaven in ${sgn('mc').name}`, 'mc'), factor(`Career ruler ${P(houseRuler(10).key).name}`, houseRuler(10).key));
+      const fields = careerFields();
+      body += sectionHtml('Your direction', (nh ? '' : para(signReading('mc', pt('mc').lon)) + para(rulerLine(10, 'your career house'))) + para(signReading('sun', pt('sun').lon)) + (nh ? '' : (occupants(10).length ? `<ul class="syn-list">${occupantLines(10)}</ul>` : '')));
+      body += sectionHtml('Work style', para(T.WORK_STYLE[dominantEl()] + ' ' + T.WORK_STYLE[dominantMd()]) + (nh ? '' : para(houseLine(6))) + (nh ? '' : (occupants(6).length ? `<ul class="syn-list">${occupantLines(6)}</ul>` : '')) + para(houseReading('saturn', pt('saturn').house)));
+      body += sectionHtml('Fields to consider', `<p class="muted">Ranked by how many chart factors point to them. Treat these as themes to explore, not a fixed list.</p><ul class="field-list">${fields.map(f => `<li><b>${esc(f.field.charAt(0).toUpperCase() + f.field.slice(1))}</b><span class="faint">${esc(f.why.join(' · '))}</span></li>`).join('')}</ul>`);
+      body += sectionHtml('Employed or self-employed?', para(independenceLean()));
+      body += sectionHtml('Professional strengths', `<ul class="syn-list">${aspectItems(aspectsInvolving(['sun', 'mc', 'saturn', 'mercury', 'mars', 'jupiter'], 'flow'))}</ul>`);
+      body += sectionHtml('Where work gets hard', `<ul class="syn-list">${aspectItems(aspectsInvolving(['sun', 'mc', 'saturn', 'mars'], 'tension'))}</ul>`);
+      timing = upcomingFor(nh ? ['sun', 'saturn'] : ['mc', 'sun', 'saturn', houseRuler(10).key]);
+      reflect = ['Which of the suggested fields already excites you, and why?', 'Do you do your best work alone, or inside a team with clear roles?', 'What would you want to be known for in ten years?'];
+    } else if (key === 'love') {
+      const v = sgn('venus'), mo = sgn('moon');
+      const ll = T.LOVE_LANGUAGE[v.element], lm = T.LOVE_LANGUAGE[mo.element];
+      factors = [factor(`Venus in ${v.name}`, 'venus'), factor(`Mars in ${sgn('mars').name}`, 'mars'), factor(`Moon in ${mo.name}`, 'moon')];
+      if (!nh) factors.push(factor(`Descendant in ${sgn('dsc').name}`, 'dsc'));
+      const compatibleSigns = E.SIGNS.filter(s => s.element === v.element || ({ fire: 'air', air: 'fire', earth: 'water', water: 'earth' })[v.element] === s.element).map(s => s.name);
+      body += sectionHtml('How you love', para(signReading('venus', pt('venus').lon)) + para(houseReading('venus', pt('venus').house)));
+      body += sectionHtml('Love language', `<p>You show love through <b>${ll.gives}</b>. You feel loved through <b>${lm.needs}</b>${lm !== ll ? ` and ${ll.needs}` : ''}.</p><p class="muted">Tell a partner this directly. Many relationship misunderstandings come from giving love in your own language rather than theirs.</p>`);
+      body += sectionHtml('What you need to feel secure', para(signReading('moon', pt('moon').lon)));
+      body += sectionHtml('What attracts you', para(signReading('mars', pt('mars').lon)) + (nh ? '' : para(signReading('dsc', pt('dsc').lon))));
+      if (!nh) body += sectionHtml('The partner who suits you', para(houseLine(7)) + para(rulerLine(7, 'partnership')) + (occupants(7).length ? `<ul class="syn-list">${occupantLines(7)}</ul>` : '') + para(houseLine(5)));
+      body += sectionHtml('Relationship strengths', `<ul class="syn-list">${aspectItems(aspectsInvolving(['venus', 'moon'], 'flow'))}</ul>`);
+      body += sectionHtml('Patterns to watch', `<ul class="syn-list">${aspectItems(aspectsInvolving(['venus', 'moon', 'mars'], 'tension'))}</ul>`);
+      body += sectionHtml('Signs that harmonise with your Venus', `<p>Traditionally ${compatibleSigns.join(', ')}. Real compatibility depends on the whole chart, so compare two charts on the <b>Compatibility</b> tab for a full answer.</p>`);
+      timing = upcomingFor(nh ? ['venus', 'moon'] : ['venus', 'moon', 'dsc', houseRuler(7).key]);
+      reflect = ['Do your partners usually get love in the form you give it, or the form they need?', 'Which of the patterns to watch have you seen repeat?', 'What does feeling safe with someone look like for you?'];
+    } else if (key === 'money') {
+      factors = [factor(`Venus in ${sgn('venus').name}`, 'venus'), factor(`Jupiter in ${sgn('jupiter').name}`, 'jupiter')];
+      if (!nh) factors.unshift(factor(`Money ruler ${P(houseRuler(2).key).name}`, houseRuler(2).key));
+      if (!nh) body += sectionHtml('How you earn and spend', para(T.MONEY_BY_SIGN[E.signOf(state.chart.houses.cusps[1]).index]) + para(rulerLine(2, 'your money house')) + (occupants(2).length ? `<ul class="syn-list">${occupantLines(2)}</ul>` : ''));
+      body += sectionHtml('Where abundance comes from', para(signReading('jupiter', pt('jupiter').lon)) + para(houseReading('jupiter', pt('jupiter').house)));
+      body += sectionHtml('Values and spending', para(signReading('venus', pt('venus').lon)));
+      if (!nh) body += sectionHtml('Shared money, loans and investments', para(houseLine(8)) + (occupants(8).length ? `<ul class="syn-list">${occupantLines(8)}</ul>` : ''));
+      body += sectionHtml('Financial strengths', `<ul class="syn-list">${aspectItems(aspectsInvolving(['jupiter', 'venus', 'saturn'], 'flow'))}</ul>`);
+      body += sectionHtml('Financial pitfalls', `<ul class="syn-list">${aspectItems(aspectsInvolving(['jupiter', 'venus', 'neptune'], 'tension'))}</ul>`);
+      timing = upcomingFor(nh ? ['jupiter', 'venus'] : ['jupiter', 'venus', houseRuler(2).key]);
+      reflect = ['Is your income style steady or in bursts, and do your savings match that?', 'What do you spend on that truly reflects your values?'];
+    } else if (key === 'home') {
+      factors = [factor(`Moon in ${sgn('moon').name}`, 'moon')];
+      if (!nh) factors.unshift(factor(`IC in ${sgn('ic').name}`, 'ic'));
+      if (!nh) body += sectionHtml('Roots and the home you need', para(signReading('ic', pt('ic').lon)) + para(rulerLine(4, 'home')) + (occupants(4).length ? `<ul class="syn-list">${occupantLines(4)}</ul>` : ''));
+      body += sectionHtml('Emotional needs at home', para(signReading('moon', pt('moon').lon)) + para(houseReading('moon', pt('moon').house)));
+      if (!nh) body += sectionHtml('Children and creativity', para(houseLine(5)) + (occupants(5).length ? `<ul class="syn-list">${occupantLines(5)}</ul>` : ''));
+      body += sectionHtml('Family patterns', `<ul class="syn-list">${aspectItems(aspectsInvolving(['moon', 'saturn'], 'tension').concat(aspectsInvolving(['moon'], 'flow')))}</ul>`);
+      timing = upcomingFor(nh ? ['moon'] : ['moon', 'ic']);
+      reflect = ['What did home feel like growing up, and what do you want it to feel like now?'];
+    } else if (key === 'health') {
+      factors = [factor(`Sun in ${sgn('sun').name}`, 'sun'), factor(`Mars in ${sgn('mars').name}`, 'mars'), factor(`Moon in ${sgn('moon').name}`, 'moon')];
+      body += '<p class="note">This is traditional astrology about energy and habits, not medical advice. See a doctor for any health concern.</p>';
+      if (!nh) body += sectionHtml('Your constitution', para(T.WELLBEING[E.signOf(pt('asc').lon).index]) + para(houseLine(6)) + (occupants(6).length ? `<ul class="syn-list">${occupantLines(6)}</ul>` : ''));
+      body += sectionHtml('Vitality', para(T.WELLBEING[E.signOf(pt('sun').lon).index]));
+      body += sectionHtml('How your energy works', para(signReading('mars', pt('mars').lon)));
+      body += sectionHtml('Emotional wellbeing', para(signReading('moon', pt('moon').lon)));
+      body += sectionHtml('What drains you', `<ul class="syn-list">${aspectItems(aspectsInvolving(['sun', 'moon', 'mars'], 'tension'))}</ul>`);
+      timing = upcomingFor(nh ? ['sun', 'moon', 'mars'] : ['sun', 'moon', 'mars', 'asc']);
+      reflect = ['Which activity reliably restores your energy?', 'Where in your week could you add one of the recharge suggestions?'];
+    } else if (key === 'purpose') {
+      factors = [factor(`Sun in ${sgn('sun').name}`, 'sun'), factor(`North Node in ${sgn('nnode').name}`, 'nnode'), factor(`Saturn in ${sgn('saturn').name}`, 'saturn'), factor(`Chiron in ${sgn('chiron').name}`, 'chiron')];
+      body += sectionHtml('Who you are becoming', para(signReading('sun', pt('sun').lon)) + para(houseReading('sun', pt('sun').house)));
+      body += sectionHtml('Your growth direction', para(signReading('nnode', pt('nnode').lon)) + para(houseReading('nnode', pt('nnode').house)));
+      body += sectionHtml('Your life lesson', para(signReading('saturn', pt('saturn').lon)) + para(houseReading('saturn', pt('saturn').house)));
+      body += sectionHtml('The wound that becomes wisdom', para(signReading('chiron', pt('chiron').lon)) + para(houseReading('chiron', pt('chiron').house)));
+      const cyc = E.lifeCycles(state.chart).filter(c => c.dates[c.dates.length - 1] > new Date()).slice(0, 4);
+      body += sectionHtml('Turning points ahead', cyc.length ? `<ul class="syn-list">${cyc.map(c => `<li><b>${esc(c.name)}</b>, age ${Math.floor(c.age)} (${c.dates.map(fmtDate).join(', ')}). ${esc(c.note)}</li>`).join('')}</ul>` : '');
+      timing = upcomingFor(['sun', 'nnode', 'saturn']);
+      reflect = ['When have you felt most "on path"? What were you doing?', 'Which familiar habit (your South Node) do you lean on when stressed?'];
+    } else if (key === 'friends') {
+      factors = [factor(`Uranus in ${sgn('uranus').name}`, 'uranus'), factor(`Venus in ${sgn('venus').name}`, 'venus')];
+      if (!nh) body += sectionHtml('Your circle', para(houseLine(11)) + para(rulerLine(11, 'friendship')) + (occupants(11).length ? `<ul class="syn-list">${occupantLines(11)}</ul>` : ''));
+      body += sectionHtml('How you connect socially', para(`Your Venus is in ${sgn('venus').element}: you offer friends ${T.LOVE_LANGUAGE[sgn('venus').element].gives}, and you need ${T.LOVE_LANGUAGE[sgn('moon').element].needs} from the people close to you.`));
+      body += sectionHtml('Social strengths and friction', `<ul class="syn-list">${aspectItems(aspectsInvolving(['venus', 'uranus', 'jupiter'], 'flow').concat(aspectsInvolving(['venus', 'uranus'], 'tension')))}</ul>`);
+      timing = upcomingFor(nh ? ['venus'] : ['venus', houseRuler(11).key]);
+      reflect = ['Which friendships give you energy, and which cost it?'];
+    } else if (key === 'mind') {
+      const m = sgn('mercury');
+      const learn = { fire: 'by doing, trying and competing', earth: 'through hands-on practice and concrete examples', air: 'by reading, discussing and connecting ideas', water: 'through stories, images and emotional connection to the subject' }[m.element];
+      factors = [factor(`Mercury in ${m.name}`, 'mercury'), factor(`Jupiter in ${sgn('jupiter').name}`, 'jupiter')];
+      body += sectionHtml('How you think', para(signReading('mercury', pt('mercury').lon)) + para(houseReading('mercury', pt('mercury').house)) + (pt('mercury').retrograde ? para(L.RETRO.mercury) : ''));
+      body += sectionHtml('How you learn best', `<p>You learn best ${learn}.</p>` + (nh ? '' : para(houseLine(3)) + para(houseLine(9))));
+      body += sectionHtml('Communication strengths', `<ul class="syn-list">${aspectItems(aspectsInvolving(['mercury'], 'flow'))}</ul>`);
+      body += sectionHtml('Communication pitfalls', `<ul class="syn-list">${aspectItems(aspectsInvolving(['mercury'], 'tension'))}</ul>`);
+      timing = upcomingFor(['mercury', 'jupiter']);
+      reflect = ['Which learning method has actually worked for you before?'];
+    } else if (key === 'strengths') {
+      const digs = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn'].map(k => ({ k, d: dignity(k, sgn(k).key) })).filter(x => x.d);
+      const b = balance();
+      const lacking = Object.keys(b.el).filter(k => b.el[k] / b.tot < 0.1);
+      factors = [factor(`Dominant: ${P(dominance()[0].key).name}`, dominance()[0].key)];
+      body += sectionHtml('Natural talents', `<ul class="syn-list">${aspectItems(state.aspects.filter(a => ['trine', 'sextile'].includes(a.aspect.key) && PLANET_KEYS.includes(a.a) && PLANET_KEYS.includes(a.b)).slice(0, 5))}</ul>` + (digs.filter(x => ['Domicile', 'Exaltation'].includes(x.d)).map(x => para(`${P(x.k).name} is strong in ${sgn(x.k).name} (${x.d.toLowerCase()}): ${P(x.k).core.toLowerCase()}`)).join('')));
+      body += sectionHtml('Growth edges', `<ul class="syn-list">${aspectItems(state.aspects.filter(a => ['square', 'opposition'].includes(a.aspect.key) && PLANET_KEYS.includes(a.a) && PLANET_KEYS.includes(a.b)).slice(0, 5))}</ul>` + digs.filter(x => ['Detriment', 'Fall'].includes(x.d)).map(x => para(`${P(x.k).name} in ${sgn(x.k).name} (${x.d.toLowerCase()}) has to work harder, which can turn into unusual skill.`)).join(''));
+      body += sectionHtml('Balance', para(`Your strongest element is ${dominantEl()}. ${C.ELEMENTS[dominantEl()].text}`) + (lacking.length ? para(`Little ${lacking.join(' or ')} in the chart: ${lacking.map(k => C.ELEMENTS[k].text.split('.')[0].toLowerCase()).join('; ')} may need deliberate practice, or come through other people.`) : ''));
+      reflect = ['Which talent do you take for granted?', 'Which tension has pushed you to grow the most?'];
+    }
+    const topic = T.TOPICS.find(t => t.key === key);
+    return `<div class="section guide-answer">
+      <div class="print-only"><span class="eyebrow">Life guidance · ${esc(state.input.name || '')}</span></div>
+      <div class="section-head"><div><span class="eyebrow">Answer</span><h2>${esc(topic.name)}</h2></div><button class="btn small no-print" type="button" id="guide-print">Print this answer</button></div>
+      ${noTime}
+      <div class="chips"><span class="faint">Based on:</span> ${factors.join('')}</div>
+      <div class="guide-grid">${body}</div>
+      ${key !== 'strengths' ? sectionHtml('Timing: the next 12 months', timingList(timing)) : ''}
+      ${reflect.length ? sectionHtml('Questions to reflect on', `<ul class="syn-list">${reflect.map(r => `<li>${esc(r)}</li>`).join('')}</ul>`) : ''}
+    </div>`;
+  }
+
+  function renderGuide() {
+    const g = state.guide;
+    const topic = T.TOPICS.find(t => t.key === g.topic) || T.TOPICS[0];
+    $('#panel-guide').innerHTML = `
+      <div class="section no-print">
+        <div><span class="eyebrow">Life guidance</span><h2>Ask the chart a question</h2></div>
+        <p class="muted">Type a question about career, love, money, family, health, purpose, friends or learning, or pick a topic. The answer is built from the placements astrologers traditionally read for that area of life.</p>
+        <form class="ask" id="ask-form">
+          <label class="sr-only" for="ask-input">Your question</label>
+          <input type="text" id="ask-input" placeholder="For example: What career suits me?" value="${esc(g.question)}" autocomplete="off">
+          <button class="btn primary" type="submit">Ask</button>
+        </form>
+        <p class="form-error" id="ask-error" hidden></p>
+        <div class="chips topic-chips">${T.TOPICS.map(t => `<button class="chip${t.key === topic.key ? ' on' : ''}" type="button" data-topic="${t.key}">${esc(t.name)}</button>`).join('')}</div>
+        <div class="chips">${topic.examples.map(q => `<button class="chip ghost" type="button" data-ask="${esc(q)}">${esc(q)}</button>`).join('')}</div>
+      </div>
+      <div id="guide-answer">${guideTopic(topic.key)}</div>`;
+  }
+
+  function bindGuide() {
+    const panel = $('#panel-guide');
+    const ask = q => {
+      const t = T.routeQuestion(q);
+      state.guide.question = q;
+      if (!t) {
+        const el = $('#ask-error');
+        el.textContent = 'That question did not match a topic. Try words like career, love, money, family, health, purpose, friends or learning, or pick a topic below.';
+        el.hidden = false;
+        return;
+      }
+      state.guide.topic = t.key; store.set('guideTopic', t.key);
+      renderGuide();
+      $('#guide-answer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    panel.addEventListener('submit', e => { if (e.target.id === 'ask-form') { e.preventDefault(); ask($('#ask-input').value); } });
+    panel.addEventListener('click', e => {
+      const tb = e.target.closest('[data-topic]');
+      if (tb) { state.guide.topic = tb.dataset.topic; state.guide.question = ''; store.set('guideTopic', tb.dataset.topic); renderGuide(); return; }
+      const qb = e.target.closest('[data-ask]');
+      if (qb) { ask(qb.dataset.ask); return; }
+      if (e.target.id === 'guide-print') printPanel();
+    });
+  }
+
   // ---------- Compatibility ----------
   const PARTNER_EXAMPLE = {
     name: 'Example partner', date: '1998-06-21', time: '18:30', timeUnknown: false,
@@ -1185,7 +1413,7 @@
   }
 
   // ---------- tabs ----------
-  const RENDER = { compat: renderCompat, reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
+  const RENDER = { guide: renderGuide, compat: renderCompat, reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
 
   function showTab(tab) {
     state.tab = tab;
@@ -1449,7 +1677,7 @@
       document.querySelector('main').innerHTML = '<div class="card"><h2>The astronomy library did not load</h2><p class="muted">Check your internet connection and reload. The chart is calculated in your browser with astronomy-engine, loaded from cdn.jsdelivr.net.</p></div>';
       return;
     }
-    bindWheel(); bindTabs(); bindCustomize(); bindDialog(); bindCompat();
+    bindWheel(); bindTabs(); bindCustomize(); bindDialog(); bindCompat(); bindGuide();
     $('main').addEventListener('click', e => { if (e.target.id === 'reading-print') printPanel(); });
     if (!window.matchMedia('(hover: hover)').matches) {
       $('#wheel-hint').textContent = 'Tap any symbol, sign or house number to read about it. Tap the centre to close.';
