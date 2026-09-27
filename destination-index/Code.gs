@@ -23,7 +23,7 @@
 // ============================================================================
 
 var APP_NAME = 'Destination Index';
-var VERSION = '1.2.0';
+var VERSION = '1.3.0';
 
 // Where "Update code" downloads the newest version from (changeable in the menu).
 var DEFAULT_UPDATE_URL =
@@ -402,7 +402,7 @@ function guideLines_() {
     ['   Click Continue > choose your account > "Google hasn\'t verified this app" > Advanced > Go to (project name) > Allow.', 'code'],
     ['   This warning is normal for your own scripts. The script only works inside this Sheet and fetches data from the links in the Sources tab.', 'code'],
     ['Step 5. Destination Index > Open control panel (buttons). A panel opens on the right with all actions.', 'text'],
-    ['Step 6 (optional, once). Set up automatic code updates - see section 14.', 'text'],
+    ['Step 6. Later, when a new version is announced: Code updates > Update code to the latest version (section 14).', 'text'],
     ['Tip: if the menu does not appear, reload the Sheet again, or in Apps Script select the function "onOpen" and click Run once.', 'tip']
   ]); blank();
 
@@ -415,8 +415,8 @@ function guideLines_() {
     ['Refresh scores & dashboard - regenerates all formulas for the current list of countries and indicators. Use after adding/removing rows or columns by hand.', 'text'],
     ['Add a source link / Add an indicator / Add a country - open the control panel directly at that form.', 'text'],
     ['Go to Guide / Dashboard / Data / Sources - jump to that tab.', 'text'],
-    ['Code updates > Update code to the latest version - downloads the newest code and installs it (section 14).', 'text'],
-    ['Code updates > Restore previous code - puts back the code from before the last update.', 'text'],
+    ['Code updates > Update code to the latest version - downloads the newest code and opens a window to install it in 4 clicks (section 14).', 'text'],
+    ['Code updates > Restore previous code - go back to an earlier version (section 14).', 'text'],
     ['Code updates > Update settings - change the download link, or add a GitHub token for a private repository.', 'text'],
     ['Code updates > About / current version - shows the installed version and the update link.', 'text'],
     ['Reset everything - deletes ALL tool tabs including your data and rebuilds them with defaults. Asks for confirmation. Use only to start over.', 'warn']
@@ -621,19 +621,27 @@ function guideLines_() {
   // 14
   add([
     ['14. UPDATING THE CODE', 'h'],
-    ['When the code is improved, you do not need to copy-paste again: Destination Index > Code updates > Update code to the latest version.', 'text'],
-    ['What it does: downloads the newest Code.gs from the update link (GitHub), checks it is a valid version of this tool, saves your current code in the hidden _CodeBackup tab, installs the new code, and tells you the old and new version. Your data is not touched.', 'text'],
-    ['After updating: reload the Sheet (F5), then click Build / repair the sheet once so new tabs/formulas appear.', 'text'],
-    ['ONE-TIME SETUP (needed before the first update)', 'h2'],
-    ['Google only lets a script rewrite its own code if you allow it. Do this once:', 'text'],
+    ['Everything lives in this one code file. When a new version is published, you update from the menu: Destination Index > Code updates > Update code to the latest version (also in the control panel).', 'text'],
+    ['What happens:', 'h2'],
+    ['1) The script downloads the newest Code.gs from the update link (GitHub) and checks that it really is this tool (name, version, menu). If not, nothing changes.', 'text'],
+    ['2) It shows the installed and the new version number and asks you to confirm.', 'text'],
+    ['3) A window opens with 4 steps:', 'text'],
+    ['   Step 1 - click "Copy code".   Step 2 - click "Open the Apps Script editor".', 'code'],
+    ['   Step 3 - click inside Code.gs, press Ctrl+A then Ctrl+V (Mac: Cmd+A, Cmd+V), then Ctrl+S to save.', 'code'],
+    ['   Step 4 - come back, reload the Sheet (F5), then Destination Index > Build / repair the sheet.', 'code'],
+    ['   If "Copy code" does not copy (some browsers block it), the code is selected in the box - press Ctrl+C. Or use "Download Code.gs instead" and paste from the file.', 'code'],
+    ['4) Your Data, Evidence, Weights, Indicators and Sources stay exactly as they are. New tabs or formulas appear after Build / repair.', 'text'],
+    ['Check your version: Code updates > About / current version (also shown in the control panel).', 'text'],
+    ['Going back to an older version: Code updates > Restore previous code. Every earlier version is kept on GitHub (the message shows the link): open the version, click "Raw", copy all, paste over Code.gs, save.', 'text'],
+    ['Update settings: change the download link (e.g. to the "main" branch or your own copy) or add a GitHub token if the repository becomes private. The token is stored only for your Google account.', 'text'],
+    ['OPTIONAL - fully automatic install (no copy-paste)', 'h2'],
+    ['Google only allows a script to rewrite itself after an extra permission. If you want the button to install by itself and keep a backup in this Sheet, do this once:', 'text'],
     ['a) Open https://script.google.com/home/usersettings and switch "Google Apps Script API" ON.', 'code'],
-    ['b) In the Apps Script editor: Project Settings (gear icon) > tick "Show appsscript.json manifest file in editor".', 'code'],
-    ['c) Open appsscript.json in the editor, replace its content with the appsscript.json provided with the code, Save.', 'code'],
-    ['d) Run any menu item once and accept the new permission ("Create and update Google Apps Script projects").', 'code'],
-    ['If the update button says "setup needed", one of these steps is missing - the message tells you which.', 'text'],
-    ['Restore previous code: Code updates > Restore previous code puts back the version saved before the last update.', 'text'],
-    ['Update settings: change the download link (e.g. to a different branch or your own copy) or add a GitHub token if the repository becomes private. The token is stored only for your Google account.', 'text'],
-    ['Manual fallback (always works): open the update link in a browser, copy all, paste over Code.gs in the editor, Save, reload.', 'tip']
+    ['b) Apps Script editor > Project Settings (gear) > tick "Show appsscript.json manifest file in editor".', 'code'],
+    ['c) Open appsscript.json, replace everything with the text on the next line, save:', 'code'],
+    [OPTIONAL_MANIFEST, 'code'],
+    ['d) Click Update again and accept the new permission. From then on the update installs by itself; if anything fails it falls back to the copy-paste window.', 'code'],
+    ['You never need this optional part - the copy-paste update always works.', 'tip']
   ]); blank();
 
   // 15
@@ -651,7 +659,8 @@ function guideLines_() {
     ['Dashboard says "No scores yet" -> fill Data or fetch; also check Weights row 2 is not all zero.', 'text'],
     ['A country is missing from Scores -> there is an empty row above it in Data. Delete the empty row and Refresh.', 'text'],
     ['"Exceeded maximum execution time" -> too many sources at once. Untick some, fetch, then tick the rest and fetch again.', 'text'],
-    ['Update says "setup needed" -> do the one-time setup in section 14. "HTTP 404" on update -> the update link is wrong; fix it in Update settings.', 'text'],
+    ['Update: "Could not download (HTTP 404)" -> the update link is wrong; fix it in Code updates > Update settings. "HTTP 401/403" -> repository is private: add a GitHub token there.', 'text'],
+    ['Update: after pasting, the menu is gone -> the paste was incomplete or the old code was not fully replaced. Open the editor, Ctrl+A, paste again, save, reload.', 'text'],
     ['Everything is broken -> Build / repair first. If still broken, File > Version history to go back, or Restore previous code.', 'text'],
     ['The Log tab records every action and error with a time stamp - check it first.', 'tip']
   ]); blank();
@@ -1421,49 +1430,113 @@ function updateCode() {
   var same = newVersion === VERSION;
   var answer = ui.alert(same ? 'Already up to date' : 'Update available',
     'Installed: ' + VERSION + '\nAvailable: ' + newVersion + '\n\n' +
-    (same ? 'Reinstall this version anyway?' : 'Install the new version? Your data stays as it is; the current code is backed up first.'),
+    (same ? 'Install this version again anyway?' : 'Install the new version? Your data stays as it is.'),
     ui.ButtonSet.YES_NO);
   if (answer !== ui.Button.YES) return 'Update cancelled.';
 
-  // 3. Read the current project, back it up, replace the code file
+  // 3a. Automatic install - only possible if the optional permission is set up (Guide section 14)
   var project = readProject_();
-  if (!project.ok) { ui.alert('Setup needed', project.message, ui.ButtonSet.OK); return 'Update needs setup.'; }
-  var target = findCodeFile_(project.files);
-  backupCode_(target ? target.source : '', VERSION);
+  if (project.ok) {
+    var target = findCodeFile_(project.files);
+    backupCode_(target ? target.source : '', VERSION);
+    var files = project.files.map(function (f) { return { name: f.name, type: f.type, source: f.source }; });
+    if (target) files.forEach(function (f) { if (f.name === target.name && f.type === 'SERVER_JS') f.source = newCode; });
+    else files.push({ name: 'Code', type: 'SERVER_JS', source: newCode });
+    var result = writeProject_(files);
+    if (result.ok) {
+      log_('Update', 'Code updated automatically from ' + VERSION + ' to ' + newVersion + ' (' + url + ').');
+      ui.alert('Updated to ' + newVersion,
+        'Done. Now:\n1. Reload this Sheet (F5).\n2. Destination Index > Build / repair the sheet.\n\nIf something is wrong: Code updates > Restore previous code.',
+        ui.ButtonSet.OK);
+      return 'Updated to ' + newVersion + '. Reload the Sheet, then Build / repair.';
+    }
+  }
 
-  var files = project.files.map(function (f) { return { name: f.name, type: f.type, source: f.source }; });
-  if (target) files.forEach(function (f) { if (f.name === target.name && f.type === 'SERVER_JS') f.source = newCode; });
-  else files.push({ name: 'Code', type: 'SERVER_JS', source: newCode });
-
-  var result = writeProject_(files);
-  if (!result.ok) { ui.alert('Update failed', result.message, ui.ButtonSet.OK); return 'Update failed.'; }
-
-  log_('Update', 'Code updated from ' + VERSION + ' to ' + newVersion + ' (' + url + ').');
-  ui.alert('Updated to ' + newVersion,
-    'Done. Now:\n1. Reload this Sheet (F5).\n2. Destination Index > Build / repair the sheet.\n\nIf something is wrong: Code updates > Restore previous code.',
-    ui.ButtonSet.OK);
-  return 'Updated to ' + newVersion + '. Reload the Sheet, then Build / repair.';
+  // 3b. Copy-paste install (works with the single code file, no extra setup)
+  log_('Update', 'Showing version ' + newVersion + ' for copy-paste install (installed: ' + VERSION + ').');
+  showInstallDialog_(newCode, 'Install version ' + newVersion,
+    'Installed: ' + VERSION + '  ->  new: ' + newVersion);
+  return 'Version ' + newVersion + ' is ready - follow the 4 steps in the window.';
 }
 
 function restorePreviousCode() {
   var ui = SpreadsheetApp.getUi();
   var backup = readBackup_();
-  if (!backup) { ui.alert('No backup found. A backup is made automatically before each update.'); return 'No backup.'; }
+  if (!backup) {
+    var hist = githubHistoryUrl_(getUpdateUrl_());
+    ui.alert('No backup in this Sheet',
+      'Backups are only saved by the automatic install (Guide section 14).\n\n' +
+      'Every earlier version is kept on GitHub' + (hist ? ':\n' + hist : '.') +
+      '\nOpen it, pick the version, click "Raw", copy all and paste it over Code.gs.', ui.ButtonSet.OK);
+    return 'No backup in this Sheet - see GitHub history.';
+  }
   var ok = ui.alert('Restore previous code?', 'Restore version ' + backup.version + ' saved on ' + backup.date + '?', ui.ButtonSet.YES_NO);
   if (ok !== ui.Button.YES) return 'Restore cancelled.';
 
   var project = readProject_();
-  if (!project.ok) { ui.alert('Setup needed', project.message, ui.ButtonSet.OK); return 'Restore needs setup.'; }
-  var target = findCodeFile_(project.files);
-  var files = project.files.map(function (f) { return { name: f.name, type: f.type, source: f.source }; });
-  if (target) files.forEach(function (f) { if (f.name === target.name && f.type === 'SERVER_JS') f.source = backup.source; });
-  else files.push({ name: 'Code', type: 'SERVER_JS', source: backup.source });
+  if (project.ok) {
+    var target = findCodeFile_(project.files);
+    var files = project.files.map(function (f) { return { name: f.name, type: f.type, source: f.source }; });
+    if (target) files.forEach(function (f) { if (f.name === target.name && f.type === 'SERVER_JS') f.source = backup.source; });
+    else files.push({ name: 'Code', type: 'SERVER_JS', source: backup.source });
+    if (writeProject_(files).ok) {
+      log_('Restore', 'Code restored to version ' + backup.version + '.');
+      ui.alert('Restored', 'Version ' + backup.version + ' restored. Reload the Sheet (F5).', ui.ButtonSet.OK);
+      return 'Restored ' + backup.version + '. Reload the Sheet.';
+    }
+  }
+  showInstallDialog_(backup.source, 'Restore version ' + backup.version, 'Backup saved on ' + backup.date);
+  return 'Backup ' + backup.version + ' ready - follow the steps in the window.';
+}
 
-  var result = writeProject_(files);
-  if (!result.ok) { ui.alert('Restore failed', result.message, ui.ButtonSet.OK); return 'Restore failed.'; }
-  log_('Restore', 'Code restored to version ' + backup.version + '.');
-  ui.alert('Restored', 'Version ' + backup.version + ' restored. Reload the Sheet (F5).', ui.ButtonSet.OK);
-  return 'Restored ' + backup.version + '. Reload the Sheet.';
+/** raw.githubusercontent.com/o/r/branch/path -> github.com/o/r/commits/branch/path */
+function githubHistoryUrl_(rawUrl) {
+  var m = String(rawUrl).match(/^https:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/(.+)$/i);
+  return m ? 'https://github.com/' + m[1] + '/' + m[2] + '/commits/' + m[3] : '';
+}
+
+/** Window with the code, a Copy button, a link to the editor and the paste steps. */
+function showInstallDialog_(code, title, subtitle) {
+  var editor = 'https://script.google.com/home/projects/' + ScriptApp.getScriptId() + '/edit';
+  // Embed the code safely inside a <script> block
+  var safe = JSON.stringify(code).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+  var html = '<!DOCTYPE html><html><head><base target="_blank"><style>' +
+    'body{font-family:Arial,sans-serif;font-size:13px;margin:12px;color:#222}' +
+    '.sub{color:#555;margin-bottom:10px}ol{padding-left:20px;margin:6px 0 10px}li{margin:6px 0}' +
+    'button,a.btn{display:inline-block;padding:8px 14px;margin:2px 6px 2px 0;border:0;border-radius:4px;background:#1F4E78;color:#fff;font-size:13px;cursor:pointer;text-decoration:none}' +
+    'a.btn.sec,button.sec{background:#e8eef5;color:#1F4E78}' +
+    'kbd{background:#eee;border:1px solid #ccc;border-radius:3px;padding:0 4px;font-size:12px}' +
+    'textarea{width:100%;height:170px;font-family:monospace;font-size:11px;margin-top:8px}' +
+    '#st{margin-left:6px;font-weight:bold;color:#1a7f37}' +
+    '</style></head><body>' +
+    '<div class="sub">' + escapeHtml_(subtitle) + ' - your data is not touched.</div>' +
+    '<ol>' +
+    '<li><button onclick="copyCode()">1. Copy code</button><span id="st"></span></li>' +
+    '<li><a class="btn" href="' + editor + '">2. Open the Apps Script editor</a> (or Extensions &gt; Apps Script)</li>' +
+    '<li>3. Click inside <b>Code.gs</b>, press <kbd>Ctrl</kbd>+<kbd>A</kbd> then <kbd>Ctrl</kbd>+<kbd>V</kbd> ' +
+    '(Mac: <kbd>Cmd</kbd>), then save with <kbd>Ctrl</kbd>+<kbd>S</kbd>.</li>' +
+    '<li>4. Come back here, reload the Sheet (<kbd>F5</kbd>), then <b>Destination Index &gt; Build / repair the sheet</b>.</li>' +
+    '</ol>' +
+    '<button class="sec" onclick="download()">Download Code.gs instead</button>' +
+    '<button class="sec" onclick="google.script.host.close()">Close</button>' +
+    '<textarea id="code" readonly></textarea>' +
+    '<script>' +
+    'var CODE=' + safe + ';var ta=document.getElementById("code");ta.value=CODE;' +
+    'function ok(t){document.getElementById("st").textContent=t;}' +
+    'function copyCode(){' +
+    ' var fallback=function(){ta.focus();ta.select();var done=false;try{done=document.execCommand("copy");}catch(e){}' +
+    '  ok(done?"Copied!":"Code selected below - press Ctrl+C (Cmd+C) now.");};' +
+    ' if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(CODE).then(function(){ok("Copied!");},fallback);}else{fallback();}' +
+    '}' +
+    'function download(){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([CODE],{type:"text/plain"}));' +
+    ' a.download="Code.gs";document.body.appendChild(a);a.click();a.remove();}' +
+    '</script></body></html>';
+  SpreadsheetApp.getUi().showModalDialog(
+    HtmlService.createHtmlOutput(html).setWidth(760).setHeight(520), title);
+}
+
+function escapeHtml_(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 /** Pure check (testable): is this text a version of this tool? */
@@ -1485,13 +1558,16 @@ function findCodeFile_(files) {
   return null;
 }
 
-var SETUP_HELP =
-  'One-time setup for code updates (see Guide, section 14):\n' +
-  '1. Open script.google.com/home/usersettings and switch "Google Apps Script API" ON.\n' +
-  '2. Apps Script editor > Project Settings > tick "Show appsscript.json manifest file in editor".\n' +
-  '3. Replace appsscript.json with the provided appsscript.json and Save.\n' +
-  '4. Run the update again and accept the new permission.\n\n' +
-  'Manual alternative: open the update link, copy all, paste over Code.gs, Save, reload.';
+// Optional: paste this into appsscript.json to let "Update code" install automatically (Guide section 14).
+var OPTIONAL_MANIFEST = JSON.stringify({
+  timeZone: 'Europe/Berlin', dependencies: {}, exceptionLogging: 'STACKDRIVER', runtimeVersion: 'V8',
+  oauthScopes: [
+    'https://www.googleapis.com/auth/spreadsheets',
+    'https://www.googleapis.com/auth/script.container.ui',
+    'https://www.googleapis.com/auth/script.external_request',
+    'https://www.googleapis.com/auth/script.projects'
+  ]
+});
 
 function readProject_() {
   var resp = UrlFetchApp.fetch(SCRIPT_API + ScriptApp.getScriptId() + '/content', {
@@ -1515,7 +1591,7 @@ function apiError_(resp) {
   var code = resp.getResponseCode(), text = resp.getContentText(), detail = text;
   try { detail = JSON.parse(text).error.message; } catch (ignore) {}
   log_('Update', 'Apps Script API HTTP ' + code + ': ' + String(detail).slice(0, 300));
-  return 'Google refused the code change (HTTP ' + code + '): ' + String(detail).slice(0, 300) + '\n\n' + SETUP_HELP;
+  return 'Google refused the code change (HTTP ' + code + '): ' + String(detail).slice(0, 300);
 }
 
 /** Stores code in a hidden tab, in chunks (a cell holds max 50,000 characters). */

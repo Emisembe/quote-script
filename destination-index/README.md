@@ -19,13 +19,8 @@ is a European country a realistic destination for African professionals?
 - Every fetched value is written to Data with a cell note and logged in Evidence.
 
 ## Code updates (menu > Code updates)
-The script can update itself from this repository:
+Everything is in the single `Code.gs`. To update:
 **Destination Index > Code updates > Update code to the latest version.**
-It downloads the newest `Code.gs`, checks it, backs up the current code in a hidden
-`_CodeBackup` tab, installs the new code, and can be undone with *Restore previous code*.
-
-One-time setup:
-1. Switch **Google Apps Script API** ON at https://script.google.com/home/usersettings
-2. Apps Script editor > Project Settings > tick *Show "appsscript.json" manifest file in editor*.
-3. Replace `appsscript.json` with [`appsscript.json`](appsscript.json) and save.
-4. Run the update and accept the new permission.
+It downloads the newest `Code.gs` from this repository, checks it, and opens a window with
+*Copy code*, a link to the Apps Script editor, and the paste steps (Ctrl+A, Ctrl+V, Ctrl+S, reload).
+Your data is not touched. Optional fully automatic install is described in the Guide tab, section 14.
