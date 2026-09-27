@@ -23,7 +23,7 @@
 // ============================================================================
 
 var APP_NAME = 'Destination Index';
-var VERSION = '1.3.0';
+var VERSION = '1.4.0';
 
 // Where "Update code" downloads the newest version from (changeable in the menu).
 var DEFAULT_UPDATE_URL =
@@ -40,9 +40,11 @@ var SHEETS = {
   INDICATORS: 'Indicators',
   SOURCES: 'Sources',
   RUBRICS: 'Rubrics',
+  PROFESSIONS: 'Professions',
+  ORGS: 'Organisations',
   LOG: 'Log'
 };
-var SHEET_ORDER = ['GUIDE', 'DASHBOARD', 'DATA', 'EVIDENCE', 'WEIGHTS', 'SCORES',
+var SHEET_ORDER = ['GUIDE', 'DASHBOARD', 'DATA', 'PROFESSIONS', 'ORGS', 'EVIDENCE', 'WEIGHTS', 'SCORES',
                    'INDICATORS', 'SOURCES', 'RUBRICS', 'LOG'];
 
 // Country name + Eurostat geo code (Eurostat uses EL for Greece).
@@ -143,6 +145,8 @@ function onOpen() {
     .addItem('Go to Dashboard', 'goDashboard')
     .addItem('Go to Data', 'goData')
     .addItem('Go to Sources', 'goSources')
+    .addItem('Go to Professions in demand', 'goProfessions')
+    .addItem('Go to Organisations', 'goOrganisations')
     .addSeparator()
     .addSubMenu(SpreadsheetApp.getUi().createMenu('Code updates')
       .addItem('Update code to the latest version', 'updateCode')
@@ -158,6 +162,8 @@ function goGuide() { goTo_(SHEETS.GUIDE); }
 function goDashboard() { goTo_(SHEETS.DASHBOARD); }
 function goData() { goTo_(SHEETS.DATA); }
 function goSources() { goTo_(SHEETS.SOURCES); }
+function goProfessions() { goTo_(SHEETS.PROFESSIONS); }
+function goOrganisations() { goTo_(SHEETS.ORGS); }
 function goTo_(name) {
   var ss = SpreadsheetApp.getActive(), sh = ss.getSheetByName(name);
   if (!sh) { setupIndex(); sh = ss.getSheetByName(name); }
@@ -207,6 +213,8 @@ function controlPanelHtml_(section) {
   '<button class="btn sec" onclick="run(\'goDashboard\')">Go to Dashboard</button>' +
   '<button class="btn sec" onclick="run(\'goData\')">Go to Data</button>' +
   '<button class="btn sec" onclick="run(\'goSources\')">Go to Sources</button>' +
+  '<button class="btn sec" onclick="run(\'goProfessions\')">Go to Professions in demand</button>' +
+  '<button class="btn sec" onclick="run(\'goOrganisations\')">Go to Organisations</button>' +
   '<button class="btn sec" onclick="run(\'goGuide\')">Go to Guide</button>' +
 
   '<h3>Add your own</h3>' +
@@ -295,6 +303,8 @@ function setupIndex() {
   if (!ss.getSheetByName(SHEETS.WEIGHTS)) buildWeights_(ss);
   if (!ss.getSheetByName(SHEETS.SOURCES)) buildSources_(ss);
   if (!ss.getSheetByName(SHEETS.LOG)) buildLog_(ss);
+  if (!ss.getSheetByName(SHEETS.PROFESSIONS)) buildProfessions_(ss);
+  if (!ss.getSheetByName(SHEETS.ORGS)) buildOrganisations_(ss);
   rebuildFormulas();
   orderSheets_(ss);
   removeDefaultSheet_(ss);
@@ -376,7 +386,8 @@ function guideLines_() {
     ['Version ' + VERSION + '. This tab explains everything: setup, every button, every tab, every indicator, the maths, adding your own links, updating the code, and fixing problems.', 'sub'],
     ['Contents: 1 What this tool is | 2 First-time setup | 3 Menu | 4 Control panel | 5 Recommended workflow | 6 The tabs | 7 The indicators | ' +
      '8 Source links (Eurostat & CSV) | 9 Adding indicators & countries | 10 How the score is calculated | 11 Weights & thresholds | ' +
-     '12 Reading the Dashboard | 13 Evidence rules | 14 Updating the code | 15 Troubleshooting | 16 FAQ | 17 Glossary | 18 Limits', 'sub']
+     '12 Reading the Dashboard | 13 Evidence rules | 14 Updating the code | 15 Troubleshooting | 16 FAQ | 17 Glossary | 18 Limits | ' +
+     '19 Professions in demand | 20 Organisations that influence policy', 'sub']
   ]); blank();
 
   // 1
@@ -466,6 +477,8 @@ function guideLines_() {
     ['Indicators - the list of indicators: code, pillar, name, direction, unit, how to get it, source, link. This tab is yours: edit names, directions or links, add rows. Then click Refresh.', 'text'],
     ['Sources - the links the script downloads from. One row per link. Columns: Indicator, Type, Link, Filters A, Filters B, Since year, CSV country/value/year column, Enabled (tick box), Note, Last status (written by the script).', 'text'],
     ['Rubrics - the fixed rules for 0-10 ratings (A1, A3, S3). Use them so every country is judged the same way.', 'text'],
+    ['Professions - which professions are in shortage in each country, with links to the official lists (section 19).', 'text'],
+    ['Organisations - bodies that shape migration, labour and anti-discrimination policy, and how to engage with them (section 20).', 'text'],
     ['Log - a diary of what the script did: setup, each fetch, errors, code updates.', 'text'],
     ['_CodeBackup (hidden) - copy of the code from before the last update. Used by "Restore previous code". Do not edit.', 'text']
   ]); blank();
@@ -699,6 +712,48 @@ function guideLines_() {
     ['- Data is one to three years old by the time it is published.', 'text'],
     ['- Ratings (0-10) contain your judgement - the Rubrics keep them consistent, not objective.', 'text'],
     ['- Use the result to decide where to look deeper, not as the final answer.', 'warn']
+  ]); blank();
+
+  // 19
+  add([
+    ['19. PROFESSIONS IN DEMAND (Professions tab)', 'h'],
+    ['Purpose: see at a glance which professions each country officially needs. Shortage professions usually mean easier visas (lower Blue Card threshold, no labour-market test) and faster hiring.', 'text'],
+    ['Layout:', 'h2'],
+    ['   Rows = professions (column A), with ISCO-08 code (the international job classification), sector and whether the profession is regulated.', 'code'],
+    ['   Columns = your countries - the same countries as the Data tab. Adding a country adds a column automatically (after Refresh).', 'code'],
+    ['   Row 1 = link to each country\'s official shortage list (above the country name). For a country you add yourself, paste its link in row 1.', 'code'],
+    ['   "Countries in shortage" = automatic count: Shortage = 1, Some shortage (regional) = 0.5.', 'code'],
+    ['How to fill it:', 'h2'],
+    ['1) Open the official list in row 1 for one country (and the yearly EU report on shortage occupations from the European Labour Authority, see Organisations).', 'text'],
+    ['2) For each profession choose from the dropdown: Shortage | Some shortage (regional) | Balanced | Surplus | Unknown. Leave empty if you have not checked yet.', 'text'],
+    ['3) Log where you found it in the Evidence tab (country, indicator code = the profession name, value = the status, year, link).', 'text'],
+    ['4) Refresh scores & dashboard - the Dashboard then shows the 15 most-needed professions.', 'text'],
+    ['Official lists used as starting links: Germany - Make it in Germany "professions in demand" (based on the Federal Employment Agency shortage analysis); Netherlands - UWV; France - Ministry of Labour "metiers en tension"; ' +
+     'Belgium - regional lists (VDAB for Flanders, Actiris for Brussels, Le Forem for Wallonia); Ireland - Critical Skills Occupations List (Department of Enterprise); Sweden - Arbetsformedlingen occupational forecasts; Spain - SEPE "Catalogo de Ocupaciones de Dificil Cobertura".', 'text'],
+    ['Add your own profession: type it in the first empty row under the list (column A), with its ISCO code if you know it. The dropdowns and the count are already there for 30 extra rows; click Refresh for more.', 'text'],
+    ['Use the filter buttons in the header row to show only one sector, or sort by "Countries in shortage".', 'text'],
+    ['Link to your score: if your own profession is in shortage in a country, give that country a higher A1 rating (Rubrics).', 'tip'],
+    ['Regulated professions (health, teaching, law, some engineering) need recognition of your diploma before you can work - even when there is a shortage. Check A3 for that country.', 'warn']
+  ]); blank();
+
+  // 20
+  add([
+    ['20. ORGANISATIONS THAT INFLUENCE POLICY (Organisations tab)', 'h'],
+    ['Purpose: know who shapes the rules on skilled migration, recognition of diplomas and discrimination - and where your voice, your data or a complaint can make a difference.', 'text'],
+    ['Columns: Organisation | Level (EU, Europe, Global, Africa / AU, Country) | Country | Type | Policy area | How they influence policy | How you can engage | Website | Your status | Your notes.', 'text'],
+    ['The list starts with about 30 real organisations: EU institutions and agencies, UN and intergovernmental bodies, think tanks, NGO networks, diaspora platforms, and the national equality bodies of the listed countries.', 'text'],
+    ['Types of influence, from strongest to widest reach:', 'h2'],
+    ['   EU institutions (Commission, Parliament) write the laws - respond to consultations on the "Have your say" portal and write to your MEPs.', 'code'],
+    ['   Agencies and intergovernmental bodies (ELA, FRA, OECD, IOM, ILO, ICMPD) produce the data governments rely on - cite them, feed them evidence.', 'code'],
+    ['   Think tanks (CGD, MPI, EPC, SVR, CIDOB) shape the ideas - share your findings with them, join their events.', 'code'],
+    ['   NGO and diaspora networks (ENAR, PICUM, ADEPT) organise collective voice - join or partner.', 'code'],
+    ['   Equality bodies take individual discrimination complaints - free of charge - and their case numbers feed policy.', 'code'],
+    ['How to use the tab:', 'h2'],
+    ['1) Filter by Level or Country to find the organisations relevant to your target country.', 'text'],
+    ['2) Track your contact in "Your status" (Not contacted, Following, Contacted, In conversation, Partner) and write dates/names in "Your notes".', 'text'],
+    ['3) Add your own rows at the bottom (diaspora associations, professional bodies, unions, local integration offices).', 'text'],
+    ['4) Once your index has results, share them: a clear, sourced comparison is exactly the kind of evidence these organisations use.', 'text'],
+    ['The list is a starting point written at the time of this version. Websites and names change - check each link before relying on it, and note the date in "Your notes".', 'warn']
   ]);
   return L;
 }
@@ -885,7 +940,8 @@ function rebuildFormulas() {
   var map = syncDataColumns_(data, indicators);
   var n = countryCount_(data);
   buildScores_(ss, n, indicators, map);
-  buildDashboard_(ss, n, indicators.length);
+  var profCountCol = syncProfessions_(ss);
+  buildDashboard_(ss, n, indicators.length, profCountCol);
   ss.toast('Scores refreshed: ' + n + ' countries, ' + indicators.length + ' indicators.', APP_NAME, 4);
   return 'Scores refreshed: ' + n + ' countries, ' + indicators.length + ' indicators.';
 }
@@ -973,7 +1029,7 @@ function buildScores_(ss, n, indicators, map) {
   sh.setConditionalFormatRules(verdictRules_(sh.getRange(first, L.verdict, n, 1)));
 }
 
-function buildDashboard_(ss, n, nI) {
+function buildDashboard_(ss, n, nI, profCountCol) {
   var sh = freshSheet_(ss, SHEETS.DASHBOARD);
   var L = scoreLayout_(nI);
   sh.getRange('A1').setValue('Destination ranking').setFontSize(16).setFontWeight('bold').setFontColor(COLORS.title);
@@ -999,6 +1055,20 @@ function buildDashboard_(ss, n, nI) {
   sh.getRange(noteRow + 1, 1).setFormula('=IFERROR(TEXTJOIN(", ",TRUE,FILTER(' + col(1) + ',' + col(L.total) + '="")),"")');
   sh.getRange(noteRow + 3, 1).setValue('Legend: >= 70 Destination | 50-69 Conditional | < 50 Not recommended | coverage below minimum = Insufficient data. ' +
     'Scores are relative to the listed countries.').setFontStyle('italic');
+
+  // Most-needed professions (from the Professions tab)
+  var pRow = noteRow + 6;
+  sh.getRange(pRow, 1).setValue('Most-needed professions (number of listed countries with a shortage)')
+    .setFontSize(13).setFontWeight('bold').setFontColor(COLORS.title);
+  sh.getRange(pRow + 1, 1, 1, 2).setValues([['Profession', 'Countries in shortage']]);
+  styleHeader_(sh.getRange(pRow + 1, 1, 1, 2));
+  if (profCountCol) {
+    var P = SHEETS.PROFESSIONS, cc = colLetter_(profCountCol);
+    sh.getRange(pRow + 2, 1).setFormula('=IFERROR(ARRAY_CONSTRAIN(SORT(FILTER({' + P + '!A' + PROF_FIRST_ROW + ':A,' +
+      P + '!' + cc + PROF_FIRST_ROW + ':' + cc + '},ISNUMBER(' + P + '!' + cc + PROF_FIRST_ROW + ':' + cc + '),' +
+      P + '!' + cc + PROF_FIRST_ROW + ':' + cc + '>0),2,FALSE),15,2),' +
+      '"Mark shortages in the Professions tab to see the ranking here.")');
+  }
 
   var chart = sh.newChart()
     .setChartType(Charts.ChartType.BAR)
@@ -1350,6 +1420,225 @@ function guessDelimiter_(text) {
 function shortHost_(url) {
   var m = String(url).match(/^https?:\/\/([^\/?#]+)/i);
   return m ? m[1] : url;
+}
+
+// ============================================================================
+// PROFESSIONS IN DEMAND + ORGANISATIONS
+// ============================================================================
+
+var PROF_LINK_ROW = 1;         // links to the official shortage lists
+var PROF_HEAD_ROW = 2;         // column headers (filter starts here)
+var PROF_FIRST_ROW = 3;        // first profession
+var PROF_FIRST_COUNTRY_COL = 5; // A Profession, B ISCO-08, C Sector, D Regulated?
+var PROF_COUNT_HEAD = 'Countries in shortage';
+var SHORTAGE_STATUS = ['Shortage', 'Some shortage (regional)', 'Balanced', 'Surplus', 'Unknown'];
+
+// Official national shortage lists (row 1 of the Professions tab). Check them yearly.
+var SHORTAGE_LISTS = {
+  DE: 'https://www.make-it-in-germany.com/en/working-in-germany/professions-in-demand',
+  NL: 'https://www.uwv.nl',
+  FR: 'https://travail-emploi.gouv.fr',
+  BE: 'https://www.vdab.be',
+  IE: 'https://enterprise.gov.ie',
+  SE: 'https://arbetsformedlingen.se',
+  ES: 'https://www.sepe.es'
+};
+
+// Starting list: professions that EU labour-shortage reports mention often.
+// Profession, ISCO-08 code, sector, regulated in most EU countries?
+var DEFAULT_PROFESSIONS = [
+  ['Nursing professionals', '2221', 'Health', 'Yes'],
+  ['Medical doctors', '221', 'Health', 'Yes'],
+  ['Pharmacists', '2262', 'Health', 'Yes'],
+  ['Physiotherapists', '2264', 'Health', 'Yes'],
+  ['Health care assistants', '5321', 'Care', 'Varies'],
+  ['Software developers', '2512', 'ICT', 'No'],
+  ['Systems analysts', '2511', 'ICT', 'No'],
+  ['Database and network professionals', '252', 'ICT', 'No'],
+  ['Civil engineers', '2142', 'Engineering', 'Varies'],
+  ['Electrical engineers', '2151', 'Engineering', 'Varies'],
+  ['Mechanical engineers', '2144', 'Engineering', 'Varies'],
+  ['Building electricians', '7411', 'Skilled trades', 'Varies'],
+  ['Plumbers and pipe fitters', '7126', 'Skilled trades', 'Varies'],
+  ['Welders and flame cutters', '7212', 'Skilled trades', 'Varies'],
+  ['Carpenters and joiners', '7115', 'Skilled trades', 'Varies'],
+  ['Bricklayers', '7112', 'Construction', 'No'],
+  ['Motor vehicle mechanics', '7231', 'Skilled trades', 'Varies'],
+  ['Heavy truck and lorry drivers', '8332', 'Transport', 'Yes (licence)'],
+  ['Primary school teachers', '2341', 'Education', 'Yes'],
+  ['Secondary teachers (STEM)', '2330', 'Education', 'Yes'],
+  ['Early childhood educators', '2342', 'Education', 'Yes'],
+  ['Accountants', '2411', 'Business', 'Varies'],
+  ['Cooks', '5120', 'Hospitality', 'No']
+];
+
+var ORG_HEAD = ['Organisation', 'Level', 'Country', 'Type', 'Policy area', 'How they influence policy',
+                'How you can engage', 'Website', 'Your status', 'Your notes'];
+var ORG_STATUS = ['Not contacted', 'Following', 'Contacted', 'In conversation', 'Partner'];
+
+// Starting list of real organisations. Check each website; add your own rows.
+var DEFAULT_ORGS = [
+  ['European Commission - DG Migration and Home Affairs', 'EU', '', 'EU institution', 'Legal migration, EU Blue Card, EU Talent Pool, Talent Partnerships',
+   'Proposes EU migration laws and programmes', 'Answer public consultations; follow Talent Partnership calls', 'https://home-affairs.ec.europa.eu'],
+  ['EU "Have your say" portal', 'EU', '', 'Consultation portal', 'All EU laws in preparation',
+   'Collects public feedback before the Commission finalises proposals', 'Submit feedback on migration and labour initiatives (anyone can)', 'https://ec.europa.eu/info/law/better-regulation/have-your-say'],
+  ['European Parliament - LIBE Committee', 'EU', '', 'EU institution', 'Migration, civil liberties, anti-discrimination',
+   'Amends and votes EU migration law', 'Write to MEPs of your country; EU petitions portal', 'https://www.europarl.europa.eu/committees/en/libe/home'],
+  ['European Labour Authority (ELA) / EURES', 'EU', '', 'EU agency', 'Labour mobility, labour shortages',
+   'Publishes the yearly EU report on shortage and surplus occupations', 'Use the data; talk to EURES advisers', 'https://www.ela.europa.eu'],
+  ['EU Agency for Fundamental Rights (FRA)', 'EU', '', 'EU agency', 'Racism and discrimination ("Being Black in the EU" surveys)',
+   'Provides evidence used for EU anti-racism policy', 'Cite its surveys; take part in its consultations', 'https://fra.europa.eu'],
+  ['African Union - Citizens and Diaspora Directorate (CIDO)', 'Africa / AU', '', 'Intergovernmental', 'Diaspora engagement, AU-EU dialogue',
+   'Represents diaspora interests in AU policy and AU-EU summits', 'Diaspora consultations and networks', 'https://au.int'],
+  ['ADEPT - Africa-Europe Diaspora Development Platform', 'Europe', '', 'Diaspora network', 'African diaspora in Europe, development, AU-EU dialogue',
+   'Brings African diaspora organisations into EU policy dialogues', 'Join as or through a member organisation', 'https://www.adept-platform.org'],
+  ['International Organization for Migration (IOM)', 'Global', '', 'UN agency', 'Labour migration, skills mobility partnerships',
+   'Advises governments and runs mobility programmes', 'Programmes, reports, events', 'https://www.iom.int'],
+  ['International Labour Organization (ILO)', 'Global', '', 'UN agency', 'Fair recruitment, recognition of skills, migrant workers\' rights',
+   'Sets international labour standards', 'Use its standards and reports in your advocacy', 'https://www.ilo.org'],
+  ['OECD - International Migration Division', 'Global', '', 'Intergovernmental', 'Migration data, integration indicators, talent attractiveness',
+   'Data and recommendations that governments act on', 'Cite its indicators ("Settling In", International Migration Outlook)', 'https://www.oecd.org/migration'],
+  ['ICMPD - International Centre for Migration Policy Development', 'Europe', '', 'Intergovernmental', 'Migration policy, mobility partnerships with Africa',
+   'Designs and runs migration partnerships for governments', 'Reports, events, programme calls', 'https://www.icmpd.org'],
+  ['Center for Global Development', 'Global', '', 'Think tank', 'Global Skill Partnerships, labour mobility',
+   'Designs policy models adopted by governments', 'Read and share its proposals; events', 'https://www.cgdev.org'],
+  ['Migration Policy Institute (incl. MPI Europe)', 'Global / Europe', '', 'Think tank', 'Migration and integration policy',
+   'Research used by policymakers', 'Research, webinars', 'https://www.migrationpolicy.org'],
+  ['European Policy Centre (EPC)', 'Europe', '', 'Think tank', 'EU migration and diversity policy',
+   'Brussels policy debates and papers', 'Events, papers', 'https://www.epc.eu'],
+  ['European Network Against Racism (ENAR)', 'Europe', '', 'NGO network', 'Anti-racism, equality at work',
+   'Advocacy towards EU institutions', 'Member organisations, campaigns', 'https://www.enar-eu.org'],
+  ['PICUM', 'Europe', '', 'NGO network', 'Rights of undocumented migrants, labour exploitation',
+   'Advocacy towards EU institutions', 'Reports, member organisations', 'https://picum.org'],
+  ['Equinet - European Network of Equality Bodies', 'Europe', '', 'Network of equality bodies', 'Discrimination law and complaints',
+   'Connects national equality bodies; advises EU', 'Find your national equality body', 'https://equineteurope.org'],
+  ['Talent Beyond Boundaries', 'Global', '', 'NGO', 'Labour mobility for refugees',
+   'Pilots skilled-migration pathways with governments', 'Programmes, partnerships', 'https://www.talentbeyondboundaries.org'],
+  ['Expert Council on Integration and Migration (SVR)', 'Country', 'Germany', 'Expert council / research', 'Migration and integration policy',
+   'Yearly reports to the federal government', 'Reports, public events', 'https://www.svr-migration.de'],
+  ['DeZIM Institute', 'Country', 'Germany', 'Research institute', 'Migration, racism research (National Discrimination and Racism Monitor)',
+   'Evidence for federal policy', 'Studies, events', 'https://www.dezim-institut.de'],
+  ['Federal Anti-Discrimination Agency', 'Country', 'Germany', 'Equality body', 'Discrimination in work and daily life',
+   'Advises parliament; publishes reports', 'Free advice; report discrimination cases', 'https://www.antidiskriminierungsstelle.de'],
+  ['Make it in Germany', 'Country', 'Germany', 'Government portal', 'Skilled immigration, shortage professions',
+   'Official information on the Skilled Immigration Act', 'Information and contact service', 'https://www.make-it-in-germany.com'],
+  ['Netherlands Institute for Human Rights', 'Country', 'Netherlands', 'Equality body', 'Discrimination at work',
+   'Rules on complaints; advises government', 'File a complaint (free)', 'https://www.mensenrechten.nl'],
+  ['Defender of Rights (Defenseur des droits)', 'Country', 'France', 'Equality body', 'Discrimination, including in hiring',
+   'Independent authority; recommendations to government', 'File a complaint (free)', 'https://www.defenseurdesdroits.fr'],
+  ['Unia', 'Country', 'Belgium', 'Equality body', 'Discrimination and equal opportunities',
+   'Advises governments; takes cases to court', 'Report discrimination', 'https://www.unia.be'],
+  ['Myria - Federal Migration Centre', 'Country', 'Belgium', 'Public body', 'Migration and rights of foreigners',
+   'Analysis and recommendations to government', 'Reports, questions', 'https://www.myria.be'],
+  ['Migrant Rights Centre Ireland', 'Country', 'Ireland', 'NGO', 'Migrant workers\' rights, work permits',
+   'Campaigns that changed Irish work-permit rules', 'Membership, campaigns, advice', 'https://www.mrci.ie'],
+  ['Irish Human Rights and Equality Commission', 'Country', 'Ireland', 'Equality body', 'Equality and discrimination',
+   'Advises government and parliament', 'Information and legal help', 'https://www.ihrec.ie'],
+  ['Equality Ombudsman (Diskrimineringsombudsmannen)', 'Country', 'Sweden', 'Equality body', 'Discrimination',
+   'Supervises the Discrimination Act', 'Report discrimination', 'https://www.do.se'],
+  ['Delmi - Migration Studies Delegation', 'Country', 'Sweden', 'Government research body', 'Migration policy research',
+   'Reports to the Swedish government', 'Reports, seminars', 'https://www.delmi.se'],
+  ['CIDOB - Barcelona Centre for International Affairs', 'Country', 'Spain', 'Think tank', 'Migration and EU-Africa relations',
+   'Research used in Spanish and EU debates', 'Publications, events', 'https://www.cidob.org']
+];
+
+function buildProfessions_(ss) {
+  var sh = freshSheet_(ss, SHEETS.PROFESSIONS);
+  sh.getRange(PROF_HEAD_ROW, 1, 1, 5).setValues([['Profession', 'ISCO-08 code', 'Sector', 'Regulated?', PROF_COUNT_HEAD]]);
+  sh.getRange(PROF_HEAD_ROW, 6).setValue('Notes');
+  styleHeader_(sh.getRange(PROF_HEAD_ROW, 1, 1, 6));
+  sh.getRange(PROF_LINK_ROW, 1).setValue('Official shortage list (link) ->').setFontStyle('italic').setFontWeight('bold');
+  sh.getRange(PROF_FIRST_ROW, 1, DEFAULT_PROFESSIONS.length, 4).setValues(DEFAULT_PROFESSIONS).setBackground(COLORS.input);
+  sh.getRange(PROF_FIRST_ROW, 1, DEFAULT_PROFESSIONS.length, 1).setFontWeight('bold');
+  sh.setFrozenRows(2); sh.setFrozenColumns(1);
+  sh.setColumnWidth(1, 230); sh.setColumnWidth(2, 80); sh.setColumnWidth(3, 110); sh.setColumnWidth(4, 95);
+}
+
+/**
+ * Keeps one column per Data country (inserted before "Countries in shortage"),
+ * refreshes dropdowns, colours and the count formula. Returns the count column.
+ */
+function syncProfessions_(ss) {
+  var sh = ss.getSheetByName(SHEETS.PROFESSIONS);
+  var data = ss.getSheetByName(SHEETS.DATA);
+  if (!sh || !data) return 0;
+  var n = countryCount_(data);
+  var countries = n ? data.getRange(DATA_FIRST_ROW, 1, n, 2).getValues() : [];
+
+  var lastCol = sh.getLastColumn();
+  var head = sh.getRange(PROF_HEAD_ROW, 1, 1, lastCol).getValues()[0].map(function (h) { return String(h).trim(); });
+  var countCol = head.indexOf(PROF_COUNT_HEAD) + 1;
+  if (!countCol) {
+    countCol = lastCol + 1;
+    sh.getRange(PROF_HEAD_ROW, countCol).setValue(PROF_COUNT_HEAD);
+    styleHeader_(sh.getRange(PROF_HEAD_ROW, countCol));
+    head.push(PROF_COUNT_HEAD);
+  }
+  countries.forEach(function (c) {
+    var name = String(c[0]).trim(), code = String(c[1]).trim().toUpperCase();
+    if (head.indexOf(name) >= 0) return;
+    sh.insertColumnBefore(countCol);
+    sh.getRange(PROF_HEAD_ROW, countCol).setValue(name);
+    styleHeader_(sh.getRange(PROF_HEAD_ROW, countCol));
+    if (SHORTAGE_LISTS[code]) sh.getRange(PROF_LINK_ROW, countCol).setValue(SHORTAGE_LISTS[code]);
+    sh.setColumnWidth(countCol, 115);
+    head.splice(countCol - 1, 0, name);
+    countCol++;
+  });
+
+  var firstC = PROF_FIRST_COUNTRY_COL, nC = countCol - firstC;
+  var lastRow = Math.max(lastFilledRow_(sh, 1), PROF_FIRST_ROW);
+  var rows = lastRow - PROF_FIRST_ROW + 1;
+  var extra = 30; // room for your own professions
+  if (nC > 0) {
+    var block = sh.getRange(PROF_FIRST_ROW, firstC, rows + extra, nC);
+    block.setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(SHORTAGE_STATUS, true)
+      .setAllowInvalid(false).build()).setBackground(COLORS.input).setHorizontalAlignment('center');
+    sh.getRange(PROF_LINK_ROW, firstC, 1, nC).setFontSize(8).setWrap(false).setFontColor('#1155CC');
+    var mk = function (text, color) {
+      return SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo(text).setBackground(color).setRanges([block]).build();
+    };
+    sh.setConditionalFormatRules([mk('Shortage', '#B7E1CD'), mk('Some shortage (regional)', '#E2F3EA'),
+      mk('Balanced', '#EEEEEE'), mk('Surplus', COLORS.bad)]);
+  }
+  sh.getRange(PROF_FIRST_ROW, 1, rows + extra, 4).setBackground(COLORS.input);
+  var f = [];
+  for (var r = PROF_FIRST_ROW; r < PROF_FIRST_ROW + rows + extra; r++) {
+    f.push([nC > 0
+      ? '=IF($A' + r + '="","",COUNTIF(' + colLetter_(firstC) + r + ':' + colLetter_(countCol - 1) + r + ',"Shortage")+0.5*COUNTIF(' +
+        colLetter_(firstC) + r + ':' + colLetter_(countCol - 1) + r + ',"Some shortage (regional)"))'
+      : '=""']);
+  }
+  sh.getRange(PROF_FIRST_ROW, countCol, f.length, 1).setFormulas(f).setBackground(COLORS.calc)
+    .setFontWeight('bold').setHorizontalAlignment('center');
+  sh.getRange(PROF_LINK_ROW, countCol).setValue('Shortage = 1, regional = 0.5').setFontSize(8).setFontStyle('italic');
+  sh.setColumnWidth(countCol, 120);
+  if (sh.getFilter()) sh.getFilter().remove();
+  sh.getRange(PROF_HEAD_ROW, 1, rows + extra + 1, countCol + 1).createFilter();
+  return countCol;
+}
+
+function buildOrganisations_(ss) {
+  var sh = freshSheet_(ss, SHEETS.ORGS);
+  var rows = DEFAULT_ORGS.map(function (o) { return o.concat(['Not contacted', '']); });
+  writeTable_(sh, ORG_HEAD, rows);
+  var extra = 50;
+  sh.getRange(2, 1, rows.length + extra, ORG_HEAD.length).setBackground(COLORS.input);
+  sh.getRange(2, 9, rows.length + extra, 1).setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(ORG_STATUS, true).build());
+  sh.getRange(2, 2, rows.length + extra, 1).setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(['EU', 'Europe', 'Global', 'Global / Europe', 'Africa / AU', 'Country'], true).build());
+  [300, 90, 100, 150, 260, 300, 280, 280, 120, 250].forEach(function (w, i) { sh.setColumnWidth(i + 1, w); });
+  sh.setFrozenColumns(1);
+  sh.getRange(1, 1, rows.length + extra + 1, ORG_HEAD.length).createFilter();
+}
+
+function lastFilledRow_(sh, col) {
+  var last = sh.getLastRow();
+  if (last < 1) return 0;
+  var vals = sh.getRange(1, col, last, 1).getValues();
+  for (var i = vals.length - 1; i >= 0; i--) if (String(vals[i][0]).trim() !== '') return i + 1;
+  return 0;
 }
 
 // ============================================================================

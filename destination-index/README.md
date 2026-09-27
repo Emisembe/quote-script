@@ -11,7 +11,9 @@ is a European country a realistic destination for African professionals?
 5. **Destination Index > Open control panel (buttons)** and follow the **Guide** tab.
 
 ## Features
-- Tabs: Guide, Dashboard, Data, Evidence, Weights, Scores, Indicators, Sources, Rubrics, Log.
+- Tabs: Guide, Dashboard, Data, Professions, Organisations, Evidence, Weights, Scores, Indicators, Sources, Rubrics, Log.
+- Professions: shortage status per profession and country, links to official shortage lists, most-needed ranking on the Dashboard.
+- Organisations: starter list of EU, global and national bodies that shape migration, labour and anti-discrimination policy, with engagement tracking.
 - Control-panel sidebar with buttons: build, fetch, refresh, navigate, reset.
 - Add your own **source links**: Eurostat (data-browser link, API link or dataset code, with filters
   and optional A - B gap) or any **CSV link** (map the country / value / year columns).
