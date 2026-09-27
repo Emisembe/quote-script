@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Natal Chart Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+Symbols&family=Noto+Sans+Symbols+2&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="shell">
+  <header class="masthead">
+    <div class="who">
+      <span class="eyebrow">Natal chart</span>
+      <h1 id="chart-name">Birth chart</h1>
+      <div class="birthline" id="birthline"></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="edit-birth" type="button">Edit birth data</button>
+      <button class="btn" id="save-chart" type="button">Save chart</button>
+      <button class="btn" id="copy-code" type="button">Copy chart code</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Chart sections">
+    <button class="tab" role="tab" id="tab-chart" aria-controls="panel-chart" data-tab="chart">Chart</button>
+    <button class="tab" role="tab" id="tab-data" aria-controls="panel-data" data-tab="data">Chart data</button>
+    <button class="tab" role="tab" id="tab-traits" aria-controls="panel-traits" data-tab="traits">Characteristics</button>
+    <button class="tab" role="tab" id="tab-signature" aria-controls="panel-signature" data-tab="signature">Signature</button>
+    <button class="tab" role="tab" id="tab-big3" aria-controls="panel-big3" data-tab="big3">Big Three</button>
+    <button class="tab" role="tab" id="tab-timing" aria-controls="panel-timing" data-tab="timing">Timing</button>
+    <button class="tab" role="tab" id="tab-houses" aria-controls="panel-houses" data-tab="houses">Houses</button>
+  </nav>
+
+  <main>
+    <section class="panel" role="tabpanel" id="panel-chart" aria-labelledby="tab-chart">
+      <div class="chart-layout">
+        <div class="wheel-wrap">
+          <div class="wheel-tools">
+            <span class="hint" id="wheel-hint">Hover to explore. Tap or press Enter to keep a detail open. Arrow keys move between points.</span>
+            <button class="btn small" id="toggle-customize" type="button" aria-expanded="false" aria-controls="customize">Customize chart</button>
+          </div>
+          <div class="customize" id="customize" hidden>
+            <div class="customize-grid">
+              <div class="field">
+                <label for="opt-house">House system</label>
+                <select id="opt-house">
+                  <option value="placidus">Placidus</option>
+                  <option value="whole">Whole sign</option>
+                  <option value="equal">Equal</option>
+                  <option value="porphyry">Porphyry</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="opt-node">Lunar nodes</label>
+                <select id="opt-node">
+                  <option value="true">True node</option>
+                  <option value="mean">Mean node</option>
+                </select>
+              </div>
+              <div class="field">
+                <span class="label">Show points</span>
+                <div class="checks" id="opt-points">
+                  <label><input type="checkbox" id="pt-nodes" data-pt="nodes"> Nodes</label>
+                  <label><input type="checkbox" id="pt-chiron" data-pt="chiron"> Chiron</label>
+                  <label><input type="checkbox" id="pt-lilith" data-pt="lilith"> Lilith</label>
+                  <label><input type="checkbox" id="pt-vertex" data-pt="vertex"> Vertex</label>
+                  <label><input type="checkbox" id="pt-fortune" data-pt="fortune"> Fortune</label>
+                </div>
+              </div>
+              <div class="field">
+                <span class="label">Aspects</span>
+                <div class="checks">
+                  <label><input type="checkbox" id="opt-lines"> Aspect lines</label>
+                  <label><input type="checkbox" id="opt-minor"> Minor aspects</label>
+                </div>
+              </div>
+              <div class="field">
+                <label for="opt-orb">Orb width <span class="num" id="orb-val"></span></label>
+                <input type="range" id="opt-orb" min="0.5" max="1.5" step="0.1">
+              </div>
+              <div class="field">
+                <span class="label">Symbols</span>
+                <div class="seg" role="group" aria-label="Symbol style">
+                  <button type="button" id="glyph-sym" data-glyph="symbols">Glyphs</button>
+                  <button type="button" id="glyph-let" data-glyph="letters">Letters</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <svg class="wheel" id="wheel" viewBox="0 0 820 820" role="group" aria-label="Birth chart wheel"></svg>
+          <div class="legend" aria-hidden="true">
+            <span class="flow"><i></i>Trine, sextile</span>
+            <span class="tension"><i></i>Square, opposition</span>
+            <span class="blend"><i></i>Conjunction</span>
+            <span class="adjust"><i></i>Minor</span>
+          </div>
+        </div>
+        <aside class="detail" id="detail" aria-live="polite"></aside>
+      </div>
+    </section>
+
+    <section class="panel" role="tabpanel" id="panel-data" aria-labelledby="tab-data" hidden></section>
+    <section class="panel" role="tabpanel" id="panel-traits" aria-labelledby="tab-traits" hidden></section>
+    <section class="panel" role="tabpanel" id="panel-signature" aria-labelledby="tab-signature" hidden></section>
+    <section class="panel" role="tabpanel" id="panel-big3" aria-labelledby="tab-big3" hidden></section>
+    <section class="panel" role="tabpanel" id="panel-timing" aria-labelledby="tab-timing" hidden></section>
+    <section class="panel" role="tabpanel" id="panel-houses" aria-labelledby="tab-houses" hidden></section>
+  </main>
+</div>
+
+<dialog id="birth-dialog" aria-labelledby="birth-title">
+  <form class="dlg" id="birth-form" novalidate>
+    <div class="dlg-head">
+      <h2 id="birth-title">Birth data</h2>
+      <button class="btn small" type="button" id="close-dialog">Close</button>
+    </div>
+    <div class="form-grid">
+      <div class="field full">
+        <label for="f-name">Name</label>
+        <input type="text" id="f-name" autocomplete="off" placeholder="Whose chart is this?">
+      </div>
+      <div class="field">
+        <label for="f-date">Date of birth</label>
+        <input type="date" id="f-date" required min="1800-01-01" max="2199-12-31">
+      </div>
+      <div class="field">
+        <label for="f-time">Time of birth</label>
+        <input type="time" id="f-time">
+      </div>
+      <div class="field full">
+        <label class="checks"><input type="checkbox" id="f-unknown"> I don't know the birth time</label>
+        <span class="faint">Without a time the chart has no houses or angles, and the Moon can be up to 7° off.</span>
+      </div>
+      <div class="field full suggest">
+        <label for="f-place">Place of birth</label>
+        <input type="text" id="f-place" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="place-list" placeholder="Start typing a city">
+        <ul id="place-list" role="listbox" hidden></ul>
+      </div>
+      <div class="field">
+        <label for="f-lat">Latitude (north +)</label>
+        <input type="number" id="f-lat" step="0.0001" min="-89.9" max="89.9">
+      </div>
+      <div class="field">
+        <label for="f-lon">Longitude (east +)</label>
+        <input type="number" id="f-lon" step="0.0001" min="-180" max="180">
+      </div>
+      <div class="field">
+        <label for="f-tz">Time zone</label>
+        <select id="f-tz"></select>
+      </div>
+      <div class="field">
+        <label for="f-offset">UTC offset (hours)</label>
+        <input type="number" id="f-offset" step="0.25" min="-14" max="14">
+      </div>
+      <div class="field full"><span class="faint" id="offset-note"></span></div>
+    </div>
+    <p class="form-error" id="form-error" hidden></p>
+    <div class="actions">
+      <button class="btn primary" type="submit">Draw chart</button>
+    </div>
+    <details>
+      <summary>Saved charts and chart codes</summary>
+      <div class="dlg" style="padding: 12px 0 0;">
+        <div class="saved-list" id="saved-list"></div>
+        <div class="field">
+          <label for="f-code">Paste a chart code</label>
+          <textarea id="f-code" placeholder="Paste a code copied with Copy chart code"></textarea>
+        </div>
+        <div><button class="btn small" type="button" id="import-code">Load code</button></div>
+      </div>
+    </details>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+<script src="engine.js"></script>
+<script src="content.js"></script>
+<script src="cities.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
