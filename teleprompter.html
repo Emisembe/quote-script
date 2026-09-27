@@ -4,21 +4,669 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Teleprompter</title>
-<link rel="stylesheet" href="teleprompter.css">
 
-<!-- Add-to-Home-Screen support (iPhone/Android): launches without browser chrome -->
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon-180.png">
-<link rel="icon" href="icon-180.png">
+<!-- Add-to-Home-Screen support (iPhone/Android): launches without browser chrome.
+     Manifest and icon are inlined as data: URIs so this stays one file. -->
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIlRlbGVwcm9tcHRlciIsICJzaG9ydF9uYW1lIjogIlByb21wdGVyIiwgInN0YXJ0X3VybCI6ICIuIiwgInNjb3BlIjogIi4iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgIm9yaWVudGF0aW9uIjogImFueSIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwYjBiMGIiLCAidGhlbWVfY29sb3IiOiAiIzBiMGIwYiIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQUxRQUFBQzBDQVlBQUFBOXpRWXlBQUFDSzBsRVFWUjQydTNjd1FuQ1VBQUZRU3RJZ2ZaZlFEcUlZQUdDb0tENzVyRG5EeTlETGova2RoekhKVlc2R1VGQVMwQkxRRXRBQzJnSmFBbG9DV2dKYUFFdEFTMEJMUUV0QVMyZ0phQWxvQ1dnSmFBRnRBUzBCTFFFdEFTMGdKYUFsb0NXZ0phQUZ0QVMwQkxRRXRBUzBBSmFBbG9DV2dKYVFCdENRRXRBUzBCTFFBdG9DV2dKYUFsb0NXZ0JMUUV0QVMwQkxRRXRvQ1dnSTUzbitjd1dRS2RBZ3cxMEVqVFlRQ2RCZ3cxMEVqVFlRQ2RCZ3cxMEVqVFlRQ2RCZ3cxMEVqVFlRQ2RCZ3cxMEVqVFlRQ2RCZ3cxMEVqVFlRQ2RCZ3cxMEVqVFlRQ2RCZ3cxMEVqVFlRQ2RCZ3cxMEVqVFlRQ2RCZ3cxMEVqVFlRQ2RCZ3cxMEVqVFlRQ2RCZ3cxMEVqVFlRQ2RCZ3cxMEV2UXliS0REb0JkaEF6MEFlZ2syME43UVFBTU5NdEJBZ3d3MDBDQUQ3YVlRYVBtV0l3TDZ1dCt2VC9UT29iOSs1ajlEWG4rZVFQOFI2TUsyUUFPZDJoYm9ZZERGYllFZUJGM2VGdWdoMEF2YkFqMEFlbWxib01PZ0Y3Y0ZPZ2g2ZWR1dmczYTc1UC9RcnI2QkJobm9QZEMyQkRvQjJvWkFKMERiRHVnRWFKc0JuUUJ0SzZBVG9HMEVkQUswYllCT2dMWUowQW5RdGdCYUFsb0NXZ0phUUV0QVMwQkxRRXRBQzJnSmFBbG9DV2dKYUFFdEFTMEJMUUV0b0kwZ29DV2dKYUFsb0FXMEJMUUV0QVMwQkxTQWxvQ1dnSmFBbG9BVzBCTFFFdEFTMEJMUUFsb0NXZ0phQWxvQ1drQkxRRXRBUzBCTFFBdG9DV2dKYUFsb0NXZ0JMUUV0QVMwQkxhQWxvQ1dnSmFBbG9BVzBCTFFFdEFTMEJMU0Fsb0NXZ0phQWxsNzBBSDdkQW1uQU9TV3NBQUFBQUVsRlRrU3VRbUNDIiwgInNpemVzIjogIjE4MHgxODAiLCAidHlwZSI6ICJpbWFnZS9wbmciLCAicHVycG9zZSI6ICJhbnkifV19">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAACK0lEQVR42u3cwQnCUAAFQStIgfZfQDqIYAGCoKD75rDnDy9DLj/kdhzHJVW6GUFAS0BLQEtAC2gJaAloCWgJaAEtAS0BLQEtAS2gJaAloCWgJaAFtAS0BLQEtAS0gJaAloCWgJaAFtAS0BLQEtAS0AJaAloCWgJaQBtCQEtAS0BLQAtoCWgJaAloCWgBLQEtAS0BLQEtoCWgI53n+cwWQKdAgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EvQybKDDoBdhAz0Aegk20N7QQAMNMtBAgww00CAD7aYQaPmWIwL6ut+vT/TOob9+5j9DXn+eQP8R6MK2QAOd2hboYdDFbYEeBF3eFugh0AvbAj0AemlboMOgF7cFOgh6eduvg3a75P/Qrr6BBhnoPdC2BDoB2oZAJ0DbDugEaJsBnQBtK6AToG0EdAK0bYBOgLYJ0AnQtgBaAloCWgJaQEtAS0BLQEtAC2gJaAloCWgJaAEtAS0BLQEtoI0goCWgJaAloAW0BLQEtAS0BLSAloCWgJaAloAW0BLQEtAS0BLQAloCWgJaAloCWkBLQEtAS0BLQAtoCWgJaAloCWgBLQEtAS0BLaAloCWgJaAloAW0BLQEtAS0BLSAloCWgJaAll70AH7dAmnAOSWsAAAAAElFTkSuQmCC">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAACK0lEQVR42u3cwQnCUAAFQStIgfZfQDqIYAGCoKD75rDnDy9DLj/kdhzHJVW6GUFAS0BLQEtAC2gJaAloCWgJaAEtAS0BLQEtAS2gJaAloCWgJaAFtAS0BLQEtAS0gJaAloCWgJaAFtAS0BLQEtAS0AJaAloCWgJaQBtCQEtAS0BLQAtoCWgJaAloCWgBLQEtAS0BLQEtoCWgI53n+cwWQKdAgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EjTYQCdBgw10EvQybKDDoBdhAz0Aegk20N7QQAMNMtBAgww00CAD7aYQaPmWIwL6ut+vT/TOob9+5j9DXn+eQP8R6MK2QAOd2hboYdDFbYEeBF3eFugh0AvbAj0AemlboMOgF7cFOgh6eduvg3a75P/Qrr6BBhnoPdC2BDoB2oZAJ0DbDugEaJsBnQBtK6AToG0EdAK0bYBOgLYJ0AnQtgBaAloCWgJaQEtAS0BLQEtAC2gJaAloCWgJaAEtAS0BLQEtoI0goCWgJaAloAW0BLQEtAS0BLSAloCWgJaAloAW0BLQEtAS0BLQAloCWgJaAloCWkBLQEtAS0BLQAtoCWgJaAloCWgBLQEtAS0BLaAloCWgJaAloAW0BLQEtAS0BLSAloCWgJaAll70AH7dAmnAOSWsAAAAAElFTkSuQmCC">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b0b0b">
+
+<style>
+:root {
+  color-scheme: dark;
+  --bar-bg: rgba(20, 20, 20, 0.72);
+  --accent: #3ea6ff;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #0b0b0b;
+  color: #f2f2f2;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overscroll-behavior: none;
+}
+
+/* When the prompter is running we drop the page background entirely so a
+   fully-transparent scrim (opacity slider at 0) is genuinely see-through —
+   e.g. when this page is used as an OBS Browser Source with alpha support. */
+html.prompter-active, html.prompter-active body {
+  background: transparent !important;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+/* ---------- Role picker (first screen) ---------- */
+#role-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 24px;
+  text-align: center;
+  gap: 14px;
+}
+#role-picker.hidden { display: none; }
+#role-picker h1 { font-size: 1.6rem; margin: 0 0 4px; }
+#role-picker p.lead { opacity: 0.75; max-width: 420px; margin: 0 0 10px; }
+.role-btn {
+  width: 100%;
+  max-width: 380px;
+  padding: 20px;
+  font-size: 1.02rem;
+  border-radius: 14px;
+  border: 1px solid #3a3a3a;
+  background: #171717;
+  color: #f2f2f2;
+  text-align: left;
+}
+.role-btn b { display: block; font-size: 1.1rem; margin-bottom: 4px; }
+.role-btn span { opacity: 0.7; font-size: 0.85rem; }
+.role-btn:hover { background: #1f1f1f; }
+.switch-role-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 4px 0;
+  margin-bottom: 8px;
+}
+
+#teleprompter-app, #remote-app { display: none; height: 100%; }
+#teleprompter-app.active, #remote-app.active { display: contents; }
+
+.view { display: none; height: 100%; }
+.view.active { display: flex; flex-direction: column; height: 100%; }
+
+/* ---------- Editor view ---------- */
+
+#editor-view {
+  padding: 16px;
+  gap: 14px;
+  max-width: 900px;
+  margin: 0 auto;
+  overflow-y: auto;
+}
+
+#editor-view h1 {
+  font-size: 1.4rem;
+  margin: 4px 0 0;
+}
+
+#editor-view .subtitle {
+  margin: 0 0 8px;
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+.panel {
+  background: #171717;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#script-text {
+  width: 100%;
+  min-height: 240px;
+  resize: vertical;
+  background: #0f0f0f;
+  color: #f2f2f2;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.btn {
+  background: #262626;
+  color: #f2f2f2;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+}
+.btn:hover { background: #313131; }
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #06202f;
+  font-weight: 600;
+}
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.danger { border-color: #7a2e2e; color: #ff8a8a; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+#file-input { display: none; }
+
+#script-library {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+#script-library li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0f0f0f;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+#script-library li .name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#script-library li .meta {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+.empty-note { opacity: 0.5; font-size: 0.85rem; padding: 6px 2px; }
+
+label.field-label {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ---------- Prompter view ---------- */
+
+#prompter-view {
+  position: relative;
+  background: transparent;
+  overflow: hidden;
+}
+
+#camera-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+#camera-bg.on { display: block; }
+
+#scrim {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+  z-index: 1;
+}
+
+#prompter-stage {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+#prompter-stage.mirror-h { transform: scaleX(-1); }
+#prompter-stage.mirror-v { transform: scaleY(-1); }
+#prompter-stage.mirror-hv { transform: scale(-1, -1); }
+
+#center-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 2px dashed rgba(255, 80, 80, 0.75);
+  pointer-events: none;
+  display: none;
+  z-index: 3;
+}
+#center-line.on { display: block; }
+
+.eye-marker {
+  position: absolute;
+  top: -15px;
+  font-size: 22px;
+  filter: drop-shadow(0 0 4px rgba(0,0,0,0.9));
+}
+.eye-marker-left { left: 10px; }
+.eye-marker-right { right: 10px; }
+
+.eye-line-label {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 80, 80, 0.9);
+  color: #1a0000;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 2px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+/* It sits right on the reading line, so it would otherwise cover whatever
+   text scrolls under it — show it as a brief orientation hint, then fade
+   it out and leave just the thin line + edge markers in place. */
+.eye-line-label.faded { opacity: 0; }
+
+/* Reading-guide spotlight: dim text away from the center line, like a
+   physical teleprompter's read zone. Toggled together with #center-line. */
+#prompter-stage.spotlight-on #script-track {
+  -webkit-mask-image: linear-gradient(to bottom,
+    rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.15) 30%,
+    rgba(0,0,0,1) 47%, rgba(0,0,0,1) 53%,
+    rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.15) 100%);
+  mask-image: linear-gradient(to bottom,
+    rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.15) 30%,
+    rgba(0,0,0,1) 47%, rgba(0,0,0,1) 53%,
+    rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.15) 100%);
+}
+
+#progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255,255,255,0.12);
+  z-index: 6;
+}
+#progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+}
+#time-readout {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8rem;
+  background: rgba(0,0,0,0.5);
+  padding: 3px 8px;
+  border-radius: 6px;
+  z-index: 6;
+}
+
+#quick-font-controls {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 6;
+}
+.icon-btn.small {
+  min-width: 38px;
+  min-height: 38px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+}
+
+#countdown-overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.55);
+  z-index: 9;
+  pointer-events: none;
+}
+#countdown-overlay.show { display: flex; }
+#countdown-number {
+  font-size: 25vw;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 30px rgba(0,0,0,0.6);
+}
+
+.swatch-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 2px solid rgba(255,255,255,0.25);
+  cursor: pointer;
+}
+.swatch-btn.active { border-color: var(--accent); }
+.swatch-black { background: #000; }
+.swatch-green { background: #0b7a1e; }
+
+/* ---------- Pairing modal (host side) ---------- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 20;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: #171717;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 440px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-box h2 { margin-top: 0; font-size: 1.15rem; }
+.modal-box textarea {
+  width: 100%;
+  background: #0f0f0f;
+  color: #f2f2f2;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 8px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  margin: 6px 0 10px;
+  resize: vertical;
+}
+.remote-status {
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.06);
+  display: inline-block;
+}
+.remote-status.connected { color: #7CFC9A; }
+
+#script-track {
+  width: 100%;
+  max-width: 900px;
+  padding: 100vh 24px;
+  word-wrap: break-word;
+  text-align: center;
+  will-change: transform;
+}
+
+#script-track .para {
+  white-space: pre-wrap;
+  margin: 0 0 1.2em;
+}
+
+#prompter-controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bar-bg);
+  backdrop-filter: blur(6px);
+  padding: 10px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  z-index: 5;
+}
+#prompter-controls.hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.controls-top {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 6px 10px;
+  flex: 1;
+  min-width: 130px;
+}
+.control-group span.ico { font-size: 0.9rem; opacity: 0.8; white-space: nowrap; }
+.control-group .value-readout {
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+  min-width: 2.6em;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.controls-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.icon-btn {
+  background: rgba(255,255,255,0.08);
+  color: #f2f2f2;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 10px 12px;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1rem;
+}
+.icon-btn.active { background: var(--accent); border-color: var(--accent); color: #06202f; }
+.icon-btn:hover { background: rgba(255,255,255,0.16); }
+
+#show-controls-tab {
+  position: absolute;
+  bottom: 0;
+  right: 12px;
+  background: var(--bar-bg);
+  border: none;
+  border-radius: 8px 8px 0 0;
+  color: #f2f2f2;
+  padding: 8px 14px;
+  z-index: 4;
+  display: none;
+}
+#show-controls-tab.show { display: block; }
+
+#camera-error {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(120, 20, 20, 0.85);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  display: none;
+  z-index: 6;
+  max-width: 90%;
+  text-align: center;
+}
+#camera-error.show { display: block; }
+
+.select-native {
+  background: #171717;
+  color: #f2f2f2;
+  border: 1px solid #3a3a3a;
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+
+footer.hint {
+  font-size: 0.78rem;
+  opacity: 0.55;
+  text-align: center;
+  padding: 4px 0 10px;
+}
+
+@media (max-width: 560px) {
+  .control-group { min-width: 100%; }
+  #editor-view { padding: 12px; }
+}
+
+/* ---------- Remote-control app (second device) ----------
+   Scoped under #remote-app so its generic class names (.btn, .panel, …)
+   never bleed into the teleprompter app sharing this same file/stylesheet. */
+#remote-app .screen { display: none; padding: 16px; max-width: 480px; margin: 0 auto; }
+#remote-app .screen.active { display: block; }
+#remote-app h1 { font-size: 1.3rem; margin: 6px 0 2px; }
+#remote-app .subtitle { opacity: 0.7; font-size: 0.9rem; margin: 0 0 10px; }
+#remote-app .panel {
+  background: #171717;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+#remote-app textarea {
+  width: 100%;
+  background: #0f0f0f;
+  color: #f2f2f2;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 8px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  margin-bottom: 10px;
+  resize: vertical;
+}
+#remote-app .btn {
+  background: #262626;
+  color: #f2f2f2;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  width: 100%;
+}
+#remote-app .btn.primary { background: var(--accent); border-color: var(--accent); color: #06202f; font-weight: 600; }
+#remote-app .hint { font-size: 0.78rem; opacity: 0.6; margin: 8px 0 0; }
+#remote-app .status {
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.06);
+  display: inline-block;
+  margin-bottom: 10px;
+}
+#remote-app .status.connected { color: #7CFC9A; }
+#remote-app .status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+#remote-app #r-time-readout { font-variant-numeric: tabular-nums; opacity: 0.8; font-size: 0.85rem; }
+#remote-app #r-progress-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+#remote-app #r-progress-fill { height: 100%; width: 0%; background: var(--accent); }
+#remote-app .big-btn {
+  display: block;
+  width: 100%;
+  padding: 26px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  border-radius: 14px;
+  border: none;
+  background: var(--accent);
+  color: #06202f;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+#remote-app .big-btn.playing { background: #ff9f3e; }
+#remote-app .grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+#remote-app .tile {
+  background: #1c1c1c;
+  border: 1px solid #303030;
+  border-radius: 12px;
+  color: #f2f2f2;
+  min-height: 64px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+#remote-app .tile.readout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: default;
+}
+#remote-app .tile.danger { background: #3a1414; border-color: #7a2e2e; color: #ff8a8a; grid-column: 3; }
+</style>
 </head>
 <body>
 
-<!-- ============= EDITOR VIEW ============= -->
+<!-- ============= ROLE PICKER ============= -->
+<div id="role-picker">
+  <h1>Teleprompter</h1>
+  <p class="lead">One file, two jobs. Pick what this device is doing right now — you can switch later.</p>
+  <button class="role-btn" id="pick-teleprompter">
+    <b>📽 The Teleprompter</b>
+    <span>This is the screen you'll read from.</span>
+  </button>
+  <button class="role-btn" id="pick-remote">
+    <b>🔗 The Remote Control</b>
+    <span>Use this device to control a teleprompter running on another device.</span>
+  </button>
+</div>
+
+<!-- ============= TELEPROMPTER APP ============= -->
+<div id="teleprompter-app">
+
+<!-- ---- EDITOR VIEW ---- -->
 <div id="editor-view" class="view active">
+  <button class="switch-role-link" id="switch-role-from-editor">↩ Switch device role</button>
   <h1>Teleprompter</h1>
   <p class="subtitle">Write or load a script, tune it to taste, then hit Start.</p>
 
@@ -85,7 +733,7 @@ Once you hit Start, this text will scroll smoothly. You can change the font size
   </footer>
 </div>
 
-<!-- ============= PROMPTER VIEW ============= -->
+<!-- ---- PROMPTER VIEW ---- -->
 <div id="prompter-view" class="view">
   <video id="camera-bg" autoplay playsinline muted></video>
   <div id="scrim"></div>
@@ -155,7 +803,7 @@ Once you hit Start, this text will scroll smoothly. You can change the font size
   <div id="remote-modal" class="modal-overlay">
     <div class="modal-box">
       <h2>Pair a remote control</h2>
-      <p>Open <code>remote.html</code> on your other phone or laptop, then follow the two steps below — they only happen once per session.</p>
+      <p>On your other phone or laptop, open this same file and choose "🔗 The Remote Control", then follow the two steps below — they only happen once per session.</p>
       <p id="remote-status" class="remote-status">Not connected</p>
 
       <label class="field-label">Step 1 — generate a code and copy it to the other device</label>
@@ -175,13 +823,1068 @@ Once you hit Start, this text will scroll smoothly. You can change the font size
   </div>
 </div>
 
-<script src="teleprompter.js"></script>
+</div><!-- /#teleprompter-app -->
+
+<!-- ============= REMOTE-CONTROL APP ============= -->
+<div id="remote-app">
+
+  <div id="r-pairing-screen" class="screen active">
+    <button class="switch-role-link" id="switch-role-from-remote">↩ Switch device role</button>
+    <h1>Teleprompter Remote</h1>
+    <p class="subtitle">Pairs directly with the teleprompter screen — no account, no app.</p>
+    <p id="r-status" class="status">Not connected</p>
+
+    <div class="panel">
+      <label class="field-label">Step 1 — paste the code from the teleprompter</label>
+      <textarea id="r-offer-input" rows="3" placeholder="Paste the teleprompter's code here..."></textarea>
+      <button class="btn primary" id="r-gen-answer-btn">Generate my code</button>
+    </div>
+
+    <div class="panel" id="r-answer-panel" style="display:none;">
+      <label class="field-label">Step 2 — copy this code back into the teleprompter</label>
+      <textarea id="r-answer-output" readonly rows="3"></textarea>
+      <button class="btn" id="r-copy-answer-btn">Copy code</button>
+      <p class="hint">Paste it into the teleprompter's "Step 2" box, then this screen will switch to the remote automatically.</p>
+    </div>
+  </div>
+
+  <div id="r-control-screen" class="screen">
+    <div class="status-row">
+      <span id="r-control-status" class="status connected">🟢 Connected</span>
+      <span id="r-time-readout">0:00 / 0:00</span>
+    </div>
+    <div id="r-progress-bar"><div id="r-progress-fill"></div></div>
+
+    <button id="r-toggle-btn" class="big-btn play">▶ Play</button>
+
+    <div class="grid">
+      <button class="tile" id="r-prev-btn">⏮<br>Prev ¶</button>
+      <button class="tile" id="r-reset-btn">⟲<br>Reset</button>
+      <button class="tile" id="r-next-btn">⏭<br>Next ¶</button>
+
+      <button class="tile" id="r-speed-down-btn">➖<br>Speed</button>
+      <span class="tile readout" id="r-speed-readout">40</span>
+      <button class="tile" id="r-speed-up-btn">➕<br>Speed</button>
+
+      <button class="tile" id="r-font-down-btn">A−<br>Font</button>
+      <span class="tile readout" id="r-font-readout">48px</span>
+      <button class="tile" id="r-font-up-btn">A+<br>Font</button>
+
+      <button class="tile" id="r-mirror-btn">🪞<br>Mirror</button>
+      <button class="tile" id="r-guide-btn">➖<br>Guide</button>
+      <button class="tile danger" id="r-disconnect-btn">✕<br>Disconnect</button>
+    </div>
+  </div>
+
+</div><!-- /#remote-app -->
+
 <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
+(() => {
+  'use strict';
+  const rolePicker = document.getElementById('role-picker');
+  const teleprompterApp = document.getElementById('teleprompter-app');
+  const remoteApp = document.getElementById('remote-app');
+
+  function chooseRole(role) {
+    rolePicker.classList.add('hidden');
+    teleprompterApp.classList.toggle('active', role === 'teleprompter');
+    remoteApp.classList.toggle('active', role === 'remote');
+  }
+
+  document.getElementById('pick-teleprompter').addEventListener('click', () => chooseRole('teleprompter'));
+  document.getElementById('pick-remote').addEventListener('click', () => chooseRole('remote'));
+
+  // Switching role resets all state cleanly (closes any WebRTC connection,
+  // stops the camera, etc.) — simplest and safest as a full reload.
+  document.getElementById('switch-role-from-editor').addEventListener('click', () => location.reload());
+  document.getElementById('switch-role-from-remote').addEventListener('click', () => location.reload());
+})();
+</script>
+
+<script>
+// ============================================================
+// Teleprompter app logic (runs only once the "Teleprompter" role is picked;
+// harmless to initialize while hidden — nothing here executes network/camera
+// access until the user presses a button inside the now-visible UI).
+// ============================================================
+(() => {
+  'use strict';
+
+  const LIBRARY_KEY = 'teleprompter.library';
+  const SETTINGS_KEY = 'teleprompter.settings';
+
+  const DRAFT_KEY = 'teleprompter.draft';
+
+  const defaultSettings = {
+    fontSize: 48,
+    speed: 40,
+    opacity: 100,
+    fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif",
+    mirrorMode: 0, // 0 none, 1 horizontal, 2 vertical, 3 both
+    backdropColor: '#000000',
+    countdownEnabled: true
+  };
+
+  let settings = loadSettings();
+
+  // ---------- DOM refs ----------
+  const editorView = document.getElementById('editor-view');
+  const prompterView = document.getElementById('prompter-view');
+  const scriptText = document.getElementById('script-text');
+  const uploadBtn = document.getElementById('upload-btn');
+  const fileInput = document.getElementById('file-input');
+  const clearBtn = document.getElementById('clear-btn');
+  const downloadBtn = document.getElementById('download-btn');
+  const startBtn = document.getElementById('start-btn');
+  const saveNameInput = document.getElementById('save-name');
+  const saveBtn = document.getElementById('save-btn');
+  const libraryList = document.getElementById('script-library');
+  const libraryEmpty = document.getElementById('library-empty');
+
+  const fontSizeRange = document.getElementById('font-size-range');
+  const fontSizeLabel = document.getElementById('font-size-label');
+  const speedRange = document.getElementById('speed-range');
+  const speedLabel = document.getElementById('speed-label');
+  const fontFamilySelect = document.getElementById('font-family');
+
+  const scriptTrack = document.getElementById('script-track');
+  const prompterStage = document.getElementById('prompter-stage');
+  const centerLine = document.getElementById('center-line');
+  const cameraBg = document.getElementById('camera-bg');
+  const scrim = document.getElementById('scrim');
+  const cameraError = document.getElementById('camera-error');
+
+  const pFontSize = document.getElementById('p-font-size');
+  const pSpeed = document.getElementById('p-speed');
+  const pOpacity = document.getElementById('p-opacity');
+  const pFontSizeValue = document.getElementById('p-font-size-value');
+  const pSpeedValue = document.getElementById('p-speed-value');
+  const pOpacityValue = document.getElementById('p-opacity-value');
+
+  const backBtn = document.getElementById('back-btn');
+  const playBtn = document.getElementById('play-btn');
+  const resetBtn = document.getElementById('reset-btn');
+  const mirrorBtn = document.getElementById('mirror-btn');
+  const cameraBtn = document.getElementById('camera-btn');
+  const flipCamBtn = document.getElementById('flip-cam-btn');
+  const centerlineBtn = document.getElementById('centerline-btn');
+  const fullscreenBtn = document.getElementById('fullscreen-btn');
+  const hideControlsBtn = document.getElementById('hide-controls-btn');
+  const showControlsTab = document.getElementById('show-controls-tab');
+  const controlsBar = document.getElementById('prompter-controls');
+
+  const countdownToggle = document.getElementById('countdown-toggle');
+  const countdownOverlay = document.getElementById('countdown-overlay');
+  const countdownNumber = document.getElementById('countdown-number');
+  const progressFill = document.getElementById('progress-fill');
+  const timeReadout = document.getElementById('time-readout');
+  const fontDecBtn = document.getElementById('font-dec');
+  const fontIncBtn = document.getElementById('font-inc');
+  const backdropBlackBtn = document.getElementById('backdrop-black');
+  const backdropGreenBtn = document.getElementById('backdrop-green');
+  const prevParaBtn = document.getElementById('prev-para-btn');
+  const nextParaBtn = document.getElementById('next-para-btn');
+
+  // ---------- Settings persistence ----------
+  function loadSettings() {
+    try {
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if (!raw) return { ...defaultSettings };
+      return { ...defaultSettings, ...JSON.parse(raw) };
+    } catch {
+      return { ...defaultSettings };
+    }
+  }
+
+  function saveSettings() {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  }
+
+  function applySettingsToUI() {
+    fontSizeRange.value = settings.fontSize;
+    fontSizeLabel.textContent = settings.fontSize;
+    speedRange.value = settings.speed;
+    speedLabel.textContent = settings.speed;
+    fontFamilySelect.value = settings.fontFamily;
+    pFontSize.value = settings.fontSize;
+    pSpeed.value = settings.speed;
+    pOpacity.value = settings.opacity;
+    pFontSizeValue.textContent = settings.fontSize + 'px';
+    pSpeedValue.textContent = settings.speed;
+    pOpacityValue.textContent = settings.opacity + '%';
+    countdownToggle.checked = settings.countdownEnabled;
+    backdropBlackBtn.classList.toggle('active', settings.backdropColor === '#000000');
+    backdropGreenBtn.classList.toggle('active', settings.backdropColor !== '#000000');
+  }
+
+  applySettingsToUI();
+
+  // ---------- Draft autosave (so a stray refresh never loses typed work) ----------
+  const savedDraft = localStorage.getItem(DRAFT_KEY);
+  if (savedDraft && savedDraft.trim()) {
+    scriptText.value = savedDraft;
+  }
+  let draftTimer = null;
+  scriptText.addEventListener('input', () => {
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(() => localStorage.setItem(DRAFT_KEY, scriptText.value), 400);
+  });
+
+  countdownToggle.addEventListener('change', () => {
+    settings.countdownEnabled = countdownToggle.checked;
+    saveSettings();
+  });
+
+  // ---------- Script library (localStorage) ----------
+  function loadLibrary() {
+    try {
+      return JSON.parse(localStorage.getItem(LIBRARY_KEY)) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveLibrary(list) {
+    localStorage.setItem(LIBRARY_KEY, JSON.stringify(list));
+  }
+
+  function renderLibrary() {
+    const list = loadLibrary();
+    libraryList.innerHTML = '';
+    libraryEmpty.style.display = list.length ? 'none' : 'block';
+    list
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+      .forEach(item => {
+        const li = document.createElement('li');
+        const date = new Date(item.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        li.innerHTML = `
+          <span class="name">${escapeHtml(item.name)}</span>
+          <span class="meta">${date}</span>
+        `;
+        const loadBtn = document.createElement('button');
+        loadBtn.className = 'btn';
+        loadBtn.textContent = 'Load';
+        loadBtn.onclick = () => {
+          scriptText.value = item.text;
+          saveNameInput.value = item.name;
+        };
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn danger';
+        delBtn.textContent = 'Delete';
+        delBtn.onclick = () => {
+          if (confirm(`Delete "${item.name}"?`)) {
+            saveLibrary(loadLibrary().filter(x => x.id !== item.id));
+            renderLibrary();
+          }
+        };
+        li.appendChild(loadBtn);
+        li.appendChild(delBtn);
+        libraryList.appendChild(li);
+      });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  saveBtn.addEventListener('click', () => {
+    const name = saveNameInput.value.trim() || `Script ${new Date().toLocaleString()}`;
+    const text = scriptText.value;
+    if (!text.trim()) return;
+    const list = loadLibrary();
+    const existing = list.find(x => x.name === name);
+    if (existing) {
+      existing.text = text;
+      existing.updatedAt = Date.now();
+    } else {
+      list.push({ id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), name, text, updatedAt: Date.now() });
+    }
+    saveLibrary(list);
+    renderLibrary();
+  });
+
+  renderLibrary();
+
+  // ---------- File load / clear / download ----------
+  uploadBtn.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      scriptText.value = reader.result;
+      saveNameInput.value = file.name.replace(/\.[^.]+$/, '');
+    };
+    reader.readAsText(file);
+    fileInput.value = '';
+  });
+
+  clearBtn.addEventListener('click', () => {
+    if (scriptText.value.trim() && !confirm('Clear the script text?')) return;
+    scriptText.value = '';
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    const blob = new Blob([scriptText.value], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${(saveNameInput.value.trim() || 'script')}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // ---------- Editor-side setting controls ----------
+  fontSizeRange.addEventListener('input', () => setFontSize(+fontSizeRange.value));
+  speedRange.addEventListener('input', () => setSpeed(+speedRange.value));
+  fontFamilySelect.addEventListener('change', () => {
+    settings.fontFamily = fontFamilySelect.value;
+    scriptTrack.style.fontFamily = settings.fontFamily;
+    saveSettings();
+  });
+
+  // ---------- Prompter-side setting controls ----------
+  pFontSize.addEventListener('input', () => setFontSize(+pFontSize.value));
+  pSpeed.addEventListener('input', () => setSpeed(+pSpeed.value));
+  pOpacity.addEventListener('input', () => {
+    settings.opacity = +pOpacity.value;
+    scrim.style.opacity = settings.opacity / 100;
+    pOpacityValue.textContent = settings.opacity + '%';
+    saveSettings();
+  });
+
+  backdropBlackBtn.addEventListener('click', () => setBackdropColor('#000000'));
+  backdropGreenBtn.addEventListener('click', () => setBackdropColor('#00b140'));
+
+  function setBackdropColor(color) {
+    settings.backdropColor = color;
+    scrim.style.background = color;
+    backdropBlackBtn.classList.toggle('active', color === '#000000');
+    backdropGreenBtn.classList.toggle('active', color !== '#000000');
+    saveSettings();
+  }
+
+  function setFontSize(v) {
+    settings.fontSize = v;
+    fontSizeRange.value = v;
+    pFontSize.value = v;
+    fontSizeLabel.textContent = v;
+    pFontSizeValue.textContent = v + 'px';
+    scriptTrack.style.fontSize = v + 'px';
+    saveSettings();
+    recomputeMaxScroll();
+    updateProgressUI();
+  }
+
+  function setSpeed(v) {
+    settings.speed = v;
+    speedRange.value = v;
+    pSpeed.value = v;
+    speedLabel.textContent = v;
+    pSpeedValue.textContent = v;
+    saveSettings();
+    updateProgressUI();
+  }
+
+  // ---------- View switching ----------
+  let wakeLock = null;
+
+  async function requestWakeLock() {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLock = await navigator.wakeLock.request('screen');
+      }
+    } catch {
+      // ignore - not fatal, screen may just dim if unsupported
+    }
+  }
+
+  function releaseWakeLock() {
+    if (wakeLock) {
+      wakeLock.release().catch(() => {});
+      wakeLock = null;
+    }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && playing && prompterView.classList.contains('active')) {
+      requestWakeLock();
+    }
+  });
+
+  function renderScript(text) {
+    scriptTrack.innerHTML = '';
+    paragraphEls = text.split(/\n{2,}/).map(para => {
+      const div = document.createElement('div');
+      div.className = 'para';
+      div.textContent = para;
+      scriptTrack.appendChild(div);
+      return div;
     });
   }
+
+  startBtn.addEventListener('click', () => {
+    if (!scriptText.value.trim()) {
+      scriptText.focus();
+      return;
+    }
+    renderScript(scriptText.value);
+    scriptTrack.style.fontSize = settings.fontSize + 'px';
+    scriptTrack.style.fontFamily = settings.fontFamily;
+    scrim.style.background = settings.backdropColor;
+    scrim.style.opacity = settings.opacity / 100;
+    applyMirrorClass();
+    scrollPos = 0;
+    hasStartedOnce = false;
+    applyScrollTransform();
+    editorView.classList.remove('active');
+    prompterView.classList.add('active');
+    document.documentElement.classList.add('prompter-active');
+    setPlaying(false);
+    showControls();
+    requestAnimationFrame(() => {
+      recomputeMaxScroll();
+      updateProgressUI();
+    });
+  });
+
+  backBtn.addEventListener('click', exitToEditor);
+
+  function exitToEditor() {
+    setPlaying(false);
+    stopCamera();
+    releaseWakeLock();
+    document.documentElement.classList.remove('prompter-active');
+    prompterView.classList.remove('active');
+    editorView.classList.add('active');
+  }
+
+  // ---------- Scrolling engine ----------
+  let playing = false;
+  let scrollPos = 0;
+  let lastTs = null;
+  let paragraphEls = [];
+  let maxScroll = 1;
+  let hasStartedOnce = false;
+
+  function applyScrollTransform() {
+    scriptTrack.style.transform = `translateY(-${scrollPos}px)`;
+  }
+
+  function recomputeMaxScroll() {
+    maxScroll = Math.max(1, scriptTrack.scrollHeight - prompterStage.clientHeight);
+  }
+
+  function fmtTime(s) {
+    s = Math.max(0, Math.round(s));
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  }
+
+  function updateProgressUI() {
+    const pct = maxScroll ? Math.min(100, (scrollPos / maxScroll) * 100) : 0;
+    progressFill.style.width = pct + '%';
+    const elapsed = settings.speed ? scrollPos / settings.speed : 0;
+    const total = settings.speed ? maxScroll / settings.speed : 0;
+    timeReadout.textContent = `${fmtTime(elapsed)} / ${fmtTime(total)}`;
+    sendStateThrottled();
+  }
+
+  function tick(ts) {
+    if (!playing) return;
+    if (lastTs !== null) {
+      const dt = (ts - lastTs) / 1000;
+      scrollPos += settings.speed * dt;
+      if (scrollPos >= maxScroll) {
+        scrollPos = maxScroll;
+        applyScrollTransform();
+        updateProgressUI();
+        setPlaying(false);
+        return;
+      }
+      applyScrollTransform();
+      updateProgressUI();
+    }
+    lastTs = ts;
+    requestAnimationFrame(tick);
+  }
+
+  function setPlaying(v) {
+    playing = v;
+    lastTs = null;
+    playBtn.textContent = playing ? '⏸ Pause' : '▶ Play';
+    playBtn.classList.toggle('active', playing);
+    if (playing) {
+      requestAnimationFrame(tick);
+      requestWakeLock();
+    } else {
+      releaseWakeLock();
+    }
+    sendStateNow();
+  }
+
+  function beginCountdownThenPlay() {
+    if (!settings.countdownEnabled) {
+      setPlaying(true);
+      return;
+    }
+    let n = 3;
+    countdownNumber.textContent = n;
+    countdownOverlay.classList.add('show');
+    const iv = setInterval(() => {
+      n--;
+      if (n <= 0) {
+        clearInterval(iv);
+        countdownOverlay.classList.remove('show');
+        setPlaying(true);
+      } else {
+        countdownNumber.textContent = n;
+      }
+    }, 800);
+  }
+
+  playBtn.addEventListener('click', () => {
+    if (playing) {
+      setPlaying(false);
+      return;
+    }
+    if (!hasStartedOnce) {
+      hasStartedOnce = true;
+      beginCountdownThenPlay();
+    } else {
+      setPlaying(true);
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    scrollPos = 0;
+    hasStartedOnce = false;
+    applyScrollTransform();
+    updateProgressUI();
+  });
+
+  // ---------- Paragraph navigation (jump by blank-line-separated section) ----------
+  function currentParaIndex() {
+    const centerLocal = scrollPos + prompterStage.clientHeight / 2;
+    let idx = 0;
+    for (let i = 0; i < paragraphEls.length; i++) {
+      if (paragraphEls[i].offsetTop <= centerLocal) idx = i;
+      else break;
+    }
+    return idx;
+  }
+
+  function jumpToParagraph(idx) {
+    if (!paragraphEls.length) return;
+    idx = Math.max(0, Math.min(paragraphEls.length - 1, idx));
+    const el = paragraphEls[idx];
+    const target = el.offsetTop - prompterStage.clientHeight / 2 + el.offsetHeight / 2;
+    scrollPos = Math.max(0, Math.min(maxScroll, target));
+    applyScrollTransform();
+    updateProgressUI();
+  }
+
+  prevParaBtn.addEventListener('click', () => jumpToParagraph(currentParaIndex() - 1));
+  nextParaBtn.addEventListener('click', () => jumpToParagraph(currentParaIndex() + 1));
+
+  // ---------- Quick on-screen font size nudge ----------
+  fontDecBtn.addEventListener('click', () => setFontSize(Math.max(20, settings.fontSize - 4)));
+  fontIncBtn.addEventListener('click', () => setFontSize(Math.min(200, settings.fontSize + 4)));
+
+  window.addEventListener('resize', () => {
+    if (prompterView.classList.contains('active')) recomputeMaxScroll();
+  });
+
+  // ---------- Mirror ----------
+  const mirrorClasses = ['', 'mirror-h', 'mirror-v', 'mirror-hv'];
+  const mirrorLabels = ['🪞 Mirror: off', '🪞 Mirror: horiz', '🪞 Mirror: vert', '🪞 Mirror: both'];
+
+  function applyMirrorClass() {
+    prompterStage.classList.remove('mirror-h', 'mirror-v', 'mirror-hv');
+    const cls = mirrorClasses[settings.mirrorMode];
+    if (cls) prompterStage.classList.add(cls);
+    mirrorBtn.textContent = mirrorLabels[settings.mirrorMode];
+    mirrorBtn.classList.toggle('active', settings.mirrorMode !== 0);
+  }
+
+  mirrorBtn.addEventListener('click', () => {
+    settings.mirrorMode = (settings.mirrorMode + 1) % mirrorClasses.length;
+    applyMirrorClass();
+    saveSettings();
+  });
+
+  // ---------- Camera see-through background ----------
+  let cameraStream = null;
+  let facingMode = 'user';
+
+  async function startCamera() {
+    try {
+      cameraError.classList.remove('show');
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API not available (needs HTTPS or localhost).');
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode }, audio: false
+      });
+      cameraStream = stream;
+      cameraBg.srcObject = stream;
+      cameraBg.classList.add('on');
+      cameraBtn.classList.add('active');
+      flipCamBtn.style.display = 'inline-block';
+    } catch (err) {
+      showCameraError(err.message || 'Could not access camera.');
+    }
+  }
+
+  function stopCamera() {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(t => t.stop());
+      cameraStream = null;
+    }
+    cameraBg.srcObject = null;
+    cameraBg.classList.remove('on');
+    cameraBtn.classList.remove('active');
+    flipCamBtn.style.display = 'none';
+  }
+
+  function showCameraError(msg) {
+    cameraError.textContent = msg;
+    cameraError.classList.add('show');
+    setTimeout(() => cameraError.classList.remove('show'), 4000);
+  }
+
+  cameraBtn.addEventListener('click', () => {
+    if (cameraStream) stopCamera();
+    else startCamera();
+  });
+
+  flipCamBtn.addEventListener('click', () => {
+    facingMode = facingMode === 'user' ? 'environment' : 'user';
+    stopCamera();
+    startCamera();
+  });
+
+  // ---------- Eye-line reading guide ----------
+  const eyeLineLabel = document.querySelector('#teleprompter-app .eye-line-label');
+  let labelFadeTimer = null;
+
+  centerlineBtn.addEventListener('click', () => {
+    const turningOn = !centerLine.classList.contains('on');
+    centerLine.classList.toggle('on');
+    prompterStage.classList.toggle('spotlight-on');
+    centerlineBtn.classList.toggle('active');
+    clearTimeout(labelFadeTimer);
+    if (turningOn) {
+      // Show the "look here" label as a one-time hint, then fade it so it
+      // stops sitting on top of (and blocking) the text scrolling past it.
+      eyeLineLabel.classList.remove('faded');
+      labelFadeTimer = setTimeout(() => eyeLineLabel.classList.add('faded'), 2500);
+    }
+  });
+
+  // ---------- Fullscreen ----------
+  fullscreenBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      (document.documentElement.requestFullscreen || function () {}).call(document.documentElement).catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  });
+
+  // ---------- Auto-hide controls ----------
+  let hideTimer = null;
+
+  function showControls() {
+    controlsBar.classList.remove('hidden');
+    showControlsTab.classList.remove('show');
+    scheduleAutoHide();
+  }
+
+  function scheduleAutoHide() {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+      if (playing) hideControls();
+    }, 4000);
+  }
+
+  function hideControls() {
+    controlsBar.classList.add('hidden');
+    showControlsTab.classList.add('show');
+  }
+
+  hideControlsBtn.addEventListener('click', hideControls);
+  showControlsTab.addEventListener('click', showControls);
+  ['pointermove', 'touchstart', 'click'].forEach(evt => {
+    controlsBar.addEventListener(evt, scheduleAutoHide);
+  });
+  prompterStage.addEventListener('click', () => {
+    if (controlsBar.classList.contains('hidden')) showControls();
+  });
+
+  // ---------- Wireless remote control (WebRTC, no server) ----------
+  // Two devices pair by manually copying a short code once; after that,
+  // control messages flow directly between them (no relay, no account).
+  const ICE_SERVERS = [{ urls: 'stun:stun.l.google.com:19302' }];
+
+  const remoteBtn = document.getElementById('remote-btn');
+  const remoteModal = document.getElementById('remote-modal');
+  const closeRemoteModalBtn = document.getElementById('close-remote-modal');
+  const remoteStatusEl = document.getElementById('remote-status');
+  const genOfferBtn = document.getElementById('gen-offer-btn');
+  const offerOutput = document.getElementById('offer-output');
+  const copyOfferBtn = document.getElementById('copy-offer-btn');
+  const answerInput = document.getElementById('answer-input');
+  const connectAnswerBtn = document.getElementById('connect-answer-btn');
+  const disconnectRemoteBtn = document.getElementById('disconnect-remote-btn');
+
+  let rtcPc = null;
+  let rtcDc = null;
+  let lastStateSend = 0;
+
+  // Don't wait forever for a STUN round-trip that a restrictive network
+  // might silently drop — after 4s, proceed with whatever candidates
+  // (usually at least a local-network one) have been gathered so far.
+  function waitForIceGatheringComplete(pc, timeoutMs = 4000) {
+    if (pc.iceGatheringState === 'complete') return Promise.resolve();
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        pc.removeEventListener('icegatheringstatechange', check);
+        resolve();
+      }, timeoutMs);
+      function check() {
+        if (pc.iceGatheringState === 'complete') {
+          clearTimeout(timer);
+          pc.removeEventListener('icegatheringstatechange', check);
+          resolve();
+        }
+      }
+      pc.addEventListener('icegatheringstatechange', check);
+    });
+  }
+
+  function setRemoteStatus(text, connected) {
+    remoteStatusEl.textContent = text;
+    remoteStatusEl.classList.toggle('connected', !!connected);
+    disconnectRemoteBtn.style.display = connected ? 'inline-block' : 'none';
+    remoteBtn.classList.toggle('active', !!connected);
+  }
+
+  function wireHostDataChannel(channel) {
+    rtcDc = channel;
+    rtcDc.onopen = () => {
+      setRemoteStatus('🟢 Remote connected', true);
+      sendStateNow();
+    };
+    rtcDc.onclose = () => setRemoteStatus('Disconnected', false);
+    rtcDc.onerror = () => setRemoteStatus('Connection error', false);
+    rtcDc.onmessage = (e) => {
+      let msg;
+      try { msg = JSON.parse(e.data); } catch { return; }
+      switch (msg.type) {
+        case 'toggle': playBtn.click(); break;
+        case 'reset': resetBtn.click(); break;
+        case 'speedUp': setSpeed(Math.min(150, settings.speed + 5)); break;
+        case 'speedDown': setSpeed(Math.max(5, settings.speed - 5)); break;
+        case 'fontUp': setFontSize(Math.min(200, settings.fontSize + 4)); break;
+        case 'fontDown': setFontSize(Math.max(20, settings.fontSize - 4)); break;
+        case 'nextPara': jumpToParagraph(currentParaIndex() + 1); break;
+        case 'prevPara': jumpToParagraph(currentParaIndex() - 1); break;
+        case 'mirror': mirrorBtn.click(); break;
+        case 'guide': centerlineBtn.click(); break;
+      }
+      sendStateNow();
+    };
+  }
+
+  function sendStateNow() {
+    if (!rtcDc || rtcDc.readyState !== 'open') return;
+    lastStateSend = performance.now();
+    rtcDc.send(JSON.stringify({
+      type: 'state',
+      playing,
+      speed: settings.speed,
+      fontSize: settings.fontSize,
+      time: timeReadout.textContent,
+      pct: parseFloat(progressFill.style.width) || 0
+    }));
+  }
+
+  function sendStateThrottled() {
+    if (!rtcDc || rtcDc.readyState !== 'open') return;
+    if (performance.now() - lastStateSend < 200) return;
+    sendStateNow();
+  }
+
+  remoteBtn.addEventListener('click', () => remoteModal.classList.add('show'));
+  closeRemoteModalBtn.addEventListener('click', () => remoteModal.classList.remove('show'));
+
+  genOfferBtn.addEventListener('click', async () => {
+    genOfferBtn.disabled = true;
+    genOfferBtn.textContent = 'Generating…';
+    try {
+      if (rtcPc) rtcPc.close();
+      rtcPc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+      wireHostDataChannel(rtcPc.createDataChannel('control'));
+      rtcPc.onconnectionstatechange = () => {
+        if (rtcPc.connectionState === 'failed' || rtcPc.connectionState === 'disconnected') {
+          setRemoteStatus('Disconnected', false);
+        }
+      };
+      const offer = await rtcPc.createOffer();
+      await rtcPc.setLocalDescription(offer);
+      await waitForIceGatheringComplete(rtcPc);
+      offerOutput.value = btoa(JSON.stringify(rtcPc.localDescription));
+    } catch (err) {
+      setRemoteStatus('Could not start pairing: ' + err.message, false);
+    } finally {
+      genOfferBtn.disabled = false;
+      genOfferBtn.textContent = 'Generate pairing code';
+    }
+  });
+
+  copyOfferBtn.addEventListener('click', () => {
+    if (!offerOutput.value) return;
+    offerOutput.select();
+    navigator.clipboard?.writeText(offerOutput.value).catch(() => {});
+  });
+
+  connectAnswerBtn.addEventListener('click', async () => {
+    if (!rtcPc) {
+      setRemoteStatus('Generate a pairing code first (Step 1)', false);
+      return;
+    }
+    try {
+      const answer = JSON.parse(atob(answerInput.value.trim()));
+      await rtcPc.setRemoteDescription(answer);
+      setRemoteStatus('Connecting…', false);
+    } catch {
+      setRemoteStatus('That code looks invalid — copy it again from the remote device', false);
+    }
+  });
+
+  disconnectRemoteBtn.addEventListener('click', () => {
+    if (rtcDc) rtcDc.close();
+    if (rtcPc) rtcPc.close();
+    rtcPc = null;
+    rtcDc = null;
+    offerOutput.value = '';
+    answerInput.value = '';
+    setRemoteStatus('Not connected', false);
+  });
+
+  // ---------- Keyboard shortcuts ----------
+  document.addEventListener('keydown', (e) => {
+    if (!prompterView.classList.contains('active')) return;
+    switch (e.key) {
+      case ' ':
+      case 'Enter':
+        e.preventDefault();
+        playBtn.click();
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSpeed(Math.min(150, settings.speed + 5));
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        setSpeed(Math.max(5, settings.speed - 5));
+        break;
+      case 'PageDown':
+        e.preventDefault();
+        jumpToParagraph(currentParaIndex() + 1);
+        break;
+      case 'PageUp':
+        e.preventDefault();
+        jumpToParagraph(currentParaIndex() - 1);
+        break;
+      case '+':
+      case '=':
+        setFontSize(Math.min(200, settings.fontSize + 4));
+        break;
+      case '-':
+        setFontSize(Math.max(20, settings.fontSize - 4));
+        break;
+      case 'm':
+      case 'M':
+        settings.mirrorMode = (settings.mirrorMode + 1) % mirrorClasses.length;
+        applyMirrorClass();
+        saveSettings();
+        break;
+      case 'c':
+      case 'C':
+        if (cameraStream) stopCamera(); else startCamera();
+        break;
+      case 'f':
+      case 'F':
+        fullscreenBtn.click();
+        break;
+      case 'Escape':
+        exitToEditor();
+        break;
+    }
+  });
+})();
 </script>
+
+<script>
+// ============================================================
+// Remote-control app logic (runs only once the "Remote Control" role is
+// picked). All ids here are prefixed with r- to avoid clashing with the
+// teleprompter app's own ids sharing this same page.
+// ============================================================
+(() => {
+  'use strict';
+
+  const ICE_SERVERS = [{ urls: 'stun:stun.l.google.com:19302' }];
+
+  const pairingScreen = document.getElementById('r-pairing-screen');
+  const controlScreen = document.getElementById('r-control-screen');
+  const statusEl = document.getElementById('r-status');
+
+  const offerInput = document.getElementById('r-offer-input');
+  const genAnswerBtn = document.getElementById('r-gen-answer-btn');
+  const answerPanel = document.getElementById('r-answer-panel');
+  const answerOutput = document.getElementById('r-answer-output');
+  const copyAnswerBtn = document.getElementById('r-copy-answer-btn');
+
+  const toggleBtn = document.getElementById('r-toggle-btn');
+  const prevBtn = document.getElementById('r-prev-btn');
+  const nextBtn = document.getElementById('r-next-btn');
+  const resetBtn = document.getElementById('r-reset-btn');
+  const speedUpBtn = document.getElementById('r-speed-up-btn');
+  const speedDownBtn = document.getElementById('r-speed-down-btn');
+  const fontUpBtn = document.getElementById('r-font-up-btn');
+  const fontDownBtn = document.getElementById('r-font-down-btn');
+  const mirrorBtn = document.getElementById('r-mirror-btn');
+  const guideBtn = document.getElementById('r-guide-btn');
+  const disconnectBtn = document.getElementById('r-disconnect-btn');
+  const speedReadout = document.getElementById('r-speed-readout');
+  const fontReadout = document.getElementById('r-font-readout');
+  const timeReadout = document.getElementById('r-time-readout');
+  const progressFill = document.getElementById('r-progress-fill');
+
+  let pc = null;
+  let dc = null;
+
+  function waitForIceGatheringComplete(peer, timeoutMs = 4000) {
+    if (peer.iceGatheringState === 'complete') return Promise.resolve();
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        peer.removeEventListener('icegatheringstatechange', check);
+        resolve();
+      }, timeoutMs);
+      function check() {
+        if (peer.iceGatheringState === 'complete') {
+          clearTimeout(timer);
+          peer.removeEventListener('icegatheringstatechange', check);
+          resolve();
+        }
+      }
+      peer.addEventListener('icegatheringstatechange', check);
+    });
+  }
+
+  function send(type) {
+    if (dc && dc.readyState === 'open') dc.send(JSON.stringify({ type }));
+  }
+
+  function showControlScreen() {
+    pairingScreen.classList.remove('active');
+    controlScreen.classList.add('active');
+  }
+
+  function showPairingScreen() {
+    controlScreen.classList.remove('active');
+    pairingScreen.classList.add('active');
+    statusEl.textContent = 'Not connected';
+    statusEl.classList.remove('connected');
+    offerInput.value = '';
+    answerOutput.value = '';
+    answerPanel.style.display = 'none';
+  }
+
+  genAnswerBtn.addEventListener('click', async () => {
+    const code = offerInput.value.trim();
+    if (!code) return;
+    genAnswerBtn.disabled = true;
+    genAnswerBtn.textContent = 'Generating…';
+    try {
+      const offer = JSON.parse(atob(code));
+      if (pc) pc.close();
+      pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+      pc.ondatachannel = (e) => wireDataChannel(e.channel);
+      pc.onconnectionstatechange = () => {
+        if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+          showPairingScreen();
+        }
+      };
+      await pc.setRemoteDescription(offer);
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      await waitForIceGatheringComplete(pc);
+      answerOutput.value = btoa(JSON.stringify(pc.localDescription));
+      answerPanel.style.display = 'block';
+      statusEl.textContent = 'Waiting for the teleprompter to connect…';
+    } catch (err) {
+      statusEl.textContent = 'That code looks invalid — copy it again from the teleprompter';
+    } finally {
+      genAnswerBtn.disabled = false;
+      genAnswerBtn.textContent = 'Generate my code';
+    }
+  });
+
+  copyAnswerBtn.addEventListener('click', () => {
+    if (!answerOutput.value) return;
+    answerOutput.select();
+    navigator.clipboard?.writeText(answerOutput.value).catch(() => {});
+  });
+
+  function wireDataChannel(channel) {
+    dc = channel;
+    dc.onopen = () => {
+      statusEl.textContent = '🟢 Connected';
+      statusEl.classList.add('connected');
+      showControlScreen();
+    };
+    dc.onclose = () => showPairingScreen();
+    dc.onerror = () => showPairingScreen();
+    dc.onmessage = (e) => {
+      let msg;
+      try { msg = JSON.parse(e.data); } catch { return; }
+      if (msg.type !== 'state') return;
+      toggleBtn.textContent = msg.playing ? '⏸ Pause' : '▶ Play';
+      toggleBtn.classList.toggle('playing', msg.playing);
+      speedReadout.textContent = msg.speed;
+      fontReadout.textContent = msg.fontSize + 'px';
+      timeReadout.textContent = msg.time;
+      progressFill.style.width = (msg.pct || 0) + '%';
+    };
+  }
+
+  toggleBtn.addEventListener('click', () => send('toggle'));
+  prevBtn.addEventListener('click', () => send('prevPara'));
+  nextBtn.addEventListener('click', () => send('nextPara'));
+  resetBtn.addEventListener('click', () => send('reset'));
+  speedUpBtn.addEventListener('click', () => send('speedUp'));
+  speedDownBtn.addEventListener('click', () => send('speedDown'));
+  fontUpBtn.addEventListener('click', () => send('fontUp'));
+  fontDownBtn.addEventListener('click', () => send('fontDown'));
+  mirrorBtn.addEventListener('click', () => send('mirror'));
+  guideBtn.addEventListener('click', () => send('guide'));
+
+  disconnectBtn.addEventListener('click', () => {
+    if (dc) dc.close();
+    if (pc) pc.close();
+    dc = null;
+    pc = null;
+    showPairingScreen();
+  });
+})();
+</script>
+
 </body>
 </html>
