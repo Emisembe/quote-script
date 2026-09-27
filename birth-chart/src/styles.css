@@ -364,3 +364,92 @@ details summary { cursor: pointer; font-weight: 650; }
 .reading-item { scroll-margin-top: 90px; }
 a.chip { text-decoration: none; }
 a.chip:hover { border-color: var(--plum-2); background: var(--plum-tint); }
+
+/* ---------- small screens ---------- */
+@media (max-width: 900px) {
+  .detail { position: static; }
+  .detail.sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 30;
+    max-height: min(62vh, 560px); overflow-y: auto; overscroll-behavior: contain;
+    border-radius: 20px 20px 0 0; border-bottom: 0;
+    padding: 12px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -8px 32px rgba(40, 20, 35, .22);
+    animation: sheet-up .22s ease-out;
+  }
+  .detail.sheet::before {
+    content: ''; justify-self: center; width: 40px; height: 4px; border-radius: 99px; background: var(--line-strong);
+  }
+}
+@media (min-width: 901px) { #sheet { display: none !important; } }
+@keyframes sheet-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+@media (max-width: 600px) {
+  body { font-size: 14.5px; }
+  .masthead { padding-top: 18px; }
+  .actions .btn { padding: 7px 12px; font-size: 13.5px; }
+  .tab { padding: 8px 13px; font-size: 13.5px; }
+  th, td { padding: 8px 9px; font-size: 13px; }
+  .wide-only { display: none; }
+  .card { padding: 14px 15px; }
+  .house-row { grid-template-columns: 36px 1fr; gap: 10px; padding: 12px; }
+  .house-row .hn { font-size: 28px; }
+  .bar { grid-template-columns: 64px 1fr 40px; font-size: 13px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .stat { flex-basis: 120px; }
+  .stat b { font-size: 26px; }
+  .detail h3 { font-size: 21px; }
+  .asp-grid td, .asp-grid th { width: 30px; height: 30px; font-size: 14px; }
+  dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+  .dlg { padding: 16px; }
+}
+
+/* ---------- compatibility ---------- */
+.person .section-head { margin-bottom: 10px; }
+.load-select { width: auto; max-width: 100%; font-size: 13px; padding: 5px 8px; }
+.coords { margin-top: 12px; font-size: 14px; }
+.report { gap: 16px; }
+.report > h3 { margin-top: 12px; }
+.report-head { display: grid; gap: 16px; }
+.pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: start; }
+.pair .amp { font-family: var(--serif); font-size: 44px; color: var(--plum); line-height: 1; align-self: center; }
+@media (max-width: 600px) { .pair { grid-template-columns: 1fr; } .pair .amp { font-size: 30px; } }
+.stat b small { font-size: 15px; color: var(--ink-3); font-family: var(--sans); margin-left: 2px; }
+.area-summary { display: grid; gap: 10px; }
+.area-summary .bar { grid-template-columns: minmax(120px, 190px) 1fr 40px; }
+.area-card { display: grid; gap: 10px; align-content: start; }
+.score-bar { grid-template-columns: 40px 1fr 0; }
+.score-bar .num { font-family: var(--serif); font-size: 26px; font-weight: 600; text-align: left; }
+.syn-list { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 8px; font-size: 14px; }
+.syn-list .asp-g { font-family: var(--glyph); }
+.good-eyebrow { color: var(--flow); }
+.bad-eyebrow { color: var(--tension); }
+.bar.dual { grid-template-columns: 64px 1fr 64px; }
+.dual-tracks { display: grid; gap: 3px; }
+.dual-tracks .track { height: 7px; }
+.dual-tracks .track.b .fill { opacity: .55; }
+tr.static { cursor: default; }
+.print-only { display: none; }
+
+/* ---------- print ---------- */
+@media print {
+  :root:not(#_print) {
+    color-scheme: light;
+    --bg: #fff; --surface: #fff; --surface-2: #f3eef1; --ink: #1a1418; --ink-2: #3d333b; --ink-3: #6b5f69;
+    --line: #d8ccd3; --line-strong: #b9a6b2; --plum: #5E2B50; --plum-2: #7E4A6F; --plum-tint: #f1e6ed; --on-plum: #fff;
+    --brass: #8a6326; --flow: #25685a; --tension: #a13d33; --blend: #7a5c22; --adjust: #5d4f93;
+    --fire: #f6e9e2; --earth: #efede2; --air: #eeedf4; --water: #e7eff1; --shadow: none;
+  }
+  @page { margin: 14mm; }
+  body { padding: 0; font-size: 11pt; background: #fff; }
+  .shell { max-width: none; gap: 10px; }
+  .actions, .tabs, .example-banner, .no-print, #sheet, .toast, dialog, .wheel-tools, .customize, .legend { display: none !important; }
+  .print-only { display: block; }
+  body.print-compat .masthead { display: none !important; }
+  .chart-layout { grid-template-columns: 1fr; }
+  .detail { position: static; box-shadow: none; }
+  .card, .stat, .house-row, .area-card, .reading-item, .table-wrap { box-shadow: none; break-inside: avoid; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr 1fr; }
+  h2, h3 { break-after: avoid; }
+  .table-wrap { overflow: visible; }
+  a.chip { display: none; }
+}

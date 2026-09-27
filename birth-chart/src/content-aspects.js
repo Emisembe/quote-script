@@ -158,7 +158,12 @@
     if (theme) parts.push(`This contact links ${theme}.`);
     parts.push(FAMILY[aspectKey] || '');
     const ea = EXPRESS[a], eb = EXPRESS[b];
-    if (ea && eb) {
+    if (ea && a === b) {
+      if (tone === 'flow') parts.push(`At its best, both people bring ${ea[0]}.`);
+      else if (tone === 'tension') parts.push(`Under pressure this shows as ${ea[1]} on both sides. Worked with consciously, it turns into ${ea[0]}.`);
+      else if (aspectKey === 'conjunction') parts.push(`It doubles ${ea[0]}, and when unbalanced it doubles ${ea[1]}.`);
+      else parts.push(`Each expresses ${ea[0]} in a different way, which takes some adjusting.`);
+    } else if (ea && eb) {
       if (tone === 'flow') parts.push(`At its best: ${ea[0]} supported by ${eb[0]}.`);
       else if (tone === 'tension') parts.push(`Under pressure: ${ea[1]}, meeting ${eb[1]}. Worked with consciously, it turns into ${ea[0]} and ${eb[0]}.`);
       else if (aspectKey === 'conjunction') parts.push(`It can bring ${ea[0]} and ${eb[0]}, or, when unbalanced, ${ea[1]} and ${eb[1]}.`);

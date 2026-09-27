@@ -6,6 +6,20 @@ An interactive birth chart that runs entirely in the browser. It calculates the 
 
 It works for anyone. Press **New chart**, enter a name, date, time and city, and the chart is calculated. The city search fills in the historical UTC offset, including daylight saving time. For places not in the list, type the coordinates and choose any of the world's time zones.
 
+## Compatibility
+
+The **Compatibility** tab compares any two people. It scores seven areas of life from 0 to 100: emotional connection, romance and attraction, communication, values and lifestyle, long-term commitment, friendship and growth, and handling conflict. Each score combines:
+
+- aspects between the two charts, weighted by how close they are and which planets describe that area,
+- element harmony between the key placements (for example the two Moons for emotions),
+- house overlays, meaning where each person's planets fall in the other's houses, when both birth times are known.
+
+A separate **similarity** score compares element and modality mix and shared signs. Each area lists what helps and what needs care, with a written explanation. **Print report** prints a clean, light-coloured copy of the results, and **Print reading** does the same for the full natal reading.
+
+## Responsive layout
+
+The wheel resizes its symbols from its on-screen width, so they stay readable and tappable on phones. On screens under 900px, a tapped item opens as a bottom sheet over the page. Tables drop secondary columns under 600px. Layout is tested at 320, 360, 375, 414, 768, 1024 and 1440 px wide with no horizontal scrolling.
+
 ## Editing
 
 The sources live in `src/`. After changing them, rebuild the single file:
@@ -20,6 +34,7 @@ python3 build.py
 | --- | --- |
 | `src/content-signs.js`, `src/content-houses.js` | A specific explanation for every planet and point in every sign and every house |
 | `src/content-aspects.js` | A theme for every pair of points, plus how each one expresses itself in easy and hard aspects |
+| `src/compat.js` | Compatibility scoring, similarity and house overlays |
 | `src/content-learn.js` | Glossary, retrograde meanings, transit themes, pattern explanations |
 | `src/vendor/astronomy.browser.min.js` | astronomy-engine 2.1.19 (MIT), bundled so no CDN is needed |
 | `src/engine.js` | Astronomy and astrology maths: planets, nodes, Lilith, Chiron, angles, Vertex, Part of Fortune, four house systems, aspects, patterns, transits, life cycles |

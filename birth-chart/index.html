@@ -375,6 +375,95 @@ details summary { cursor: pointer; font-weight: 650; }
 a.chip { text-decoration: none; }
 a.chip:hover { border-color: var(--plum-2); background: var(--plum-tint); }
 
+/* ---------- small screens ---------- */
+@media (max-width: 900px) {
+  .detail { position: static; }
+  .detail.sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 30;
+    max-height: min(62vh, 560px); overflow-y: auto; overscroll-behavior: contain;
+    border-radius: 20px 20px 0 0; border-bottom: 0;
+    padding: 12px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -8px 32px rgba(40, 20, 35, .22);
+    animation: sheet-up .22s ease-out;
+  }
+  .detail.sheet::before {
+    content: ''; justify-self: center; width: 40px; height: 4px; border-radius: 99px; background: var(--line-strong);
+  }
+}
+@media (min-width: 901px) { #sheet { display: none !important; } }
+@keyframes sheet-up { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+@media (max-width: 600px) {
+  body { font-size: 14.5px; }
+  .masthead { padding-top: 18px; }
+  .actions .btn { padding: 7px 12px; font-size: 13.5px; }
+  .tab { padding: 8px 13px; font-size: 13.5px; }
+  th, td { padding: 8px 9px; font-size: 13px; }
+  .wide-only { display: none; }
+  .card { padding: 14px 15px; }
+  .house-row { grid-template-columns: 36px 1fr; gap: 10px; padding: 12px; }
+  .house-row .hn { font-size: 28px; }
+  .bar { grid-template-columns: 64px 1fr 40px; font-size: 13px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .stat { flex-basis: 120px; }
+  .stat b { font-size: 26px; }
+  .detail h3 { font-size: 21px; }
+  .asp-grid td, .asp-grid th { width: 30px; height: 30px; font-size: 14px; }
+  dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+  .dlg { padding: 16px; }
+}
+
+/* ---------- compatibility ---------- */
+.person .section-head { margin-bottom: 10px; }
+.load-select { width: auto; max-width: 100%; font-size: 13px; padding: 5px 8px; }
+.coords { margin-top: 12px; font-size: 14px; }
+.report { gap: 16px; }
+.report > h3 { margin-top: 12px; }
+.report-head { display: grid; gap: 16px; }
+.pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: start; }
+.pair .amp { font-family: var(--serif); font-size: 44px; color: var(--plum); line-height: 1; align-self: center; }
+@media (max-width: 600px) { .pair { grid-template-columns: 1fr; } .pair .amp { font-size: 30px; } }
+.stat b small { font-size: 15px; color: var(--ink-3); font-family: var(--sans); margin-left: 2px; }
+.area-summary { display: grid; gap: 10px; }
+.area-summary .bar { grid-template-columns: minmax(120px, 190px) 1fr 40px; }
+.area-card { display: grid; gap: 10px; align-content: start; }
+.score-bar { grid-template-columns: 40px 1fr 0; }
+.score-bar .num { font-family: var(--serif); font-size: 26px; font-weight: 600; text-align: left; }
+.syn-list { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 8px; font-size: 14px; }
+.syn-list .asp-g { font-family: var(--glyph); }
+.good-eyebrow { color: var(--flow); }
+.bad-eyebrow { color: var(--tension); }
+.bar.dual { grid-template-columns: 64px 1fr 64px; }
+.dual-tracks { display: grid; gap: 3px; }
+.dual-tracks .track { height: 7px; }
+.dual-tracks .track.b .fill { opacity: .55; }
+tr.static { cursor: default; }
+.print-only { display: none; }
+
+/* ---------- print ---------- */
+@media print {
+  :root:not(#_print) {
+    color-scheme: light;
+    --bg: #fff; --surface: #fff; --surface-2: #f3eef1; --ink: #1a1418; --ink-2: #3d333b; --ink-3: #6b5f69;
+    --line: #d8ccd3; --line-strong: #b9a6b2; --plum: #5E2B50; --plum-2: #7E4A6F; --plum-tint: #f1e6ed; --on-plum: #fff;
+    --brass: #8a6326; --flow: #25685a; --tension: #a13d33; --blend: #7a5c22; --adjust: #5d4f93;
+    --fire: #f6e9e2; --earth: #efede2; --air: #eeedf4; --water: #e7eff1; --shadow: none;
+  }
+  @page { margin: 14mm; }
+  body { padding: 0; font-size: 11pt; background: #fff; }
+  .shell { max-width: none; gap: 10px; }
+  .actions, .tabs, .example-banner, .no-print, #sheet, .toast, dialog, .wheel-tools, .customize, .legend { display: none !important; }
+  .print-only { display: block; }
+  body.print-compat .masthead { display: none !important; }
+  .chart-layout { grid-template-columns: 1fr; }
+  .detail { position: static; box-shadow: none; }
+  .card, .stat, .house-row, .area-card, .reading-item, .table-wrap { box-shadow: none; break-inside: avoid; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr 1fr; }
+  h2, h3 { break-after: avoid; }
+  .table-wrap { overflow: visible; }
+  a.chip { display: none; }
+}
+
 </style>
 </head>
 <body>
@@ -400,6 +489,7 @@ a.chip:hover { border-color: var(--plum-2); background: var(--plum-tint); }
 
   <nav class="tabs" role="tablist" aria-label="Chart sections">
     <button class="tab" role="tab" id="tab-chart" aria-controls="panel-chart" data-tab="chart">Chart</button>
+    <button class="tab" role="tab" id="tab-compat" aria-controls="panel-compat" data-tab="compat">Compatibility</button>
     <button class="tab" role="tab" id="tab-reading" aria-controls="panel-reading" data-tab="reading">Full reading</button>
     <button class="tab" role="tab" id="tab-data" aria-controls="panel-data" data-tab="data">Chart data</button>
     <button class="tab" role="tab" id="tab-traits" aria-controls="panel-traits" data-tab="traits">Characteristics</button>
@@ -478,6 +568,7 @@ a.chip:hover { border-color: var(--plum-2); background: var(--plum-tint); }
       </div>
     </section>
 
+    <section class="panel" role="tabpanel" id="panel-compat" aria-labelledby="tab-compat" hidden></section>
     <section class="panel" role="tabpanel" id="panel-reading" aria-labelledby="tab-reading" hidden></section>
     <section class="panel" role="tabpanel" id="panel-data" aria-labelledby="tab-data" hidden></section>
     <section class="panel" role="tabpanel" id="panel-traits" aria-labelledby="tab-traits" hidden></section>
@@ -553,6 +644,7 @@ a.chip:hover { border-color: var(--plum-2); background: var(--plum-tint); }
   </form>
 </dialog>
 
+<aside class="detail sheet" id="sheet" aria-live="polite" hidden></aside>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
@@ -2070,7 +2162,12 @@ return new kd(this.curr.time,a,b)};$jscomp.global.Object.defineProperties(H.prot
     if (theme) parts.push(`This contact links ${theme}.`);
     parts.push(FAMILY[aspectKey] || '');
     const ea = EXPRESS[a], eb = EXPRESS[b];
-    if (ea && eb) {
+    if (ea && a === b) {
+      if (tone === 'flow') parts.push(`At its best, both people bring ${ea[0]}.`);
+      else if (tone === 'tension') parts.push(`Under pressure this shows as ${ea[1]} on both sides. Worked with consciously, it turns into ${ea[0]}.`);
+      else if (aspectKey === 'conjunction') parts.push(`It doubles ${ea[0]}, and when unbalanced it doubles ${ea[1]}.`);
+      else parts.push(`Each expresses ${ea[0]} in a different way, which takes some adjusting.`);
+    } else if (ea && eb) {
       if (tone === 'flow') parts.push(`At its best: ${ea[0]} supported by ${eb[0]}.`);
       else if (tone === 'tension') parts.push(`Under pressure: ${ea[1]}, meeting ${eb[1]}. Worked with consciously, it turns into ${ea[0]} and ${eb[0]}.`);
       else if (aspectKey === 'conjunction') parts.push(`It can bring ${ea[0]} and ${eb[0]}, or, when unbalanced, ${ea[1]} and ${eb[1]}.`);
@@ -2310,6 +2407,235 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
 
 </script>
 <script>
+/* compat.js */
+/*
+ * Compatibility (synastry) and similarity between two birth charts.
+ * Scores are built from aspects between the two charts, element harmony
+ * between key placements, and house overlays when birth times are known.
+ */
+(function (root) {
+  'use strict';
+  const E = root.ChartEngine;
+
+  const PLANETS = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
+  const SYN_POINTS = PLANETS.concat(['nnode', 'asc', 'mc']);
+
+  const SYN_ASPECTS = [
+    { key: 'conjunction', name: 'Conjunction', angle: 0, orb: 7, glyph: '☌' },
+    { key: 'opposition', name: 'Opposition', angle: 180, orb: 7, glyph: '☍' },
+    { key: 'trine', name: 'Trine', angle: 120, orb: 6, glyph: '△' },
+    { key: 'square', name: 'Square', angle: 90, orb: 6, glyph: '□' },
+    { key: 'sextile', name: 'Sextile', angle: 60, orb: 4, glyph: '⚹' }
+  ];
+
+  // Each area lists the cross-chart pairs that describe it, with weights.
+  const AREAS = [
+    {
+      key: 'emotional', name: 'Emotional connection',
+      about: 'How safe, understood and at ease you feel with each other. Driven mainly by the Moons.',
+      pairs: [['moon', 'moon', 3], ['sun', 'moon', 3], ['moon', 'venus', 2], ['moon', 'asc', 1.5], ['moon', 'jupiter', 1.2], ['moon', 'neptune', 1], ['moon', 'saturn', 1.5], ['moon', 'pluto', 1], ['moon', 'mars', 1.2]],
+      elements: ['moon']
+    },
+    {
+      key: 'romance', name: 'Romance and attraction',
+      about: 'Chemistry, desire and romantic spark. Driven mainly by Venus and Mars.',
+      pairs: [['venus', 'mars', 3], ['sun', 'venus', 2], ['venus', 'venus', 1.5], ['mars', 'mars', 1.2], ['venus', 'pluto', 1.5], ['mars', 'pluto', 1], ['venus', 'uranus', 1], ['sun', 'mars', 1.5], ['venus', 'asc', 1.2], ['mars', 'asc', 1], ['moon', 'mars', 1]],
+      elements: ['venus', 'mars']
+    },
+    {
+      key: 'communication', name: 'Communication',
+      about: 'How easily you talk, listen, plan and understand each other\'s thinking. Driven mainly by Mercury.',
+      pairs: [['mercury', 'mercury', 3], ['mercury', 'sun', 2], ['mercury', 'moon', 2], ['mercury', 'venus', 1.2], ['mercury', 'jupiter', 1.5], ['mercury', 'saturn', 1], ['mercury', 'uranus', 1], ['mercury', 'mars', 1.5], ['mercury', 'asc', 1]],
+      elements: ['mercury']
+    },
+    {
+      key: 'values', name: 'Values and lifestyle',
+      about: 'Shared tastes, priorities, money habits and the way you like to live day to day.',
+      pairs: [['venus', 'venus', 2], ['moon', 'moon', 1.5], ['sun', 'sun', 2], ['jupiter', 'jupiter', 1], ['venus', 'jupiter', 1.5], ['saturn', 'saturn', 1], ['venus', 'saturn', 1]],
+      elements: ['sun', 'venus']
+    },
+    {
+      key: 'commitment', name: 'Long-term commitment',
+      about: 'Staying power, loyalty and the ability to build a future together. Saturn contacts and Sun–Moon links matter most.',
+      pairs: [['saturn', 'sun', 2.5], ['saturn', 'moon', 2.5], ['saturn', 'venus', 2.5], ['sun', 'moon', 2], ['nnode', 'sun', 1], ['nnode', 'moon', 1], ['nnode', 'venus', 1], ['saturn', 'asc', 1], ['saturn', 'mars', 1], ['jupiter', 'saturn', 1]],
+      elements: []
+    },
+    {
+      key: 'growth', name: 'Friendship and growth',
+      about: 'Encouragement, shared humour and how much you help each other grow. Jupiter contacts matter most.',
+      pairs: [['jupiter', 'sun', 2], ['jupiter', 'moon', 1.5], ['jupiter', 'venus', 1.5], ['jupiter', 'mercury', 1], ['sun', 'sun', 1.5], ['uranus', 'sun', 1], ['nnode', 'jupiter', 1], ['jupiter', 'asc', 1]],
+      elements: ['sun']
+    },
+    {
+      key: 'harmony', name: 'Handling conflict',
+      about: 'How smoothly you handle disagreements and daily friction. Mars and Saturn contacts matter most. A high score means conflict is easier to manage.',
+      pairs: [['mars', 'mars', 2], ['mars', 'sun', 2], ['mars', 'moon', 2], ['mars', 'saturn', 2], ['mars', 'pluto', 1.5], ['sun', 'sun', 1], ['moon', 'moon', 1], ['saturn', 'sun', 1], ['mars', 'mercury', 1.2]],
+      elements: ['moon', 'mars']
+    }
+  ];
+
+  const HEAVY = new Set(['saturn', 'pluto', 'mars']);
+
+  // Value of one cross aspect for one area: positive supports, negative strains.
+  function aspectValue(area, a, b, asp) {
+    const heavy = HEAVY.has(a) || HEAVY.has(b);
+    const attraction = area === 'romance' && ((a === 'venus' && b === 'mars') || (a === 'mars' && b === 'venus') || a === 'pluto' || b === 'pluto');
+    switch (asp) {
+      case 'trine': return 1;
+      case 'sextile': return 0.8;
+      case 'conjunction':
+        if (area === 'harmony' && heavy) return -0.4;
+        if ((a === 'saturn' || b === 'saturn') && area !== 'commitment') return 0.2;
+        return heavy && !attraction ? 0.5 : 1;
+      case 'square':
+        if (attraction) return 0.3;
+        if (a === 'saturn' || b === 'saturn') return -1;
+        return -0.8;
+      case 'opposition':
+        if (attraction) return 0.4;
+        if (a === 'saturn' || b === 'saturn') return -0.8;
+        return -0.5;
+      default: return 0;
+    }
+  }
+
+  function crossAspects(A, B) {
+    const out = [];
+    const pa = A.points.filter(p => SYN_POINTS.includes(p.key) && !(A.noHouses && ['asc', 'mc'].includes(p.key)));
+    const pb = B.points.filter(p => SYN_POINTS.includes(p.key) && !(B.noHouses && ['asc', 'mc'].includes(p.key)));
+    for (const p of pa) for (const q of pb) {
+      const sep = Math.abs(E.angDiff(p.lon, q.lon));
+      for (const asp of SYN_ASPECTS) {
+        let orb = asp.orb;
+        if (['sun', 'moon'].includes(p.key) || ['sun', 'moon'].includes(q.key)) orb += 1;
+        if (['nnode', 'asc', 'mc'].includes(p.key) || ['nnode', 'asc', 'mc'].includes(q.key)) orb -= 2;
+        // Moon moves fast; without a birth time its position is uncertain, so tighten.
+        if ((p.key === 'moon' && A.noHouses) || (q.key === 'moon' && B.noHouses)) orb -= 2;
+        const off = Math.abs(sep - asp.angle);
+        if (off <= orb) { out.push({ a: p.key, b: q.key, aspect: asp, orb: off, maxOrb: orb }); break; }
+      }
+    }
+    return out.sort((x, y) => x.orb - y.orb);
+  }
+
+  const ELEMENT_OF = lon => E.signOf(lon).sign.element;
+  const MODE_OF = lon => E.signOf(lon).sign.mode;
+  const COMPATIBLE = { fire: 'air', air: 'fire', earth: 'water', water: 'earth' };
+
+  const PLACEMENT_LABEL = { sun: 'Suns', moon: 'Moons', mercury: 'Mercury placements', venus: 'Venus placements', mars: 'Mars placements' };
+  function elementHarmony(A, B, key) {
+    const la = A.points.find(p => p.key === key).lon, lb = B.points.find(p => p.key === key).lon;
+    const ea = ELEMENT_OF(la), eb = ELEMENT_OF(lb);
+    const who = PLACEMENT_LABEL[key] || key;
+    if (ea === eb) return { value: 0.8, note: `${who}: both in ${ea} signs, so this part of you works in a similar way` };
+    if (COMPATIBLE[ea] === eb) return { value: 0.5, note: `${who}: ${ea} and ${eb}, which support and feed each other` };
+    if (MODE_OF(la) === MODE_OF(lb)) return { value: -0.4, note: `${who}: ${ea} and ${eb} in the same modality, which tends to create friction` };
+    return { value: 0, note: `${who}: ${ea} and ${eb}, which work differently without clashing` };
+  }
+
+  const squash = raw => Math.round(50 + 45 * Math.tanh(raw / 5));
+
+  function scoreArea(area, aspects, A, B) {
+    let raw = 0;
+    const support = [], strain = [];
+    for (const x of aspects) {
+      const spec = area.pairs.find(([p, q]) => (p === x.a && q === x.b) || (p === x.b && q === x.a));
+      if (!spec) continue;
+      const tight = 1 - x.orb / (x.maxOrb + 1);
+      const v = aspectValue(area.key, x.a, x.b, x.aspect.key) * spec[2] * tight;
+      raw += v;
+      (v >= 0 ? support : strain).push({ ...x, weight: v });
+    }
+    const elements = area.elements.map(k => ({ key: k, ...elementHarmony(A, B, k) }));
+    elements.forEach(e => { raw += e.value; });
+    support.sort((x, y) => y.weight - x.weight);
+    strain.sort((x, y) => x.weight - y.weight);
+    return { ...area, score: squash(raw), raw, support, strain, elements };
+  }
+
+  // Element and modality mix, weighted like the Characteristics tab.
+  const WEIGHTS = { sun: 3, moon: 3, asc: 3, mercury: 2, venus: 2, mars: 2, jupiter: 1.5, saturn: 1.5, uranus: 0.5, neptune: 0.5, pluto: 0.5 };
+  function mix(chart) {
+    const el = { fire: 0, earth: 0, air: 0, water: 0 }, md = { cardinal: 0, fixed: 0, mutable: 0 };
+    let tot = 0;
+    Object.entries(WEIGHTS).forEach(([k, w]) => {
+      if (chart.noHouses && k === 'asc') return;
+      const s = E.signOf(chart.points.find(p => p.key === k).lon).sign;
+      el[s.element] += w; md[s.mode] += w; tot += w;
+    });
+    Object.keys(el).forEach(k => { el[k] /= tot; });
+    Object.keys(md).forEach(k => { md[k] /= tot; });
+    return { el, md };
+  }
+
+  function similarity(A, B) {
+    const ma = mix(A), mb = mix(B);
+    const dist = (x, y) => Object.keys(x).reduce((s, k) => s + Math.abs(x[k] - y[k]), 0) / 2;
+    const elementSim = 1 - dist(ma.el, mb.el);
+    const modeSim = 1 - dist(ma.md, mb.md);
+    const keys = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn'].concat(A.noHouses || B.noHouses ? [] : ['asc', 'mc']);
+    const sign = (c, k) => E.signOf(c.points.find(p => p.key === k).lon).sign;
+    const same = keys.filter(k => sign(A, k).key === sign(B, k).key).map(k => ({ key: k, sign: sign(A, k) }));
+    const sameElement = keys.filter(k => sign(A, k).key !== sign(B, k).key && sign(A, k).element === sign(B, k).element).map(k => ({ key: k, element: sign(A, k).element }));
+    // Outer planets and Jupiter–Saturn are shared by people born close together, so leave them out of the score.
+    const personal = ['sun', 'moon', 'mercury', 'venus', 'mars'].concat(A.noHouses || B.noHouses ? [] : ['asc']);
+    const signMatch = personal.reduce((s, k) => s + (sign(A, k).key === sign(B, k).key ? 1 : sign(A, k).element === sign(B, k).element ? 0.5 : 0), 0) / personal.length;
+    const score = Math.round((elementSim * 0.4 + modeSim * 0.2 + signMatch * 0.4) * 100);
+    const topEl = m => Object.keys(m.el).sort((x, y) => m.el[y] - m.el[x])[0];
+    const topMd = m => Object.keys(m.md).sort((x, y) => m.md[y] - m.md[x])[0];
+    return { score, elementSim, modeSim, same, sameElement, mixA: ma, mixB: mb, topA: [topEl(ma), topMd(ma)], topB: [topEl(mb), topMd(mb)] };
+  }
+
+  // Where one person's planets land in the other person's houses.
+  function overlays(host, guest) {
+    if (host.noHouses) return [];
+    return ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn'].map(k => {
+      const p = guest.points.find(x => x.key === k);
+      return { key: k, house: E.houseOf(p.lon, host.houses.cusps) };
+    });
+  }
+
+  function compare(A, B) {
+    const aspects = crossAspects(A, B);
+    const areas = AREAS.map(area => scoreArea(area, aspects, A, B));
+    const weights = { emotional: 1.3, romance: 1.1, communication: 1.1, values: 1, commitment: 1.2, growth: 0.8, harmony: 1 };
+    const overall = Math.round(areas.reduce((s, a) => s + a.score * weights[a.key], 0) / areas.reduce((s, a) => s + weights[a.key], 0));
+    return {
+      aspects, areas, overall,
+      similarity: similarity(A, B),
+      overlaysAinB: overlays(B, A),
+      overlaysBinA: overlays(A, B)
+    };
+  }
+
+  function label(score) {
+    if (score >= 80) return { text: 'Very strong', cls: 'ok' };
+    if (score >= 65) return { text: 'Strong', cls: 'ok' };
+    if (score >= 50) return { text: 'Balanced', cls: 'warn' };
+    if (score >= 35) return { text: 'Takes work', cls: 'warn' };
+    return { text: 'Challenging', cls: 'bad' };
+  }
+
+  const OVERLAY_TEXT = [
+    'feels strongly personal: they affect how the other sees themselves and even how they present themselves.',
+    'touches money, possessions and self-worth. Shared finances and values come into focus.',
+    'stimulates conversation, ideas and everyday exchange.',
+    'feels like home and family. This can create a deep sense of belonging.',
+    'brings romance, fun, play and creativity. A classic sign of enjoyment together.',
+    'shows up in daily routines, work and health. Practical and helpful, sometimes critical.',
+    'lands in the house of partnership, which is a strong indicator of commitment and one-to-one bonding.',
+    'stirs intimacy, trust and transformation. Intense and hard to ignore.',
+    'expands horizons through travel, study and shared beliefs.',
+    'affects career, status and public life. One supports or shapes the other\'s ambitions.',
+    'feels like friendship, with shared goals and social circles.',
+    'touches the private, hidden or spiritual side. It can be deeply intimate or confusing.'
+  ];
+
+  root.ChartCompat = { compare, label, AREAS, OVERLAY_TEXT };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
 /* app.js */
 /* Natal Chart Studio: UI layer. Depends on ChartEngine, ChartContent, ChartCities. */
 (function () {
@@ -2475,11 +2801,29 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
 
   function aspectTone(asp) { return asp.major ? asp.tone : 'adjust'; }
 
+  // The wheel is drawn in an 820-unit viewBox. On small screens those units shrink,
+  // so text and symbols are sized from the rendered width to stay readable and tappable.
+  function wheelMetrics() {
+    const w = $('#wheel').getBoundingClientRect().width || 760;
+    const k = 820 / w; // viewBox units per screen pixel
+    const compact = w < 560;
+    return {
+      w, k, compact,
+      glyph: Math.max(19, Math.min(44, 16 * k)),
+      letters: Math.max(12, Math.min(30, 11 * k)),
+      radius: Math.max(16, Math.min(30, 12 * k)),
+      sign: Math.max(18, Math.min(34, 12 * k)),
+      house: Math.max(12, Math.min(28, 10 * k))
+    };
+  }
+
   function renderWheel() {
     const chart = state.chart;
     const keys = visibleKeys();
     const shown = chart.points.filter(p => keys.includes(p.key));
     const out = [];
+    const M = wheelMetrics();
+    state.wheelWidth = M.w;
 
     out.push(`<circle class="ring-outer" cx="${CX}" cy="${CX}" r="${R.out}"/>`);
     // zodiac ring
@@ -2488,8 +2832,13 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       out.push(`<path class="sign-seg ${s.element}" data-kind="sign" data-key="${s.key}" d="${sector(a, a + 30, R.signIn, R.out)}"><title>${s.name}</title></path>`);
       // glyph stacked above the name so the pair never collides, whatever the angle
       const [nx, ny] = xy(a + 15, (R.signIn + R.out) / 2);
-      out.push(`<text class="sign-glyph" x="${f(nx)}" y="${f(ny - 11)}" text-anchor="middle" dominant-baseline="central">${signGlyph(s)}</text>`);
-      out.push(`<text class="sign-name" x="${f(nx)}" y="${f(ny + 9)}" text-anchor="middle" dominant-baseline="central">${s.short}</text>`);
+      if (M.compact) {
+        // one label only on phones: the name, large enough to read
+        out.push(`<text class="sign-name" x="${f(nx)}" y="${f(ny)}" text-anchor="middle" dominant-baseline="central" style="font-size:${f(M.sign)}px">${s.short}</text>`);
+      } else {
+        out.push(`<text class="sign-glyph" x="${f(nx)}" y="${f(ny - 11)}" text-anchor="middle" dominant-baseline="central">${signGlyph(s)}</text>`);
+        out.push(`<text class="sign-name" x="${f(nx)}" y="${f(ny + 9)}" text-anchor="middle" dominant-baseline="central">${s.short}</text>`);
+      }
     });
     // degree ticks
     for (let d = 0; d < 360; d++) {
@@ -2508,7 +2857,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
         out.push(`<path class="house-hit" data-kind="house" data-key="${i + 1}" d="${sector(c, next, R.houseIn, R.houseOut)}"><title>House ${i + 1}</title></path>`);
         const mid = c + E.norm(next - c) / 2;
         const [hx, hy] = xy(mid, (R.houseIn + R.houseOut) / 2);
-        out.push(`<text class="house-num" x="${f(hx)}" y="${f(hy)}" text-anchor="middle" dominant-baseline="central">${i + 1}</text>`);
+        out.push(`<text class="house-num" x="${f(hx)}" y="${f(hy)}" text-anchor="middle" dominant-baseline="central" style="font-size:${f(M.house)}px">${i + 1}</text>`);
         const isAngle = i % 3 === 0;
         const [x1, y1] = xy(c, R.houseIn), [x2, y2] = xy(c, R.signIn - 12);
         out.push(`<line class="cusp${isAngle ? ' angle' : ''}" x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}"/>`);
@@ -2528,7 +2877,8 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     out.push(`<circle class="center-dot" cx="${CX}" cy="${CX}" r="4"/>`);
 
     // points
-    const display = spread(shown, 6.6);
+    // minimum angular gap so neighbouring symbols never overlap at this size
+    const display = spread(shown, Math.max(6.6, (2 * M.radius + 4) / R.planet * 180 / Math.PI));
     const order = shown.slice().sort((a, b) => a.lon - b.lon);
     order.forEach(p => {
       const dl = display[p.key];
@@ -2545,13 +2895,13 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       const light = p.key === 'sun' || p.key === 'moon' ? ' light' : '';
       const glyphable = GLYPHABLE.has(p.key) && state.prefs.glyphs !== 'letters' ? ' glyphable' : '';
       const letters = state.prefs.glyphs === 'letters' ? ' letters' : '';
+      const textSize = glyphable ? M.glyph * (p.kind === 'planet' ? 1 : 0.9) : M.letters;
       const label = `${P(p.key).name}, ${posText(p.lon)}${p.house ? ', house ' + p.house : ''}${p.retrograde ? ', retrograde' : ''}`;
       out.push(`<g class="pt ${kindCls}${light}${glyphable}" data-kind="point" data-key="${p.key}" tabindex="0" role="button" aria-label="${esc(label)}">` +
-        `<circle cx="${f(gx)}" cy="${f(gy)}" r="16"/>` +
-        `<text class="g${letters}" x="${f(gx)}" y="${f(gy)}">${esc(glyphOf(p.key))}</text>` +
-        `<text class="deg" x="${f(dx)}" y="${f(dy)}">${Math.floor(s.deg)}°</text>` +
-        (p.retrograde && p.kind !== 'point' ? `<text class="rx" x="${f(gx + 12)}" y="${f(gy - 12)}">R</text>` : '') +
-        (p.retrograde && p.kind === 'point' && p.key === 'chiron' ? `<text class="rx" x="${f(gx + 12)}" y="${f(gy - 12)}">R</text>` : '') +
+        `<circle cx="${f(gx)}" cy="${f(gy)}" r="${f(M.radius)}"/>` +
+        `<text class="g${letters}" x="${f(gx)}" y="${f(gy)}" style="font-size:${f(textSize)}px">${esc(glyphOf(p.key))}</text>` +
+        (M.compact ? '' : `<text class="deg" x="${f(dx)}" y="${f(dy)}">${Math.floor(s.deg)}°</text>`) +
+        ((p.retrograde && (p.kind !== 'point' || p.key === 'chiron')) ? `<text class="rx" x="${f(gx + M.radius * 0.8)}" y="${f(gy - M.radius * 0.8)}" style="font-size:${f(Math.max(10, M.letters * 0.8))}px">R</text>` : '') +
         `</g>`);
     });
 
@@ -2745,8 +3095,21 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     else if (a.kind === 'aspect') html = detailAspect(+a.key);
     else if (a.kind === 'house') html = detailHouse(+a.key);
     else if (a.kind === 'sign') html = detailSign(a.key);
-    const foot = a ? `<div class="detail-foot"><span>${state.pinned ? 'Pinned. Press Esc to release.' : 'Click to keep this open.'}</span>${state.pinned ? '<button class="btn small" type="button" id="unpin">Close</button>' : ''}</div>` : '';
-    $('#detail').innerHTML = html + foot;
+    const touch = !window.matchMedia('(hover: hover)').matches;
+    const foot = a ? `<div class="detail-foot"><span>${state.pinned ? (touch ? 'Tap another symbol to switch.' : 'Pinned. Press Esc to release.') : 'Click to keep this open.'}</span>${state.pinned ? '<button class="btn small" type="button" id="unpin">Close</button>' : ''}</div>` : '';
+    // On narrow screens a pinned detail slides up as a bottom sheet so it is visible next to the wheel.
+    // It is a separate element, so the page layout underneath never moves.
+    const useSheet = !!(a && state.pinned && window.matchMedia('(max-width: 900px)').matches);
+    const sheet = $('#sheet');
+    if (useSheet) {
+      sheet.innerHTML = html + foot;
+      sheet.hidden = false;
+      sheet.scrollTop = 0;
+      $('#detail').innerHTML = detailEmpty();
+    } else {
+      sheet.hidden = true;
+      $('#detail').innerHTML = html + foot;
+    }
   }
 
   function setActive(item, pin) {
@@ -2797,13 +3160,15 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && state.pinned && !$('#birth-dialog').open) setActive(null, false);
     });
-    $('#detail').addEventListener('click', e => {
+    const detailClick = e => {
       if (e.target.closest('#unpin')) { setActive(null, false); return; }
       const gp = e.target.closest('[data-goto-point]');
       if (gp) { setActive({ kind: 'point', key: gp.dataset.gotoPoint }, true); return; }
       const ga = e.target.closest('[data-goto-aspect]');
       if (ga) setActive({ kind: 'aspect', key: ga.dataset.gotoAspect }, true);
-    });
+    };
+    $('#detail').addEventListener('click', detailClick);
+    $('#sheet').addEventListener('click', detailClick);
   }
 
   // ---------- Chart data tab ----------
@@ -2817,7 +3182,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
         <td class="num">${E.fmtDeg(p.lon, false)}</td>
         <td><span class="glyph">${signGlyph(s.sign)}</span>${s.sign.name}</td>
         <td class="num">${p.house ?? '–'}</td>
-        <td class="num">${p.lon.toFixed(3)}°</td>
+        <td class="num wide-only">${p.lon.toFixed(3)}°</td>
         <td>${p.speed == null ? '–' : (p.retrograde ? '<span class="pill bad">R</span> ' : '') + `<span class="num">${p.speed.toFixed(3)}°/d</span>`}</td>
       </tr>`;
     }).join('');
@@ -2865,7 +3230,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       </div>
       <div class="section">
         <h3>Positions</h3>
-        <div class="table-wrap"><table><thead><tr><th>Point</th><th>Degree</th><th>Sign</th><th>House</th><th>Longitude</th><th>Daily motion</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>Point</th><th>Degree</th><th>Sign</th><th>House</th><th class="wide-only">Longitude</th><th>Daily motion</th></tr></thead><tbody>${rows}</tbody></table></div>
       </div>
       ${ch.noHouses ? '' : `<div class="section"><h3>House cusps</h3><div class="table-wrap"><table><thead><tr><th>House</th><th>Cusp</th><th>Sign</th><th>Width</th></tr></thead><tbody>${cuspRows}</tbody></table></div></div>`}
       <div class="section">
@@ -3198,6 +3563,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
         <div><span class="eyebrow">Full reading</span><h2>Every placement, explained</h2></div>
         <p class="muted">Each placement is read in layers: what the planet or point stands for, how its sign colours it, the area of life its house points to, and the aspects that connect it to the rest of the chart. Start with the lights and angles, then read outward.</p>
         <div class="chips">${toc}</div>
+        <div class="actions no-print"><button class="btn small" type="button" id="reading-print">Print reading</button></div>
       </div>
       ${groups.map(([title, ks]) => {
         const items = ks.filter(k => keys.includes(k)).map(pt);
@@ -3235,8 +3601,230 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       </div>`;
   }
 
+  // ---------- Compatibility ----------
+  const PARTNER_EXAMPLE = {
+    name: 'Example partner', date: '1998-06-21', time: '18:30', timeUnknown: false,
+    place: 'Paris, France', lat: 48.8566, lon: 2.3522, tz: 'Europe/Paris', utcOffset: 2, example: true
+  };
+  state.compat = { A: null, B: store.get('compatB', PARTNER_EXAMPLE), result: null };
+
+  function personForm(id, who, i) {
+    const saved = store.get('saved', []);
+    return `<div class="card person" id="${id}">
+      <div class="section-head"><h3>${who}</h3>
+        <select class="load-select" data-person="${id}" aria-label="Load a chart for ${who}">
+          <option value="">Load a chart…</option>
+          <option value="current">Chart on the Chart tab</option>
+          ${saved.map((c, n) => `<option value="${n}">${esc(c.name || 'Unnamed')} · ${esc(c.date)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="field full"><label for="${id}-name">Name</label><input type="text" id="${id}-name" value="${esc(i.name || '')}" autocomplete="off"></div>
+        <div class="field"><label for="${id}-date">Date of birth</label><input type="date" id="${id}-date" value="${esc(i.date || '')}" min="1800-01-01" max="2199-12-31"></div>
+        <div class="field"><label for="${id}-time">Time of birth</label><input type="time" id="${id}-time" value="${i.timeUnknown ? '' : esc(i.time || '')}" ${i.timeUnknown ? 'disabled' : ''}></div>
+        <div class="field full"><label class="checks"><input type="checkbox" id="${id}-unknown" ${i.timeUnknown ? 'checked' : ''}> Birth time unknown</label></div>
+        <div class="field full"><label for="${id}-place">Place of birth</label><input type="text" id="${id}-place" list="city-options" value="${esc(i.place || '')}" autocomplete="off" placeholder="Start typing a city"></div>
+      </div>
+      <details class="coords">
+        <summary>Coordinates and time zone</summary>
+        <div class="form-grid" style="margin-top:10px">
+          <div class="field"><label for="${id}-lat">Latitude (north +)</label><input type="number" id="${id}-lat" step="0.0001" value="${i.lat ?? ''}"></div>
+          <div class="field"><label for="${id}-lon">Longitude (east +)</label><input type="number" id="${id}-lon" step="0.0001" value="${i.lon ?? ''}"></div>
+          <div class="field"><label for="${id}-tz">Time zone</label><select id="${id}-tz"><option value="">Manual offset</option>${TZS.map(z => `<option value="${z}" ${z === i.tz ? 'selected' : ''}>${z.replace(/_/g, ' ')}</option>`).join('')}</select></div>
+          <div class="field"><label for="${id}-offset">UTC offset (hours)</label><input type="number" id="${id}-offset" step="0.25" value="${i.utcOffset ?? 0}"></div>
+        </div>
+      </details>
+    </div>`;
+  }
+
+  function readPerson(id, who) {
+    const v = sel => $(`#${id}-${sel}`);
+    const unknown = v('unknown').checked;
+    const i = {
+      name: v('name').value.trim() || who, date: v('date').value, time: unknown ? '12:00' : v('time').value, timeUnknown: unknown,
+      place: v('place').value.trim(), lat: parseFloat(v('lat').value), lon: parseFloat(v('lon').value), tz: v('tz').value, utcOffset: parseFloat(v('offset').value)
+    };
+    if (!i.date) return { error: `Enter a date of birth for ${who}.` };
+    if (!unknown && !i.time) return { error: `Enter a birth time for ${who}, or tick "Birth time unknown".` };
+    if (!Number.isFinite(i.lat) || !Number.isFinite(i.lon)) return { error: `Choose a city from the list for ${who}, or enter coordinates under "Coordinates and time zone".` };
+    if (i.tz) { const off = CITY.utcOffsetFor(i.tz, i.date, i.time); if (off != null) i.utcOffset = off; }
+    if (!Number.isFinite(i.utcOffset)) return { error: `Enter a UTC offset for ${who}.` };
+    return { value: i };
+  }
+
+  function fillPerson(id, i) {
+    const v = sel => $(`#${id}-${sel}`);
+    v('name').value = i.name || ''; v('date').value = i.date || '';
+    v('time').value = i.timeUnknown ? '' : (i.time || ''); v('unknown').checked = !!i.timeUnknown; v('time').disabled = !!i.timeUnknown;
+    v('place').value = i.place || ''; v('lat').value = i.lat ?? ''; v('lon').value = i.lon ?? '';
+    v('tz').value = TZS.includes(i.tz) ? i.tz : ''; v('offset').value = i.utcOffset ?? 0;
+  }
+
+  function chartFor(i) {
+    const c = E.computeChart({ date: i.date, time: i.timeUnknown ? '12:00' : i.time, utcOffset: i.utcOffset, lat: i.lat, lon: i.lon, houseSystem: 'placidus', nodeType: 'true' });
+    c.noHouses = !!i.timeUnknown;
+    if (c.noHouses) c.points.forEach(p => { p.house = null; });
+    return c;
+  }
+
+  function renderCompat() {
+    const panel = $('#panel-compat');
+    const A = state.compat.A || state.input;
+    const B = state.compat.B;
+    const names = [A.name || 'Person A', B.name || 'Person B'];
+    panel.innerHTML = `
+      <div class="section no-print">
+        <div><span class="eyebrow">Compatibility</span><h2>Compare two birth charts</h2></div>
+        <p class="muted">Enter two people's birth data to see how their charts connect across seven areas of life, and how similar they are. It works for partners, friends, family or colleagues.</p>
+        <datalist id="city-options">${CITY.CITIES.map(c => `<option value="${esc(c.name)}, ${esc(c.country)}"></option>`).join('')}</datalist>
+        <div class="grid-2">${personForm('pa', 'Person A', A)}${personForm('pb', 'Person B', B)}</div>
+        <p class="form-error" id="compat-error" hidden></p>
+        <div class="actions">
+          <button class="btn primary" type="button" id="compat-run">Compare charts</button>
+          <button class="btn" type="button" id="compat-swap">Swap people</button>
+          <button class="btn" type="button" id="compat-print">Print report</button>
+        </div>
+      </div>
+      <div id="compat-report"></div>`;
+    runCompat(A, B);
+  }
+
+  function runCompat(A, B) {
+    let CA, CB;
+    try { CA = chartFor(A); CB = chartFor(B); } catch (err) {
+      const el = $('#compat-error'); el.textContent = 'One of the charts could not be calculated. Check the dates and coordinates.'; el.hidden = false; return;
+    }
+    const r = window.ChartCompat.compare(CA, CB);
+    state.compat.result = r;
+    const nA = A.name || 'Person A', nB = B.name || 'Person B';
+    const ownerA = k => `${esc(nA)}'s ${P(k).name}`;
+    const ownerB = k => `${esc(nB)}'s ${P(k).name}`;
+    const L2 = window.ChartCompat.label;
+    const aspLine = x => `<li><span class="asp-g ${x.weight >= 0 ? 'flow' : 'tension'}">${x.aspect.glyph}${VS}</span> <b>${ownerA(x.a)} ${x.aspect.name.toLowerCase()} ${ownerB(x.b)}</b> <span class="faint">(orb ${x.orb.toFixed(1)}°)</span><br><span class="muted">${esc(AT.readAspect(x.a, x.b, x.aspect.key, ['trine', 'sextile'].includes(x.aspect.key) ? 'flow' : ['square', 'opposition'].includes(x.aspect.key) ? 'tension' : 'blend', [nA + "'s " + P(x.a).name, nB + "'s " + P(x.b).name]))}</span></li>`;
+    const areaCard = a => {
+      const lb = L2(a.score);
+      const top = a.support.slice(0, 3), low = a.strain.slice(0, 3);
+      return `<article class="card area-card">
+        <div class="section-head"><h3>${esc(a.name)}</h3><span class="pill ${lb.cls}">${lb.text}</span></div>
+        <div class="bar score-bar"><span class="num">${a.score}</span><div class="track"><div class="fill" style="width:${a.score}%"></div></div><span></span></div>
+        <p class="faint">${esc(a.about)}</p>
+        ${a.elements.length ? `<p class="muted">${a.elements.map(e => esc(e.note) + '.').join('<br>')}</p>` : ''}
+        ${top.length ? `<div class="eyebrow good-eyebrow">What helps</div><ul class="syn-list">${top.map(aspLine).join('')}</ul>` : ''}
+        ${low.length ? `<div class="eyebrow bad-eyebrow">What needs care</div><ul class="syn-list">${low.map(aspLine).join('')}</ul>` : ''}
+        ${!top.length && !low.length ? '<p class="muted">No close contacts between the planets that describe this area. It is neutral: neither a strong pull nor a source of friction.</p>' : ''}
+      </article>`;
+    };
+    const sim = r.similarity;
+    const elBars = ['fire', 'earth', 'air', 'water'].map(k => `<div class="bar dual ${k}"><span>${C.ELEMENTS[k].name}</span>
+      <div class="dual-tracks"><div class="track"><div class="fill" style="width:${Math.round(sim.mixA.el[k] * 100)}%"></div></div><div class="track b"><div class="fill" style="width:${Math.round(sim.mixB.el[k] * 100)}%"></div></div></div>
+      <span class="num">${Math.round(sim.mixA.el[k] * 100)} / ${Math.round(sim.mixB.el[k] * 100)}</span></div>`).join('');
+    const overlayList = (list, guest, host) => list.map(o => `<li><b>${esc(guest)}'s ${P(o.key).name}</b> in ${esc(host)}'s house ${o.house} (${C.HOUSES[o.house - 1].title.toLowerCase()}): ${esc(window.ChartCompat.OVERLAY_TEXT[o.house - 1])}</li>`).join('');
+    const best = r.areas.slice().sort((x, y) => y.score - x.score);
+    const ol = L2(r.overall);
+    const dateTxt = i => `${new Date(i.date + 'T12:00:00Z').toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}${i.timeUnknown ? ', time unknown' : ', ' + i.time}${i.place ? ', ' + i.place : ''}`;
+    const sign = (c, k) => E.signOf(c.points.find(p => p.key === k).lon).sign.name;
+    $('#compat-report').innerHTML = `
+      <div class="section report">
+        <div class="print-only print-title"><span class="eyebrow">Compatibility report</span></div>
+        <div class="card report-head">
+          <div class="pair">
+            <div><span class="eyebrow">Person A</span><h3>${esc(nA)}</h3><p class="faint">${esc(dateTxt(A))}</p><p class="muted">Sun ${sign(CA, 'sun')} · Moon ${sign(CA, 'moon')}${CA.noHouses ? '' : ' · Rising ' + sign(CA, 'asc')}</p></div>
+            <div class="amp">&amp;</div>
+            <div><span class="eyebrow">Person B</span><h3>${esc(nB)}</h3><p class="faint">${esc(dateTxt(B))}</p><p class="muted">Sun ${sign(CB, 'sun')} · Moon ${sign(CB, 'moon')}${CB.noHouses ? '' : ' · Rising ' + sign(CB, 'asc')}</p></div>
+          </div>
+          <div class="stat-row">
+            <div class="stat"><b>${r.overall}<small>/100</small></b><span>Overall compatibility · <span class="pill ${ol.cls}">${ol.text}</span></span></div>
+            <div class="stat"><b>${sim.score}<small>%</small></b><span>Chart similarity</span></div>
+            <div class="stat"><b>${r.aspects.length}</b><span>Connections between the charts</span></div>
+          </div>
+          <p>Strongest area: <b>${esc(best[0].name.toLowerCase())}</b> (${best[0].score}). Area that needs the most care: <b>${esc(best[best.length - 1].name.toLowerCase())}</b> (${best[best.length - 1].score}).</p>
+          ${A.timeUnknown || B.timeUnknown ? '<p class="note">At least one birth time is unknown, so rising signs and house overlays are left out and Moon contacts use tighter orbs.</p>' : ''}
+        </div>
+
+        <h3>Compatibility by area of life</h3>
+        <div class="area-summary card">${r.areas.map(a => `<div class="bar"><span>${esc(a.name)}</span><div class="track"><div class="fill" style="width:${a.score}%"></div></div><span class="num">${a.score}</span></div>`).join('')}</div>
+        <div class="grid-2 areas">${r.areas.map(areaCard).join('')}</div>
+
+        <h3>Similarity</h3>
+        <div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">Element balance · ${esc(nA)} / ${esc(nB)}</div>
+            <div class="bars" style="margin-top:10px">${elBars}</div>
+            <p class="muted" style="margin-top:10px">Element mix is ${Math.round(sim.elementSim * 100)}% alike and modality mix is ${Math.round(sim.modeSim * 100)}% alike. ${esc(nA)} leans ${sim.topA[0]} and ${sim.topA[1]}; ${esc(nB)} leans ${sim.topB[0]} and ${sim.topB[1]}.
+            ${sim.topA[0] === sim.topB[0] ? ' You share the same dominant element, so you tend to approach life in a similar way.' : COMPATIBLE_EL[sim.topA[0]] === sim.topB[0] ? ' Your dominant elements complement each other.' : ' Your dominant elements differ, which brings variety and some misunderstanding.'}</p>
+          </div>
+          <div class="card">
+            <div class="eyebrow">Shared placements</div>
+            ${sim.same.length ? `<ul class="syn-list">${sim.same.map(x => `<li><b>${P(x.key).name} in ${x.sign.name}</b> for both of you. ${esc(P(x.key).core)}</li>`).join('')}</ul>` : '<p class="muted" style="margin-top:6px">No personal planets in the same sign.</p>'}
+            ${sim.sameElement.length ? `<p class="muted" style="margin-top:8px">Same element: ${sim.sameElement.map(x => `${P(x.key).name} (${x.element})`).join(', ')}.</p>` : ''}
+            <p class="faint" style="margin-top:8px">Similarity is not the same as compatibility. Very similar charts understand each other easily, while different charts can complete each other.</p>
+          </div>
+        </div>
+
+        ${r.overlaysBinA.length || r.overlaysAinB.length ? `<h3>How you land in each other's lives</h3>
+        <p class="muted">Each person's planets fall into the other person's houses, showing which areas of life the other person activates.</p>
+        <div class="grid-2">
+          ${r.overlaysBinA.length ? `<div class="card"><div class="eyebrow">${esc(nB)} in ${esc(nA)}'s chart</div><ul class="syn-list">${overlayList(r.overlaysBinA, nB, nA)}</ul></div>` : ''}
+          ${r.overlaysAinB.length ? `<div class="card"><div class="eyebrow">${esc(nA)} in ${esc(nB)}'s chart</div><ul class="syn-list">${overlayList(r.overlaysAinB, nA, nB)}</ul></div>` : ''}
+        </div>` : ''}
+
+        <h3>Every connection between the charts</h3>
+        <div class="table-wrap"><table><thead><tr><th>${esc(nA)}</th><th>Aspect</th><th>${esc(nB)}</th><th>Orb</th></tr></thead><tbody>
+          ${r.aspects.map(x => `<tr class="static"><td><span class="glyph">${esc(glyphOf(x.a))}</span>${esc(P(x.a).name)}</td><td><span class="asp-g ${['trine', 'sextile'].includes(x.aspect.key) ? 'flow' : ['square', 'opposition'].includes(x.aspect.key) ? 'tension' : 'blend'}">${x.aspect.glyph}${VS}</span> ${x.aspect.name}</td><td><span class="glyph">${esc(glyphOf(x.b))}</span>${esc(P(x.b).name)}</td><td class="num">${x.orb.toFixed(1)}°</td></tr>`).join('')}
+        </tbody></table></div>
+        <p class="faint">Scores combine the aspects between the two charts (closer aspects count more), element harmony between key placements, and weights for each area. Astrology describes tendencies, not destiny. Use this for reflection and conversation.</p>
+      </div>`;
+  }
+  const COMPATIBLE_EL = { fire: 'air', air: 'fire', earth: 'water', water: 'earth' };
+
+  function bindCompat() {
+    const panel = $('#panel-compat');
+    panel.addEventListener('change', e => {
+      const t = e.target;
+      if (t.classList.contains('load-select') && t.value !== '') {
+        const src = t.value === 'current' ? state.input : store.get('saved', [])[+t.value];
+        if (src) fillPerson(t.dataset.person, src);
+        t.value = '';
+      }
+      const m = t.id && t.id.match(/^(pa|pb)-(place|unknown)$/);
+      if (m && m[2] === 'place') {
+        const c = CITY.CITIES.find(x => `${x.name}, ${x.country}`.toLowerCase() === t.value.trim().toLowerCase());
+        if (c) { $(`#${m[1]}-lat`).value = c.lat; $(`#${m[1]}-lon`).value = c.lon; $(`#${m[1]}-tz`).value = c.tz; }
+      }
+      if (m && m[2] === 'unknown') $(`#${m[1]}-time`).disabled = t.checked;
+    });
+    panel.addEventListener('click', e => {
+      if (e.target.id === 'compat-run') {
+        const a = readPerson('pa', 'Person A'), b = readPerson('pb', 'Person B');
+        const err = a.error || b.error;
+        const el = $('#compat-error');
+        if (err) { el.textContent = err; el.hidden = false; return; }
+        el.hidden = true;
+        state.compat.A = a.value; state.compat.B = b.value;
+        delete state.compat.B.example;
+        store.set('compatB', state.compat.B);
+        runCompat(a.value, b.value);
+        $('#compat-report').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (e.target.id === 'compat-swap') {
+        const a = readPerson('pa', 'Person A'), b = readPerson('pb', 'Person B');
+        if (a.value && b.value) { fillPerson('pa', b.value); fillPerson('pb', a.value); }
+      }
+      if (e.target.id === 'compat-print') printPanel();
+    });
+  }
+
+  // Printing shows only the current tab's content, in light colours.
+  function printPanel() {
+    document.body.classList.add('printing', 'print-' + state.tab);
+    const done = () => { document.body.classList.remove('printing', 'print-' + state.tab); window.removeEventListener('afterprint', done); };
+    window.addEventListener('afterprint', done);
+    try { window.print(); } catch (e) { /* print unavailable in this viewer */ }
+    setTimeout(done, 1500);
+  }
+
   // ---------- tabs ----------
-  const RENDER = { reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
+  const RENDER = { compat: renderCompat, reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
 
   function showTab(tab) {
     state.tab = tab;
@@ -3500,7 +4088,20 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       document.querySelector('main').innerHTML = '<div class="card"><h2>The astronomy library did not load</h2><p class="muted">Check your internet connection and reload. The chart is calculated in your browser with astronomy-engine, loaded from cdn.jsdelivr.net.</p></div>';
       return;
     }
-    bindWheel(); bindTabs(); bindCustomize(); bindDialog();
+    bindWheel(); bindTabs(); bindCustomize(); bindDialog(); bindCompat();
+    $('main').addEventListener('click', e => { if (e.target.id === 'reading-print') printPanel(); });
+    if (!window.matchMedia('(hover: hover)').matches) {
+      $('#wheel-hint').textContent = 'Tap any symbol, sign or house number to read about it. Tap the centre to close.';
+    }
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const w = $('#wheel').getBoundingClientRect().width;
+        if (state.chart && w && Math.abs(w - (state.wheelWidth || 0)) > 24) renderWheel();
+        renderDetail();
+      }, 150);
+    });
     try { refresh(); } catch (err) {
       console.error(err);
       state.input = EXAMPLE_INPUT; refresh();
