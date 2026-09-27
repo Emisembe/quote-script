@@ -49,6 +49,9 @@ python3 build.py
 | `src/content-aspects.js` | A theme for every pair of points, plus how each one expresses itself in easy and hard aspects |
 | `src/content-topics.js` | Career fields, work style, love languages, money style, wellbeing, and question-to-topic routing |
 | `src/compat.js` | Compatibility scoring, similarity and house overlays |
+| `src/content-aspects-natal.js` | 213 paragraphs written for specific natal aspects: every planet pair plus key points, each as conjunction, flowing and challenging |
+| `src/content-sunmoon.js` | All 144 Sun–Moon sign combinations |
+| `src/content-transits.js` | 135 transit paragraphs: Jupiter to Pluto over the Sun, Moon, personal planets, Jupiter, Saturn, Ascendant and Midheaven |
 | `src/content-learn.js` | Glossary, retrograde meanings, transit themes, pattern explanations |
 | `src/vendor/astronomy.browser.min.js` | astronomy-engine 2.1.19 (MIT), bundled so no CDN is needed |
 | `src/engine.js` | Astronomy and astrology maths: planets, nodes, Lilith, Chiron, angles, Vertex, Part of Fortune, four house systems, aspects, patterns, transits, life cycles |

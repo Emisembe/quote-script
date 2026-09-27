@@ -1,0 +1,177 @@
+/*
+ * Sun–Moon combinations: SUN_MOON[sunSignIndex][moonSignIndex], zodiac order Aries ... Pisces.
+ */
+(function (root) {
+  'use strict';
+  const SM = [
+    [ // Sun Aries
+      'Double Aries: pure fire and initiative. You act instantly and feel everything at full volume. Learning to pause is your superpower.',
+      'Bold outside, steady inside. You start with fire and finish with Taurus patience, a rare mix of courage and staying power.',
+      'Quick in action and quick in mind. You are witty, restless and energetic, and you need constant stimulation.',
+      'A fighter with a tender heart. You charge ahead, but you need a safe home to come back to.',
+      'Confident and warm-hearted, a natural leader who needs to be admired and to admire.',
+      'Driven but careful. You want to act fast yet feel secure only when things are done properly.',
+      'Independent but relationship-hungry. You are bold for yourself and need harmony with others.',
+      'Intense and fearless. You act directly and feel deeply, which makes you a formidable, loyal ally.',
+      'Adventurous in every way. You are optimistic and blunt and need freedom and new horizons.',
+      'Ambitious and self-controlled. Your fiery drive is backed by an inner need for achievement.',
+      'Independent in will and in feeling. You are original, idealistic and need space.',
+      'Courageous outside, sensitive inside. You fight for others and need quiet time to recover.'
+    ],
+    [ // Sun Taurus
+      'Determined and passionate. Steady on the outside, you have quick emotional reactions underneath.',
+      'Double Taurus: calm, sensual and immovable once decided. Comfort and loyalty define you.',
+      'Practical but curious. You enjoy both stability and variety of ideas.',
+      'Deeply home-loving. Security, family and comfort are everything to you.',
+      'Loyal and warm, and proud of what you build. You need appreciation.',
+      'Grounded and capable, a hard worker who needs order and usefulness.',
+      'You love beauty, harmony and pleasure, and your taste is strong.',
+      'Steady but intense. Emotional depth sits beneath a calm surface, and you are fiercely loyal.',
+      'Practical with an adventurous heart. You like stability plus room to explore.',
+      'Solid, ambitious and patient, a builder of lasting security.',
+      'Steady but unconventional. You are stubborn about principles and need independence.',
+      'Gentle, artistic and kind. You are sensual, imaginative and caring.'
+    ],
+    [ // Sun Gemini
+      'Quick-witted and restless. You think and feel fast and need action and variety.',
+      'Clever with a steady core. Your ideas are grounded in practical common sense.',
+      'Double Gemini: brilliant, curious and chatty. Your mind never stops.',
+      'Thoughtful and caring. You think a lot about your feelings and your family.',
+      'Charming and expressive, a natural storyteller who loves attention.',
+      'Analytical and precise. You are an excellent communicator and problem-solver, and you can worry.',
+      'Sociable, diplomatic and charming. Relationships stimulate your mind.',
+      'Light on the surface, deep underneath. You are curious about secrets and psychology.',
+      'A born explorer and communicator who needs travel, learning and freedom.',
+      'Clever and ambitious. You use your mind strategically.',
+      'Original and intellectual. You need friends who share your ideas.',
+      'Imaginative and adaptable, a poetic mind with a sensitive heart.'
+    ],
+    [ // Sun Cancer
+      'Caring and protective, but emotionally quick and fiery. You defend loved ones fiercely.',
+      'Home-loving and steady. You need security, comfort and loyal people.',
+      'Sensitive and talkative. You process feelings by sharing them.',
+      'Double Cancer: deeply nurturing, intuitive and family-centred, with strong memories.',
+      'Warm and generous, proud of your family and your home.',
+      'Caring and practical. You help others in concrete, useful ways.',
+      'Gentle and relationship-oriented. You need emotional harmony.',
+      'Intensely emotional and intuitive, with loyalty that runs very deep.',
+      'Caring but adventurous. You need a home base and freedom to roam.',
+      'Protective and responsible, a provider who takes care of everyone.',
+      'Caring but independent. You need closeness with space.',
+      'Extremely sensitive and compassionate, empathic and imaginative.'
+    ],
+    [ // Sun Leo
+      'Confident and dynamic, a natural leader with passionate feelings.',
+      'Warm and steady. You are loyal, proud and love comfort.',
+      'Expressive and witty, a charismatic communicator.',
+      'Warm-hearted and family-loving. You shine for the people you love.',
+      'Double Leo: radiant, generous and proud. You need appreciation and to express yourself creatively.',
+      'Proud yet modest. You shine through excellent, careful work.',
+      'Charming and romantic. Relationships and beauty matter greatly to you.',
+      'Powerful and intense, with strong will and deep feeling.',
+      'Enthusiastic and big-hearted, a born performer and adventurer.',
+      'Proud and ambitious. You want recognition and lasting achievement.',
+      'Creative and individual. You shine as yourself while caring for the group.',
+      'Warm and imaginative. You are creative and sensitive underneath the confidence.'
+    ],
+    [ // Sun Virgo
+      'Precise and quick. You get things done fast and well.',
+      'Practical and steady. You are dependable and value comfort.',
+      'Analytical and curious, an excellent thinker and communicator.',
+      'Caring and helpful. You nurture through practical service.',
+      'Modest outside, proud inside. You want your work to be admired.',
+      'Double Virgo: meticulous, useful and self-critical. Learn to relax.',
+      'Refined and helpful, with good taste and a need for harmony.',
+      'Perceptive and deep, a researcher and healer.',
+      'Careful but curious. You love learning and meaning.',
+      'Hard-working and responsible, a master of detail and structure.',
+      'Analytical and original, an innovative problem-solver.',
+      'Practical and compassionate. You serve with kindness.'
+    ],
+    [ // Sun Libra
+      'Charming but assertive. You balance relationship with independence.',
+      'Refined and steady. You love beauty, comfort and harmony.',
+      'Sociable and articulate, a diplomat and conversationalist.',
+      'Gentle and caring, devoted to home and partnership.',
+      'Charming and warm. You love romance, art and appreciation.',
+      'Tactful and precise, with good judgement and taste.',
+      'Double Libra: graceful and fair, with relationships at the centre of your life.',
+      'Charming outside, intense inside. You feel relationships deeply.',
+      'Sociable and optimistic, and you love travel and ideas.',
+      'Diplomatic and ambitious, excellent in professional relationships.',
+      'Fair-minded and idealistic, focused on friends and causes.',
+      'Gentle and romantic, artistic and compassionate.'
+    ],
+    [ // Sun Scorpio
+      'Intense and fiery. You are passionate, bold and determined.',
+      'Deep and steady. You are loyal, sensual and determined.',
+      'Probing and curious, a detective mind.',
+      'Deeply emotional and protective of your inner circle.',
+      'Powerful and proud, with a strong will and warmth.',
+      'Perceptive and analytical, an excellent researcher.',
+      'Intense but diplomatic. Relationships transform you.',
+      'Double Scorpio: deeply intense, private and powerful. Transformation is your theme.',
+      'Deep but optimistic. You seek meaning and truth.',
+      'Strategic and determined, with the power to build.',
+      'Intense but detached, an independent and original thinker.',
+      'Mystical and sensitive, with strong intuition.'
+    ],
+    [ // Sun Sagittarius
+      'Adventurous and bold, an optimistic go-getter.',
+      'Adventurous but steady. You enjoy comfort between journeys.',
+      'Curious and talkative, a lifelong learner.',
+      'Adventurous but home-loving. You need roots and wings.',
+      'Enthusiastic and generous, a natural entertainer.',
+      'Philosophical and practical. You learn in order to help.',
+      'Friendly and fair, sociable and optimistic.',
+      'Seeking truth with intensity, a deep philosopher.',
+      'Double Sagittarius: free-spirited, honest and always exploring.',
+      'Visionary and practical. You make big ideas real.',
+      'Idealistic and independent, a freedom-loving visionary.',
+      'Spiritual and compassionate, an idealistic seeker.'
+    ],
+    [ // Sun Capricorn
+      'Ambitious and energetic, a driven achiever.',
+      'Steady and practical, building lasting security.',
+      'Strategic and clever, a sharp planner.',
+      'Responsible and caring, a provider with a soft heart.',
+      'Ambitious and proud, and you want recognition.',
+      'Hard-working and precise, the ultimate professional.',
+      'Diplomatic and ambitious, excellent in partnerships.',
+      'Determined and deep, with strategic power.',
+      'Ambitious but optimistic. You build towards a vision.',
+      'Double Capricorn: disciplined, serious and extremely capable. Remember to rest.',
+      'Structured but inventive, a reformer.',
+      'Practical but sensitive. You achieve with compassion.'
+    ],
+    [ // Sun Aquarius
+      'Independent and energetic, a bold innovator.',
+      'Original but steady. You stick to your principles.',
+      'Brilliant and sociable, an ideas person.',
+      'Detached outside, caring inside. You love your chosen family.',
+      'Original and warm. You need to shine as yourself.',
+      'Innovative and practical, a problem-solver.',
+      'Friendly and fair, an idealist in relationships.',
+      'Detached outside, intense inside, with strong convictions.',
+      'Free-spirited and idealistic, a visionary.',
+      'Innovative and responsible, a reformer who builds.',
+      'Double Aquarius: highly original, independent and humanitarian.',
+      'Idealistic and compassionate, a humanitarian dreamer.'
+    ],
+    [ // Sun Pisces
+      'Sensitive but brave. You fight for your dreams.',
+      'Gentle and grounded, artistic and loyal.',
+      'Imaginative and talkative, a storyteller.',
+      'Deeply caring and intuitive, a natural nurturer.',
+      'Creative and warm, and you need to express yourself.',
+      'Compassionate and practical, a healer and helper.',
+      'Gentle and romantic, devoted to love and beauty.',
+      'Deeply intuitive and emotional, with psychic sensitivity.',
+      'Spiritual and adventurous, a seeker of meaning.',
+      'Dreamy but disciplined. You turn visions into results.',
+      'Idealistic and original, a compassionate visionary.',
+      'Double Pisces: deeply sensitive, imaginative and spiritual. Protect your energy.'
+    ]
+  ];
+  root.ChartSunMoon = SM;
+})(typeof window !== 'undefined' ? window : globalThis);

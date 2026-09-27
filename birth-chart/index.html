@@ -2194,7 +2194,20 @@ return new kd(this.curr.time,a,b)};$jscomp.global.Object.defineProperties(H.prot
     return parts.join(' ');
   }
 
-  root.ChartAspectText = { PAIR, EXPRESS, FAMILY, pairTheme, readAspect };
+  // Natal reading: a paragraph written for this exact pair and aspect type when one exists.
+  function natalAspect(a, b, aspectKey, tone, names) {
+    const table = root.ChartNatalAspects || {};
+    const [x, y] = ORDER.indexOf(a) <= ORDER.indexOf(b) ? [a, b] : [b, a];
+    const entry = table[`${x}|${y}`];
+    const slot = aspectKey === 'conjunction' ? 0 : ['trine', 'sextile'].includes(aspectKey) ? 1 : ['square', 'opposition'].includes(aspectKey) ? 2 : -1;
+    if (entry && slot >= 0 && entry[slot]) {
+      const theme = pairTheme(a, b);
+      return (theme ? `This contact links ${theme}. ` : '') + entry[slot];
+    }
+    return readAspect(a, b, aspectKey, tone, names);
+  }
+
+  root.ChartAspectText = { PAIR, EXPRESS, FAMILY, pairTheme, readAspect, natalAspect };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -2264,6 +2277,429 @@ return new kd(this.curr.time,a,b)};$jscomp.global.Object.defineProperties(H.prot
   ];
 
   root.ChartLearn = { RETRO, TRANSIT, PATTERN_INFO, GLOSSARY };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* content-aspects-natal.js */
+/*
+ * Specific natal aspect interpretations.
+ * Key "a|b" (in ChartAspectText ORDER) -> [conjunction, harmonious (trine/sextile), challenging (square/opposition)].
+ */
+(function (root) {
+  'use strict';
+  const N = {
+    // ---- Sun ----
+    'sun|moon': [
+      'Born near a New Moon, your will and your feelings pull in the same direction. You know what you want and go after it single-mindedly, though you may find it hard to see yourself from the outside.',
+      'What you want and what you need usually agree. This gives inner peace, emotional stability and an easy relationship between head and heart, which others find reassuring.',
+      'What you want and what you need often disagree, so you can feel divided between ambition and comfort. Learning to honour both sides turns this into great self-awareness and drive.'
+    ],
+    'sun|mercury': [
+      'Your thinking and your identity are closely linked. You speak with conviction and identify strongly with your ideas, so learning to hear criticism of an idea without feeling personally attacked is part of your growth.',
+      'Mercury is never far from the Sun, so this contact is always a close one. It shows a mind that works in harmony with your purpose.',
+      'Mercury is never far from the Sun, so this contact is always a close one. It shows a mind that works in harmony with your purpose.'
+    ],
+    'sun|venus': [
+      'Charm, warmth and a love of beauty are part of your identity. You attract people easily and want to be liked, and art or relationships can become central to how you express yourself.',
+      'You have natural grace and a talent for making others feel comfortable. Pleasure and relationships come easily, and you have good aesthetic judgement.',
+      'Venus is never far from the Sun, so this contact is always a close one. It adds charm and a desire for harmony to your personality.'
+    ],
+    'sun|mars': [
+      'You have strong drive, courage and a competitive streak. You act decisively and need physical outlets for your energy. Patience and listening are the skills to develop.',
+      'Your will and your energy work together, which gives confidence, stamina and effective leadership. You tackle challenges directly and usually get results.',
+      'Your drive can clash with your sense of self, which shows up as impatience, conflict or pushing too hard. Channelled into sport, work or a cause, it becomes formidable determination.'
+    ],
+    'sun|jupiter': [
+      'You radiate optimism, generosity and confidence, and people are drawn to your enthusiasm. Opportunities come your way, but you may overpromise or overextend.',
+      'Luck and good will tend to follow you. You are generous, hopeful and philosophical, and growth comes naturally when you trust yourself.',
+      'Big ambitions can outrun your resources. You may overestimate, overspend or overcommit. Learning moderation turns this into real, lasting expansion.'
+    ],
+    'sun|saturn': [
+      'You are serious, responsible and hard on yourself, often carrying weight early in life. Success comes slowly but lasts, and you grow more confident with age.',
+      'Discipline supports your purpose. You are patient, reliable and able to build something lasting, and people trust you with responsibility.',
+      'You may doubt yourself or feel blocked by authority figures, especially early in life. The lesson is to become your own authority. Maturity brings strength and respect.'
+    ],
+    'sun|uranus': [
+      'You are original, independent and hard to predict. You need freedom to be yourself and may break with convention. Your life has sudden turning points.',
+      'Your individuality is an asset. You bring fresh ideas and innovation, and people see you as refreshingly original without being disruptive.',
+      'You resist control and may rebel or change direction suddenly. Restlessness is the shadow side. Channelled well, it makes you a genuine innovator.'
+    ],
+    'sun|neptune': [
+      'You are sensitive, imaginative and idealistic, and your sense of self can be fluid. Art, music, spirituality or service can give it shape. Clear boundaries protect you.',
+      'Imagination and compassion strengthen your identity. You have artistic or spiritual gifts and a gentle, inspiring presence.',
+      'You may struggle to know who you are or be drawn to escapism, illusion or self-sacrifice. Grounding practices and honest self-reflection help, and your sensitivity becomes a gift.'
+    ],
+    'sun|pluto': [
+      'You have an intense, powerful personality and life brings deep transformations. You are drawn to hidden truths and have great resilience.',
+      'You have natural personal power, focus and the ability to regenerate after setbacks. You can lead others through change.',
+      'Power struggles, especially with authority, are a theme. You may fear losing control. Facing that fear brings enormous strength and self-mastery.'
+    ],
+    'sun|nnode': [
+      'Expressing yourself fully is part of your life direction, and being true to yourself moves you forward.',
+      'Your natural character supports your growth path, and opportunities arrive when you act as yourself.',
+      'There is a tension between who you are now and who you are growing into. The nodes ask you to integrate both.'
+    ],
+    'sun|chiron': [
+      'A core sensitivity about self-worth or identity becomes your source of wisdom. You often help others believe in themselves.',
+      'Your healing journey strengthens your identity, and you have a gift for mentoring and teaching.',
+      'Old wounds around being seen or valued can resurface. Working with them makes you a compassionate guide.'
+    ],
+    'sun|asc': [
+      'Your personality is visible and consistent. People see who you are straight away, and you radiate your Sun sign strongly.',
+      'Your inner self and outer manner work well together, so you come across as authentic and confident.',
+      'How you come across and who you feel yourself to be can differ, and others may misread you at first. Relationships teach you to align the two.'
+    ],
+    'sun|mc': [
+      'Your career is bound up with your identity. You are ambitious and likely to be publicly visible or recognised.',
+      'Career and purpose support each other, and you find it natural to pursue work that fits who you are.',
+      'Home and career, or personal and public life, may compete for your energy. Balancing them is a lifelong task.'
+    ],
+    // ---- Moon ----
+    'moon|mercury': [
+      'Your thoughts and feelings are closely linked. You communicate emotionally, remember through feeling and read moods well, though objectivity can be hard.',
+      'You express feelings easily and understand others intuitively. You are a sympathetic listener with a good memory.',
+      'Head and heart may argue, and you may overthink feelings or speak before processing them. Writing things down helps.'
+    ],
+    'moon|venus': [
+      'You are affectionate, gentle and emotionally warm. You need harmony, beauty and love, and you often have artistic taste.',
+      'You give and receive love easily and create comfort around you. People feel cared for in your presence.',
+      'What you need emotionally and what you find attractive may differ. You can seek comfort through indulgence. Understanding your needs brings better relationships.'
+    ],
+    'moon|mars': [
+      'Your emotions are strong and quick. You are protective, passionate and quick-tempered, and anger flares when you feel threatened.',
+      'You act on your feelings with courage and are good in emergencies. You defend those you love.',
+      'Moods can turn into irritation or conflict, especially in close relationships. Physical activity and naming feelings early help a great deal.'
+    ],
+    'moon|jupiter': [
+      'You are emotionally generous, warm and optimistic. You feel things in a big way and need space and meaning.',
+      'Faith and good humour carry you through hard times. You are kind, protective and popular.',
+      'Emotional excess, such as overeating, overspending or overpromising, can be a pattern. Learning when "enough" is enough brings contentment.'
+    ],
+    'moon|saturn': [
+      'You may have learned early to control or hide your feelings. You are responsible, resilient and reliable, and you slowly learn that it is safe to need people.',
+      'You are emotionally steady and dependable, and you offer others a sense of security. Your feelings mature well over time.',
+      'You may feel emotionally unsupported, lonely or too serious. Loosening self-control and allowing support are the lessons. Once you do, you are deeply resilient.'
+    ],
+    'moon|uranus': [
+      'Your emotional life is changeable and original. You need independence even in close bonds, and sudden changes of mood or circumstance are common.',
+      'You adapt quickly to change and bring an unusual, open-minded emotional style. Friendship is an important part of love for you.',
+      'You may swing between wanting closeness and needing space, which can unsettle relationships. Building in freedom helps you stay connected.'
+    ],
+    'moon|neptune': [
+      'You are highly sensitive, empathic and intuitive, and you soak up other people\'s feelings. Art, music and spirituality nourish you. Boundaries are essential.',
+      'Your imagination and compassion are strong, and you may have psychic or artistic gifts. You are a natural carer.',
+      'You may idealise people, feel confused about what you feel or escape into fantasy. Reality checks and grounding routines protect your big heart.'
+    ],
+    'moon|pluto': [
+      'Your emotions are intense and all-or-nothing. You bond deeply, sense what is hidden and may have experienced emotional upheaval early.',
+      'You have emotional depth and the ability to heal and transform, and you support others through crisis.',
+      'Jealousy, control or fear of abandonment can surface in close bonds. Facing emotional fears brings profound renewal.'
+    ],
+    'moon|nnode': ['Emotional growth and home life are part of your path.', 'Your instincts guide you toward your growth path.', 'Old emotional habits may pull you away from growth, so notice where comfort holds you back.'],
+    'moon|chiron': ['Emotional sensitivity around care or nurturing becomes a gift for supporting others.', 'You heal others through empathy and understanding.', 'Early emotional hurts may resurface in close relationships. Self-care is the healing path.'],
+    'moon|asc': ['Your feelings show on your face, and you come across as caring, sensitive and approachable.', 'Your emotional instincts and outward manner fit together, and people find you easy to connect with.', 'Your moods can affect how you come across. Learning to pause before reacting helps.'],
+    'moon|mc': ['Your public life is emotionally charged, and you may work with the public, family or care.', 'Your emotional intelligence supports your career.', 'Home and career may compete for your attention, and each needs time.'],
+    // ---- Mercury ----
+    'mercury|venus': ['You speak gracefully and have an eye for beauty. You are diplomatic and may have literary, musical or artistic talent.', 'You communicate with charm and tact, which helps in negotiation, sales and relationships.', 'Venus and Mercury stay close together, so this contact is rarely hard. It shows a pleasant, social mind.'],
+    'mercury|mars': ['Your mind is quick and sharp, and you argue well. You think fast and speak directly, sometimes too bluntly.', 'You think and act decisively. You are a persuasive speaker with mental energy and courage.', 'Words can become weapons. You may be argumentative or impatient in discussion, so debate, writing and strategy games are good outlets.'],
+    'mercury|jupiter': ['You think big and optimistically and love learning, teaching and ideas. Details can get lost in the big picture.', 'You learn easily and communicate with enthusiasm. Teaching, writing, law and travel suit you.', 'You may exaggerate, overlook details or promise more than you can deliver. Fact-checking and focus balance your vision.'],
+    'mercury|saturn': ['You think carefully, seriously and methodically. You may have doubted your intelligence early on and became an expert through effort.', 'Your mind is disciplined, practical and reliable. You concentrate well and plan well.', 'Self-doubt, pessimism or communication blocks may slow you down. Patience turns this into deep expertise.'],
+    'mercury|uranus': ['Your mind is brilliant, original and fast, with flashes of insight. Technology and science suit you, though you can be impatient with slower thinkers.', 'You think inventively and objectively, and you see solutions others miss.', 'Your thinking can be scattered, nervous or contrarian. Grounding ideas in practical steps helps them land.'],
+    'mercury|neptune': ['Your mind is imaginative and poetic and thinks in images. You are creative, intuitive and sometimes vague.', 'You communicate creatively and with compassion, and you may have a gift for writing, music or healing words.', 'Confusion, forgetfulness or misunderstandings are possible. Writing things down and checking facts protects you.'],
+    'mercury|pluto': ['Your mind is penetrating, investigative and persuasive. You uncover secrets and dig deep.', 'You have strong powers of concentration and research, and your words carry weight.', 'Your thinking can become obsessive, suspicious or controlling in debate. Learning to let go of mental battles brings peace.'],
+    'mercury|asc': ['You come across as articulate, curious and talkative.', 'Your communication skills help your self-presentation.', 'What you say and how you come across may not match. Mindful communication helps.'],
+    'mercury|mc': ['Communication is central to your career.', 'Words, trade or teaching support your professional path.', 'Career communication can be stressful. Clear agreements help.'],
+    'mercury|chiron': ['A sensitivity about being heard becomes a gift for teaching and explaining.', 'You find words that help others heal.', 'Old fears about intelligence or voice can resurface. Speaking up is part of the healing.'],
+    // ---- Venus ----
+    'venus|mars': ['You have strong passion and magnetism. Love and desire are closely linked, and you pursue romance actively. Creative energy is high.', 'Attraction flows easily, and you balance giving and taking in love. There is creative and romantic talent here.', 'Desire and affection may pull in different directions, which creates passionate but stormy relationships. Understanding what you want versus what you value brings balance.'],
+    'venus|jupiter': ['You are generous, affectionate and fond of pleasure. Love and money often come with some ease.', 'Good fortune in relationships and finances is likely. You are warm-hearted and sociable.', 'Overindulgence in pleasure, spending or romance is the risk. Moderation keeps the blessings flowing.'],
+    'venus|saturn': ['You take love seriously and may be shy or cautious. You commit for the long term, sometimes with an older or more serious partner.', 'Love is loyal and durable, and you build lasting relationships and wealth over time.', 'Fear of rejection, loneliness or feeling unlovable can make love feel hard. Patience and self-worth work bring deep, stable relationships later.'],
+    'venus|uranus': ['You are attracted to the unusual and need freedom in love. Sudden attractions and unconventional relationships are likely.', 'You bring excitement and originality to relationships while keeping friendship at the heart of them.', 'You may be drawn to unavailable people or leave suddenly when you feel confined. Building freedom into commitment is the key.'],
+    'venus|neptune': ['You are deeply romantic, artistic and idealistic about love. You may have musical or visual talent.', 'Your compassion and artistic sense are strong. Love has a spiritual, soulful quality.', 'You may idealise partners and later feel disappointed, or give too much. Seeing people as they really are protects your heart.'],
+    'venus|pluto': ['Love is intense, magnetic and transformative. You love completely and can be jealous or possessive.', 'You form deep, loyal bonds and are good at renewing relationships.', 'Power struggles, obsession or fear of betrayal can appear in love. Trust and letting go are the lessons.'],
+    'venus|nnode': ['Relationships and values point you toward your life direction.', 'Love and beauty support your growth path.', 'Comfort in love may pull you away from growth.'],
+    'venus|chiron': ['A sensitivity about being lovable becomes a gift for helping others feel accepted.', 'You heal through love, art and beauty.', 'Old hurts around love or self-worth can resurface. Self-acceptance is the medicine.'],
+    'venus|asc': ['You come across as attractive, charming and pleasant.', 'Grace and diplomacy help you make a good first impression.', 'You may try too hard to please. Authenticity is more attractive.'],
+    'venus|mc': ['Art, beauty or diplomacy may shape your career, and you are liked in public.', 'Charm and good relationships support your career.', 'Career and love life may compete. Balance helps.'],
+    // ---- Mars ----
+    'mars|jupiter': ['You have enormous energy and enthusiasm. You are bold, adventurous and competitive, sometimes overconfident.', 'Your actions tend to succeed. You have good timing and courage and are often lucky in sport or business.', 'Overconfidence, risk-taking or taking on too much can backfire. Planning and pacing make you unstoppable.'],
+    'mars|saturn': ['You have disciplined drive and great endurance. Frustration may build when you are blocked, but you achieve through persistence.', 'You combine energy with discipline, which makes you an effective and strategic worker who finishes what you start.', 'Stop-start energy, frustration or suppressed anger is common. Structured exercise and realistic goals release the tension.'],
+    'mars|uranus': ['Your energy comes in sudden bursts, and you are rebellious, inventive and quick to act. Accidents can come from haste.', 'You act with originality and speed and are good in a crisis and in technical work.', 'Impulsiveness, restlessness or sudden anger are the risks. Slowing down at key moments protects you.'],
+    'mars|neptune': ['Your drive is linked to ideals, art or spirituality. You may act on inspiration, and energy can fluctuate.', 'You act with compassion and creativity and fight for causes you believe in.', 'Low energy, confusion about what you want, or passive-aggressive patterns may appear. Clear goals help.'],
+    'mars|pluto': ['You have immense willpower and intensity, and you rarely give up. You need constructive outlets for your power.', 'You have strength, stamina and the ability to transform situations through focused action.', 'Power struggles or explosive anger can arise. Mastering this energy through sport or deep work makes you formidable.'],
+    'mars|nnode': ['Action and courage move you along your path.', 'Your drive supports your growth path.', 'Impulsive action may pull you off course.'],
+    'mars|chiron': ['A sensitivity about assertion becomes the ability to empower others.', 'You fight for those who have been hurt.', 'Old wounds around anger or confidence may resurface.'],
+    'mars|asc': ['You come across as energetic, direct and assertive, sometimes aggressive.', 'You make a strong, confident impression.', 'You may seem more confrontational than you mean to.'],
+    'mars|mc': ['You are ambitious and competitive in your career and drawn to leadership.', 'Your drive supports your career.', 'Conflicts with bosses or in public life are possible. Channel your ambition carefully.'],
+    // ---- Jupiter ----
+    'jupiter|saturn': ['You balance expansion and caution. Growth comes through structured effort, and you may reach success later but steadily.', 'You combine vision with realism, which is excellent for business and long-term planning.', 'You may swing between optimism and pessimism, or between risk and caution. Finding the middle path brings wisdom.'],
+    'jupiter|uranus': ['You have a restless, inventive optimism and sudden lucky breaks. You need freedom to grow.', 'Unexpected opportunities and original thinking open doors for you.', 'Rash decisions or sudden changes of plan can undo progress. Pausing before leaping helps.'],
+    'jupiter|neptune': ['You are idealistic, spiritual and compassionate, with a strong imagination and faith.', 'You have generous vision and spiritual or artistic gifts.', 'Unrealistic expectations or escapism may cause disappointment, so ground your dreams in practice.'],
+    'jupiter|pluto': ['You are ambitious for influence and large-scale change.', 'You have the power to achieve big goals and regenerate resources.', 'An urge for too much power or control can backfire.'],
+    'jupiter|asc': ['You come across as warm, generous and optimistic.', 'You make a positive, confident impression that opens doors.', 'You may overpromise or appear overconfident.'],
+    'jupiter|mc': ['You have good prospects for career growth and recognition.', 'Opportunities and mentors help your career.', 'Overexpansion or poor judgement in career choices is the risk.'],
+    // ---- Saturn ----
+    'saturn|uranus': ['There is tension between tradition and change. You may build new structures from old ones.', 'You combine innovation with practicality, which is excellent for reform.', 'You may feel torn between security and freedom. Integration brings inventive stability.'],
+    'saturn|neptune': ['You are learning to give form to dreams and ideals.', 'Your practical idealism can turn visions into reality.', 'Fear and confusion may blur boundaries. Grounding spiritual life helps.'],
+    'saturn|pluto': ['You have great endurance and seriousness under pressure.', 'You have the strength to rebuild after loss.', 'Heavy pressure or control issues may arise, and resilience is the result.'],
+    'saturn|asc': ['You come across as serious, reserved and mature.', 'You make a reliable, trustworthy impression.', 'You may seem distant or feel self-conscious. Warmth grows with age.'],
+    'saturn|mc': ['Your career is built slowly, with responsibility and authority.', 'Discipline brings steady career success.', 'Career obstacles teach patience, and success tends to come later.'],
+    // ---- Outer planets (generational) ----
+    'uranus|neptune': ['A generational link between innovation and idealism.', 'A generation that blends vision with invention.', 'A generation whose ideals and innovations collide.'],
+    'uranus|pluto': ['A generation of radical change.', 'A generation able to reform society.', 'A generation living through upheaval.'],
+    'neptune|pluto': ['A generational link between ideals and transformation.', 'This long sextile links a century of generations through deep spiritual and cultural change.', 'A generation facing collective crises of belief.'],
+    // ---- Asc / MC with outer ----
+    'uranus|asc': ['You come across as unusual and independent.', 'You make a fresh, original impression.', 'You may seem unpredictable.'],
+    'neptune|asc': ['You come across as gentle, dreamy or elusive.', 'You make a compassionate, artistic impression.', 'Others may project onto you.'],
+    'pluto|asc': ['You come across as intense and magnetic.', 'You make a powerful, focused impression.', 'You may seem intimidating.']
+  };
+
+  root.ChartNatalAspects = N;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* content-sunmoon.js */
+/*
+ * Sun–Moon combinations: SUN_MOON[sunSignIndex][moonSignIndex], zodiac order Aries ... Pisces.
+ */
+(function (root) {
+  'use strict';
+  const SM = [
+    [ // Sun Aries
+      'Double Aries: pure fire and initiative. You act instantly and feel everything at full volume. Learning to pause is your superpower.',
+      'Bold outside, steady inside. You start with fire and finish with Taurus patience, a rare mix of courage and staying power.',
+      'Quick in action and quick in mind. You are witty, restless and energetic, and you need constant stimulation.',
+      'A fighter with a tender heart. You charge ahead, but you need a safe home to come back to.',
+      'Confident and warm-hearted, a natural leader who needs to be admired and to admire.',
+      'Driven but careful. You want to act fast yet feel secure only when things are done properly.',
+      'Independent but relationship-hungry. You are bold for yourself and need harmony with others.',
+      'Intense and fearless. You act directly and feel deeply, which makes you a formidable, loyal ally.',
+      'Adventurous in every way. You are optimistic and blunt and need freedom and new horizons.',
+      'Ambitious and self-controlled. Your fiery drive is backed by an inner need for achievement.',
+      'Independent in will and in feeling. You are original, idealistic and need space.',
+      'Courageous outside, sensitive inside. You fight for others and need quiet time to recover.'
+    ],
+    [ // Sun Taurus
+      'Determined and passionate. Steady on the outside, you have quick emotional reactions underneath.',
+      'Double Taurus: calm, sensual and immovable once decided. Comfort and loyalty define you.',
+      'Practical but curious. You enjoy both stability and variety of ideas.',
+      'Deeply home-loving. Security, family and comfort are everything to you.',
+      'Loyal and warm, and proud of what you build. You need appreciation.',
+      'Grounded and capable, a hard worker who needs order and usefulness.',
+      'You love beauty, harmony and pleasure, and your taste is strong.',
+      'Steady but intense. Emotional depth sits beneath a calm surface, and you are fiercely loyal.',
+      'Practical with an adventurous heart. You like stability plus room to explore.',
+      'Solid, ambitious and patient, a builder of lasting security.',
+      'Steady but unconventional. You are stubborn about principles and need independence.',
+      'Gentle, artistic and kind. You are sensual, imaginative and caring.'
+    ],
+    [ // Sun Gemini
+      'Quick-witted and restless. You think and feel fast and need action and variety.',
+      'Clever with a steady core. Your ideas are grounded in practical common sense.',
+      'Double Gemini: brilliant, curious and chatty. Your mind never stops.',
+      'Thoughtful and caring. You think a lot about your feelings and your family.',
+      'Charming and expressive, a natural storyteller who loves attention.',
+      'Analytical and precise. You are an excellent communicator and problem-solver, and you can worry.',
+      'Sociable, diplomatic and charming. Relationships stimulate your mind.',
+      'Light on the surface, deep underneath. You are curious about secrets and psychology.',
+      'A born explorer and communicator who needs travel, learning and freedom.',
+      'Clever and ambitious. You use your mind strategically.',
+      'Original and intellectual. You need friends who share your ideas.',
+      'Imaginative and adaptable, a poetic mind with a sensitive heart.'
+    ],
+    [ // Sun Cancer
+      'Caring and protective, but emotionally quick and fiery. You defend loved ones fiercely.',
+      'Home-loving and steady. You need security, comfort and loyal people.',
+      'Sensitive and talkative. You process feelings by sharing them.',
+      'Double Cancer: deeply nurturing, intuitive and family-centred, with strong memories.',
+      'Warm and generous, proud of your family and your home.',
+      'Caring and practical. You help others in concrete, useful ways.',
+      'Gentle and relationship-oriented. You need emotional harmony.',
+      'Intensely emotional and intuitive, with loyalty that runs very deep.',
+      'Caring but adventurous. You need a home base and freedom to roam.',
+      'Protective and responsible, a provider who takes care of everyone.',
+      'Caring but independent. You need closeness with space.',
+      'Extremely sensitive and compassionate, empathic and imaginative.'
+    ],
+    [ // Sun Leo
+      'Confident and dynamic, a natural leader with passionate feelings.',
+      'Warm and steady. You are loyal, proud and love comfort.',
+      'Expressive and witty, a charismatic communicator.',
+      'Warm-hearted and family-loving. You shine for the people you love.',
+      'Double Leo: radiant, generous and proud. You need appreciation and to express yourself creatively.',
+      'Proud yet modest. You shine through excellent, careful work.',
+      'Charming and romantic. Relationships and beauty matter greatly to you.',
+      'Powerful and intense, with strong will and deep feeling.',
+      'Enthusiastic and big-hearted, a born performer and adventurer.',
+      'Proud and ambitious. You want recognition and lasting achievement.',
+      'Creative and individual. You shine as yourself while caring for the group.',
+      'Warm and imaginative. You are creative and sensitive underneath the confidence.'
+    ],
+    [ // Sun Virgo
+      'Precise and quick. You get things done fast and well.',
+      'Practical and steady. You are dependable and value comfort.',
+      'Analytical and curious, an excellent thinker and communicator.',
+      'Caring and helpful. You nurture through practical service.',
+      'Modest outside, proud inside. You want your work to be admired.',
+      'Double Virgo: meticulous, useful and self-critical. Learn to relax.',
+      'Refined and helpful, with good taste and a need for harmony.',
+      'Perceptive and deep, a researcher and healer.',
+      'Careful but curious. You love learning and meaning.',
+      'Hard-working and responsible, a master of detail and structure.',
+      'Analytical and original, an innovative problem-solver.',
+      'Practical and compassionate. You serve with kindness.'
+    ],
+    [ // Sun Libra
+      'Charming but assertive. You balance relationship with independence.',
+      'Refined and steady. You love beauty, comfort and harmony.',
+      'Sociable and articulate, a diplomat and conversationalist.',
+      'Gentle and caring, devoted to home and partnership.',
+      'Charming and warm. You love romance, art and appreciation.',
+      'Tactful and precise, with good judgement and taste.',
+      'Double Libra: graceful and fair, with relationships at the centre of your life.',
+      'Charming outside, intense inside. You feel relationships deeply.',
+      'Sociable and optimistic, and you love travel and ideas.',
+      'Diplomatic and ambitious, excellent in professional relationships.',
+      'Fair-minded and idealistic, focused on friends and causes.',
+      'Gentle and romantic, artistic and compassionate.'
+    ],
+    [ // Sun Scorpio
+      'Intense and fiery. You are passionate, bold and determined.',
+      'Deep and steady. You are loyal, sensual and determined.',
+      'Probing and curious, a detective mind.',
+      'Deeply emotional and protective of your inner circle.',
+      'Powerful and proud, with a strong will and warmth.',
+      'Perceptive and analytical, an excellent researcher.',
+      'Intense but diplomatic. Relationships transform you.',
+      'Double Scorpio: deeply intense, private and powerful. Transformation is your theme.',
+      'Deep but optimistic. You seek meaning and truth.',
+      'Strategic and determined, with the power to build.',
+      'Intense but detached, an independent and original thinker.',
+      'Mystical and sensitive, with strong intuition.'
+    ],
+    [ // Sun Sagittarius
+      'Adventurous and bold, an optimistic go-getter.',
+      'Adventurous but steady. You enjoy comfort between journeys.',
+      'Curious and talkative, a lifelong learner.',
+      'Adventurous but home-loving. You need roots and wings.',
+      'Enthusiastic and generous, a natural entertainer.',
+      'Philosophical and practical. You learn in order to help.',
+      'Friendly and fair, sociable and optimistic.',
+      'Seeking truth with intensity, a deep philosopher.',
+      'Double Sagittarius: free-spirited, honest and always exploring.',
+      'Visionary and practical. You make big ideas real.',
+      'Idealistic and independent, a freedom-loving visionary.',
+      'Spiritual and compassionate, an idealistic seeker.'
+    ],
+    [ // Sun Capricorn
+      'Ambitious and energetic, a driven achiever.',
+      'Steady and practical, building lasting security.',
+      'Strategic and clever, a sharp planner.',
+      'Responsible and caring, a provider with a soft heart.',
+      'Ambitious and proud, and you want recognition.',
+      'Hard-working and precise, the ultimate professional.',
+      'Diplomatic and ambitious, excellent in partnerships.',
+      'Determined and deep, with strategic power.',
+      'Ambitious but optimistic. You build towards a vision.',
+      'Double Capricorn: disciplined, serious and extremely capable. Remember to rest.',
+      'Structured but inventive, a reformer.',
+      'Practical but sensitive. You achieve with compassion.'
+    ],
+    [ // Sun Aquarius
+      'Independent and energetic, a bold innovator.',
+      'Original but steady. You stick to your principles.',
+      'Brilliant and sociable, an ideas person.',
+      'Detached outside, caring inside. You love your chosen family.',
+      'Original and warm. You need to shine as yourself.',
+      'Innovative and practical, a problem-solver.',
+      'Friendly and fair, an idealist in relationships.',
+      'Detached outside, intense inside, with strong convictions.',
+      'Free-spirited and idealistic, a visionary.',
+      'Innovative and responsible, a reformer who builds.',
+      'Double Aquarius: highly original, independent and humanitarian.',
+      'Idealistic and compassionate, a humanitarian dreamer.'
+    ],
+    [ // Sun Pisces
+      'Sensitive but brave. You fight for your dreams.',
+      'Gentle and grounded, artistic and loyal.',
+      'Imaginative and talkative, a storyteller.',
+      'Deeply caring and intuitive, a natural nurturer.',
+      'Creative and warm, and you need to express yourself.',
+      'Compassionate and practical, a healer and helper.',
+      'Gentle and romantic, devoted to love and beauty.',
+      'Deeply intuitive and emotional, with psychic sensitivity.',
+      'Spiritual and adventurous, a seeker of meaning.',
+      'Dreamy but disciplined. You turn visions into results.',
+      'Idealistic and original, a compassionate visionary.',
+      'Double Pisces: deeply sensitive, imaginative and spiritual. Protect your energy.'
+    ]
+  ];
+  root.ChartSunMoon = SM;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* content-transits.js */
+/*
+ * Specific transit interpretations: "mover|natal" -> [conjunction, harmonious (trine/sextile), challenging (square/opposition)].
+ */
+(function (root) {
+  'use strict';
+  const TR = {
+    // ---- Jupiter ----
+    'jupiter|sun': ['A high point for confidence and recognition. A good time to start ventures, ask for opportunities and be visible.', 'Things flow your way. Luck, support and optimism make this a good time to grow and take reasonable risks.', 'Opportunities come with the risk of overdoing it. Watch overconfidence, overspending and overcommitting.'],
+    'jupiter|moon': ['Emotional warmth and generosity. Home and family may expand, through a move, a birth or a reunion.', 'You feel content and emotionally supported. A good time for home improvements and family time.', 'Emotional excess or overindulgence is possible. Keep your comfort habits in check.'],
+    'jupiter|mercury': ['Big ideas and good news. A great time for study, writing, contracts and travel.', 'Clear, optimistic thinking. Good for negotiations, learning and publishing.', 'Details may be overlooked. Read contracts carefully and avoid overpromising.'],
+    'jupiter|venus': ['A lucky period for love, pleasure and money. Relationships and creative work flourish.', 'Harmony in love and finances. A good time for socialising, art and purchases.', 'Overspending or indulgence in pleasure is the risk. Enjoy yourself, within limits.'],
+    'jupiter|mars': ['High energy and courage. Good for bold action, sport and new projects.', 'Your efforts succeed. A great time to push forward with confidence.', 'Rash action or overconfidence can backfire. Plan before you charge.'],
+    'jupiter|jupiter': ['Your Jupiter return: a new twelve-year cycle of growth. Set intentions for the next chapter.', 'Growth comes steadily. Opportunities fit your values.', 'Growth pains. Choose which opportunities truly matter.'],
+    'jupiter|saturn': ['Expansion meets structure. A good time to grow something solid.', 'Effort pays off. Recognition for long-term work.', 'Tension between growth and limits. Balance ambition with realism.'],
+    'jupiter|asc': ['You feel confident and look good. People respond warmly, and a new personal chapter opens.', 'Personal opportunities and good first impressions come your way.', 'You may overextend yourself personally. Pace yourself.'],
+    'jupiter|mc': ['Career breakthroughs and public recognition are likely. Promotions and new roles.', 'Career support and good reputation.', 'Career opportunities may clash with home life. Choose carefully.'],
+    // ---- Saturn ----
+    'saturn|sun': ['A defining test of identity and purpose. Hard work, responsibility and maturity, often with lasting rewards. Energy can feel low, so rest.', 'Steady progress through effort. Your authority and reputation grow.', 'Pressure, obstacles or authority conflicts. A reality check that strips away what is not essential. Persist.'],
+    'saturn|moon': ['Emotional seriousness. Family responsibilities or feelings of loneliness can arise, and emotional maturity follows.', 'Emotional stability grows. A good time to establish home and routines.', 'Emotional heaviness or family pressure. Allow support and practise self-care.'],
+    'saturn|mercury': ['Serious thinking and study. Good for focused learning, planning and important documents.', 'Clear, disciplined thinking. Good for contracts and long-term plans.', 'Communication delays or worries. Be patient and double-check.'],
+    'saturn|venus': ['Relationships are tested and either deepen into commitment or end. Finances need care.', 'Love and money stabilise. A good time for commitment and saving.', 'Loneliness, relationship strain or tight money. Focus on what is truly valuable.'],
+    'saturn|mars': ['Energy meets resistance. Disciplined effort works, and force does not.', 'Persistent effort brings real results. Great for long projects and training.', 'Frustration and blocked energy. Avoid conflict and use structured exercise.'],
+    'saturn|jupiter': ['Growth is put through a reality check. Consolidate rather than expand.', 'Steady, well-planned growth.', 'Tension between expansion and limits. Simplify your plans.'],
+    'saturn|saturn': ['Your Saturn return (around ages 29, 58 and 87): a major life review. What is authentic stays, and what is not falls away.', 'Structures you have built are rewarded.', 'A Saturn square or opposition: a checkpoint that tests your life structures. Adjust where needed.'],
+    'saturn|asc': ['A serious new personal chapter. You take on responsibility, and your health and appearance need care.', 'You come across as mature and capable. Good for self-discipline.', 'Personal pressure or relationship strain. Take care of your body.'],
+    'saturn|mc': ['A career peak or restructuring. You reap what you have built, for better or worse.', 'Solid career progress through effort.', 'Career pressure or conflict with authority. Reassess your direction.'],
+    // ---- Uranus ----
+    'uranus|sun': ['A liberation of identity. Sudden change, new freedom and reinvention. Expect the unexpected.', 'Exciting, positive changes. Fresh starts feel natural.', 'Disruption and restlessness. You may break free from what no longer fits, sometimes abruptly.'],
+    'uranus|moon': ['Emotional awakening. Changes at home, a move or new freedom in family life.', 'Welcome changes in home and emotional life.', 'Emotional upheaval or sudden changes at home. Stay flexible.'],
+    'uranus|mercury': ['Brilliant, sudden ideas. Great for technology, learning new skills and new ways of thinking.', 'Inventive, fast thinking and exciting news.', 'Nervous tension and scattered thinking. Unexpected news.'],
+    'uranus|venus': ['Sudden attractions or changes in relationships. You need freedom in love, and your taste changes.', 'Exciting new connections, creative breakthroughs and a financial windfall are possible.', 'Relationships may be disrupted or end suddenly, and money can be unpredictable.'],
+    'uranus|mars': ['A surge of restless, rebellious energy. Great for bold new starts. Take care with accidents.', 'Energetic, original action and quick success.', 'Impulsiveness and accident risk. Slow down and channel the energy.'],
+    'uranus|jupiter': ['Sudden opportunities and lucky breaks.', 'Unexpected growth.', 'Rash decisions. Think before you jump.'],
+    'uranus|saturn': ['Old structures change. Reform your life.', 'You modernise traditions and structures in a positive way.', 'Tension between security and freedom. A midlife reform.'],
+    'uranus|asc': ['A personal reinvention: new image, new relationships, new direction.', 'Refreshing personal changes.', 'Unsettling changes in relationships or self-image.'],
+    'uranus|mc': ['A sudden career change or breakthrough. You may go freelance or take a new path.', 'Innovative career developments.', 'Career instability or sudden changes.'],
+    // ---- Neptune ----
+    'neptune|sun': ['Identity becomes softer and more spiritual. Your ego dissolves and something inspired emerges. Energy can be low, so avoid major decisions based on illusion.', 'Inspiration, compassion and creative flow.', 'Confusion about direction, fatigue or disillusionment. Seek clarity and truth.'],
+    'neptune|moon': ['Heightened sensitivity and intuition. Emotional boundaries soften.', 'Emotional and spiritual nourishment.', 'Emotional confusion or family uncertainty. Protect your boundaries.'],
+    'neptune|mercury': ['Imaginative thinking. Great for creative writing, but check facts.', 'Intuitive insight and artistic communication.', 'Confusion, misunderstandings or deception. Read the small print.'],
+    'neptune|venus': ['Romantic idealism and artistic inspiration. Love feels magical.', 'Spiritual love and creative flow.', 'Illusions in love or money. See people clearly.'],
+    'neptune|mars': ['Energy is linked to ideals, and drive can be low or inspired.', 'Compassionate, inspired action.', 'Low energy or unclear goals. Rest and refocus.'],
+    'neptune|jupiter': ['Spiritual expansion and faith.', 'Inspired optimism.', 'Unrealistic hopes. Ground your dreams.'],
+    'neptune|saturn': ['Structures dissolve and dreams take form.', 'Practical idealism.', 'Uncertainty about foundations. Clarify what is real.'],
+    'neptune|asc': ['Your self-image softens and you become more sensitive to your surroundings.', 'An inspired, compassionate presence.', 'Confusion in relationships or self-image.'],
+    'neptune|mc': ['Your career becomes more idealistic, creative or spiritual.', 'Inspired career direction.', 'Career uncertainty. Avoid illusions about your path.'],
+    // ---- Pluto ----
+    'pluto|sun': ['Deep transformation of identity. An old self dies and a stronger one emerges. Power issues arise.', 'Personal empowerment and regeneration.', 'Power struggles and intense pressure. Profound growth through crisis.'],
+    'pluto|moon': ['Deep emotional transformation. Family dynamics change fundamentally.', 'Emotional healing and depth.', 'Emotional intensity or family crisis. Let old patterns go.'],
+    'pluto|mercury': ['Deep, obsessive thinking. Research and psychology are favoured.', 'Powerful insight and persuasion.', 'Mental intensity or power struggles through words.'],
+    'pluto|venus': ['Love and values transform. Intense relationships.', 'Deep, renewing love and financial regeneration.', 'Jealousy, obsession or financial pressure. Let go of control.'],
+    'pluto|mars': ['Immense drive and willpower.', 'Powerful, effective action.', 'Conflicts and power struggles. Use strength wisely.'],
+    'pluto|jupiter': ['Ambition grows, and so does your influence.', 'Growth in power and resources.', 'Overreaching or power conflicts.'],
+    'pluto|saturn': ['Structures are rebuilt from the ground up.', 'Deep, lasting consolidation.', 'Intense pressure on life structures.'],
+    'pluto|asc': ['A personal metamorphosis.', 'Personal empowerment.', 'Intense relationship dynamics.'],
+    'pluto|mc': ['A career transformation or rise to power.', 'Growing influence.', 'Career power struggles.']
+  };
+  root.ChartTransitText = TR;
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -2796,6 +3232,15 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
 
   const ST = window.ChartSignText, HT = window.ChartHouseText, AT = window.ChartAspectText, L = window.ChartLearn;
   const signReading = (key, lon) => ST[key] ? ST[key][E.signOf(lon).index] : null;
+  // Paragraph for a transit ("Saturn square your Venus"), falling back to the mover's general theme.
+  function transitText(mover, natal, aspectKey) {
+    const e = (window.ChartTransitText || {})[`${mover}|${natal}`];
+    const slot = aspectKey === 'conjunction' ? 0 : ['trine', 'sextile'].includes(aspectKey) ? 1 : 2;
+    if (e && e[slot]) return e[slot] + (L.TRANSIT[mover] ? ' ' + L.TRANSIT[mover].length : '');
+    return L.TRANSIT[mover] ? `A period of ${L.TRANSIT[mover].theme} for your ${P(natal).name.toLowerCase()}. ${L.TRANSIT[mover].length}` : '';
+  }
+  // Sun–Moon blend for the chart on screen.
+  const sunMoonText = () => (window.ChartSunMoon || [])[E.signOf(pt('sun').lon).index]?.[E.signOf(pt('moon').lon).index] || '';
   const houseReading = (key, h) => (HT[key] && h) ? HT[key][h - 1] : null;
 
   const DEFAULT_PREFS = {
@@ -3162,7 +3607,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
         <span class="chip">${a.aspect.major ? 'Major' : 'Minor'}</span>
       </div>
       <p>${esc(P(a.a).name)} ${esc(C.ASPECT_TEXT[a.aspect.key])} ${esc(P(a.b).name)}. ${esc(C.ASPECT_MEANING[a.aspect.key])}</p>
-      <p>${esc(AT.readAspect(a.a, a.b, a.aspect.key, a.aspect.major ? a.aspect.tone : 'adjust', [P(a.a).name, P(a.b).name]))}</p>
+      <p>${esc(AT.natalAspect(a.a, a.b, a.aspect.key, a.aspect.major ? a.aspect.tone : 'adjust', [P(a.a).name, P(a.b).name]))}</p>
       <p class="faint">${esc(P(a.a).name)}: ${esc(P(a.a).keywords?.join(', ') || '')}. ${esc(P(a.b).name)}: ${esc(P(a.b).keywords?.join(', ') || '')}.</p>
       <div class="chips">
         <button class="chip" type="button" data-goto-point="${a.a}">${esc(P(a.a).name)} · ${posText(pa.lon)}</button>
@@ -3574,6 +4019,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
         <div><span class="eyebrow">Big Three</span><h2>${signs.map(s => s.name).join(', ')}</h2></div>
         <div class="grid-3 big3">${cards}</div>
         ${moonRange}
+        <div class="card"><div class="eyebrow">Your Sun–Moon blend · ${E.signOf(pt('sun').lon).sign.name} Sun, ${E.signOf(pt('moon').lon).sign.name} Moon</div><p style="margin-top:6px">${esc(sunMoonText())}</p></div>
         <div class="card"><div class="eyebrow">How they work together</div><p style="margin-top:6px">${esc(synth)}</p></div>
       </div>`;
   }
@@ -3606,8 +4052,8 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
   function drawTiming() {
     const t = state.timingCache;
     const now = Date.now();
-    const act = t.active.map(a => `<li><button type="button" data-goto-point="${a.natal}"><span class="asp-g ${a.aspect.tone}">${a.aspect.glyph}${VS}</span><span>Transiting <b>${P(a.mover).name}</b>${a.retrograde ? ' (R)' : ''} ${esc(C.ASPECT_TEXT[a.aspect.key])} your <b>${P(a.natal).name}</b></span><span class="num">${a.orb.toFixed(1)}° ${a.applying ? 'ap' : 'sep'}</span></button></li>`).join('');
-    const up = t.upcoming.map(x => `<div class="tl-item${x.date.getTime() < now ? ' past' : ''}"><span class="when">${fmtDate(x.date)}</span><span><b>${P(x.mover).name}</b>${x.retrograde ? ' (R)' : ''} ${x.aspect.name.toLowerCase()} natal <b>${P(x.natal).name}</b></span><span class="faint">${esc(L.TRANSIT[x.mover] ? `A period of ${L.TRANSIT[x.mover].theme} for your ${P(x.natal).name.toLowerCase()} (${P(x.natal).keywords.join(', ')}). ${L.TRANSIT[x.mover].length}` : '')}</span></div>`).join('');
+    const act = t.active.map(a => `<li><button type="button" data-goto-point="${a.natal}"><span class="asp-g ${a.aspect.tone}">${a.aspect.glyph}${VS}</span><span>Transiting <b>${P(a.mover).name}</b>${a.retrograde ? ' (R)' : ''} ${esc(C.ASPECT_TEXT[a.aspect.key])} your <b>${P(a.natal).name}</b>${(window.ChartTransitText || {})[a.mover + '|' + a.natal] ? `<br><span class="faint">${esc(transitText(a.mover, a.natal, a.aspect.key))}</span>` : ''}</span><span class="num">${a.orb.toFixed(1)}° ${a.applying ? 'ap' : 'sep'}</span></button></li>`).join('');
+    const up = t.upcoming.map(x => `<div class="tl-item${x.date.getTime() < now ? ' past' : ''}"><span class="when">${fmtDate(x.date)}</span><span><b>${P(x.mover).name}</b>${x.retrograde ? ' (R)' : ''} ${x.aspect.name.toLowerCase()} natal <b>${P(x.natal).name}</b></span><span class="faint">${esc(transitText(x.mover, x.natal, x.aspect.key))}</span></div>`).join('');
     const cyc = t.cycles.map(c => {
       const label = c.angle === 90 ? `${c.name} (${c.angleSigned > 0 ? 'opening' : 'closing'})` : c.name;
       return `<div class="tl-item${c.dates[c.dates.length - 1].getTime() < now ? ' past' : ''}"><span class="when">Age ${Math.floor(c.age)} · ${c.dates.map(fmtDate).join(', ')}</span><span><b>${label}</b>${c.dates.length > 1 ? ` <span class="faint">(${c.dates.length} passes)</span>` : ''}</span><span class="faint">${esc(c.note)}</span></div>`;
@@ -3683,7 +4129,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
         ${pointParagraphs(p).map(t => `<p style="margin-top:6px">${esc(t)}</p>`).join('')}
         ${conns.length ? `<div class="eyebrow" style="margin-top:12px">Aspects</div>${conns.map(a => {
           const other = a.a === p.key ? a.b : a.a;
-          return `<p style="margin-top:6px"><b><span class="asp-g ${aspectTone(a.aspect)}">${a.aspect.glyph}${VS}</span> ${a.aspect.name} ${esc(P(other).name)}</b> <span class="faint">(orb ${a.orb.toFixed(1)}°)</span>. ${esc(AT.readAspect(p.key, other, a.aspect.key, a.aspect.major ? a.aspect.tone : 'adjust', [P(p.key).name, P(other).name]))}</p>`;
+          return `<p style="margin-top:6px"><b><span class="asp-g ${aspectTone(a.aspect)}">${a.aspect.glyph}${VS}</span> ${a.aspect.name} ${esc(P(other).name)}</b> <span class="faint">(orb ${a.orb.toFixed(1)}°)</span>. ${esc(AT.natalAspect(p.key, other, a.aspect.key, a.aspect.major ? a.aspect.tone : 'adjust', [P(p.key).name, P(other).name]))}</p>`;
         }).join('')}` : ''}
       </article>`;
     };
@@ -3706,7 +4152,8 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       </div>
       ${groups.map(([title, ks]) => {
         const items = ks.filter(k => keys.includes(k)).map(pt);
-        return items.length ? `<div class="section"><h3>${title}</h3><div class="reading-list">${items.map(section).join('')}</div></div>` : '';
+        const intro = title === 'The lights' ? `<div class="card"><div class="eyebrow">Sun–Moon blend</div><p style="margin-top:6px">${esc(sunMoonText())}</p></div>` : '';
+        return items.length ? `<div class="section"><h3>${title}</h3>${intro}<div class="reading-list">${items.map(section).join('')}</div></div>` : '';
       }).join('')}
       ${patterns.length ? `<div class="section"><h3>Patterns</h3><div class="grid-2">${patterns.map(pp => `<div class="card"><div class="eyebrow">${esc(pp.type)}</div><p style="margin:6px 0">${pp.members.map(m => esc(P(m).name)).join(' · ')}</p><p class="muted">${esc(L.PATTERN_INFO[pp.type] || '')}</p></div>`).join('')}</div></div>` : ''}`;
   }
@@ -3762,7 +4209,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
   function aspectsInvolving(keys, tone) {
     return state.aspects.filter(a => a.aspect.major && (keys.includes(a.a) || keys.includes(a.b)) && (tone === 'flow' ? ['trine', 'sextile'].includes(a.aspect.key) : tone === 'tension' ? ['square', 'opposition'].includes(a.aspect.key) : a.aspect.key === 'conjunction')).slice(0, 4);
   }
-  const aspectItems = list => list.map(a => `<li><b>${esc(P(a.a).name)} ${a.aspect.name.toLowerCase()} ${esc(P(a.b).name)}</b> <span class="faint">(orb ${a.orb.toFixed(1)}°)</span>. ${esc(AT.readAspect(a.a, a.b, a.aspect.key, aspectTone(a.aspect), [P(a.a).name, P(a.b).name]))}</li>`).join('');
+  const aspectItems = list => list.map(a => `<li><b>${esc(P(a.a).name)} ${a.aspect.name.toLowerCase()} ${esc(P(a.b).name)}</b> <span class="faint">(orb ${a.orb.toFixed(1)}°)</span>. ${esc(AT.natalAspect(a.a, a.b, a.aspect.key, aspectTone(a.aspect), [P(a.a).name, P(a.b).name]))}</li>`).join('');
   const dominantEl = () => { const b = balance(); return Object.keys(b.el).sort((x, y) => b.el[y] - b.el[x])[0]; };
   const dominantMd = () => { const b = balance(); return Object.keys(b.md).sort((x, y) => b.md[y] - b.md[x])[0]; };
   const upcomingFor = keys => {
@@ -3773,7 +4220,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
   };
   const timingList = list => list.length ? `<ul class="syn-list">${list.slice(0, 8).map(x => {
     const good = x.mover === 'jupiter' || ['trine', 'sextile'].includes(x.aspect.key);
-    return `<li><span class="pill ${good ? 'ok' : 'warn'}">${good ? 'Opening' : 'Test'}</span> <b>${fmtDate(x.date)}</b>: ${P(x.mover).name}${x.retrograde ? ' (R)' : ''} ${x.aspect.name.toLowerCase()} your ${P(x.natal).name}. <span class="muted">${esc(L.TRANSIT[x.mover] ? 'A period of ' + L.TRANSIT[x.mover].theme + '.' : '')}</span></li>`;
+    return `<li><span class="pill ${good ? 'ok' : 'warn'}">${good ? 'Opening' : 'Test'}</span> <b>${fmtDate(x.date)}</b>: ${P(x.mover).name}${x.retrograde ? ' (R)' : ''} ${x.aspect.name.toLowerCase()} your ${P(x.natal).name}. <span class="muted">${esc(transitText(x.mover, x.natal, x.aspect.key))}</span></li>`;
   }).join('')}</ul>` : '<p class="muted">No slow-planet transits to these points in the next 12 months. It is a steadier period for this area.</p>';
   // Drops empty lists, and the whole section when nothing is left to say.
   const sectionHtml = (title, body) => {
@@ -3877,7 +4324,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       reflect = ['Which activity reliably restores your energy?', 'Where in your week could you add one of the recharge suggestions?'];
     } else if (key === 'purpose') {
       factors = [factor(`Sun in ${sgn('sun').name}`, 'sun'), factor(`North Node in ${sgn('nnode').name}`, 'nnode'), factor(`Saturn in ${sgn('saturn').name}`, 'saturn'), factor(`Chiron in ${sgn('chiron').name}`, 'chiron')];
-      body += sectionHtml('Who you are becoming', para(signReading('sun', pt('sun').lon)) + para(houseReading('sun', pt('sun').house)));
+      body += sectionHtml('Who you are becoming', para(signReading('sun', pt('sun').lon)) + para(houseReading('sun', pt('sun').house)) + para(sunMoonText()));
       body += sectionHtml('Your growth direction', para(signReading('nnode', pt('nnode').lon)) + para(houseReading('nnode', pt('nnode').house)));
       body += sectionHtml('Your life lesson', para(signReading('saturn', pt('saturn').lon)) + para(houseReading('saturn', pt('saturn').house)));
       body += sectionHtml('The wound that becomes wisdom', para(signReading('chiron', pt('chiron').lon)) + para(houseReading('chiron', pt('chiron').house)));

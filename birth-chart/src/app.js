@@ -18,6 +18,15 @@
 
   const ST = window.ChartSignText, HT = window.ChartHouseText, AT = window.ChartAspectText, L = window.ChartLearn;
   const signReading = (key, lon) => ST[key] ? ST[key][E.signOf(lon).index] : null;
+  // Paragraph for a transit ("Saturn square your Venus"), falling back to the mover's general theme.
+  function transitText(mover, natal, aspectKey) {
+    const e = (window.ChartTransitText || {})[`${mover}|${natal}`];
+    const slot = aspectKey === 'conjunction' ? 0 : ['trine', 'sextile'].includes(aspectKey) ? 1 : 2;
+    if (e && e[slot]) return e[slot] + (L.TRANSIT[mover] ? ' ' + L.TRANSIT[mover].length : '');
+    return L.TRANSIT[mover] ? `A period of ${L.TRANSIT[mover].theme} for your ${P(natal).name.toLowerCase()}. ${L.TRANSIT[mover].length}` : '';
+  }
+  // Sun–Moon blend for the chart on screen.
+  const sunMoonText = () => (window.ChartSunMoon || [])[E.signOf(pt('sun').lon).index]?.[E.signOf(pt('moon').lon).index] || '';
   const houseReading = (key, h) => (HT[key] && h) ? HT[key][h - 1] : null;
 
   const DEFAULT_PREFS = {
@@ -384,7 +393,7 @@
         <span class="chip">${a.aspect.major ? 'Major' : 'Minor'}</span>
       </div>
       <p>${esc(P(a.a).name)} ${esc(C.ASPECT_TEXT[a.aspect.key])} ${esc(P(a.b).name)}. ${esc(C.ASPECT_MEANING[a.aspect.key])}</p>
-      <p>${esc(AT.readAspect(a.a, a.b, a.aspect.key, a.aspect.major ? a.aspect.tone : 'adjust', [P(a.a).name, P(a.b).name]))}</p>
+      <p>${esc(AT.natalAspect(a.a, a.b, a.aspect.key, a.aspect.major ? a.aspect.tone : 'adjust', [P(a.a).name, P(a.b).name]))}</p>
       <p class="faint">${esc(P(a.a).name)}: ${esc(P(a.a).keywords?.join(', ') || '')}. ${esc(P(a.b).name)}: ${esc(P(a.b).keywords?.join(', ') || '')}.</p>
       <div class="chips">
         <button class="chip" type="button" data-goto-point="${a.a}">${esc(P(a.a).name)} · ${posText(pa.lon)}</button>
@@ -796,6 +805,7 @@
         <div><span class="eyebrow">Big Three</span><h2>${signs.map(s => s.name).join(', ')}</h2></div>
         <div class="grid-3 big3">${cards}</div>
         ${moonRange}
+        <div class="card"><div class="eyebrow">Your Sun–Moon blend · ${E.signOf(pt('sun').lon).sign.name} Sun, ${E.signOf(pt('moon').lon).sign.name} Moon</div><p style="margin-top:6px">${esc(sunMoonText())}</p></div>
         <div class="card"><div class="eyebrow">How they work together</div><p style="margin-top:6px">${esc(synth)}</p></div>
       </div>`;
   }
@@ -828,8 +838,8 @@
   function drawTiming() {
     const t = state.timingCache;
     const now = Date.now();
-    const act = t.active.map(a => `<li><button type="button" data-goto-point="${a.natal}"><span class="asp-g ${a.aspect.tone}">${a.aspect.glyph}${VS}</span><span>Transiting <b>${P(a.mover).name}</b>${a.retrograde ? ' (R)' : ''} ${esc(C.ASPECT_TEXT[a.aspect.key])} your <b>${P(a.natal).name}</b></span><span class="num">${a.orb.toFixed(1)}° ${a.applying ? 'ap' : 'sep'}</span></button></li>`).join('');
-    const up = t.upcoming.map(x => `<div class="tl-item${x.date.getTime() < now ? ' past' : ''}"><span class="when">${fmtDate(x.date)}</span><span><b>${P(x.mover).name}</b>${x.retrograde ? ' (R)' : ''} ${x.aspect.name.toLowerCase()} natal <b>${P(x.natal).name}</b></span><span class="faint">${esc(L.TRANSIT[x.mover] ? `A period of ${L.TRANSIT[x.mover].theme} for your ${P(x.natal).name.toLowerCase()} (${P(x.natal).keywords.join(', ')}). ${L.TRANSIT[x.mover].length}` : '')}</span></div>`).join('');
+    const act = t.active.map(a => `<li><button type="button" data-goto-point="${a.natal}"><span class="asp-g ${a.aspect.tone}">${a.aspect.glyph}${VS}</span><span>Transiting <b>${P(a.mover).name}</b>${a.retrograde ? ' (R)' : ''} ${esc(C.ASPECT_TEXT[a.aspect.key])} your <b>${P(a.natal).name}</b>${(window.ChartTransitText || {})[a.mover + '|' + a.natal] ? `<br><span class="faint">${esc(transitText(a.mover, a.natal, a.aspect.key))}</span>` : ''}</span><span class="num">${a.orb.toFixed(1)}° ${a.applying ? 'ap' : 'sep'}</span></button></li>`).join('');
+    const up = t.upcoming.map(x => `<div class="tl-item${x.date.getTime() < now ? ' past' : ''}"><span class="when">${fmtDate(x.date)}</span><span><b>${P(x.mover).name}</b>${x.retrograde ? ' (R)' : ''} ${x.aspect.name.toLowerCase()} natal <b>${P(x.natal).name}</b></span><span class="faint">${esc(transitText(x.mover, x.natal, x.aspect.key))}</span></div>`).join('');
     const cyc = t.cycles.map(c => {
       const label = c.angle === 90 ? `${c.name} (${c.angleSigned > 0 ? 'opening' : 'closing'})` : c.name;
       return `<div class="tl-item${c.dates[c.dates.length - 1].getTime() < now ? ' past' : ''}"><span class="when">Age ${Math.floor(c.age)} · ${c.dates.map(fmtDate).join(', ')}</span><span><b>${label}</b>${c.dates.length > 1 ? ` <span class="faint">(${c.dates.length} passes)</span>` : ''}</span><span class="faint">${esc(c.note)}</span></div>`;
@@ -905,7 +915,7 @@
         ${pointParagraphs(p).map(t => `<p style="margin-top:6px">${esc(t)}</p>`).join('')}
         ${conns.length ? `<div class="eyebrow" style="margin-top:12px">Aspects</div>${conns.map(a => {
           const other = a.a === p.key ? a.b : a.a;
-          return `<p style="margin-top:6px"><b><span class="asp-g ${aspectTone(a.aspect)}">${a.aspect.glyph}${VS}</span> ${a.aspect.name} ${esc(P(other).name)}</b> <span class="faint">(orb ${a.orb.toFixed(1)}°)</span>. ${esc(AT.readAspect(p.key, other, a.aspect.key, a.aspect.major ? a.aspect.tone : 'adjust', [P(p.key).name, P(other).name]))}</p>`;
+          return `<p style="margin-top:6px"><b><span class="asp-g ${aspectTone(a.aspect)}">${a.aspect.glyph}${VS}</span> ${a.aspect.name} ${esc(P(other).name)}</b> <span class="faint">(orb ${a.orb.toFixed(1)}°)</span>. ${esc(AT.natalAspect(p.key, other, a.aspect.key, a.aspect.major ? a.aspect.tone : 'adjust', [P(p.key).name, P(other).name]))}</p>`;
         }).join('')}` : ''}
       </article>`;
     };
@@ -928,7 +938,8 @@
       </div>
       ${groups.map(([title, ks]) => {
         const items = ks.filter(k => keys.includes(k)).map(pt);
-        return items.length ? `<div class="section"><h3>${title}</h3><div class="reading-list">${items.map(section).join('')}</div></div>` : '';
+        const intro = title === 'The lights' ? `<div class="card"><div class="eyebrow">Sun–Moon blend</div><p style="margin-top:6px">${esc(sunMoonText())}</p></div>` : '';
+        return items.length ? `<div class="section"><h3>${title}</h3>${intro}<div class="reading-list">${items.map(section).join('')}</div></div>` : '';
       }).join('')}
       ${patterns.length ? `<div class="section"><h3>Patterns</h3><div class="grid-2">${patterns.map(pp => `<div class="card"><div class="eyebrow">${esc(pp.type)}</div><p style="margin:6px 0">${pp.members.map(m => esc(P(m).name)).join(' · ')}</p><p class="muted">${esc(L.PATTERN_INFO[pp.type] || '')}</p></div>`).join('')}</div></div>` : ''}`;
   }
@@ -984,7 +995,7 @@
   function aspectsInvolving(keys, tone) {
     return state.aspects.filter(a => a.aspect.major && (keys.includes(a.a) || keys.includes(a.b)) && (tone === 'flow' ? ['trine', 'sextile'].includes(a.aspect.key) : tone === 'tension' ? ['square', 'opposition'].includes(a.aspect.key) : a.aspect.key === 'conjunction')).slice(0, 4);
   }
-  const aspectItems = list => list.map(a => `<li><b>${esc(P(a.a).name)} ${a.aspect.name.toLowerCase()} ${esc(P(a.b).name)}</b> <span class="faint">(orb ${a.orb.toFixed(1)}°)</span>. ${esc(AT.readAspect(a.a, a.b, a.aspect.key, aspectTone(a.aspect), [P(a.a).name, P(a.b).name]))}</li>`).join('');
+  const aspectItems = list => list.map(a => `<li><b>${esc(P(a.a).name)} ${a.aspect.name.toLowerCase()} ${esc(P(a.b).name)}</b> <span class="faint">(orb ${a.orb.toFixed(1)}°)</span>. ${esc(AT.natalAspect(a.a, a.b, a.aspect.key, aspectTone(a.aspect), [P(a.a).name, P(a.b).name]))}</li>`).join('');
   const dominantEl = () => { const b = balance(); return Object.keys(b.el).sort((x, y) => b.el[y] - b.el[x])[0]; };
   const dominantMd = () => { const b = balance(); return Object.keys(b.md).sort((x, y) => b.md[y] - b.md[x])[0]; };
   const upcomingFor = keys => {
@@ -995,7 +1006,7 @@
   };
   const timingList = list => list.length ? `<ul class="syn-list">${list.slice(0, 8).map(x => {
     const good = x.mover === 'jupiter' || ['trine', 'sextile'].includes(x.aspect.key);
-    return `<li><span class="pill ${good ? 'ok' : 'warn'}">${good ? 'Opening' : 'Test'}</span> <b>${fmtDate(x.date)}</b>: ${P(x.mover).name}${x.retrograde ? ' (R)' : ''} ${x.aspect.name.toLowerCase()} your ${P(x.natal).name}. <span class="muted">${esc(L.TRANSIT[x.mover] ? 'A period of ' + L.TRANSIT[x.mover].theme + '.' : '')}</span></li>`;
+    return `<li><span class="pill ${good ? 'ok' : 'warn'}">${good ? 'Opening' : 'Test'}</span> <b>${fmtDate(x.date)}</b>: ${P(x.mover).name}${x.retrograde ? ' (R)' : ''} ${x.aspect.name.toLowerCase()} your ${P(x.natal).name}. <span class="muted">${esc(transitText(x.mover, x.natal, x.aspect.key))}</span></li>`;
   }).join('')}</ul>` : '<p class="muted">No slow-planet transits to these points in the next 12 months. It is a steadier period for this area.</p>';
   // Drops empty lists, and the whole section when nothing is left to say.
   const sectionHtml = (title, body) => {
@@ -1099,7 +1110,7 @@
       reflect = ['Which activity reliably restores your energy?', 'Where in your week could you add one of the recharge suggestions?'];
     } else if (key === 'purpose') {
       factors = [factor(`Sun in ${sgn('sun').name}`, 'sun'), factor(`North Node in ${sgn('nnode').name}`, 'nnode'), factor(`Saturn in ${sgn('saturn').name}`, 'saturn'), factor(`Chiron in ${sgn('chiron').name}`, 'chiron')];
-      body += sectionHtml('Who you are becoming', para(signReading('sun', pt('sun').lon)) + para(houseReading('sun', pt('sun').house)));
+      body += sectionHtml('Who you are becoming', para(signReading('sun', pt('sun').lon)) + para(houseReading('sun', pt('sun').house)) + para(sunMoonText()));
       body += sectionHtml('Your growth direction', para(signReading('nnode', pt('nnode').lon)) + para(houseReading('nnode', pt('nnode').house)));
       body += sectionHtml('Your life lesson', para(signReading('saturn', pt('saturn').lon)) + para(houseReading('saturn', pt('saturn').house)));
       body += sectionHtml('The wound that becomes wisdom', para(signReading('chiron', pt('chiron').lon)) + para(houseReading('chiron', pt('chiron').house)));

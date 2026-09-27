@@ -172,5 +172,18 @@
     return parts.join(' ');
   }
 
-  root.ChartAspectText = { PAIR, EXPRESS, FAMILY, pairTheme, readAspect };
+  // Natal reading: a paragraph written for this exact pair and aspect type when one exists.
+  function natalAspect(a, b, aspectKey, tone, names) {
+    const table = root.ChartNatalAspects || {};
+    const [x, y] = ORDER.indexOf(a) <= ORDER.indexOf(b) ? [a, b] : [b, a];
+    const entry = table[`${x}|${y}`];
+    const slot = aspectKey === 'conjunction' ? 0 : ['trine', 'sextile'].includes(aspectKey) ? 1 : ['square', 'opposition'].includes(aspectKey) ? 2 : -1;
+    if (entry && slot >= 0 && entry[slot]) {
+      const theme = pairTheme(a, b);
+      return (theme ? `This contact links ${theme}. ` : '') + entry[slot];
+    }
+    return readAspect(a, b, aspectKey, tone, names);
+  }
+
+  root.ChartAspectText = { PAIR, EXPRESS, FAMILY, pairTheme, readAspect, natalAspect };
 })(typeof window !== 'undefined' ? window : globalThis);
