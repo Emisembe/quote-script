@@ -7,11 +7,13 @@ is a European country a realistic destination for African professionals?
 1. Create a new Google Sheet.
 2. Extensions > Apps Script. Replace the contents of `Code.gs` with [`Code.gs`](Code.gs). Save.
 3. Reload the Sheet. Menu **Destination Index** appears.
-4. **Destination Index > 1. Build / repair the sheet** (approve permissions the first time).
-5. Follow the **Guide** tab.
+4. **Destination Index > Build / repair the sheet** (approve permissions the first time).
+5. **Destination Index > Open control panel (buttons)** and follow the **Guide** tab.
 
-## Tabs
-Guide, Dashboard, Data, Evidence, Weights, Scores, Indicators, Sources, Rubrics, Log.
-
-Eurostat indicators (F1, F2, R1, R3) are fetched automatically via the Eurostat JSON API;
-the rest are filled manually from the sources listed in the Indicators tab.
+## Features
+- Tabs: Guide, Dashboard, Data, Evidence, Weights, Scores, Indicators, Sources, Rubrics, Log.
+- Control-panel sidebar with buttons: build, fetch, refresh, navigate, reset.
+- Add your own **source links**: Eurostat (data-browser link, API link or dataset code, with filters
+  and optional A - B gap) or any **CSV link** (map the country / value / year columns).
+- Add your own **indicators** (pillar + direction) and **countries**; scores update automatically.
+- Every fetched value is written to Data with a cell note and logged in Evidence.
