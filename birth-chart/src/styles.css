@@ -126,6 +126,8 @@ p { margin: 0; }
 .btn.primary { background: var(--plum); border-color: var(--plum); color: var(--on-plum); }
 .btn.primary:hover { background: var(--plum-2); }
 .btn.small { padding: 5px 11px; font-size: 13px; }
+.theme-btn #theme-icon { font-family: var(--glyph); font-size: 16px; line-height: 1; }
+html { transition: background-color .2s; }
 .btn[aria-pressed="true"] { background: var(--plum-tint); border-color: var(--plum-2); }
 
 /* ---------- tabs ---------- */

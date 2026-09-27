@@ -1683,7 +1683,36 @@
     if (state.tab !== 'chart' && RENDER[state.tab]) RENDER[state.tab]();
   }
 
+  // ---------- theme ----------
+  // Cycles Auto (follow the device) -> Light -> Dark. Auto removes data-theme so prefers-color-scheme decides.
+  const THEMES = [
+    { key: 'auto', label: 'Auto', icon: '◐' },
+    { key: 'light', label: 'Light', icon: '☀' + VS },
+    { key: 'dark', label: 'Dark', icon: '☾' + VS }
+  ];
+  function applyTheme(key) {
+    const t = THEMES.find(x => x.key === key) || THEMES[0];
+    if (t.key === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', t.key);
+    $('#theme-label').textContent = t.label;
+    $('#theme-icon').textContent = t.icon;
+    $('#theme-toggle').setAttribute('aria-label', `Colour theme: ${t.label}. Click to change.`);
+    $('#theme-toggle').title = t.key === 'auto' ? 'Following your device setting' : `${t.label} mode`;
+  }
+  function bindTheme() {
+    let current = store.get('theme', 'auto');
+    applyTheme(current);
+    $('#theme-toggle').addEventListener('click', () => {
+      const i = THEMES.findIndex(x => x.key === current);
+      current = THEMES[(i + 1) % THEMES.length].key;
+      store.set('theme', current);
+      applyTheme(current);
+      toast(current === 'auto' ? 'Theme follows your device' : `${THEMES.find(x => x.key === current).label} mode`);
+    });
+  }
+
   function boot() {
+    bindTheme();
     if (!window.Astronomy) {
       document.querySelector('main').innerHTML = '<div class="card"><h2>The astronomy library did not load</h2><p class="muted">Check your internet connection and reload. The chart is calculated in your browser with astronomy-engine, loaded from cdn.jsdelivr.net.</p></div>';
       return;

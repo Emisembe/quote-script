@@ -136,6 +136,8 @@ p { margin: 0; }
 .btn.primary { background: var(--plum); border-color: var(--plum); color: var(--on-plum); }
 .btn.primary:hover { background: var(--plum-2); }
 .btn.small { padding: 5px 11px; font-size: 13px; }
+.theme-btn #theme-icon { font-family: var(--glyph); font-size: 16px; line-height: 1; }
+html { transition: background-color .2s; }
 .btn[aria-pressed="true"] { background: var(--plum-tint); border-color: var(--plum-2); }
 
 /* ---------- tabs ---------- */
@@ -483,6 +485,10 @@ tr.static { cursor: default; }
 </style>
 </head>
 <body>
+<script>
+  // Apply the saved theme before anything paints, so there is no flash of the wrong colours.
+  try { var t = JSON.parse(localStorage.getItem('ncs:theme')); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
 <div class="shell">
   <header class="masthead">
     <div class="who">
@@ -495,6 +501,7 @@ tr.static { cursor: default; }
       <button class="btn" id="edit-birth" type="button">Edit birth data</button>
       <button class="btn" id="save-chart" type="button">Save chart</button>
       <button class="btn" id="copy-code" type="button">Copy chart code</button>
+      <button class="btn theme-btn" id="theme-toggle" type="button" aria-label="Colour theme"><span aria-hidden="true" id="theme-icon">◐</span> <span id="theme-label">Auto</span></button>
     </div>
   </header>
 
@@ -4897,7 +4904,36 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     if (state.tab !== 'chart' && RENDER[state.tab]) RENDER[state.tab]();
   }
 
+  // ---------- theme ----------
+  // Cycles Auto (follow the device) -> Light -> Dark. Auto removes data-theme so prefers-color-scheme decides.
+  const THEMES = [
+    { key: 'auto', label: 'Auto', icon: '◐' },
+    { key: 'light', label: 'Light', icon: '☀' + VS },
+    { key: 'dark', label: 'Dark', icon: '☾' + VS }
+  ];
+  function applyTheme(key) {
+    const t = THEMES.find(x => x.key === key) || THEMES[0];
+    if (t.key === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', t.key);
+    $('#theme-label').textContent = t.label;
+    $('#theme-icon').textContent = t.icon;
+    $('#theme-toggle').setAttribute('aria-label', `Colour theme: ${t.label}. Click to change.`);
+    $('#theme-toggle').title = t.key === 'auto' ? 'Following your device setting' : `${t.label} mode`;
+  }
+  function bindTheme() {
+    let current = store.get('theme', 'auto');
+    applyTheme(current);
+    $('#theme-toggle').addEventListener('click', () => {
+      const i = THEMES.findIndex(x => x.key === current);
+      current = THEMES[(i + 1) % THEMES.length].key;
+      store.set('theme', current);
+      applyTheme(current);
+      toast(current === 'auto' ? 'Theme follows your device' : `${THEMES.find(x => x.key === current).label} mode`);
+    });
+  }
+
   function boot() {
+    bindTheme();
     if (!window.Astronomy) {
       document.querySelector('main').innerHTML = '<div class="card"><h2>The astronomy library did not load</h2><p class="muted">Check your internet connection and reload. The chart is calculated in your browser with astronomy-engine, loaded from cdn.jsdelivr.net.</p></div>';
       return;

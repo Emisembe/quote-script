@@ -10,6 +10,10 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<script>
+  // Apply the saved theme before anything paints, so there is no flash of the wrong colours.
+  try { var t = JSON.parse(localStorage.getItem('ncs:theme')); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
 <div class="shell">
   <header class="masthead">
     <div class="who">
@@ -22,6 +26,7 @@
       <button class="btn" id="edit-birth" type="button">Edit birth data</button>
       <button class="btn" id="save-chart" type="button">Save chart</button>
       <button class="btn" id="copy-code" type="button">Copy chart code</button>
+      <button class="btn theme-btn" id="theme-toggle" type="button" aria-label="Colour theme"><span aria-hidden="true" id="theme-icon">◐</span> <span id="theme-label">Auto</span></button>
     </div>
   </header>
 
