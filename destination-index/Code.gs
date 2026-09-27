@@ -23,7 +23,7 @@
 // ============================================================================
 
 var APP_NAME = 'Destination Index';
-var VERSION = '1.4.0';
+var VERSION = '1.5.0';
 
 // Where "Update code" downloads the newest version from (changeable in the menu).
 var DEFAULT_UPDATE_URL =
@@ -33,6 +33,7 @@ var BACKUP_SHEET = '_CodeBackup';
 var SHEETS = {
   GUIDE: 'Guide',
   DASHBOARD: 'Dashboard',
+  FINDINGS: 'Findings & Advice',
   DATA: 'Data',
   EVIDENCE: 'Evidence',
   WEIGHTS: 'Weights',
@@ -44,7 +45,7 @@ var SHEETS = {
   ORGS: 'Organisations',
   LOG: 'Log'
 };
-var SHEET_ORDER = ['GUIDE', 'DASHBOARD', 'DATA', 'PROFESSIONS', 'ORGS', 'EVIDENCE', 'WEIGHTS', 'SCORES',
+var SHEET_ORDER = ['GUIDE', 'DASHBOARD', 'FINDINGS', 'DATA', 'PROFESSIONS', 'ORGS', 'EVIDENCE', 'WEIGHTS', 'SCORES',
                    'INDICATORS', 'SOURCES', 'RUBRICS', 'LOG'];
 
 // Country name + Eurostat geo code (Eurostat uses EL for Greece).
@@ -143,6 +144,7 @@ function onOpen() {
     .addSeparator()
     .addItem('Go to Guide', 'goGuide')
     .addItem('Go to Dashboard', 'goDashboard')
+    .addItem('Go to Findings & Advice', 'goFindings')
     .addItem('Go to Data', 'goData')
     .addItem('Go to Sources', 'goSources')
     .addItem('Go to Professions in demand', 'goProfessions')
@@ -160,6 +162,7 @@ function onOpen() {
 
 function goGuide() { goTo_(SHEETS.GUIDE); }
 function goDashboard() { goTo_(SHEETS.DASHBOARD); }
+function goFindings() { goTo_(SHEETS.FINDINGS); }
 function goData() { goTo_(SHEETS.DATA); }
 function goSources() { goTo_(SHEETS.SOURCES); }
 function goProfessions() { goTo_(SHEETS.PROFESSIONS); }
@@ -211,6 +214,7 @@ function controlPanelHtml_(section) {
   '<button class="btn" onclick="run(\'fetchAllSources\')">Fetch data from all sources</button>' +
   '<button class="btn" onclick="run(\'rebuildFormulas\')">Refresh scores &amp; dashboard</button>' +
   '<button class="btn sec" onclick="run(\'goDashboard\')">Go to Dashboard</button>' +
+  '<button class="btn sec" onclick="run(\'goFindings\')">Go to Findings &amp; Advice</button>' +
   '<button class="btn sec" onclick="run(\'goData\')">Go to Data</button>' +
   '<button class="btn sec" onclick="run(\'goSources\')">Go to Sources</button>' +
   '<button class="btn sec" onclick="run(\'goProfessions\')">Go to Professions in demand</button>' +
@@ -383,11 +387,12 @@ function guideLines_() {
 
   add([
     ['African Talent Destination Index - Guide', 'title'],
+    ['THE QUESTION THIS TOOL ANSWERS: ' + THE_QUESTION, 'h2'],
     ['Version ' + VERSION + '. This tab explains everything: setup, every button, every tab, every indicator, the maths, adding your own links, updating the code, and fixing problems.', 'sub'],
     ['Contents: 1 What this tool is | 2 First-time setup | 3 Menu | 4 Control panel | 5 Recommended workflow | 6 The tabs | 7 The indicators | ' +
      '8 Source links (Eurostat & CSV) | 9 Adding indicators & countries | 10 How the score is calculated | 11 Weights & thresholds | ' +
      '12 Reading the Dashboard | 13 Evidence rules | 14 Updating the code | 15 Troubleshooting | 16 FAQ | 17 Glossary | 18 Limits | ' +
-     '19 Professions in demand | 20 Organisations that influence policy', 'sub']
+     '19 Professions in demand | 20 Organisations that influence policy | 21 Findings & Advice', 'sub']
   ]); blank();
 
   // 1
@@ -477,6 +482,7 @@ function guideLines_() {
     ['Indicators - the list of indicators: code, pillar, name, direction, unit, how to get it, source, link. This tab is yours: edit names, directions or links, add rows. Then click Refresh.', 'text'],
     ['Sources - the links the script downloads from. One row per link. Columns: Indicator, Type, Link, Filters A, Filters B, Since year, CSV country/value/year column, Enabled (tick box), Note, Last status (written by the script).', 'text'],
     ['Rubrics - the fixed rules for 0-10 ratings (A1, A3, S3). Use them so every country is judged the same way.', 'text'],
+    ['Findings & Advice - the answer in plain language: one-sentence answer, what it means, country-by-country advice and two charts (section 21).', 'text'],
     ['Professions - which professions are in shortage in each country, with links to the official lists (section 19).', 'text'],
     ['Organisations - bodies that shape migration, labour and anti-discrimination policy, and how to engage with them (section 20).', 'text'],
     ['Log - a diary of what the script did: setup, each fetch, errors, code updates.', 'text'],
@@ -754,6 +760,27 @@ function guideLines_() {
     ['3) Add your own rows at the bottom (diaspora associations, professional bodies, unions, local integration offices).', 'text'],
     ['4) Once your index has results, share them: a clear, sourced comparison is exactly the kind of evidence these organisations use.', 'text'],
     ['The list is a starting point written at the time of this version. Websites and names change - check each link before relying on it, and note the date in "Your notes".', 'warn']
+  ]); blank();
+
+  // 21
+  add([
+    ['21. FINDINGS & ADVICE (Findings & Advice tab)', 'h'],
+    ['Purpose: turn the numbers into answers you can explain to a young African professional - in a conversation, a workshop, a video or a post.', 'text'],
+    ['Everything on this tab is calculated automatically from Scores, Professions and your advice wording. Click Refresh scores & dashboard after changing data.', 'text'],
+    ['What is on the tab, from top to bottom:', 'h2'],
+    ['The question - the question the whole tool answers.', 'text'],
+    ['Profession selector (cell B4) - choose the profession of the person you are advising (from the Professions tab list). The advice and the "Your profession here" column then adapt. Leave empty for general advice.', 'text'],
+    ['The answer in one sentence - the top 3 countries with score and verdict (countries with insufficient data are left out).', 'text'],
+    ['What this means - how many countries are Destination / Conditional / Not recommended; the most common weak point across all countries and what to do about it; the most-needed professions; where the chosen profession is in shortage.', 'text'],
+    ['Country by country - for every country: score, verdict, strongest and weakest pillar, the status of the chosen profession, and written advice built from: verdict text + advice for the weakest pillar + profession status.', 'text'],
+    ['Advice that holds for every country - six practical steps.', 'text'],
+    ['Advice wording - the sentences used in the advice. Change the text in column B to your own words (for example in your voice, or in French or German). Your wording is kept when the tab is rebuilt. Do not change the keys in column A.', 'text'],
+    ['Charts (right side) - "Where each country is strong or weak" (the four pillar scores per country) and "Overall Destination Score". They update automatically.', 'text'],
+    ['How to use it when advising someone:', 'h2'],
+    ['1) Choose their profession in B4.  2) Read the one-sentence answer and the country table together with them.  3) Look at the pillar chart: a country with a tall Reward bar but a short Fairness bar pays well but often under-uses foreign graduates.', 'text'],
+    ['4) Agree on one or two target countries and the concrete next step from the advice (recognition, language level, shortage route, employer type).  5) Point them to the Organisations tab for help and rights.', 'text'],
+    ['To share: File > Download > PDF (choose "Current sheet") gives a clean handout; or copy a chart (three dots on the chart > Copy chart) into a presentation or post.', 'tip'],
+    ['Be honest about limits: national averages, relative scores, and data that is 1-3 years old. Use the tab to guide a decision, not to promise an outcome.', 'warn']
   ]);
   return L;
 }
@@ -942,6 +969,7 @@ function rebuildFormulas() {
   buildScores_(ss, n, indicators, map);
   var profCountCol = syncProfessions_(ss);
   buildDashboard_(ss, n, indicators.length, profCountCol);
+  buildFindings_(ss, n, indicators.length, profCountCol);
   ss.toast('Scores refreshed: ' + n + ' countries, ' + indicators.length + ' indicators.', APP_NAME, 4);
   return 'Scores refreshed: ' + n + ' countries, ' + indicators.length + ' indicators.';
 }
@@ -1639,6 +1667,203 @@ function lastFilledRow_(sh, col) {
   var vals = sh.getRange(1, col, last, 1).getValues();
   for (var i = vals.length - 1; i >= 0; i--) if (String(vals[i][0]).trim() !== '') return i + 1;
   return 0;
+}
+
+// ============================================================================
+// FINDINGS & ADVICE (plain-language results for advising young professionals)
+// ============================================================================
+
+var THE_QUESTION = 'Which of these European countries gives an African university graduate the best realistic chance ' +
+  'of building a career that matches their skills - and what should they do to get there?';
+var ADVICE_KEY_HEAD = 'Advice key';
+
+// Default advice wording. You can edit the wording in the Findings & Advice tab; your edits are kept.
+var DEFAULT_ADVICE = [
+  ['Destination', 'Strong option compared with the others: worth serious planning.'],
+  ['Conditional', 'Possible, but only with preparation - fix the weak point below before moving.'],
+  ['Not recommended', 'Weaker than the alternatives in this comparison - only if you have a specific job offer or a strong personal reason.'],
+  ['Insufficient data', 'Not enough data yet to judge - fill in more of the Data tab.'],
+  ['Weak_Access', 'Main barrier: getting in. Target shortage professions and employers that sponsor the EU Blue Card, and start the degree recognition before you apply.'],
+  ['Weak_Fairness', 'Main risk: your skills being under-used. Get your diploma officially recognised first, target international employers, keep proof of all experience, and know the national equality body.'],
+  ['Weak_Reward', 'Money goes less far here. Compare net salary after rent and living costs, and negotiate using official salary data for your profession.'],
+  ['Weak_Settlement', 'Building a life takes longer here. Start the local language early (aim for B1-B2), connect with the African community, and plan the permanent-residence timeline.'],
+  ['Prof_Shortage', 'Your profession is officially in shortage here - a strong entry route.'],
+  ['Prof_Some', 'Your profession is in shortage in some regions - look at those regions first.'],
+  ['Prof_Surplus', 'Your profession is in surplus here - consider related shortage roles or another country.']
+];
+
+var GENERAL_STEPS = [
+  '1. Choose the country by its weakest pillar, not by salary alone. A high Reward score means little if Access or Fairness is low.',
+  '2. Start the recognition of your diploma BEFORE you move. It takes months and decides which jobs you can do.',
+  '3. Learn the local language to at least B1 before arriving, B2 for regulated professions. English is rarely enough long-term outside tech.',
+  '4. Use the fast lanes: shortage professions and the EU Blue Card. Check the Professions tab for where your profession is needed.',
+  '5. Know your rights and your network: the national equality body (free complaints) and diaspora organisations (see the Organisations tab).',
+  '6. Plan for the first 2-3 years: savings, housing, and a realistic first job. Many graduates start below their level - have a plan to move up.'
+];
+
+function buildFindings_(ss, n, nI, profCountCol) {
+  // keep the user's selected profession and advice wording across rebuilds
+  var old = ss.getSheetByName(SHEETS.FINDINGS);
+  var keptProfession = '', keptAdvice = {};
+  if (old && old.getLastRow() > 0) {
+    var vals = old.getRange(1, 1, old.getLastRow(), 2).getValues();
+    keptProfession = String(vals.length >= 4 ? vals[3][1] : '').trim();
+    var at = -1;
+    for (var i = 0; i < vals.length; i++) if (String(vals[i][0]).trim() === ADVICE_KEY_HEAD) { at = i; break; }
+    if (at >= 0) for (var j = at + 1; j < vals.length && String(vals[j][0]).trim(); j++) keptAdvice[String(vals[j][0]).trim()] = vals[j][1];
+  }
+
+  var sh = freshSheet_(ss, SHEETS.FINDINGS);
+  sh.getRange(1, 1, Math.max(sh.getMaxRows(), 1), Math.max(sh.getMaxColumns(), 1)).clearDataValidations();
+  var L = scoreLayout_(nI), S = SHEETS.SCORES, P = SHEETS.PROFESSIONS;
+  var f = DATA_FIRST_ROW, l = DATA_FIRST_ROW + Math.max(n, 1) - 1;
+  var sc = function (c) { return S + '!$' + colLetter_(c) + '$' + f + ':$' + colLetter_(c) + '$' + l; };
+  var countries = sc(1), totals = sc(L.total), verdicts = sc(L.verdict);
+
+  // --- header, question, profession selector
+  sh.getRange('A1').setValue('Findings & Advice').setFontSize(20).setFontWeight('bold').setFontColor(COLORS.title);
+  sh.getRange('A2').setValue('THE QUESTION: ' + THE_QUESTION).setFontStyle('italic').setFontColor('#333333');
+  sh.getRange('A4').setValue('Advising someone in this profession:').setFontWeight('bold');
+  sh.getRange('B4').setValue(keptProfession).setBackground(COLORS.input).setFontWeight('bold');
+  sh.getRange('C4').setValue('<- choose from the list (Professions tab). Leave empty for general advice.').setFontStyle('italic').setFontColor('#666666');
+  if (ss.getSheetByName(P)) {
+    sh.getRange('B4').setDataValidation(SpreadsheetApp.newDataValidation()
+      .requireValueInRange(ss.getSheetByName(P).getRange('A' + PROF_FIRST_ROW + ':A'), true).setAllowInvalid(true).build());
+  }
+
+  // Row positions
+  var tHead = 18, tFirst = 19, tLast = tFirst + Math.max(n, 1) - 1;
+  var advFirstRow = tLast + 12 + GENERAL_STEPS.length;   // advice-wording table (header row)
+  var adv = '$A$' + (advFirstRow + 1) + ':$B$' + (advFirstRow + DEFAULT_ADVICE.length);
+  // advice lookup; keyExpr is a formula expression, e.g. '"Prof_Shortage"' or 'C19'
+  var A = function (keyExpr) { return 'IFERROR(VLOOKUP(' + keyExpr + ',' + adv + ',2,FALSE),"")'; };
+  var weakCol = 'E' + tFirst + ':E' + tLast, profStatusCol = 'F' + tFirst + ':F' + tLast;
+
+  // --- one-sentence answer
+  section_(sh, 6, 'THE ANSWER IN ONE SENTENCE');
+  sh.getRange('A7').setFormula('=IFERROR(IF(COUNT(' + totals + ')=0,"No results yet - fill the Data tab (or Fetch data from all sources), then Refresh.",' +
+    '"Top of this comparison: "&TEXTJOIN(",  ",TRUE,ARRAY_CONSTRAIN(SORT(FILTER(ARRAYFORMULA(' + countries + '&" ("&ROUND(' + totals + ')&", "&' + verdicts + '&")"),' +
+    'ISNUMBER(' + totals + '),' + verdicts + '<>"Insufficient data"),FILTER(' + totals + ',ISNUMBER(' + totals + '),' + verdicts + '<>"Insufficient data"),FALSE),3,1))&"."),' +
+    '"Not enough data for a verdict yet - check Data coverage on the Dashboard.")').setFontSize(13).setFontWeight('bold');
+
+  // --- what it means
+  section_(sh, 9, 'WHAT THIS MEANS FOR YOUNG AFRICAN PROFESSIONALS');
+  var pillarsArr = '{"Access","Fairness","Reward","Settlement"}';
+  var lines = [
+    '="Countries compared: "&COUNTA(' + countries + ')&".   Destination: "&COUNTIF(' + verdicts + ',"Destination")&"   |   Conditional: "&COUNTIF(' + verdicts +
+      ',"Conditional")&"   |   Not recommended: "&COUNTIF(' + verdicts + ',"Not recommended")&"   |   Insufficient data: "&COUNTIF(' + verdicts + ',"Insufficient data")&"."',
+    '=IFERROR(IF(MAX(ARRAYFORMULA(COUNTIF(' + weakCol + ',' + pillarsArr + ')))=0,"The most common weak point will appear here once scores exist.",' +
+      '"Most common weak point across these countries: "&UPPER(INDEX(' + pillarsArr + ',MATCH(MAX(ARRAYFORMULA(COUNTIF(' + weakCol + ',' + pillarsArr + '))),ARRAYFORMULA(COUNTIF(' + weakCol + ',' + pillarsArr + ')),0)))&' +
+      '" - "&VLOOKUP("Weak_"&INDEX(' + pillarsArr + ',MATCH(MAX(ARRAYFORMULA(COUNTIF(' + weakCol + ',' + pillarsArr + '))),ARRAYFORMULA(COUNTIF(' + weakCol + ',' + pillarsArr + ')),0)),' + adv + ',2,FALSE)),"")',
+    profCountCol
+      ? '=IFERROR("Most-needed professions across these countries: "&TEXTJOIN(", ",TRUE,ARRAY_CONSTRAIN(SORT(FILTER(' + P + '!$A$' + PROF_FIRST_ROW + ':$A,ISNUMBER(' + P + '!$' + colLetter_(profCountCol) + '$' + PROF_FIRST_ROW + ':$' + colLetter_(profCountCol) + '),' +
+        P + '!$' + colLetter_(profCountCol) + '$' + PROF_FIRST_ROW + ':$' + colLetter_(profCountCol) + '>0),FILTER(' + P + '!$' + colLetter_(profCountCol) + '$' + PROF_FIRST_ROW + ':$' + colLetter_(profCountCol) + ',ISNUMBER(' +
+        P + '!$' + colLetter_(profCountCol) + '$' + PROF_FIRST_ROW + ':$' + colLetter_(profCountCol) + '),' + P + '!$' + colLetter_(profCountCol) + '$' + PROF_FIRST_ROW + ':$' + colLetter_(profCountCol) + '>0),FALSE),5,1))&".",' +
+        '"No shortages marked yet in the Professions tab.")'
+      : '="Add the Professions tab (Build / repair) to see the most-needed professions."',
+    profCountCol
+      ? '=IF($B$4="","Choose a profession in B4 to see where it is needed.",IFERROR("For "&$B$4&": in shortage in "&TEXTJOIN(", ",TRUE,FILTER(' + P + '!$' + colLetter_(PROF_FIRST_COUNTRY_COL) + '$' + PROF_HEAD_ROW + ':$' + colLetter_(profCountCol - 1) + '$' + PROF_HEAD_ROW + ',' +
+        '(INDEX(' + P + '!$' + colLetter_(PROF_FIRST_COUNTRY_COL) + '$' + PROF_FIRST_ROW + ':$' + colLetter_(profCountCol - 1) + ',MATCH($B$4,' + P + '!$A$' + PROF_FIRST_ROW + ':$A,0),0)="Shortage")+' +
+        '(INDEX(' + P + '!$' + colLetter_(PROF_FIRST_COUNTRY_COL) + '$' + PROF_FIRST_ROW + ':$' + colLetter_(profCountCol - 1) + ',MATCH($B$4,' + P + '!$A$' + PROF_FIRST_ROW + ':$A,0),0)="Some shortage (regional)")))&' +
+        '". Start with the country that is both on this list and high in the ranking.","For "&$B$4&": no shortage marked in the listed countries yet (fill the Professions tab)."))'
+      : '=""',
+    '="How to read the scores: 100 = best of the countries in this sheet, 0 = weakest. They compare countries with each other - they are not a guarantee for one person."'
+  ];
+  lines.forEach(function (fm, k) { sh.getRange(10 + k, 1).setFormula(fm); });
+
+  // --- country table
+  section_(sh, 16, 'COUNTRY BY COUNTRY');
+  sh.getRange(17, 1).setValue('Strongest / weakest = the pillar where the country scores best / worst compared with the others.')
+    .setFontStyle('italic').setFontColor('#666666');
+  var head = ['Country', 'Score', 'Verdict', 'Strongest pillar', 'Weakest pillar', 'Your profession here', 'Advice'];
+  sh.getRange(tHead, 1, 1, head.length).setValues([head]);
+  styleHeader_(sh.getRange(tHead, 1, 1, head.length));
+  var rows = [];
+  for (var k2 = 0; k2 < Math.max(n, 1); k2++) {
+    var r = DATA_FIRST_ROW + k2, tr = tFirst + k2;
+    var pil = S + '!' + colLetter_(L.pillarStart) + r + ':' + colLetter_(L.pillarStart + 3) + r;
+    rows.push([
+      '=IF(' + S + '!A' + r + '="","",' + S + '!A' + r + ')',
+      '=IFERROR(' + S + '!' + colLetter_(L.total) + r + '*1,"")',
+      '=IFERROR(' + S + '!' + colLetter_(L.verdict) + r + '&"","")',
+      '=IF(COUNT(' + pil + ')=0,"",INDEX(' + pillarsArr + ',MATCH(MAX(' + pil + '),' + pil + ',0)))',
+      '=IF(COUNT(' + pil + ')<2,"",INDEX(' + pillarsArr + ',MATCH(MIN(' + pil + '),' + pil + ',0)))',
+      profCountCol
+        ? '=IF(OR($B$4="",A' + tr + '=""),"",IFERROR(INDEX(' + P + '!$A:$' + colLetter_(profCountCol) + ',MATCH($B$4,' + P + '!$A:$A,0),MATCH(A' + tr + ',' + P + '!$' + PROF_HEAD_ROW + ':$' + PROF_HEAD_ROW + ',0))&"",""))'
+        : '=""',
+      '=IF(A' + tr + '="","",TRIM(' + A('C' + tr) + '&" "&IF(E' + tr + '="","",' + A('"Weak_"&E' + tr) + ')&" "&' +
+        'IF(F' + tr + '="Shortage",' + A('"Prof_Shortage"') + ',IF(F' + tr + '="Some shortage (regional)",' + A('"Prof_Some"') +
+        ',IF(F' + tr + '="Surplus",' + A('"Prof_Surplus"') + ',"")))))'
+    ]);
+  }
+  sh.getRange(tFirst, 1, rows.length, head.length).setFormulas(rows);
+  sh.getRange(tFirst, 1, rows.length, 1).setFontWeight('bold');
+  sh.getRange(tFirst, 2, rows.length, 1).setNumberFormat('0').setFontWeight('bold').setHorizontalAlignment('center');
+  sh.getRange(tFirst, 7, rows.length, 1).setWrap(true);
+  sh.getRange(tFirst, 1, rows.length, head.length).setVerticalAlignment('top');
+  sh.setConditionalFormatRules(verdictRules_(sh.getRange(tFirst, 3, rows.length, 1)).concat([
+    SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('Shortage').setBackground('#B7E1CD').setRanges([sh.getRange(profStatusCol)]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('Surplus').setBackground(COLORS.bad).setRanges([sh.getRange(profStatusCol)]).build()
+  ]));
+
+  // --- general steps
+  var gRow = tLast + 3;
+  section_(sh, gRow, 'ADVICE THAT HOLDS FOR EVERY COUNTRY');
+  sh.getRange(gRow + 1, 1, GENERAL_STEPS.length, 1).setValues(GENERAL_STEPS.map(function (t) { return [t]; }));
+  sh.getRange(gRow + GENERAL_STEPS.length + 2, 1)
+    .setValue('This tab summarises national data. It is a starting point for a conversation, not a personal guarantee or legal advice. Always check the current rules on official government sites.')
+    .setFontStyle('italic').setFontColor('#9C1C1C');
+
+  // --- advice wording (editable, kept across rebuilds)
+  section_(sh, advFirstRow - 1, 'ADVICE WORDING - edit column B to change the advice text (kept when you Refresh)');
+  sh.getRange(advFirstRow, 1, 1, 2).setValues([[ADVICE_KEY_HEAD, 'Text used in the advice']]);
+  styleHeader_(sh.getRange(advFirstRow, 1, 1, 2));
+  var advRows = DEFAULT_ADVICE.map(function (a) { return [a[0], keptAdvice[a[0]] !== undefined && keptAdvice[a[0]] !== '' ? keptAdvice[a[0]] : a[1]]; });
+  sh.getRange(advFirstRow + 1, 1, advRows.length, 2).setValues(advRows);
+  sh.getRange(advFirstRow + 1, 2, advRows.length, 1).setBackground(COLORS.input).setWrap(true);
+
+  // --- chart data (right side) + charts
+  var cdHead = 18, cdCol = 10; // column J
+  sh.getRange(cdHead, cdCol, 1, 6).setValues([['Country', 'Access', 'Fairness', 'Reward', 'Settlement', 'Score']]);
+  styleHeader_(sh.getRange(cdHead, cdCol, 1, 6));
+  var cd = [];
+  for (var m = 0; m < Math.max(n, 1); m++) {
+    var rr = DATA_FIRST_ROW + m, row = ['=' + S + '!A' + rr];
+    for (var q = 0; q < 4; q++) row.push('=IFERROR(' + S + '!' + colLetter_(L.pillarStart + q) + rr + '*1,0)');
+    row.push('=IFERROR(' + S + '!' + colLetter_(L.total) + rr + '*1,0)');
+    cd.push(row);
+  }
+  sh.getRange(cdHead + 1, cdCol, cd.length, 6).setFormulas(cd).setNumberFormat('0').setFontColor('#888888');
+  sh.getRange(cdHead - 1, cdCol).setValue('Chart data (automatic)').setFontStyle('italic').setFontColor('#888888');
+
+  if (n > 0) {
+    sh.insertChart(sh.newChart().setChartType(Charts.ChartType.COLUMN)
+      .addRange(sh.getRange(cdHead, cdCol, n + 1, 5))
+      .setPosition(1, cdCol, 0, 0)
+      .setOption('title', 'Where each country is strong or weak (pillar scores 0-100)')
+      .setOption('vAxis', { minValue: 0, maxValue: 100 })
+      .setOption('legend', { position: 'top' })
+      .setOption('colors', ['#1F4E78', '#2E86AB', '#F2A541', '#6A994E'])
+      .setOption('width', 640).setOption('height', 320).build());
+    sh.insertChart(sh.newChart().setChartType(Charts.ChartType.BAR)
+      .addRange(sh.getRange(cdHead, cdCol, n + 1, 1))
+      .addRange(sh.getRange(cdHead, cdCol + 5, n + 1, 1))
+      .setPosition(cdHead + n + 3, cdCol, 0, 0)
+      .setOption('title', 'Overall Destination Score (0-100)')
+      .setOption('legend', { position: 'none' })
+      .setOption('hAxis', { minValue: 0, maxValue: 100 })
+      .setOption('colors', ['#1F4E78'])
+      .setOption('width', 640).setOption('height', 300).build());
+  }
+
+  [190, 70, 130, 120, 120, 150, 560].forEach(function (w, i) { sh.setColumnWidth(i + 1, w); });
+  sh.setColumnWidth(8, 30); sh.setColumnWidth(9, 30);
+  sh.setHiddenGridlines(true);
+}
+
+function section_(sh, row, title) {
+  sh.getRange(row, 1, 1, 7).setBackground(COLORS.header);
+  sh.getRange(row, 1).setValue(title).setFontWeight('bold').setFontColor(COLORS.headerText);
 }
 
 // ============================================================================
