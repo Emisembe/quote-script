@@ -23,7 +23,7 @@
 // ============================================================================
 
 var APP_NAME = 'Destination Index';
-var VERSION = '1.5.0';
+var VERSION = '1.6.0';
 
 // Where "Update code" downloads the newest version from (changeable in the menu).
 var DEFAULT_UPDATE_URL =
@@ -345,21 +345,24 @@ function resetEverything() {
 function buildGuide_(ss) {
   var sh = freshSheet_(ss, SHEETS.GUIDE);
   var lines = guideLines_();
-  var values = lines.map(function (l) { return [l[0]]; });
-  sh.getRange(1, 1, values.length, 1).setValues(values).setWrap(true).setVerticalAlignment('top')
-    .setFontSize(10).setFontFamily('Arial').setFontColor('#222222').setBackground(null).setFontWeight('normal');
-  lines.forEach(function (l, i) {
-    var cell = sh.getRange(i + 1, 1);
-    switch (l[1]) {
-      case 'title': cell.setFontSize(20).setFontWeight('bold').setFontColor(COLORS.title); break;
-      case 'sub': cell.setFontStyle('italic').setFontColor('#555555'); break;
-      case 'h': cell.setFontSize(12).setFontWeight('bold').setFontColor(COLORS.headerText).setBackground(COLORS.header); break;
-      case 'h2': cell.setFontWeight('bold').setFontColor(COLORS.title).setBackground('#E8EEF5'); break;
-      case 'code': cell.setFontFamily('Roboto Mono').setFontSize(9).setBackground('#F4F4F4'); break;
-      case 'tip': cell.setBackground('#FFF8E1'); break;
-      case 'warn': cell.setBackground('#FDECEA'); break;
-    }
-  });
+  var st = {
+    title: { size: 20, weight: 'bold', color: COLORS.title, bg: '#FFFFFF', family: 'Arial' },
+    sub: { size: 10, weight: 'normal', color: '#555555', bg: '#FFFFFF', family: 'Arial' },
+    h: { size: 12, weight: 'bold', color: COLORS.headerText, bg: COLORS.header, family: 'Arial' },
+    h2: { size: 10, weight: 'bold', color: COLORS.title, bg: '#E8EEF5', family: 'Arial' },
+    code: { size: 9, weight: 'normal', color: '#222222', bg: '#F4F4F4', family: 'Roboto Mono' },
+    tip: { size: 10, weight: 'normal', color: '#222222', bg: '#FFF8E1', family: 'Arial' },
+    warn: { size: 10, weight: 'normal', color: '#222222', bg: '#FDECEA', family: 'Arial' },
+    text: { size: 10, weight: 'normal', color: '#222222', bg: '#FFFFFF', family: 'Arial' }
+  };
+  var fmt = lines.map(function (l) { return st[l[1]] || st.text; });
+  var col = function (k) { return fmt.map(function (x) { return [x[k]]; }); };
+  sh.getRange(1, 1, lines.length, 1)
+    .setValues(lines.map(function (l) { return [l[0]]; }))
+    .setWrap(true).setVerticalAlignment('top')
+    .setFontSizes(col('size')).setFontWeights(col('weight')).setFontColors(col('color'))
+    .setBackgrounds(col('bg')).setFontFamilies(col('family'))
+    .setFontStyles(lines.map(function (l) { return [l[1] === 'sub' ? 'italic' : 'normal']; }));
   sh.setColumnWidth(1, 1000);
   sh.setHiddenGridlines(true);
   sh.setFrozenRows(1);
@@ -573,7 +576,8 @@ function guideLines_() {
     ['   Separators , ; and tab are detected automatically.', 'code'],
     ['C) AFTER ADDING', 'h2'],
     ['Click Fetch data from all sources (or tick "Fetch it now"). Check "Last status": OK 2026-..: 7/7 countries means success; "No data: XX" lists countries the source does not cover.', 'text'],
-    ['A fetched value OVERWRITES what is in that Data cell. If you prefer your manual value for a country, untick Enabled for that source after the first fetch, or fix the value afterwards.', 'warn']
+    ['A fetch never overwrites a value you typed yourself: it only fills empty cells and cells it filled before (those have a "fetched" note). "Last status" lists the countries where your manual value was kept. To let the fetch replace a manual value, clear that cell first.', 'tip'],
+    ['Evidence is kept tidy: when a value is fetched again, its earlier auto-fetched Evidence row is updated instead of adding a duplicate.', 'text']
   ]); blank();
 
   // 9
@@ -598,6 +602,7 @@ function guideLines_() {
     ['Step 2 - pillar score = average of that pillar\'s indicator scores (only the ones that have data).', 'text'],
     ['Step 3 - Destination Score = weighted average of the pillar scores, using the Weights tab. Pillars with no data are left out and the remaining weights are re-scaled.', 'text'],
     ['Step 4 - Data coverage = share of indicators filled for that country. Below the minimum (Weights B7, default 60%) the verdict is "Insufficient data".', 'text'],
+    ['   Also "Insufficient data" when a pillar that has a weight has no data at all (Weights B8, ticked by default) - otherwise a country could look good just because its weak pillar is empty.', 'code'],
     ['Step 5 - verdict: score >= 70 Destination | 50 to 69 Conditional | below 50 Not recommended. Rank 1 = highest score.', 'text'],
     ['WORKED EXAMPLE (made-up numbers)', 'h2'],
     ['F2 employment gap (lower is better): Germany 16, Netherlands 10, Spain 22. Highest 22, lowest 10.', 'text'],
@@ -614,7 +619,7 @@ function guideLines_() {
     ['Weights say how much each pillar counts. Default: Access 30, Fairness 30, Reward 25, Settlement 15. They do not have to add up to 100.', 'text'],
     ['Examples: career-first profile -> Fairness 40, Reward 30, Access 20, Settlement 10.  Family-first profile -> Settlement 30, Access 30, Fairness 25, Reward 15.', 'text'],
     ['Set a weight to 0 to ignore a pillar completely.', 'text'],
-    ['Thresholds (B5, B6) decide the verdict labels; B7 decides how much data is needed before any verdict is given.', 'text'],
+    ['Thresholds (B5, B6) decide the verdict labels; B7 decides how much data is needed before any verdict is given; B8 (tick box) requires at least one value in every weighted pillar.', 'text'],
     ['Good practice: decide the weights BEFORE looking at the results, and write your reason in the Weights tab, so you are not tempted to push a favourite country up.', 'tip']
   ]); blank();
 
@@ -908,9 +913,18 @@ function buildWeights_(ss) {
   ]);
   sh.getRange('B5:B7').setBackground(COLORS.input);
   sh.getRange('B7').setNumberFormat('0%');
+  ensureWeightsOptions_(sh);
   sh.getRange('A9').setValue('Weights do not have to add up to 100: the score divides by the weights of the pillars that have data.')
     .setFontStyle('italic');
   sh.setColumnWidth(1, 260);
+}
+
+/** Adds settings introduced in later versions to an existing Weights tab. */
+function ensureWeightsOptions_(sh) {
+  if (String(sh.getRange('A8').getValue()).trim() === '') {
+    sh.getRange('A8').setValue('Require data in every pillar for a verdict');
+    sh.getRange('B8').insertCheckboxes().setValue(true);
+  }
 }
 
 function buildSources_(ss) {
@@ -966,6 +980,7 @@ function rebuildFormulas() {
   var indicators = getIndicators_();
   var map = syncDataColumns_(data, indicators);
   var n = countryCount_(data);
+  if (ss.getSheetByName(SHEETS.WEIGHTS)) ensureWeightsOptions_(ss.getSheetByName(SHEETS.WEIGHTS));
   buildScores_(ss, n, indicators, map);
   var profCountCol = syncProfessions_(ss);
   buildDashboard_(ss, n, indicators.length, profCountCol);
@@ -1039,7 +1054,10 @@ function buildScores_(ss, n, indicators, map) {
     row.push(indicators.length ? '=COUNT(' + dataCells.join(',') + ')/' + indicators.length : '=0');
 
     var t = colLetter_(L.total) + r, cv = colLetter_(L.coverage) + r;
-    row.push('=IF(' + cv + '<' + W + '!$B$7,"Insufficient data",IF(' + t + '>=' + W + '!$B$5,"Destination",IF(' +
+    var gaps = PILLARS.map(function (p, k) {
+      return 'IF(AND(' + wCells[k] + '>0,NOT(ISNUMBER(' + colLetter_(L.pillarStart + k) + r + '))),1,0)';
+    }).join('+');
+    row.push('=IF(OR(' + cv + '<' + W + '!$B$7,AND(' + W + '!$B$8=TRUE,(' + gaps + ')>0)),"Insufficient data",IF(' + t + '>=' + W + '!$B$5,"Destination",IF(' +
       t + '>=' + W + '!$B$6,"Conditional","Not recommended")))');
     var tr = colLetter_(L.total) + '$' + first + ':' + colLetter_(L.total) + '$' + last;
     row.push('=IF(ISNUMBER(' + t + '),RANK(' + t + ',' + tr + '),"")');
@@ -1216,10 +1234,13 @@ function fetchSources_(rowNumbers) {
   });
   var tz = ss.getSpreadsheetTimeZone();
   var today = Utilities.formatDate(new Date(), tz, 'yyyy-MM-dd');
-  var written = 0, ok = 0, failed = 0, evidence = [];
+  var written = 0, ok = 0, failed = 0, kept = 0, evidence = [];
+  var lastSrc = src.getLastRow();
+  var srcVals = lastSrc >= 2 ? src.getRange(2, 1, lastSrc - 1, SRC_HEAD.length).getValues() : [];
 
   rowNumbers.forEach(function (rowNum) {
-    var s = src.getRange(rowNum, 1, 1, SRC_HEAD.length).getValues()[0];
+    var s = srcVals[rowNum - 2];
+    if (!s) return;
     var code = String(s[SRC.IND - 1]).trim(), link = String(s[SRC.LINK - 1]).trim();
     if (!code || !link || s[SRC.ENABLED - 1] !== true) return;
     var status = function (m) { src.getRange(rowNum, SRC.STATUS).setValue(m); };
@@ -1231,10 +1252,15 @@ function fetchSources_(rowNumbers) {
         ? fetchCsvSource_(link, s[SRC.CSV_COUNTRY - 1], s[SRC.CSV_VALUE - 1], s[SRC.CSV_YEAR - 1], countries)
         : fetchEurostatSource_(link, s[SRC.FILTER_A - 1], s[SRC.FILTER_B - 1], s[SRC.SINCE - 1], countries);
 
-      var got = 0, missing = [];
+      var got = 0, missing = [], manual = [];
+      var colRange = data.getRange(DATA_FIRST_ROW, map[code], n, 1);
+      var curVals = colRange.getValues(), curNotes = colRange.getNotes();
       countries.forEach(function (c) {
         var hit = res.values[c.row];
         if (!hit) { missing.push(c.geo || c.name); return; }
+        var i = c.row - DATA_FIRST_ROW;
+        // never overwrite a value you typed yourself (manual cells have no "fetched" note)
+        if (String(curVals[i][0]) !== '' && String(curNotes[i][0]).indexOf('fetched') < 0) { manual.push(c.geo || c.name); kept++; return; }
         var value = Math.round(hit.value * 100) / 100;
         data.getRange(c.row, map[code]).setValue(value)
           .setNote(res.label + (hit.year ? ', ' + hit.year : '') + ' (fetched ' + today + ')');
@@ -1243,6 +1269,7 @@ function fetchSources_(rowNumbers) {
       });
       var m = 'OK ' + today + ': ' + got + '/' + countries.length + ' countries' +
         (missing.length ? '. No data: ' + missing.join(', ') : '') +
+        (manual.length ? '. Kept your manual value: ' + manual.join(', ') : '') +
         (res.warnings.length ? '. Warning: ' + res.warnings.join('; ') : '');
       status(m); log_('Fetch ' + code, m); ok++;
     } catch (e) {
@@ -1250,8 +1277,25 @@ function fetchSources_(rowNumbers) {
     }
   });
 
-  if (evidence.length) ev.getRange(firstEmptyRow_(ev), 1, evidence.length, 8).setValues(evidence);
-  return written + ' values written from ' + ok + ' source(s)' + (failed ? ', ' + failed + ' failed (see Sources "Last status")' : '') + '.';
+  if (evidence.length) writeEvidence_(ev, evidence);
+  return written + ' values written from ' + ok + ' source(s)' + (kept ? ', ' + kept + ' manual values kept' : '') +
+    (failed ? ', ' + failed + ' failed (see Sources "Last status")' : '') + '.';
+}
+
+/** Updates earlier auto-fetched rows (same country + indicator) instead of adding duplicates. */
+function writeEvidence_(ev, rows) {
+  var last = ev.getLastRow();
+  var existing = last >= 2 ? ev.getRange(2, 1, last - 1, 8).getValues() : [];
+  var index = {};
+  existing.forEach(function (r, i) {
+    if (String(r[7]) === 'Auto-fetched') index[String(r[0]).toLowerCase() + '|' + String(r[1])] = i + 2;
+  });
+  var append = [];
+  rows.forEach(function (r) {
+    var at = index[String(r[0]).toLowerCase() + '|' + String(r[1])];
+    if (at) ev.getRange(at, 1, 1, 8).setValues([r]); else append.push(r);
+  });
+  if (append.length) ev.getRange(firstEmptyRow_(ev), 1, append.length, 8).setValues(append);
 }
 
 // ---------- Eurostat ----------
@@ -1829,8 +1873,9 @@ function buildFindings_(ss, n, nI, profCountCol) {
   var cd = [];
   for (var m = 0; m < Math.max(n, 1); m++) {
     var rr = DATA_FIRST_ROW + m, row = ['=' + S + '!A' + rr];
-    for (var q = 0; q < 4; q++) row.push('=IFERROR(' + S + '!' + colLetter_(L.pillarStart + q) + rr + '*1,0)');
-    row.push('=IFERROR(' + S + '!' + colLetter_(L.total) + rr + '*1,0)');
+    // missing values become #N/A so the charts show a gap instead of a misleading 0
+    for (var q = 0; q < 4; q++) { var pc = S + '!' + colLetter_(L.pillarStart + q) + rr; row.push('=IF(ISNUMBER(' + pc + '),' + pc + ',NA())'); }
+    var tc = S + '!' + colLetter_(L.total) + rr; row.push('=IF(ISNUMBER(' + tc + '),' + tc + ',NA())');
     cd.push(row);
   }
   sh.getRange(cdHead + 1, cdCol, cd.length, 6).setFormulas(cd).setNumberFormat('0').setFontColor('#888888');
@@ -2139,8 +2184,9 @@ function readBackup_() {
 function freshSheet_(ss, name) {
   var sh = ss.getSheetByName(name);
   if (sh) {
+    if (sh.getFilter()) sh.getFilter().remove();
+    sh.getRange(1, 1, sh.getMaxRows(), sh.getMaxColumns()).clearDataValidations();
     sh.clear(); sh.clearConditionalFormatRules();
-    sh.getDataRange().clearDataValidations();
     sh.getCharts().forEach(function (c) { sh.removeChart(c); });
     sh.setFrozenRows(0); sh.setFrozenColumns(0);
   } else {
