@@ -42,6 +42,7 @@ Colour code of the tabs: blue = explanation · green = results · orange = your 
 | FAQ | Explanation | Frequently asked questions |
 | Countries / Products | Input | Reference data. Edit memberships, or untick products to exclude them |
 | Value_Addition | Results | Per country: raw vs processed exports, processing share, value lost by exporting raw, enabler gaps; 3 charts |
+| Value_Lost_Charts | Results | Value lost made visual: a 4-step diagram of how value is lost, a value ladder for every chain, a worked example, a live "pick a country" section with 2 charts, and 5 Africa-wide charts (raw vs processed, by sector, by region, round trip, readiness vs value lost) |
 | Country_Needs | Results | Pick a country: enablers vs the African median, value-addition opportunities, what processing requires, a summary in words |
 | VA_Scorecard | Results | Every country × value chain with 5 sub-scores and a value-addition score (0–100) |
 | Value_Chains | Input | The 25 value chains: raw, semi-processed and processed HS4 codes, value multipliers (assumptions) and needs |

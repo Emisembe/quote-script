@@ -23,7 +23,7 @@
 // ------------------------------------------------------------------
 
 const APP = {
-  version: '3.0.0',
+  version: '3.1.0',
   sheets: {
     guide: 'Guide',
     about: 'About',
@@ -43,6 +43,7 @@ const APP = {
     products: 'Products',
     raw: 'Raw_Trade',
     vaSummary: 'Value_Addition',
+    vaCharts: 'Value_Lost_Charts',
     vaScore: 'VA_Scorecard',
     needs: 'Country_Needs',
     chains: 'Value_Chains',
@@ -304,6 +305,16 @@ const TAB_HELP = {
     say: ['"This country exports its raw materials and buys the finished products back. By processing at home it could earn roughly this much',
       ' more each year — and the Country_Needs tab shows what it would take."'],
     watch: ['Value lost is an ESTIMATE built on the value multipliers on the Value_Chains tab (assumptions you can edit). Some HS4 codes are broad.'],
+  },
+  vaCharts: {
+    title: 'Value_Lost_Charts — value lost, explained with diagrams and charts',
+    what: ['A diagram of how exporting raw materials loses value, the value ladder of every chain, a worked example,',
+      'a live section where you pick a country and its charts redraw, and five Africa-wide charts.'],
+    read: ['Grey = value of the raw material; green = value added by processing, which is lost when the material is exported raw.',
+      'Each chart has a caption. The tables from column N are the data behind the charts.'],
+    say: ['"For every dollar of cocoa beans exported raw, someone abroad turns it into about two dollars of chocolate. The green part is the value',
+      ' we give away — this page shows how much that is, for which countries and which products."'],
+    watch: ['All value-lost figures use the multipliers on Value_Chains (assumptions). Section 4 redraws when you pick another country.'],
   },
   vaScore: {
     title: 'VA_Scorecard — value-addition opportunities (country × value chain)',
@@ -858,7 +869,7 @@ function buildWorkbook_() {
   const keptKey = ss.getRangeByName('P_API_KEY') ? ss.getRangeByName('P_API_KEY').getValue() : '';
   const s = APP.sheets;
   const order = [s.guide, s.about, s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.settings,
-    s.vaSummary, s.needs, s.vaScore, s.method, s.glossary, s.sources, s.updates, s.faq,
+    s.vaSummary, s.vaCharts, s.needs, s.vaScore, s.method, s.glossary, s.sources, s.updates, s.faq,
     s.countries, s.products, s.chains, s.enablers, s.raw, s.rawHs4];
   order.forEach((name, i) => {
     let sh = ss.getSheetByName(name);
@@ -879,6 +890,7 @@ function buildWorkbook_() {
   buildScorecard_(ss);
   buildVaScorecard_(ss);
   buildValueAddition_(ss);
+  buildValueLostCharts_(ss);
   buildCountryNeeds_(ss);
   buildTopGaps_(ss);
   buildCountryView_(ss);
@@ -1383,7 +1395,7 @@ function colourTabs_(ss) {
   const s = APP.sheets;
   const groups = [
     ['#4a86e8', [s.guide, s.about, s.method, s.glossary, s.sources, s.updates, s.faq]],
-    ['#1f4e3d', [s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.vaSummary, s.needs, s.vaScore]],
+    ['#1f4e3d', [s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.vaSummary, s.vaCharts, s.needs, s.vaScore]],
     ['#e8a33d', [s.settings, s.countries, s.products, s.chains]],
     ['#999999', [s.raw, s.enablers, s.rawHs4]],
   ];
@@ -1441,7 +1453,7 @@ function writeDocPage_(ss, name, blocks, widths) {
 function buildGuide_(ss) {
   const s = APP.sheets;
   const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
-  const helpRows = ['dashboard', 'charts', 'top', 'country', 'explain', 'score', 'vaSummary', 'needs', 'vaScore', 'settings',
+  const helpRows = ['dashboard', 'charts', 'top', 'country', 'explain', 'score', 'vaSummary', 'vaCharts', 'needs', 'vaScore', 'settings',
     'countries', 'products', 'chains', 'enablers', 'raw', 'rawHs4']
     .map(k => {
       const h = TAB_HELP[k];
@@ -1475,6 +1487,7 @@ function buildGuide_(ss) {
       [s.explain, 'Results', 'Pick one opportunity and see exactly how its score was built, criterion by criterion.'],
       [s.score, 'Results', 'The full composite index: raw inputs, 7 sub-scores (0–1) and the composite score (0–100).'],
       [s.vaSummary, 'Results', 'Value addition per country: raw vs processed exports, processing share, value lost, charts.'],
+      [s.vaCharts, 'Results', 'Value lost made visual: how it happens (diagram), value ladder per chain, worked example, a live country view, 5 charts.'],
       [s.needs, 'Results', 'Pick a country: enablers vs the African median, its value-addition opportunities, what processing requires.'],
       [s.vaScore, 'Results', 'Every country × value chain with 5 sub-scores and a value-addition score (0–100).'],
       [s.settings, 'Your inputs', 'Weights of the 7 criteria and other parameters (yellow cells).'],
@@ -1499,6 +1512,7 @@ function buildGuide_(ss) {
       [5, s.explain, 'The #1 opportunity', '"Here is why it scores so high: most points come from the size of the gap and market access."'],
       [6, s.settings, 'Change one weight live', '"If we care more about distance, the ranking changes like this — the method is transparent."'],
       [7, s.vaSummary, 'Top of the country table and the charts', '"Many countries export raw materials and buy the processed goods back. This is the value left on the table."'],
+      ['7b', s.vaCharts, 'Diagram 1, the value ladder, then section 4 for your audience\'s country', '"For every dollar exported raw, the processed product is worth more — the green part is what we give away."'],
       [8, s.needs, 'Your audience\'s country', '"To capture that value, this country needs these enablers — and this is what processing each material requires."'],
       [9, s.method, '"Know the limits"', '"These are leads to investigate, not guarantees. Official data misses informal trade."'],
     ]],
@@ -3038,12 +3052,14 @@ function valueAddition_(countries, chains, hs4Rows, enablers, year) {
   // Country summary.
   const table = countries.map(c => {
     const mine = cands.filter(x => x.c.iso === c.iso);
-    let raw = 0, processed = 0, lost = 0, round = 0;
-    chains.forEach(k => { raw += sum(X, c.iso, k.raw); processed += sum(X, c.iso, k.semi) + sum(X, c.iso, k.fin); });
+    let raw = 0, processed = 0, lost = 0, round = 0, finM = 0;
+    chains.forEach(k => {
+      raw += sum(X, c.iso, k.raw); processed += sum(X, c.iso, k.semi) + sum(X, c.iso, k.fin); finM += sum(M, c.iso, k.fin);
+    });
     mine.forEach(x => { lost += x.lost; round += x.round; });
     const gaps = INDICATORS.map((ind, j) => (isGap(c.iso, j) ? ind[1].replace(/ \(.*\)$/, '') : null)).filter(Boolean);
     return {
-      iso: c.iso, name: c.name, raw, processed, share: raw + processed ? processed / (raw + processed) : 0,
+      iso: c.iso, name: c.name, region: c.region, finM, raw, processed, share: raw + processed ? processed / (raw + processed) : 0,
       lost, round, top: mine.length ? mine[0].k.name : '—', readiness: hasEnablers ? readiness(c.iso, null) : '',
       gaps: hasEnablers ? (gaps.length ? gaps.join(', ') : 'none flagged') : 'no enabler data', chains: mine.length,
     };
@@ -3063,6 +3079,8 @@ function valueAddition_(countries, chains, hs4Rows, enablers, year) {
     summary: {
       kpis: [tot.raw, tot.processed, tot.raw + tot.processed ? tot.processed / (tot.raw + tot.processed) : 0, tot.lost, tot.round, chains.length],
       table, chainTable,
+      sectorLost: groupSum_(cands, x => x.k.sector, x => x.lost),
+      regionLost: groupSum_(cands, x => x.c.region, x => x.lost),
     },
   };
 }
@@ -3082,6 +3100,8 @@ function computeValueAddition_() {
     const body = sh.getRange(T + 2, 1, Math.max(sh.getMaxRows() - T - 1, 1), sh.getMaxColumns());
     body.breakApart();
     body.clear();
+    const vc = SpreadsheetApp.getActive().getSheetByName(APP.sheets.vaCharts);
+    if (vc) vc.getCharts().forEach(ch => vc.removeChart(ch));
     sh.getRange(T + 2, 1).setValue('No HS4 data in Raw_HS4 yet. Load data (menu 2a sample or 2b UN Comtrade) to see value addition.');
     return;
   }
@@ -3090,6 +3110,7 @@ function computeValueAddition_() {
   const res = valueAddition_(readCountries_(), readChains_(), rows4, readEnablers_(), Number(getParam_('P_YEAR')));
   writeVaScorecard_(res.rows);
   writeValueAddition_(res.summary);
+  writeValueLostCharts_(res.summary);
 }
 
 function writeVaScorecard_(rows) {
@@ -3174,4 +3195,192 @@ function writeValueAddition_(s) {
   });
   sh.setColumnWidth(2, 170); sh.setColumnWidth(8, 260); sh.setColumnWidth(10, 280);
   sh.setColumnWidth(cc, 260);
+}
+
+/** [[key, sum]] sorted by sum, largest first. */
+function groupSum_(items, keyFn, valFn) {
+  const acc = {};
+  items.forEach(x => { const k = keyFn(x); acc[k] = (acc[k] || 0) + valFn(x); });
+  return Object.keys(acc).map(k => [k, acc[k]]).sort((a, b) => b[1] - a[1]);
+}
+
+// ------------------------------------------------------------------
+// Value lost — diagrams and charts tab
+// ------------------------------------------------------------------
+
+/** Row positions on the Value_Lost_Charts tab. */
+function vlcLayout_() {
+  const T = top_('vaCharts');
+  return { T, ladder: T + 6, ladderRows: 30, example: T + 40, country: T + 48, grid: T + 86 };
+}
+
+function buildValueLostCharts_(ss) {
+  const sh = resetSheet_(ss, APP.sheets.vaCharts);
+  writeBanner_(sh, 'vaCharts');
+  const V = vlcLayout_(), T = V.T;
+  [24, 250, 40, 250, 40, 250, 40, 250, 80, 80, 80, 80, 80, 240, 140, 140].forEach((w, i) => sh.setColumnWidth(i + 1, w));
+  const heading = (row, text) => sh.getRange(row, 2).setValue(text).setFontSize(13).setFontWeight('bold')
+    .setFontColor(APP.color.title).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  const caption = (row, text) => sh.getRange(row, 2).setValue(text).setFontStyle('italic').setFontColor('#555555')
+    .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  const cellHeader = (row, col, text) => header_(sh.getRange(row, col, 1, 1), [text]);
+
+  // 1. Diagram: how value is lost.
+  heading(T, '1. How value is lost — the story in four steps');
+  const boxes = [
+    ['1. RAW MATERIAL LEAVES\nCocoa beans, copper ore,\ncrude oil… worth $1', '#e0e0e0'],
+    ['2. PROCESSED ABROAD\nFactories, jobs, skills\nand profits are created\noutside Africa', '#fde9c8'],
+    ['3. PRODUCT COMES BACK\nChocolate, cable, petrol…\nworth about $2 is imported\n(round-trip trade)', '#d9e7fb'],
+    ['4. VALUE LOST\n$2 − $1 = $1 of value\nadded elsewhere for each\n$1 exported raw', '#f4dcdc'],
+  ];
+  boxes.forEach(([text, colour], i) => {
+    const col = 2 + i * 2;
+    sh.getRange(T + 1, col, 4, 1).merge().setValue(text).setBackground(colour).setWrap(true)
+      .setHorizontalAlignment('center').setVerticalAlignment('middle').setFontWeight('bold')
+      .setBorder(true, true, true, true, false, false, '#888888', SpreadsheetApp.BorderStyle.SOLID);
+    if (i < boxes.length - 1) {
+      sh.getRange(T + 1, col + 1, 4, 1).merge().setValue('→').setFontSize(22).setFontColor('#888888')
+        .setHorizontalAlignment('center').setVerticalAlignment('middle');
+    }
+  });
+  sh.setRowHeights(T + 1, 4, 22);
+  caption(T + 5, 'Read left to right. "$2" is an example: the real ratio for each chain is its value multiplier (next diagram).');
+
+  // 2. Value ladder per chain (live from Value_Chains).
+  heading(V.ladder, '2. The value ladder — what $1 of raw material becomes when processed');
+  cellHeader(V.ladder + 1, 2, 'Value chain');
+  cellHeader(V.ladder + 1, 4, 'Raw → semi-processed → processed ($)');
+  sh.getRange(V.ladder + 1, 6, 1, 3).merge();
+  header_(sh.getRange(V.ladder + 1, 6, 1, 1), ['Grey = raw value ($1) · green = value added by processing (lost if exported raw)']);
+  const mult = r => `Value_Chains!$F$${r}`;
+  const multAll = `Value_Chains!$F$${L.chainsFirst}:$F`;
+  for (let i = 0; i < V.ladderRows; i++) {
+    const r = V.ladder + 2 + i, src = L.chainsFirst + i;
+    sh.getRange(r, 2).setFormula(`=IF(Value_Chains!$A$${src}="","",Value_Chains!$A$${src})`);
+    sh.getRange(r, 4).setFormula(`=IF(B${r}="","","1.00 → "&TEXT((1+${mult(src)})/2,"0.00")&" → "&TEXT(${mult(src)},"0.00"))`);
+    sh.getRange(r, 6, 1, 3).merge().setFormula(
+      `=IF(B${r}="","",SPARKLINE({1,MAX(${mult(src)}-1,0)},{"charttype","bar";"max",MAX(${multAll});"color1","#999999";"color2","#1f4e3d"}))`);
+  }
+  caption(V.ladder + 2 + V.ladderRows, 'Longer green bar = more value added by processing. Multipliers are assumptions — edit them on Value_Chains.');
+
+  // 3. Worked example.
+  heading(V.example, '3. Worked example (illustrative numbers, USD millions)');
+  const steps = [
+    ['Raw cocoa beans exported', 100, '#999999'],
+    ['Same beans processed into chocolate (× 2.0)', 200, '#1f4e3d'],
+    ['Value lost if exported raw = 200 − 100', 100, '#a50e0e'],
+    ['If 30% were processed at home: value captured', 30, '#4a86e8'],
+    ['Still lost', 70, '#e8a33d'],
+  ];
+  steps.forEach(([label, v, colour], i) => {
+    const r = V.example + 1 + i;
+    sh.getRange(r, 2).setValue(label);
+    sh.getRange(r, 4).setValue(v).setNumberFormat('$#,##0"M"');
+    sh.getRange(r, 6, 1, 3).merge().setFormula(`=SPARKLINE(D${r},{"charttype","bar";"max",200;"color1","${colour}"})`);
+  });
+  caption(V.example + 6, 'Formula used everywhere in the workbook: value lost = raw exports × (multiplier − 1). Semi-processed exports count half.');
+
+  // 4. Live: one country.
+  const C = V.country, iso = `$B$${C + 2}`;
+  heading(C, '4. Pick a country — its value lost by chain (charts below redraw automatically)');
+  sh.getRange(C + 1, 2).setValue('Côte d\'Ivoire').setBackground(APP.color.input).setFontWeight('bold');
+  dropdown_(sh.getRange(C + 1, 2), COUNTRIES.map(c => c[2]).sort());
+  sh.getRange(C + 1, 4).setValue('← choose a country').setFontStyle('italic');
+  sh.getRange(C + 2, 2).setFormula(
+    `=IFERROR(INDEX(Countries!$A$${L.ctryFirst}:$A,MATCH($B$${C + 1},Countries!$C$${L.ctryFirst}:$C,0)),"")`).setFontColor('#888888');
+  sh.getRange(C + 3, 2).setFormula(`=IF(B${C + 5}="","No value-addition data for this country (it exports little raw material in the 25 chains, or step 3 has not been run).","")`)
+    .setFontStyle('italic').setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  [[2, 'Value chain'], [4, 'Raw exports (USD)'], [6, 'Processed exports (USD)'], [8, 'Value lost (USD)']]
+    .forEach(([col, text]) => cellHeader(C + 4, col, text));
+  const base = `ARRAY_CONSTRAIN(SORT(FILTER({${va_('C')},${va_('E')},${va_('F')}+${va_('G')},${va_('K')}},${va_('A')}=${iso}),4,FALSE),10,4)`;
+  [[2, 1], [4, 2], [6, 3], [8, 4]].forEach(([col, n]) =>
+    sh.getRange(C + 5, col).setFormula(`=ARRAYFORMULA(IFERROR(INDEX(${base},0,${n}),""))`));
+  [4, 6, 8].forEach(col => sh.getRange(C + 5, col, 10, 1).setNumberFormat('#,##0'));
+
+  heading(V.grid - 2, '5. Africa-wide charts about value lost');
+  sh.getRange(V.grid - 1, 2).setValue('Run Africa Trade → 3. Compute to draw the charts.').setFontStyle('italic')
+    .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  sh.setHiddenGridlines(true);
+}
+
+function writeValueLostCharts_(s) {
+  const sh = SpreadsheetApp.getActive().getSheetByName(APP.sheets.vaCharts);
+  if (!sh) return;
+  const V = vlcLayout_();
+  sh.getCharts().forEach(c => sh.removeChart(c));
+  const area = sh.getRange(V.grid - 1, 1, Math.max(sh.getMaxRows() - V.grid + 2, 1), sh.getMaxColumns());
+  area.breakApart();
+  area.clear();
+  ensureRows_(sh, V.grid + 70);
+  const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
+  sh.getRange(V.grid - 1, 2).setValue(`Drawn by step 3 on ${stamp}. The tables from column N are the data behind each chart. Values are estimates.`)
+    .setFontStyle('italic').setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+
+  const place = (row, col, title, caption, builder) => {
+    sh.getRange(row, col).setValue(title).setFontWeight('bold').setFontSize(11).setFontColor(APP.color.title)
+      .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+    sh.getRange(row + 1, col).setValue(caption).setFontStyle('italic').setFontSize(9).setFontColor('#555555')
+      .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+    sh.insertChart(builder.setOption('width', 600).setOption('height', 380).setPosition(row + 2, col, 0, 0).build());
+  };
+
+  // Section 4 (live) charts — ranges hold formulas that follow the country dropdown.
+  const C = V.country, rows = 11;
+  place(C + 16, 2, 'Value lost by chain — country chosen above (live)',
+    'Longest bar = the chain where this country loses most by exporting raw.',
+    sh.newChart().setChartType(Charts.ChartType.BAR).setNumHeaders(1)
+      .addRange(sh.getRange(C + 4, 2, rows, 1)).addRange(sh.getRange(C + 4, 8, rows, 1))
+      .setOption('legend', { position: 'none' }).setOption('colors', ['#a50e0e']));
+  place(C + 16, 8, 'Raw vs processed exports — country chosen above (live)',
+    'Grey = sold raw, green = sold processed. Mostly grey = little value added at home.',
+    sh.newChart().setChartType(Charts.ChartType.BAR).setNumHeaders(1)
+      .addRange(sh.getRange(C + 4, 2, rows, 1)).addRange(sh.getRange(C + 4, 4, rows, 1)).addRange(sh.getRange(C + 4, 6, rows, 1))
+      .setOption('isStacked', true).setOption('colors', ['#999999', '#1f4e3d']));
+
+  // Section 5 data tables (column N onwards).
+  const DC = 14;
+  let r = V.grid;
+  const table = (title, head, data, formats) => {
+    sh.getRange(r, DC).setValue(title).setFontWeight('bold').setFontColor(APP.color.title);
+    header_(sh.getRange(r + 1, DC, 1, head.length), head);
+    if (data.length) sh.getRange(r + 2, DC, data.length, head.length).setValues(data);
+    (formats || []).forEach((f, i) => { if (f) sh.getRange(r + 2, DC + i, Math.max(data.length, 1), 1).setNumberFormat(f); });
+    const range = sh.getRange(r + 1, DC, data.length + 1, head.length);
+    r += data.length + 4;
+    return range;
+  };
+  const byLost = s.table.filter(x => x.lost > 0).slice(0, 15);
+  const t1 = table('Data: raw vs processed, top 15 by value lost', ['Country', 'Raw exports', 'Processed exports'],
+    byLost.map(x => [x.name, x.raw, x.processed]), [null, '#,##0', '#,##0']);
+  const t2 = table('Data: value lost by sector', ['Sector', 'Value lost (USD)'], s.sectorLost, [null, '#,##0']);
+  const t3 = table('Data: value lost by region', ['AU region', 'Value lost (USD)'], s.regionLost, [null, '#,##0']);
+  const byRound = s.table.filter(x => x.round > 0).sort((a, b) => b.round - a.round).slice(0, 15);
+  const t4 = table('Data: round trip, top 15', ['Country', 'Raw exports', 'Processed imports'],
+    byRound.map(x => [x.name, x.raw, x.finM]), [null, '#,##0', '#,##0']);
+  const scatter = s.table.filter(x => x.readiness !== '' && x.lost > 0).map(x => [x.readiness, x.lost]);
+  const t5 = table('Data: readiness vs value lost (one row per country)', ['Readiness (0–1)', 'Value lost (USD)'],
+    scatter, ['0.00', '#,##0']);
+
+  const specs = [
+    [t1, Charts.ChartType.BAR, 'A. Raw vs processed exports — top 15 countries by value lost',
+      'Grey = exported raw, green = exported processed. Long grey bars = big value lost.',
+      { isStacked: true, colors: ['#999999', '#1f4e3d'] }],
+    [t2, Charts.ChartType.PIE, 'B. Where the value is lost — by sector',
+      'Each slice = a sector\'s share of all value lost in Africa (estimate).', { pieHole: 0.4 }],
+    [t3, Charts.ChartType.COLUMN, 'C. Value lost by region (estimate, USD per year)',
+      'Which African Union regions lose most by exporting raw materials.',
+      { legend: { position: 'none' }, colors: ['#a50e0e'] }],
+    [t4, Charts.ChartType.COLUMN, 'D. Round trip — raw out, processed back in (top 15)',
+      'Grey = raw exports, blue = processed goods imported in the same chains. Both high = round-trip trade.',
+      { colors: ['#999999', '#4a86e8'], hAxis: { slantedText: true, slantedTextAngle: 45 } }],
+    [t5, Charts.ChartType.SCATTER, 'E. Readiness vs value lost — one dot per country',
+      'Right and high = much to gain and fairly ready: quick wins. Left and high = big prize, needs enablers first.',
+      { legend: { position: 'none' }, colors: ['#1f4e3d'], hAxis: { title: 'Readiness (0–1)', minValue: 0, maxValue: 1 },
+        vAxis: { title: 'Value lost (USD)' } }],
+  ];
+  specs.forEach(([range, type, title, caption, options], i) => {
+    let b = sh.newChart().setChartType(type).addRange(range).setNumHeaders(1);
+    Object.keys(options).forEach(k => { b = b.setOption(k, options[k]); });
+    place(V.grid + 1 + Math.floor(i / 2) * 23, i % 2 === 0 ? 2 : 8, title, caption, b);
+  });
 }
