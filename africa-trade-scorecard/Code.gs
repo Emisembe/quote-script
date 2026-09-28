@@ -23,9 +23,10 @@
 // ------------------------------------------------------------------
 
 const APP = {
-  version: '3.1.0',
+  version: '3.2.0',
   sheets: {
     guide: 'Guide',
+    health: 'Health_Check',
     about: 'About',
     dashboard: 'Dashboard',
     charts: 'Charts',
@@ -305,6 +306,14 @@ const TAB_HELP = {
     say: ['"This country exports its raw materials and buys the finished products back. By processing at home it could earn roughly this much',
       ' more each year — and the Country_Needs tab shows what it would take."'],
     watch: ['Value lost is an ESTIMATE built on the value multipliers on the Value_Chains tab (assumptions you can edit). Some HS4 codes are broad.'],
+  },
+  health: {
+    title: 'Health_Check — is everything working?',
+    what: ['Live checks of every part of the workbook (data loaded, scores calculated, weights, enablers) and a full audit that scans every tab for errors.'],
+    read: ['OK = fine. CHECK = needs attention — the "What to do" column says how to fix it. INFO = for your information.',
+      'Section 2 fills in when you run Africa Trade → Run full audit: it lists any cell showing an error such as #REF! or #N/A.'],
+    say: ['"Before we present, we check this page: every line is OK, so the data is loaded, the scores are calculated and no tab shows errors."'],
+    watch: ['The live checks update by themselves. The full audit is a snapshot — run it again after big changes.'],
   },
   vaCharts: {
     title: 'Value_Lost_Charts — value lost, explained with diagrams and charts',
@@ -611,6 +620,7 @@ function onOpen() {
     .addItem('Monthly auto-refresh ON / OFF', 'toggleAutoRefresh')
     .addItem('Update workbook after pasting new code (keeps your data)', 'upgradeWorkbook')
     .addItem('Reset workbook to defaults (deletes data)', 'buildWorkbook')
+    .addItem('Run full audit (Health_Check)', 'runFullAudit')
     .addItem('Stop a running Comtrade fetch', 'stopComtradeFetch')
     .addToUi();
   checkVersion_();
@@ -739,7 +749,9 @@ function upgradeWorkbook() {
   const snap = snapshot_(ss);
   buildWorkbook_();
   restore_(snap);
+  const filled = fillMissingValueAddition_();
   if (snap.raw.length) computeScorecard();
+  if (filled) alert_(filled);
   notify_(`Workbook updated to version ${APP.version}. Kept ${snap.raw.length.toLocaleString()} data rows and your settings.`);
 }
 
@@ -868,7 +880,7 @@ function buildWorkbook_() {
   const ss = SpreadsheetApp.getActive();
   const keptKey = ss.getRangeByName('P_API_KEY') ? ss.getRangeByName('P_API_KEY').getValue() : '';
   const s = APP.sheets;
-  const order = [s.guide, s.about, s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.settings,
+  const order = [s.guide, s.health, s.about, s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.settings,
     s.vaSummary, s.vaCharts, s.needs, s.vaScore, s.method, s.glossary, s.sources, s.updates, s.faq,
     s.countries, s.products, s.chains, s.enablers, s.raw, s.rawHs4];
   order.forEach((name, i) => {
@@ -904,6 +916,7 @@ function buildWorkbook_() {
   buildDataSources_(ss);
   buildUpdates_(ss);
   buildFaq_(ss);
+  buildHealthCheck_(ss);
   colourTabs_(ss);
   PropertiesService.getDocumentProperties().setProperty(APP.versionProp, APP.version);
   ss.getSheetByName(APP.sheets.guide).activate();
@@ -1085,12 +1098,14 @@ function buildTopGaps_(ss) {
   dropdown_(sh.getRange(T + 1, 2), ['All'].concat(names));
   dropdown_(sh.getRange(T + 2, 2), ['All'].concat(sectors));
   dropdown_(sh.getRange(T + 3, 2), [10, 25, 50, 100, 250, 500]);
-  sh.getRange(T, 4).setValue('← Pick filters in the yellow cells. Ranking follows the weights on the Settings tab.')
-    .setFontStyle('italic');
-  sh.getRange(T + 1, 4).setValue('Want to know WHY a row scores what it does? Open the Explain_Score tab.')
-    .setFontStyle('italic');
+  steps_(sh, T, 4, ['Step 1: choose filters in the yellow cells (All = no filter). Ranking follows the weights on Settings.',
+    'Step 2: the green NOW SHOWING line below confirms your filters and how many rows match.',
+    'Step 3: to see WHY a row scores what it does, copy it into the Explain_Score tab.']);
+  sh.getRange(T, 2, 3, 1).setNote('Pick from the list. The table below updates automatically — the green NOW SHOWING line confirms it.');
 
   const H = T + 5, F = T + 6;
+  nowShowing_(sh.getRange(T + 3, 4), `="NOW SHOWING: "&IF(COUNT(I${F}:I)=0,"no opportunities",COUNT(I${F}:I)&" opportunities")&` +
+    `"  ·  exporter: "&$B$${T}&"  ·  importer: "&$B$${T + 1}&"  ·  sector: "&$B$${T + 2}&"  (from "&COUNTA(${sc_('A')})&" in the Scorecard)"`);
   header_(sh.getRange(H, 1, 1, 9), ['Rank', 'Exporter', 'Importer', 'HS2', 'Product',
     'Untapped gap (USD)', 'Current trade (USD)', 'Market access', 'Score (0–100)']);
   sh.getRange(F, 1).setFormula(`=ARRAYFORMULA(IF(ISNUMBER(I${F}:I),ROW(I${F}:I)-${F - 1},))`);
@@ -1126,6 +1141,12 @@ function buildCountryView_(ss) {
     `=IFERROR(INDEX(Countries!$A$${L.ctryFirst}:$A,MATCH($B$${T},Countries!$C$${L.ctryFirst}:$C,0)),"")`]]);
   sh.getRange(T, 1, 2, 1).setFontWeight('bold');
   sh.getRange(T, 4).setFormula('="Year "&P_YEAR&"  ·  "&P_STATUS').setFontStyle('italic');
+  steps_(sh, T + 1, 4, ['Step 1: choose a country (yellow). Step 2: the green NOW SHOWING line confirms it. Step 3: every table below updates.']);
+  sh.getRange(T, 2).setNote('Pick a country. Everything on this tab updates automatically — the green NOW SHOWING line confirms it.');
+  const rows = `COUNTIFS(Raw_Trade!B:B,${iso},Raw_Trade!A:A,P_YEAR)`;
+  nowShowing_(sh.getRange(T + 2, 1), `=IF(${iso}="","Choose a country in the yellow cell.",IF(${rows}=0,"NOW SHOWING: "&$B$${T}&` +
+    `" — no trade data reported for "&P_YEAR&". Try another year on Settings.","NOW SHOWING: "&$B$${T}&" ("&${iso}&") — "&${rows}&` +
+    `" data rows for "&P_YEAR&". Every table below is for this country."))`);
 
   const K = T + 3;
   const sumifs = (partner, flow) =>
@@ -1292,8 +1313,10 @@ function buildExplainScore_(ss) {
   dropdown_(sh.getRange(T, 2), names);
   dropdown_(sh.getRange(T + 1, 2), names);
   dropdown_(sh.getRange(T + 2, 2), HS2.map(h => h[1]));
-  sh.getRange(T, 4).setValue('← Pick an exporter, importer and product (tip: copy them from Top_Gaps). Step 3 pre-selects the current #1.')
-    .setFontStyle('italic');
+  steps_(sh, T, 4, ['Step 1: pick an exporter, importer and product (yellow). Tip: copy them from Top_Gaps. Menu step 3 pre-selects the #1.',
+    'Step 2: "Found" in column C and the green NOW SHOWING line confirm your pick.',
+    'Step 3: read the story, the points table and the picture of the gap below.']);
+  sh.getRange(T, 2, 3, 1).setNote('Pick from the list. Everything below updates automatically — the green NOW SHOWING line confirms it.');
   sh.getRange(T + 3, 1).setValue('Row in Scorecard');
   sh.getRange(T + 3, 2).setFormula(`=IFERROR(MATCH(1,INDEX((${sc_('B')}=$B$${T})*(${sc_('D')}=$B$${T + 1})*(${sc_('F')}=$B$${T + 2}),0),0),"")`);
   sh.getRange(T + 3, 3).setFormula(`=IF(${idx}="","Not in the Scorecard: one side does not trade this product, the gap is below the minimum, or it did not fit under the row limit.","Found")`);
@@ -1301,6 +1324,8 @@ function buildExplainScore_(ss) {
   const at = col => `INDEX(${sc_(col)},${idx})`;
   const money = col => `TEXT(${at(col)},"$#,##0")`;
   const ex = `$B$${T}`, im = `$B$${T + 1}`, pr = `$B$${T + 2}`;
+  nowShowing_(sh.getRange(T + 4, 1), `=IF(${idx}="","NOW SHOWING: "&${ex}&" → "&${im}&" · "&${pr}&" — not in the Scorecard (see the message above). Try another combination.",` +
+    `"NOW SHOWING: "&${ex}&" → "&${im}&" · "&${pr}&" — score "&TEXT(${at('U')},"0.0")&", rank "&RANK(${at('U')},${sc_('U')})&" of "&COUNT(${sc_('U')})&".")`);
   sh.getRange(T + 5, 1).setFormula(`=IF(${idx}="","",${im}&" buys "&${money('H')}&" of "&LOWER(${pr})&" a year from the world. "&` +
     `${ex}&" sells "&${money('I')}&" of it to the world, but only "&${money('J')}&" to "&${im}&".")`);
   sh.getRange(T + 6, 1).setFormula(`=IF(${idx}="","","Untapped gap: "&${money('K')}&"   ·   Distance: "&TEXT(${at('L')},"#,##0")&" km   ·   Market access: "&${at('M')})`);
@@ -1395,7 +1420,7 @@ function colourTabs_(ss) {
   const s = APP.sheets;
   const groups = [
     ['#4a86e8', [s.guide, s.about, s.method, s.glossary, s.sources, s.updates, s.faq]],
-    ['#1f4e3d', [s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.vaSummary, s.vaCharts, s.needs, s.vaScore]],
+    ['#1f4e3d', [s.health, s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.vaSummary, s.vaCharts, s.needs, s.vaScore]],
     ['#e8a33d', [s.settings, s.countries, s.products, s.chains]],
     ['#999999', [s.raw, s.enablers, s.rawHs4]],
   ];
@@ -1453,7 +1478,7 @@ function writeDocPage_(ss, name, blocks, widths) {
 function buildGuide_(ss) {
   const s = APP.sheets;
   const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
-  const helpRows = ['dashboard', 'charts', 'top', 'country', 'explain', 'score', 'vaSummary', 'vaCharts', 'needs', 'vaScore', 'settings',
+  const helpRows = ['health', 'dashboard', 'charts', 'top', 'country', 'explain', 'score', 'vaSummary', 'vaCharts', 'needs', 'vaScore', 'settings',
     'countries', 'products', 'chains', 'enablers', 'raw', 'rawHs4']
     .map(k => {
       const h = TAB_HELP[k];
@@ -1470,15 +1495,28 @@ function buildGuide_(ss) {
       ['2. Load data', 'Pick ONE: 2a SAMPLE · 2b UN Comtrade (United Nations Commodity Trade Statistics Database) · 2c your own data', 'Fills Raw_Trade. See Data_Sources for what each option means.'],
       ['3. Compute', 'Menu → 3. Compute scorecard, dashboard & charts', 'Scores every exporter → importer → product combination and draws the charts.'],
       ['4. Explore', 'Dashboard, Charts, Top_Gaps, Country_View, Explain_Score, Value_Addition, Country_Needs', 'Change weights on Settings — rankings update instantly.'],
+      ['5. Check', 'Open Health_Check', 'Every line should say OK. For a deep check run Africa Trade → Run full audit.'],
       ['Later', 'Refresh data · Monthly auto-refresh · Update workbook (new code)', 'All explained on the Refresh_&_Updates tab.'],
     ]],
     ['h', 'Every results and input tab starts with a blue box'],
     ['p', 'It has four parts: WHAT YOU SEE · HOW TO READ IT · SAY IT LIKE THIS (a sentence you can use when presenting) · WATCH OUT.'],
     ['p', 'Use the − / + button at the top left of the tab to hide or show it. All the boxes are also collected at the bottom of this page.'],
     ['gap'],
+    ['h', 'Tabs with a picker (dropdown): how you know the new data is shown'],
+    ['table', ['Tab', 'Where you pick', 'What confirms the change'], [
+      [s.top, 'Yellow cells: exporter, importer, sector, show top', 'The green NOW SHOWING line repeats your filters and counts the matching rows.'],
+      [s.country, 'Yellow country cell', 'The green NOW SHOWING line names the country and counts its data rows for the year.'],
+      [s.explain, 'Yellow exporter, importer and product cells', '"Found" in column C and the green NOW SHOWING line with the score and rank.'],
+      [s.needs, 'Yellow country cell', 'The green NOW SHOWING line names the country and counts its indicators and value chains.'],
+      [s.vaCharts, 'Yellow country cell in section 4', 'The green NOW SHOWING line, the table headers and both chart legends show the country name.'],
+      [s.settings, 'Yellow weight cells', 'Scores on Scorecard and VA_Scorecard, Top_Gaps order and Explain_Score points and rank change at once.'],
+    ]],
+    ['p', 'If the green line says there is nothing to show, it also says why (no data for that year, no raw exports in the 25 chains, or data not loaded yet).'],
+    ['gap'],
     ['h', 'Tab map  (tab colours: blue = explanation · green = results · orange = your inputs · grey = data)'],
     ['table', ['Tab', 'Type', 'What it is for'], [
       [s.guide, 'Explanation', 'This page: steps, tab map, presentation script, abbreviations.'],
+      [s.health, 'Results', 'Live checks that everything works (OK / CHECK) and a full audit that scans every tab for errors.'],
       [s.about, 'Explanation', 'What the tool is, why it exists, and which questions it answers.'],
       [s.dashboard, 'Results', 'Africa-wide totals, one row per country, charts of intra-African share and gaps by sector.'],
       [s.charts, 'Results', 'Diagrams of how the index works, live weights, the gap illustrated, and six charts.'],
@@ -1813,6 +1851,9 @@ function buildFaq_(ss) {
       ['Why does a country have no value-addition rows?', 'It exports little of the raw materials in the 25 chains, or its HS4 data is missing for that year.'],
       ['Can I add a value chain?', 'Yes: add a row on the Value_Chains tab (codes, multiplier, needs), download data again with Refresh, then run step 3.'],
       ['What does "GAP" mean on Country_Needs?', 'The country is below the African median on that enabler. It is a flag to investigate, not a verdict.'],
+      ['How do I know the page changed after I picked a country?', 'Look at the green NOW SHOWING line under the yellow cell: it names what you picked and counts what was found. On Value_Lost_Charts the chart legends show the country name too.'],
+      ['A country shows nothing — is it broken?', 'No: the green line says why — no data for that year, no raw exports in the 25 value chains, or the data is not loaded yet. Health_Check shows which.'],
+      ['How do I check everything works?', 'Open Health_Check: every line should say OK. Run Africa Trade → Run full audit to scan every tab for errors.'],
       ['Can I undo a mistake?', 'File → Version history → See version history, then restore an earlier version.'],
       ['Can I share this workbook?', 'Yes — share the Google Sheet. Editors must authorise the script once to use the menu.'],
     ]],
@@ -2703,6 +2744,8 @@ function buildCountryNeeds_(ss) {
     `=IFERROR(INDEX(Countries!$A$${L.ctryFirst}:$A,MATCH($B$${T},Countries!$C$${L.ctryFirst}:$C,0)),"")`]]);
   sh.getRange(T, 1, 2, 1).setFontWeight('bold');
   sh.getRange(T, 4).setFormula('="Enabler data: "&P_WB_STATUS').setFontStyle('italic');
+  steps_(sh, T + 1, 4, ['Step 1: choose a country (yellow). Step 2: the green NOW SHOWING line confirms it. Step 3: read sections 1–4 below.']);
+  sh.getRange(T, 2).setNote('Pick a country. Everything on this tab updates automatically — the green NOW SHOWING line confirms it.');
 
   // 1. Enablers vs African median.
   const E = T + 3;
@@ -2722,6 +2765,9 @@ function buildCountryNeeds_(ss) {
   });
   sh.getRange(E + 2, 2, INDICATORS.length, 2).setNumberFormat('0.0');
   const statusRange = sh.getRange(E + 2, 4, INDICATORS.length, 1);
+  nowShowing_(sh.getRange(T + 2, 1), `=IF(${iso}="","Choose a country in the yellow cell.","NOW SHOWING: "&$B$${T}&" ("&${iso}&")` +
+    ` — enabler indicators available: "&COUNT(B${E + 2}:B${E + 1 + INDICATORS.length})&" of ${INDICATORS.length}  ·  value chains: "&COUNTIF(${va_('A')},${iso})&` +
+    `IF(COUNTA(${va_('A')})=0,"  (no value-addition data yet: run Africa Trade → Refresh data)","")&". Everything below is for this country.")`);
 
   // 2. Value-addition opportunities.
   const O = E + 2 + INDICATORS.length + 1;
@@ -2730,7 +2776,8 @@ function buildCountryNeeds_(ss) {
     'Score (0–100)', 'Needs flagged for this chain']);
   sh.getRange(O + 2, 1).setFormula(
     `=IFERROR(ARRAY_CONSTRAIN(SORT(FILTER({${va_('C')},${va_('E')},${va_('I')},${va_('K')},${va_('R')},${va_('S')}},` +
-    `${va_('A')}=${iso}),4,FALSE),10,6),"No value-addition data for this country: it exports little raw material in the 25 chains, or step 3 has not been run.")`);
+    `${va_('A')}=${iso}),4,FALSE),10,6),IF(COUNTA(${va_('A')})=0,"No value-addition data yet: the 4-digit data (Raw_HS4) is empty. Run Africa Trade → Refresh data.",` +
+    `"This country exports little raw material in the 25 value chains, so there are no opportunities to list."))`);
   sh.getRange(O + 2, 2, 10, 1).setNumberFormat('#,##0');
   sh.getRange(O + 2, 3, 10, 1).setNumberFormat('0.0%');
   sh.getRange(O + 2, 4, 10, 1).setNumberFormat('#,##0');
@@ -3285,13 +3332,20 @@ function buildValueLostCharts_(ss) {
   heading(C, '4. Pick a country — its value lost by chain (charts below redraw automatically)');
   sh.getRange(C + 1, 2).setValue('Côte d\'Ivoire').setBackground(APP.color.input).setFontWeight('bold');
   dropdown_(sh.getRange(C + 1, 2), COUNTRIES.map(c => c[2]).sort());
-  sh.getRange(C + 1, 4).setValue('← choose a country').setFontStyle('italic');
+  steps_(sh, C + 1, 4, ['Step 1: choose a country (yellow). Step 2: the green NOW SHOWING line and the chart legends change to it.',
+    'Step 3: the table and both charts below redraw within a second. Nothing to show? The green line says why.']);
+  sh.getRange(C + 1, 2).setNote('Pick a country. The table and both charts below redraw automatically — the green NOW SHOWING line and the chart legends confirm it.');
   sh.getRange(C + 2, 2).setFormula(
     `=IFERROR(INDEX(Countries!$A$${L.ctryFirst}:$A,MATCH($B$${C + 1},Countries!$C$${L.ctryFirst}:$C,0)),"")`).setFontColor('#888888');
-  sh.getRange(C + 3, 2).setFormula(`=IF(B${C + 5}="","No value-addition data for this country (it exports little raw material in the 25 chains, or step 3 has not been run).","")`)
-    .setFontStyle('italic').setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
-  [[2, 'Value chain'], [4, 'Raw exports (USD)'], [6, 'Processed exports (USD)'], [8, 'Value lost (USD)']]
-    .forEach(([col, text]) => cellHeader(C + 4, col, text));
+  const name = `$B$${C + 1}`, n = `COUNTIF(${va_('A')},${iso})`;
+  nowShowing_(sh.getRange(C + 3, 2), `=IF(COUNTA(${va_('A')})=0,"No value-addition data yet: the 4-digit data (Raw_HS4) is empty. Run Africa Trade → Refresh data (or 2a for sample data).",` +
+    `IF(${n}=0,"NOW SHOWING: "&${name}&" — no value chains: it exports little of the 25 raw materials in this data, so there is nothing to chart. Try another country.",` +
+    `"NOW SHOWING: "&${name}&" ("&${iso}&") — "&${n}&" value chains · total value lost "&TEXT(SUMIF(${va_('A')},${iso},${va_('K')}),"$#,##0")&"  ·  table and charts below are for this country."))`);
+  cellHeader(C + 4, 2, 'Value chain');
+  [[4, 'Raw exports: '], [6, 'Processed exports: '], [8, 'Value lost: ']].forEach(([col, text]) => {
+    cellHeader(C + 4, col, '');
+    sh.getRange(C + 4, col).setFormula(`="${text}"&${name}`);
+  });
   const base = `ARRAY_CONSTRAIN(SORT(FILTER({${va_('C')},${va_('E')},${va_('F')}+${va_('G')},${va_('K')}},${va_('A')}=${iso}),4,FALSE),10,4)`;
   [[2, 1], [4, 2], [6, 3], [8, 4]].forEach(([col, n]) =>
     sh.getRange(C + 5, col).setFormula(`=ARRAYFORMULA(IFERROR(INDEX(${base},0,${n}),""))`));
@@ -3327,15 +3381,15 @@ function writeValueLostCharts_(s) {
   // Section 4 (live) charts — ranges hold formulas that follow the country dropdown.
   const C = V.country, rows = 11;
   place(C + 16, 2, 'Value lost by chain — country chosen above (live)',
-    'Longest bar = the chain where this country loses most by exporting raw.',
+    'Longest bar = the chain where this country loses most by exporting raw. The legend names the country.',
     sh.newChart().setChartType(Charts.ChartType.BAR).setNumHeaders(1)
       .addRange(sh.getRange(C + 4, 2, rows, 1)).addRange(sh.getRange(C + 4, 8, rows, 1))
-      .setOption('legend', { position: 'none' }).setOption('colors', ['#a50e0e']));
+      .setOption('legend', { position: 'top' }).setOption('colors', ['#a50e0e']));
   place(C + 16, 8, 'Raw vs processed exports — country chosen above (live)',
-    'Grey = sold raw, green = sold processed. Mostly grey = little value added at home.',
+    'Grey = sold raw, green = sold processed. Mostly grey = little value added at home. The legend names the country.',
     sh.newChart().setChartType(Charts.ChartType.BAR).setNumHeaders(1)
       .addRange(sh.getRange(C + 4, 2, rows, 1)).addRange(sh.getRange(C + 4, 4, rows, 1)).addRange(sh.getRange(C + 4, 6, rows, 1))
-      .setOption('isStacked', true).setOption('colors', ['#999999', '#1f4e3d']));
+      .setOption('isStacked', true).setOption('legend', { position: 'top' }).setOption('colors', ['#999999', '#1f4e3d']));
 
   // Section 5 data tables (column N onwards).
   const DC = 14;
@@ -3383,4 +3437,180 @@ function writeValueLostCharts_(s) {
     Object.keys(options).forEach(k => { b = b.setOption(k, options[k]); });
     place(V.grid + 1 + Math.floor(i / 2) * 23, i % 2 === 0 ? 2 : 8, title, caption, b);
   });
+}
+
+/**
+ * After an update from an older version: fill value-addition data that did not exist yet.
+ * Returns a message for the user, or '' when nothing was needed.
+ */
+function fillMissingValueAddition_() {
+  if (rawCount_() === 0) return '';
+  const source = String(getParam_('P_SOURCE'));
+  const noEnablers = Object.keys(readEnablers_()).length === 0;
+  if (hs4Count_() === 0) {
+    if (source === 'SAMPLE') {
+      loadSampleValueAddition_();
+      return 'Value-addition sample data was added (the older version did not have it). All value-addition tabs are now filled.';
+    }
+    if (noEnablers) { try { fetchWorldBank_(); } catch (e) { /* optional */ } }
+    return 'Your data comes from an older version without the 4-digit (HS4) detail needed for value addition.\n\n' +
+      'Run Africa Trade → Refresh data to download it. Until then the value-addition tabs say "no value-addition data yet".';
+  }
+  if (noEnablers && source !== 'SAMPLE') { try { fetchWorldBank_(); } catch (e) { /* optional */ } }
+  return '';
+}
+
+// ------------------------------------------------------------------
+// Guidance helpers and Health_Check
+// ------------------------------------------------------------------
+
+/** Green "NOW SHOWING" confirmation line (formula). */
+function nowShowing_(range, formula) {
+  range.setFormula(formula).setFontWeight('bold').setFontColor('#0d652d').setBackground('#e6f4ea')
+    .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+}
+
+/** Small numbered guidance notes, one per row, starting at (row, col). */
+function steps_(sh, row, col, lines) {
+  lines.forEach((t, i) => sh.getRange(row + i, col).setValue(t).setFontStyle('italic').setFontColor('#1c3d6e')
+    .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW));
+}
+
+/** Rows of the live checks: [check, result formula, status formula using {B}, what to do, where]. */
+function healthChecks_() {
+  const rt = c => `Raw_Trade!$${c}$${L.rawFirst}:$${c}`;
+  return [
+    ['Trade data rows (Raw_Trade)', `=COUNTA(${rt('B')})`, '=IF({B}>0,"OK","CHECK")',
+      'Load data: menu 2a (sample), 2b (UN Comtrade) or 2c (your own).', 'Raw_Trade'],
+    ['Rows for the analysis year', `=COUNTIF(${rt('A')},P_YEAR)`, '=IF({B}>0,"OK","CHECK")',
+      'Set Settings → Analysis year to a year that exists in Raw_Trade, or run Refresh data.', 'Settings'],
+    ['Countries with world trade in that year (of 54)',
+      `=IFERROR(COUNTUNIQUE(FILTER(${rt('B')},${rt('A')}=P_YEAR,${rt('C')}="WLD")),0)`, '=IF({B}>=40,"OK","CHECK")',
+      'Some countries have not reported for this year. Try an earlier year; the data status on Settings lists them.', 'Settings'],
+    ['Opportunities in the Scorecard', `=COUNTA(${sc_('A')})`, '=IF({B}>0,"OK","CHECK")',
+      'Run menu 3 (Compute).', 'Scorecard'],
+    ['Composite scores calculated', `=COUNT(${sc_('U')})`, `=IF(AND({B}>0,{B}=COUNTA(${sc_('A')})),"OK","CHECK")`,
+      'Run menu 3. Check that the weights on Settings are numbers.', 'Scorecard'],
+    ['Trade-gap weights total', '=SUM(WEIGHTS)', '=IF({B}>0,"OK","CHECK")',
+      'At least one trade-gap weight on Settings must be above 0.', 'Settings'],
+    ['Detailed 4-digit rows (Raw_HS4)', `=COUNTA(Raw_HS4!$B$${L.hs4First}:$B)`, '=IF({B}>0,"OK","CHECK")',
+      'Run Refresh data (UN Comtrade) or 2a (sample). Needed for all value-addition tabs.', 'Raw_HS4'],
+    ['Value-addition rows (VA_Scorecard)', `=COUNTA(${va_('A')})`, '=IF({B}>0,"OK","CHECK")',
+      'Needs Raw_HS4 data, then menu 3 (Compute).', 'VA_Scorecard'],
+    ['Value-addition weights total', '=SUM(VA_WEIGHTS)', '=IF({B}>0,"OK","CHECK")',
+      'At least one value-addition weight on Settings must be above 0.', 'Settings'],
+    ['Countries with enabler data (of 54)', `=COUNT(${en_('C')})`, '=IF({B}>=30,"OK","CHECK")',
+      'Run menu 2d (World Bank indicators, free).', 'Enablers'],
+    ['Countries listed', `=COUNTA(Countries!$A$${L.ctryFirst}:$A)`, '=IF({B}>=50,"OK","CHECK")',
+      'The Countries tab should list the 54 African countries.', 'Countries'],
+    ['Products included', `=COUNTIF(Products!$D$${L.prodFirst}:$D,TRUE)`, '=IF({B}>0,"OK","CHECK")',
+      'Tick at least one product on the Products tab.', 'Products'],
+    ['Value chains listed', `=COUNTA(Value_Chains!$A$${L.chainsFirst}:$A)`, '=IF({B}>0,"OK","CHECK")',
+      'The Value_Chains tab should list the value chains.', 'Value_Chains'],
+    ['Trade data source', '=P_STATUS', '=IF(OR(ISNUMBER(SEARCH("SAMPLE",{B})),ISNUMBER(SEARCH("fail",{B}))),"CHECK","OK")',
+      'SAMPLE = synthetic numbers. Use 2b (UN Comtrade) for real data before sharing results.', 'Settings'],
+    ['Enabler data source', '=P_WB_STATUS', '=IF(OR(ISNUMBER(SEARCH("SAMPLE",{B})),ISNUMBER(SEARCH("fail",{B})),ISNUMBER(SEARCH("No enabler",{B}))),"CHECK","OK")',
+      'Run menu 2d to load real World Bank indicators.', 'Enablers'],
+    ['Last computed', '=P_LAST_REFRESH', '=IF(OR({B}="",{B}="—"),"CHECK","OK")', 'Run menu 3 (Compute).', 'Settings'],
+    ['Monthly auto-refresh', '=P_AUTO', '="INFO"', 'Switch with the menu: Monthly auto-refresh ON / OFF.', 'Settings'],
+  ];
+}
+
+function buildHealthCheck_(ss) {
+  const sh = resetSheet_(ss, APP.sheets.health);
+  writeBanner_(sh, 'health');
+  const T = top_('health');
+  const heading = (row, text) => sh.getRange(row, 1).setValue(text).setFontSize(13).setFontWeight('bold')
+    .setFontColor(APP.color.title).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+
+  heading(T, '1. Live checks (update by themselves)');
+  header_(sh.getRange(T + 1, 1, 1, 5), ['Check', 'Result', 'Status', 'What to do if it says CHECK', 'Tab']);
+  const checks = healthChecks_();
+  checks.forEach(([label, result, status, fix, where], i) => {
+    const r = T + 2 + i;
+    sh.getRange(r, 1, 1, 5).setValues([[label, result, status.split('{B}').join(`B${r}`), fix, where]]);
+  });
+  const statusRange = sh.getRange(T + 2, 3, checks.length, 1);
+  statusRange.setFontWeight('bold').setHorizontalAlignment('center');
+  sh.getRange(T + 2, 2, checks.length, 1).setHorizontalAlignment('left');
+  const sumRow = T + 2 + checks.length;
+  nowShowing_(sh.getRange(sumRow, 1), `=IF(COUNTIF(C${T + 2}:C${sumRow - 1},"CHECK")=0,"ALL CHECKS OK — the workbook is ready.",` +
+    `COUNTIF(C${T + 2}:C${sumRow - 1},"CHECK")&" check(s) need attention — see the red rows and the ""What to do"" column.")`);
+
+  const A = sumRow + 2;
+  heading(A, '2. Full audit — scans every tab for errors (run: Africa Trade → Run full audit)');
+  sh.getRange(A + 1, 1).setValue('Not run yet.').setFontStyle('italic');
+  header_(sh.getRange(A + 2, 1, 1, 4), ['Tab', 'Cell', 'Problem', 'What to do']);
+
+  const rules = [
+    SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('OK').setBackground('#e6f4ea').setFontColor('#0d652d')
+      .setRanges([statusRange]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('CHECK').setBackground(APP.color.warn).setFontColor('#a50e0e')
+      .setRanges([statusRange]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('INFO').setBackground('#f1f3f4').setFontColor('#555555')
+      .setRanges([statusRange]).build(),
+  ];
+  sh.setConditionalFormatRules(rules);
+  [330, 330, 90, 560, 140].forEach((w, i) => sh.setColumnWidth(i + 1, w));
+}
+
+/** Row where the audit results start on Health_Check. */
+function auditRow_() { return top_('health') + 2 + healthChecks_().length + 2; }
+
+/** Menu: scans every tab for error values, missing tabs, named ranges and charts. */
+function runFullAudit() {
+  requireBuilt_();
+  const ss = SpreadsheetApp.getActive();
+  const problems = [];
+  const s = APP.sheets;
+  Object.keys(s).forEach(k => {
+    if (!ss.getSheetByName(s[k])) problems.push([s[k], '—', 'Tab is missing', 'Run Africa Trade → Update workbook.']);
+  });
+  ['WEIGHTS', 'VA_WEIGHTS'].concat(PARAMS.map(p => p[0])).forEach(n => {
+    if (!ss.getRangeByName(n)) problems.push([s.settings, '—', `Named range ${n} is missing`, 'Run Africa Trade → Update workbook.']);
+  });
+  const ERR = /^#(REF!|N\/A|ERROR!|VALUE!|DIV\/0!|NAME\?|NUM!|NULL!)/;
+  let scanned = 0;
+  Object.keys(s).forEach(k => {
+    const sh = ss.getSheetByName(s[k]);
+    if (!sh || sh.getLastRow() === 0 || sh.getLastColumn() === 0) return;
+    const vals = sh.getRange(1, 1, sh.getLastRow(), sh.getLastColumn()).getDisplayValues();
+    let found = 0;
+    vals.forEach((row, i) => row.forEach((v, j) => {
+      scanned++;
+      if (!ERR.test(String(v))) return;
+      found++;
+      if (found <= 20) {
+        problems.push([s[k], sh.getRange(i + 1, j + 1).getA1Notation(), `Shows ${v}`,
+          'Run Update workbook; if it stays, send this line to whoever maintains the code.']);
+      }
+    }));
+    if (found > 20) problems.push([s[k], '…', `${found - 20} more error cells`, 'See above.']);
+  });
+  if (rawCount_() > 0) {
+    [[s.dashboard, 2], [s.charts, 6], [s.vaSummary, 3], [s.vaCharts, 7]].forEach(([name, n]) => {
+      const sh = ss.getSheetByName(name);
+      if (sh && hs4Count_() === 0 && (name === s.vaSummary || name === s.vaCharts)) return;
+      if (sh && sh.getCharts().length < n) {
+        problems.push([name, '—', `${sh.getCharts().length} of ${n} charts drawn`, 'Run menu 3 (Compute).']);
+      }
+    });
+  }
+
+  const sh = sheet_(APP.sheets.health);
+  const A = auditRow_();
+  clearSheetBody_(sh, A + 3);
+  const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
+  const summary = problems.length
+    ? `Audit run ${stamp}: ${problems.length} problem(s) found in ${scanned.toLocaleString()} cells — see the list below.`
+    : `Audit run ${stamp}: no problems found. ${scanned.toLocaleString()} cells on ${Object.keys(s).length} tabs checked, all named ranges and charts present.`;
+  sh.getRange(A + 1, 1).setValue(summary).setFontWeight('bold')
+    .setFontColor(problems.length ? '#a50e0e' : '#0d652d').setBackground(problems.length ? APP.color.warn : '#e6f4ea')
+    .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  if (problems.length) {
+    ensureRows_(sh, A + 3 + problems.length);
+    sh.getRange(A + 3, 1, problems.length, 4).setValues(problems);
+  }
+  sh.activate();
+  notify_(problems.length ? `Audit: ${problems.length} problem(s) found — see Health_Check.` : 'Audit: no problems found.');
 }

@@ -27,6 +27,7 @@ Colour code of the tabs: blue = explanation · green = results · orange = your 
 | Tab | Type | What it shows |
 |---|---|---|
 | Guide | Explanation | Start here: steps, tab map, a 5-minute presentation script, **all abbreviations with full names**, all tab explanations |
+| Health_Check | Results | Live OK / CHECK list for every part of the workbook, with what to do, plus a full audit (menu **Run full audit**) that scans every tab for error cells, missing tabs, named ranges and charts |
 | About | Explanation | What the tool is, why it exists, the questions it answers, and what it is *not* |
 | Dashboard | Results | Africa-wide totals, a table per country, charts of intra-African share and gap by sector |
 | Charts | Results | Flow diagram of the method, live weights diagram, the "untapped gap" illustrated, and 6 charts (sectors, top exporters, regions, top opportunities, market access, score spread) |
@@ -49,6 +50,14 @@ Colour code of the tabs: blue = explanation · green = results · orange = your 
 | Enablers | Data | 7 World Bank indicators per country (electricity, manufacturing, manufactured exports, logistics, schooling, credit, internet) |
 | Raw_Trade | Data | The 2-digit trade data the trade-gap analysis uses |
 | Raw_HS4 | Data | The 4-digit trade data the value-addition analysis uses |
+
+## Knowing that a picker worked
+
+Every tab with a yellow picker (Top_Gaps, Country_View, Explain_Score, Country_Needs, Value_Lost_Charts) has:
+- step-by-step notes next to it
+- a green **NOW SHOWING** line that names what you picked and counts what was found. On Value_Lost_Charts the chart legends also show the country name.
+
+If there is nothing to show, the green line says why.
 
 ## Value addition
 
