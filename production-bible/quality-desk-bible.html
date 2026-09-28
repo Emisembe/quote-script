@@ -1,0 +1,1787 @@
+<title>The Quality Desk Bible</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F5F2; --surface:#FFFFFF; --sunk:#ECEEEA; --ink:#1B2127; --ink2:#4A5560; --ink3:#6B7680;
+  --line:#D6DAD4; --accent:#2150C8; --accent-soft:#E3EAFB; --hi:#F4C430; --hi-soft:#FCF1C9;
+  --pass:#1D7A4E; --pass-soft:#DDF0E5; --fail:#B8342A; --fail-soft:#F8E1DE; --warn:#946010; --warn-soft:#F6EAD2;
+  --shadow:0 1px 2px rgba(27,33,39,.06),0 4px 14px rgba(27,33,39,.05);
+  --display:'Archivo','Helvetica Neue',Arial,sans-serif; --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark; --paper:#111518; --surface:#181D21; --sunk:#1F252A; --ink:#E6E9E5; --ink2:#A9B3BB; --ink3:#87929B;
+  --line:#2B3238; --accent:#86A6FF; --accent-soft:#1E2A45; --hi:#F4C430; --hi-soft:#3A3219;
+  --pass:#5CC592; --pass-soft:#16301F; --fail:#F08B80; --fail-soft:#3A1C19; --warn:#E3B25C; --warn-soft:#352914; --shadow:none;}}
+:root[data-theme="dark"]{
+  color-scheme:dark; --paper:#111518; --surface:#181D21; --sunk:#1F252A; --ink:#E6E9E5; --ink2:#A9B3BB; --ink3:#87929B;
+  --line:#2B3238; --accent:#86A6FF; --accent-soft:#1E2A45; --hi:#F4C430; --hi-soft:#3A3219;
+  --pass:#5CC592; --pass-soft:#16301F; --fail:#F08B80; --fail-soft:#3A1C19; --warn:#E3B25C; --warn-soft:#352914; --shadow:none;}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:15px/1.6 var(--body);}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(26px,4vw,38px);font-weight:800;letter-spacing:-.02em}
+h2{font-size:22px;font-weight:800;letter-spacing:-.01em}
+h3{font-size:17px;font-weight:700}
+h4{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+p{margin:0;max-width:72ch}
+a{color:var(--accent)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ink);color:#F4F5F2;padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+:root[data-theme="dark"] .topbar{background:#0B0E10}
+.brandmark{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:-.01em}
+.brandmark .sq{width:26px;height:26px;border:2.5px solid #F4F5F2;display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:500;position:relative}
+.brandmark .sq::after{content:"";position:absolute;right:-5px;bottom:-5px;width:9px;height:9px;background:var(--hi)}
+.topbar .tag{font-family:var(--mono);font-size:12px;opacity:.75}
+.topbar select{margin-left:auto;font:14px var(--body);padding:6px 8px;border-radius:4px;border:1px solid #4A5560;background:#232A31;color:#F4F5F2;max-width:100%}
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr);gap:0;min-height:100vh}
+nav.side{border-right:1px solid var(--line);padding-block:18px;padding-inline:14px;position:sticky;top:48px;align-self:start;max-height:calc(100vh - 48px);overflow:auto}
+nav.side .grp{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin:16px 8px 6px}
+nav.side .grp:first-child{margin-top:0}
+nav.side button{display:flex;gap:10px;width:100%;text-align:left;background:none;border:0;padding:6px 8px;border-radius:4px;color:var(--ink2);font:14px/1.35 var(--body);cursor:pointer}
+nav.side button .n{font-family:var(--mono);font-size:11px;color:var(--ink3);min-width:22px;padding-top:2px}
+nav.side button:hover{background:var(--sunk);color:var(--ink)}
+nav.side button.on{background:var(--accent-soft);color:var(--ink);font-weight:600}
+nav.side button.on .n{color:var(--accent)}
+nav.side button:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding-block:28px 80px;padding-inline:clamp(16px,4vw,48px);min-width:0}
+.tab{display:none}
+.tab.on{display:block}
+.doc{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--mono);font-size:11.5px;color:var(--ink3);border-top:3px solid var(--ink);border-bottom:1px solid var(--line);padding:8px 0;margin-bottom:22px}
+.doc b{color:var(--ink2);font-weight:500}
+.lede{font-size:17px;color:var(--ink2);margin-top:10px;max-width:70ch}
+.sec{margin-top:34px;display:grid;gap:14px}
+.sec>h2{padding-bottom:6px;border-bottom:1px solid var(--line)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.grid.two{grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;display:grid;gap:8px;align-content:start;box-shadow:var(--shadow)}
+.card p{font-size:14.5px}
+.card .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.card ul,.card ol{margin:0;padding-left:18px;font-size:14.5px}
+.card li+li{margin-top:4px}
+.note{border-left:4px solid var(--hi);background:var(--hi-soft);padding:12px 14px;border-radius:0 6px 6px 0;font-size:14.5px}
+.note.blue{border-color:var(--accent);background:var(--accent-soft)}
+.note.red{border-color:var(--fail);background:var(--fail-soft)}
+.note.green{border-color:var(--pass);background:var(--pass-soft)}
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink2);background:var(--sunk);white-space:nowrap}
+.pill.b{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.pill.g{background:var(--pass-soft);color:var(--pass);border-color:transparent}
+.pill.r{background:var(--fail-soft);color:var(--fail);border-color:transparent}
+.pill.y{background:var(--hi-soft);color:var(--warn);border-color:transparent}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);font-weight:500;background:var(--sunk);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.tc,td .tc{font-family:var(--mono);font-size:12.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;font-size:14px}
+.kv dt{font-family:var(--mono);font-size:11.5px;color:var(--ink3);padding-top:2px}
+.kv dd{margin:0}
+.swatches{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.sw{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--surface)}
+.sw .chip{height:74px}
+.sw .meta{padding:8px 10px;font-size:13px}
+.sw .meta b{display:block;font-family:var(--display)}
+.sw .meta span{font-family:var(--mono);font-size:11.5px;color:var(--ink3)}
+.btn{font:600 13px var(--body);padding:7px 12px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.pri{color:#0B0E10}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.pri{color:#0B0E10}}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+/* scripts */
+.script{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.beat{display:grid;grid-template-columns:120px minmax(0,1fr);border-bottom:1px solid var(--line)}
+.beat:last-child{border-bottom:0}
+.beat .side{padding:12px;background:var(--sunk);font-family:var(--mono);font-size:11.5px;color:var(--ink2);display:grid;gap:3px;align-content:start}
+.beat .side b{color:var(--ink);font-size:12.5px}
+.beat .body{padding:12px 14px;display:grid;gap:6px}
+.dir{font-size:13px;color:var(--ink3);font-style:italic}
+.say{font-family:var(--display);font-weight:600;font-size:19px;line-height:1.35;letter-spacing:-.005em}
+.say mark{background:var(--hi);color:#1B2127;padding:0 3px}
+.deliv{font-size:13px;color:var(--warn)}
+pre.tp{white-space:pre-wrap;font-family:var(--display);font-size:20px;line-height:1.55;font-weight:600;background:var(--ink);color:#F4F5F2;padding:22px;border-radius:6px;margin:0;max-height:520px;overflow:auto}
+:root[data-theme="dark"] pre.tp{background:#0B0E10}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) pre.tp{background:#0B0E10}}
+pre.plain{white-space:pre-wrap;font-family:var(--mono);font-size:13px;background:var(--sunk);border:1px solid var(--line);padding:14px;border-radius:6px;margin:0;overflow:auto}
+/* phone frame specimens */
+.frames{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.fr{display:grid;gap:8px;align-content:start}
+.phone{position:relative;aspect-ratio:9/16;max-width:100%;border-radius:10px;overflow:hidden;background:linear-gradient(160deg,#3B4650,#1B2127 70%);container-type:inline-size}
+.phone.land{aspect-ratio:16/9}
+.phone .face{position:absolute;left:50%;top:26%;width:46%;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 50% 38%,#8C6A55 0 34%,transparent 35%),radial-gradient(ellipse at 50% 100%,#2D3A45 0 60%,transparent 61%);opacity:.9}
+.phone .desk{position:absolute;left:0;right:0;bottom:0;height:28%;background:linear-gradient(#5A4636,#43342A)}
+.safe{position:absolute;left:5.6%;right:19%;top:5.7%;bottom:29.7%;border:1.5px dashed rgba(244,196,48,.8);pointer-events:none;display:none}
+.showsafe .safe{display:block}
+.ov{position:absolute;font-family:'Archivo',sans-serif;color:#fff}
+.lt1{left:5.6%;bottom:31%;display:grid}
+.lt1 .nm{background:#2150C8;padding:1.6cqw 3.2cqw;font-weight:800;font-size:5.6cqw;letter-spacing:-.01em}
+.lt1 .rl{background:#F4F5F2;color:#1B2127;padding:1.2cqw 3.2cqw;font-weight:500;font-size:3.6cqw;font-family:'IBM Plex Sans',sans-serif}
+.clause{left:5.6%;top:8%;display:flex;align-items:stretch;font-family:'IBM Plex Mono',monospace}
+.clause span{padding:1.4cqw 2.6cqw;font-size:4.4cqw}
+.clause span:first-child{background:#1B2127;border:1px solid #F4F5F2}
+.clause span:last-child{background:#F4C430;color:#1B2127;font-weight:500}
+.stat{left:5.6%;right:19%;top:30%;display:grid;gap:1.4cqw;text-align:left}
+.stat .big{font-weight:800;font-size:17cqw;line-height:.9;letter-spacing:-.03em}
+.stat .big em{font-style:normal;color:#F4C430}
+.stat .src{font-family:'IBM Plex Mono',monospace;font-size:3.2cqw;opacity:.85}
+.cap{left:5.6%;right:19%;bottom:31%;text-align:center;font-weight:800;font-size:7cqw;line-height:1.15;text-shadow:0 0 1.2cqw #1B2127,0 0 .6cqw #1B2127}
+.cap mark{background:#F4C430;color:#1B2127;padding:0 1.2cqw;text-shadow:none}
+.srcb{left:5.6%;bottom:31%;display:flex;gap:1.6cqw;align-items:center;background:rgba(27,33,39,.88);border:1px solid #1D8A57;padding:1.4cqw 2.4cqw;font-family:'IBM Plex Mono',monospace;font-size:3.4cqw}
+.srcb i{font-style:normal;color:#5CC592;font-weight:500}
+.stamp{left:12%;top:36%;transform:rotate(-8deg);border:1.2cqw solid #C2372C;color:#E0584D;padding:2cqw 4cqw;font-weight:800;font-size:9cqw;letter-spacing:.04em;background:rgba(27,33,39,.35)}
+.stamp small{display:block;font-size:3.4cqw;font-family:'IBM Plex Mono',monospace;letter-spacing:0;font-weight:500}
+.chap{inset:0;background:#1B2127;display:grid;place-content:center;justify-items:start;padding:0 9%;gap:2cqw}
+.chap .no{font-family:'IBM Plex Mono',monospace;font-size:4cqw;color:#F4C430}
+.chap .tt{font-weight:800;font-size:10cqw;line-height:1;letter-spacing:-.02em}
+.chap .rule{width:18cqw;height:1.4cqw;background:#2150C8}
+.series{right:21%;top:7%;display:flex;font-family:'IBM Plex Mono',monospace;font-size:3.6cqw}
+.series span{padding:1.2cqw 2cqw;background:#2150C8}
+.series span+span{background:#F4F5F2;color:#1B2127;font-weight:500}
+.split{inset:0;display:grid;grid-template-rows:1fr 1fr}
+.split>div{display:grid;place-content:center;text-align:center;gap:1cqw;padding:4cqw}
+.split>div:first-child{background:#2150C8}
+.split>div:last-child{background:#1D5A43}
+.split b{font-size:9cqw;font-weight:800}
+.split span{font-family:'IBM Plex Mono',monospace;font-size:3.8cqw}
+.split .vs{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#F4C430;color:#1B2127;font-weight:800;font-size:5cqw;padding:1cqw 2.6cqw}
+.pdca{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);width:66%;aspect-ratio:1}
+.endc{inset:0;background:#1B2127;display:grid;place-content:center;justify-items:center;gap:2.4cqw;text-align:center}
+.endc .t1{font-weight:800;font-size:9cqw;letter-spacing:-.02em}
+.endc .t2{font-family:'IBM Plex Mono',monospace;font-size:4cqw;color:#F4C430}
+.endc .t3{font-size:3.6cqw;opacity:.8;font-family:'IBM Plex Sans',sans-serif}
+.fr .cap-t{font-weight:600;font-size:14px}
+.fr .cap-d{font-size:13px;color:var(--ink2)}
+/* checklist */
+.chk{display:grid;gap:4px}
+.chk label{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;padding:8px 10px;border-radius:4px;cursor:pointer;background:var(--surface);border:1px solid var(--line)}
+.chk label:hover{border-color:var(--accent)}
+.chk input{width:17px;height:17px;margin-top:3px;accent-color:var(--accent)}
+.chk .t{font-weight:600;font-size:14.5px}
+.chk .d{font-size:13px;color:var(--ink2);display:block;font-weight:400}
+.chk input:checked+span .t{text-decoration:line-through;color:var(--ink3)}
+.bar{height:8px;background:var(--sunk);border-radius:999px;overflow:hidden;flex:1;min-width:120px}
+.bar i{display:block;height:100%;background:var(--pass);width:0;transition:width .2s}
+/* planner */
+.form{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.form .full{grid-column:1/-1}
+.fld{display:grid;gap:5px}
+.fld label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.fld input,.fld textarea,.fld select{font:14.5px var(--body);padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);width:100%}
+.fld textarea{min-height:78px;resize:vertical}
+.fset{border:1px solid var(--line);border-radius:6px;padding:14px;display:grid;gap:12px;background:var(--surface)}
+.fset legend{font-family:var(--display);font-weight:700;padding:0 6px}
+/* timeline strip */
+.strip{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface);padding:12px}
+.lanes{display:grid;gap:6px;min-width:760px}
+.lane{display:grid;grid-template-columns:70px 1fr;gap:8px;align-items:center}
+.lane .lbl{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.track{position:relative;height:44px;background:var(--sunk);border-radius:4px}
+.clip{position:absolute;top:3px;bottom:3px;border-radius:3px;padding:3px 6px;font-size:11px;line-height:1.2;overflow:hidden;color:#fff}
+.clip.a{background:#2150C8}.clip.b{background:#1D7A4E}.clip.g{background:#1B2127;border:1px solid #F4C430}.clip.t{background:#F4C430;color:#1B2127}.clip.m{background:#6B7680}
+.ruler{display:grid;grid-template-columns:70px 1fr;gap:8px}
+.ruler .ticks{position:relative;height:16px;font-family:var(--mono);font-size:10.5px;color:var(--ink3)}
+.ruler .ticks span{position:absolute;transform:translateX(-50%)}
+details.fmt{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+details.fmt summary{cursor:pointer;padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;list-style:none}
+details.fmt summary::-webkit-details-marker{display:none}
+details.fmt summary::before{content:"+";font-family:var(--mono);color:var(--accent);width:12px}
+details.fmt[open] summary::before{content:"−"}
+details.fmt summary h3{flex:1;min-width:200px}
+details.fmt .in{padding:0 14px 14px;display:grid;gap:10px}
+.hook{display:grid;gap:4px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.hook .f{font-family:var(--mono);font-size:12.5px;color:var(--accent)}
+.hook .ex{font-family:var(--display);font-weight:600;font-size:16px}
+.hook .de{font-size:14px;color:var(--ink2)}
+.flag{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:12px 14px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.flag .sev{margin-top:2px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.flow .st{flex:1 1 150px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:13.5px;display:grid;gap:4px;align-content:start}
+.flow .st b{font-family:var(--display)}
+.flow .st .mono{color:var(--accent);font-size:11px}
+footer{margin-top:60px;padding-top:14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--ink3)}
+@media (max-width:860px){
+  .shell{grid-template-columns:1fr}
+  nav.side{display:none}
+  .beat{grid-template-columns:1fr}
+  .beat .side{grid-auto-flow:column;justify-content:start;gap:12px}
+}
+@media (min-width:861px){.topbar select{display:none}}
+@media (max-width:860px){.topbar .tag{display:none}.topbar select{margin-left:0;flex:1}}
+section.tab{scroll-margin-top:120px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="topbar">
+  <div class="brandmark"><span class="sq">QD</span>The Quality Desk</div>
+  <span class="tag">Production Bible · Efic · Rev. 1.0</span>
+  <label for="mobnav" class="tag" style="position:absolute;left:-9999px">Section</label>
+  <select id="mobnav" aria-label="Go to section"></select>
+</header>
+
+<div class="shell">
+<nav class="side" id="sidenav" aria-label="Bible sections"></nav>
+<main id="main">
+
+<!-- ============ 01 START HERE ============ -->
+<section class="tab" id="start" data-grp="Foundation" data-t="Start Here">
+<div class="doc"><span><b>QD-PB-01</b></span><span>Rev. 1.0</span><span>Stand: 28.09.2026</span><span>Owner: M. Emisembe</span><span>Status: Freigegeben</span></div>
+<h1>Your production bible for LinkedIn video</h1>
+<p class="lede">This is your own system for planning, filming, editing and publishing short videos that show what you know about quality management. It uses the structure of the River Musa guide as a model. The brand, content and rules here are built from your two CVs, your certificates and your Wayfair reference letter.</p>
+
+<div class="sec">
+<h2>The brand in one page</h2>
+<div class="grid two">
+  <div class="card"><span class="k">Working name</span><h3>The Quality Desk — with Efic</h3><p>German series name: <b>Qualität, klar erklärt.</b> The name is a placeholder you can change. It says what the channel is (a desk where quality questions get answered) and it works in both languages.</p><p class="pills"><span class="pill">Alternative: Efic on Quality</span><span class="pill">Alternative: Audit Ready</span><span class="pill">Alternative: Prove It</span></p></div>
+  <div class="card"><span class="k">Tagline and sign-off</span><h3>Prove it. Improve it.</h3><p>German: <b>Nachweisen. Verbessern.</b> These are the two halves of your work: evidence (Nachweisführung, audits) and improvement (CAPA, KVP, PDCA). Say it at the end of every video, the way River Musa closes with its tagline.</p></div>
+  <div class="card"><span class="k">Brand idea</span><h3>The audit trail</h3><p>River Musa used the riverbank as its metaphor. Yours is the audit trail: <b>every claim has evidence</b>. On screen, each fact gets a source badge. In scripts, each opinion is tied to something you did, read or measured. This is a habit your target audience already respects.</p></div>
+  <div class="card"><span class="k">Positioning statement</span><p>I help quality professionals and small companies in Germany turn ISO requirements into work that holds up in an audit. I explain it in plain English and German, from experience on a warehouse floor, at a recycling plant and in audit rooms, having started my career on another continent.</p></div>
+</div>
+</div>
+
+<div class="sec">
+<h2>Who the videos are for</h2>
+<div class="grid">
+  <div class="card"><span class="pill b">Priority 1 · next 6 months</span><h3>The hiring side</h3><p>QM leads, plant and site managers, HR and recruiters in the German Mittelstand: logistics, plastics and recycling, manufacturing, social and healthcare services.</p><p><b>Goal:</b> they see how you think before the interview. Measure it by profile views, recruiter messages and interview invitations.</p></div>
+  <div class="card"><span class="pill">Priority 2</span><h3>Peers and newcomers</h3><p>QM assistants, QMB trainees, auditors in training, and international professionals building a quality career in Germany.</p><p><b>Goal:</b> a following of people in your field, which is also social proof for priority 1.</p></div>
+  <div class="card"><span class="pill">Priority 3</span><h3>Small companies</h3><p>Owners and managers of SMEs facing their first ISO 9001 or 14001 certification.</p><p><b>Goal:</b> consulting inquiries for Efic Consultancy, now or later.</p></div>
+</div>
+</div>
+
+<div class="sec">
+<h2>Six content pillars</h2>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Pillar</th><th>What it covers</th><th>Your proof</th><th>Share</th></tr></thead>
+<tbody>
+<tr><td class="tc">P1</td><td><b>ISO, clearly explained</b></td><td>ISO 9001, 14001, 45001 and 19011, one clause at a time, in plain words: what it asks for and what evidence an auditor wants to see</td><td>Bureau Veritas and TÜV SÜD training, ISO 9001/14001 work at Grünstoff, BWHW QMB</td><td class="tc">30 %</td></tr>
+<tr><td class="tc">P2</td><td><b>Methods in practice</b></td><td>8D, FMEA, CAPA, 5S, KVP, PDCA, root-cause analysis: each shown on paper or a whiteboard</td><td>Your core-tools list, 5S audits at Wayfair, CAPA work</td><td class="tc">25 %</td></tr>
+<tr><td class="tc">P3</td><td><b>Lessons from the floor</b></td><td>Real stories from logistics and recycling, with outcomes</td><td>−15 % error rate, −30 % lead time (Wayfair)</td><td class="tc">15 %</td></tr>
+<tr><td class="tc">P4</td><td><b>The audit room</b></td><td>How internal audits and certification preparation work, anonymised</td><td>ISO 19011 training, internal audits, certification preparation</td><td class="tc">10 %</td></tr>
+<tr><td class="tc">P5</td><td><b>Data for quality</b></td><td>KPIs, Excel trackers, Power BI dashboards, all built with dummy data</td><td>Excel (PivotTables, VLOOKUP), Power BI, Google Data Analytics</td><td class="tc">10 %</td></tr>
+<tr><td class="tc">P6</td><td><b>The career bridge</b></td><td>Building a QM career in Germany: degree recognition, German at C1, DGQ, the QMB. Told looking forward, as progress rather than struggle</td><td>ZAB recognition, EU Blue Card, B2 → C1, DGQ member</td><td class="tc">10 %</td></tr>
+</tbody></table></div>
+</div>
+
+<div class="sec">
+<h2>Language strategy</h2>
+<div class="grid">
+  <div class="card"><span class="k">On camera</span><p><b>Film mainly in English</b>, where your delivery is strongest (C2). Burn in <b>German captions</b> or write the post text in German, so German hiring managers can follow.</p></div>
+  <div class="card"><span class="k">German series</span><p>Film one short piece a week in German (<i>QM-Wort der Woche</i>, 30–45 s). It shows German-market recruiters your progress towards C1 in a format they can judge for themselves.</p></div>
+  <div class="card"><span class="k">Register</span><p>In German content, use <b>Sie</b>. The Mittelstand QM audience is conservative, and <i>Sie</i> is never wrong in a hiring context. In English, keep it conversational: "you", with contractions.</p></div>
+</div>
+</div>
+
+<div class="sec">
+<h2>How this fits with what you already have</h2>
+<div class="grid">
+  <div class="card"><span class="k">Two pillars</span><p><b>Pillar 1:</b> the quality career and the job search. <b>Pillar 2:</b> the video channel. The videos serve the career. They are not a replacement for it. The River Musa guide makes the same point in its Creator-in-Germany tab, citing the Bundesagentur für Arbeit.</p></div>
+  <div class="card"><span class="k">River Musa stays separate</span><p>Keep the River Musa Show as its own brand, with its own palette (teal and navy). The Quality Desk runs on your personal LinkedIn with its own look (graphite, blue and highlighter yellow), so recruiters see one clear professional identity.</p></div>
+  <div class="card"><span class="k">Your existing kit</span><p>You don't need to buy anything to start. Use the phone or GoPro, the Focusrite Scarlett 2i2 with your mic, Camtasia for editing, the Audacity 01MRC macro for voice, and CapCut for quick vertical captions.</p></div>
+</div>
+</div>
+
+<div class="sec">
+<h2>What I still need from you</h2>
+<div class="note">The LinkedIn link you sent (<code>linkedin.com/feed/</code>) opens the general feed, not your profile, so I couldn't read it. Your Xing link wasn't included. To tailor the LinkedIn and Xing tab to your actual profiles, send <b>LinkedIn → Me → View profile → More → Save to PDF</b>, and your Xing profile as copied text. Everything else in this bible is already built from your CVs and certificates.</div>
+</div>
+</section>
+
+<!-- ============ 02 PROOF BANK ============ -->
+<section class="tab" id="proof" data-grp="Foundation" data-t="Proof Bank">
+<div class="doc"><span><b>QD-PB-02</b></span><span>Rev. 1.0</span><span>Source: both CVs, certificates, Wayfair reference 15.10.2022, ZAB statement 14.11.2024</span></div>
+<h1>Proof Bank</h1>
+<p class="lede">These are the only facts you say on camera. Every stat bomb, lower third and "about me" line comes from this list. If a fact isn't here, check it before you use it. This is the audit-trail rule applied to yourself.</p>
+
+<div class="sec">
+<h2>Stat bombs you can use</h2>
+<div class="grid">
+  <div class="card"><span class="k">Wayfair · EU Supply Chain</span><h2 style="font-size:38px">−15 %</h2><p>Operational error rate, reduced through structured root-cause analysis and KVP measures.</p><p class="pills"><span class="pill">Source: CV (both versions)</span></p></div>
+  <div class="card"><span class="k">Wayfair · EU Supply Chain</span><h2 style="font-size:38px">−30 %</h2><p>Lead time, after you initiated and implemented an SOP for cross-docking and Castlegate orders to reduce delays and returns.</p><p class="pills"><span class="pill g">Source: Arbeitszeugnis, 15.10.2022</span></p></div>
+  <div class="card"><span class="k">Training hours</span><h2 style="font-size:38px">200 h</h2><p>BWHW Qualitätsmanagementbeauftragte:r, Part 1 (100 h, 22.06.–03.07.2026) and Part 2 (100 h, TÜV-based, 06.07.–17.07.2026).</p><p class="pills"><span class="pill y">Say "exam pending" until you've passed</span></p></div>
+</div>
+</div>
+
+<div class="sec">
+<h2>Career facts in order</h2>
+<div class="tw"><table>
+<thead><tr><th>When</th><th>Role</th><th>Safe on-camera phrasing</th></tr></thead>
+<tbody>
+<tr><td class="tc">10/2020–01/2021</td><td>HR &amp; Employee Relations Consultant, Grant Thornton Consulting, Nairobi</td><td>"I started in HR compliance consulting in Nairobi: policies, file audits, training."</td></tr>
+<tr><td class="tc">06/2021–12/2021</td><td>Warehouse Clerk, Wayfair Deutschland (EU Supply Chain)</td><td>"I began on the logistics floor: transport planning, freight documents, customs paperwork."</td></tr>
+<tr><td class="tc">12/2021–10/2022</td><td>Quality Auditor, Wayfair Deutschland (EU Supply Chain)</td><td>"As a quality auditor I ran site audits, 5S audits and root-cause analyses, and tracked quality KPIs."</td></tr>
+<tr><td class="tc">10/2022–08/2025</td><td>Quality &amp; Compliance Consultant, Efic Consultancy Ltd</td><td>"I advised organisations on documentation and quality processes." (see flag F6)</td></tr>
+<tr><td class="tc">08/2025–10/2025</td><td>Quality &amp; Certification Officer, Grünstoff Kunststoff-Recycling GmbH, Frankfurt</td><td>"I supported an integrated ISO 9001 and ISO 14001 system at a plastics recycler."</td></tr>
+<tr><td class="tc">10/2025–06/2026</td><td>Intensive German course, C1 level</td><td>"Course completed; C1 exam coming up."</td></tr>
+<tr><td class="tc">06/2026–08/2026</td><td>QMB training, BWHW Gießen</td><td>"200 hours of QMB training: PDCA, CAPA, 8D, FMEA, internal audit, certification."</td></tr>
+</tbody></table></div>
+</div>
+
+<div class="sec">
+<h2>Qualifications</h2>
+<div class="grid">
+  <div class="card"><span class="k">Degree</span><p><b>Bachelor of Co-operative Business, major in Finance</b>, The Co-operative University of Kenya, 2017. Recognised by the ZAB as equivalent to a German Bachelor's degree (14.11.2024).</p></div>
+  <div class="card"><span class="k">Standards training</span><ul><li>ISO 19011 auditing, TÜV SÜD (2025)</li><li>ISO 9001 (and 14001 / 45001, see flag F4), Bureau Veritas</li><li>QMB Parts 1 + 2, BWHW Gießen (2026)</li></ul></div>
+  <div class="card"><span class="k">Other certificates</span><ul><li>Google Project Management, Coursera, 07.11.2025</li><li>Google Data Analytics</li><li>McKinsey Forward Program (2023)</li><li>Member of DGQ, the German Society for Quality</li></ul></div>
+  <div class="card"><span class="k">Tools and languages</span><p>SAP ERP, SAP HCM, Excel (PivotTables, VLOOKUP), Power BI, SharePoint, MS 365. English C2, German B2 (C1 course completed, exam pending). EU Blue Card, based in Gießen, open to travel.</p></div>
+</div>
+</div>
+
+<div class="sec">
+<h2>Consistency flags: fix these before you go public</h2>
+<p>Your two CVs don't always tell the same story. Recruiters will compare your video, your LinkedIn, your Xing profile and the CV you sent them, so these have to match. Decide on one version of each point and use it everywhere.</p>
+<div class="chk" style="gap:8px">
+<div class="flag"><span class="pill r sev">F1</span><div><b>Master's degree.</b> The Caritas CV lists an <i>M.A. Labour Policies and Globalisation, Universität Kassel &amp; HWR Berlin, grade 2.0 (10/2019–09/2020)</i>. The Quality Specialist CV doesn't mention it. If you hold it, it belongs on every version, and it strengthens the career-bridge story.</div></div>
+<div class="flag"><span class="pill r sev">F2</span><div><b>Lead Auditor wording.</b> One CV says "ISO 19011:2018 Auditing (TÜV SÜD)", the other "ISO 19011 Lead Auditor, TÜV SÜD, 10/2025". Only use "Lead Auditor" in a lower third if the certificate itself says it.</div></div>
+<div class="flag"><span class="pill y sev">F3</span><div><b>Degree name.</b> The CVs say "Bachelor in Finanzwesen" / "B.A. Finance", but the ZAB statement says "Bachelor of Co-operative Business, Fachrichtung Finance". Use the ZAB wording. It's the official German reference.</div></div>
+<div class="flag"><span class="pill y sev">F4</span><div><b>Bureau Veritas scope.</b> One CV says "ISO 9001:2015", the other "ISO 9001 · 14001 · 45001". Match it to the certificates you hold.</div></div>
+<div class="flag"><span class="pill y sev">F5</span><div><b>Project management.</b> One CV says "2022: Project Management Certification", but the Google certificate is dated 07.11.2025. If there's a separate 2022 certificate, name it; if not, correct the year.</div></div>
+<div class="flag"><span class="pill y sev">F6</span><div><b>Efic Consultancy scope.</b> One CV describes documentation and quality work in HR and organisation; the other describes ISO 9001 implementation for SMEs, internal audits and SOPs. On camera, stay with what you can explain in detail in an interview.</div></div>
+<div class="flag"><span class="pill y sev">F7</span><div><b>Grünstoff scope.</b> Only the Caritas CV lists internal audits, CAPA, RecyClass and ISCC PLUS. Use those in videos only if you're ready to go into detail on them.</div></div>
+<div class="flag"><span class="pill r sev">F8</span><div><b>Privacy in your CV PDF.</b> The Quality Specialist PDF includes a scan of your residence permit (document number, date of birth, signature). German applications don't need it: the line "Arbeitserlaubnis: EU Blue Card" is enough. Take it out of any CV you send widely, and never show it on camera.</div></div>
+</div>
+</div>
+</section>
+
+<!-- ============ 03 BRAND KIT ============ -->
+<section class="tab" id="brand" data-grp="Foundation" data-t="Brand Kit">
+<div class="doc"><span><b>QD-PB-03</b></span><span>Rev. 1.0</span><span>Applies to: video graphics, thumbnails, LinkedIn banner, PDF carousels</span></div>
+<h1>Brand Kit</h1>
+<p class="lede">The look is taken from the audit desk: graphite ink, a blue document stamp and a yellow highlighter on the clause that matters. It is deliberately different from River Musa's teal and navy.</p>
+
+<div class="sec">
+<h2>Palette</h2>
+<div class="swatches">
+  <div class="sw"><div class="chip" style="background:#1B2127"></div><div class="meta"><b>Graphite</b><span>#1B2127 · backgrounds, text</span></div></div>
+  <div class="sw"><div class="chip" style="background:#2150C8"></div><div class="meta"><b>Audit Blue</b><span>#2150C8 · name bars, badges</span></div></div>
+  <div class="sw"><div class="chip" style="background:#F4C430"></div><div class="meta"><b>Highlighter</b><span>#F4C430 · one key word per frame</span></div></div>
+  <div class="sw"><div class="chip" style="background:#F4F5F2;border-bottom:1px solid var(--line)"></div><div class="meta"><b>Paper</b><span>#F4F5F2 · light panels</span></div></div>
+  <div class="sw"><div class="chip" style="background:#1D8A57"></div><div class="meta"><b>Conformity Green</b><span>#1D8A57 · source badge only</span></div></div>
+  <div class="sw"><div class="chip" style="background:#C2372C"></div><div class="meta"><b>Finding Red</b><span>#C2372C · "finding" stamp only</span></div></div>
+</div>
+<div class="note">The highlighter works the way a teal accent would: <b>one element per frame</b>. Green and red are status colours, not decoration. Green appears only on a source badge; red appears only on the "finding" stamp for myths and mistakes.</div>
+</div>
+
+<div class="sec">
+<h2>Typography</h2>
+<div class="grid two">
+  <div class="card"><span class="k">Display · Archivo</span><p style="font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.02em;line-height:1.1">Prove it. Improve it.</p><p>Titles, lower-third names and captions. Weights: 800 for titles, 700 for captions and names, 500 for small labels. Free on Google Fonts, also available in Canva.</p></div>
+  <div class="card"><span class="k">Data · IBM Plex Mono</span><p style="font-family:var(--mono);font-size:22px">ISO 9001 · 7.5.3</p><p>Clause numbers, sources, timecodes and series numbers: anything that would carry a document reference number. This is what makes the graphics read as quality work.</p></div>
+  <div class="card"><span class="k">Body · IBM Plex Sans</span><p style="font-size:18px">Role lines, long captions, PDF carousel body text.</p><p>Only where Archivo would feel too heavy.</p></div>
+  <div class="card"><span class="k">Rules</span><ul><li>Maximum three families, as above. Never add a fourth.</li><li>Use all caps only for labels such as series names and "SOURCE".</li><li>Put a graphite outline or panel behind all text on video. Contrast comes first.</li><li>No more than 5 words on a thumbnail.</li></ul></div>
+</div>
+</div>
+
+<div class="sec">
+<h2>Sizes on a 1080 × 1920 vertical frame</h2>
+<div class="tw"><table>
+<thead><tr><th>Element</th><th>Font</th><th>Size</th><th>Colour</th><th>Hold</th></tr></thead>
+<tbody>
+<tr><td>Title / chapter card</td><td>Archivo 800</td><td class="tc">76–88 px</td><td>White on Graphite, blue rule</td><td class="tc">1.5–2.5 s</td></tr>
+<tr><td>Lower third, name</td><td>Archivo 800</td><td class="tc">40–44 px</td><td>White on Audit Blue</td><td class="tc">4 s, once</td></tr>
+<tr><td>Lower third, role</td><td>IBM Plex Sans 500</td><td class="tc">26–28 px</td><td>Graphite on Paper</td><td class="tc">4 s</td></tr>
+<tr><td>Burned-in caption</td><td>Archivo 800</td><td class="tc">56–64 px</td><td>White, 3 px Graphite stroke; key word on a Highlighter block</td><td class="tc">matches speech</td></tr>
+<tr><td>Clause badge</td><td>IBM Plex Mono 500</td><td class="tc">30–34 px</td><td>Graphite + Highlighter</td><td class="tc">3–5 s</td></tr>
+<tr><td>Source line</td><td>IBM Plex Mono 400</td><td class="tc">24 px</td><td>White at 85 %, green tick</td><td class="tc">3 s</td></tr>
+<tr><td>Stat bomb number</td><td>Archivo 800</td><td class="tc">180–220 px</td><td>White, sign or unit in Highlighter</td><td class="tc">3–4 s</td></tr>
+</tbody></table></div>
+<p>Safe zone for all vertical platforms: 5.6 % from the left, 19 % from the right, 5.7 % from the top and 29.7 % from the bottom. This is the same conservative zone as in the River Musa guide. It clears the LinkedIn, TikTok, Reels and Shorts overlays.</p>
+</div>
+
+<div class="sec">
+<h2>Profile assets</h2>
+<div class="grid">
+  <div class="card"><span class="k">LinkedIn banner · 1584 × 396</span><p>Graphite background. Left: "Prove it. Improve it." in Archivo 800. Right, in mono: "ISO 9001 · ISO 14001 · Interne Audits · CAPA". Keep the left-hand 400 px clear, because your profile photo covers it on mobile.</p></div>
+  <div class="card"><span class="k">Profile photo</span><p>Head and shoulders, eyes at the upper third, a plain background in Paper or light grey. Solid shirt, no logos. Use the same photo on LinkedIn and Xing so recruiters recognise you.</p></div>
+  <div class="card"><span class="k">Video thumbnail</span><p>Graphite frame, your face on the left, up to 5 words on the right, one word on a highlighter block, and a series badge top right (for example NORM IN 60 · #04).</p></div>
+</div>
+</div>
+</section>
+
+<!-- ============ 04 FORMATS ============ -->
+<section class="tab" id="formats" data-grp="Script" data-t="Formats">
+<div class="doc"><span><b>QD-PB-04</b></span><span>Rev. 1.0</span><span>10 formats · each one repeatable, each one a series</span></div>
+<h1>Formats</h1>
+<p class="lede">A format is a recipe you can repeat every week without reinventing it. River Musa has 14. You start with 10, each tied to a pillar and a platform. The first four do most of the work in the first 90 days.</p>
+<div class="sec" id="fmtlist"></div>
+</section>
+
+<!-- ============ 05 HOOKS & CTAs ============ -->
+<section class="tab" id="hooks" data-grp="Script" data-t="Hooks &amp; CTAs">
+<div class="doc"><span><b>QD-PB-05</b></span><span>Rev. 1.0</span><span>Hooks EN + DE · CTAs · connecting phrases</span></div>
+<h1>Hooks &amp; CTAs</h1>
+<p class="lede">You have about three seconds on LinkedIn before the thumb moves on. There's no "Hi everyone, today I want to talk about…". The first sentence <i>is</i> the hook, and it has to work on mute, so the hook text also appears on screen.</p>
+<div class="sec"><h2>Hook formulas</h2><div class="grid two" id="hooklist"></div></div>
+<div class="sec"><h2>Hook rules for a professional audience</h2>
+<div class="grid">
+<div class="card"><span class="k">Specific beats clever</span><p>"Clause 7.5.3" or "−15 %" earns more trust than "a big improvement". A specific detail tells the viewer you did the work.</p></div>
+<div class="card"><span class="k">Loss framing, honestly</span><p>"The audit finding most companies get for the same clause" works because people fear losing more than they want to gain. It has to be true and specific. A vague threat reads as clickbait to this audience.</p></div>
+<div class="card"><span class="k">Open one loop</span><p>Promise an answer in the first 5 seconds ("…and the fix takes ten minutes") and deliver it before the CTA. Leave exactly one loop open at the end: next week's topic.</p></div>
+<div class="card"><span class="k">Never punch down</span><p>Don't mock former employers, auditors or colleagues. Recruiters read your tone as a preview of how you'd talk about <i>their</i> company.</p></div>
+</div></div>
+<div class="sec"><h2>CTAs (one per video)</h2><div class="grid" id="ctalist"></div></div>
+<div class="sec"><h2>Connecting phrases</h2>
+<div class="grid">
+<div class="card"><span class="k">Hook → point</span><ul><li>"Here's what that means in an audit."</li><li>"Let me show you on paper."</li><li>"The standard says one thing. The floor says another."</li><li><i>DE:</i> „Was heißt das konkret im Audit?"</li></ul></div>
+<div class="card"><span class="k">Between points</span><ul><li>"Second thing."</li><li>"Now, the part most people skip."</li><li>"This is where it usually breaks."</li><li><i>DE:</i> „Und jetzt der Teil, den viele übersehen."</li></ul></div>
+<div class="card"><span class="k">Building to the turn</span><ul><li>"We fixed it. Three weeks later it was back."</li><li>"That's when I stopped treating the symptom."</li><li>"The data said something different."</li><li><i>DE:</i> „Dann haben wir die Ursache gesucht, nicht den Schuldigen."</li></ul></div>
+<div class="card"><span class="k">Closing the loop</span><ul><li>"So, back to the question from the start."</li><li>"That's the evidence an auditor wants."</li><li>"One sheet. Eight steps. Done."</li><li><i>DE:</i> „Das ist der Nachweis, den der Auditor sehen will."</li></ul></div>
+</div></div>
+</section>
+
+<!-- ============ 06 STORY LAB ============ -->
+<section class="tab" id="story" data-grp="Script" data-t="Story Lab">
+<div class="doc"><span><b>QD-PB-06</b></span><span>Rev. 1.0</span><span>From idea to script · adapted from River Musa Story Lab</span></div>
+<h1>Story Lab</h1>
+<p class="lede">A topic isn't a story. "ISO 9001 clause 10.2" is a topic. "The same nonconformity came back three times, until we asked a different question" is a story. People watch stories, and recruiters remember them.</p>
+
+<div class="sec"><h2>Where your stories come from</h2>
+<div class="grid">
+<div class="card"><span class="k">Source 1 · Observation</span><p>Something you saw on the floor or in an audit that surprised you.</p><p class="dir">"Every pallet label was correct. The scanner said otherwise."</p></div>
+<div class="card"><span class="k">Source 2 · Tension</span><p>The gap between what the standard asks for and what happens on the floor.</p><p class="dir">"The procedure said sign off daily. Nobody could, because the form was in the office."</p></div>
+<div class="card"><span class="k">Source 3 · The unanswered question</span><p>Something you had to look up yourself. Your audience has the same question.</p><p class="dir">"What's the actual difference between a correction and a corrective action?"</p></div>
+<div class="card"><span class="k">Source 4 · Contrast</span><p>The same standard in two sectors, logistics against recycling against social care, or two ways of working, Nairobi against Hessen.</p><p class="dir">"ISO 9001 at a plastics recycler vs. a warehouse: same clause, different evidence."</p></div>
+</div></div>
+
+<div class="sec"><h2>The four parts every story needs</h2>
+<div class="tw"><table><thead><tr><th>Part</th><th>Question</th><th>Quality Desk example</th></tr></thead><tbody>
+<tr><td><b>Character</b></td><td>Who or what is this about?</td><td>You as a new quality auditor; or a process, a supplier, a form</td></tr>
+<tr><td><b>Problem</b></td><td>What goes wrong?</td><td>The same nonconformity keeps coming back after every correction</td></tr>
+<tr><td><b>Stakes</b></td><td>Why does it matter?</td><td>Returns, delays, customer complaints, a finding at the next audit</td></tr>
+<tr><td><b>Change</b></td><td>What's different at the end?</td><td>Root cause found, SOP changed, error rate down 15 %</td></tr>
+</tbody></table></div>
+<p>If one part is missing, you have a lecture, not a story. Check all four before you write a single line.</p>
+</div>
+
+<div class="sec"><h2>Five structures</h2>
+<div class="grid two">
+<div class="card"><span class="k">Type 1 · The discovery</span><p><b>Question → what I expected → what I found → what it means → what you can do.</b></p><p>Best for P1 and P6. "I thought ISO 14001 was about recycling bins. Clause 6.1.2 is about something else."</p></div>
+<div class="card"><span class="k">Type 2 · The fix</span><p><b>Symptom → first (wrong) fix → symptom returns → root cause → lasting fix + number.</b></p><p>Best for P3. Your −15 % and −30 % stories use this structure.</p></div>
+<div class="card"><span class="k">Type 3 · The system</span><p><b>What people think it is → layer 1: what it asks → layer 2: what evidence proves it → layer 3: where it fails → what to do.</b></p><p>Best for P1 and P4. It suits LinkedIn and YouTube search well.</p></div>
+<div class="card"><span class="k">Type 4 · Myth vs. requirement</span><p><b>The myth → "FINDING" stamp → what the standard actually says → the practical version.</b></p><p>Best for P1 and P2. "ISO 9001 requires a quality manual." It hasn't since 2015.</p></div>
+<div class="card"><span class="k">Type 5 · The bridge</span><p><b>Where I started → the step that changed things → what it took → what I'd tell someone starting now.</b></p><p>Best for P6. Always told looking forward.</p></div>
+</div></div>
+
+<div class="sec"><h2>Writing for the ear</h2>
+<div class="grid">
+<div class="card"><span class="k">Rules</span><ul><li>One idea per sentence.</li><li>Active voice: "We changed the SOP", not "The SOP was changed".</li><li>Use numbers, not adjectives.</li><li>Use contractions in English.</li><li>Say the key point twice, in different words.</li><li>Read it out loud. If you stumble on a line, rewrite it.</li></ul></div>
+<div class="card"><span class="k">Script length at ~130 words/min</span><div class="kv"><dt>45 s</dt><dd>~95 words</dd><dt>60 s</dt><dd>~130 words</dd><dt>90 s</dt><dd>~190 words</dd><dt>3 min</dt><dd>~390 words</dd><dt>8 min</dt><dd>~1,000 words</dd></div><p>In German, allow about 10 % more time for the same content.</p></div>
+<div class="card"><span class="k">The one-sentence test</span><p>"This video is about <b>[character]</b> facing <b>[problem]</b>, and afterwards the viewer will <b>[know / do / feel]</b>…" If you can't write that sentence, don't film yet.</p></div>
+</div></div>
+
+<div class="sec"><h2>From idea to published video</h2>
+<div class="flow">
+<div class="st"><span class="mono">1 · IDEA</span><b>Source + one sentence</b>Pick the source. Write the test sentence.</div>
+<div class="st"><span class="mono">2 · CHECK</span><b>Four parts</b>Character, problem, stakes, change. Check the fact against the Proof Bank.</div>
+<div class="st"><span class="mono">3 · STRUCTURE</span><b>Type 1–5</b>Five to eight bullet beats.</div>
+<div class="st"><span class="mono">4 · HOOK</span><b>Write it first</b>Plus on-screen hook text of 6 words or fewer.</div>
+<div class="st"><span class="mono">5 · SCRIPT</span><b>Fast draft</b>Read aloud, fix it for the ear, mark B-roll.</div>
+<div class="st"><span class="mono">6 · SHOT LIST</span><b>From the script</b>List every cutaway, graphic and prop.</div>
+<div class="st"><span class="mono">7 · FILM</span><b>A-roll, then B-roll</b>Plus 10 s of room tone.</div>
+<div class="st"><span class="mono">8 · EDIT</span><b>Cut → captions → graphics</b>Add the source badges.</div>
+<div class="st"><span class="mono">9 · PUBLISH</span><b>Native upload</b>Reply to comments in the first hour.</div>
+</div></div>
+</section>
+
+<!-- ============ 07 EP 01 ============ -->
+<section class="tab" id="ep01" data-grp="Script" data-t="Ep. 01 — Script">
+<div class="doc"><span><b>QD-PB-07</b></span><span>Rev. 1.0</span><span>Episode 01 · "Quality Is Proof" · LinkedIn native 9:16 · ~70 s</span></div>
+<h1>Ep. 01 — Quality Is Proof</h1>
+<p class="lede">Your introduction video. Pin it to your LinkedIn "Featured" section and link to it from your Xing profile and your application emails. Every fact in it comes from the Proof Bank.</p>
+<div class="grid" style="margin-top:18px">
+<div class="card"><span class="k">Platform</span><p>LinkedIn native, then YouTube Shorts and Reels</p></div>
+<div class="card"><span class="k">Format</span><p>9:16 vertical · 1080 × 1920 · 30 fps</p></div>
+<div class="card"><span class="k">Length</span><p>~70 s · 9 shots · ~120 words</p></div>
+<div class="card"><span class="k">Versions</span><p>EN on camera with DE captions, and a separate DE take</p></div>
+</div>
+
+<div class="sec"><h2>Shot table</h2>
+<div class="tw"><table><thead><tr><th>Shot</th><th>Time</th><th>Type</th><th>Key line</th><th>Camera</th><th>Graphic / B-roll</th></tr></thead><tbody>
+<tr><td class="tc">01</td><td class="tc">0:00–0:04</td><td>ECU</td><td>"Quality isn't paperwork. It's proof."</td><td>Static, locked off, eye level</td><td>Hook text: QUALITY ISN'T PAPERWORK.</td></tr>
+<tr><td class="tc">02</td><td class="tc">0:04–0:10</td><td>MS</td><td>"I'm Efic — Murdock Emisembe…"</td><td>Static</td><td>Name lower third (4 s)</td></tr>
+<tr><td class="tc">03</td><td class="tc">0:10–0:22</td><td>MS + B</td><td>"I learned it on a warehouse floor…"</td><td>Static; B-roll over 0:12–0:20</td><td>B: checklist being ticked, clipboard ECU</td></tr>
+<tr><td class="tc">04</td><td class="tc">0:22–0:32</td><td>CU</td><td>"…error rates dropped fifteen percent."</td><td>Slow 5 % push-in</td><td>Stat bomb −15 % + source line</td></tr>
+<tr><td class="tc">05</td><td class="tc">0:32–0:44</td><td>MS + B</td><td>"Since then: ISO 9001 and 14001…"</td><td>Static; B-roll over 0:34–0:42</td><td>B: highlighter on a mock clause, QM binder</td></tr>
+<tr><td class="tc">06</td><td class="tc">0:44–0:55</td><td>CU</td><td>"On this channel I break down…"</td><td>Hold. First smile.</td><td>Series badges flash: NORM IN 60 / METHOD MINUTE</td></tr>
+<tr><td class="tc">07</td><td class="tc">0:55–1:05</td><td>MS→CU</td><td>"If you work in quality…"</td><td>Push to CU on the question</td><td>Caption highlight on "which clause"</td></tr>
+<tr><td class="tc">08</td><td class="tc">1:05–1:09</td><td>CU</td><td>"Prove it. Improve it."</td><td>Hold still; 1 s silence after</td><td>—</td></tr>
+<tr><td class="tc">09</td><td class="tc">1:09–1:12</td><td>GFX</td><td>End card</td><td>—</td><td>The Quality Desk · Prove it. Improve it.</td></tr>
+</tbody></table></div></div>
+
+<div class="sec"><h2>Full script, word for word (English)</h2>
+<div class="script">
+<div class="beat"><div class="side"><b>01 · ECU</b><span>HOOK</span><span>0:00–0:04</span></div><div class="body"><p class="dir">[Locked-off ECU. No music, or music at 5 %. Start speaking on frame one.]</p><p class="say">Quality isn't paperwork.<br>It's <mark>proof</mark>.</p><p class="deliv">Calm and low. Pause for half a beat after "paperwork". Don't smile yet.</p></div></div>
+<div class="beat"><div class="side"><b>02 · MS</b><span>WHO</span><span>0:04–0:10</span></div><div class="body"><p class="dir">[Cut to MS. Lower third on at 0:05: Murdock Emisembe · Quality Management · ISO 9001 | 14001.]</p><p class="say">I'm Efic — Murdock Emisembe.<br>I work in quality management, here in Germany.</p><p class="deliv">Warm and matter-of-fact, the way you'd introduce yourself at a DGQ meeting.</p></div></div>
+<div class="beat"><div class="side"><b>03 · MS+B</b><span>ORIGIN</span><span>0:10–0:22</span></div><div class="body"><p class="dir">[B-roll over the middle: ticking a checklist, clipboard ECU. Return to your face for "kept coming back".]</p><p class="say">I learned it on a warehouse floor.<br>5S audits. Supplier scorecards.<br>Nonconformities that kept coming back.</p><p class="deliv">Short list, one beat per item. Put a little weight on "kept coming back".</p></div></div>
+<div class="beat"><div class="side"><b>04 · CU</b><span>PROOF</span><span>0:22–0:32</span></div><div class="body"><p class="dir">[Slow 5 % push-in. Stat bomb appears ON "fifteen": −15 % · Source: Wayfair EU Supply Chain, 2021–22.]</p><p class="say">So we stopped fixing symptoms<br>and started finding causes.<br>Error rates dropped <mark>fifteen percent</mark>.</p><p class="deliv">Slow down on the number. Duck the room (music), not your voice up.</p></div></div>
+<div class="beat"><div class="side"><b>05 · MS+B</b><span>SINCE</span><span>0:32–0:44</span></div><div class="body"><p class="dir">[B-roll: highlighter across a mock clause; QM binder closing.]</p><p class="say">Since then: ISO 9001 and 14001 at a plastics recycler.<br>Internal audits.<br>And a QMB qualification, here in Gießen.</p><p class="deliv">Steady. Don't list certificates like a CV. Three beats are enough.</p></div></div>
+<div class="beat"><div class="side"><b>06 · CU</b><span>PROMISE</span><span>0:44–0:55</span></div><div class="body"><p class="dir">[Hold CU. Series badges flash over "standards" and "methods".]</p><p class="say">On this channel I break down standards, methods,<br>and real audit lessons.<br>Plain language. <mark>One idea per video.</mark></p><p class="deliv">First real smile here. This is the moment people decide whether they like you.</p></div></div>
+<div class="beat"><div class="side"><b>07 · MS→CU</b><span>CTA</span><span>0:55–1:05</span></div><div class="body"><p class="dir">[Begin the push-in. Music drops to 5 %.]</p><p class="say">If you work in quality — or want to — follow along.<br>And tell me:<br>which ISO clause confuses you most?</p><p class="deliv">Invite, don't ask for a favour. Genuine curiosity on the question: the answers are next month's episodes.</p></div></div>
+<div class="beat"><div class="side"><b>08 · CU</b><span>SIGN-OFF</span><span>1:05–1:09</span></div><div class="body"><p class="dir">[Hold completely still. One second of silence after the last word, then cut.]</p><p class="say">Prove it.<br>Improve it.</p><p class="deliv">Two separate beats. Quiet and final.</p></div></div>
+<div class="beat"><div class="side"><b>09 · GFX</b><span>END</span><span>1:09–1:12</span></div><div class="body"><p class="dir">[End card: THE QUALITY DESK / Prove it. Improve it. / New video every Tuesday. Music fades out over 2 s.]</p></div></div>
+</div></div>
+
+<div class="sec"><h2>Teleprompter versions</h2>
+<p><code>[ · ]</code> = half-breath beat · <code>[ — ]</code> = one full second · <code>[ — — ]</code> = hold before the cut.</p>
+<div class="grid two">
+<div class="card"><div class="row"><h3 style="flex:1">English</h3><button class="btn" data-copy="tp-en">Copy text</button></div><pre class="tp" id="tp-en">Quality isn't paperwork. [ · ]
+It's proof.
+
+[ — ]
+
+I'm Efic — Murdock Emisembe.
+I work in quality management, here in Germany.
+
+I learned it on a warehouse floor. [ · ]
+5S audits. [ · ] Supplier scorecards. [ · ]
+Nonconformities that kept coming back.
+
+[ — ]
+
+So we stopped fixing symptoms
+and started finding causes. [ · ]
+Error rates dropped fifteen percent.
+
+[ — ]
+
+Since then: ISO 9001 and 14001 at a plastics recycler. [ · ]
+Internal audits. [ · ]
+And a QMB qualification, here in Gießen.
+
+On this channel I break down standards, methods,
+and real audit lessons. [ · ]
+Plain language. One idea per video.
+
+[ — ]
+
+If you work in quality — or want to — follow along. [ · ]
+And tell me: [ · ]
+which ISO clause confuses you most?
+
+[ — ]
+
+Prove it. [ · ]
+Improve it.
+
+[ — — ]</pre></div>
+<div class="card"><div class="row"><h3 style="flex:1">Deutsch (Sie)</h3><button class="btn" data-copy="tp-de">Copy text</button></div><pre class="tp" id="tp-de">Qualität ist kein Papierkram. [ · ]
+Qualität ist Nachweis.
+
+[ — ]
+
+Ich bin Efic — Murdock Emisembe.
+Ich arbeite im Qualitätsmanagement, hier in Deutschland.
+
+Gelernt habe ich es in der Logistik. [ · ]
+5S-Audits. [ · ] Lieferantenbewertungen. [ · ]
+Abweichungen, die immer wiederkamen.
+
+[ — ]
+
+Also haben wir aufgehört, Symptome zu behandeln, [ · ]
+und angefangen, Ursachen zu finden. [ · ]
+Die Fehlerquote sank um fünfzehn Prozent.
+
+[ — ]
+
+Seitdem: ISO 9001 und 14001 in einem Kunststoff-Recycling-Unternehmen. [ · ]
+Interne Audits. [ · ]
+Und eine Weiterbildung zum QMB, hier in Gießen.
+
+Auf diesem Kanal erkläre ich Normen, Methoden
+und echte Audit-Erfahrungen. [ · ]
+Klar und praxisnah. Eine Idee pro Video.
+
+[ — ]
+
+Wenn Sie im Qualitätsmanagement arbeiten — oder dorthin wollen —
+folgen Sie mir. [ · ]
+Und sagen Sie mir: [ · ]
+Welches ISO-Kapitel verwirrt Sie am meisten?
+
+[ — ]
+
+Nachweisen. [ · ]
+Verbessern.
+
+[ — — ]</pre></div>
+</div></div>
+
+<div class="sec"><h2>LinkedIn post text for Ep. 01</h2>
+<div class="grid two">
+<div class="card"><div class="row"><span class="k" style="flex:1">EN</span><button class="btn" data-copy="post-en">Copy text</button></div><pre class="plain" id="post-en">Quality isn't paperwork. It's proof.
+
+I learned that on a warehouse floor: 5S audits, supplier scorecards, and nonconformities that kept coming back until we stopped fixing symptoms and started finding causes. Error rates dropped 15 %.
+
+Since then: ISO 9001 and 14001 at a plastics recycler, internal audits, and a QMB qualification here in Gießen.
+
+From today I'm sharing what I've learned: one standard, one method or one audit lesson per video, in plain language.
+
+Question for you: which ISO clause confuses you most? The answers decide the next episodes.
+
+#Qualitätsmanagement #ISO9001 #QualityManagement #InternalAudit #KVP</pre></div>
+<div class="card"><div class="row"><span class="k" style="flex:1">DE</span><button class="btn" data-copy="post-de">Copy text</button></div><pre class="plain" id="post-de">Qualität ist kein Papierkram. Qualität ist Nachweis.
+
+Gelernt habe ich das in der Logistik: 5S-Audits, Lieferantenbewertungen und Abweichungen, die immer wiederkamen – bis wir aufgehört haben, Symptome zu behandeln, und angefangen haben, Ursachen zu finden. Die Fehlerquote sank um 15 %.
+
+Seitdem: ISO 9001 und 14001 in einem Kunststoff-Recycling-Unternehmen, interne Audits und eine Weiterbildung zum QMB hier in Gießen.
+
+Ab heute teile ich, was ich gelernt habe: eine Norm, eine Methode oder eine Audit-Erfahrung pro Video – klar und praxisnah.
+
+Meine Frage an Sie: Welches ISO-Kapitel verwirrt Sie am meisten? Ihre Antworten bestimmen die nächsten Folgen.
+
+#Qualitätsmanagement #ISO9001 #QMB #InterneAudits #KVP</pre></div>
+</div></div>
+
+<div class="sec"><h2>Delivery notes</h2>
+<div class="grid">
+<div class="card"><span class="k">Opening</span><p>The first word is on frame one. Relax your jaw before you start. In an ECU every tension shows. Say the line quietly: quiet reads as confidence.</p></div>
+<div class="card"><span class="k">The number</span><p>"Fifteen percent" is the one line people should remember. Slow down, leave a micro-pause before it, and duck the music to ~5 %. Emphasis comes from space, not volume.</p></div>
+<div class="card"><span class="k">The CTA</span><p>Drop your energy slightly before "If you work in quality", then lift on the question. The push-in does the emotional work, so keep your voice steady.</p></div>
+<div class="card"><span class="k">German take</span><p>Film the German version as its own take, not a dub. Slow down by 10 %. If a word catches, pause, breathe and repeat the whole sentence. Cutting on sentence boundaries is invisible.</p></div>
+</div></div>
+</section>
+
+<!-- ============ 08 EPISODE LIBRARY ============ -->
+<section class="tab" id="library" data-grp="Script" data-t="Episode Library">
+<div class="doc"><span><b>QD-PB-08</b></span><span>Rev. 1.0</span><span>First 16 episodes · 90-day backlog</span></div>
+<h1>Episode Library</h1>
+<p class="lede">Sixteen episodes, ready to script: enough for the six-video stockpile before launch plus the first ten weeks. Each one is tied to a pillar, a format and a fact you can back up.</p>
+<div class="sec"><div class="row"><span class="pill b" data-f="all" role="button" tabindex="0">All</span><span class="pill" data-f="P1" role="button" tabindex="0">P1 ISO</span><span class="pill" data-f="P2" role="button" tabindex="0">P2 Methods</span><span class="pill" data-f="P3" role="button" tabindex="0">P3 Floor</span><span class="pill" data-f="P4" role="button" tabindex="0">P4 Audit</span><span class="pill" data-f="P5" role="button" tabindex="0">P5 Data</span><span class="pill" data-f="P6" role="button" tabindex="0">P6 Bridge</span></div>
+<div class="tw"><table><thead><tr><th>#</th><th>Title</th><th>Pillar · Format</th><th>Hook (first line)</th><th>Proof / research</th></tr></thead><tbody id="eplist"></tbody></table></div>
+<div class="note">Before you script P1 episodes, check each clause against your own copy of the standard (your BWHW course materials or DIN Media). ISO text is copyrighted: paraphrase it, quote at most a short phrase, and never film full pages.</div>
+</div>
+</section>
+
+<style>
+.fmtpick{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+.fmtpick button{display:grid;gap:3px;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);cursor:pointer;font:13px var(--body)}
+.fmtpick button b{font-family:var(--display);font-size:15px}
+.fmtpick button span{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.fmtpick button:hover{border-color:var(--accent)}
+.fmtpick button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.secs{display:grid;gap:10px}
+.sbx{display:grid;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.sbx .hd{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.sbx .hd b{font-family:var(--display);font-size:15px;flex:1;min-width:140px}
+.sbx .pr{font-size:13px;color:var(--ink2)}
+.sbx textarea{font:15px/1.5 var(--body);padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);width:100%;min-height:62px;resize:vertical}
+.wc{font-family:var(--mono);font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--sunk);color:var(--ink2);white-space:nowrap}
+.wc.over{background:var(--warn-soft);color:var(--warn)}
+.wc.ok{background:var(--pass-soft);color:var(--pass)}
+.totals{display:flex;flex-wrap:wrap;gap:10px}
+.tot{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 14px;display:grid;gap:2px;min-width:120px}
+.tot span{font-family:var(--mono);font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em}
+.tot b{font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.tot b.warn{color:var(--warn)}
+.outs{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
+.sbrow{display:grid;grid-template-columns:34px 110px 110px 70px minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr) auto;gap:6px;align-items:start;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+.sbrow .no{font-family:var(--mono);font-size:12px;color:var(--ink3);padding-top:8px}
+.sbrow select,.sbrow input,.sbrow textarea{font:13.5px var(--body);padding:6px 8px;border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);width:100%}
+.sbrow textarea{min-height:38px;resize:vertical}
+.sbrow .acts{display:flex;gap:4px;flex-wrap:wrap}
+.sbrow .acts button{font:13px var(--mono);width:30px;height:30px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink2);cursor:pointer}
+.sbrow .acts button:hover{border-color:var(--accent);color:var(--accent)}
+.sbrow .acts button.del:hover{border-color:var(--fail);color:var(--fail)}
+.sbrow .tcx{font-family:var(--mono);font-size:11px;color:var(--ink3);display:block;margin-top:3px}
+.sbhead{display:grid;grid-template-columns:34px 110px 110px 70px minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr) auto;gap:6px;padding:0 8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.sbrow.isdone{opacity:.62}
+@media (max-width:1100px){.sbrow,.sbhead{grid-template-columns:34px 1fr 1fr 80px}.sbrow textarea,.sbrow .c-cam,.sbrow .c-gfx{grid-column:2/-1}.sbrow .acts{grid-column:2/-1}.sbhead{display:none}}
+.frames2{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.frames2.land{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.fcard{display:grid;gap:6px;align-content:start;font-size:12.5px}
+.fbox{position:relative;aspect-ratio:9/16;max-width:100%;border-radius:6px;overflow:hidden;background:#3A4550;container-type:inline-size;border-top:4px solid var(--sc,#6B7680)}
+.land .fbox{aspect-ratio:16/9}
+.fbox .ty{position:absolute;left:6%;top:4%;font-family:'IBM Plex Mono',monospace;font-size:clamp(10px,9cqw,15px);color:#fff;background:rgba(27,33,39,.7);padding:1px 6px;border-radius:3px;z-index:2}
+.fbox .dur{position:absolute;right:6%;top:4%;font-family:'IBM Plex Mono',monospace;font-size:clamp(10px,8cqw,13px);color:#1B2127;background:#F4C430;padding:1px 6px;border-radius:3px;z-index:2}
+.sil{position:absolute;left:50%;bottom:0;transform:translateX(-50%) scale(var(--s,1));transform-origin:50% 100%;width:70%;aspect-ratio:1/1.25}
+.sil::before{content:"";position:absolute;left:30%;top:0;width:40%;aspect-ratio:1;border-radius:50%;background:#B58C6E}
+.sil::after{content:"";position:absolute;left:5%;right:5%;bottom:0;height:52%;border-radius:45% 45% 0 0;background:#1F3C85}
+.land .sil{width:32%}
+.paper{position:absolute;left:18%;right:18%;top:22%;bottom:22%;background:#F4F5F2;border-radius:2px;transform:rotate(-4deg)}
+.paper i{position:absolute;left:12%;right:12%;height:4%;background:#C5CBC5}
+.paper i:nth-child(1){top:14%}.paper i:nth-child(2){top:26%}.paper i:nth-child(3){top:38%;background:#F4C430}.paper i:nth-child(4){top:50%}.paper i:nth-child(5){top:62%;right:40%}
+.screen{position:absolute;left:10%;right:10%;top:22%;bottom:30%;background:#1B2127;border:3px solid #9AA5AE;border-radius:4px}
+.screen i{position:absolute;bottom:12%;width:12%;background:#2150C8}
+.screen i:nth-child(1){left:14%;height:30%}.screen i:nth-child(2){left:32%;height:52%}.screen i:nth-child(3){left:50%;height:40%;background:#F4C430}.screen i:nth-child(4){left:68%;height:66%}
+.pip{position:absolute;right:6%;bottom:8%;width:22%;aspect-ratio:1;border-radius:50%;background:#B58C6E;border:2px solid #F4F5F2}
+.gfxf{position:absolute;inset:0;background:#1B2127;display:grid;place-content:center;text-align:center;color:#F4F5F2;font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(11px,11cqw,20px);padding:10%}
+.gfxf small{display:block;font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:clamp(9px,7cqw,12px);color:#F4C430;margin-top:4px}
+.brf{position:absolute;inset:0;background:linear-gradient(160deg,#1D7A4E,#15402C);display:grid;place-content:center;color:#DDF0E5;font-family:'IBM Plex Mono',monospace;font-size:clamp(10px,9cqw,14px);text-align:center;padding:10%}
+.wsf{position:absolute;left:0;right:0;bottom:0;height:34%;background:#5A4636}
+.arr{position:absolute;right:8%;bottom:8%;font-family:'IBM Plex Mono',monospace;color:#F4C430;font-size:clamp(10px,9cqw,14px);z-index:2}
+.fcard .fn{font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.fcard .fl{font-weight:600;line-height:1.35}
+.tpls{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.tpls button{display:grid;gap:2px;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);cursor:pointer;font:12.5px var(--body)}
+.tpls button b{font-family:var(--display);font-size:14.5px}
+.tpls button span{color:var(--ink2)}
+.tpls button:hover{border-color:var(--accent)}
+.msg{font-family:var(--mono);font-size:12px;color:var(--pass);min-height:1em}
+</style>
+
+<!-- ============ SCRIPT BUILDER ============ -->
+<section class="tab" id="scriptbuilder" data-grp="Script" data-t="Script Builder">
+<div class="doc"><span><b>QD-PB-SB1</b></span><span>Rev. 1.0</span><span>Tool · drafts saved in this browser only</span></div>
+<h1>Script Builder</h1>
+<p class="lede">Choose a format, write each section in the box provided, and the builder assembles the full script with directions and a clean teleprompter version. It counts words and estimates the running time against the format's target. When the script is done, send it to the Storyboard Builder as a shot list.</p>
+
+<div class="sec"><h2>1 · Format</h2><div class="fmtpick" id="sbFmts"></div></div>
+
+<div class="sec"><h2>2 · Episode</h2>
+<div class="form">
+<div class="fld"><label for="sbTopic">Episode title / topic</label><input id="sbTopic" placeholder="e.g. Documented information in 60 seconds"></div>
+<div class="fld"><label for="sbLang">Language</label><select id="sbLang"><option value="en">English (~130 words/min)</option><option value="de">Deutsch (~118 Wörter/Min.)</option></select></div>
+<div class="fld"><label for="sbStruct">Story structure (Story Lab)</label><select id="sbStruct"><option>Type 1 · The discovery</option><option>Type 2 · The fix</option><option>Type 3 · The system</option><option>Type 4 · Myth vs. requirement</option><option>Type 5 · The bridge</option></select></div>
+</div>
+<div class="row"><button class="btn" id="sbExample" type="button">Fill empty boxes with examples</button><button class="btn" id="sbClear" type="button">Clear this format</button><span class="msg" id="sbMsg" role="status"></span></div>
+<p class="dir">Tip: type <code>/</code> anywhere to mark a short spoken beat. It becomes <code>[ · ]</code> on the teleprompter.</p>
+<div class="note">The example text shows the <i>shape</i> of each section. Before filming, replace it with your own words and check every fact against the Proof Bank. Lines in <code>[brackets]</code> are placeholders for details only you can tell truthfully.</div>
+</div>
+
+<div class="sec"><h2>3 · Write each section</h2><div class="secs" id="sbSecs"></div></div>
+
+<div class="sec"><h2>4 · Check</h2>
+<div class="totals">
+<div class="tot"><span>Words</span><b id="sbW">0</b></div>
+<div class="tot"><span>Est. runtime</span><b id="sbD">0:00</b></div>
+<div class="tot"><span>Format target</span><b id="sbT">0:00</b></div>
+<div class="tot"><span>Sections filled</span><b id="sbF">0/0</b></div>
+</div>
+<div id="sbWarn" class="chk" style="gap:6px"></div>
+</div>
+
+<div class="sec"><h2>5 · Output</h2>
+<div class="row"><button class="btn pri" id="sbToSB" type="button">Send to Storyboard Builder →</button></div>
+<div class="outs">
+<div class="card"><div class="row"><h3 style="flex:1">Full script with directions</h3><button class="btn" data-copy="sbOutFull" type="button">Copy text</button></div><pre class="plain" id="sbOutFull"></pre></div>
+<div class="card"><div class="row"><h3 style="flex:1">Teleprompter</h3><button class="btn" data-copy="sbOutTP" type="button">Copy text</button></div><pre class="tp" id="sbOutTP"></pre></div>
+</div>
+</div>
+</section>
+
+<!-- ============ STORYBOARD BUILDER ============ -->
+<section class="tab" id="storyboard" data-grp="Shoot" data-t="Storyboard Builder">
+<div class="doc"><span><b>QD-PB-SB2</b></span><span>Rev. 1.0</span><span>Tool · plan every shot before you film · saved in this browser only</span></div>
+<h1>Storyboard Builder</h1>
+<p class="lede">Load a template or a script from the Script Builder, then edit, reorder, add and delete shots. Timecodes and total runtime recalculate automatically. The frames show what each shot looks like. The shooting table copies straight into your notes app for the shoot.</p>
+
+<div class="sec"><h2>Episode details</h2>
+<div class="form">
+<div class="fld"><label for="sbdTitle">Episode title</label><input id="sbdTitle"></div>
+<div class="fld"><label for="sbdNum">Episode number</label><input id="sbdNum"></div>
+<div class="fld"><label for="sbdDate">Filming date</label><input id="sbdDate" type="date"></div>
+<div class="fld"><label for="sbdLoc">Location(s)</label><input id="sbdLoc"></div>
+<div class="fld"><label for="sbdAsp">Aspect ratio</label><select id="sbdAsp"><option value="v">9:16 vertical (LinkedIn, Shorts, Reels)</option><option value="h">16:9 landscape (YouTube, screen recordings)</option></select></div>
+<div class="fld full"><label for="sbdGoal">One-sentence story goal</label><input id="sbdGoal"></div>
+</div></div>
+
+<div class="sec"><h2>Load a template</h2>
+<p>Loading a template replaces the current shot list.</p>
+<div class="tpls" id="sbdTpls"></div>
+</div>
+
+<div class="sec"><h2>Shot list</h2>
+<div class="totals">
+<div class="tot"><span>Shots</span><b id="sbdN">0</b></div>
+<div class="tot"><span>Runtime</span><b id="sbdR">0:00</b></div>
+<div class="tot"><span>Filmed</span><b id="sbdDone">0/0</b></div>
+<div class="tot"><span>Face shots</span><b id="sbdFace">0</b></div>
+</div>
+<div class="sbhead" aria-hidden="true"><span>#</span><span>Section</span><span>Shot type</span><span>Sec.</span><span>Key line / description</span><span>Camera / move</span><span>Graphic / B-roll</span><span>Done · edit</span></div>
+<div class="secs" id="sbdRows"></div>
+<div class="row"><button class="btn pri" id="sbdAdd" type="button">+ Add shot</button><button class="btn" id="sbdClearAll" type="button">Clear all shots</button><span class="msg" id="sbdMsg" role="status"></span></div>
+</div>
+
+<div class="sec"><h2>Frames</h2><div class="frames2" id="sbdFrames"></div></div>
+
+<div class="sec"><h2>Shooting table</h2>
+<div class="row"><button class="btn" id="sbdCopy" type="button">Copy table as text</button></div>
+<div class="tw"><table><thead><tr><th>Shot</th><th>Time</th><th>Section</th><th>Type</th><th>Key line / description</th><th>Camera</th><th>Graphic / B-roll</th><th>Dur</th></tr></thead><tbody id="sbdTable"></tbody></table></div>
+</div>
+</section>
+
+<!-- ============ 09 STUDIO ============ -->
+<section class="tab" id="studio" data-grp="Shoot" data-t="Studio &amp; Camera">
+<div class="doc"><span><b>QD-PB-09</b></span><span>Rev. 1.0</span><span>Home desk studio · phone or GoPro · no extra gear</span></div>
+<h1>Studio &amp; Camera</h1>
+<p class="lede">Your set is the audit desk. Build it once, photograph it so you can rebuild it the same way, and film every talking-head video there. A consistent background is what makes 50 videos look like one channel.</p>
+
+<div class="sec"><h2>The desk set</h2>
+<div class="grid">
+<div class="card"><span class="k">Behind you</span><ul><li>A plain wall, lit by one warm lamp pointed at the wall. This adds depth.</li><li>One shelf with 2–3 binders, spines reading "QM-Handbuch", "Audits 2026", "CAPA". Label your own empty binders.</li><li>One small Audit Blue object and one yellow highlighter in view: quiet brand consistency.</li></ul></div>
+<div class="card"><span class="k">In front of you</span><ul><li>Window light on your face. Overcast is best.</li><li>Your face must be the brightest thing in the frame. If the window is behind you, turn the set around.</li><li>Before every take, remove the one most distracting object.</li></ul></div>
+<div class="card"><span class="k">Props that tell the story</span><ul><li>A whiteboard or A3 pad for PDCA, Ishikawa and 8D drawings</li><li>A clipboard with <i>your own</i> mock checklist</li><li>A caliper or ruler for the Prüfmittel metaphor (about €10)</li><li>Sticky notes in blue and yellow</li></ul></div>
+</div></div>
+
+<div class="sec"><h2>Framing</h2>
+<div class="grid">
+<div class="card"><span class="k">Eyes on the upper third</span><p>Turn on the grid. Your eyes sit on the top grid line, never in the centre. Leave a little headroom, not a ceiling.</p></div>
+<div class="card"><span class="k">Camera height</span><p>At eye level or 2–3 cm below it. For professional content, the slightly low angle reads as grounded authority. Never shoot from above.</p></div>
+<div class="card"><span class="k">Look at the lens</span><p>Put a small yellow sticker next to the lens and put the teleprompter text as close to the lens as you can. The lens is the recruiter.</p></div>
+<div class="card"><span class="k">Hands in frame</span><p>Frame from mid-chest so your hand gestures show on the key words. For vertical video, keep your whole head inside the safe zone.</p></div>
+</div>
+<div class="tw"><table><thead><tr><th>Shot</th><th>Frame</th><th>Use it for</th></tr></thead><tbody>
+<tr><td class="tc">ECU</td><td>Forehead to chin</td><td>Hooks and the one key line. Use it sparingly.</td></tr>
+<tr><td class="tc">CU</td><td>Face and shoulders</td><td>Insights, numbers, the turn</td></tr>
+<tr><td class="tc">MS</td><td>Waist up, hands visible</td><td>Default talking head; explanations</td></tr>
+<tr><td class="tc">MS→CU</td><td>5–8 % digital push-in</td><td>CTA and emotional emphasis. In Camtasia, animate the scale.</td></tr>
+<tr><td class="tc">OVERHEAD</td><td>Phone or GoPro straight down on the desk</td><td>Method Minute drawings, documents, checklists</td></tr>
+<tr><td class="tc">SCREEN</td><td>Camtasia recording plus PiP face</td><td>Dashboard Breakdown</td></tr>
+</tbody></table></div></div>
+
+<div class="sec"><h2>Camera settings</h2>
+<div class="grid">
+<div class="card"><span class="k">Phone (A-roll)</span><div class="kv"><dt>Resolution</dt><dd>1080p or 4K, vertical</dd><dt>Frame rate</dt><dd>30 fps</dd><dt>Exposure</dt><dd>Tap and hold on your face to lock exposure and focus (AE/AF lock)</dd><dt>Lens</dt><dd>Main lens (1×), not ultra-wide</dd><dt>Mode</dt><dd>Normal video. Portrait/cinematic mode only if your phone keeps your hands in focus.</dd></div></div>
+<div class="card"><span class="k">GoPro (B-roll, overhead)</span><div class="kv"><dt>FOV</dt><dd>Linear or Medium, not SuperView</dd><dt>Frame rate</dt><dd>60 fps for hand movements (slow to 50–80 %)</dd><dt>ProTune</dt><dd>On · ISO max 800 · Sharpness Low</dd><dt>Mount</dt><dd>Overhead arm or tripod with a horizontal arm</dd></div></div>
+<div class="card"><span class="k">Exposure triangle (manual camera)</span><div class="kv"><dt>Shutter</dt><dd>2 × frame rate: 1/60 at 30 fps, 1/120 at 60 fps</dd><dt>Aperture</dt><dd>f/2.8–f/4: face sharp, background soft</dd><dt>ISO</dt><dd>100–400. Add light before you raise the ISO.</dd><dt>Order</dt><dd>Shutter → aperture → ISO</dd></div></div>
+</div></div>
+
+<div class="sec"><h2>Wardrobe</h2>
+<div class="grid">
+<div class="card"><span class="k">Wear</span><p>Solid mid-tones: navy, grey, white shirt under a dark jacket. It reads "QM lead at a Mittelstand company", not "influencer".</p></div>
+<div class="card"><span class="k">Avoid</span><p>Thin stripes (they flicker on camera), bright red, big logos, or anything with an employer's logo.</p></div>
+<div class="card"><span class="k">Batch days</span><p>Change your shirt between videos so a single filming day looks like four different weeks.</p></div>
+</div></div>
+</section>
+
+<!-- ============ 10 AUDIO ============ -->
+<section class="tab" id="audio" data-grp="Shoot" data-t="Audio">
+<div class="doc"><span><b>QD-PB-10</b></span><span>Rev. 1.0</span><span>Focusrite Scarlett 2i2 · Audacity 01MRC · Camtasia mix</span></div>
+<h1>Audio</h1>
+<p class="lede">Viewers forgive soft video. They don't forgive bad sound. With a professional audience, clean voice audio says "this person is thorough" before you've said anything useful.</p>
+<div class="sec"><h2>Recording</h2>
+<div class="grid">
+<div class="card"><span class="k">Signal chain</span><p>Mic → Scarlett 2i2 → laptop. Record the voice as a separate WAV (48 kHz, 24-bit) alongside the phone video. Clap once at the start to sync the two.</p></div>
+<div class="card"><span class="k">Gain</span><p>Speak your loudest line. Set the gain so the Scarlett halo stays green and peaks land around −12 to −6 dBFS. It should never turn red.</p></div>
+<div class="card"><span class="k">Room</span><p>Soft furnishings help: curtains, a sofa, a rug. Record 10 seconds of room tone before every session so you have silence to patch gaps in the edit.</p></div>
+<div class="card"><span class="k">Checks</span><p>Fridge, heating, open window, phone notifications off. Listen back on headphones before you start the real take.</p></div>
+</div></div>
+<div class="sec"><h2>Processing</h2>
+<div class="flow">
+<div class="st"><span class="mono">1</span><b>Audacity</b>Run the <b>01MRC Best EQ Settings</b> macro on the voice WAV. That's your settled preset. Don't tweak it further.</div>
+<div class="st"><span class="mono">2</span><b>Camtasia</b>Import the processed WAV and align it to the clap. Mute the phone's own audio track.</div>
+<div class="st"><span class="mono">3</span><b>Mix in Camtasia</b>Use volume keyframes for music and ducking, not Audacity.</div>
+<div class="st"><span class="mono">4</span><b>Export check</b>Aim for about −14 LUFS integrated, with true peaks below −1 dB.</div>
+</div></div>
+<div class="sec"><h2>Levels (voice = 100 %)</h2>
+<div class="tw"><table><thead><tr><th>Layer</th><th>Level</th><th>≈ dB</th><th>Note</th></tr></thead><tbody>
+<tr><td>Voice</td><td class="tc">100 %</td><td class="tc">peaks −6</td><td>Keep it constant. Never raise it for emphasis.</td></tr>
+<tr><td>Music under speech</td><td class="tc">8–12 %</td><td class="tc">−20 to −18</td><td>Lower than River Musa. Professional content wants the words clear.</td></tr>
+<tr><td>Music, intro/outro only</td><td class="tc">30–40 %</td><td class="tc">−12 to −10</td><td>Fade in 1 s, fade out 2 s</td></tr>
+<tr><td>Emphasis duck</td><td class="tc">3–5 %</td><td class="tc">≈ −26</td><td>Start 0.3 s before the key line, restore 0.5 s after</td></tr>
+<tr><td>UI tick under graphics</td><td class="tc">15–20 %</td><td class="tc">−18 to −14</td><td>The same soft tick every time a badge appears</td></tr>
+<tr><td>Stamp SFX ("FINDING")</td><td class="tc">25–30 %</td><td class="tc">≈ −12</td><td>The one louder effect, used only on myth videos</td></tr>
+</tbody></table></div>
+<div class="note">Emphasis comes from turning the room down, not your voice up. Duck the music and leave half a second of space before the line that matters.</div>
+</div>
+<div class="sec"><h2>Music</h2>
+<p>Choose one calm, low-tempo instrumental "house track" from the YouTube Audio Library or Pixabay Music and use it in every video, the way the colour grade works: consistency makes it recognisable. Keep a copy of the licence text in your project folder. For LinkedIn-only videos, no music at all is also a valid choice.</p>
+</div>
+</section>
+
+<!-- ============ 11 SHOT CHECKLIST ============ -->
+<section class="tab" id="checklist" data-grp="Shoot" data-t="Shot Checklist">
+<div class="doc"><span><b>QD-PB-11</b></span><span>Rev. 1.0</span><span>Tick as you go · saved in this browser only</span></div>
+<h1>Shot Checklist</h1>
+<p class="lede">Go through this before every shoot. The list works the way a pre-audit checklist does: nothing is left to memory.</p>
+<div class="sec"><div class="row"><div class="bar" aria-hidden="true"><i id="chkbar"></i></div><span class="mono" id="chkcount">0 / 0</span><button class="btn" id="chkreset">Reset</button></div>
+<div id="chkwrap" class="sec" style="margin-top:0"></div></div>
+</section>
+
+<!-- ============ 12 B-ROLL ============ -->
+<section class="tab" id="broll" data-grp="Shoot" data-t="B-roll Stockpile">
+<div class="doc"><span><b>QD-PB-12</b></span><span>Rev. 1.0</span><span>9 categories · build the library before you need it</span></div>
+<h1>B-roll Stockpile</h1>
+<p class="lede">B-roll is your visual vocabulary. Quality management looks dull on camera only if you show people sitting at desks. Show the <i>act</i> of quality work instead: a highlighter on a clause, a tick on a checklist, a stamp, a caliper closing, a root cause drawn in the fishbone.</p>
+<div class="note red"><b>The one hard rule:</b> use only mock documents you created yourself. No real client documents, audit reports, employer data, ID documents or certificates showing personal numbers. If a real document has to appear, blur it completely.</div>
+<div class="sec"><h2>Categories</h2><div class="grid two" id="stocklist"></div></div>
+<div class="sec"><h2>Filming order if you're starting from zero</h2>
+<div class="tw"><table><thead><tr><th>Order</th><th>Category</th><th>When</th></tr></thead><tbody>
+<tr><td class="tc">1</td><td>Desk &amp; Documents</td><td>This weekend: one 45-minute session with overhead GoPro, mock documents and highlighters</td></tr>
+<tr><td class="tc">2</td><td>Methods on Paper</td><td>Same session: draw PDCA, a fishbone, 8D and 5-Why as timelapses</td></tr>
+<tr><td class="tc">3</td><td>Self / Identity</td><td>30 minutes at the window: hands, walking in, thinking</td></tr>
+<tr><td class="tc">4</td><td>Screens &amp; Data</td><td>Screen-record a dummy Excel tracker and a dummy Power BI dashboard</td></tr>
+<tr><td class="tc">5</td><td>Measurement &amp; Inspection</td><td>With the €10 caliper, stopwatch and checklist: 20 minutes</td></tr>
+<tr><td class="tc">6</td><td>Transitions</td><td>Add to any session: closing a binder, capping a pen, stamping</td></tr>
+<tr><td class="tc">7</td><td>Industry exteriors</td><td>Whenever you travel. Film from public ground only.</td></tr>
+<tr><td class="tc">8</td><td>Learning &amp; Language</td><td>During your C1 / QMB study sessions</td></tr>
+<tr><td class="tc">9</td><td>City &amp; Place</td><td>Gießen and Frankfurt at golden hour, whenever you pass</td></tr>
+</tbody></table></div></div>
+</section>
+
+<!-- ============ 13 EDIT GUIDE ============ -->
+<section class="tab" id="edit" data-grp="Edit" data-t="Edit Guide">
+<div class="doc"><span><b>QD-PB-13</b></span><span>Rev. 1.0</span><span>Camtasia workflow · cutting rules · look · captions</span></div>
+<h1>Edit Guide</h1>
+<p class="lede">Cut in a fixed order and don't go back a step. Most time lost in editing comes from polishing graphics on a cut that isn't final yet.</p>
+
+<div class="sec"><h2>The Camtasia workflow</h2>
+<div class="flow">
+<div class="st"><span class="mono">1 · ORGANISE</span><b>Project folder</b><code>YYYY-MM-DD_QD-EpNN_title</code> with subfolders A-roll / B-roll / Audio / GFX / Export.</div>
+<div class="st"><span class="mono">2 · SYNC</span><b>Voice WAV</b>Align it to the clap, mute the phone audio, apply the 01MRC-processed track.</div>
+<div class="st"><span class="mono">3 · ROUGH CUT</span><b>A-roll only</b>Keep the best take of each line and cut restarts. Aim for about 70 % of the fillers removed.</div>
+<div class="st"><span class="mono">4 · PACE CUT</span><b>Tighten</b>Close gaps down to about 0.15 s. Silence removal first, then fix by hand.</div>
+<div class="st"><span class="mono">5 · B-ROLL</span><b>Track 2</b>Cut the B-roll in on the key verb. Keep the voice running underneath.</div>
+<div class="st"><span class="mono">6 · LOOK</span><b>Colour</b>White balance → exposure → contrast. Push-in on static shots.</div>
+<div class="st"><span class="mono">7 · CAPTIONS</span><b>Burn in</b>Generate automatically, correct every word, then highlight one word per sentence.</div>
+<div class="st"><span class="mono">8 · GRAPHICS</span><b>Track 3</b>Lower third, clause badge, stat, source badge, end card.</div>
+<div class="st"><span class="mono">9 · MIX &amp; EXPORT</span><b>Levels</b>Duck the music, check against −14 LUFS, export per platform.</div>
+</div></div>
+
+<div class="sec"><h2>Ep. 01 on the timeline</h2>
+<div class="strip"><div class="lanes" id="tl"></div></div>
+<p>Track 1 is A-roll (blue), track 2 B-roll (green), track 3 graphics (yellow and dark), track 4 music (grey). The B-roll never covers the hook, the number or the CTA: those moments need your face.</p>
+</div>
+
+<div class="sec"><h2>Cutting rules</h2>
+<div class="grid">
+<div class="card"><span class="k">Pace</span><p>Short-form: something changes every 3–4 seconds, whether a cut, a B-roll clip, a graphic or a push-in. No single static angle for longer than 4 seconds, and no talking head longer than 12.</p></div>
+<div class="card"><span class="k">Face moments</span><p>Always cut back to your face for the hook, the number, the turn and the CTA. Viewers follow a person, not a scene.</p></div>
+<div class="card"><span class="k">Cut on the verb</span><p>B-roll comes in on the action word: "we <b>changed</b> the SOP" → cut to the pen editing the document.</p></div>
+<div class="card"><span class="k">J- and L-cuts</span><p>Bring the next shot's audio in about 0.5 s early, or let the previous one linger about 0.5 s. This makes cuts feel seamless.</p></div>
+<div class="card"><span class="k">Transitions</span><p>Hard cuts, 95 % of the time. A dip-to-black only before the end card. No spins, wipes or page curls: a quality audience reads them as sloppy.</p></div>
+<div class="card"><span class="k">Length discipline</span><p>If a line doesn't serve the one-sentence test, cut it. A 55-second video that holds attention beats a 90-second one that doesn't.</p></div>
+</div></div>
+
+<div class="sec"><h2>The look</h2>
+<div class="grid">
+<div class="card"><span class="k">Base grade (every clip)</span><ol><li>White balance: skin looks natural, the wall neutral grey.</li><li>Exposure: the face is the brightest area.</li><li>Brightness/Contrast +5 to +10.</li><li>Saturation −5. Calm, not cold.</li></ol></div>
+<div class="card"><span class="k">No stylised LUT</span><p>River Musa uses Milo 5 for a cinematic travel look. The Quality Desk stays clean and neutral. If you want a LUT, pick one subtle one at 20–30 % and never change it.</p></div>
+<div class="card"><span class="k">Movement</span><p>Add a slow 5–8 % push-in on almost every static shot. It's the cheapest way to make a phone video look produced. Stabilise handheld B-roll one notch.</p></div>
+</div></div>
+
+<div class="sec"><h2>Captions</h2>
+<div class="grid">
+<div class="card"><span class="k">Why</span><p>Most LinkedIn video autoplays on mute. The often-quoted "85 % watch muted" comes from a 2016 Facebook study. The exact figure is old, but the behaviour isn't. The hook has to work silently.</p></div>
+<div class="card"><span class="k">Style</span><p>Archivo 800, white with a 3 px graphite stroke, 3–6 words per card, centred just above the bottom safe line. One word per sentence on a highlighter block.</p></div>
+<div class="card"><span class="k">Two layers</span><p>Burn in the captions, <i>and</i> upload an .srt file on LinkedIn so the text is searchable and accessible. For the English video, burn in English and upload a German .srt, or the other way round.</p></div>
+</div></div>
+</section>
+
+<!-- ============ 14 GRAPHICS ============ -->
+<section class="tab" id="graphics" data-grp="Edit" data-t="On-Screen Graphics">
+<div class="doc"><span><b>QD-PB-14</b></span><span>Rev. 1.0</span><span>10 graphics · shown on a 9:16 frame · toggle the safe zone</span></div>
+<h1>On-Screen Graphics</h1>
+<p class="lede">Graphics are your second voice. They name the clause, prove the number and show the method. Show one graphic at a time (captions excepted). Each appears on the spoken word, holds 2–4 seconds and leaves.</p>
+<div class="row" style="margin-top:14px"><button class="btn" id="safebtn" aria-pressed="false">Show safe zone</button><span class="pill">Safe zone: L 5.6 % · R 19 % · T 5.7 % · B 29.7 %</span></div>
+<div class="sec"><div class="frames" id="gfx">
+<div class="fr"><div class="phone"><div class="face"></div><div class="desk"></div><div class="safe"></div><div class="ov lt1"><span class="nm">Murdock Emisembe</span><span class="rl">Quality Management · ISO 9001 | 14001</span></div></div><span class="cap-t">1 · Name lower third</span><span class="cap-d">First appearance only, 4 s, from 0:05. Audit Blue bar, Paper role line.</span></div>
+<div class="fr"><div class="phone"><div class="face"></div><div class="desk"></div><div class="safe"></div><div class="ov clause"><span>ISO 9001</span><span>7.5.3</span></div></div><span class="cap-t">2 · Clause badge</span><span class="cap-d">Appears exactly when you name the clause. Standard in Graphite, clause number on Highlighter.</span></div>
+<div class="fr"><div class="phone" style="background:#1B2127"><div class="safe"></div><div class="ov stat"><span class="big"><em>−</em>15<em>%</em></span><span style="font-size:6cqw;font-weight:700">operational errors</span><span class="src">SOURCE · Wayfair EU Supply Chain · 2021–22</span></div></div><span class="cap-t">3 · Stat bomb</span><span class="cap-d">The number fades in on the word, and the source line follows 0.4 s later. Hold 3–4 s.</span></div>
+<div class="fr"><div class="phone"><div class="face"></div><div class="desk"></div><div class="safe"></div><div class="ov srcb"><i>✓ SOURCE</i><span>ISO 9001:2015 · 10.2</span></div></div><span class="cap-t">4 · Source badge</span><span class="cap-d">The audit-trail signature. It appears on every factual claim about a standard or a law. Bottom left, 3 s.</span></div>
+<div class="fr"><div class="phone"><div class="face"></div><div class="desk"></div><div class="safe"></div><div class="ov stamp">FINDING<small>myth ≠ requirement</small></div></div><span class="cap-t">5 · "Finding" stamp</span><span class="cap-d">Only in Myth vs. Requirement videos: it stamps the myth with a thump SFX. At most once per video.</span></div>
+<div class="fr"><div class="phone"><div class="face"></div><div class="desk"></div><div class="safe"></div><div class="ov cap">Stop fixing <mark>symptoms</mark>.</div></div><span class="cap-t">6 · Burned-in caption</span><span class="cap-d">3–6 words per card, one highlighted word. Timed exactly to the speech.</span></div>
+<div class="fr"><div class="phone" style="background:#1B2127"><div class="safe"></div><div class="ov" style="inset:0"><svg class="pdca" viewBox="0 0 200 200" aria-label="PDCA cycle diagram"><circle cx="100" cy="100" r="92" fill="none" stroke="#F4F5F2" stroke-width="2"/><line x1="100" y1="8" x2="100" y2="192" stroke="#F4F5F2" stroke-width="2"/><line x1="8" y1="100" x2="192" y2="100" stroke="#F4F5F2" stroke-width="2"/><path d="M100 100 L100 8 A92 92 0 0 1 192 100 Z" fill="#2150C8"/><text x="138" y="66" fill="#fff" font-family="Archivo,sans-serif" font-weight="800" font-size="26" text-anchor="middle">PLAN</text><text x="138" y="146" fill="#F4F5F2" font-family="Archivo,sans-serif" font-weight="800" font-size="26" text-anchor="middle">DO</text><text x="62" y="146" fill="#F4F5F2" font-family="Archivo,sans-serif" font-weight="800" font-size="26" text-anchor="middle">CHECK</text><text x="62" y="66" fill="#F4F5F2" font-family="Archivo,sans-serif" font-weight="800" font-size="26" text-anchor="middle">ACT</text></svg><div class="ov" style="left:8%;right:19%;bottom:31%;font-family:'IBM Plex Mono',monospace;font-size:4cqw;color:#F4C430">Step 1 of 4 · Plan</div></div></div><span class="cap-t">7 · Method diagram</span><span class="cap-d">PDCA, 8D (D1–D8 strip), fishbone, 5-Why ladder. Highlight the current step, and step through it as you talk.</span></div>
+<div class="fr"><div class="phone"><div class="ov split"><div><b>ISO 9001</b><span>"Does it meet requirements?"</span></div><div><b>ISO 14001</b><span>"What's the environmental impact?"</span></div><span class="vs">VS</span></div><div class="safe"></div></div><span class="cap-t">8 · Comparison split</span><span class="cap-d">Two standards, sectors or approaches. Top half slides in from the left, bottom half from the right.</span></div>
+<div class="fr"><div class="phone"><div class="ov chap"><span class="no">PART 2 OF 3</span><span class="tt">Where it breaks</span><span class="rule"></span></div><div class="safe"></div></div><span class="cap-t">9 · Chapter card</span><span class="cap-d">For videos over 2 minutes. 1.5 s full screen, or as a lower-third version over B-roll.</span></div>
+<div class="fr"><div class="phone"><div class="face"></div><div class="desk"></div><div class="safe"></div><div class="ov series"><span>NORM IN 60</span><span>#04</span></div></div><span class="cap-t">10 · Series badge</span><span class="cap-d">Top right, first 3 s, then it fades. The count builds anticipation.</span></div>
+<div class="fr"><div class="phone"><div class="ov endc"><span class="t1">The Quality Desk</span><span class="t2">Prove it. Improve it.</span><span class="t3">New video every Tuesday · Efic</span></div><div class="safe"></div></div><span class="cap-t">11 · End card</span><span class="cap-d">2–3 s. The same design every time. Build it once as a Camtasia template.</span></div>
+</div></div>
+<div class="sec"><h2>Building these in Camtasia</h2>
+<div class="grid">
+<div class="card"><span class="k">Build once</span><p>Make each graphic as a Camtasia group, then right-click → <b>Add to Library</b> → folder "QD Graphics". Reuse it every episode by editing the text only.</p></div>
+<div class="card"><span class="k">Animation</span><p>Fade in 0.3 s, hold, fade out 0.4 s. Use a slide-in only for the comparison split. Add the same soft "tick" sound effect under every graphic.</p></div>
+<div class="card"><span class="k">Callouts on documents</span><p>Annotations → Arrow or Highlight rectangle over a <i>mock</i> clause. Draw it in over 0.3 s, hold 2 s. One callout per cut.</p></div>
+</div></div>
+</section>
+
+<!-- ============ 15 EXPORT ============ -->
+<section class="tab" id="export" data-grp="Edit" data-t="Export Specs">
+<div class="doc"><span><b>QD-PB-15</b></span><span>Rev. 1.0</span><span>Checked September 2026 · platforms change limits, so re-check each quarter</span></div>
+<h1>Export Specs</h1>
+<div class="sec"><div class="tw"><table><thead><tr><th>Platform</th><th>Aspect</th><th>Resolution</th><th>Length</th><th>File</th><th>Notes</th></tr></thead><tbody>
+<tr><td><b>LinkedIn</b> (priority)</td><td>9:16 · 4:5 · 16:9</td><td class="tc">1080×1920 · 1080×1350 · 1920×1080</td><td>3 s–15 min (desktop), 10 min (mobile)</td><td>MP4 H.264 + AAC, up to 5 GB (keep it under ~200 MB)</td><td>Upload natively, never as a YouTube link. Upload an .srt file and a custom thumbnail. Sweet spot 30–90 s.</td></tr>
+<tr><td><b>YouTube</b></td><td>16:9</td><td class="tc">1920×1080</td><td>Long-form</td><td>MP4 H.264</td><td>Phase 2. Add chapters for anything over 3 minutes.</td></tr>
+<tr><td><b>YouTube Shorts</b></td><td>9:16</td><td class="tc">1080×1920</td><td>Up to 3 min</td><td>MP4 H.264</td><td>The River Musa guide says a 60 s cap. That's outdated: Shorts have allowed up to 3 minutes since October 2024.</td></tr>
+<tr><td><b>Instagram Reels</b></td><td>9:16</td><td class="tc">1080×1920</td><td>Up to 3 min</td><td>MP4 H.264</td><td>Optional. Use for reach if you want it.</td></tr>
+<tr><td><b>Xing</b></td><td>—</td><td>—</td><td>—</td><td>—</td><td>No feed for video. Xing is now a jobs platform, so link to your LinkedIn video from your Xing profile instead.</td></tr>
+</tbody></table></div></div>
+<div class="sec"><h2>Camtasia presets to save</h2>
+<div class="grid">
+<div class="card"><span class="k">QD-Vertical</span><div class="kv"><dt>Canvas</dt><dd>1080 × 1920</dd><dt>Frame rate</dt><dd>30 fps</dd><dt>Format</dt><dd>MP4, H.264</dd><dt>Quality</dt><dd>High / bitrate ~10–12 Mbps</dd><dt>Audio</dt><dd>AAC, 48 kHz, 192–320 kbps</dd></div></div>
+<div class="card"><span class="k">QD-Landscape</span><div class="kv"><dt>Canvas</dt><dd>1920 × 1080</dd><dt>Frame rate</dt><dd>30 fps (60 only if slow motion is planned)</dd><dt>Format</dt><dd>MP4, H.264</dd><dt>Quality</dt><dd>~12–16 Mbps</dd></div></div>
+<div class="card"><span class="k">Audio target</span><div class="kv"><dt>Loudness</dt><dd>≈ −14 LUFS integrated</dd><dt>True peak</dt><dd>≤ −1 dBTP</dd><dt>Voice peaks</dt><dd>≈ −6 dBFS</dd><dt>Captions</dt><dd>.srt exported separately (UTF-8)</dd></div></div>
+</div></div>
+<div class="sec"><h2>File naming</h2>
+<pre class="plain">QD-Ep01_QualityIsProof_EN_9x16_v1.mp4
+QD-Ep01_QualityIsProof_DE_9x16_v1.mp4
+QD-Ep01_QualityIsProof_DE.srt
+QD-Ep01_QualityIsProof_thumb.png</pre>
+<p>Keep your raw files and project files. They prove the content is yours if it's ever reposted without credit.</p></div>
+</section>
+
+<!-- ============ 16 LINKEDIN & XING ============ -->
+<section class="tab" id="platforms" data-grp="Publish &amp; Grow" data-t="LinkedIn &amp; Xing">
+<div class="doc"><span><b>QD-PB-16</b></span><span>Rev. 1.0</span><span>Researched September 2026 · sources listed at the bottom of this tab</span></div>
+<h1>LinkedIn &amp; Xing Playbook</h1>
+<p class="lede">LinkedIn is where the videos live. Xing is where German recruiters check you out. The two do different jobs, so they get different treatment.</p>
+
+<div class="sec"><h2>How LinkedIn distributes video in 2026</h2>
+<div class="grid">
+<div class="card"><span class="k">Native only</span><p>Upload the MP4 directly. Posts with external links, YouTube included, get less reach. Put any link in the first comment.</p></div>
+<div class="card"><span class="k">Dwell time</span><p>How long people stop on your post matters more than likes. Hook in 3 seconds, captions on, 30–90 seconds long.</p></div>
+<div class="card"><span class="k">The first hour</span><p>Reply to every comment within the first 60 minutes, ideally within 15. Early conversation pushes the post to second- and third-degree networks.</p></div>
+<div class="card"><span class="k">Network first</span><p>LinkedIn shows your post to your own network first. Connect with 5–10 relevant people a week: QM leads, DGQ members, recruiters in your target sectors.</p></div>
+</div></div>
+
+<div class="sec"><h2>Anatomy of a post</h2>
+<div class="tw"><table><thead><tr><th>Part</th><th>Rule</th><th>Example</th></tr></thead><tbody>
+<tr><td><b>Lines 1–2</b></td><td>This is all people see before "…see more", about 200 characters. It's the hook in text.</td><td>"Quality isn't paperwork. It's proof."</td></tr>
+<tr><td><b>Body</b></td><td>3–6 short paragraphs. One fact from the Proof Bank. White space between them.</td><td>The warehouse story, −15 %</td></tr>
+<tr><td><b>Question</b></td><td>One specific professional question that's easy to answer.</td><td>"Which ISO clause confuses you most?"</td></tr>
+<tr><td><b>Hashtags</b></td><td>3–5, a mix of DE and EN, same core set every time.</td><td>#Qualitätsmanagement #ISO9001 #QMB #InternalAudit #KVP</td></tr>
+<tr><td><b>Video</b></td><td>Native, with .srt captions and a custom thumbnail.</td><td>9:16, 60–75 s</td></tr>
+<tr><td><b>First comment</b></td><td>Your own, posted immediately: a resource or the German/English version.</td><td>"🇩🇪 Deutsche Version: …"</td></tr>
+</tbody></table></div></div>
+
+<div class="sec"><h2>Profile set-up (do this before Ep. 01)</h2>
+<div class="grid two">
+<div class="card"><span class="k">LinkedIn headline (draft)</span><pre class="plain">Qualitätsmanagement | ISO 9001 · ISO 14001 · Interne Audits (ISO 19011) | CAPA · 8D · FMEA | QMB (BWHW) | Quality videos: The Quality Desk</pre><p>Put keywords first, because recruiters search for them. Check it against flag F2 before you add "Lead Auditor".</p></div>
+<div class="card"><span class="k">Featured section</span><ol><li>Ep. 01 "Quality Is Proof" (video post)</li><li>Your best Norm in 60, once it's published</li><li>A PDF carousel: "8D on one page" (see Templates)</li></ol></div>
+<div class="card"><span class="k">About (structure)</span><ol><li>One line: what you do, in the recruiter's words</li><li>Proof: −15 % and −30 %, ISO 9001/14001, audits</li><li>Sectors: logistics, recycling, SMEs, social services</li><li>Languages, EU Blue Card, Gießen, open to travel</li><li>"I post a short quality video every Tuesday."</li></ol></div>
+<div class="card"><span class="k">Settings</span><ul><li>Profile URL: linkedin.com/in/murdock-emisembe (or the closest available)</li><li>"Open to work": recruiters-only visibility is enough</li><li>Profile language: German main profile plus an English secondary profile, both available in LinkedIn settings</li></ul></div>
+</div></div>
+
+<div class="sec"><h2>Xing: what it is now</h2>
+<div class="note blue">In 2023 Xing shut down groups and events, and it has since been rebuilt as a job and recruiting platform. There's no content feed like LinkedIn's, so <b>you don't post videos on Xing</b>. What you do is make your profile the one German recruiters find, and point it to your LinkedIn videos.</div>
+<div class="grid">
+<div class="card"><span class="k">Xing headline</span><pre class="plain">Qualitätsmanagement | ISO 9001 · ISO 14001 | Interne Audits | QMB (BWHW) | Gießen</pre></div>
+<div class="card"><span class="k">Profile checklist</span><ul><li>The same photo as LinkedIn</li><li>Job preferences: Qualitätsfachkraft, QM-Beauftragter, Qualitätsmanager; region Hessen plus remote/travel</li><li>Skills in German terms: Nachweisführung, Abweichungsmanagement, Lieferantenbewertung</li><li>In the "About" text, a link to your LinkedIn profile with a mention of the video series</li></ul></div>
+<div class="card"><span class="k">Why keep it</span><p>Many German Mittelstand HR teams still source candidates from Xing. It costs you 30 minutes once and 5 minutes a month to keep up to date.</p></div>
+</div></div>
+
+<div class="sec"><h2>Other platforms (optional)</h2>
+<div class="tw"><table><thead><tr><th>Platform</th><th>Role</th><th>When</th></tr></thead><tbody>
+<tr><td>YouTube</td><td>Archive and search. Dashboard Breakdowns, Deep Dives, Shorts cut from LinkedIn videos.</td><td>Phase 2 (after week 8)</td></tr>
+<tr><td>Instagram / TikTok</td><td>Reach among younger peers. Low value for recruiting.</td><td>Only if you have spare capacity</td></tr>
+<tr><td>River Musa channels</td><td>Separate brand. Cross-mention at most once a quarter.</td><td>—</td></tr>
+</tbody></table></div></div>
+
+<div class="sec"><h2>Sources</h2>
+<ul style="font-size:14px;margin:0;padding-left:18px">
+<li><a href="https://www.linkboost.co/blog/linkedin-video-specs-requirements-2026/" target="_blank" rel="noopener">LinkedIn Video Specs &amp; Requirements (2026)</a> · <a href="https://www.justpollen.com/blog/linkedin-video-guide" target="_blank" rel="noopener">LinkedIn Video Specs 2026: Size, Length &amp; Format</a></li>
+<li><a href="https://www.dataslayer.ai/blog/linkedin-algorithm-february-2026-whats-working-now" target="_blank" rel="noopener">LinkedIn Algorithm 2026: What Works Now</a> · <a href="https://blog.hootsuite.com/linkedin-algorithm/" target="_blank" rel="noopener">Hootsuite: How the LinkedIn algorithm works in 2026</a></li>
+<li><a href="https://skill-sprinters.de/blog/social-media/xing-vs-linkedin-2026/" target="_blank" rel="noopener">Xing vs LinkedIn 2026</a> · <a href="https://office.lexware.de/blog/xing-recruiting/" target="_blank" rel="noopener">Lexware: XING wurde umgebaut zur Recruiting App</a> · <a href="https://www.neuemedienwerkstatt.de/blog/xing-schaltet-gruppen-ab-welche-kommunikationsmoeglichkeiten-bleiben-bei-xing" target="_blank" rel="noopener">XING schaltet Gruppen ab</a></li>
+</ul></div>
+</section>
+
+<!-- ============ 17 PIPELINE ============ -->
+<section class="tab" id="pipeline" data-grp="Publish &amp; Grow" data-t="Posting Pipeline">
+<div class="doc"><span><b>QD-PB-17</b></span><span>Rev. 1.0</span><span>Cadence · stockpile · 90-day plan · batch filming</span></div>
+<h1>Posting Pipeline</h1>
+<p class="lede">Consistency compounds and bursts don't. Posting twice a week for six months beats twenty posts in one month and then silence, so set a pace you can hold while job-hunting and studying for C1 and the QMB exam.</p>
+
+<div class="sec"><h2>Weekly rhythm (CET/CEST)</h2>
+<div class="tw"><table><thead><tr><th>Day</th><th>Time</th><th>What</th><th>Format</th></tr></thead><tbody>
+<tr><td><b>Tuesday ★</b></td><td class="tc">08:00</td><td>Main video, English with German captions</td><td>Norm in 60 / Method Minute / Floor Lesson</td></tr>
+<tr><td>Wednesday</td><td class="tc">12:00</td><td>Text post or PDF carousel on the same topic</td><td>Carousel "on one page"</td></tr>
+<tr><td>Thursday</td><td class="tc">08:00</td><td>Second video, German</td><td>QM-Wort der Woche / German cut</td></tr>
+<tr><td>Daily</td><td class="tc">15 min</td><td>Comment on 5 posts from QM leads, DGQ people and target companies</td><td>Real comments, 2–3 sentences each</td></tr>
+<tr><td>Fri–Sun</td><td>—</td><td>No posting. LinkedIn engagement drops sharply at the weekend.</td><td>Batch filming / rest</td></tr>
+</tbody></table></div>
+<div class="note">★ Tuesday 08:00 is your anchor. If you only manage one thing in a week, make it the Tuesday video.</div></div>
+
+<div class="sec"><h2>Stockpile before launch</h2>
+<div class="grid">
+<div class="card"><span class="k">Minimum</span><h2>6</h2><p>Six finished videos before Ep. 01 goes live. <b>Finished</b> means edited, captioned, thumbnail made and post text written.</p></div>
+<div class="card"><span class="k">Recommended mix</span><ul><li>Ep. 01 Quality Is Proof</li><li>2 × Norm in 60</li><li>1 × Method Minute</li><li>1 × Floor Lesson (−30 % SOP)</li><li>1 × QM-Wort der Woche</li></ul></div>
+<div class="card"><span class="k">Rule</span><p>Keep at least 4 finished videos in reserve at all times. When it drops to 3, the next weekend is a batch day.</p></div>
+</div></div>
+
+<div class="sec"><h2>90-day plan</h2>
+<div class="grid">
+<div class="card"><span class="pill">Weeks −4 to 0</span><h3>Build the runway</h3><ul><li>Fix consistency flags F1–F8</li><li>Profile set-up on LinkedIn and Xing</li><li>Desk set and B-roll categories 1–3</li><li>Graphics templates in the Camtasia library</li><li>Film and edit 6 videos</li></ul></div>
+<div class="card"><span class="pill b">Month 1</span><h3>Launch and stay steady</h3><ul><li>Tuesday and Thursday videos from the stockpile</li><li>Film 4 new videos in one batch day</li><li>First-hour replies on every post</li><li>Log the numbers every Monday (Growth tab)</li></ul></div>
+<div class="card"><span class="pill b">Month 2</span><h3>Learn</h3><ul><li>Which format holds viewers longest? Make more of it.</li><li>Which hook type gets comments from your target roles?</li><li>First PDF carousel in Featured</li><li>Invite one guest (a DGQ contact) for a short conversation</li></ul></div>
+<div class="card"><span class="pill b">Month 3</span><h3>Scale what works</h3><ul><li>First Dashboard Breakdown (3–5 min)</li><li>Decide on YouTube (Phase 2)</li><li>Record a 60 s video application pitch for each target sector</li><li>Quarterly review: act on the data</li></ul></div>
+</div></div>
+
+<div class="sec"><h2>Batch day: one Saturday, four videos</h2>
+<div class="tw"><table><thead><tr><th>Block</th><th>Time</th><th>What</th></tr></thead><tbody>
+<tr><td class="tc">1</td><td class="tc">09:00–10:00</td><td>Set up the desk from your reference photo, check the light, set the audio gain, record room tone</td></tr>
+<tr><td class="tc">2</td><td class="tc">10:00–12:30</td><td>A-roll for 4 scripts, changing shirts between them. Three clean takes each. EN and DE where needed.</td></tr>
+<tr><td class="tc">3</td><td class="tc">13:30–15:00</td><td>Overhead B-roll for all 4: drawings, documents, props</td></tr>
+<tr><td class="tc">4</td><td class="tc">Sunday</td><td>Rough cut all 4 → captions → graphics → export → schedule</td></tr>
+</tbody></table></div></div>
+</section>
+
+<!-- ============ 18 PLANNER ============ -->
+<section class="tab" id="planner" data-grp="Publish &amp; Grow" data-t="Episode Planner">
+<div class="doc"><span><b>QD-PB-18</b></span><span>Rev. 1.0</span><span>Fill in before every shoot · saved in this browser only</span></div>
+<h1>Episode Planner</h1>
+<p class="lede">A video rarely fails for lack of a camera. It fails for lack of a plan. The form below is filled in with Ep. 01 as an example; clear it for your next episode.</p>
+<div class="row" style="margin-top:14px"><button class="btn" id="planclear">Clear form</button><button class="btn" id="planexample">Load Ep. 01 example</button><span class="mono" id="plansaved" style="color:var(--ink3)"></span></div>
+<form id="planform" class="sec" autocomplete="off">
+<fieldset class="fset"><legend>Concept</legend><div class="form">
+<div class="fld"><label for="p_title">Episode title</label><input id="p_title" name="p_title"></div>
+<div class="fld"><label for="p_fmt">Format</label><select id="p_fmt" name="p_fmt"><option value="">Choose a format</option><option>Norm in 60</option><option>Method Minute</option><option>Floor Lesson</option><option>Audit Room</option><option>QM-Wort der Woche</option><option>Dashboard Breakdown</option><option>Career Bridge</option><option>Learning in Public</option><option>Deep Dive</option><option>Video application pitch</option></select></div>
+<div class="fld"><label for="p_pillar">Pillar</label><select id="p_pillar" name="p_pillar"><option value="">Choose a pillar</option><option>P1 ISO, clearly explained</option><option>P2 Methods in practice</option><option>P3 Lessons from the floor</option><option>P4 The audit room</option><option>P5 Data for quality</option><option>P6 The career bridge</option></select></div>
+<div class="fld full"><label for="p_one">One-sentence test</label><textarea id="p_one" name="p_one"></textarea></div>
+<div class="fld full"><label for="p_hook">Hook (first line) + on-screen hook text</label><textarea id="p_hook" name="p_hook"></textarea></div>
+<div class="fld full"><label for="p_proof">Fact used + source (from the Proof Bank)</label><textarea id="p_proof" name="p_proof"></textarea></div>
+</div></fieldset>
+<fieldset class="fset"><legend>Schedule and shoot</legend><div class="form">
+<div class="fld"><label for="p_film">Film date</label><input id="p_film" name="p_film" type="date"></div>
+<div class="fld"><label for="p_pub">Publish date and time</label><input id="p_pub" name="p_pub" type="datetime-local"></div>
+<div class="fld"><label for="p_lang">Languages</label><input id="p_lang" name="p_lang"></div>
+<div class="fld full"><label for="p_aroll">A-roll shots</label><textarea id="p_aroll" name="p_aroll"></textarea></div>
+<div class="fld full"><label for="p_broll">B-roll shots and props</label><textarea id="p_broll" name="p_broll"></textarea></div>
+</div></fieldset>
+<fieldset class="fset"><legend>Post-production and distribution</legend><div class="form">
+<div class="fld"><label for="p_gfx">Graphics needed</label><textarea id="p_gfx" name="p_gfx"></textarea></div>
+<div class="fld"><label for="p_cta">CTA (only one)</label><textarea id="p_cta" name="p_cta"></textarea></div>
+<div class="fld"><label for="p_tags">Hashtags</label><input id="p_tags" name="p_tags"></div>
+<div class="fld full"><label for="p_post">Post text, first two lines</label><textarea id="p_post" name="p_post"></textarea></div>
+</div></fieldset>
+</form>
+</section>
+
+<!-- ============ 19 RULES ============ -->
+<section class="tab" id="rules" data-grp="Publish &amp; Grow" data-t="Rules &amp; Boundaries">
+<div class="doc"><span><b>QD-PB-19</b></span><span>Rev. 1.0</span><span>German legal basics · privacy · confidentiality · not legal advice</span></div>
+<h1>Rules &amp; Boundaries</h1>
+<p class="lede">You work in compliance, so your channel has to be compliant too. A single slip here would undo the credibility the videos are meant to build. These are the practical basics. When money or a business is involved, check with the IHK or a tax adviser.</p>
+
+<div class="sec"><h2>What never goes on camera</h2>
+<div class="grid">
+<div class="card"><span class="pill r">Never</span><ul><li>Residence permit, passport, ID numbers, date of birth</li><li>Arbeitszeugnisse, bank details, salary documents</li><li>Home address or street views that identify it</li><li>Real client, employer or supplier documents, audit reports or internal KPIs</li><li>Colleagues or guests without written consent</li></ul></div>
+<div class="card"><span class="pill g">Always fine</span><ul><li>Your knowledge and opinions</li><li>Mock documents you made yourself</li><li>Facts already on your CV (the Proof Bank)</li><li>Public, published information, with its source named</li><li>Your desk, your city, your learning journey</li></ul></div>
+<div class="card"><span class="pill y">Ask first</span><ul><li>Naming a former employer in a <i>critical</i> context. Don't do it.</li><li>Filming inside any company, even a friend's</li><li>Once you're employed, check the employer's social media policy before posting about work topics</li></ul></div>
+</div></div>
+
+<div class="sec"><h2>German legal checklist</h2>
+<div class="tw"><table><thead><tr><th>Topic</th><th>What applies</th><th>Your action</th></tr></thead><tbody>
+<tr><td><b>Recht am eigenen Bild</b> (KUG §22)</td><td>You need consent to publish recognisable images of people.</td><td>Get a written release from every guest (template in Templates). In public, film wide shots where no one is identifiable.</td></tr>
+<tr><td><b>Urheberrecht</b></td><td>ISO/DIN standards, music and images belong to their owners.</td><td>Paraphrase standards and quote only short phrases, with the source. Use licensed music only. Never film whole norm pages.</td></tr>
+<tr><td><b>Werbekennzeichnung</b></td><td>Paid or gifted collaborations must be labelled.</td><td>Put "Werbung" or "Anzeige" at the start of the post and in the video. This includes promoting your own paid services.</td></tr>
+<tr><td><b>Impressum / Datenschutz</b></td><td>Business-related online presence needs legal notices.</td><td>Once you use LinkedIn or a website to promote Efic Consultancy services, add an Impressum and a privacy notice. Clarify the details with the IHK.</td></tr>
+<tr><td><b>DSGVO</b></td><td>Newsletters and guest data are personal data.</td><td>Consent for guests and newsletter sign-ups; collect only the data you need.</td></tr>
+<tr><td><b>Gewerbe / Steuer</b></td><td>Income from content or consulting is taxable.</td><td>Register the business and inform the Finanzamt before the first euro comes in. Keep receipts for equipment and software.</td></tr>
+<tr><td><b>EU Blue Card</b></td><td>Permit conditions can limit self-employed work.</td><td>Before earning money from content or consulting, check with the Ausländerbehörde that self-employment is allowed under your permit.</td></tr>
+<tr><td><b>AI-generated visuals</b></td><td>Since 2 August 2026 the EU AI Act (Art. 50) requires deepfake-type content to be disclosed.</td><td>If you ever use AI-generated B-roll or voices, label them clearly. The simplest choice is not to use them for a credibility brand.</td></tr>
+</tbody></table></div>
+<div class="note">This table is a practical starting point, not legal advice. The Blue Card row matters most: clarify it before you earn anything from the channel or from consulting.</div>
+</div>
+</section>
+
+<!-- ============ 20 GROWTH ============ -->
+<section class="tab" id="growth" data-grp="Publish &amp; Grow" data-t="Growth &amp; Metrics">
+<div class="doc"><span><b>QD-PB-20</b></span><span>Rev. 1.0</span><span>Measure what serves the career · monthly PDCA on your own channel</span></div>
+<h1>Growth &amp; Metrics</h1>
+<p class="lede">Views are a vanity number. Your channel exists to create interviews, professional relationships and, later, consulting work. Measure those first.</p>
+
+<div class="sec"><h2>The funnel</h2>
+<div class="flow">
+<div class="st"><span class="mono">1 · SEE</span><b>Impressions</b>People who saw the post</div>
+<div class="st"><span class="mono">2 · WATCH</span><b>Watch time</b>Average view duration and completion</div>
+<div class="st"><span class="mono">3 · TALK</span><b>Comments</b>From people in QM and hiring roles</div>
+<div class="st"><span class="mono">4 · CHECK</span><b>Profile views</b>And search appearances</div>
+<div class="st"><span class="mono">5 · ACT</span><b>Messages</b>From recruiters, invitations, consulting leads</div>
+</div></div>
+
+<div class="sec"><h2>The six numbers that matter</h2>
+<div class="tw"><table><thead><tr><th>Metric</th><th>Where to find it</th><th>What it tells you</th><th>If it's low</th></tr></thead><tbody>
+<tr><td><b>Recruiter / hiring messages</b></td><td>LinkedIn and Xing inbox (count them yourself)</td><td>Whether the channel serves pillar 1</td><td>Make the headline and Featured clearer; post more Floor Lessons with numbers</td></tr>
+<tr><td><b>Profile views</b></td><td>LinkedIn analytics</td><td>Whether videos make people curious about you</td><td>Hooks and the name lower third</td></tr>
+<tr><td><b>Search appearances</b></td><td>LinkedIn analytics</td><td>Headline and skill keywords</td><td>Add German QM terms to your headline and skills</td></tr>
+<tr><td><b>Average watch time</b></td><td>Video analytics</td><td>Whether the edit holds attention</td><td>Cut faster; move the payoff earlier</td></tr>
+<tr><td><b>Comments from target roles</b></td><td>Posts (count them yourself)</td><td>Whether you reach the right people</td><td>Ask more specific questions; comment on their posts</td></tr>
+<tr><td><b>Followers</b></td><td>LinkedIn analytics</td><td>Slow-moving trust signal</td><td>Check it monthly, not daily</td></tr>
+</tbody></table></div></div>
+
+<div class="sec"><h2>Monthly PDCA on your channel</h2>
+<div class="grid">
+<div class="card"><span class="pill b">Plan</span><p>Last Monday of the month: pick next month's 8 episodes from the Library, weighted towards whatever worked.</p></div>
+<div class="card"><span class="pill b">Do</span><p>One batch day and one editing day. Publish on the rhythm.</p></div>
+<div class="card"><span class="pill b">Check</span><p>Log the six numbers in one spreadsheet row per month, with a note on the best and worst video.</p></div>
+<div class="card"><span class="pill b">Act</span><p>Change <b>one</b> thing: a hook type, a length or a format. Changing several at once tells you nothing.</p></div>
+</div>
+<div class="note green">This is your own method on camera. A short "What my monthly review showed" video is itself good content for a quality audience.</div>
+</div>
+
+<div class="sec"><h2>Honest benchmarks (not promises)</h2>
+<p>With two videos a week and daily commenting, many new LinkedIn creators in a professional niche see a few hundred new followers in the first three months and a rise in profile views within weeks. Some videos will get almost no reach. That's normal and says nothing about you. Judge the channel after 12 weeks, not after one post.</p>
+</div>
+</section>
+
+<!-- ============ 21 TEMPLATES ============ -->
+<section class="tab" id="templates" data-grp="Publish &amp; Grow" data-t="Templates">
+<div class="doc"><span><b>QD-PB-21</b></span><span>Rev. 1.0</span><span>Copy, adapt, use</span></div>
+<h1>Templates</h1>
+<div class="sec"><div class="grid two">
+<div class="card"><div class="row"><span class="k" style="flex:1">A · Post template (EN)</span><button class="btn" data-copy="t-post">Copy text</button></div><pre class="plain" id="t-post">[Hook, one line, the same as the video's first sentence]
+
+[The situation, 1–2 lines: where, what went wrong]
+
+[What we did / what the standard actually asks, 2–3 lines]
+
+[The result or the evidence, one line with a number or clause]
+
+[One specific question for the reader]
+
+#Qualitätsmanagement #ISO9001 #[topic] #[topic]</pre></div>
+<div class="card"><div class="row"><span class="k" style="flex:1">B · PDF carousel "on one page"</span><button class="btn" data-copy="t-car">Copy text</button></div><pre class="plain" id="t-car">Slide 1  Title: "8D on one page" + your name + series badge
+Slide 2  When to use it (and when not)
+Slide 3  D1–D2: team + problem description
+Slide 4  D3: containment
+Slide 5  D4: root cause (5-Why / fishbone)
+Slide 6  D5–D6: corrective action + verification
+Slide 7  D7: prevent recurrence
+Slide 8  D8: close + recognise the team
+Slide 9  One common mistake
+Slide 10 "Follow for Method Minute every week" + face photo
+Format: 1080×1350 PDF · Archivo + IBM Plex · Graphite/Paper/Blue</pre></div>
+<div class="card"><div class="row"><span class="k" style="flex:1">C · Video application pitch (60 s)</span><button class="btn" data-copy="t-pitch">Copy text</button></div><pre class="plain" id="t-pitch">[0–5 s]  "Guten Tag, ich bin Murdock Emisembe – Qualitätsmanagement, ISO 9001 und 14001."
+[5–20 s] One Floor Lesson with a number, matched to the company's sector.
+[20–35 s] What I'd bring in the first 90 days: [2 concrete things from the job ad].
+[35–50 s] Languages, EU Blue Card, Gießen, open to travel.
+[50–60 s] "Ich freue mich auf ein Gespräch. Nachweisen. Verbessern."
+→ Upload unlisted; put the link in the application email, not the CV PDF.</pre></div>
+<div class="card"><div class="row"><span class="k" style="flex:1">D · Guest invitation (DE)</span><button class="btn" data-copy="t-guest">Copy text</button></div><pre class="plain" id="t-guest">Guten Tag [Name],
+
+ich produziere auf LinkedIn die Kurzvideo-Reihe „Qualität, klar erklärt" (The Quality Desk). In jeder Folge geht es um eine Norm, eine Methode oder eine Erfahrung aus dem Audit-Alltag.
+
+Ihr Beitrag zu [Thema] hat mich angesprochen. Hätten Sie Lust auf ein 15-minütiges Gespräch per Video zu [konkrete Frage]? Sie erhalten den Schnitt vor der Veröffentlichung zur Freigabe.
+
+Mit freundlichen Grüßen
+Murdock Emisembe</pre></div>
+<div class="card"><div class="row"><span class="k" style="flex:1">E · Consent / release (short, DE)</span><button class="btn" data-copy="t-rel">Copy text</button></div><pre class="plain" id="t-rel">Einwilligung zur Veröffentlichung von Bild- und Tonaufnahmen
+
+Ich, [Name], willige ein, dass Murdock Emisembe die am [Datum] aufgenommenen Bild- und Tonaufnahmen von mir im Rahmen der Videoreihe „The Quality Desk" auf LinkedIn und YouTube veröffentlicht. Ich habe den finalen Schnitt vor Veröffentlichung gesehen. Die Einwilligung kann ich jederzeit mit Wirkung für die Zukunft widerrufen.
+
+Ort, Datum, Unterschrift</pre></div>
+<div class="card"><div class="row"><span class="k" style="flex:1">F · Research brief</span><button class="btn" data-copy="t-brief">Copy text</button></div><pre class="plain" id="t-brief">Episode:
+One-sentence test:
+Pillar / format / structure type:
+3 hook options (write all three, choose later):
+ 1)
+ 2)
+ 3)
+Primary sources (min. 2):
+Proof Bank fact used:
+Clause / method details to verify:
+The one insight the viewer takes away:
+CTA (one):
+B-roll list: </pre></div>
+<div class="card"><div class="row"><span class="k" style="flex:1">G · Comment replies</span><button class="btn" data-copy="t-rep">Copy text</button></div><pre class="plain" id="t-rep">Thanks — good point. In my experience [one specific addition]. How do you handle it at your site?
+
+Danke für die Ergänzung! Bei uns war der Knackpunkt [konkretes Detail]. Wie lösen Sie das?
+
+Great question — I'll answer it properly in next week's Norm in 60.</pre></div>
+<div class="card"><div class="row"><span class="k" style="flex:1">H · Recruiter follow-up (DE)</span><button class="btn" data-copy="t-rec">Copy text</button></div><pre class="plain" id="t-rec">Guten Tag [Name],
+
+vielen Dank für Ihr Interesse. Einen kurzen Eindruck, wie ich an Qualitätsthemen herangehe, gibt dieses 70-Sekunden-Video: [Link]
+
+Gern stelle ich mich in einem Gespräch ausführlicher vor.
+
+Mit freundlichen Grüßen
+Murdock Emisembe</pre></div>
+</div></div>
+</section>
+
+<footer>The Quality Desk · Production Bible · Rev. 1.0 · 28.09.2026 · Graphite #1B2127 · Audit Blue #2150C8 · Highlighter #F4C430 · Structure modelled on the River Musa Show Production Visual Guide</footer>
+</main>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- NAV ---------- */
+const tabs=$$('section.tab'), side=$('#sidenav'), mob=$('#mobnav');
+let grp='', html='', opts='';
+tabs.forEach((t,i)=>{
+  const g=t.dataset.grp, n=String(i+1).padStart(2,'0');
+  if(g!==grp){grp=g;html+=`<div class="grp">${g}</div>`;opts+=(opts?'</optgroup>':'')+`<optgroup label="${g.replace('&amp;','&')}">`;}
+  html+=`<button type="button" data-tab="${t.id}"><span class="n">${n}</span><span>${t.dataset.t}</span></button>`;
+  opts+=`<option value="${t.id}">${n} · ${t.dataset.t.replace('&amp;','&')}</option>`;
+});
+side.innerHTML=html; mob.innerHTML=opts+'</optgroup>';
+function show(id,push){
+  if(!document.getElementById(id)||!document.getElementById(id).classList.contains('tab')) id='start';
+  tabs.forEach(t=>t.classList.toggle('on',t.id===id));
+  $$('nav.side button').forEach(b=>b.classList.toggle('on',b.dataset.tab===id));
+  mob.value=id; store.set('qd-tab',id);
+  if(push){try{history.replaceState(null,'','#'+id)}catch(e){location.hash=id} window.scrollTo(0,0);}
+}
+side.addEventListener('click',e=>{const b=e.target.closest('button[data-tab]'); if(b) show(b.dataset.tab,true);});
+mob.addEventListener('change',()=>show(mob.value,true));
+window.addEventListener('hashchange',()=>{show(location.hash.slice(1),false);window.scrollTo(0,0);});
+
+/* ---------- FORMATS ---------- */
+const F=[
+ {n:'Norm in 60',p:'P1',len:'45–75 s',plat:'LinkedIn · Shorts',ar:'9:16',prio:'Core',st:'Hook question → clause badge → what it asks, in plain words → what evidence an auditor looks for → the most common gap → CTA',ex:'"ISO 9001 7.5 in 60 seconds: what documented information really means."',tip:'One clause per video. Never read the norm text aloud: paraphrase it and show the source badge.'},
+ {n:'Method Minute',p:'P2',len:'60–90 s',plat:'LinkedIn · Shorts',ar:'9:16 / 4:5',prio:'Core',st:'Problem → method name → steps drawn by hand (overhead timelapse) → a small everyday example → when NOT to use it → CTA',ex:'"8D on one sheet of paper."',tip:'Filming your hand drawing the method is the whole visual. A marker and A3 paper are enough.'},
+ {n:'Floor Lesson',p:'P3',len:'90–150 s',plat:'LinkedIn',ar:'9:16',prio:'Core',st:'Structure Type 2 (The fix): symptom → wrong first fix → it returns → root cause → lasting fix + number',ex:'"The SOP that cut lead time by 30 %."',tip:'Use only CV-level facts. No internal figures beyond −15 % and −30 %, and no names of colleagues or customers.'},
+ {n:'QM-Wort der Woche',p:'P6',len:'30–45 s',plat:'LinkedIn',ar:'9:16',prio:'Core',st:'German term → plain definition → example sentence from practice → the English equivalent → "Nächste Woche: …"',ex:'„Abweichung vs. Fehler: nicht dasselbe."',tip:'Filmed in German, with Sie. Shows your German to German hiring managers in 40 seconds.'},
+ {n:'Audit Room',p:'P4',len:'60–120 s',plat:'LinkedIn',ar:'9:16',prio:'Month 2',st:'Situation (anonymised) → the question I ask → the evidence I want to see → what good looks like → CTA',ex:'"Three questions I ask first in an internal audit."',tip:'Built on ISO 19011 principles, never on real findings from a named organisation.'},
+ {n:'Myth vs. Requirement',p:'P1',len:'45–75 s',plat:'LinkedIn · Shorts',ar:'9:16',prio:'Month 2',st:'State the myth → FINDING stamp → what the standard actually requires → the practical version',ex:'"ISO 9001 requires a quality manual." (It hasn\'t since 2015.)',tip:'Check every myth against the current edition before filming, and name the edition on screen.'},
+ {n:'Dashboard Breakdown',p:'P5',len:'3–5 min',plat:'LinkedIn · YouTube',ar:'16:9 + PiP',prio:'Month 3',st:'Hook on the face → screen recording with PiP → zoom-in on the key cell or chart → back to the face for the insight → CTA',ex:'"A quality KPI tracker in Excel in five minutes."',tip:'Dummy data only. Camtasia screen recording on track 1, face-cam on track 2 at 20 % size, bottom right.'},
+ {n:'Career Bridge',p:'P6',len:'90–180 s',plat:'LinkedIn',ar:'9:16',prio:'Monthly',st:'Structure Type 5 (The bridge): where I started → the step that changed things → what it took → what I\'d tell someone starting now',ex:'"From a finance degree in Kenya to QM in Germany: what recognition actually took."',tip:'Told as progress, never as grievance. Ends with one useful step the viewer can take.'},
+ {n:'Learning in Public',p:'P6',len:'45–90 s',plat:'LinkedIn',ar:'9:16',prio:'Occasional',st:'What I\'m studying this week → one thing that surprised me → how I\'d apply it → question to the audience',ex:'"What I\'m learning for my QMB exam: the part about risk-based thinking."',tip:'Honest about "exam pending" until you pass. Then a result video.'},
+ {n:'Video application pitch',p:'—',len:'60 s',plat:'Unlisted link',ar:'9:16 or 16:9',prio:'Month 3',st:'See Templates → C. One version per target sector.',ex:'"Guten Tag, ich bin Murdock Emisembe…"',tip:'Not a public post. Send it only where the job ad or the recruiter invites it, or in a follow-up message.'}
+];
+$('#fmtlist').innerHTML=F.map((f,i)=>`<details class="fmt"${i<2?' open':''}><summary><h3>${f.n}</h3><span class="pill b">${f.p}</span><span class="pill">${f.len}</span><span class="pill">${f.ar}</span><span class="pill ${f.prio==='Core'?'g':''}">${f.prio}</span></summary><div class="in"><div class="kv"><dt>Platform</dt><dd>${f.plat}</dd><dt>Structure</dt><dd>${f.st}</dd><dt>Example</dt><dd><b>${esc(f.ex)}</b></dd><dt>Tip</dt><dd>${f.tip}</dd></div></div></details>`).join('');
+
+/* ---------- HOOKS ---------- */
+const H=[
+ ['CLAUSE QUESTION','"What does ISO [X] clause [Y] actually ask for?"','"What does ISO 9001 clause 7.5 actually ask for? It\'s not a folder of documents."','„Was verlangt ISO 9001, Kapitel 7.5, eigentlich? Keinen Ordner voller Dokumente."'],
+ ['NUMBER FIRST','"[Number]. Here\'s how we got there."','"Minus fifteen percent errors. Here\'s how we got there."','„Minus 15 Prozent Fehler. So sind wir dahin gekommen."'],
+ ['MYTH → FINDING','"Everyone says [myth]. That\'s a finding waiting to happen."','"Everyone says ISO 9001 needs a quality manual. It hasn\'t since 2015."','„Viele sagen, ISO 9001 verlangt ein QM-Handbuch. Seit 2015 nicht mehr."'],
+ ['SYMPTOM LOOP','"We fixed it. [Time] later it was back."','"We fixed the labelling error. Three weeks later it was back."','„Wir haben den Fehler behoben. Drei Wochen später war er wieder da."'],
+ ['ONE-SHEET PROMISE','"[Method] on one sheet of paper."','"8D on one sheet of paper. Watch."','„8D auf einem Blatt Papier. Schauen Sie zu."'],
+ ['AUDITOR\'S EYE','"The first thing an auditor asks for isn\'t what you think."','"The first thing I ask for in an internal audit isn\'t the procedure."','„Das Erste, was ich im Audit sehen will, ist nicht die Verfahrensanweisung."'],
+ ['LOSS FRAME','"The [clause] gap that shows up in [audit type] again and again."','"The clause 10.2 gap that shows up in certification audits again and again."','„Die Lücke in 10.2, die in Zertifizierungsaudits immer wieder auftaucht."'],
+ ['CONTRAST','"Same standard. [Sector A] vs. [sector B]."','"Same ISO 9001. A warehouse vs. a plastics recycler. Different evidence."','„Gleiche Norm. Lager vs. Recycling. Andere Nachweise."'],
+ ['YOU STATEMENT','"If you\'ve ever [situation], this is for you."','"If you\'ve ever written a corrective action that changed nothing, this is for you."','„Wenn Sie je eine Korrekturmaßnahme geschrieben haben, die nichts geändert hat: Das ist für Sie."'],
+ ['CONFESSION','"I got [X] wrong. Here\'s what I do now."','"I used to confuse correction and corrective action. Here\'s the difference."','„Ich habe früher Korrektur und Korrekturmaßnahme verwechselt. Hier ist der Unterschied."'],
+ ['WORD OF THE WEEK','„[German term]. Klingt einfach. Ist es nicht."','"Nachweisführung. Sounds simple. It isn\'t."','„Nachweisführung. Klingt einfach. Ist es nicht."'],
+ ['BRIDGE','"I started in [A]. Now I [B]. One thing made the difference."','"I started in finance in Nairobi. Now I work in quality in Hessen. One thing made the difference."','„Angefangen habe ich im Finanzbereich in Nairobi. Heute arbeite ich im Qualitätsmanagement in Hessen."']
+];
+$('#hooklist').innerHTML=H.map(h=>`<div class="hook"><span class="k" style="font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink3)">${h[0]}</span><span class="f">${esc(h[1])}</span><span class="ex">${esc(h[2])}</span><span class="de">${esc(h[3])}</span></div>`).join('');
+
+const C=[
+ ['Comment: open question','"Which clause gives you the most trouble? Tell me below."','„Welches Kapitel macht Ihnen am meisten Arbeit? Schreiben Sie es mir."','Answers become new episodes. Say so.'],
+ ['Comment: your experience','"How do you handle this at your site?"','„Wie lösen Sie das in Ihrem Betrieb?"','Invites peers to show their expertise. They come back to reply.'],
+ ['Follow: habit','"New Quality Desk video every Tuesday. Follow so it finds you."','„Jeden Dienstag ein neues Video. Folgen Sie mir, dann verpassen Sie keins."','A specific day creates a routine.'],
+ ['Save','"Save this for your next audit prep."','„Speichern Sie das für Ihre nächste Auditvorbereitung."','Works best for Norm in 60 and carousels.'],
+ ['Share: targeted','"Send this to the one colleague who writes your CAPAs."','„Schicken Sie das der Person, die bei Ihnen die Korrekturmaßnahmen schreibt."','"One person" makes sharing feel small and specific.'],
+ ['Open loop','"Next week: why 5-Why stops at the wrong why."','„Nächste Woche: Warum 5-Why oft beim falschen Warum aufhört."','The one loop left open, as a reason to come back.'],
+ ['Soft career signal','"I\'m currently open to quality roles in Hessen. Happy to connect."','„Ich bin aktuell offen für neue Aufgaben im Qualitätsmanagement. Gern vernetzen."','At most once a month, in the post text rather than the video.'],
+ ['Resource','"I put the one-page 8D template in the comments."','„Die 8D-Vorlage auf einer Seite finden Sie in den Kommentaren."','Only when you actually have the file ready.']
+];
+$('#ctalist').innerHTML=C.map(c=>`<div class="card"><span class="k">${c[0]}</span><p><b>${esc(c[1])}</b></p><p style="color:var(--ink2)">${esc(c[2])}</p><p class="dir">${c[3]}</p></div>`).join('');
+
+/* ---------- EPISODES ---------- */
+const E=[
+ ['01','Quality Is Proof','P3','Intro','"Quality isn\'t paperwork. It\'s proof."','Proof Bank: −15 %, Grünstoff, QMB'],
+ ['02','Documented information in 60 seconds','P1','Norm in 60','"ISO 9001 clause 7.5: it\'s not a folder of documents."','ISO 9001:2015 §7.5; your BWHW notes'],
+ ['03','8D on one sheet of paper','P2','Method Minute','"8D on one sheet of paper. Watch."','BWHW Part 1 content (8D); CV methods'],
+ ['04','The SOP that cut lead time by 30 %','P3','Floor Lesson','"One SOP. Thirty percent faster. Here\'s what was in it."','Wayfair reference letter 15.10.2022'],
+ ['05','Abweichung vs. Fehler','P6','QM-Wort der Woche','„Abweichung und Fehler: nicht dasselbe."','ISO 9000 terms (verify wording)'],
+ ['06','Correction vs. corrective action','P1','Norm in 60','"I used to confuse these two. Most audit findings start here."','ISO 9001 §10.2'],
+ ['07','5S is not tidying up','P2','Method Minute','"5S isn\'t about a clean desk. It\'s about finding things in 30 seconds."','Wayfair 5S audits (CV)'],
+ ['08','Why the same error kept coming back','P3','Floor Lesson','"We fixed it. Three weeks later it was back."','CV: −15 % via root cause + KVP'],
+ ['09','ISO 9001 vs. ISO 14001: same structure','P1','Norm in 60','"Same chapters. Completely different question."','Harmonised structure (Annex SL); Grünstoff IMS'],
+ ['10','Three questions I ask first in an internal audit','P4','Audit Room','"The first thing I ask for isn\'t the procedure."','ISO 19011:2018 principles; TÜV SÜD training'],
+ ['11','Nachweisführung','P6','QM-Wort der Woche','„Nachweisführung. Klingt einfach. Ist es nicht."','Your own Grünstoff role wording'],
+ ['12','ISO 9001 needs a quality manual? (Finding)','P1','Myth vs. Requirement','"Everyone says you need a QM manual. Since 2015 you don\'t."','ISO 9001:2015 (verify clause refs)'],
+ ['13','A quality KPI tracker in Excel','P5','Dashboard Breakdown','"Five minutes, one PivotTable, and you see where errors cluster."','CV: Excel PivotTables, audit reports (dummy data)'],
+ ['14','FMEA explained with a coffee machine','P2','Method Minute','"What could go wrong with your office coffee machine? FMEA knows."','BWHW FMEA content'],
+ ['15','From a finance degree to QM in Germany','P6','Career Bridge','"I started in finance in Nairobi. One step changed everything."','ZAB 14.11.2024; Blue Card; DGQ (see flag F1 first)'],
+ ['16','What I\'m learning for the QMB exam','P6','Learning in Public','"200 hours of training. One idea changed how I see audits."','BWHW Parts 1 + 2 certificates']
+];
+const tb=$('#eplist');
+function drawE(f){tb.innerHTML=E.filter(e=>f==='all'||e[2]===f).map(e=>`<tr><td class="tc">${e[0]}</td><td><b>${esc(e[1])}</b></td><td><span class="pill b">${e[2]}</span> ${e[3]}</td><td>${esc(e[4])}</td><td style="font-size:13px;color:var(--ink2)">${esc(e[5])}</td></tr>`).join('');}
+drawE('all');
+$$('#library [data-f]').forEach(p=>{const go=()=>{$$('#library [data-f]').forEach(x=>x.classList.remove('b'));p.classList.add('b');drawE(p.dataset.f)};p.addEventListener('click',go);p.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}});});
+
+/* ---------- CHECKLIST ---------- */
+const K=[
+ ['Plan',[
+  ['One-sentence test written','"This video is about… and afterwards the viewer will…"'],
+  ['Every fact checked against the Proof Bank','No number or title that isn\'t on the list or verified'],
+  ['Clause wording checked against the current edition','Edition year noted for the source badge'],
+  ['Hook written first, plus on-screen hook text of 6 words or fewer','It must work on mute'],
+  ['Script read aloud twice','Rewrite every line you stumble on'],
+  ['Shot list with every B-roll clip and graphic','Include the props'],
+  ['Mock documents prepared','No real client or employer documents']]],
+ ['Set',[
+  ['Desk set matches the reference photo','Same binders, lamp, highlighter'],
+  ['One distracting object removed','Take a 5-second look at the background'],
+  ['Face is the brightest thing in the frame','Window in front, lamp behind'],
+  ['Shirt: solid colour, no logo','Change shirts between batch videos'],
+  ['Phone or camera charged, 5 GB free','Spare battery for the GoPro'],
+  ['Notifications off, door closed','Tell the household you\'re recording']]],
+ ['Record',[
+  ['Grid on: eyes on the upper third','Camera at eye level or slightly below'],
+  ['Exposure and focus locked on the face','AE/AF lock'],
+  ['Scarlett gain: peaks −12 to −6 dBFS','Never red'],
+  ['10 s of room tone recorded','For patching gaps in the edit'],
+  ['Clap at the start of every take','Sync marker'],
+  ['Recording actually running','Check the red dot, twice'],
+  ['Three clean takes of the hook','Choose in the edit'],
+  ['German take recorded if planned','As its own take, not a dub'],
+  ['B-roll shot list complete','60 fps for hands; 10 s per clip']]],
+ ['Wrap',[
+  ['First and last 10 s of each take reviewed','On headphones'],
+  ['Files backed up to a second location','Cloud or drive before you tidy up'],
+  ['Notes on anything to reshoot','Write them now'],
+  ['Stockpile count updated','Reserve at 4 or more?']]],
+ ['Publish',[
+  ['Captions burned in and checked word by word','One highlighted word per sentence'],
+  ['.srt file exported','For the LinkedIn upload'],
+  ['Source badge on every factual claim','The audit-trail rule'],
+  ['Nothing private visible in any frame','IDs, addresses, real documents, faces without consent'],
+  ['Post text: hook lines, body, question, hashtags','Template A'],
+  ['Thumbnail uploaded','Face + 5 words or fewer + series badge'],
+  ['First comment ready','Link or the other-language version'],
+  ['Calendar blocked for 60 min after posting','For first-hour replies']]]
+];
+const done=store.get('qd-chk')||{};
+let n=0;
+$('#chkwrap').innerHTML=K.map(g=>`<div class="sec" style="margin-top:18px"><h2>${g[0]}</h2><div class="chk">${g[1].map(it=>{const id='c'+(n++);return `<label for="${id}"><input type="checkbox" id="${id}" ${done[id]?'checked':''}><span><span class="t">${esc(it[0])}</span><span class="d">${esc(it[1])}</span></span></label>`}).join('')}</div></div>`).join('');
+function prog(){const all=$$('#chkwrap input'),c=all.filter(x=>x.checked).length;$('#chkcount').textContent=c+' / '+all.length;$('#chkbar').style.width=(all.length?c/all.length*100:0)+'%';}
+$('#chkwrap').addEventListener('change',e=>{if(e.target.type==='checkbox'){done[e.target.id]=e.target.checked;store.set('qd-chk',done);prog();}});
+$('#chkreset').addEventListener('click',()=>{$$('#chkwrap input').forEach(x=>{x.checked=false;delete done[x.id]});store.set('qd-chk',done);prog();});
+prog();
+
+/* ---------- STOCKPILE ---------- */
+const S=[
+ ['Desk & Documents','Highest value','12+','Highlighter across a mock clause (ECU), stamping "geprüft", ticking a checklist, a QM binder opening and closing, a pen correcting a procedure, a signature line.','These are your evergreen cutaways. They show quality work happening, not just talked about.','Overhead GoPro at 60 fps with window light from the side. Print your mock documents in a realistic layout: document number, revision, approval box.'],
+ ['Methods on Paper','Signature shots','10+','PDCA circle drawn, Ishikawa fishbone filling in, 8D D1–D8 sticky notes placed, a 5-Why ladder, an FMEA table with RPN numbers.','This is the whole visual for Method Minute. Nobody else in QM content films methods being drawn well.','Draw in real time and speed it up to 300–400 % in Camtasia. Thick marker, A3 paper, blue and yellow only.'],
+ ['Self / Identity','Shoot today','10+','Walking to the desk with a binder, reading a document, thinking at the window, a hand closing a laptop, a profile shot writing notes.','You are the brand. These fill voice-overs in Career Bridge videos.','One 30-minute session at the window, in the same shirt as your A-roll so it cuts together.'],
+ ['Measurement & Inspection','Easy win','8+','Caliper closing on a part, stopwatch starting, a ruler on a label, a checklist on a clipboard, gloves being put on.','Prüfmittel make "measurement" concrete. They\'re good metaphors for "you can\'t improve what you can\'t measure".','A €10 digital caliper and a screw or small part. Macro ECU, 60 fps.'],
+ ['Screens & Data','Easy win','8+','An Excel PivotTable building, conditional formatting turning red, a Power BI chart filtering, a cursor highlighting a KPI.','Proof of P5 skills. Also the background for Dashboard Breakdown.','Dummy data only. Clean browser, no bookmarks bar, large zoom, slow and deliberate cursor.'],
+ ['Transitions','Add to any session','8+','A binder slamming shut, a pen capped, a page turned, a stamp lifted, a sticky note pulled off.','Deliberate actions make clean edit points without jump cuts.','60 fps, 10 s per clip. Slow to 80 % in the edit.'],
+ ['Industry Exteriors','When travelling','10+','Logistics trucks at a depot gate, an industrial park, recycling containers, a harbour or container terminal from public ground, trade fair halls (with permission).','Shows the sectors you talk about without entering anyone\'s premises.','Film from public ground only. No company logos in focus. Wide shots, no identifiable people.'],
+ ['Learning & Language','Ongoing','6+','German flashcards, your C1 textbook, QMB course folder (cover only), a DGQ magazine on the desk, a notebook with German QM terms.','Supports the Career Bridge and QM-Wort der Woche with honest proof of learning.','No certificate close-ups showing personal data. Covers and hands are enough.'],
+ ['City & Place','Golden hour','6+','Gießen centre, the Lahn, Frankfurt skyline from Sachsenhausen, a regional train arriving, a station departure board.','Grounds you in Hessen, your target job market.','Static 10 s clips, 4K if possible. The same settings in every city so they cut together.']
+];
+$('#stocklist').innerHTML=S.map(s=>`<div class="card"><div class="row"><h3 style="flex:1">${s[0]}</h3><span class="pill y">${s[1]}</span><span class="pill">Target ${s[2]}</span></div><p><b>What to shoot:</b> ${esc(s[3])}</p><p><b>Why:</b> ${esc(s[4])}</p><p class="dir"><b>Tip:</b> ${esc(s[5])}</p></div>`).join('');
+
+/* ---------- TIMELINE ---------- */
+const T=72, pct=s=>(s/T*100).toFixed(2)+'%';
+const lanes=[
+ ['A-roll',[[0,4,'01 ECU hook','a'],[4,10,'02 MS who','a'],[10,22,'03 MS origin','a'],[22,32,'04 CU proof','a'],[32,44,'05 MS since','a'],[44,55,'06 CU promise','a'],[55,65,'07 CTA push-in','a'],[65,69,'08 sign-off','a']]],
+ ['B-roll',[[12,20,'checklist · clipboard','b'],[34,42,'highlighter · binder','b']]],
+ ['GFX',[[0,3,'hook text','t'],[5,9,'name LT','g'],[24,28,'−15 % stat','t'],[46,50,'series badges','g'],[69,72,'end','g']]],
+ ['Music',[[0,4,'5 %','m'],[4,55,'10 %','m'],[55,69,'5 %','m'],[69,72,'fade','m']]]
+];
+let tl=`<div class="ruler"><span></span><div class="ticks">${[0,10,20,30,40,50,60,70].map(s=>`<span style="left:${pct(s)}">0:${String(s).padStart(2,'0')}</span>`).join('')}</div></div>`;
+tl+=lanes.map(l=>`<div class="lane"><span class="lbl">${l[0]}</span><div class="track">${l[1].map(c=>`<div class="clip ${c[3]}" style="left:${pct(c[0])};width:${pct(c[1]-c[0])}" title="${c[2]}">${c[2]}</div>`).join('')}</div></div>`).join('');
+$('#tl').innerHTML=tl;
+
+/* ---------- SAFE ZONE ---------- */
+const sb=$('#safebtn');
+sb.addEventListener('click',()=>{const on=$('#gfx').classList.toggle('showsafe');sb.setAttribute('aria-pressed',on);sb.textContent=on?'Hide safe zone':'Show safe zone';});
+
+/* ---------- COPY ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-copy]'); if(!b) return;
+  const el=document.getElementById(b.dataset.copy); const txt=el.innerText;
+  const ok=()=>{const o=b.textContent;b.textContent='Copied';setTimeout(()=>b.textContent=o,1400)};
+  const fb=()=>{const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected, press Ctrl+C';setTimeout(()=>b.textContent='Copy text',2000)};
+  try{navigator.clipboard.writeText(txt).then(ok,fb)}catch(err){fb()}
+});
+
+/* ---------- PLANNER ---------- */
+const EX={p_title:'Ep. 01 — Quality Is Proof',p_fmt:'Floor Lesson',p_pillar:'P3 Lessons from the floor',p_one:'This video is about how I learned quality on a warehouse floor, and afterwards the viewer will know who I am, what I do and why to follow.',p_hook:'"Quality isn\'t paperwork. It\'s proof." / On screen: QUALITY ISN\'T PAPERWORK.',p_proof:'−15 % operational errors (CV, Wayfair EU Supply Chain 2021–22); ISO 9001/14001 at Grünstoff; BWHW QMB 2026',p_film:'',p_pub:'',p_lang:'EN on camera + DE captions; separate DE take',p_aroll:'01 ECU hook · 02 MS intro · 03 MS origin · 04 CU stat · 05 MS since · 06 CU promise · 07 MS→CU CTA · 08 CU sign-off',p_broll:'Checklist ticked (ECU) · clipboard · highlighter on mock clause · QM binder closing',p_gfx:'Hook text · name lower third · −15 % stat bomb with source · series badges · end card',p_cta:'"Which ISO clause confuses you most?"',p_tags:'#Qualitätsmanagement #ISO9001 #QualityManagement #InternalAudit #KVP',p_post:'Quality isn\'t paperwork. It\'s proof.'};
+const form=$('#planform'); const saved=store.get('qd-plan');
+function fill(o){Object.keys(EX).forEach(k=>{const el=form.elements[k]; if(el) el.value=(o&&o[k])||''});}
+fill(saved||EX);
+let tmr;
+form.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>{const o={};Object.keys(EX).forEach(k=>o[k]=form.elements[k].value);store.set('qd-plan',o);$('#plansaved').textContent='Saved in this browser';},300);});
+form.addEventListener('submit',e=>e.preventDefault());
+$('#planclear').addEventListener('click',()=>{fill({});store.set('qd-plan',{});$('#plansaved').textContent='Cleared';});
+$('#planexample').addEventListener('click',()=>{fill(EX);store.set('qd-plan',EX);$('#plansaved').textContent='Example loaded';});
+
+
+/* ================= SCRIPT BUILDER ================= */
+const SO={en:'Prove it. Improve it.',de:'Nachweisen. Verbessern.'};
+// section: [key, label, targetSec, shot, direction, prompt, example]
+const SB={
+ norm:{n:'Norm in 60',t:60,sec:[
+  ['hook','Hook',4,'ECU','Locked-off ECU. Hook text on screen.','A question about the clause, or a myth. 12 words or fewer.','What does ISO 9001 clause 7.5 actually ask for? / It\'s not a folder full of documents.'],
+  ['clause','Clause',8,'MS','Clause badge ON the clause number.','Name the standard and clause. What it covers, in one sentence.','Clause 7.5 is called documented information. It covers the documents you work with and the records that prove what you did.'],
+  ['plain','Plain words',18,'MS','B-roll: highlighter on a mock clause. Source badge.','What it asks for. Paraphrase; never read the norm aloud.','The standard doesn\'t tell you how many documents to write. It says: document what your processes need, and what the standard asks for. Nothing more.'],
+  ['evidence','Evidence',14,'CU','Slow push-in. Numbered list on screen (1–2–3).','What an auditor wants to see as proof.','In an audit, I look for three things. Is the document identified and approved? Is the current version available where the work happens? And are old versions out of circulation?'],
+  ['gap','Common gap',8,'CU','Duck music to 5 %. Micro-pause before the line.','The most common gap you see.','The most common gap? / The right procedure, sitting in the office, while the floor works from an old printout.'],
+  ['cta','CTA',6,'MS→CU','Push-in on the question.','One CTA only.','Check one document at your site today. Which version is on the floor? Tell me what you find.'],
+  ['so','Sign-off',2,'CU','Hold still. 1 s silence, then end card.','Your sign-off.','']]},
+ method:{n:'Method Minute',t:75,sec:[
+  ['hook','Hook',4,'ECU','Hook text on screen.','The method and a promise.','8D on one sheet of paper. / Watch.'],
+  ['problem','Problem',10,'MS','','What problem the method solves.','When a customer complaint comes back a second time, a quick fix isn\'t enough. You need a structure. That\'s 8D.'],
+  ['steps','Steps',35,'OVERHEAD','Overhead timelapse: draw D1–D8 while you talk. Highlight each step.','The steps, one short line each.','D1: build a small team. D2: describe the problem with facts. D3: contain it, so no bad part reaches the customer. D4: find the root cause. D5 and D6: choose the fix and prove it works. D7: stop it happening again. D8: close it and thank the team.'],
+  ['example','Example',12,'MS','B-roll: sticky notes on the sheet.','A small, everyday example.','Wrong labels on outgoing pallets? D3 is checking every pallet today. D4 is asking why the label printer template changed.'],
+  ['notwhen','When not to use it',8,'CU','','When the method is overkill.','For a one-off typo, 8D is overkill. Use it when the problem is costly or keeps coming back.'],
+  ['cta','CTA',4,'MS→CU','Push-in.','One CTA only.','Save this for the next complaint that comes back.'],
+  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]},
+ floor:{n:'Floor Lesson',t:120,sec:[
+  ['hook','Hook',5,'ECU','Hook text on screen.','The result, or the moment it went wrong.','One SOP. Thirty percent faster. / Here\'s what was in it.'],
+  ['symptom','Symptom',15,'MS','B-roll: checklist, clipboard.','What kept going wrong (CV-level facts only).','Cross-docking and Castlegate orders were getting delayed. And delays meant returns.'],
+  ['wrongfix','First fix',15,'MS','','What was tried first, and why it didn\'t last.','[Your own memory: what was tried first, and why it didn\'t last. Only say what really happened.]'],
+  ['back','It came back',10,'CU','Duck music. Micro-pause.','The moment you realised.','[Your own memory: the moment you saw it was a process problem.]'],
+  ['root','Root cause',25,'MS','B-roll: fishbone being drawn.','What you found when you looked at the process.','[Your own memory: what you found when you looked at the process.]'],
+  ['fix','Lasting fix',25,'MS','B-roll: pen on a mock SOP.','What changed.','So I initiated an SOP for cross-docking and Castlegate orders, and put it into practice.'],
+  ['number','Number',10,'CU','Stat bomb + source badge ON the number.','The measurable result, from the Proof Bank.','Lead time dropped by thirty percent.'],
+  ['lesson','Lesson',10,'CU','Hold.','What the viewer should take away.','If a problem survives every extra check, it isn\'t a people problem. It\'s a process problem.'],
+  ['cta','CTA',3,'MS→CU','Push-in.','One CTA only.','Where does your process depend on who is on shift? Tell me below.'],
+  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]},
+ audit:{n:'Audit Room',t:90,sec:[
+  ['hook','Hook',5,'ECU','Hook text on screen.','A surprising first move in an audit.','The first thing I ask for in an internal audit / isn\'t the procedure.'],
+  ['situation','Situation',12,'MS','B-roll: clipboard, mock checklist.','Set the scene, anonymised.','An internal audit, a process owner, a folder of procedures ready on the table.'],
+  ['question','My question',15,'CU','Caption highlight on the question.','The question you ask.','I ask: show me the last time this process went wrong, and what you did about it.'],
+  ['evidence','Evidence',25,'MS','Numbered list on screen.','What evidence tells you the system works.','That one question shows me the records, the corrective action, and whether anyone checked it worked. A procedure only shows me the plan.'],
+  ['good','What good looks like',20,'CU','Source badge: ISO 19011.','The healthy answer.','A good answer isn\'t "nothing ever goes wrong". It\'s a clear record, a root cause, and a check that the fix held.'],
+  ['cta','CTA',8,'MS→CU','Push-in.','One CTA only.','What\'s the first thing you ask for in an audit? I\'d like to compare.'],
+  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]},
+ wort:{n:'QM-Wort der Woche',t:40,de:true,sec:[
+  ['hook','Begriff',4,'ECU','Begriff groß auf dem Bildschirm.','Der Begriff, kurz eingeführt.','Nachweisführung. / Klingt einfach. Ist es nicht.'],
+  ['def','Definition',12,'MS','Quellen-Badge.','Einfache Erklärung.','Nachweisführung heißt: Sie können belegen, dass Sie tun, was Sie beschreiben. Mit Aufzeichnungen, nicht mit Worten.'],
+  ['beispiel','Beispiel',12,'MS','B-Roll: Checkliste wird abgehakt.','Ein Satz aus der Praxis.','Die Wartung ist nicht erledigt, weil jemand es sagt. Sie ist erledigt, wenn das Protokoll unterschrieben ist.'],
+  ['en','Englisch',6,'CU','Untertitel: EN-Begriff.','Der englische Begriff.','Auf Englisch sagt man dazu: evidence, oder documented information.'],
+  ['next','Nächste Woche',4,'CU','','Ausblick.','Nächste Woche: Abweichung oder Fehler?'],
+  ['so','Abschluss',2,'CU','Stillhalten. Endkarte.','Ihr Abschlusssatz.','']]},
+ myth:{n:'Myth vs. Requirement',t:60,sec:[
+  ['myth','Myth',6,'ECU','Hook text on screen.','State the myth as people say it.','"ISO 9001 requires a quality manual." / You hear it all the time.'],
+  ['finding','Finding',4,'CU','FINDING stamp + thump SFX.','The short verdict.','Since 2015, it doesn\'t.'],
+  ['req','Requirement',22,'MS','Source badge with edition year.','What the standard actually requires.','The 2015 version replaced the manual and the six mandatory procedures with documented information. You decide what your processes need.'],
+  ['practical','Practical version',20,'CU','B-roll: binder closing.','What to do instead.','Many companies keep a short manual anyway, because it helps new people. That\'s fine. Just keep it because it\'s useful, not because you think the auditor wants it.'],
+  ['cta','CTA',6,'MS→CU','Push-in.','One CTA only.','Which ISO myth should I check next? Put it in the comments.'],
+  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]},
+ bridge:{n:'Career Bridge',t:150,sec:[
+  ['hook','Hook',6,'ECU','Hook text on screen.','Where you started and where you are.','I started in finance in Nairobi. / Now I work in quality management in Hessen.'],
+  ['start','Where I started',25,'MS','B-roll: city of origin, notebook.','The starting point (Proof Bank facts only).','My degree is in co-operative business and finance. My first consulting work was HR compliance: policies, file audits, training.'],
+  ['step','The step',30,'MS','B-roll: warehouse or checklist.','The step that changed things.','Then came a warehouse floor in Germany. Running 5S audits showed me that compliance and quality are the same question: can you prove it?'],
+  ['took','What it took',45,'CU','B-roll: German flashcards, course folder (cover only).','What it took: recognition, language, qualifications. Keep it looking forward.','It took a recognised degree, a lot of German, and qualifications in the German system: ISO training, internal auditing, and QMB training here in Gießen.'],
+  ['advice','Advice',34,'CU','Hold. First smile.','One step the viewer can take this week.','If you\'re starting this path: get your degree assessed early, and join a professional network like the DGQ. Both open doors faster than applications alone.'],
+  ['cta','CTA',8,'MS→CU','Push-in.','One CTA only.','Where are you on your path? Tell me, and I\'ll answer in a video.'],
+  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]},
+ dash:{n:'Dashboard Breakdown',t:240,sec:[
+  ['hook','Hook',8,'ECU','Face only. Hook text.','The promise.','Five minutes, one PivotTable, / and you\'ll see where your errors cluster.'],
+  ['promise','Promise',15,'MS','','What they\'ll be able to do afterwards.','By the end you\'ll have a simple quality tracker that shows you where to look first.'],
+  ['setup','Set-up',60,'SCREEN','Screen recording on track 1, face PiP on track 2 at 20 %. Dummy data only.','The data and the first steps.','Here\'s a list of nonconformities: date, area, type, shift. First, turn it into a table.'],
+  ['build','Build',90,'SCREEN','Zoom-in animation on the key cell.','Building the pivot and chart.','Now insert a PivotTable. Areas in rows, types in columns, count of entries in values. Add a chart.'],
+  ['insight','Insight',50,'CU','Back to the face for the insight.','What the pattern tells you.','And there it is: most errors come from one area on one shift. That\'s where the root-cause work starts.'],
+  ['cta','CTA',15,'MS→CU','Push-in.','One CTA only.','Want the template? Tell me in the comments, and I\'ll share a clean version.'],
+  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]},
+ learn:{n:'Learning in Public',t:60,sec:[
+  ['hook','Hook',5,'ECU','Hook text.','What you\'re learning.','200 hours of QMB training. / One idea changed how I see audits.'],
+  ['studying','This week',12,'MS','B-roll: course folder cover, notes.','What you\'re studying.','This week I\'m revising risk-based thinking for my QMB exam.'],
+  ['surprise','Surprise',18,'CU','','What surprised you.','What surprised me: risk isn\'t only about what can go wrong. The standard also asks you to look for opportunities.'],
+  ['apply','How I\'d apply it',15,'MS','','How you\'d use it at work.','So in my next audit I\'ll ask not only "what could fail here?" but "what could work better?"'],
+  ['q','Question',8,'MS→CU','Push-in.','A question for the audience.','How does your team handle opportunities? Do they even get recorded?'],
+  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]}
+};
+const sbS=Object.assign({fmt:'norm',topic:'Documented information in 60 seconds',lang:'en',struct:'Type 3 · The system',tx:{}},store.get('qd-sbuild')||{});
+if(!SB[sbS.fmt]) sbS.fmt='norm';
+const sbSave=()=>store.set('qd-sbuild',sbS);
+const words=s=>(s.replace(/\//g,' ').trim().match(/\S+/g)||[]).length;
+const mmss=s=>{s=Math.round(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const wpm=()=>sbS.lang==='de'?118:130;
+function sbText(k){const f=sbS.tx[sbS.fmt]||{};return f[k]!==undefined?f[k]:null;}
+function sbFirstFill(){ // first visit of a format: prefill examples so the tool opens in a working state
+  if(!sbS.tx[sbS.fmt]){sbS.tx[sbS.fmt]={};SB[sbS.fmt].sec.forEach(s=>{sbS.tx[sbS.fmt][s[0]]=s[0]==='so'?SO[sbS.lang]:s[6];});}
+}
+function sbDrawFmts(){$('#sbFmts').innerHTML=Object.entries(SB).map(([k,f])=>`<button type="button" data-fk="${k}" aria-pressed="${k===sbS.fmt}"><b>${f.n}</b><span>${mmss(f.t)} · ${f.sec.length} sections${f.de?' · DE':''}</span></button>`).join('');}
+function sbDrawSecs(){
+  sbFirstFill();
+  const cur=sbS.tx[sbS.fmt]; if(cur.so===SO.en||cur.so===SO.de) cur.so=SO[sbS.lang]; // sign-off follows the language
+  const f=SB[sbS.fmt];
+  $('#sbSecs').innerHTML=f.sec.map((s,i)=>{const id='sbx_'+sbS.fmt+'_'+s[0];return `<div class="sbx"><div class="hd"><span class="pill">${String(i+1).padStart(2,'0')}</span><b>${s[1]}</b><span class="pill b">${s[3]}</span><span class="pill">${s[2]} s · ~${Math.round(s[2]*wpm()/60)} words</span><span class="wc" id="${id}_wc"></span></div><label class="pr" for="${id}">${esc(s[5])}${s[4]?' <span class="dir">Direction: '+esc(s[4])+'</span>':''}</label><textarea id="${id}" data-k="${s[0]}">${esc(sbText(s[0])||'')}</textarea></div>`}).join('');
+}
+function sbCalc(){
+  const f=SB[sbS.fmt], w=wpm(); let tw=0, filled=0; const warn=[];
+  let full=`${(sbS.topic||f.n).toUpperCase()}\nFormat: ${f.n} · ${sbS.struct} · ${sbS.lang==='de'?'Deutsch':'English'}\n`, tp='';
+  let clock=0;
+  f.sec.forEach((s,i)=>{
+    const t=(sbText(s[0])||'').trim(), n=words(t), est=n/w*60, tgt=s[2]*w/60;
+    tw+=n; if(t) filled++;
+    const wc=document.getElementById('sbx_'+sbS.fmt+'_'+s[0]+'_wc');
+    if(wc){wc.textContent=n+' words · ~'+Math.round(est)+' s';wc.className='wc'+(n===0?'':(n>tgt*1.35?' over':' ok'));}
+    if(n>tgt*1.35&&n>4) warn.push(`<b>${s[1]}</b> is long: ${n} words against a target of ~${Math.round(tgt)}. Cut it, or accept a longer video.`);
+    if(s[0]==='hook'&&n>18) warn.push('<b>Hook</b> has more than 18 words. Viewers decide in about 3 seconds. Shorten it.');
+    const secT=Math.max(est,t?1.5:0);
+    full+=`\n[${String(i+1).padStart(2,'0')} · ${s[1].toUpperCase()} · ${s[3]} · ${mmss(clock)}–${mmss(clock+secT)}]\n`+(s[4]?`(${s[4]})\n`:'')+(t?t.replace(/\s*\/\s*/g,' '):'— not written yet —')+'\n';
+    clock+=secT;
+    if(t){
+      const lines=t.replace(/\s*\/\s*/g,' [ · ]\n').split(/(?<=[.!?…])\s+(?=[^\s])/).join('\n');
+      tp+=lines.trim()+(s[0]==='so'?'\n\n[ — — ]':'\n\n[ — ]\n\n');
+    }
+  });
+  const qCount=[...f.sec].filter(s=>['cta','q'].includes(s[0])).map(s=>(sbText(s[0])||'').split('?').length-1).reduce((a,b)=>a+b,0);
+  if(qCount>1) warn.push('<b>CTA</b> asks more than one question. Keep one clear ask.');
+  const d=tw/w*60;
+  if(d>f.t*1.25) warn.push(`Estimated runtime ${mmss(d)} is well over the ${mmss(f.t)} target for ${f.n}.`);
+  if(f.de&&sbS.lang!=='de') warn.push('This format is meant to be filmed in German. Switch the language to Deutsch.');
+  $('#sbW').textContent=tw; $('#sbD').textContent=mmss(d); $('#sbT').textContent=mmss(f.t); $('#sbF').textContent=filled+'/'+f.sec.length;
+  $('#sbD').className=d>f.t*1.25?'warn':'';
+  $('#sbWarn').innerHTML=warn.length?warn.map(x=>`<div class="note" style="padding:8px 12px">${x}</div>`).join(''):'<div class="note green" style="padding:8px 12px">Checks passed: hook length, section lengths, one CTA question and runtime are all within target.</div>';
+  $('#sbOutFull').textContent=full; $('#sbOutTP').textContent=tp.trim()||'Write the sections above to build your teleprompter text.';
+}
+function sbAll(){sbDrawFmts();sbDrawSecs();sbCalc();$('#sbTopic').value=sbS.topic||'';$('#sbLang').value=sbS.lang;$('#sbStruct').value=sbS.struct;}
+$('#sbFmts').addEventListener('click',e=>{const b=e.target.closest('[data-fk]');if(!b)return;const was=SB[sbS.fmt];sbS.fmt=b.dataset.fk;if(SB[sbS.fmt].de)sbS.lang='de';else if(was.de)sbS.lang='en';sbSave();sbAll();});
+$('#sbSecs').addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;(sbS.tx[sbS.fmt]=sbS.tx[sbS.fmt]||{})[k]=e.target.value;sbSave();sbCalc();});
+$('#sbTopic').addEventListener('input',e=>{sbS.topic=e.target.value;sbSave();sbCalc();});
+$('#sbStruct').addEventListener('change',e=>{sbS.struct=e.target.value;sbSave();sbCalc();});
+$('#sbLang').addEventListener('change',e=>{
+  const old=sbS.lang; sbS.lang=e.target.value;
+  Object.values(sbS.tx).forEach(t=>{if(t.so===SO[old]) t.so=SO[sbS.lang];});
+  sbSave(); sbDrawSecs(); sbCalc();
+});
+$('#sbExample').addEventListener('click',()=>{const t=(sbS.tx[sbS.fmt]=sbS.tx[sbS.fmt]||{});let c=0;SB[sbS.fmt].sec.forEach(s=>{if(!(t[s[0]]||'').trim()){t[s[0]]=s[0]==='so'?SO[sbS.lang]:s[6];c++;}});sbSave();sbDrawSecs();sbCalc();$('#sbMsg').textContent=c?c+' empty box(es) filled':'Nothing empty to fill';});
+$('#sbClear').addEventListener('click',()=>{sbS.tx[sbS.fmt]={};SB[sbS.fmt].sec.forEach(s=>sbS.tx[sbS.fmt][s[0]]='');sbSave();sbDrawSecs();sbCalc();$('#sbMsg').textContent='Cleared';});
+
+/* ================= STORYBOARD BUILDER ================= */
+const SECS=['HOOK','INTRO','BODY','TURN','PROOF','CTA','SIGN-OFF','END','B-ROLL'];
+const SEC_C={HOOK:'#2150C8',INTRO:'#4A5560',BODY:'#6B7680',TURN:'#F4C430',PROOF:'#F4C430',CTA:'#1D7A4E','SIGN-OFF':'#1D7A4E',END:'#1B2127','B-ROLL':'#1D7A4E'};
+const TYPES=['ECU','CU','MS','MS→CU','WS','OVERHEAD','SCREEN','PiP','B-ROLL','GFX'];
+const FACE=['ECU','CU','MS','MS→CU','PiP'];
+const shot=(sec,type,dur,line,cam,gfx)=>({sec,type,dur,line,cam,gfx});
+const TPL={
+ ep01:{n:'Ep. 01 — Quality Is Proof',d:'The intro video from this bible',a:'v',title:'Ep. 01 — Quality Is Proof',num:'01',goal:'Viewers know who I am, what I do and why to follow.',s:[
+  shot('HOOK','ECU',4,'"Quality isn\'t paperwork. It\'s proof."','Static, locked off, eye level','Hook text: QUALITY ISN\'T PAPERWORK.'),
+  shot('INTRO','MS',6,'"I\'m Efic — Murdock Emisembe. I work in quality management, here in Germany."','Static','Name lower third, 4 s'),
+  shot('BODY','MS',12,'"I learned it on a warehouse floor. 5S audits. Supplier scorecards…"','Static','B: checklist ticked, clipboard ECU (0:12–0:20)'),
+  shot('PROOF','CU',10,'"…Error rates dropped fifteen percent."','Slow 5 % push-in','Stat bomb −15 % + source'),
+  shot('BODY','MS',12,'"Since then: ISO 9001 and 14001… QMB here in Gießen."','Static','B: highlighter on mock clause, binder'),
+  shot('BODY','CU',11,'"Standards, methods and real audit lessons. One idea per video."','Hold. First smile.','Series badges'),
+  shot('CTA','MS→CU',10,'"Which ISO clause confuses you most?"','Push-in on the question','Caption highlight'),
+  shot('SIGN-OFF','CU',4,'"Prove it. Improve it."','Hold still, 1 s silence',''),
+  shot('END','GFX',3,'End card','—','The Quality Desk · Prove it. Improve it.')]},
+ norm:{n:'Norm in 60',d:'Solo talking head, one clause',a:'v',title:'Norm in 60 — ',num:'',goal:'After watching, the viewer knows what clause [X] asks for and what evidence proves it.',s:[
+  shot('HOOK','ECU',4,'Clause question or myth','Locked off','Hook text + series badge'),
+  shot('INTRO','MS',8,'Name the standard and clause','Static','Clause badge'),
+  shot('BODY','MS',18,'What it asks for, in plain words','Static','B: highlighter on mock clause; source badge'),
+  shot('BODY','CU',14,'What evidence an auditor wants','Slow push-in','Numbered list 1–2–3'),
+  shot('TURN','CU',8,'The most common gap','Hold; music ducked','—'),
+  shot('CTA','MS→CU',6,'One question to the viewer','Push-in',''),
+  shot('SIGN-OFF','CU',2,'"Prove it. Improve it."','Hold','End card')]},
+ method:{n:'Method Minute',d:'Overhead drawing of a method',a:'v',title:'Method Minute — ',num:'',goal:'After watching, the viewer can sketch [method] on one sheet of paper.',s:[
+  shot('HOOK','ECU',4,'"[Method] on one sheet of paper."','Locked off','Hook text'),
+  shot('INTRO','MS',10,'The problem the method solves','Static',''),
+  shot('BODY','OVERHEAD',35,'Steps drawn live, one line each','GoPro overhead, 60 fps, timelapse 300 %','Step counter (Step 2 of 8)'),
+  shot('BODY','MS',12,'A small everyday example','Static','B: sticky notes on the sheet'),
+  shot('TURN','CU',8,'When NOT to use it','Hold',''),
+  shot('CTA','MS→CU',4,'Save / comment CTA','Push-in',''),
+  shot('SIGN-OFF','CU',2,'"Prove it. Improve it."','Hold','End card')]},
+ floor:{n:'Floor Lesson',d:'Story with a measurable result',a:'v',title:'Floor Lesson — ',num:'',goal:'The viewer sees how root-cause work beats firefighting, with a real number.',s:[
+  shot('HOOK','ECU',5,'The result or the moment it went wrong','Locked off','Hook text'),
+  shot('BODY','MS',15,'The symptom','Static','B: checklist, clipboard'),
+  shot('BODY','MS',15,'The first fix','Static',''),
+  shot('TURN','CU',10,'"Then it came back."','Hold; duck music',''),
+  shot('BODY','MS',25,'The root cause','Static','B: fishbone being drawn'),
+  shot('BODY','MS',25,'The lasting fix','Static','B: pen on mock SOP'),
+  shot('PROOF','CU',10,'The number','Slow push-in','Stat bomb + source'),
+  shot('CTA','MS→CU',8,'Lesson + one question','Push-in',''),
+  shot('SIGN-OFF','CU',2,'"Prove it. Improve it."','Hold','End card')]},
+ wort:{n:'QM-Wort der Woche',d:'German term, 40 s',a:'v',title:'QM-Wort der Woche — ',num:'',goal:'Die Zuschauer verstehen den Begriff [X] und können ihn richtig verwenden.',s:[
+  shot('HOOK','ECU',4,'Der Begriff','Statisch','Begriff groß auf dem Bildschirm'),
+  shot('BODY','MS',12,'Einfache Definition','Statisch','Quellen-Badge'),
+  shot('BODY','MS',12,'Beispiel aus der Praxis','Statisch','B: Checkliste'),
+  shot('BODY','CU',6,'Englischer Begriff','Halten','EN-Untertitel'),
+  shot('SIGN-OFF','CU',6,'Nächste Woche + „Nachweisen. Verbessern."','Halten','Endkarte')]},
+ dash:{n:'Dashboard Breakdown',d:'Screen recording + PiP, 16:9',a:'h',title:'Dashboard Breakdown — ',num:'',goal:'After watching, the viewer can build a simple quality tracker.',s:[
+  shot('HOOK','ECU',8,'The promise','Face only, locked off','Hook text'),
+  shot('INTRO','MS',15,'What they\'ll be able to do','Static',''),
+  shot('BODY','SCREEN',60,'Data and first steps','Camtasia screen recording','PiP face 20 %, bottom right'),
+  shot('BODY','SCREEN',90,'Build the pivot and chart','Zoom-in animation','Callout on the key cell'),
+  shot('TURN','CU',50,'The insight','Cut back to the face',''),
+  shot('CTA','MS→CU',15,'Template offer / question','Push-in',''),
+  shot('END','GFX',5,'End card','—','Subscribe end screen')]},
+ broll:{n:'B-roll day: Desk & Documents',d:'No talking head, 10 clips',a:'v',title:'B-roll session — Desk & Documents',num:'',goal:'Stock 10+ evergreen cutaways in 45 minutes.',s:[
+  shot('B-ROLL','B-ROLL',10,'Highlighter across a mock clause','Overhead, 60 fps','Library: Desk & Documents'),
+  shot('B-ROLL','B-ROLL',10,'Stamp "geprüft" on a document','Side 45°, 60 fps',''),
+  shot('B-ROLL','B-ROLL',10,'Ticking a checklist on a clipboard','ECU, 60 fps',''),
+  shot('B-ROLL','B-ROLL',10,'QM binder opening and closing','MS, static',''),
+  shot('B-ROLL','B-ROLL',10,'Pen correcting a procedure','Overhead',''),
+  shot('B-ROLL','B-ROLL',10,'Signature on the approval box','ECU',''),
+  shot('B-ROLL','B-ROLL',15,'PDCA circle drawn','Overhead, timelapse','Library: Methods on Paper'),
+  shot('B-ROLL','B-ROLL',15,'Fishbone filled in','Overhead, timelapse',''),
+  shot('B-ROLL','B-ROLL',10,'Caliper closing on a part','Macro ECU, 60 fps','Library: Measurement'),
+  shot('B-ROLL','B-ROLL',10,'Pen capped, binder shut (transition)','ECU, 60 fps','Library: Transitions')]},
+ guest:{n:'Guest conversation',d:'Two people, in person',a:'h',title:'Guest — ',num:'',goal:'The viewer learns one practical lesson from [guest].',s:[
+  shot('HOOK','CU',6,'Guest\'s strongest line (cold open)','Guest CU','Guest name lower third'),
+  shot('INTRO','MS',15,'Who the guest is and why now','Host MS',''),
+  shot('BODY','WS',8,'Two-shot establishing','Wide, static','—'),
+  shot('BODY','CU',60,'Guest answers: question 1','Guest CU; OTS from behind host','Clause / term badges'),
+  shot('BODY','CU',10,'Host reaction (listening)','Host CU','—'),
+  shot('TURN','CU',45,'The key lesson','Guest CU, hold',''),
+  shot('CTA','MS→CU',10,'Host close + one question','Push-in','End card')]}
+};
+let sbdTxt='';
+const sbd=Object.assign({title:'',num:'',date:'',loc:'',asp:'v',goal:'',shots:[]},store.get('qd-sb')||{});
+let uid=1; sbd.shots.forEach(s=>{s.id=uid++;});
+function loadTpl(k){const t=TPL[k];Object.assign(sbd,{title:t.title,num:t.num,goal:t.goal,asp:t.a,shots:t.s.map(s=>Object.assign({id:uid++,done:false},s))});sbdSave();sbdAll();}
+function sbdSave(){store.set('qd-sb',{title:sbd.title,num:sbd.num,date:sbd.date,loc:sbd.loc,asp:sbd.asp,goal:sbd.goal,shots:sbd.shots.map(({id,...r})=>r)});}
+const opt=(arr,v)=>arr.map(o=>`<option${o===v?' selected':''}>${esc(o)}</option>`).join('');
+function sbdRows(){
+  $('#sbdRows').innerHTML=sbd.shots.length?sbd.shots.map((s,i)=>{const p='sbd'+s.id;return `<div class="sbrow${s.done?' isdone':''}" data-id="${s.id}">
+  <span class="no">${String(i+1).padStart(2,'0')}<span class="tcx" data-tc></span></span>
+  <select id="${p}sec" data-f="sec" aria-label="Section of shot ${i+1}">${opt(SECS,s.sec)}</select>
+  <select id="${p}type" data-f="type" aria-label="Shot type of shot ${i+1}">${opt(TYPES,s.type)}</select>
+  <input id="${p}dur" data-f="dur" type="number" min="1" max="900" step="1" value="${Number(s.dur)||1}" aria-label="Duration in seconds of shot ${i+1}">
+  <textarea id="${p}line" data-f="line" aria-label="Key line of shot ${i+1}" placeholder="Key line or description">${esc(s.line||'')}</textarea>
+  <input class="c-cam" id="${p}cam" data-f="cam" value="${esc(s.cam||'')}" aria-label="Camera of shot ${i+1}" placeholder="Camera / movement">
+  <input class="c-gfx" id="${p}gfx" data-f="gfx" value="${esc(s.gfx||'')}" aria-label="Graphic or B-roll of shot ${i+1}" placeholder="Graphic / B-roll">
+  <div class="acts"><label title="Filmed" style="display:flex;align-items:center;gap:4px;font-size:12px"><input id="${p}done" data-f="done" type="checkbox"${s.done?' checked':''}> done</label><button type="button" data-a="up" aria-label="Move shot ${i+1} up" title="Move up">↑</button><button type="button" data-a="down" aria-label="Move shot ${i+1} down" title="Move down">↓</button><button type="button" data-a="dup" aria-label="Duplicate shot ${i+1}" title="Duplicate">⧉</button><button type="button" class="del" data-a="del" aria-label="Delete shot ${i+1}" title="Delete">✕</button></div>
+  </div>`}).join(''):'<div class="note">No shots yet. Load a template, send a script from the Script Builder, or add a shot.</div>';
+}
+function frameArt(t){
+  if(t==='GFX') return '<div class="gfxf">GFX<small>title / end card</small></div>';
+  if(t==='B-ROLL') return '<div class="brf">B-ROLL<br>cutaway</div>';
+  if(t==='OVERHEAD') return '<div class="paper"><i></i><i></i><i></i><i></i><i></i></div>';
+  if(t==='SCREEN') return '<div class="screen"><i></i><i></i><i></i><i></i></div><div class="pip"></div>';
+  const sc={ECU:2.1,CU:1.35,MS:.85,'MS→CU':.85,WS:.38,PiP:.85}[t]||1;
+  return (t==='WS'?'<div class="wsf"></div>':'')+`<div class="sil" style="--s:${sc}"></div>`+(t==='MS→CU'?'<span class="arr">→ CU</span>':'')+(t==='PiP'?'<div class="screen" style="opacity:.5"></div>':'');
+}
+function sbdDerived(){
+  let clock=0, done=0, face=0; const rowsTC=[], fr=[], tb=[], txt=['Shot\tTime\tSection\tType\tKey line\tCamera\tGraphic/B-roll\tDur'];
+  sbd.shots.forEach((s,i)=>{
+    const d=Math.max(1,Number(s.dur)||1), tc=mmss(clock)+'–'+mmss(clock+d); clock+=d;
+    if(s.done) done++; if(FACE.includes(s.type)) face++;
+    rowsTC.push(tc);
+    const no=String(i+1).padStart(2,'0');
+    fr.push(`<div class="fcard"><div class="fbox" style="--sc:${SEC_C[s.sec]||'#6B7680'}"><span class="ty">${esc(s.type)}</span><span class="dur">${d}s</span>${frameArt(s.type)}</div><span class="fn">${no} · ${esc(s.sec)} · ${tc}</span><span class="fl">${esc(s.line||'—')}</span></div>`);
+    tb.push(`<tr><td class="tc">${no}</td><td class="tc">${tc}</td><td>${esc(s.sec)}</td><td>${esc(s.type)}</td><td>${esc(s.line||'')}</td><td>${esc(s.cam||'')}</td><td>${esc(s.gfx||'')}</td><td class="tc">${d}s</td></tr>`);
+    txt.push([no,tc,s.sec,s.type,(s.line||'').replace(/\s+/g,' '),s.cam||'',s.gfx||'',d+'s'].join('\t'));
+  });
+  $$('#sbdRows .sbrow').forEach((r,i)=>{const e=r.querySelector('[data-tc]');if(e)e.textContent=rowsTC[i]||'';});
+  $('#sbdN').textContent=sbd.shots.length; $('#sbdR').textContent=mmss(clock); $('#sbdDone').textContent=done+'/'+sbd.shots.length; $('#sbdFace').textContent=face;
+  $('#sbdFrames').className='frames2'+(sbd.asp==='h'?' land':''); $('#sbdFrames').innerHTML=fr.join('')||'<p class="dir">Frames appear here.</p>';
+  $('#sbdTable').innerHTML=tb.join('')||'<tr><td colspan="8">No shots yet.</td></tr>';
+  sbdTxt=[`${sbd.title||'Untitled episode'}${sbd.num?' · Ep. '+sbd.num:''}${sbd.date?' · '+sbd.date:''}${sbd.loc?' · '+sbd.loc:''}`,sbd.goal?'Goal: '+sbd.goal:'',`Runtime ${mmss(clock)} · ${sbd.shots.length} shots · ${sbd.asp==='h'?'16:9':'9:16'}`,''].concat(txt).join('\n');
+}
+function sbdAll(){['Title','Num','Date','Loc','Goal'].forEach(k=>{$('#sbd'+k).value=sbd[k.toLowerCase()]||''});$('#sbdAsp').value=sbd.asp;sbdRows();sbdDerived();}
+$('#sbdTpls').innerHTML=Object.entries(TPL).map(([k,t])=>`<button type="button" data-tpl="${k}"><b>${t.n}</b><span>${t.s.length} shots · ${t.a==='h'?'16:9':'9:16'} · ${t.d}</span></button>`).join('');
+$('#sbdTpls').addEventListener('click',e=>{const b=e.target.closest('[data-tpl]');if(!b)return;loadTpl(b.dataset.tpl);$('#sbdMsg').textContent='Template loaded: '+TPL[b.dataset.tpl].n;});
+['Title','Num','Date','Loc','Goal'].forEach(k=>$('#sbd'+k).addEventListener('input',e=>{sbd[k.toLowerCase()]=e.target.value;sbdSave();sbdDerived();}));
+$('#sbdAsp').addEventListener('change',e=>{sbd.asp=e.target.value;sbdSave();sbdDerived();});
+const rowOf=el=>{const r=el.closest('.sbrow');return r?sbd.shots.findIndex(s=>s.id===Number(r.dataset.id)):-1;};
+$('#sbdRows').addEventListener('input',e=>{const i=rowOf(e.target),f=e.target.dataset.f;if(i<0||!f)return;const s=sbd.shots[i];
+  if(f==='done'){s.done=e.target.checked;e.target.closest('.sbrow').classList.toggle('isdone',s.done);}
+  else if(f==='dur'){s.dur=Math.max(1,Math.min(900,parseInt(e.target.value,10)||1));}
+  else s[f]=e.target.value;
+  sbdSave();sbdDerived();});
+$('#sbdRows').addEventListener('change',e=>{if(e.target.dataset.f==='dur'){const i=rowOf(e.target);if(i>=0)e.target.value=sbd.shots[i].dur;}});
+$('#sbdRows').addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b)return;const i=rowOf(b);if(i<0)return;const a=b.dataset.a,S=sbd.shots;
+  if(a==='up'&&i>0)[S[i-1],S[i]]=[S[i],S[i-1]];
+  else if(a==='down'&&i<S.length-1)[S[i+1],S[i]]=[S[i],S[i+1]];
+  else if(a==='dup')S.splice(i+1,0,Object.assign({},S[i],{id:uid++,done:false}));
+  else if(a==='del')S.splice(i,1);
+  else return;
+  sbdSave();sbdRows();sbdDerived();
+  const tgt=a==='up'?i-1:a==='down'?i+1:a==='dup'?i+1:Math.min(i,S.length-1);
+  const r=$$('#sbdRows .sbrow')[tgt]; if(r){const btn=r.querySelector(`button[data-a="${a==='del'?'del':a}"]`)||r.querySelector('textarea'); if(btn) btn.focus();}
+});
+$('#sbdAdd').addEventListener('click',()=>{sbd.shots.push({id:uid++,sec:'BODY',type:'MS',dur:5,line:'',cam:'',gfx:'',done:false});sbdSave();sbdRows();sbdDerived();const r=$$('#sbdRows .sbrow');if(r.length)r[r.length-1].querySelector('textarea').focus();});
+let clearArmed=false;
+$('#sbdClearAll').addEventListener('click',e=>{if(!clearArmed){clearArmed=true;e.target.textContent='Click again to confirm';setTimeout(()=>{clearArmed=false;e.target.textContent='Clear all shots'},3000);return;}clearArmed=false;e.target.textContent='Clear all shots';sbd.shots=[];sbdSave();sbdRows();sbdDerived();$('#sbdMsg').textContent='All shots cleared';});
+$('#sbdCopy').addEventListener('click',e=>{const b=e.target;const ok=()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy table as text',1400)};const fb=()=>{const p=document.createElement('pre');p.className='plain';p.textContent=sbdTxt;b.insertAdjacentElement('afterend',p);const r=document.createRange();r.selectNodeContents(p);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected below, press Ctrl+C';};try{navigator.clipboard.writeText(sbdTxt).then(ok,fb)}catch(err){fb()}});
+
+/* Script → Storyboard */
+const SECMAP={hook:'HOOK',cta:'CTA',q:'CTA',so:'SIGN-OFF',number:'PROOF',gap:'TURN',back:'TURN',finding:'TURN',notwhen:'TURN',insight:'TURN',clause:'INTRO',promise:'INTRO',situation:'INTRO',start:'INTRO',def:'INTRO',myth:'HOOK'};
+$('#sbToSB').addEventListener('click',()=>{
+  const f=SB[sbS.fmt], w=wpm(); const shots=[];
+  f.sec.forEach(s=>{const t=(sbText(s[0])||'').trim(); if(!t) return;
+    const first=t.replace(/\s*\/\s*/g,' ').split(/(?<=[.!?…])\s+/)[0];
+    shots.push({id:uid++,sec:SECMAP[s[0]]||'BODY',type:s[3],dur:Math.max(2,Math.round(words(t)/w*60)),line:'"'+first+(first.length<t.replace(/\s*\/\s*/g,' ').length?' …"':'"'),cam:s[3]==='MS→CU'?'Push-in':s[3]==='OVERHEAD'?'GoPro overhead':'Static',gfx:s[4]||'',done:false});});
+  if(!shots.length){$('#sbMsg').textContent='Write at least one section first';return;}
+  shots.push({id:uid++,sec:'END',type:'GFX',dur:3,line:'End card',cam:'—',gfx:'The Quality Desk · '+SO[sbS.lang],done:false});
+  Object.assign(sbd,{title:sbS.topic||f.n,goal:'',asp:sbS.fmt==='dash'?'h':'v',shots});
+  sbdSave(); sbdAll(); show('storyboard',true); $('#sbdMsg').textContent='Script sent: '+shots.length+' shots created from '+f.n;
+});
+sbAll();
+if(!store.get('qd-sb')) loadTpl('ep01'); else sbdAll();
+
+/* ---------- START ---------- */
+const h=location.hash.slice(1);
+show(h&&document.getElementById(h)?h:(store.get('qd-tab')||'start'),false);
+window.scrollTo(0,0);
+})();
+</script>
