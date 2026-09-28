@@ -1,6 +1,6 @@
 # Africa Trade Gap Scorecard
 
-A self-building Google Sheets app that shows what African countries import and export, and ranks where they could trade more with each other. It is a **composite index** (a multi-criteria scorecard) with weights you can edit.
+A self-building Google Sheets app that shows what African countries import and export, ranks where they could trade more with each other, and measures how much value each country adds (or loses) by processing its raw materials, and what it needs to add more. It is a **composite index** (a multi-criteria scorecard) with weights you can edit.
 
 ## Set it up (about 2 minutes)
 
@@ -41,7 +41,25 @@ Colour code of the tabs: blue = explanation · green = results · orange = your 
 | Refresh_&_Updates | Explanation | How to refresh data, switch on auto-refresh, and update the code safely |
 | FAQ | Explanation | Frequently asked questions |
 | Countries / Products | Input | Reference data. Edit memberships, or untick products to exclude them |
-| Raw_Trade | Data | The trade data everything is computed from |
+| Value_Addition | Results | Per country: raw vs processed exports, processing share, value lost by exporting raw, enabler gaps; 3 charts |
+| Country_Needs | Results | Pick a country: enablers vs the African median, value-addition opportunities, what processing requires, a summary in words |
+| VA_Scorecard | Results | Every country × value chain with 5 sub-scores and a value-addition score (0–100) |
+| Value_Chains | Input | The 25 value chains: raw, semi-processed and processed HS4 codes, value multipliers (assumptions) and needs |
+| Enablers | Data | 7 World Bank indicators per country (electricity, manufacturing, manufactured exports, logistics, schooling, credit, internet) |
+| Raw_Trade | Data | The 2-digit trade data the trade-gap analysis uses |
+| Raw_HS4 | Data | The 4-digit trade data the value-addition analysis uses |
+
+## Value addition
+
+For 25 value chains, for example cocoa → chocolate, copper ore → cable, crude oil → fuel, bauxite → aluminium, cotton → clothing and hides → leather & footwear:
+
+- **Processing share** = (semi-processed + processed exports) ÷ all exports in the chain
+- **Value lost (estimate)** = raw exports × (multiplier − 1) + semi-processed exports × (multiplier − 1) ÷ 2. The multipliers are **editable assumptions** on the Value_Chains tab.
+- **Round-trip imports** = processed goods bought back while the raw material is exported
+- **Value-addition score (0–100)** combines 5 weighted criteria: value at stake, raw material base, processing gap, market for processed goods, and readiness
+- **Needs**: each chain lists what it requires (energy, industry, logistics, skills, finance, digital, standards). A need is flagged where the country is below the African median on the matching World Bank indicator.
+
+UN Comtrade (2b) downloads the 4-digit data and the World Bank indicators automatically. Menu **2d** refreshes only the World Bank indicators, which are free and need no key.
 
 ## Refreshing the data
 

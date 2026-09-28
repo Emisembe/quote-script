@@ -23,7 +23,7 @@
 // ------------------------------------------------------------------
 
 const APP = {
-  version: '2.1.0',
+  version: '3.0.0',
   sheets: {
     guide: 'Guide',
     about: 'About',
@@ -42,6 +42,12 @@ const APP = {
     countries: 'Countries',
     products: 'Products',
     raw: 'Raw_Trade',
+    vaSummary: 'Value_Addition',
+    vaScore: 'VA_Scorecard',
+    needs: 'Country_Needs',
+    chains: 'Value_Chains',
+    enablers: 'Enablers',
+    rawHs4: 'Raw_HS4',
   },
   color: {
     header: '#1f4e3d',
@@ -83,9 +89,133 @@ const PARAMS = [
   ['P_LANDLOCK', 'Proximity multiplier if landlocked', 0.85, 'Applied when exporter or importer has no sea coast.', true],
   ['P_API_KEY', 'UN Comtrade API key', '', 'Free key: comtradedeveloper.un.org → subscribe to "comtrade - v1". API = Application Programming Interface.', true],
   ['P_STATUS', 'Data status', 'No data loaded', 'Set automatically. Shown on the Dashboard.', false],
+  ['P_WB_STATUS', 'Enabler data status', 'No enabler data loaded', 'Set automatically: World Bank indicators or SAMPLE.', false],
   ['P_SOURCE', 'Data source', 'NONE', 'Set automatically: SAMPLE, COMTRADE or OWN. Refresh uses it.', false],
   ['P_LAST_REFRESH', 'Last computed', '—', 'Set automatically when step 3 (Compute) finishes.', false],
   ['P_AUTO', 'Monthly auto-refresh', 'OFF', 'Switch with the menu: Monthly auto-refresh ON / OFF.', false],
+];
+
+// ------------------------------------------------------------------
+// Value addition — constants
+// ------------------------------------------------------------------
+
+// [name, default weight, explanation] — order matches VA_Scorecard sub-score columns M..Q
+const VA_CRITERIA = [
+  ['Value at stake', 30, 'Estimated extra export value if the raw exports were processed first (log scale).'],
+  ['Raw material base', 20, 'How much raw and semi-processed material the country already exports (log scale).'],
+  ['Processing gap', 15, 'Part of the chain still exported raw: 1 − processing share.'],
+  ['Market for processed goods', 15, 'Home imports and Africa-wide imports of the processed products (log scale).'],
+  ['Readiness (enablers)', 20, 'How the country scores on the enablers this chain needs (World Bank indicators).'],
+];
+
+// World Bank WDI (World Development Indicators). Higher is better for all of them.
+// [indicator code, short label, full name, need key, why it matters]
+const INDICATORS = [
+  ['EG.ELC.ACCS.ZS', 'Electricity access (%)', 'Access to electricity (% of population)', 'energy',
+    'Processing plants need reliable, affordable power.'],
+  ['NV.IND.MANF.ZS', 'Manufacturing (% of GDP)', 'Manufacturing, value added (% of GDP — Gross Domestic Product)', 'industry',
+    'An existing industrial base makes new processing easier.'],
+  ['TX.VAL.MANF.ZS.UN', 'Manufactured exports (%)', 'Manufactures exports (% of merchandise exports)', 'industry',
+    'Shows how much the country already sells processed goods abroad.'],
+  ['LP.LPI.OVRL.XQ', 'Logistics LPI (1–5)', 'Logistics Performance Index (LPI): overall score, 1 = low to 5 = high', 'logistics',
+    'Processed goods must reach buyers quickly and cheaply.'],
+  ['SE.SEC.ENRR', 'Secondary school (%)', 'School enrollment, secondary (% gross)', 'skills',
+    'Factories need trained technicians and workers.'],
+  ['FS.AST.PRVT.GD.ZS', 'Private credit (% of GDP)', 'Domestic credit to private sector (% of GDP)', 'finance',
+    'Plants need investment and working capital.'],
+  ['IT.NET.USER.ZS', 'Internet use (%)', 'Individuals using the Internet (% of population)', 'digital',
+    'Digital links help firms find buyers, meet standards and get paid.'],
+];
+
+const NEED_LABELS = {
+  energy: 'Reliable, affordable electricity',
+  industry: 'Industrial base & investment in plants',
+  logistics: 'Logistics & trade facilitation',
+  skills: 'Technical skills & training',
+  finance: 'Access to finance / capital',
+  digital: 'Digital connectivity',
+  standards: 'Quality standards & certification (check)',
+};
+
+// [chain, sector, raw HS4, semi-processed HS4, processed HS4, value multiplier (assumption), needs, what processing requires]
+// Some HS4 codes are broader than the chain (e.g. 0901 includes roasted coffee, 7102 includes cut diamonds).
+const VALUE_CHAINS = [
+  ['Cocoa → chocolate', 'Agri-food', '1801', '1803, 1804, 1805', '1806', 2.0, 'energy, finance, standards, skills',
+    'Grinding and pressing plants (cocoa liquor, butter, powder), stable power, food-safety certification (e.g. HACCP, ISO 22000) and capital for plant and bean stocks.'],
+  ['Coffee & tea → roasted, instant & packaged', 'Agri-food', '0901, 0902', '', '2101', 1.8, 'energy, standards, logistics, finance',
+    'Roasting, extraction and packaging lines, food-safety certification, branding, and fast logistics to consumer markets.'],
+  ['Cashew & nuts → kernels & snacks', 'Agri-food', '0801, 0802', '', '2008', 2.0, 'skills, standards, finance, energy',
+    'Shelling and peeling plants (labour- and skill-intensive), drying, grading to buyer standards, and working capital to buy the harvest.'],
+  ['Cotton → yarn, fabric & clothing', 'Textiles & apparel', '5201', '5205, 5208, 5209, 5210, 5211, 5212',
+    '6104, 6105, 6106, 6109, 6110, 6203, 6204, 6205, 6206, 6211', 3.0, 'energy, skills, logistics, finance, industry',
+    'Spinning and weaving need much power and capital; garment making needs trained workers, fast shipping and buyer compliance standards.'],
+  ['Crude oil → refined fuels', 'Minerals & fuels', '2709', '', '2710', 1.3, 'finance, industry, skills, logistics',
+    'Refineries need very large capital, technical skills, a reliable crude supply, and storage and pipeline logistics.'],
+  ['Natural gas → ammonia & fertiliser', 'Minerals & fuels', '2711', '2814', '3102', 1.6, 'finance, industry, energy, skills',
+    'Gas-to-ammonia and urea plants are capital-intensive and need a secure gas supply and skilled operators.'],
+  ['Phosphate rock → phosphate fertiliser', 'Chemicals', '2510', '2809', '3103, 3105', 2.0, 'energy, finance, industry, logistics',
+    'Acid and fertiliser plants need sulphur, water, energy, capital and bulk logistics.'],
+  ['Copper ore → cathodes, wire & cable', 'Metals', '2603', '7402, 7403', '7408, 7409, 7411, 8544', 1.3, 'energy, finance, industry, skills',
+    'Smelting and refining need large amounts of power and capital; wire and cable making needs industrial skills and standards.'],
+  ['Cobalt → chemicals & battery materials', 'Metals', '2605', '8105, 2822', '8507', 1.8, 'energy, finance, skills, standards, industry',
+    'Refining to cobalt chemicals needs power, capital and chemical skills; battery supply chains demand traceability and ESG standards.'],
+  ['Iron ore → iron & steel', 'Metals', '2601', '7201, 7203, 7206, 7207', '7208, 7209, 7210, 7213, 7214, 7216, 7306, 7308', 2.5,
+    'energy, finance, industry, logistics',
+    'Steelmaking needs huge amounts of energy (or gas for direct reduction), capital, rail and port logistics, and industrial skills.'],
+  ['Bauxite → alumina & aluminium', 'Metals', '2606', '2818, 7601', '7604, 7606, 7610, 7614, 7616', 4.0, 'energy, finance, industry, logistics',
+    'Alumina refineries and especially smelters need very cheap, reliable electricity (often hydropower) and very large capital.'],
+  ['Manganese & chrome ore → ferro-alloys', 'Metals', '2602, 2610', '', '7202', 2.0, 'energy, finance, industry',
+    'Ferro-alloy furnaces use large amounts of electricity and capital.'],
+  ['Gold & diamonds → refining, cutting & jewellery', 'Stone, glass & precious', '7102, 7108', '', '7113, 7114, 7116', 1.2,
+    'skills, standards, finance',
+    'Refining to international standards (e.g. LBMA accreditation), diamond cutting and jewellery design need skills, certification and secure logistics.'],
+  ['Hides & skins → leather & footwear', 'Leather, wood & paper', '4101, 4102, 4103', '4104, 4105, 4106, 4107', '4202, 4203, 6403, 6405', 3.0,
+    'skills, standards, energy, finance',
+    'Tanneries need water treatment and environmental standards; footwear and bags need design and craft skills and buyer compliance.'],
+  ['Logs → sawn wood, panels & furniture', 'Leather, wood & paper', '4403', '4407, 4408, 4412', '4418, 9403', 2.5,
+    'energy, skills, standards, logistics',
+    'Sawmills and panel plants need power and skills; furniture needs design, finishing and legal-timber certification.'],
+  ['Oilseeds → vegetable oils', 'Agri-food', '1201, 1202, 1204, 1205, 1206, 1207', '', '1507, 1508, 1511, 1512, 1513, 1515, 1516, 1517', 1.6,
+    'energy, finance, standards', 'Crushing and refining plants need steady power, capital and food-safety standards.'],
+  ['Raw sugar → confectionery & drinks', 'Agri-food', '1701', '', '1704, 2202', 1.8, 'energy, standards, logistics, finance',
+    'Food factories need power, food-safety certification, packaging and distribution networks.'],
+  ['Cereals → flour, pasta & bakery', 'Agri-food', '1001, 1005, 1006, 1007', '1101, 1102, 1103', '1902, 1905', 1.4, 'energy, standards, logistics',
+    'Mills and bakeries need power, storage, food-safety standards and distribution.'],
+  ['Fish → fillets & canned fish', 'Agri-food', '0302, 0303', '0304', '1604', 1.7, 'energy, standards, logistics',
+    'Cold chain, processing plants and export health certification (e.g. approval for the EU market) are essential.'],
+  ['Fruit → juices & preserves', 'Agri-food', '0803, 0804, 0805', '', '2007, 2008, 2009', 1.8, 'energy, standards, logistics, finance',
+    'Juice and canning lines need cold chain, packaging, food-safety standards and capital.'],
+  ['Tobacco leaf → cigarettes', 'Agri-food', '2401', '', '2402', 2.5, 'industry, finance, standards',
+    'Cigarette manufacturing is capital-intensive and heavily regulated.'],
+  ['Natural rubber → tyres & gloves', 'Plastics & rubber', '4001', '', '4011, 4015', 2.0, 'energy, industry, finance, skills',
+    'Tyre plants need capital, chemicals, power and skills; gloves need medical-grade standards.'],
+  ['Lithium & graphite → battery materials', 'Minerals & fuels', '2504, 2530', '2825, 2836, 3801', '8507', 3.0,
+    'energy, finance, skills, industry, standards',
+    'Chemical refining (lithium hydroxide or carbonate, battery-grade graphite) needs power, chemicals, capital and strict traceability standards.'],
+  ['Live animals → meat', 'Agri-food', '0102, 0104', '', '0201, 0202, 0204, 1602', 1.5, 'energy, standards, logistics',
+    'Abattoirs need cold chain, veterinary and hygiene certification, and reliable transport.'],
+  ['Cassava → starch & flour products', 'Agri-food', '0714', '', '1108, 1903', 2.0, 'energy, skills, standards',
+    'Starch and flour plants need drying equipment, power and food-safety standards.'],
+];
+
+// --- Sample-data shape only (NOT real statistics): who produces / processes what. Index = VALUE_CHAINS row.
+const SAMPLE_CHAIN_PRODUCERS = [
+  ['CIV', 'GHA', 'CMR', 'NGA'], ['ETH', 'UGA', 'KEN', 'TZA', 'RWA', 'BDI'], ['CIV', 'NGA', 'TZA', 'GNB', 'BEN', 'MOZ', 'GHA'],
+  ['BFA', 'MLI', 'BEN', 'CIV', 'TCD', 'CMR', 'EGY', 'TZA'], ['NGA', 'AGO', 'DZA', 'LBY', 'COG', 'GAB', 'GNQ', 'SSD', 'TCD', 'EGY', 'GHA'],
+  ['DZA', 'NGA', 'EGY', 'MOZ', 'GNQ', 'LBY'], ['MAR', 'TUN', 'TGO', 'SEN', 'EGY', 'DZA'], ['ZMB', 'COD'], ['COD', 'ZMB', 'MDG'],
+  ['ZAF', 'MRT', 'LBR', 'SLE', 'GIN'], ['GIN', 'SLE', 'GHA'], ['ZAF', 'GAB', 'GHA', 'ZWE', 'CIV'],
+  ['GHA', 'ZAF', 'MLI', 'BFA', 'SDN', 'TZA', 'BWA', 'NAM', 'AGO', 'COD', 'ZWE', 'SLE'], ['ETH', 'SDN', 'NGA', 'KEN', 'SOM', 'TCD', 'MLI'],
+  ['GAB', 'CMR', 'COG', 'CAF', 'COD', 'GNQ', 'LBR', 'MOZ'], ['SDN', 'NGA', 'ETH', 'TZA', 'SEN', 'BFA'], ['ZAF', 'SWZ', 'MUS', 'MWI', 'ZMB', 'SDN', 'EGY'],
+  ['ZAF', 'ZMB', 'UGA', 'TZA'], ['MAR', 'MRT', 'SEN', 'NAM', 'ZAF', 'GHA', 'SYC', 'MUS'], ['MAR', 'ZAF', 'EGY', 'CIV', 'KEN', 'CMR', 'GHA'],
+  ['ZWE', 'MWI', 'TZA', 'MOZ', 'ZMB'], ['CIV', 'LBR', 'NGA', 'GHA', 'CMR'], ['ZWE', 'COD', 'NAM', 'MDG', 'MOZ', 'TZA'],
+  ['SOM', 'SDN', 'ETH', 'MLI', 'NER', 'TCD', 'BFA', 'MRT', 'DJI'], ['NGA', 'GHA', 'CIV', 'COD'],
+];
+const SAMPLE_CHAIN_PROCESSORS = [
+  ['CIV', 'GHA', 'ZAF'], ['KEN'], ['CIV'], ['EGY', 'MUS', 'MAR', 'TUN', 'LSO', 'KEN', 'MDG', 'ETH'], ['DZA', 'EGY', 'NGA', 'ZAF'],
+  ['EGY', 'DZA', 'NGA'], ['MAR', 'TUN', 'EGY', 'SEN', 'ZAF'], ['ZMB', 'COD', 'ZAF'], ['ZMB', 'ZAF'], ['ZAF', 'EGY', 'DZA'],
+  ['MOZ', 'GHA', 'EGY', 'ZAF', 'CMR'], ['ZAF', 'ZWE'], ['ZAF', 'EGY'], ['ETH', 'KEN', 'MAR', 'TUN', 'EGY'], ['GAB', 'CMR', 'ZAF'],
+  ['EGY', 'NGA', 'ZAF'], ['ZAF', 'EGY', 'KEN'], ['EGY', 'ZAF', 'NGA', 'MAR'], ['MAR', 'SEN', 'MUS', 'SYC', 'NAM', 'GHA'],
+  ['MAR', 'ZAF', 'EGY', 'KEN'], ['ZAF', 'KEN', 'EGY'], ['ZAF', 'NGA'], ['MAR', 'ZAF'], ['ETH', 'BWA', 'NAM', 'SDN'], ['NGA', 'GHA'],
 ];
 
 // What each tab shows and how to explain it. Shown as a blue box at the top of the tab
@@ -145,7 +275,7 @@ const TAB_HELP = {
   },
   settings: {
     title: 'Settings — the controls',
-    what: ['How much each of the 7 criteria counts (weights) and other parameters such as the analysis year and the minimum gap size.'],
+    what: ['How much each criterion counts: 7 trade-gap weights, 5 value-addition weights, and parameters such as the analysis year.'],
     read: ['Weights are relative: 20 vs 10 = twice as important; 0 = ignored. Yellow cells are editable. Grey rows are filled in automatically.'],
     say: ['"The weights are our priorities. With the default weights the size of the gap counts most. We can try other priorities and check',
       ' that the top results stay on top."'],
@@ -165,6 +295,53 @@ const TAB_HELP = {
     read: ['Sector names feed the filters and charts. Arms (93) and art (97) are excluded by default.'],
     say: ['"Products are grouped with the same HS codes every customs office in the world uses, so our figures line up with official statistics."'],
     watch: ['2-digit groups are broad: "Cereals" mixes wheat, rice and maize. Run step 3 again after changing ticks.'],
+  },
+  vaSummary: {
+    title: 'Value_Addition — how much each country processes before it exports',
+    what: ['For each country: raw materials exported, processed goods exported, the processing share, and the value lost by exporting raw.'],
+    read: ['Processing share = processed ÷ all exports in the 25 value chains (higher = more value added at home).',
+      'Value lost = extra export value if raw exports were processed first. Round-trip = processed imports bought while exporting the raw material.'],
+    say: ['"This country exports its raw materials and buys the finished products back. By processing at home it could earn roughly this much',
+      ' more each year — and the Country_Needs tab shows what it would take."'],
+    watch: ['Value lost is an ESTIMATE built on the value multipliers on the Value_Chains tab (assumptions you can edit). Some HS4 codes are broad.'],
+  },
+  vaScore: {
+    title: 'VA_Scorecard — value-addition opportunities (country × value chain)',
+    what: ['One row per country and value chain where the country exports the raw or semi-processed material, with 5 sub-scores and a score.'],
+    read: ['E–L = facts in USD. M–Q = sub-scores (0–1). R = value-addition score, 0–100 (live formula using the value-addition weights on Settings).',
+      'S = enablers this chain needs where the country is below the African median. T = what the processing step requires.'],
+    say: ['"The higher the score, the more value is at stake, the bigger the raw base and market, and the better prepared the country is to process it."'],
+    watch: ['Do not type here — step 3 overwrites it. Readiness uses World Bank indicators; SAMPLE enabler data is synthetic.'],
+  },
+  needs: {
+    title: 'Country_Needs — what a country needs to add value',
+    what: ['Pick a country: its enablers compared with the African median, its value-addition opportunities, and what each processing step requires.'],
+    read: ['GAP = below the African median on that enabler. Opportunities are sorted by value lost (largest first).',
+      'Section 3 explains what it takes to process each raw material; section 4 sums it up in words.'],
+    say: ['"To capture this value, this country mainly needs what is flagged as a gap here. For its biggest chain, processing requires what section 3 lists."'],
+    watch: ['Below the median is a flag, not a verdict: check national studies. Standards and certification have no indicator, so always check them.'],
+  },
+  chains: {
+    title: 'Value_Chains — the 25 value chains tracked (editable)',
+    what: ['Each chain lists its raw, semi-processed and processed product codes (HS4 = 4-digit Harmonized System), a value multiplier and its needs.'],
+    read: ['Value multiplier = how many times more the processed product is worth than the raw one — an ASSUMPTION; replace it with study values.',
+      'Needs keywords: energy, industry, logistics, skills, finance, digital, standards. Some codes are broad (0901 also covers roasted coffee).'],
+    say: ['"We follow each raw material through its processing stages — for example cocoa beans, then cocoa butter and powder, then chocolate."'],
+    watch: ['After editing product codes, download the data again (Refresh). After editing multipliers or needs, run step 3.'],
+  },
+  enablers: {
+    title: 'Enablers — World Bank indicators of readiness for value addition',
+    what: ['Seven indicators per country from the World Bank WDI (World Development Indicators): power, industry, logistics, skills, finance, internet.'],
+    read: ['Latest available value for each country; higher is better for all seven. "Data years" shows how recent the values are.'],
+    say: ['"These show whether the basics for processing are in place — power, skills, finance, logistics and an industrial base."'],
+    watch: ['If the status says SAMPLE the values are synthetic. Menu "Fetch World Bank enabler indicators" loads real data (free, no key).'],
+  },
+  rawHs4: {
+    title: 'Raw_HS4 — detailed trade data for the value chains',
+    what: ['Exports (X) and imports (M) with the world (WLD) for the codes on the Value_Chains tab, at HS4 (4-digit) level, in USD.'],
+    read: ['Same six columns as Raw_Trade, but the product column holds 4-digit HS codes (e.g. 1801 = cocoa beans, 1806 = chocolate).'],
+    say: ['"This finer detail separates raw cocoa beans from chocolate, which the 2-digit data cannot do."'],
+    watch: ['Filled by the menu (sample or UN Comtrade). If you paste your own data, keep the six columns in this order.'],
   },
   raw: {
     title: 'Raw_Trade — the data everything is calculated from',
@@ -192,15 +369,23 @@ const ABBREVIATIONS = [
   ['COMESA', 'Common Market for Eastern and Southern Africa'],
   ['CU', 'Customs Union'],
   ['EAC', 'East African Community'],
+  ['ESG', 'Environmental, Social and Governance (standards buyers ask suppliers to meet)'],
+  ['EU', 'European Union'],
   ['ECCAS', 'Economic Community of Central African States'],
   ['ECOWAS', 'Economic Community of West African States'],
   ['FAQ', 'Frequently Asked Questions'],
   ['FTA', 'Free Trade Area'],
+  ['GDP', 'Gross Domestic Product — the value of everything a country produces in a year'],
+  ['HACCP', 'Hazard Analysis and Critical Control Points — a food-safety management standard'],
   ['HS', 'Harmonized Commodity Description and Coding System — the world standard product classification'],
   ['HS2', 'Harmonized System at 2-digit (chapter) level — 96 product groups'],
+  ['HS4', 'Harmonized System at 4-digit (heading) level — about 1,200 products, e.g. 1801 cocoa beans'],
+  ['ISO 22000', 'International food-safety management standard'],
   ['ISO3', 'ISO 3166-1 alpha-3 three-letter country code (ISO = International Organization for Standardization), e.g. NGA = Nigeria'],
   ['ITC', 'International Trade Centre (UN / WTO agency)'],
   ['KPI', 'Key Performance Indicator — the headline tiles on the Dashboard'],
+  ['LBMA', 'London Bullion Market Association — sets the standard for refined gold'],
+  ['LPI', 'Logistics Performance Index (World Bank), from 1 = low to 5 = high'],
   ['M', 'Imports (trade flow code)'],
   ['M49', 'UN standard numeric country code, used by UN Comtrade (e.g. 566 = Nigeria)'],
   ['RCA', 'Revealed Comparative Advantage (Balassa index)'],
@@ -212,7 +397,9 @@ const ABBREVIATIONS = [
   ['UN Comtrade', 'United Nations Commodity Trade Statistics Database'],
   ['UNCTAD', 'United Nations Conference on Trade and Development'],
   ['USD', 'United States dollars'],
+  ['VA', 'Value addition — processing raw materials into higher-value products'],
   ['WAEMU', 'West African Economic and Monetary Union'],
+  ['WDI', 'World Development Indicators — the World Bank\'s main database of country statistics'],
   ['WITS', 'World Integrated Trade Solution (World Bank)'],
   ['WLD', 'World — partner code meaning trade with all countries combined'],
   ['WTO', 'World Trade Organization'],
@@ -220,7 +407,7 @@ const ABBREVIATIONS = [
 ];
 
 // Tabs whose first content row is a table header (frozen under the blue box).
-const DATA_TABS = ['score', 'raw', 'countries', 'products'];
+const DATA_TABS = ['score', 'raw', 'countries', 'products', 'vaScore', 'chains', 'enablers', 'rawHs4'];
 
 function bannerLines_(key) {
   const h = TAB_HELP[key];
@@ -241,12 +428,18 @@ const L = (() => {
   return {
     settingsWeightHead: s,
     settingsWeight: s + 1,
-    settingsParamHead: s + CRITERIA.length + 3,
-    settingsParam: s + CRITERIA.length + 4,
+    settingsVaHead: s + CRITERIA.length + 3,
+    settingsVa: s + CRITERIA.length + 4,
+    settingsParamHead: s + CRITERIA.length + VA_CRITERIA.length + 6,
+    settingsParam: s + CRITERIA.length + VA_CRITERIA.length + 7,
     scoreHead: top_('score'), scoreFirst: top_('score') + 1,
     rawHead: top_('raw'), rawFirst: top_('raw') + 1,
     ctryHead: top_('countries'), ctryFirst: top_('countries') + 1,
     prodHead: top_('products'), prodFirst: top_('products') + 1,
+    vaHead: top_('vaScore'), vaFirst: top_('vaScore') + 1,
+    chainsHead: top_('chains'), chainsFirst: top_('chains') + 1,
+    enHead: top_('enablers'), enFirst: top_('enablers') + 1,
+    hs4Head: top_('rawHs4'), hs4First: top_('rawHs4') + 1,
   };
 })();
 
@@ -401,6 +594,7 @@ function onOpen() {
     .addItem('2a. Load SAMPLE data (synthetic, for testing)', 'loadSampleData')
     .addItem('2b. Fetch REAL data from UN Comtrade', 'fetchComtradeData')
     .addItem('2c. Clear Raw_Trade to paste your own data', 'clearRawTrade')
+    .addItem('2d. Fetch World Bank enabler indicators (free)', 'fetchWorldBankData')
     .addItem('3. Compute scorecard, dashboard & charts', 'computeScorecard')
     .addSeparator()
     .addItem('Monthly auto-refresh ON / OFF', 'toggleAutoRefresh')
@@ -453,12 +647,13 @@ function loadSampleData() {
 
 function clearRawTrade() {
   requireBuilt_();
-  if (!confirm_('Clear all rows in Raw_Trade so you can paste your own data?')) return;
+  if (!confirm_('Clear all rows in Raw_Trade and Raw_HS4 so you can paste your own data?')) return;
   clearSheetBody_(sheet_(APP.sheets.raw), L.rawFirst);
+  clearSheetBody_(sheet_(APP.sheets.rawHs4), L.hs4First);
   setParam_('P_SOURCE', 'OWN');
   setParam_('P_STATUS', 'Own data (pasted into Raw_Trade by user)');
   sheet_(APP.sheets.raw).activate();
-  notify_(`Raw_Trade cleared. Paste your rows from row ${L.rawFirst} (under the header), then run Refresh or step 3.`);
+  notify_(`Cleared. Paste 2-digit rows into Raw_Trade (from row ${L.rawFirst}) and 4-digit rows into Raw_HS4 (from row ${L.hs4First}), then run step 3.`);
 }
 
 // ------------------------------------------------------------------
@@ -545,11 +740,11 @@ function snapshot_(ss) {
     for (let i = 0; i < col.length; i++) if (String(col[i][0]).trim() === text) return i + 1;
     return 0;
   };
-  const snap = { weights: {}, params: {}, countries: null, products: null, raw: [] };
+  const snap = { weights: {}, params: {}, countries: null, products: null, raw: [], hs4: [], enablers: [], chains: null };
 
   const st = ss.getSheetByName(APP.sheets.settings);
   if (st && st.getLastRow()) {
-    const names = CRITERIA.map(c => c[0]);
+    const names = CRITERIA.map(c => c[0]).concat(VA_CRITERIA.map(c => c[0]));
     st.getRange(1, 1, st.getLastRow(), 2).getValues().forEach(r => {
       if (names.indexOf(r[0]) >= 0 && r[1] !== '') snap.weights[r[0]] = r[1];
     });
@@ -583,6 +778,22 @@ function snapshot_(ss) {
     snap.raw = rw.getRange(rh + 1, 1, rw.getLastRow() - rh, 6).getValues()
       .filter(r => r[0] !== '' && r[1] !== '');
   }
+  const h4 = ss.getSheetByName(APP.sheets.rawHs4);
+  const h4h = findHeader(h4, 'Year');
+  if (h4h && h4.getLastRow() > h4h) {
+    snap.hs4 = h4.getRange(h4h + 1, 1, h4.getLastRow() - h4h, 6).getValues().filter(r => r[0] !== '' && r[1] !== '');
+  }
+  const en = ss.getSheetByName(APP.sheets.enablers);
+  const enh = findHeader(en, 'ISO3');
+  if (enh && en.getLastRow() > enh) {
+    snap.enablers = en.getRange(enh + 1, 1, en.getLastRow() - enh, 3 + INDICATORS.length).getValues()
+      .filter(r => String(r[0]).trim().length === 3);
+  }
+  const vc = ss.getSheetByName(APP.sheets.chains);
+  const vch = findHeader(vc, 'Chain');
+  if (vch && vc.getLastRow() > vch) {
+    snap.chains = vc.getRange(vch + 1, 1, vc.getLastRow() - vch, 8).getValues().filter(r => String(r[0]).trim());
+  }
   return snap;
 }
 
@@ -590,6 +801,9 @@ function restore_(snap) {
   const st = sheet_(APP.sheets.settings);
   CRITERIA.forEach((c, i) => {
     if (snap.weights[c[0]] !== undefined) st.getRange(L.settingsWeight + i, 2).setValue(snap.weights[c[0]]);
+  });
+  VA_CRITERIA.forEach((c, i) => {
+    if (snap.weights[c[0]] !== undefined) st.getRange(L.settingsVa + i, 2).setValue(snap.weights[c[0]]);
   });
   Object.keys(snap.params).forEach(k => {
     const v = snap.params[k];
@@ -618,6 +832,21 @@ function restore_(snap) {
     sh.getRange(L.prodFirst, 4, n, 1).setValues(inc);
   }
   if (snap.raw.length) writeRaw_(snap.raw, true);
+  if (snap.hs4.length) writeHs4_(snap.hs4, true);
+  if (snap.chains && snap.chains.length) {
+    const sh = sheet_(APP.sheets.chains);
+    clearSheetBody_(sh, L.chainsFirst);
+    ensureRows_(sh, L.chainsFirst + snap.chains.length);
+    sh.getRange(L.chainsFirst, 3, snap.chains.length, 3).setNumberFormat('@');
+    sh.getRange(L.chainsFirst, 1, snap.chains.length, 8).setValues(snap.chains.map(r => r.map(v => String(v === null ? '' : v))
+      .map((v, i) => (i === 5 ? Number(v) || 1 : v))));
+  }
+  if (snap.enablers.length) {
+    const sh = sheet_(APP.sheets.enablers);
+    clearSheetBody_(sh, L.enFirst);
+    ensureRows_(sh, L.enFirst + snap.enablers.length);
+    sh.getRange(L.enFirst, 1, snap.enablers.length, snap.enablers[0].length).setValues(snap.enablers);
+  }
 }
 
 // ------------------------------------------------------------------
@@ -629,7 +858,8 @@ function buildWorkbook_() {
   const keptKey = ss.getRangeByName('P_API_KEY') ? ss.getRangeByName('P_API_KEY').getValue() : '';
   const s = APP.sheets;
   const order = [s.guide, s.about, s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.settings,
-    s.method, s.glossary, s.sources, s.updates, s.faq, s.countries, s.products, s.raw];
+    s.vaSummary, s.needs, s.vaScore, s.method, s.glossary, s.sources, s.updates, s.faq,
+    s.countries, s.products, s.chains, s.enablers, s.raw, s.rawHs4];
   order.forEach((name, i) => {
     let sh = ss.getSheetByName(name);
     if (!sh) sh = ss.insertSheet(name, i);
@@ -643,7 +873,13 @@ function buildWorkbook_() {
   buildCountries_(ss);
   buildProducts_(ss);
   buildRawTrade_(ss);
+  buildValueChains_(ss);
+  buildEnablers_(ss);
+  buildRawHs4_(ss);
   buildScorecard_(ss);
+  buildVaScorecard_(ss);
+  buildValueAddition_(ss);
+  buildCountryNeeds_(ss);
   buildTopGaps_(ss);
   buildCountryView_(ss);
   buildDashboard_(ss);
@@ -714,6 +950,13 @@ function buildSettings_(ss, keptKey) {
   sh.getRange(totalRow, 1, 1, 2).setValues([['Total', `=SUM(B${L.settingsWeight}:B${totalRow - 1})`]])
     .setFontWeight('bold');
   ss.setNamedRange('WEIGHTS', sh.getRange(L.settingsWeight, 2, CRITERIA.length, 1));
+
+  header_(sh.getRange(L.settingsVaHead, 1, 1, 3), ['Value-addition criterion', 'Weight', 'What it measures']);
+  sh.getRange(L.settingsVa, 1, VA_CRITERIA.length, 3).setValues(VA_CRITERIA);
+  sh.getRange(L.settingsVa, 2, VA_CRITERIA.length, 1).setBackground(APP.color.input);
+  const vaTotal = L.settingsVa + VA_CRITERIA.length;
+  sh.getRange(vaTotal, 1, 1, 2).setValues([['Total', `=SUM(B${L.settingsVa}:B${vaTotal - 1})`]]).setFontWeight('bold');
+  ss.setNamedRange('VA_WEIGHTS', sh.getRange(L.settingsVa, 2, VA_CRITERIA.length, 1));
 
   header_(sh.getRange(L.settingsParamHead, 1, 1, 3), ['Parameter', 'Value', 'Notes']);
   const rows = PARAMS.map(p => [p[1], p[0] === 'P_API_KEY' ? keptKey : p[2], p[3]]);
@@ -1140,9 +1383,9 @@ function colourTabs_(ss) {
   const s = APP.sheets;
   const groups = [
     ['#4a86e8', [s.guide, s.about, s.method, s.glossary, s.sources, s.updates, s.faq]],
-    ['#1f4e3d', [s.dashboard, s.charts, s.top, s.country, s.explain, s.score]],
-    ['#e8a33d', [s.settings, s.countries, s.products]],
-    ['#999999', [s.raw]],
+    ['#1f4e3d', [s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.vaSummary, s.needs, s.vaScore]],
+    ['#e8a33d', [s.settings, s.countries, s.products, s.chains]],
+    ['#999999', [s.raw, s.enablers, s.rawHs4]],
   ];
   groups.forEach(([colour, names]) => names.forEach(n => {
     const sh = ss.getSheetByName(n);
@@ -1198,14 +1441,15 @@ function writeDocPage_(ss, name, blocks, widths) {
 function buildGuide_(ss) {
   const s = APP.sheets;
   const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
-  const helpRows = ['dashboard', 'charts', 'top', 'country', 'explain', 'score', 'settings', 'countries', 'products', 'raw']
+  const helpRows = ['dashboard', 'charts', 'top', 'country', 'explain', 'score', 'vaSummary', 'needs', 'vaScore', 'settings',
+    'countries', 'products', 'chains', 'enablers', 'raw', 'rawHs4']
     .map(k => {
       const h = TAB_HELP[k];
       return [h.title.split(' — ')[0], h.what.join(' '), h.read.join(' '), h.say.join('').trim(), h.watch.join(' ')];
     });
   writeDocPage_(ss, s.guide, [
     ['title', 'START HERE — Africa Trade Gap Scorecard'],
-    ['sub', 'What African countries import and export, and where they could trade more with each other.'],
+    ['sub', 'What African countries import and export, where they could trade more with each other, and how much value they could add by processing.'],
     ['sub', `Code version ${APP.version} · workbook built ${stamp}`],
     ['gap'],
     ['h', 'Get going in 4 steps'],
@@ -1213,7 +1457,7 @@ function buildGuide_(ss) {
       ['1. Build', 'Menu Africa Trade → Quick start (first time only)', 'Creates every tab, header, formula, chart area and dropdown.'],
       ['2. Load data', 'Pick ONE: 2a SAMPLE · 2b UN Comtrade (United Nations Commodity Trade Statistics Database) · 2c your own data', 'Fills Raw_Trade. See Data_Sources for what each option means.'],
       ['3. Compute', 'Menu → 3. Compute scorecard, dashboard & charts', 'Scores every exporter → importer → product combination and draws the charts.'],
-      ['4. Explore', 'Dashboard, Charts, Top_Gaps, Country_View, Explain_Score', 'Change weights on Settings — rankings update instantly.'],
+      ['4. Explore', 'Dashboard, Charts, Top_Gaps, Country_View, Explain_Score, Value_Addition, Country_Needs', 'Change weights on Settings — rankings update instantly.'],
       ['Later', 'Refresh data · Monthly auto-refresh · Update workbook (new code)', 'All explained on the Refresh_&_Updates tab.'],
     ]],
     ['h', 'Every results and input tab starts with a blue box'],
@@ -1230,6 +1474,9 @@ function buildGuide_(ss) {
       [s.country, 'Results', 'Pick one country: top exports and imports, African buyers and suppliers, best opportunities.'],
       [s.explain, 'Results', 'Pick one opportunity and see exactly how its score was built, criterion by criterion.'],
       [s.score, 'Results', 'The full composite index: raw inputs, 7 sub-scores (0–1) and the composite score (0–100).'],
+      [s.vaSummary, 'Results', 'Value addition per country: raw vs processed exports, processing share, value lost, charts.'],
+      [s.needs, 'Results', 'Pick a country: enablers vs the African median, its value-addition opportunities, what processing requires.'],
+      [s.vaScore, 'Results', 'Every country × value chain with 5 sub-scores and a value-addition score (0–100).'],
       [s.settings, 'Your inputs', 'Weights of the 7 criteria and other parameters (yellow cells).'],
       [s.method, 'Explanation', 'Every formula, step by step, with a worked example and the known limits.'],
       [s.glossary, 'Explanation', 'Plain-English meaning of every term.'],
@@ -1238,7 +1485,10 @@ function buildGuide_(ss) {
       [s.faq, 'Explanation', 'Common questions and answers.'],
       [s.countries, 'Your inputs', '54 countries with region, capital location, customs unions, RECs and AfCFTA status. Editable.'],
       [s.products, 'Your inputs', '96 HS (Harmonized System) product groups with sector. Untick "Include" to leave one out.'],
-      [s.raw, 'Data', 'The trade figures everything is calculated from.'],
+      [s.chains, 'Your inputs', 'The 25 value chains: raw, semi-processed and processed HS4 codes, value multipliers and needs.'],
+      [s.enablers, 'Data', 'World Bank indicators of readiness: electricity, industry, logistics, skills, finance, internet.'],
+      [s.raw, 'Data', 'The 2-digit trade figures the trade-gap analysis is calculated from.'],
+      [s.rawHs4, 'Data', 'The 4-digit trade figures the value-addition analysis is calculated from.'],
     ]],
     ['h', 'Presenting this workbook in 5 minutes'],
     ['table', ['#', 'Tab', 'What to show', 'What to say'], [
@@ -1248,7 +1498,9 @@ function buildGuide_(ss) {
       [4, s.top, 'The top 10, then filter for your audience\'s country', '"These are the most promising pairings: the buyer already imports it, the seller already exports it — just not to each other."'],
       [5, s.explain, 'The #1 opportunity', '"Here is why it scores so high: most points come from the size of the gap and market access."'],
       [6, s.settings, 'Change one weight live', '"If we care more about distance, the ranking changes like this — the method is transparent."'],
-      [7, s.method, '"Know the limits"', '"These are leads to investigate, not guarantees. Official data misses informal trade."'],
+      [7, s.vaSummary, 'Top of the country table and the charts', '"Many countries export raw materials and buy the processed goods back. This is the value left on the table."'],
+      [8, s.needs, 'Your audience\'s country', '"To capture that value, this country needs these enablers — and this is what processing each material requires."'],
+      [9, s.method, '"Know the limits"', '"These are leads to investigate, not guarantees. Official data misses informal trade."'],
     ]],
     ['h', 'Abbreviations — full names'],
     ['table', ['Abbreviation', 'Full name / meaning'], ABBREVIATIONS],
@@ -1277,7 +1529,8 @@ function buildAbout_(ss) {
       ['1. Trade picture', 'Imports and exports of each of the 54 African countries — by product (HS 2-digit, Harmonized System) and by African partner. See Dashboard, Charts and Country_View.'],
       ['2. Gap finder', 'For every pair of countries and every product: does A export it, does B import it, and how much of that already flows from A to B? The difference is the "untapped gap".'],
       ['3. Composite index', 'Each gap is scored on 7 criteria (demand, supply, gap size, market access, proximity, growth, competitiveness), weighted and combined into one score from 0 to 100.'],
-      ['4. Decision support', 'Rankings you can filter, and weights you can change to reflect your priorities — e.g. give more weight to proximity if logistics is your main concern.'],
+      ['4. Value addition', 'For 25 value chains (cocoa → chocolate, copper ore → cable, crude → fuel…): how much each country processes before it exports, the value lost by exporting raw, and what it needs (power, skills, finance, logistics…) to process more. See Value_Addition and Country_Needs.'],
+      ['5. Decision support', 'Rankings you can filter, and weights you can change to reflect your priorities — e.g. give more weight to proximity if logistics is your main concern.'],
     ]],
     ['h', 'Questions it answers'],
     ['p', '• Which African countries could supply what my country currently imports from outside Africa?'],
@@ -1285,6 +1538,7 @@ function buildAbout_(ss) {
     ['p', '• Which sectors hold the largest unrealised intra-African trade?'],
     ['p', '• How much of each country\'s exports already go to other African countries?'],
     ['p', '• Why does a particular opportunity rank high or low? (Explain_Score tab)'],
+    ['p', '• How much value does each country lose by exporting raw materials, and what would it need to process them? (Value_Addition, Country_Needs)'],
     ['gap'],
     ['h', 'Who it is for'],
     ['p', 'Trade promotion agencies, chambers of commerce, exporters and importers, policy analysts, researchers, students and journalists.'],
@@ -1354,7 +1608,25 @@ function buildMethodology_(ss) {
     ['p', '• Africa share of exports = intra-African exports ÷ exports to the world.'],
     ['p', '• Sector gap = sum of gaps in that sector. Gaps overlap (one supplier is counted against every buyer) so this shows scale, not an achievable total.'],
     ['gap'],
+    ['h', 'Value addition (Value_Addition, VA_Scorecard, Country_Needs tabs)'],
+    ['p', 'Each of the 25 value chains on the Value_Chains tab lists raw, semi-processed and processed HS4 (4-digit) codes. For every country and chain:'],
+    ['p', '   Processing share = (semi-processed exports + processed exports) ÷ (raw + semi-processed + processed exports)'],
+    ['p', '   Value lost (estimate) = raw exports × (multiplier − 1) + semi-processed exports × (multiplier − 1) ÷ 2'],
+    ['p', '   Round-trip imports = min(raw exports, processed imports): processed goods bought back while the raw material is exported'],
+    ['p', 'The multiplier (e.g. 2.0 = the processed product is worth twice the raw material) is an ASSUMPTION on the Value_Chains tab — replace it with study values.'],
+    ['table', ['Value-addition criterion', 'Formula / scaling', 'Why it matters'], [
+      ['Value at stake', 'log10(1 + value lost), then min-max', 'The size of the prize from processing.'],
+      ['Raw material base', 'log10(1 + raw + semi-processed exports), then min-max', 'Processing needs a steady supply of the raw material.'],
+      ['Processing gap', '1 − processing share', 'How much of the chain is still exported raw.'],
+      ['Market for processed goods', '½ × min-max of log home imports of the processed goods + ½ × min-max of log Africa-wide imports', 'A buyer at home or in Africa for the processed product.'],
+      ['Readiness (enablers)', 'Average of the min-max-scaled World Bank indicators this chain needs (e.g. electricity, finance). No data → 0.5', 'Whether the basics for processing are in place.'],
+    ]],
+    ['p', 'Value-addition score = weighted average of the 5 sub-scores × 100, with the value-addition weights on Settings (live formula).'],
+    ['p', 'Needs flagged = the enablers a chain needs (Value_Chains → Needs) where the country is below the African median. Standards are always listed "(check)".'],
+    ['gap'],
     ['h', 'Know the limits'],
+    ['p', '• Value lost uses assumed multipliers and 4-digit codes that can be broader than the chain (0901 includes roasted coffee, 7102 cut diamonds).'],
+    ['p', '• Enabler indicators are national averages with different latest years; a country can have a strong industrial zone despite a low average.'],
     ['p', '• Reporting gaps: several African countries report to UN Comtrade late or not at all; missing reporters appear as zero.'],
     ['p', '• Informal cross-border trade is not recorded, so actual intra-African trade is higher than the statistics show.'],
     ['p', '• HS 2-digit (Harmonized System chapter) is broad: "Cereals" can be wheat on one side and maize on the other. Drill down before acting.'],
@@ -1404,6 +1676,15 @@ function buildGlossary_(ss) {
       ['UN Comtrade', 'United Nations Commodity Trade Statistics Database — official trade statistics reported by countries.'],
       ['Landlocked', 'A country without a sea coast; its goods must transit through a neighbour\'s port.'],
       ['Informal cross-border trade', 'Trade that bypasses official customs recording, common across African land borders.'],
+      ['Value addition (VA)', 'Processing a raw material into a product worth more — e.g. cocoa beans into chocolate. Also called beneficiation for minerals.'],
+      ['Value chain', 'The stages a product goes through: raw material → semi-processed → processed (final) product.'],
+      ['Processing share', 'Part of a country\'s exports in a value chain that is already processed: (semi-processed + processed) ÷ all exports in that chain.'],
+      ['Value multiplier', 'How many times more a processed product is worth than its raw material. An assumption on the Value_Chains tab.'],
+      ['Value lost (estimate)', 'Extra export value a country could earn if it processed its raw exports first: raw exports × (multiplier − 1) (+ half for semi-processed).'],
+      ['Round-trip trade', 'Exporting a raw material while importing the processed product made from it (e.g. crude oil out, petrol in).'],
+      ['Enabler', 'A condition that makes processing possible: electricity, industrial base, logistics, skills, finance, digital connectivity, standards.'],
+      ['Readiness', 'Average of the enabler indicators a value chain needs, scaled 0–1 across African countries.'],
+      ['African median', 'The middle value of all African countries for an indicator: half are above, half below. Below it = a GAP flag.'],
       ['Sensitivity analysis', 'Changing the weights to see whether the top opportunities stay on top. Robust results survive reasonable weight changes.'],
     ]],
   ], [24, 330, 760, 120, 120]);
@@ -1435,12 +1716,15 @@ function buildDataSources_(ss) {
     ]],
     ['p', '(Example rows only — illustrative values.) Needed: world rows (WLD) for both X (exports) and M (imports), for the analysis year AND the year before;'],
     ['p', 'plus bilateral rows between African countries for the analysis year. Values in US dollars (USD).'],
+    ['p', 'Raw_HS4 uses the same six columns with 4-digit codes, world partner (WLD) only, for the analysis year — codes listed on the Value_Chains tab.'],
+    ['p', 'UN Comtrade (2b) fills both Raw_Trade and Raw_HS4 automatically and then downloads the World Bank enablers.'],
     ['gap'],
     ['h', 'Other good sources'],
     ['table', ['Source', 'What it offers'], [
       ['WITS (World Integrated Trade Solution, World Bank)', 'wits.worldbank.org — Comtrade data with an easier download interface, plus tariff data.'],
       ['ITC (International Trade Centre) Trade Map', 'trademap.org — detailed trade flows, mirror data, and export-potential indicators.'],
       ['CEPII BACI', 'cepii.fr — BACI (Base pour l\'Analyse du Commerce International) from CEPII, a French research centre: Comtrade data reconciled between reporters and partners; good for countries that report poorly.'],
+      ['World Bank WDI (World Development Indicators)', 'data.worldbank.org — source of the 7 enabler indicators (menu 2d, free, no key). The latest available year per country is used.'],
       ['AfCFTA Secretariat', 'au-afcfta.org — African Continental Free Trade Area membership, ratification status and tariff schedules.'],
       ['UNCTADstat', 'unctadstat.unctad.org — statistics of the United Nations Conference on Trade and Development, for checking totals.'],
     ]],
@@ -1461,6 +1745,7 @@ function buildUpdates_(ss) {
       ['Get the latest official figures', 'Menu → Refresh data (same source) & recompute', 'If the source is UN Comtrade: re-downloads all 54 countries for the analysis year and the year before (about 5–15 minutes, in the background), then recomputes everything.'],
       ['Move to a newer year', 'Settings → Analysis year (e.g. 2024) → Refresh data', 'Downloads that year and the one before. Newer years fill up gradually as countries report — the data status lists countries that have not reported yet.'],
       ['Use updated figures of my own', 'Paste the new rows into Raw_Trade (or 2c to clear it first) → Refresh data', 'Recomputes from whatever is in Raw_Trade.'],
+      ['Update the enabler indicators', 'Menu → 2d. Fetch World Bank enabler indicators', 'Downloads the latest World Bank values (free, no key) and recomputes. Also done automatically after a UN Comtrade download.'],
       ['Keep it current automatically', 'Menu → Monthly auto-refresh ON / OFF', 'On the 1st of every month (~3–4 am) the workbook refreshes itself. Settings → "Monthly auto-refresh" shows whether it is on. Run the same menu item to turn it off.'],
       ['Only changed weights', 'Nothing', 'Scores, rankings, Explain_Score and the live charts update instantly.'],
       ['Changed Countries, Products or other Settings', 'Menu → 3. Compute', 'Re-scores every opportunity with the new inputs.'],
@@ -1510,6 +1795,10 @@ function buildFaq_(ss) {
       ['Can I add more countries or criteria?', 'Countries: add rows on the Countries tab (ISO3, M49, coordinates). New criteria need a code change.'],
       ['Can I use HS 4-digit products?', 'Yes with code changes: the Products list and the Comtrade query must be extended. Expect ~12× more data.'],
       ['The Comtrade fetch stopped — what now?', 'Check the data status on Settings for the error. Use "Stop a running Comtrade fetch" and start Refresh again if needed.'],
+      ['How is "value lost" calculated?', 'Raw exports × (value multiplier − 1), plus half of that for semi-processed exports. The multipliers are assumptions on the Value_Chains tab — replace them with study values.'],
+      ['Why does a country have no value-addition rows?', 'It exports little of the raw materials in the 25 chains, or its HS4 data is missing for that year.'],
+      ['Can I add a value chain?', 'Yes: add a row on the Value_Chains tab (codes, multiplier, needs), download data again with Refresh, then run step 3.'],
+      ['What does "GAP" mean on Country_Needs?', 'The country is below the African median on that enabler. It is a flag to investigate, not a verdict.'],
       ['Can I undo a mistake?', 'File → Version history → See version history, then restore an earlier version.'],
       ['Can I share this workbook?', 'Yes — share the Google Sheet. Editors must authorise the script once to use the menu.'],
     ]],
@@ -1527,6 +1816,7 @@ function loadSampleData_() {
   writeRaw_(rows, true);
   setParam_('P_SOURCE', 'SAMPLE');
   setParam_('P_STATUS', 'SAMPLE DATA — synthetic numbers for testing, NOT real trade statistics');
+  loadSampleValueAddition_();
 }
 
 /** Deterministic synthetic trade data with a realistic shape. */
@@ -1631,6 +1921,7 @@ function startComtradeFetch_(interactive) {
   props.setProperty(APP.fetchProp, '0');
   props.setProperty(APP.missingProp, '');
   clearSheetBody_(sheet_(APP.sheets.raw), L.rawFirst);
+  clearSheetBody_(sheet_(APP.sheets.rawHs4), L.hs4First);
   setParam_('P_SOURCE', 'COMTRADE');
   runComtradeFetch_();
 }
@@ -1654,6 +1945,7 @@ function runComtradeFetch_() {
   if (cursorRaw === null) return;
   let cursor = Number(cursorRaw);
   const countries = readCountries_();
+  const chains = readChains_();
   const key = String(getParam_('P_API_KEY') || '').trim();
   const year = Number(getParam_('P_YEAR'));
   const started = Date.now();
@@ -1661,9 +1953,11 @@ function runComtradeFetch_() {
 
   while (cursor < countries.length && Date.now() - started < 4.5 * 60 * 1000) {
     const c = countries[cursor];
-    let rows;
+    let rows, rows4;
     try {
       rows = fetchReporter_(c, countries, year, key);
+      Utilities.sleep(1200); // stay under the API rate limit
+      rows4 = fetchReporterHs4_(c, chains, year, key);
     } catch (e) {
       setParam_('P_STATUS', `UN Comtrade fetch failed at ${c.name}: ${e.message}`);
       props.deleteProperty(APP.fetchProp);
@@ -1672,6 +1966,7 @@ function runComtradeFetch_() {
     }
     if (rows.length) writeRaw_(rows, false);
     else missing.push(c.iso);
+    if (rows4.length) writeHs4_(rows4, false);
     cursor++;
     props.setProperty(APP.fetchProp, String(cursor));
     props.setProperty(APP.missingProp, missing.join(','));
@@ -1689,6 +1984,11 @@ function runComtradeFetch_() {
   const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
   setParam_('P_STATUS', `UN Comtrade (fetched ${stamp}). ` +
     (missing.length ? `No ${year - 1}–${year} data reported by: ${missing.join(', ')}` : 'All countries reported.'));
+  try {
+    fetchWorldBank_();
+  } catch (e) {
+    setParam_('P_WB_STATUS', 'World Bank download failed: ' + e.message);
+  }
   computeScorecard();
 }
 
@@ -1709,23 +2009,7 @@ function fetchReporter_(reporter, countries, year, key) {
     maxRecords: 250000,
     includeDesc: 'false',
   };
-  const url = 'https://comtradeapi.un.org/data/v1/get/C/A/HS?' +
-    Object.keys(query).map(k => `${k}=${encodeURIComponent(query[k])}`).join('&');
-
-  let res;
-  for (let attempt = 1; attempt <= 4; attempt++) {
-    res = UrlFetchApp.fetch(url, {
-      headers: { 'Ocp-Apim-Subscription-Key': key },
-      muteHttpExceptions: true,
-    });
-    const code = res.getResponseCode();
-    if (code === 401 || code === 403) throw new Error('the API key was rejected (check it on Settings)');
-    if (code === 200) break;
-    if (attempt === 4) throw new Error(`HTTP ${code}: ${res.getContentText().slice(0, 200)}`);
-    Utilities.sleep(5000 * attempt);
-  }
-
-  const data = (JSON.parse(res.getContentText()).data) || [];
+  const data = comtradeGet_(query, key);
   const seen = {};
   data.forEach(d => {
     const flow = d.flowCode;
@@ -1782,6 +2066,7 @@ function computeScorecard() {
   writeDashboard_(result.summary);
   writeCharts_(result.summary);
   selectTopForExplain_(result.rows);
+  computeValueAddition_();
   setParam_('P_LAST_REFRESH', Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm'));
   notify_(`Scorecard ready: ${result.rows.length.toLocaleString()} opportunities scored.`);
 }
@@ -2280,4 +2565,613 @@ function alert_(msg) { notify_(msg, true); }
 function confirm_(msg) {
   const ui = SpreadsheetApp.getUi();
   return ui.alert('Africa Trade', msg, ui.ButtonSet.YES_NO) === ui.Button.YES;
+}
+
+// ------------------------------------------------------------------
+// Value addition — tabs
+// ------------------------------------------------------------------
+
+/** Open-ended VA_Scorecard column reference, e.g. va_('A') → VA_Scorecard!$A$8:$A */
+function va_(col) { return `VA_Scorecard!$${col}$${L.vaFirst}:$${col}`; }
+function en_(col) { return `Enablers!$${col}$${L.enFirst}:$${col}`; }
+function vaWeightCell_(i) { return `Settings!$B$${L.settingsVa + i}`; }
+function vaWeightRange_() { return `Settings!$B$${L.settingsVa}:$B$${L.settingsVa + VA_CRITERIA.length - 1}`; }
+
+function colLetter_(n) {
+  let s = '';
+  while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); }
+  return s;
+}
+
+function buildValueChains_(ss) {
+  const sh = resetSheet_(ss, APP.sheets.chains);
+  writeBanner_(sh, 'chains');
+  const head = ['Chain', 'Sector', 'Raw HS4 codes', 'Semi-processed HS4 codes', 'Processed HS4 codes',
+    'Value multiplier (assumption)', 'Needs', 'What processing requires'];
+  header_(sh.getRange(L.chainsHead, 1, 1, head.length), head);
+  sh.getRange(L.chainsHead, 1, 1, head.length).setNotes([[
+    'Raw material → processed product', 'Sector used in charts',
+    'HS4 = 4-digit Harmonized System codes of the raw material, comma-separated',
+    'Partly processed stage (e.g. cocoa butter, copper cathodes)', 'Final processed products (e.g. chocolate, copper wire)',
+    'How many times more the processed product is worth than the raw material. ASSUMPTION — replace with study values.',
+    'Keywords: energy, industry, logistics, skills, finance, digital, standards', '']]);
+  sh.getRange(L.chainsFirst, 3, VALUE_CHAINS.length, 3).setNumberFormat('@');
+  sh.getRange(L.chainsFirst, 1, VALUE_CHAINS.length, head.length).setValues(VALUE_CHAINS);
+  sh.getRange(L.chainsFirst, 6, VALUE_CHAINS.length, 1).setBackground(APP.color.input).setNumberFormat('0.0');
+  sh.setFrozenRows(L.chainsHead);
+  [260, 150, 140, 200, 260, 120, 230, 700].forEach((w, i) => sh.setColumnWidth(i + 1, w));
+}
+
+function buildEnablers_(ss) {
+  const sh = resetSheet_(ss, APP.sheets.enablers);
+  writeBanner_(sh, 'enablers');
+  const head = ['ISO3', 'Country'].concat(INDICATORS.map(i => i[1])).concat(['Data years']);
+  header_(sh.getRange(L.enHead, 1, 1, head.length), head);
+  sh.getRange(L.enHead, 1, 1, head.length).setWrap(true);
+  sh.setRowHeight(L.enHead, 48);
+  sh.getRange(L.enHead, 1, 1, head.length).setNotes([['ISO3 country code', '']
+    .concat(INDICATORS.map(i => `${i[2]}. World Bank code ${i[0]}. ${i[4]}`))
+    .concat(['Years of the latest available values'])]);
+  sh.getRange(L.enFirst, 3, sh.getMaxRows() - L.enFirst + 1, INDICATORS.length).setNumberFormat('0.0');
+  sh.setFrozenRows(L.enHead);
+  sh.setColumnWidth(2, 190);
+}
+
+function buildRawHs4_(ss) {
+  const sh = resetSheet_(ss, APP.sheets.rawHs4);
+  writeBanner_(sh, 'rawHs4');
+  header_(sh.getRange(L.hs4Head, 1, 1, 6), ['Year', 'Reporter ISO3', 'Partner ISO3 (WLD = world)',
+    'Flow (X/M)', 'HS4', 'Value (USD)']);
+  sh.getRange(L.hs4First, 5, sh.getMaxRows() - L.hs4First + 1, 1).setNumberFormat('0000');
+  sh.getRange(L.hs4First, 6, sh.getMaxRows() - L.hs4First + 1, 1).setNumberFormat('#,##0');
+  sh.setFrozenRows(L.hs4Head);
+  sh.setColumnWidth(3, 190);
+}
+
+function buildVaScorecard_(ss) {
+  const sh = resetSheet_(ss, APP.sheets.vaScore);
+  writeBanner_(sh, 'vaScore');
+  const head = ['ISO3', 'Country', 'Value chain', 'Sector', 'Raw exports (USD)', 'Semi-processed exports (USD)',
+    'Processed exports (USD)', 'Processed imports (USD)', 'Processing share', 'Value multiplier (assumption)',
+    'Value lost (estimate, USD)', 'Round-trip imports (USD)']
+    .concat(VA_CRITERIA.map(c => c[0] + ' (0–1)'))
+    .concat(['Value-addition score (0–100)', 'Needs flagged for this chain', 'What processing requires']);
+  header_(sh.getRange(L.vaHead, 1, 1, head.length), head);
+  sh.getRange(L.vaHead, 1, 1, head.length).setWrap(true);
+  sh.setRowHeight(L.vaHead, 60);
+  const notes = ['', '', 'Raw material → processed product (Value_Chains tab)', '',
+    "Country's exports of the raw material to the world", 'Exports of partly processed products',
+    'Exports of final processed products', 'Imports of the final processed products',
+    '(semi-processed + processed exports) ÷ all exports in this chain. Higher = more value added at home.',
+    'Assumption from the Value_Chains tab', 'raw exports × (multiplier − 1) + semi-processed exports × (multiplier − 1) ÷ 2',
+    'Processed imports bought while exporting the raw material: min(raw exports, processed imports)']
+    .concat(VA_CRITERIA.map(c => c[2] + ' Scaled 0–1.'))
+    .concat(['Weighted average of the 5 sub-scores × 100. Live formula: follows the value-addition weights on Settings.',
+      'Enablers this chain needs where the country is below the African median', '']);
+  sh.getRange(L.vaHead, 1, 1, notes.length).setNotes([notes]);
+  sh.setFrozenRows(L.vaHead);
+  const n = sh.getMaxRows() - L.vaFirst + 1;
+  sh.getRange(L.vaFirst, 5, n, 4).setNumberFormat('#,##0');
+  sh.getRange(L.vaFirst, 9, n, 1).setNumberFormat('0.0%');
+  sh.getRange(L.vaFirst, 10, n, 1).setNumberFormat('0.0');
+  sh.getRange(L.vaFirst, 11, n, 2).setNumberFormat('#,##0');
+  sh.getRange(L.vaFirst, 13, n, 5).setNumberFormat('0.000');
+  sh.getRange(L.vaFirst, 18, n, 1).setNumberFormat('0.0').setFontWeight('bold');
+  sh.setColumnWidth(2, 170); sh.setColumnWidth(3, 260); sh.setColumnWidth(19, 320); sh.setColumnWidth(20, 500);
+}
+
+function buildValueAddition_(ss) {
+  const sh = resetSheet_(ss, APP.sheets.vaSummary);
+  writeBanner_(sh, 'vaSummary');
+  const T = top_('vaSummary');
+  sh.getRange(T, 1).setFormula('="Trade data: "&P_STATUS&"   |   Enabler data: "&P_WB_STATUS&"   |   Year: "&P_YEAR')
+    .setFontStyle('italic').setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  sh.getRange(T + 2, 1).setValue('Run menu step 3 (Compute) to fill this page.');
+  sh.setConditionalFormatRules([SpreadsheetApp.newConditionalFormatRule()
+    .whenFormulaSatisfied(`=ISNUMBER(SEARCH("SAMPLE",$A$${T}))`)
+    .setBackground(APP.color.warn).setFontColor('#a50e0e')
+    .setRanges([sh.getRange(T, 1, 1, 12)]).build()]);
+}
+
+function buildCountryNeeds_(ss) {
+  const sh = resetSheet_(ss, APP.sheets.needs);
+  writeBanner_(sh, 'needs');
+  const T = top_('needs');
+  const names = COUNTRIES.map(c => c[2]).sort();
+  const iso = `$B$${T + 1}`;
+  const heading = (row, text) => sh.getRange(row, 1).setValue(text).setFontWeight('bold').setFontSize(12)
+    .setFontColor(APP.color.title).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+
+  sh.getRange(T, 1, 1, 2).setValues([['Country', 'Côte d\'Ivoire']]);
+  sh.getRange(T, 2).setBackground(APP.color.input).setFontWeight('bold');
+  dropdown_(sh.getRange(T, 2), names);
+  sh.getRange(T + 1, 1, 1, 2).setValues([['ISO3 code',
+    `=IFERROR(INDEX(Countries!$A$${L.ctryFirst}:$A,MATCH($B$${T},Countries!$C$${L.ctryFirst}:$C,0)),"")`]]);
+  sh.getRange(T, 1, 2, 1).setFontWeight('bold');
+  sh.getRange(T, 4).setFormula('="Enabler data: "&P_WB_STATUS').setFontStyle('italic');
+
+  // 1. Enablers vs African median.
+  const E = T + 3;
+  heading(E, '1. Enablers — how ready is this country to add value? (compared with the African median)');
+  header_(sh.getRange(E + 1, 1, 1, 6), ['Enabler', 'This country', 'African median', 'Status', 'Why it matters', 'Indicator (full name)']);
+  INDICATORS.forEach((ind, i) => {
+    const r = E + 2 + i;
+    const col = colLetter_(3 + i);
+    sh.getRange(r, 1, 1, 6).setValues([[
+      ind[1],
+      `=IFERROR(INDEX(${en_(col)},MATCH(${iso},${en_('A')},0)),"")`,
+      `=IFERROR(MEDIAN(${en_(col)}),"")`,
+      `=IF(ISNUMBER(B${r}),IF(B${r}<C${r},"GAP: below African median","OK"),"No data")`,
+      ind[4],
+      ind[2],
+    ]]);
+  });
+  sh.getRange(E + 2, 2, INDICATORS.length, 2).setNumberFormat('0.0');
+  const statusRange = sh.getRange(E + 2, 4, INDICATORS.length, 1);
+
+  // 2. Value-addition opportunities.
+  const O = E + 2 + INDICATORS.length + 1;
+  heading(O, '2. Value-addition opportunities (largest value lost first)');
+  header_(sh.getRange(O + 1, 1, 1, 6), ['Value chain', 'Raw exports (USD)', 'Processing share', 'Value lost (estimate, USD)',
+    'Score (0–100)', 'Needs flagged for this chain']);
+  sh.getRange(O + 2, 1).setFormula(
+    `=IFERROR(ARRAY_CONSTRAIN(SORT(FILTER({${va_('C')},${va_('E')},${va_('I')},${va_('K')},${va_('R')},${va_('S')}},` +
+    `${va_('A')}=${iso}),4,FALSE),10,6),"No value-addition data for this country: it exports little raw material in the 25 chains, or step 3 has not been run.")`);
+  sh.getRange(O + 2, 2, 10, 1).setNumberFormat('#,##0');
+  sh.getRange(O + 2, 3, 10, 1).setNumberFormat('0.0%');
+  sh.getRange(O + 2, 4, 10, 1).setNumberFormat('#,##0');
+  sh.getRange(O + 2, 5, 10, 1).setNumberFormat('0.0');
+
+  // 3. What each processing step requires.
+  const R = O + 13;
+  heading(R, '3. What processing requires for these chains');
+  header_(sh.getRange(R + 1, 1, 1, 3), ['Value chain', 'What processing requires', 'Needs (keywords)']);
+  const chainRange = `Value_Chains!$A$${L.chainsFirst}:$H`;
+  for (let i = 0; i < 10; i++) {
+    const r = R + 2 + i, src = `A${O + 2 + i}`;
+    sh.getRange(r, 1, 1, 3).setValues([[
+      `=IF(ISNUMBER(D${O + 2 + i}),${src},"")`,
+      `=IF(A${r}="","",IFERROR(VLOOKUP(A${r},${chainRange},8,FALSE),""))`,
+      `=IF(A${r}="","",IFERROR(VLOOKUP(A${r},${chainRange},7,FALSE),""))`,
+    ]]);
+  }
+  sh.getRange(R + 2, 2, 10, 1).setWrap(true);
+
+  // 4. Summary in words.
+  const S = R + 13;
+  heading(S, '4. In one paragraph');
+  const firstStatus = `D${E + 2}:D${E + 1 + INDICATORS.length}`, firstLabel = `A${E + 2}:A${E + 1 + INDICATORS.length}`;
+  sh.getRange(S + 1, 1).setFormula(`=IF(${iso}="","",$B$${T}&" — biggest enabler gaps: "&IFERROR(TEXTJOIN(", ",TRUE,FILTER(${firstLabel},LEFT(${firstStatus},3)="GAP")),"none flagged")&".")`);
+  sh.getRange(S + 2, 1).setFormula(`=IF(ISNUMBER(D${O + 2}),"Largest value lost: "&A${O + 2}&" — about "&TEXT(D${O + 2},"$#,##0")&" a year (estimate). Processing share today: "&TEXT(C${O + 2},"0%")&".","")`);
+  sh.getRange(S + 3, 1).setValue('Always check as well: quality standards and certification, which no indicator measures.');
+  sh.getRange(S + 1, 1, 3, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+
+  sh.setConditionalFormatRules([
+    SpreadsheetApp.newConditionalFormatRule().whenTextStartsWith('GAP').setBackground(APP.color.warn).setFontColor('#a50e0e')
+      .setRanges([statusRange]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('OK').setBackground(APP.color.band).setFontColor('#1f4e3d')
+      .setRanges([statusRange]).build(),
+  ]);
+  [290, 150, 130, 200, 420, 380].forEach((w, i) => sh.setColumnWidth(i + 1, w));
+}
+
+// ------------------------------------------------------------------
+// Value addition — data
+// ------------------------------------------------------------------
+
+function parseCodes_(v) {
+  return String(v === null || v === undefined ? '' : v).split(/[^0-9]+/).filter(String).map(Number);
+}
+
+function chainFromRow_(r) {
+  return {
+    name: String(r[0]), sector: String(r[1]), raw: parseCodes_(r[2]), semi: parseCodes_(r[3]), fin: parseCodes_(r[4]),
+    mult: Number(r[5]) || 1, needs: String(r[6] || '').split(/[,;]/).map(s => s.trim().toLowerCase()).filter(String),
+    requires: String(r[7] || ''),
+  };
+}
+
+function readChains_() {
+  const sh = SpreadsheetApp.getActive().getSheetByName(APP.sheets.chains);
+  const values = sh && sh.getLastRow() >= L.chainsFirst
+    ? sh.getRange(L.chainsFirst, 1, sh.getLastRow() - L.chainsFirst + 1, 8).getValues()
+    : VALUE_CHAINS;
+  return values.filter(r => String(r[0]).trim()).map(chainFromRow_);
+}
+
+/** { ISO3: [indicator values or null] } */
+function readEnablers_() {
+  const sh = SpreadsheetApp.getActive().getSheetByName(APP.sheets.enablers);
+  const out = {};
+  if (!sh || sh.getLastRow() < L.enFirst) return out;
+  sh.getRange(L.enFirst, 1, sh.getLastRow() - L.enFirst + 1, 2 + INDICATORS.length).getValues().forEach(r => {
+    const iso = String(r[0]).trim();
+    if (iso.length === 3) out[iso] = r.slice(2).map(v => (v === '' || v === null ? null : Number(v)));
+  });
+  return out;
+}
+
+function hs4Count_() {
+  const sh = SpreadsheetApp.getActive().getSheetByName(APP.sheets.rawHs4);
+  return sh ? Math.max(sh.getLastRow() - L.hs4First + 1, 0) : 0;
+}
+
+function writeHs4_(rows, replace) {
+  const sh = sheet_(APP.sheets.rawHs4);
+  if (replace) clearSheetBody_(sh, L.hs4First);
+  if (!rows.length) return;
+  const start = Math.max(sh.getLastRow() + 1, L.hs4First);
+  ensureRows_(sh, start + rows.length - 1);
+  sh.getRange(start, 1, rows.length, 6).setValues(rows);
+}
+
+function writeEnablers_(byIso, years, status) {
+  const sh = sheet_(APP.sheets.enablers);
+  clearSheetBody_(sh, L.enFirst);
+  const rows = readCountries_().map(c => [c.iso, c.name]
+    .concat((byIso[c.iso] || []).concat(new Array(INDICATORS.length).fill(null)).slice(0, INDICATORS.length).map(v => (v === null || v === undefined ? '' : v)))
+    .concat([years[c.iso] || '']));
+  ensureRows_(sh, L.enFirst + rows.length);
+  sh.getRange(L.enFirst, 1, rows.length, rows[0].length).setValues(rows);
+  setParam_('P_WB_STATUS', status);
+}
+
+/** Synthetic HS4 flows with a realistic shape (NOT real statistics). */
+function generateSampleHs4_(countries, chains, year) {
+  const rng = mulberry32_(20261001);
+  const rows = [];
+  const push = (iso, flow, codes, value) => {
+    if (!codes.length || value < 1000) return;
+    const w = codes.map(() => 0.2 + rng());
+    const sum = w.reduce((a, b) => a + b, 0);
+    codes.forEach((code, i) => {
+      const v = Math.round(value * w[i] / sum);
+      if (v >= 1000) rows.push([year, iso, 'WLD', flow, code, v]);
+    });
+  };
+  countries.forEach(c => {
+    const size = SAMPLE_SIZE[c.iso] || 1;
+    chains.forEach((k, i) => {
+      const producer = (SAMPLE_CHAIN_PRODUCERS[i] || []).indexOf(c.iso) >= 0;
+      const processor = (SAMPLE_CHAIN_PROCESSORS[i] || []).indexOf(c.iso) >= 0;
+      let raw = 0, semi = 0, fin = 0;
+      if (producer) {
+        raw = size * 2e8 * (0.4 + rng());
+        semi = raw * (processor ? 0.2 + 0.5 * rng() : 0.05 * rng());
+        fin = raw * (processor ? 0.05 + 0.25 * rng() : 0.02 * rng());
+      } else if (rng() < 0.15) {
+        raw = size * 5e6 * rng();
+      }
+      if (processor && !producer) fin = size * 3e7 * (0.3 + rng());
+      push(c.iso, 'X', k.raw, raw);
+      push(c.iso, 'X', k.semi, semi);
+      push(c.iso, 'X', k.fin, fin);
+      push(c.iso, 'M', k.fin, size * 4e7 * (0.2 + rng()));
+      if (rng() < 0.3) push(c.iso, 'M', k.semi, size * 1e7 * rng());
+    });
+  });
+  return rows;
+}
+
+/** Synthetic enabler indicators (NOT real statistics). */
+function generateSampleEnablers_(countries) {
+  const rng = mulberry32_(20261002);
+  const ranges = [[8, 100], [2, 22], [2, 80], [1.8, 3.7], [15, 100], [3, 80], [5, 85]];
+  const byIso = {}, years = {};
+  countries.forEach(c => {
+    const tilt = Math.min(Math.log10(1 + (SAMPLE_SIZE[c.iso] || 1)) / 2, 1);
+    byIso[c.iso] = ranges.map(([lo, hi]) => Math.round((lo + (hi - lo) * (0.6 * rng() + 0.4 * tilt)) * 10) / 10);
+    years[c.iso] = 'sample';
+  });
+  return { byIso, years };
+}
+
+function loadSampleValueAddition_() {
+  const countries = readCountries_();
+  writeHs4_(generateSampleHs4_(countries, readChains_(), Number(getParam_('P_YEAR'))), true);
+  const e = generateSampleEnablers_(countries);
+  writeEnablers_(e.byIso, e.years, 'SAMPLE — synthetic enabler values, NOT real World Bank data');
+}
+
+/** Menu: real enabler indicators from the World Bank (free, no key). */
+function fetchWorldBankData() {
+  requireBuilt_();
+  try {
+    fetchWorldBank_();
+  } catch (e) {
+    alert_('Could not load World Bank data: ' + e.message);
+    return;
+  }
+  if (rawCount_() > 0) computeScorecard();
+  else notify_('World Bank indicators loaded. Load trade data and run step 3 to use them.');
+}
+
+function fetchWorldBank_() {
+  const countries = readCountries_();
+  const isoList = countries.map(c => c.iso).join(';');
+  const byIso = {}, yearsSeen = {};
+  countries.forEach(c => { byIso[c.iso] = new Array(INDICATORS.length).fill(null); yearsSeen[c.iso] = []; });
+  INDICATORS.forEach((ind, j) => {
+    const url = `https://api.worldbank.org/v2/country/${isoList}/indicator/${ind[0]}?format=json&mrnev=1&per_page=1000`;
+    const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    if (res.getResponseCode() !== 200) throw new Error(`HTTP ${res.getResponseCode()} for ${ind[0]}`);
+    const json = JSON.parse(res.getContentText());
+    (Array.isArray(json) && json[1] ? json[1] : []).forEach(d => {
+      const iso = d.countryiso3code;
+      if (byIso[iso] && d.value !== null && d.value !== undefined) {
+        byIso[iso][j] = Math.round(Number(d.value) * 10) / 10;
+        yearsSeen[iso].push(Number(d.date));
+      }
+    });
+  });
+  const years = {};
+  Object.keys(yearsSeen).forEach(iso => {
+    const y = yearsSeen[iso].filter(Boolean);
+    years[iso] = y.length ? (Math.min.apply(null, y) === Math.max.apply(null, y) ? String(y[0]) :
+      `${Math.min.apply(null, y)}–${Math.max.apply(null, y)}`) : 'no data';
+  });
+  const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  writeEnablers_(byIso, years, `World Bank WDI (fetched ${stamp}; latest available year per country)`);
+}
+
+/** Shared UN Comtrade request with retries. Returns the data array. */
+function comtradeGet_(query, key) {
+  const url = 'https://comtradeapi.un.org/data/v1/get/C/A/HS?' +
+    Object.keys(query).map(k => `${k}=${encodeURIComponent(query[k])}`).join('&');
+  let res;
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    res = UrlFetchApp.fetch(url, { headers: { 'Ocp-Apim-Subscription-Key': key }, muteHttpExceptions: true });
+    const code = res.getResponseCode();
+    if (code === 401 || code === 403) throw new Error('the API key was rejected (check it on Settings)');
+    if (code === 200) break;
+    if (attempt === 4) throw new Error(`HTTP ${code}: ${res.getContentText().slice(0, 200)}`);
+    Utilities.sleep(5000 * attempt);
+  }
+  return (JSON.parse(res.getContentText()).data) || [];
+}
+
+/** One reporter, analysis year, trade with the world, HS4 codes of all value chains. */
+function fetchReporterHs4_(reporter, chains, year, key) {
+  const codes = {};
+  chains.forEach(k => k.raw.concat(k.semi, k.fin).forEach(c => { codes[c] = true; }));
+  const list = Object.keys(codes).map(c => ('000' + c).slice(-4));
+  if (!list.length) return [];
+  const data = comtradeGet_({
+    reporterCode: reporter.m49, period: year, partnerCode: 0, partner2Code: 0, flowCode: 'M,X',
+    cmdCode: list.join(','), customsCode: 'C00', motCode: 0, maxRecords: 250000, includeDesc: 'false',
+  }, key);
+  const seen = {};
+  data.forEach(d => {
+    const code = Number(d.cmdCode), value = Number(d.primaryValue);
+    if ((d.flowCode !== 'X' && d.flowCode !== 'M') || !codes[code] || !(value > 0)) return;
+    if (d.motCode !== undefined && Number(d.motCode) !== 0) return;
+    if (d.partner2Code !== undefined && Number(d.partner2Code) !== 0) return;
+    if (d.customsCode !== undefined && d.customsCode !== 'C00') return;
+    if (Number(d.partnerCode) !== 0) return;
+    seen[[d.flowCode, code].join('|')] = [Number(d.period), reporter.iso, 'WLD', d.flowCode, code, Math.round(value)];
+  });
+  return Object.keys(seen).map(k => seen[k]);
+}
+
+// ------------------------------------------------------------------
+// Value addition — compute (pure, no Sheets calls)
+// ------------------------------------------------------------------
+
+/**
+ * countries, chains: parsed objects. hs4Rows: [year, reporter, partner, flow, hs4, value].
+ * enablers: { ISO3: [values] }. Returns { rows: VA_Scorecard rows, summary }.
+ */
+function valueAddition_(countries, chains, hs4Rows, enablers, year) {
+  const X = {}, M = {};
+  hs4Rows.forEach(r => {
+    if (Number(r[0]) !== year || String(r[2]).trim() !== 'WLD') return;
+    const iso = String(r[1]).trim(), code = Number(r[4]), v = Number(r[5]);
+    if (!(v > 0)) return;
+    const t = String(r[3]).trim().toUpperCase() === 'X' ? X : M;
+    const k = iso + '|' + code;
+    t[k] = (t[k] || 0) + v;
+  });
+  const sum = (t, iso, codes) => codes.reduce((s, c) => s + (t[iso + '|' + c] || 0), 0);
+
+  // Enablers: min-max per indicator, African median, gaps.
+  const nInd = INDICATORS.length;
+  const norm = [], median = [];
+  for (let j = 0; j < nInd; j++) {
+    const vals = countries.map(c => (enablers[c.iso] || [])[j]).filter(v => typeof v === 'number' && !isNaN(v));
+    const sorted = vals.slice().sort((a, b) => a - b);
+    median[j] = sorted.length ? (sorted.length % 2 ? sorted[(sorted.length - 1) / 2] :
+      (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2) : null;
+    norm[j] = scaler_(vals);
+  }
+  const indValue = (iso, j) => { const v = (enablers[iso] || [])[j]; return typeof v === 'number' && !isNaN(v) ? v : null; };
+  const isGap = (iso, j) => { const v = indValue(iso, j); return v !== null && median[j] !== null && v < median[j]; };
+  const readiness = (iso, keys) => {
+    const s = [];
+    INDICATORS.forEach((ind, j) => {
+      if (keys && keys.indexOf(ind[3]) < 0) return;
+      const v = indValue(iso, j);
+      if (v !== null) s.push(norm[j](v));
+    });
+    return s.length ? s.reduce((a, b) => a + b, 0) / s.length : 0.5;
+  };
+  const hasEnablers = Object.keys(enablers).some(iso => (enablers[iso] || []).some(v => typeof v === 'number'));
+  const needsText = (iso, keys) => {
+    if (!hasEnablers) return 'Enabler data missing — load World Bank indicators';
+    const out = [];
+    keys.forEach(key => {
+      if (key === 'standards') return;
+      if (INDICATORS.some((ind, j) => ind[3] === key && isGap(iso, j)) && NEED_LABELS[key]) out.push(NEED_LABELS[key]);
+    });
+    if (keys.indexOf('standards') >= 0) out.push(NEED_LABELS.standards);
+    return out.length ? out.join('; ') : 'No enabler gaps flagged';
+  };
+
+  // Africa-wide demand for processed products of each chain.
+  const afFinM = chains.map(k => countries.reduce((s, c) => s + sum(M, c.iso, k.fin), 0));
+
+  const cands = [];
+  countries.forEach(c => chains.forEach((k, i) => {
+    const raw = sum(X, c.iso, k.raw), semi = sum(X, c.iso, k.semi), fin = sum(X, c.iso, k.fin);
+    const finM = sum(M, c.iso, k.fin);
+    if (raw + semi <= 0) return;
+    const share = (semi + fin) / (raw + semi + fin);
+    const lost = raw * (k.mult - 1) + semi * (k.mult - 1) / 2;
+    cands.push({ c, k, i, raw, semi, fin, finM, share, lost: Math.max(lost, 0), round: raw > 0 ? Math.min(raw, finM) : 0 });
+  }));
+  cands.sort((a, b) => b.lost - a.lost);
+
+  const lg = v => Math.log10(1 + v);
+  const nStake = scaler_(cands.map(x => lg(x.lost)));
+  const nBase = scaler_(cands.map(x => lg(x.raw + x.semi)));
+  const nHome = scaler_(cands.map(x => lg(x.finM)));
+  const nAf = scaler_(afFinM.map(lg));
+  const r3 = v => Math.round(v * 1000) / 1000;
+
+  const rows = cands.map(x => [
+    x.c.iso, x.c.name, x.k.name, x.k.sector, Math.round(x.raw), Math.round(x.semi), Math.round(x.fin), Math.round(x.finM),
+    r3(x.share), x.k.mult, Math.round(x.lost), Math.round(x.round),
+    r3(nStake(lg(x.lost))), r3(nBase(lg(x.raw + x.semi))), r3(1 - x.share),
+    r3(0.5 * nHome(lg(x.finM)) + 0.5 * nAf(lg(afFinM[x.i]))), r3(readiness(x.c.iso, x.k.needs)),
+    needsText(x.c.iso, x.k.needs), x.k.requires,
+  ]);
+
+  // Country summary.
+  const table = countries.map(c => {
+    const mine = cands.filter(x => x.c.iso === c.iso);
+    let raw = 0, processed = 0, lost = 0, round = 0;
+    chains.forEach(k => { raw += sum(X, c.iso, k.raw); processed += sum(X, c.iso, k.semi) + sum(X, c.iso, k.fin); });
+    mine.forEach(x => { lost += x.lost; round += x.round; });
+    const gaps = INDICATORS.map((ind, j) => (isGap(c.iso, j) ? ind[1].replace(/ \(.*\)$/, '') : null)).filter(Boolean);
+    return {
+      iso: c.iso, name: c.name, raw, processed, share: raw + processed ? processed / (raw + processed) : 0,
+      lost, round, top: mine.length ? mine[0].k.name : '—', readiness: hasEnablers ? readiness(c.iso, null) : '',
+      gaps: hasEnablers ? (gaps.length ? gaps.join(', ') : 'none flagged') : 'no enabler data', chains: mine.length,
+    };
+  }).sort((a, b) => b.lost - a.lost);
+
+  const chainTable = chains.map((k, i) => {
+    let raw = 0, processed = 0, lost = 0;
+    countries.forEach(c => { raw += sum(X, c.iso, k.raw); processed += sum(X, c.iso, k.semi) + sum(X, c.iso, k.fin); });
+    cands.filter(x => x.i === i).forEach(x => { lost += x.lost; });
+    return [k.name, raw, processed, raw + processed ? processed / (raw + processed) : 0, lost];
+  }).sort((a, b) => b[4] - a[4]);
+
+  const tot = table.reduce((s, r) => ({ raw: s.raw + r.raw, processed: s.processed + r.processed, lost: s.lost + r.lost,
+    round: s.round + r.round }), { raw: 0, processed: 0, lost: 0, round: 0 });
+  return {
+    rows,
+    summary: {
+      kpis: [tot.raw, tot.processed, tot.raw + tot.processed ? tot.processed / (tot.raw + tot.processed) : 0, tot.lost, tot.round, chains.length],
+      table, chainTable,
+    },
+  };
+}
+
+// ------------------------------------------------------------------
+// Value addition — write results
+// ------------------------------------------------------------------
+
+function computeValueAddition_() {
+  const vaSheet = SpreadsheetApp.getActive().getSheetByName(APP.sheets.vaScore);
+  if (!vaSheet) return;
+  if (hs4Count_() === 0) {
+    clearSheetBody_(vaSheet, L.vaFirst);
+    const sh = sheet_(APP.sheets.vaSummary);
+    sh.getCharts().forEach(c => sh.removeChart(c));
+    const T = top_('vaSummary');
+    const body = sh.getRange(T + 2, 1, Math.max(sh.getMaxRows() - T - 1, 1), sh.getMaxColumns());
+    body.breakApart();
+    body.clear();
+    sh.getRange(T + 2, 1).setValue('No HS4 data in Raw_HS4 yet. Load data (menu 2a sample or 2b UN Comtrade) to see value addition.');
+    return;
+  }
+  const sh4 = sheet_(APP.sheets.rawHs4);
+  const rows4 = sh4.getRange(L.hs4First, 1, sh4.getLastRow() - L.hs4First + 1, 6).getValues();
+  const res = valueAddition_(readCountries_(), readChains_(), rows4, readEnablers_(), Number(getParam_('P_YEAR')));
+  writeVaScorecard_(res.rows);
+  writeValueAddition_(res.summary);
+}
+
+function writeVaScorecard_(rows) {
+  const sh = sheet_(APP.sheets.vaScore);
+  clearSheetBody_(sh, L.vaFirst);
+  if (!rows.length) return;
+  const F = L.vaFirst;
+  ensureRows_(sh, F + rows.length);
+  sh.getRange(F, 1, rows.length, 17).setValues(rows.map(r => r.slice(0, 17)));
+  sh.getRange(F, 19, rows.length, 2).setValues(rows.map(r => r.slice(17, 19)));
+  const weighted = ['M', 'N', 'O', 'P', 'Q'].map((col, i) => `${col}${F}:${col}*${vaWeightCell_(i)}`).join('+');
+  sh.getRange(F, 18).setFormula(
+    `=ARRAYFORMULA(IF(A${F}:A="",,ROUND((${weighted})/MAX(SUM(${vaWeightRange_()}),0.0001)*100,1)))`);
+}
+
+function writeValueAddition_(s) {
+  const sh = sheet_(APP.sheets.vaSummary);
+  const T = top_('vaSummary');
+  sh.getCharts().forEach(c => sh.removeChart(c));
+  const body = sh.getRange(T + 2, 1, Math.max(sh.getMaxRows() - T - 1, 1), sh.getMaxColumns());
+  body.breakApart();
+  body.clear();
+
+  const labels = ['Raw exports in the 25 chains', 'Processed exports in the 25 chains', 'Africa processing share',
+    'Value lost (estimate, per year)', 'Round-trip imports', 'Value chains tracked'];
+  const money = '[>=1000000000]$#,##0.0,,,"B";[>=1000000]$#,##0.0,,"M";$#,##0';
+  [1, 3, 5, 7, 9, 11].forEach((col, i) => {
+    sh.getRange(T + 2, col, 1, 2).merge().setValue(labels[i]).setFontSize(9).setFontColor('#555555')
+      .setHorizontalAlignment('center');
+    sh.getRange(T + 3, col, 1, 2).merge().setValue(s.kpis[i]).setFontSize(16).setFontWeight('bold')
+      .setHorizontalAlignment('center').setBackground(APP.color.band)
+      .setNumberFormat(i === 2 ? '0.0%' : i === 5 ? '0' : money);
+  });
+
+  const head = ['ISO3', 'Country', 'Raw exports (USD)', 'Processed exports (USD)', 'Processing share',
+    'Value lost (estimate, USD)', 'Round-trip imports (USD)', 'Chain with most value lost', 'Readiness (0–1)',
+    'Enabler gaps (below African median)', 'Chains with raw exports', 'Best value-addition score'];
+  const H = T + 6, B = T + 7;
+  sh.getRange(T + 5, 1).setValue('Countries (sorted by value lost)').setFontWeight('bold').setFontColor(APP.color.title);
+  header_(sh.getRange(H, 1, 1, head.length), head);
+  sh.getRange(H, 1, 1, head.length).setWrap(true);
+  sh.setRowHeight(H, 48);
+  const rows = s.table.map((r, i) => [r.iso, r.name, r.raw, r.processed, r.share, r.lost, r.round, r.top,
+    r.readiness === '' ? '' : Math.round(r.readiness * 100) / 100, r.gaps, r.chains,
+    `=IFERROR(MAXIFS(${va_('R')},${va_('A')},A${B + i}),"")`]);
+  ensureRows_(sh, B + rows.length + 5);
+  sh.getRange(B, 1, rows.length, head.length).setValues(rows);
+  sh.getRange(B, 3, rows.length, 2).setNumberFormat('#,##0');
+  sh.getRange(B, 5, rows.length, 1).setNumberFormat('0.0%');
+  sh.getRange(B, 6, rows.length, 2).setNumberFormat('#,##0');
+  sh.getRange(B, 9, rows.length, 1).setNumberFormat('0.00');
+  sh.getRange(B, 12, rows.length, 1).setNumberFormat('0.0');
+  for (let i = 0; i < rows.length; i += 2) sh.getRange(B + i, 1, 1, head.length).setBackground(APP.color.band);
+
+  const cc = 14; // column N
+  sh.getRange(T + 5, cc).setValue('Value chains, all of Africa (sorted by value lost)').setFontWeight('bold')
+    .setFontColor(APP.color.title);
+  header_(sh.getRange(H, cc, 1, 5), ['Value chain', 'Raw exports (USD)', 'Processed exports (USD)', 'Processing share',
+    'Value lost (estimate, USD)']);
+  sh.getRange(H, cc, 1, 5).setWrap(true);
+  sh.getRange(B, cc, s.chainTable.length, 5).setValues(s.chainTable);
+  sh.getRange(B, cc + 1, s.chainTable.length, 2).setNumberFormat('#,##0');
+  sh.getRange(B, cc + 3, s.chainTable.length, 1).setNumberFormat('0.0%');
+  sh.getRange(B, cc + 4, s.chainTable.length, 1).setNumberFormat('#,##0');
+
+  const top = Math.min(15, s.table.length);
+  const charts = [
+    [[sh.getRange(H, 2, top + 1, 1), sh.getRange(H, 6, top + 1, 1)], 'Top 15 countries by value lost (estimate, USD per year)', '#a50e0e', null],
+    [[sh.getRange(H, cc, s.chainTable.length + 1, 1), sh.getRange(H, cc + 3, s.chainTable.length + 1, 1)],
+      'Processing share by value chain, all of Africa (higher = more value added)', '#1f4e3d', 'percent'],
+    [[sh.getRange(H, cc, s.chainTable.length + 1, 1), sh.getRange(H, cc + 4, s.chainTable.length + 1, 1)],
+      'Value lost by value chain, all of Africa (estimate, USD per year)', '#e8a33d', null],
+  ];
+  charts.forEach(([ranges, title, colour, fmt], i) => {
+    let b = sh.newChart().setChartType(Charts.ChartType.BAR).setNumHeaders(1)
+      .setOption('title', title).setOption('legend', { position: 'none' }).setOption('colors', [colour])
+      .setOption('width', 640).setOption('height', 420)
+      .setPosition(H + i * 22, 20, 0, 0);
+    ranges.forEach(r => { b = b.addRange(r); });
+    if (fmt) b = b.setOption('hAxis', { format: fmt });
+    sh.insertChart(b.build());
+  });
+  sh.setColumnWidth(2, 170); sh.setColumnWidth(8, 260); sh.setColumnWidth(10, 280);
+  sh.setColumnWidth(cc, 260);
 }
