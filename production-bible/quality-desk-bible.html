@@ -4,20 +4,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#F4F5F2; --surface:#FFFFFF; --sunk:#ECEEEA; --ink:#1B2127; --ink2:#4A5560; --ink3:#6B7680;
-  --line:#D6DAD4; --accent:#2150C8; --accent-soft:#E3EAFB; --hi:#F4C430; --hi-soft:#FCF1C9;
-  --pass:#1D7A4E; --pass-soft:#DDF0E5; --fail:#B8342A; --fail-soft:#F8E1DE; --warn:#946010; --warn-soft:#F6EAD2;
-  --shadow:0 1px 2px rgba(27,33,39,.06),0 4px 14px rgba(27,33,39,.05);
+  color-scheme:light;
+  --paper:#FFFFFF; --surface:#FFFFFF; --sunk:#F2F2F2; --ink:#000000; --ink2:#333333; --ink3:#666666;
+  --line:#D2D2D2; --accent:#000000; --accent-soft:#EDEDED; --hi:#000000; --hi-soft:#F2F2F2;
+  --pass:#000000; --pass-soft:#F2F2F2; --fail:#000000; --fail-soft:#F2F2F2; --warn:#000000; --warn-soft:#F2F2F2;
+  --shadow:none;
   --display:'Archivo','Helvetica Neue',Arial,sans-serif; --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  color-scheme:dark; --paper:#111518; --surface:#181D21; --sunk:#1F252A; --ink:#E6E9E5; --ink2:#A9B3BB; --ink3:#87929B;
-  --line:#2B3238; --accent:#86A6FF; --accent-soft:#1E2A45; --hi:#F4C430; --hi-soft:#3A3219;
-  --pass:#5CC592; --pass-soft:#16301F; --fail:#F08B80; --fail-soft:#3A1C19; --warn:#E3B25C; --warn-soft:#352914; --shadow:none;}}
-:root[data-theme="dark"]{
-  color-scheme:dark; --paper:#111518; --surface:#181D21; --sunk:#1F252A; --ink:#E6E9E5; --ink2:#A9B3BB; --ink3:#87929B;
-  --line:#2B3238; --accent:#86A6FF; --accent-soft:#1E2A45; --hi:#F4C430; --hi-soft:#3A3219;
-  --pass:#5CC592; --pass-soft:#16301F; --fail:#F08B80; --fail-soft:#3A1C19; --warn:#E3B25C; --warn-soft:#352914; --shadow:none;}
+/* Black-and-white theme: one light look, set explicitly so it renders the same in any viewer theme. */
 *{box-sizing:border-box}
 body{background:var(--paper);color:var(--ink);font:15px/1.6 var(--body);}
 h1,h2,h3,h4{font-family:var(--display);line-height:1.2;text-wrap:balance;margin:0}
@@ -29,10 +23,9 @@ p{margin:0;max-width:72ch}
 a{color:var(--accent)}
 code,.mono{font-family:var(--mono);font-size:.92em}
 .topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ink);color:#F4F5F2;padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-:root[data-theme="dark"] .topbar{background:#0B0E10}
 .brandmark{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:-.01em}
 .brandmark .sq{width:26px;height:26px;border:2.5px solid #F4F5F2;display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:500;position:relative}
-.brandmark .sq::after{content:"";position:absolute;right:-5px;bottom:-5px;width:9px;height:9px;background:var(--hi)}
+.brandmark .sq::after{content:"";position:absolute;right:-5px;bottom:-5px;width:9px;height:9px;background:#FFFFFF}
 .topbar .tag{font-family:var(--mono);font-size:12px;opacity:.75}
 .topbar select{margin-left:auto;font:14px var(--body);padding:6px 8px;border-radius:4px;border:1px solid #4A5560;background:#232A31;color:#F4F5F2;max-width:100%}
 .shell{display:grid;grid-template-columns:250px minmax(0,1fr);gap:0;min-height:100vh}
@@ -42,8 +35,8 @@ nav.side .grp:first-child{margin-top:0}
 nav.side button{display:flex;gap:10px;width:100%;text-align:left;background:none;border:0;padding:6px 8px;border-radius:4px;color:var(--ink2);font:14px/1.35 var(--body);cursor:pointer}
 nav.side button .n{font-family:var(--mono);font-size:11px;color:var(--ink3);min-width:22px;padding-top:2px}
 nav.side button:hover{background:var(--sunk);color:var(--ink)}
-nav.side button.on{background:var(--accent-soft);color:var(--ink);font-weight:600}
-nav.side button.on .n{color:var(--accent)}
+nav.side button.on{background:#000;color:#fff;font-weight:600}
+nav.side button.on .n{color:#fff}
 nav.side button:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 main{padding-block:28px 80px;padding-inline:clamp(16px,4vw,48px);min-width:0}
 .tab{display:none}
@@ -60,15 +53,15 @@ main{padding-block:28px 80px;padding-inline:clamp(16px,4vw,48px);min-width:0}
 .card .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
 .card ul,.card ol{margin:0;padding-left:18px;font-size:14.5px}
 .card li+li{margin-top:4px}
-.note{border-left:4px solid var(--hi);background:var(--hi-soft);padding:12px 14px;border-radius:0 6px 6px 0;font-size:14.5px}
+.note{border-left:4px solid #000;background:var(--sunk);padding:12px 14px;border-radius:0 6px 6px 0;font-size:14.5px}
 .note.blue{border-color:var(--accent);background:var(--accent-soft)}
 .note.red{border-color:var(--fail);background:var(--fail-soft)}
 .note.green{border-color:var(--pass);background:var(--pass-soft)}
 .pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink2);background:var(--sunk);white-space:nowrap}
 .pill.b{background:var(--accent-soft);color:var(--accent);border-color:transparent}
-.pill.g{background:var(--pass-soft);color:var(--pass);border-color:transparent}
-.pill.r{background:var(--fail-soft);color:var(--fail);border-color:transparent}
-.pill.y{background:var(--hi-soft);color:var(--warn);border-color:transparent}
+.pill.g{background:#fff;color:#000;border-color:#000;border-style:dashed}
+.pill.r{background:#000;color:#fff;border-color:#000}
+.pill.y{background:#fff;color:#000;border-color:#000}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
 .tw{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
 table{border-collapse:collapse;width:100%;font-size:14px}
@@ -87,9 +80,8 @@ td.tc,td .tc{font-family:var(--mono);font-size:12.5px;white-space:nowrap;font-va
 .sw .meta span{font-family:var(--mono);font-size:11.5px;color:var(--ink3)}
 .btn{font:600 13px var(--body);padding:7px 12px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
 .btn:hover{border-color:var(--accent);color:var(--accent)}
-.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
-:root[data-theme="dark"] .btn.pri{color:#0B0E10}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.pri{color:#0B0E10}}
+.btn.pri{background:#000;border-color:#000;color:#fff}
+.btn.pri:hover{background:#333;color:#fff}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 /* scripts */
 .script{background:var(--surface);border:1px solid var(--line);border-radius:6px}
@@ -100,11 +92,9 @@ td.tc,td .tc{font-family:var(--mono);font-size:12.5px;white-space:nowrap;font-va
 .beat .body{padding:12px 14px;display:grid;gap:6px}
 .dir{font-size:13px;color:var(--ink3);font-style:italic}
 .say{font-family:var(--display);font-weight:600;font-size:19px;line-height:1.35;letter-spacing:-.005em}
-.say mark{background:var(--hi);color:#1B2127;padding:0 3px}
+.say mark{background:#000;color:#fff;padding:0 3px}
 .deliv{font-size:13px;color:var(--warn)}
 pre.tp{white-space:pre-wrap;font-family:var(--display);font-size:20px;line-height:1.55;font-weight:600;background:var(--ink);color:#F4F5F2;padding:22px;border-radius:6px;margin:0;max-height:520px;overflow:auto}
-:root[data-theme="dark"] pre.tp{background:#0B0E10}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) pre.tp{background:#0B0E10}}
 pre.plain{white-space:pre-wrap;font-family:var(--mono);font-size:13px;background:var(--sunk);border:1px solid var(--line);padding:14px;border-radius:6px;margin:0;overflow:auto}
 /* phone frame specimens */
 .frames{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
@@ -163,7 +153,7 @@ pre.plain{white-space:pre-wrap;font-family:var(--mono);font-size:13px;background
 .chk .d{font-size:13px;color:var(--ink2);display:block;font-weight:400}
 .chk input:checked+span .t{text-decoration:line-through;color:var(--ink3)}
 .bar{height:8px;background:var(--sunk);border-radius:999px;overflow:hidden;flex:1;min-width:120px}
-.bar i{display:block;height:100%;background:var(--pass);width:0;transition:width .2s}
+.bar i{display:block;height:100%;background:#000;width:0;transition:width .2s}
 /* planner */
 .form{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
 .form .full{grid-column:1/-1}
@@ -180,7 +170,7 @@ pre.plain{white-space:pre-wrap;font-family:var(--mono);font-size:13px;background
 .lane .lbl{font-family:var(--mono);font-size:11px;color:var(--ink3)}
 .track{position:relative;height:44px;background:var(--sunk);border-radius:4px}
 .clip{position:absolute;top:3px;bottom:3px;border-radius:3px;padding:3px 6px;font-size:11px;line-height:1.2;overflow:hidden;color:#fff}
-.clip.a{background:#2150C8}.clip.b{background:#1D7A4E}.clip.g{background:#1B2127;border:1px solid #F4C430}.clip.t{background:#F4C430;color:#1B2127}.clip.m{background:#6B7680}
+.clip.a{background:#000}.clip.b{background:#555}.clip.g{background:#fff;color:#000;border:1px solid #000}.clip.t{background:#C8C8C8;color:#000}.clip.m{background:#8A8A8A}
 .ruler{display:grid;grid-template-columns:70px 1fr;gap:8px}
 .ruler .ticks{position:relative;height:16px;font-family:var(--mono);font-size:10.5px;color:var(--ink3)}
 .ruler .ticks span{position:absolute;transform:translateX(-50%)}
@@ -216,7 +206,7 @@ section.tab{scroll-margin-top:120px}
 
 <header class="topbar">
   <div class="brandmark"><span class="sq">QD</span>The Quality Desk</div>
-  <span class="tag">Production Bible · Efic · Rev. 1.0</span>
+  <span class="tag">Production Bible · Efic · Rev. 2.0</span>
   <label for="mobnav" class="tag" style="position:absolute;left:-9999px">Section</label>
   <select id="mobnav" aria-label="Go to section"></select>
 </header>
@@ -489,6 +479,7 @@ section.tab{scroll-margin-top:120px}
 <div class="doc"><span><b>QD-PB-07</b></span><span>Rev. 1.0</span><span>Episode 01 · "Quality Is Proof" · LinkedIn native 9:16 · ~70 s</span></div>
 <h1>Ep. 01 — Quality Is Proof</h1>
 <p class="lede">Your introduction video. Pin it to your LinkedIn "Featured" section and link to it from your Xing profile and your application emails. Every fact in it comes from the Proof Bank.</p>
+<div class="row" style="margin-top:12px"><button class="btn pri" id="ep01Print" type="button">Print Ep. 01 script</button><span class="msg" id="ep01PrintMsg" role="status"></span></div>
 <div class="grid" style="margin-top:18px">
 <div class="card"><span class="k">Platform</span><p>LinkedIn native, then YouTube Shorts and Reels</p></div>
 <div class="card"><span class="k">Format</span><p>9:16 vertical · 1080 × 1920 · 30 fps</p></div>
@@ -668,8 +659,8 @@ Meine Frage an Sie: Welches ISO-Kapitel verwirrt Sie am meisten? Ihre Antworten 
 .sbx .pr{font-size:13px;color:var(--ink2)}
 .sbx textarea{font:15px/1.5 var(--body);padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);width:100%;min-height:62px;resize:vertical}
 .wc{font-family:var(--mono);font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--sunk);color:var(--ink2);white-space:nowrap}
-.wc.over{background:var(--warn-soft);color:var(--warn)}
-.wc.ok{background:var(--pass-soft);color:var(--pass)}
+.wc.over{background:#000;color:#fff}
+.wc.ok{background:#fff;color:#000;border:1px solid #000}
 .totals{display:flex;flex-wrap:wrap;gap:10px}
 .tot{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 14px;display:grid;gap:2px;min-width:120px}
 .tot span{font-family:var(--mono);font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em}
@@ -691,7 +682,7 @@ Meine Frage an Sie: Welches ISO-Kapitel verwirrt Sie am meisten? Ihre Antworten 
 .frames2{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .frames2.land{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 .fcard{display:grid;gap:6px;align-content:start;font-size:12.5px}
-.fbox{position:relative;aspect-ratio:9/16;max-width:100%;border-radius:6px;overflow:hidden;background:#3A4550;container-type:inline-size;border-top:4px solid var(--sc,#6B7680)}
+.fbox{filter:grayscale(1);position:relative;aspect-ratio:9/16;max-width:100%;border-radius:6px;overflow:hidden;background:#3A4550;container-type:inline-size;border-top:4px solid var(--sc,#6B7680)}
 .land .fbox{aspect-ratio:16/9}
 .fbox .ty{position:absolute;left:6%;top:4%;font-family:'IBM Plex Mono',monospace;font-size:clamp(10px,9cqw,15px);color:#fff;background:rgba(27,33,39,.7);padding:1px 6px;border-radius:3px;z-index:2}
 .fbox .dur{position:absolute;right:6%;top:4%;font-family:'IBM Plex Mono',monospace;font-size:clamp(10px,8cqw,13px);color:#1B2127;background:#F4C430;padding:1px 6px;border-radius:3px;z-index:2}
@@ -718,48 +709,86 @@ Meine Frage an Sie: Welches ISO-Kapitel verwirrt Sie am meisten? Ihre Antworten 
 .tpls button b{font-family:var(--display);font-size:14.5px}
 .tpls button span{color:var(--ink2)}
 .tpls button:hover{border-color:var(--accent)}
-.msg{font-family:var(--mono);font-size:12px;color:var(--pass);min-height:1em}
+.msg{font-family:var(--mono);font-size:12px;color:var(--ink2);min-height:1em}
+.fgrp{display:grid;gap:8px}.fgrp h4{margin-top:4px}
+details.sbx{padding:0;display:block}
+details.sbx>summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:12px 14px}
+details.sbx>summary::-webkit-details-marker{display:none}
+details.sbx>summary b{font-family:var(--display);font-size:15px;flex:1;min-width:140px}
+details.sbx>summary::after{content:"▾";font-family:var(--mono);color:var(--ink3)}
+details.sbx[open]>summary::after{content:"▴"}
+.sbin{display:grid;gap:8px;padding:0 14px 14px}
+.exl{font-size:13.5px;background:var(--sunk);border-left:3px solid var(--ink);padding:8px 10px;border-radius:0 4px 4px 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ideas{display:grid;gap:6px;padding:10px;border:1px dashed var(--line);border-radius:6px;background:var(--paper)}
+.ideas[hidden]{display:none}
+.idea{text-align:left;font:14px/1.4 var(--body);padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);cursor:pointer}
+.idea:hover{border-color:var(--ink);background:var(--sunk)}
+.tpm{position:fixed;inset:0;z-index:100;background:#000;color:#fff;display:grid;grid-template-rows:auto 1fr}
+.tpm[hidden]{display:none}
+.tpmbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));border-bottom:1px solid #333;font:13px var(--body)}
+.tpmbar .btn{background:#111;color:#fff;border-color:#555}.tpmbar .btn.pri{background:#fff;color:#000;border-color:#fff}
+.tpmbar input[type=range]{width:110px;accent-color:#fff}.tpmhint{font-family:var(--mono);font-size:11px;color:#999;margin-left:auto}
+.tpmscroll{overflow-y:auto;position:relative;padding:0 max(16px,8vw)}
+.tpmguide{position:sticky;top:33%;height:0;border-top:2px solid rgba(255,255,255,.25);z-index:1}
+.tpmtext{white-space:pre-wrap;font-family:var(--display);font-weight:700;line-height:1.5;margin:0;padding:33vh 0 70vh;color:#fff}
+
 </style>
 
 <!-- ============ SCRIPT BUILDER ============ -->
 <section class="tab" id="scriptbuilder" data-grp="Script" data-t="Script Builder">
-<div class="doc"><span><b>QD-PB-SB1</b></span><span>Rev. 1.0</span><span>Tool · drafts saved in this browser only</span></div>
+<div class="doc"><span><b>QD-PB-SB1</b></span><span>Rev. 2.0</span><span>Tool · 19 formats · drafts saved in this browser only</span></div>
 <h1>Script Builder</h1>
-<p class="lede">Choose a format, write each section in the box provided, and the builder assembles the full script with directions and a clean teleprompter version. It counts words and estimates the running time against the format's target. When the script is done, send it to the Storyboard Builder as a shot list.</p>
+<p class="lede">Choose a format and say what the video is about. Then write each section, using the guidance, the <b>📝 example</b> and the <b>💡 ideas</b> (click one to paste it as a starting point). The builder times every section, checks the length, and assembles a full script and a teleprompter version you can copy, print, read in teleprompter mode or send to the Storyboard Builder.</p>
 
-<div class="sec"><h2>1 · Format</h2><div class="fmtpick" id="sbFmts"></div></div>
+<div class="sec"><h2>Step 1 · Choose your format</h2><div id="sbFmts" class="secs"></div></div>
 
-<div class="sec"><h2>2 · Episode</h2>
+<div class="sec"><h2>Step 2 · Tell me about this video</h2>
 <div class="form">
-<div class="fld"><label for="sbTopic">Episode title / topic</label><input id="sbTopic" placeholder="e.g. Documented information in 60 seconds"></div>
+<div class="fld full"><label for="sbTopic">What is this video about?</label><input id="sbTopic" placeholder="e.g. Documented information in 60 seconds"></div>
+<div class="fld full"><label for="sbAngle">Your hook angle (optional)</label><input id="sbAngle" placeholder="e.g. Most people think it means a folder full of documents"></div>
+<div class="fld"><label for="sbFormula">Hook formula (changes the hook ideas)</label><select id="sbFormula"></select></div>
 <div class="fld"><label for="sbLang">Language</label><select id="sbLang"><option value="en">English (~130 words/min)</option><option value="de">Deutsch (~118 Wörter/Min.)</option></select></div>
 <div class="fld"><label for="sbStruct">Story structure (Story Lab)</label><select id="sbStruct"><option>Type 1 · The discovery</option><option>Type 2 · The fix</option><option>Type 3 · The system</option><option>Type 4 · Myth vs. requirement</option><option>Type 5 · The bridge</option></select></div>
 </div>
-<div class="row"><button class="btn" id="sbExample" type="button">Fill empty boxes with examples</button><button class="btn" id="sbClear" type="button">Clear this format</button><span class="msg" id="sbMsg" role="status"></span></div>
-<p class="dir">Tip: type <code>/</code> anywhere to mark a short spoken beat. It becomes <code>[ · ]</code> on the teleprompter.</p>
-<div class="note">The example text shows the <i>shape</i> of each section. Before filming, replace it with your own words and check every fact against the Proof Bank. Lines in <code>[brackets]</code> are placeholders for details only you can tell truthfully.</div>
+<div class="row"><button class="btn" id="sbExample" type="button">Fill empty sections with examples</button><button class="btn" id="sbClear" type="button">Clear this format</button><button class="btn" id="sbReset" type="button">Start over</button><span class="msg" id="sbMsg" role="status"></span></div>
+<p class="dir">Tip: type <code>/</code> to mark a short spoken beat. It becomes <code>[ · ]</code> on the teleprompter.</p>
+<div class="note">Examples and ideas show the <i>shape</i> of each section. Replace them with your own words, check every fact against the Proof Bank, and fill in anything in <code>[brackets]</code> with true details only.</div>
 </div>
 
-<div class="sec"><h2>3 · Write each section</h2><div class="secs" id="sbSecs"></div></div>
+<div class="sec" id="sbStep3"><h2>Step 3 · Write each section</h2>
+<div class="row"><h3 id="sbFmtTitle" style="flex:1"></h3><span class="pill" id="sbFmtMeta"></span><button class="btn" id="sbExpand" type="button">Expand all</button></div>
+<div class="bar" aria-hidden="true"><i id="sbBar"></i></div>
+<div class="secs" id="sbSecs"></div></div>
 
-<div class="sec"><h2>4 · Check</h2>
+<div class="sec"><h2>Step 4 · Check</h2>
 <div class="totals">
-<div class="tot"><span>Words</span><b id="sbW">0</b></div>
-<div class="tot"><span>Est. runtime</span><b id="sbD">0:00</b></div>
+<div class="tot"><span>Total words</span><b id="sbW">0</b></div>
+<div class="tot"><span>Est. duration</span><b id="sbD">0:00</b></div>
 <div class="tot"><span>Format target</span><b id="sbT">0:00</b></div>
-<div class="tot"><span>Sections filled</span><b id="sbF">0/0</b></div>
+<div class="tot"><span>Sections written</span><b id="sbF">0/0</b></div>
+<div class="tot"><span>Complete</span><b id="sbP">0%</b></div>
 </div>
 <div id="sbWarn" class="chk" style="gap:6px"></div>
 </div>
 
-<div class="sec"><h2>5 · Output</h2>
-<div class="row"><button class="btn pri" id="sbToSB" type="button">Send to Storyboard Builder →</button></div>
+<div class="sec"><h2>Step 5 · Use it</h2>
+<div class="row"><button class="btn pri" id="sbToSB" type="button">Send to Storyboard Builder →</button><button class="btn" id="sbTPM" type="button">Teleprompter mode</button><button class="btn" id="sbPrint" type="button">Print script</button><button class="btn" id="sbPrintBlank" type="button">Print blank template</button><span class="msg" id="sbPrintMsg" role="status"></span></div>
 <div class="outs">
 <div class="card"><div class="row"><h3 style="flex:1">Full script with directions</h3><button class="btn" data-copy="sbOutFull" type="button">Copy text</button></div><pre class="plain" id="sbOutFull"></pre></div>
-<div class="card"><div class="row"><h3 style="flex:1">Teleprompter</h3><button class="btn" data-copy="sbOutTP" type="button">Copy text</button></div><pre class="tp" id="sbOutTP"></pre></div>
+<div class="card"><div class="row"><h3 style="flex:1">Teleprompter text</h3><button class="btn" data-copy="sbOutTP" type="button">Copy text</button></div><pre class="tp" id="sbOutTP"></pre></div>
 </div>
 </div>
 </section>
+
+<div id="tpm" class="tpm" hidden role="dialog" aria-modal="true" aria-label="Teleprompter mode">
+<div class="tpmbar"><button class="btn pri" id="tpmPlay" type="button">Start</button><button class="btn" id="tpmTop" type="button">Back to top</button>
+<label for="tpmSpeed">Speed</label><input id="tpmSpeed" type="range" min="1" max="10" value="3">
+<label for="tpmSize">Size</label><input id="tpmSize" type="range" min="28" max="96" value="52">
+<label><input id="tpmMirror" type="checkbox"> Mirror</label>
+<span class="tpmhint">Space = start/pause · Esc = close</span><button class="btn" id="tpmClose" type="button">Close</button></div>
+<div id="tpmScroll" class="tpmscroll"><div class="tpmguide" aria-hidden="true"></div><pre id="tpmText" class="tpmtext"></pre></div>
+</div>
 
 <!-- ============ STORYBOARD BUILDER ============ -->
 <section class="tab" id="storyboard" data-grp="Shoot" data-t="Storyboard Builder">
@@ -797,7 +826,7 @@ Meine Frage an Sie: Welches ISO-Kapitel verwirrt Sie am meisten? Ihre Antworten 
 <div class="sec"><h2>Frames</h2><div class="frames2" id="sbdFrames"></div></div>
 
 <div class="sec"><h2>Shooting table</h2>
-<div class="row"><button class="btn" id="sbdCopy" type="button">Copy table as text</button></div>
+<div class="row"><button class="btn" id="sbdCopy" type="button">Copy table as text</button><button class="btn pri" id="sbdPrint" type="button">Print this storyboard</button><button class="btn" id="sbdPrintAll" type="button">Print all templates</button><span class="msg" id="sbdPrintMsg" role="status"></span></div>
 <div class="tw"><table><thead><tr><th>Shot</th><th>Time</th><th>Section</th><th>Type</th><th>Key line / description</th><th>Camera</th><th>Graphic / B-roll</th><th>Dur</th></tr></thead><tbody id="sbdTable"></tbody></table></div>
 </div>
 </section>
@@ -1281,7 +1310,7 @@ Murdock Emisembe</pre></div>
 </div></div>
 </section>
 
-<footer>The Quality Desk · Production Bible · Rev. 1.0 · 28.09.2026 · Graphite #1B2127 · Audit Blue #2150C8 · Highlighter #F4C430 · Structure modelled on the River Musa Show Production Visual Guide</footer>
+<footer>The Quality Desk · Production Bible · Rev. 2.0 · 28.09.2026 · Graphite #1B2127 · Audit Blue #2150C8 · Highlighter #F4C430 · Structure modelled on the River Musa Show Production Visual Guide</footer>
 </main>
 </div>
 
@@ -1481,141 +1510,696 @@ $('#planclear').addEventListener('click',()=>{fill({});store.set('qd-plan',{});$
 $('#planexample').addEventListener('click',()=>{fill(EX);store.set('qd-plan',EX);$('#plansaved').textContent='Example loaded';});
 
 
-/* ================= SCRIPT BUILDER ================= */
-const SO={en:'Prove it. Improve it.',de:'Nachweisen. Verbessern.'};
-// section: [key, label, targetSec, shot, direction, prompt, example]
+/* ================= SCRIPT BUILDER DATA ================= */
+// SX(key, label, seconds, shot, direction, guidance, example, ideas[])
+const SX=(k,l,s,shot,dir,g,ex,ideas)=>({k,l,s,shot,dir,g,ex,ideas:ideas||[]});
+const HOOKSEC=(s,ex,ideas,g)=>SX("hook","Hook",s,"ECU","Locked-off ECU. Start speaking on frame one. Hook text on screen, 6 words max.",g||"The first line decides whether people stay. No greeting, no name, no context. Use the hook formula chosen above.",ex,ideas);
+const CTASEC=(s,ex,ideas)=>SX("cta","CTA",s,"MS→CU","Slow push-in. Music ducked to 5 %.","One clear ask. A question the viewer can answer in one line works best on LinkedIn.",ex,ideas);
+const SOSEC=()=>SX("so","Sign-off",2,"CU","Hold still. One second of silence, then the end card.","Your sign-off, the same in every video.","", []);
+
 const SB={
- norm:{n:'Norm in 60',t:60,sec:[
-  ['hook','Hook',4,'ECU','Locked-off ECU. Hook text on screen.','A question about the clause, or a myth. 12 words or fewer.','What does ISO 9001 clause 7.5 actually ask for? / It\'s not a folder full of documents.'],
-  ['clause','Clause',8,'MS','Clause badge ON the clause number.','Name the standard and clause. What it covers, in one sentence.','Clause 7.5 is called documented information. It covers the documents you work with and the records that prove what you did.'],
-  ['plain','Plain words',18,'MS','B-roll: highlighter on a mock clause. Source badge.','What it asks for. Paraphrase; never read the norm aloud.','The standard doesn\'t tell you how many documents to write. It says: document what your processes need, and what the standard asks for. Nothing more.'],
-  ['evidence','Evidence',14,'CU','Slow push-in. Numbered list on screen (1–2–3).','What an auditor wants to see as proof.','In an audit, I look for three things. Is the document identified and approved? Is the current version available where the work happens? And are old versions out of circulation?'],
-  ['gap','Common gap',8,'CU','Duck music to 5 %. Micro-pause before the line.','The most common gap you see.','The most common gap? / The right procedure, sitting in the office, while the floor works from an old printout.'],
-  ['cta','CTA',6,'MS→CU','Push-in on the question.','One CTA only.','Check one document at your site today. Which version is on the floor? Tell me what you find.'],
-  ['so','Sign-off',2,'CU','Hold still. 1 s silence, then end card.','Your sign-off.','']]},
- method:{n:'Method Minute',t:75,sec:[
-  ['hook','Hook',4,'ECU','Hook text on screen.','The method and a promise.','8D on one sheet of paper. / Watch.'],
-  ['problem','Problem',10,'MS','','What problem the method solves.','When a customer complaint comes back a second time, a quick fix isn\'t enough. You need a structure. That\'s 8D.'],
-  ['steps','Steps',35,'OVERHEAD','Overhead timelapse: draw D1–D8 while you talk. Highlight each step.','The steps, one short line each.','D1: build a small team. D2: describe the problem with facts. D3: contain it, so no bad part reaches the customer. D4: find the root cause. D5 and D6: choose the fix and prove it works. D7: stop it happening again. D8: close it and thank the team.'],
-  ['example','Example',12,'MS','B-roll: sticky notes on the sheet.','A small, everyday example.','Wrong labels on outgoing pallets? D3 is checking every pallet today. D4 is asking why the label printer template changed.'],
-  ['notwhen','When not to use it',8,'CU','','When the method is overkill.','For a one-off typo, 8D is overkill. Use it when the problem is costly or keeps coming back.'],
-  ['cta','CTA',4,'MS→CU','Push-in.','One CTA only.','Save this for the next complaint that comes back.'],
-  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]},
- floor:{n:'Floor Lesson',t:120,sec:[
-  ['hook','Hook',5,'ECU','Hook text on screen.','The result, or the moment it went wrong.','One SOP. Thirty percent faster. / Here\'s what was in it.'],
-  ['symptom','Symptom',15,'MS','B-roll: checklist, clipboard.','What kept going wrong (CV-level facts only).','Cross-docking and Castlegate orders were getting delayed. And delays meant returns.'],
-  ['wrongfix','First fix',15,'MS','','What was tried first, and why it didn\'t last.','[Your own memory: what was tried first, and why it didn\'t last. Only say what really happened.]'],
-  ['back','It came back',10,'CU','Duck music. Micro-pause.','The moment you realised.','[Your own memory: the moment you saw it was a process problem.]'],
-  ['root','Root cause',25,'MS','B-roll: fishbone being drawn.','What you found when you looked at the process.','[Your own memory: what you found when you looked at the process.]'],
-  ['fix','Lasting fix',25,'MS','B-roll: pen on a mock SOP.','What changed.','So I initiated an SOP for cross-docking and Castlegate orders, and put it into practice.'],
-  ['number','Number',10,'CU','Stat bomb + source badge ON the number.','The measurable result, from the Proof Bank.','Lead time dropped by thirty percent.'],
-  ['lesson','Lesson',10,'CU','Hold.','What the viewer should take away.','If a problem survives every extra check, it isn\'t a people problem. It\'s a process problem.'],
-  ['cta','CTA',3,'MS→CU','Push-in.','One CTA only.','Where does your process depend on who is on shift? Tell me below.'],
-  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]},
- audit:{n:'Audit Room',t:90,sec:[
-  ['hook','Hook',5,'ECU','Hook text on screen.','A surprising first move in an audit.','The first thing I ask for in an internal audit / isn\'t the procedure.'],
-  ['situation','Situation',12,'MS','B-roll: clipboard, mock checklist.','Set the scene, anonymised.','An internal audit, a process owner, a folder of procedures ready on the table.'],
-  ['question','My question',15,'CU','Caption highlight on the question.','The question you ask.','I ask: show me the last time this process went wrong, and what you did about it.'],
-  ['evidence','Evidence',25,'MS','Numbered list on screen.','What evidence tells you the system works.','That one question shows me the records, the corrective action, and whether anyone checked it worked. A procedure only shows me the plan.'],
-  ['good','What good looks like',20,'CU','Source badge: ISO 19011.','The healthy answer.','A good answer isn\'t "nothing ever goes wrong". It\'s a clear record, a root cause, and a check that the fix held.'],
-  ['cta','CTA',8,'MS→CU','Push-in.','One CTA only.','What\'s the first thing you ask for in an audit? I\'d like to compare.'],
-  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]},
- wort:{n:'QM-Wort der Woche',t:40,de:true,sec:[
-  ['hook','Begriff',4,'ECU','Begriff groß auf dem Bildschirm.','Der Begriff, kurz eingeführt.','Nachweisführung. / Klingt einfach. Ist es nicht.'],
-  ['def','Definition',12,'MS','Quellen-Badge.','Einfache Erklärung.','Nachweisführung heißt: Sie können belegen, dass Sie tun, was Sie beschreiben. Mit Aufzeichnungen, nicht mit Worten.'],
-  ['beispiel','Beispiel',12,'MS','B-Roll: Checkliste wird abgehakt.','Ein Satz aus der Praxis.','Die Wartung ist nicht erledigt, weil jemand es sagt. Sie ist erledigt, wenn das Protokoll unterschrieben ist.'],
-  ['en','Englisch',6,'CU','Untertitel: EN-Begriff.','Der englische Begriff.','Auf Englisch sagt man dazu: evidence, oder documented information.'],
-  ['next','Nächste Woche',4,'CU','','Ausblick.','Nächste Woche: Abweichung oder Fehler?'],
-  ['so','Abschluss',2,'CU','Stillhalten. Endkarte.','Ihr Abschlusssatz.','']]},
- myth:{n:'Myth vs. Requirement',t:60,sec:[
-  ['myth','Myth',6,'ECU','Hook text on screen.','State the myth as people say it.','"ISO 9001 requires a quality manual." / You hear it all the time.'],
-  ['finding','Finding',4,'CU','FINDING stamp + thump SFX.','The short verdict.','Since 2015, it doesn\'t.'],
-  ['req','Requirement',22,'MS','Source badge with edition year.','What the standard actually requires.','The 2015 version replaced the manual and the six mandatory procedures with documented information. You decide what your processes need.'],
-  ['practical','Practical version',20,'CU','B-roll: binder closing.','What to do instead.','Many companies keep a short manual anyway, because it helps new people. That\'s fine. Just keep it because it\'s useful, not because you think the auditor wants it.'],
-  ['cta','CTA',6,'MS→CU','Push-in.','One CTA only.','Which ISO myth should I check next? Put it in the comments.'],
-  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]},
- bridge:{n:'Career Bridge',t:150,sec:[
-  ['hook','Hook',6,'ECU','Hook text on screen.','Where you started and where you are.','I started in finance in Nairobi. / Now I work in quality management in Hessen.'],
-  ['start','Where I started',25,'MS','B-roll: city of origin, notebook.','The starting point (Proof Bank facts only).','My degree is in co-operative business and finance. My first consulting work was HR compliance: policies, file audits, training.'],
-  ['step','The step',30,'MS','B-roll: warehouse or checklist.','The step that changed things.','Then came a warehouse floor in Germany. Running 5S audits showed me that compliance and quality are the same question: can you prove it?'],
-  ['took','What it took',45,'CU','B-roll: German flashcards, course folder (cover only).','What it took: recognition, language, qualifications. Keep it looking forward.','It took a recognised degree, a lot of German, and qualifications in the German system: ISO training, internal auditing, and QMB training here in Gießen.'],
-  ['advice','Advice',34,'CU','Hold. First smile.','One step the viewer can take this week.','If you\'re starting this path: get your degree assessed early, and join a professional network like the DGQ. Both open doors faster than applications alone.'],
-  ['cta','CTA',8,'MS→CU','Push-in.','One CTA only.','Where are you on your path? Tell me, and I\'ll answer in a video.'],
-  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]},
- dash:{n:'Dashboard Breakdown',t:240,sec:[
-  ['hook','Hook',8,'ECU','Face only. Hook text.','The promise.','Five minutes, one PivotTable, / and you\'ll see where your errors cluster.'],
-  ['promise','Promise',15,'MS','','What they\'ll be able to do afterwards.','By the end you\'ll have a simple quality tracker that shows you where to look first.'],
-  ['setup','Set-up',60,'SCREEN','Screen recording on track 1, face PiP on track 2 at 20 %. Dummy data only.','The data and the first steps.','Here\'s a list of nonconformities: date, area, type, shift. First, turn it into a table.'],
-  ['build','Build',90,'SCREEN','Zoom-in animation on the key cell.','Building the pivot and chart.','Now insert a PivotTable. Areas in rows, types in columns, count of entries in values. Add a chart.'],
-  ['insight','Insight',50,'CU','Back to the face for the insight.','What the pattern tells you.','And there it is: most errors come from one area on one shift. That\'s where the root-cause work starts.'],
-  ['cta','CTA',15,'MS→CU','Push-in.','One CTA only.','Want the template? Tell me in the comments, and I\'ll share a clean version.'],
-  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]},
- learn:{n:'Learning in Public',t:60,sec:[
-  ['hook','Hook',5,'ECU','Hook text.','What you\'re learning.','200 hours of QMB training. / One idea changed how I see audits.'],
-  ['studying','This week',12,'MS','B-roll: course folder cover, notes.','What you\'re studying.','This week I\'m revising risk-based thinking for my QMB exam.'],
-  ['surprise','Surprise',18,'CU','','What surprised you.','What surprised me: risk isn\'t only about what can go wrong. The standard also asks you to look for opportunities.'],
-  ['apply','How I\'d apply it',15,'MS','','How you\'d use it at work.','So in my next audit I\'ll ask not only "what could fail here?" but "what could work better?"'],
-  ['q','Question',8,'MS→CU','Push-in.','A question for the audience.','How does your team handle opportunities? Do they even get recorded?'],
-  ['so','Sign-off',2,'CU','Hold. End card.','Your sign-off.','']]}
+/* ---------- CORE FORMATS ---------- */
+norm:{n:"Norm in 60",grp:"Core",t:60,plat:"LinkedIn · Shorts",formula:"clause",sec:[
+ HOOKSEC(4,"What does ISO 9001 clause 7.5 actually ask for? / It's not a folder full of documents.",[
+  "What does ISO [standard] clause [number] actually ask for?",
+  "Clause [number] of ISO [standard] in sixty seconds.",
+  "Most people read clause [number] wrong. / Here's what it really asks for.",
+  "If an auditor opens clause [number] at your site, this is what they look for.",
+  "One clause. Sixty seconds. [topic]."]),
+ SX("clause","Clause",8,"MS","Clause badge appears ON the clause number.","Name the standard, the edition and the clause. Say what it covers in one plain sentence.","Clause 7.5 is called documented information. It covers the documents you work with and the records that prove what you did.",[
+  "Clause [number] is called [title]. In plain words: [one sentence].",
+  "This sits in chapter [number], which is about [chapter topic].",
+  "It applies to every organisation certified to ISO [standard], whatever the size.",
+  "The 2015 edition wrote this clause differently from the old versions. That matters because [reason]."]),
+ SX("plain","Plain words",18,"MS","B-roll: highlighter on a MOCK clause. Source badge with edition year.","What the clause asks for. Paraphrase it; never read the norm aloud and never film full pages (copyright).","The standard doesn't tell you how many documents to write. It says: document what your processes need, and what the standard asks for. Nothing more.",[
+  "The standard doesn't say [common assumption]. It says [actual requirement].",
+  "In practice that means three things: [one], [two], [three].",
+  "Notice the word “shall”. That makes it a requirement, not a suggestion.",
+  "Think of it like this: [simple everyday comparison].",
+  "The size of your company changes how much you document, not whether you do."]),
+ SX("evidence","Evidence",14,"CU","Slow push-in. Numbered list on screen 1-2-3.","What an auditor wants to see as proof. Be concrete: records, signatures, versions, dates.","In an audit, I look for three things. Is the document identified and approved? Is the current version available where the work happens? And are old versions out of circulation?",[
+  "In an audit, I'd ask to see [record]. Not the procedure, the record.",
+  "The evidence is simple: [who] did [what], when, and it's written down.",
+  "Three questions an auditor asks here: [question one]? [question two]? [question three]?",
+  "If you can show me [evidence] for the last three months, this clause is covered."]),
+ SX("gap","Common gap",8,"CU","Duck the music to 5 %. Micro-pause before the line.","The gap people most often have with this clause. Frame it as common, not as blame.","The most common gap? / The right procedure, sitting in the office, while the floor works from an old printout.",[
+  "The most common gap? / [gap].",
+  "Where it usually breaks: [situation].",
+  "What gets written up most often here is [finding], and it's easy to prevent.",
+  "Most sites have the document. What they don't have is [missing link]."]),
+ CTASEC(6,"Check one document at your site today. Which version is on the floor? Tell me what you find.",[
+  "Check [one thing] at your site this week. What did you find?",
+  "Which clause should I explain next? Tell me below."]),
+ SOSEC()]},
+
+method:{n:"Method Minute",grp:"Core",t:75,plat:"LinkedIn · Shorts",formula:"onesheet",sec:[
+ HOOKSEC(4,"8D on one sheet of paper. / Watch.",[
+  "[Method] on one sheet of paper. / Watch.",
+  "[Method] in under a minute, drawn by hand.",
+  "Everyone says [method]. Few can draw it. / Let me show you.",
+  "The fastest way to understand [method]: a pen and one sheet."]),
+ SX("problem","Problem",10,"MS","","What problem the method solves. One situation the viewer knows.","When a customer complaint comes back a second time, a quick fix isn't enough. You need a structure. That's 8D.",[
+  "When [problem] happens again and again, you need a structure. That's [method].",
+  "[Method] answers one question: [question].",
+  "Use it when [trigger situation].",
+  "Without it, teams usually [bad habit]."]),
+ SX("steps","Steps",35,"OVERHEAD","Overhead timelapse: draw each step while you talk. Step counter on screen.","The steps, one short line each. Say the step name, then what it means in plain words.","D1: build a small team. D2: describe the problem with facts. D3: contain it, so no bad part reaches the customer. D4: find the root cause. D5 and D6: choose the fix and prove it works. D7: stop it happening again. D8: close it and thank the team.",[
+  "Step one: [name]. That means [plain meaning].",
+  "PDCA: Plan what you'll change. Do it on a small scale. Check the result against the plan. Act: keep it, or adjust.",
+  "5S: Sort. Set in order. Shine. Standardise. Sustain. The last one is the hard one.",
+  "5-Why: ask why, and again, until the answer is a process you can change, not a person to blame.",
+  "FMEA: list what can fail, how bad it is, how often it happens, and how likely you'd catch it. Multiply. Fix the highest numbers first."]),
+ SX("example","Example",12,"MS","B-roll: sticky notes on the sheet.","A small, everyday example. Keep it hypothetical unless it's from the Proof Bank.","Wrong labels on outgoing pallets? D3 is checking every pallet today. D4 is asking why the label template changed.",[
+  "Imagine [everyday problem]. Step [x] would be [action].",
+  "Take a coffee machine that keeps leaking. [Method] would start with [step].",
+  "At a warehouse, this looks like [example].",
+  "In an office, the same method works for [example]."]),
+ SX("notwhen","When not to use it",8,"CU","","When the method is overkill. This shows judgement, which recruiters notice.","For a one-off typo, 8D is overkill. Use it when the problem is costly or keeps coming back.",[
+  "Don't use [method] for [small problem]. It's built for [big problem].",
+  "If the cause is obvious and the fix takes five minutes, skip it.",
+  "The method isn't the goal. A problem that stays solved is."]),
+ CTASEC(4,"Save this for the next complaint that comes back.",[
+  "Save this for your next [situation].",
+  "Which method should I draw next?"]),
+ SOSEC()]},
+
+floor:{n:"Floor Lesson",grp:"Core",t:120,plat:"LinkedIn",formula:"number",sec:[
+ HOOKSEC(5,"One SOP. Thirty percent faster. / Here's what was in it.",[
+  "One SOP. Thirty percent faster. / Here's what was in it.",
+  "Minus fifteen percent errors. / Here's how we got there.",
+  "We fixed it. / [time] later it was back.",
+  "The problem wasn't the people. / It was the process."]),
+ SX("symptom","Symptom",15,"MS","B-roll: checklist, clipboard.","What kept going wrong. Use only CV-level facts; no internal figures, colleague or customer names.","Cross-docking and Castlegate orders were getting delayed. And delays meant returns.",[
+  "On the logistics floor, [symptom] kept happening.",
+  "Every week the same kind of nonconformity came back: [type].",
+  "It showed up as [delays / returns / complaints]."]),
+ SX("wrongfix","First fix",15,"MS","","What was tried first, and why it didn't last. Only what really happened.","[Your own memory: what was tried first, and why it didn't last.]",[
+  "The first reaction was [what really happened].",
+  "We did what most teams do: [quick fix].",
+  "It helped, for a while."]),
+ SX("back","It came back",10,"CU","Duck the music. Micro-pause.","The moment you realised it was a process problem.","[Your own memory: the moment you saw it was a process problem.]",[
+  "Then it came back.",
+  "And that's when I stopped looking for someone to blame.",
+  "Same problem. Different week."]),
+ SX("root","Root cause",25,"MS","B-roll: fishbone being drawn.","What you found when you looked at the process. Only what really happened.","[Your own memory: what you found when you looked at the process.]",[
+  "So I looked at the process, step by step. [finding].",
+  "The root cause wasn't [assumed cause]. It was [real cause].",
+  "A structured root-cause analysis showed [finding]."]),
+ SX("fix","Lasting fix",25,"MS","B-roll: pen on a MOCK SOP.","What changed: the SOP, the check, the standard.","So I initiated an SOP for cross-docking and Castlegate orders, and put it into practice.",[
+  "So I initiated [SOP / check / standard], and put it into practice.",
+  "We changed [process step], not the people.",
+  "The fix was boring: [fix]. Boring fixes last."]),
+ SX("number","Number",10,"CU","Stat bomb + source badge ON the number.","The measurable result. Only Proof Bank numbers: −15 % errors, −30 % lead time.","Lead time dropped by thirty percent.",[
+  "Lead time dropped by thirty percent.",
+  "Operational errors went down by fifteen percent.",
+  "[measurable result, from the Proof Bank]."]),
+ SX("lesson","Lesson",10,"CU","Hold.","What the viewer should take away, in one sentence.","If a problem survives every extra check, it isn't a people problem. It's a process problem.",[
+  "If a problem survives every extra check, it's a process problem.",
+  "Fix the process, and the people stop firefighting.",
+  "A standard only works if it's easier to follow than to ignore."]),
+ CTASEC(3,"Where does your process depend on who is on shift? Tell me below.",[
+  "Which problem at your site keeps coming back?"]),
+ SOSEC()]},
+
+wort:{n:"QM-Wort der Woche",grp:"Core",t:40,de:true,plat:"LinkedIn",formula:"word",sec:[
+ HOOKSEC(4,"Nachweisführung. / Klingt einfach. Ist es nicht.",[
+  "[Begriff]. / Klingt einfach. Ist es nicht.",
+  "[Begriff] und [Begriff]: nicht dasselbe.",
+  "Das QM-Wort der Woche: [Begriff].",
+  "Ein Wort, das in jedem Audit fällt: [Begriff]."],"Der Begriff, kurz und klar. Auf dem Bildschirm groß einblenden."),
+ SX("def","Definition",12,"MS","Quellen-Badge (z. B. ISO 9000).","Einfache Erklärung in einem oder zwei Sätzen. Wenn möglich an ISO 9000 anlehnen.","Nachweisführung heißt: Sie können belegen, dass Sie tun, was Sie beschreiben. Mit Aufzeichnungen, nicht mit Worten.",[
+  "[Begriff] heißt: [einfache Erklärung].",
+  "Kurz gesagt: [Kernaussage].",
+  "Die Norm meint damit [Bedeutung], nicht [häufiges Missverständnis]."]),
+ SX("beispiel","Beispiel",12,"MS","B-Roll: Checkliste wird abgehakt.","Ein Satz aus der Praxis.","Die Wartung ist nicht erledigt, weil jemand es sagt. Sie ist erledigt, wenn das Protokoll unterschrieben ist.",[
+  "Ein Beispiel aus der Praxis: [Situation].",
+  "Im Lager sieht das so aus: [Beispiel].",
+  "Im Büro bedeutet das: [Beispiel]."]),
+ SX("en","Englisch",6,"CU","Untertitel mit dem englischen Begriff.","Der englische Begriff. Hilft internationalen Kollegen und zeigt beide Sprachen.","Auf Englisch sagt man dazu: evidence, oder documented information.",[
+  "Auf Englisch: [english term].",
+  "International spricht man von [english term]."]),
+ SX("next","Nächste Woche",4,"CU","","Ein offener Ausblick auf die nächste Folge.","Nächste Woche: Abweichung oder Fehler?",[
+  "Nächste Woche: [Begriff].",
+  "Nächste Woche: Was ist der Unterschied zwischen [A] und [B]?"]),
+ SOSEC()]},
+
+/* ---------- MORE FORMATS ---------- */
+audit:{n:"Audit Room",grp:"Formats",t:90,plat:"LinkedIn",formula:"auditor",sec:[
+ HOOKSEC(5,"The first thing I ask for in an internal audit / isn't the procedure.",[
+  "The first thing I ask for in an audit / isn't the procedure.",
+  "Three questions I ask in every internal audit.",
+  "What an auditor notices in the first five minutes.",
+  "The audit question that tells me the most about a process."]),
+ SX("situation","Situation",12,"MS","B-roll: clipboard, MOCK checklist.","Set the scene, anonymised. No organisation names, no real findings.","An internal audit, a process owner, a folder of procedures ready on the table.",[
+  "An internal audit. A process owner. [setting].",
+  "Picture a typical audit of [process].",
+  "Before an audit, most teams prepare [what they prepare]."]),
+ SX("question","My question",15,"CU","Caption highlight on the question.","The question you ask, and why.","I ask: show me the last time this process went wrong, and what you did about it.",[
+  "I ask: [question]?",
+  "Instead of reading the procedure, I ask to see [record].",
+  "I ask the person doing the work, not the manager: [question]?"]),
+ SX("evidence","Evidence",25,"MS","Numbered list on screen.","What evidence tells you the system actually works.","That one question shows me the records, the corrective action, and whether anyone checked it worked. A procedure only shows me the plan.",[
+  "That shows me three things: [one], [two], [three].",
+  "A procedure shows the plan. A record shows the reality.",
+  "If the answer matches the record, the system works."]),
+ SX("good","What good looks like",20,"CU","Source badge: ISO 19011.","The healthy answer. Keep it constructive: audits exist to help.","A good answer isn't “nothing ever goes wrong”. It's a clear record, a root cause, and a check that the fix held.",[
+  "A good answer isn't [perfect answer]. It's [honest answer].",
+  "The best teams say: [example]. That's a system that learns.",
+  "Audits aren't a test. They're a second pair of eyes."]),
+ CTASEC(8,"What's the first thing you ask for in an audit? I'd like to compare.",[
+  "Auditors: what's your first question?"]),
+ SOSEC()]},
+
+myth:{n:"Myth vs. Requirement",grp:"Formats",t:60,plat:"LinkedIn · Shorts",formula:"myth",sec:[
+ SX("myth","Myth",6,"ECU","Hook text on screen.","State the myth the way people say it. This is your hook.","“ISO 9001 requires a quality manual.” / You hear it all the time.",[
+  "“ISO 9001 requires a quality manual.”",
+  "“ISO 14001 is about recycling bins.”",
+  "“Internal audits are about finding mistakes.”",
+  "“A corrective action is the same as a correction.”",
+  "“You need six mandatory procedures.”"]),
+ SX("finding","Finding",4,"CU","FINDING stamp + thump SFX.","The short verdict. Three to five words.","Since 2015, it doesn't.",[
+  "Since 2015, it doesn't.",
+  "Not quite.",
+  "That's a myth.",
+  "The standard says something else."]),
+ SX("req","Requirement",22,"MS","Source badge with edition year.","What the standard actually requires. Check it against the current edition before filming.","The 2015 version replaced the manual and the six mandatory procedures with documented information. You decide what your processes need.",[
+  "What the standard actually says: [requirement].",
+  "Clause [number] asks for [requirement], nothing more.",
+  "The [year] edition changed this: [change]."]),
+ SX("practical","Practical version",20,"CU","B-roll: binder closing.","What to do instead, in practice.","Many companies keep a short manual anyway, because it helps new people. That's fine. Just keep it because it's useful, not because you think the auditor wants it.",[
+  "In practice: [what to do].",
+  "Keep [thing] if it helps your people, not because you think the auditor wants it.",
+  "The question to ask is: does this document help someone do the work?"]),
+ CTASEC(6,"Which ISO myth should I check next? Put it in the comments.",[
+  "Which myth should I check next?"]),
+ SOSEC()]},
+
+bridge:{n:"Career Bridge",grp:"Formats",t:150,plat:"LinkedIn",formula:"you",sec:[
+ HOOKSEC(6,"I started in finance in Nairobi. / Now I work in quality management in Hessen.",[
+  "I started in finance in Nairobi. / Now I work in quality in Hessen.",
+  "What it actually took to build a quality career in Germany.",
+  "If you're building a career in Germany from abroad, this is for you.",
+  "One thing I'd tell anyone starting in quality management in Germany."]),
+ SX("start","Where I started",25,"MS","B-roll: notebook, city establishing shot.","Your starting point. Proof Bank facts only; see flag F1 before mentioning degrees.","My degree is in co-operative business and finance. My first consulting work was HR compliance: policies, file audits, training.",[
+  "My degree is in co-operative business and finance, recognised in Germany.",
+  "I started in HR compliance consulting in Nairobi.",
+  "Compliance taught me one thing early: [lesson]."]),
+ SX("step","The step",30,"MS","B-roll: checklist, warehouse exterior (public ground).","The step that changed things.","Then came a warehouse floor in Germany. Running 5S audits showed me that compliance and quality are the same question: can you prove it?",[
+  "Then came a warehouse floor in Germany. 5S audits, scorecards, root causes.",
+  "The turning point was [moment].",
+  "That's where compliance and quality became the same question for me: can you prove it?"]),
+ SX("took","What it took",45,"CU","B-roll: German flashcards, course folder (cover only).","What it took: recognition, language, qualifications. Look forward, not back. No grievances.","It took a recognised degree, a lot of German, and qualifications in the German system: ISO training, internal auditing, and QMB training here in Gießen.",[
+  "It took a recognised degree. The ZAB assessment made my Bachelor's comparable in Germany.",
+  "It took German. B2, then a full C1 course, with the exam still ahead.",
+  "It took qualifications in the German system: ISO training, internal auditing, QMB training.",
+  "It took a network. I joined the DGQ, the German Society for Quality."]),
+ SX("advice","Advice",34,"CU","Hold. First smile.","One step the viewer can take this week.","If you're starting this path: get your degree assessed early, and join a professional network like the DGQ. Both open doors faster than applications alone.",[
+  "Get your degree assessed early. It changes how employers read your CV.",
+  "Learn the German QM terms first: Abweichung, Nachweis, Lenkung.",
+  "Join one professional network and actually show up.",
+  "Document your own work, the way you would for an audit."]),
+ CTASEC(8,"Where are you on your path? Tell me, and I'll answer in a video.",[
+  "What's your next step? Tell me below."]),
+ SOSEC()]},
+
+dash:{n:"Dashboard Breakdown",grp:"Formats",t:240,plat:"LinkedIn · YouTube",formula:"onesheet",sec:[
+ HOOKSEC(8,"Five minutes, one PivotTable, / and you'll see where your errors cluster.",[
+  "Five minutes, one PivotTable, / and you'll see where your errors cluster.",
+  "A quality KPI tracker in Excel. No macros.",
+  "The one chart every QM meeting needs.",
+  "Your nonconformity list is hiding a pattern. / Let's find it."]),
+ SX("promise","Promise",15,"MS","","What they'll be able to do afterwards.","By the end you'll have a simple quality tracker that shows you where to look first.",[
+  "By the end, you'll have [result].",
+  "You'll be able to answer [question] in seconds."]),
+ SX("setup","Set-up",60,"SCREEN","Screen recording on track 1, face PiP on track 2 at 20 %. DUMMY data only.","The data and the first steps. Narrate slowly and move the cursor deliberately.","Here's a list of nonconformities: date, area, type, shift. First, turn it into a table.",[
+  "Here's the raw data: [columns].",
+  "First, format it as a table. Ctrl+T.",
+  "Check for blanks and typos first. Bad data means a bad chart."]),
+ SX("build","Build",90,"SCREEN","Zoom-in animation on the key cell.","Building the pivot, chart or measure.","Now insert a PivotTable. Areas in rows, types in columns, count of entries in values. Add a chart.",[
+  "Insert a PivotTable: [rows], [columns], [values].",
+  "Add conditional formatting so the highest values turn dark.",
+  "In Power BI, the same idea is one matrix visual and one slicer."]),
+ SX("insight","Insight",50,"CU","Back to the face for the insight.","What the pattern tells you, and what you'd do next.","And there it is: most errors come from one area on one shift. That's where the root-cause work starts.",[
+  "And there it is: [pattern].",
+  "That's where the root-cause work starts.",
+  "The chart doesn't solve anything. It tells you where to look."]),
+ CTASEC(15,"Want the template? Tell me in the comments, and I'll share a clean version.",[
+  "Want the template? Say so in the comments."]),
+ SOSEC()]},
+
+learn:{n:"Learning in Public",grp:"Formats",t:60,plat:"LinkedIn",formula:"confession",sec:[
+ HOOKSEC(5,"200 hours of QMB training. / One idea changed how I see audits.",[
+  "200 hours of QMB training. / One idea changed how I see audits.",
+  "What I'm studying for my QMB exam this week.",
+  "My C1 German course taught me a QM lesson.",
+  "Something I got wrong until this week."]),
+ SX("studying","This week",12,"MS","B-roll: course folder cover, notes.","What you're studying. Say “exam pending” honestly.","This week I'm revising risk-based thinking for my QMB exam.",[
+  "This week I'm revising [topic] for my QMB exam.",
+  "Today's chapter: [topic].",
+  "I'm learning the German terms for [topic]."]),
+ SX("surprise","Surprise",18,"CU","","What surprised you.","What surprised me: risk isn't only about what can go wrong. The standard also asks you to look for opportunities.",[
+  "What surprised me: [insight].",
+  "I always thought [assumption]. It's actually [reality].",
+  "The German term [Begriff] explains it better than the English one."]),
+ SX("apply","How I'd apply it",15,"MS","","How you'd use it at work.","So in my next audit I'll ask not only “what could fail here?” but “what could work better?”",[
+  "At work I'd use this by [action].",
+  "In my next audit I'll ask [question]."]),
+ SX("q","Question",8,"MS→CU","Push-in.","A question for the audience.","How does your team handle opportunities? Do they even get recorded?",[
+  "How does your team handle [topic]?",
+  "Did you learn this the same way?"]),
+ SOSEC()]},
+
+stat:{n:"Stat Drop",grp:"Formats",t:75,plat:"LinkedIn",formula:"number",sec:[
+ SX("stat","The stat, delivered cold",8,"ECU","Stat bomb on screen with the source line.","Open with the number. No greeting, no context. The number is the hook. It must be sourced: your Proof Bank or a published study you name.","Minus fifteen percent. / That's what structured root-cause work did to our error rate.",[
+  "Minus fifteen percent. That's what root-cause work did to our error rate.",
+  "Thirty percent. That's how much faster one SOP made our lead time.",
+  "[number]. That's [what it measures], according to [source].",
+  "[number] of [group] [finding]. Source: [study, year]."]),
+ SX("means","What it means",20,"MS","Source badge.","Explain the number in plain words. What was measured, where, when.","That was on a logistics floor, over [period]. Not with more checks. With better processes.",[
+  "What that means in practice: [meaning].",
+  "It was measured as [measure], over [period].",
+  "The important part isn't the number. It's how we got it."]),
+ SX("why","Why it matters to you",30,"CU","Slow push-in.","Why the viewer should care. Connect it to their work.","If your error rate stays flat no matter how many checks you add, the checks aren't the answer. The process is.",[
+  "If you [situation], this matters because [reason].",
+  "Most teams try [common approach]. The number says [better approach].",
+  "For a QM lead, this is the argument for [action]."]),
+ CTASEC(10,"Which number do you track that nobody looks at? Tell me below.",[
+  "Which KPI do you trust most?"]),
+ SOSEC()]},
+
+compare:{n:"Compare & Contrast",grp:"Formats",t:150,plat:"LinkedIn",formula:"contrast",sec:[
+ HOOKSEC(6,"Same standard. / A warehouse and a plastics recycler. Different evidence.",[
+  "Same standard. / [Sector A] and [sector B]. Different evidence.",
+  "ISO 9001 vs. ISO 14001. / Same chapters. Different question.",
+  "Correction vs. corrective action. / One sentence each.",
+  "Two ways to run [process]. / Only one survives an audit."]),
+ SX("a","Side A",35,"MS","Split-screen graphic, side A slides in.","Set up the first side: what it is, what it asks, one example.","In a warehouse, ISO 9001 evidence is scans, labels, delivery records. The question is: did the right item reach the right customer on time?",[
+  "In [A], [what it looks like].",
+  "ISO 9001 asks: does the product or service meet requirements?",
+  "Correction means you fix the problem in front of you."]),
+ SX("b","Side B",35,"MS","Split-screen graphic, side B slides in.","Set up the second side the same way, so the contrast is fair.","At a plastics recycler, the evidence also includes input material, environmental aspects and certification schemes. The question grows: what's the impact?",[
+  "In [B], [what it looks like].",
+  "ISO 14001 asks: what's our environmental impact, and are we controlling it?",
+  "Corrective action means you remove the cause, so it doesn't come back."]),
+ SX("insight","The insight",45,"CU","Hold. Music ducked.","What the contrast reveals. This is your point of view.","The structure is the same, because both standards share the harmonised structure. What changes is the question you ask of your evidence.",[
+  "Here's what the comparison shows: [insight].",
+  "They share the same structure, so one integrated system can cover both.",
+  "The difference isn't the paperwork. It's the question behind it."]),
+ CTASEC(10,"Which two should I compare next? Tell me below.",[
+  "Which comparison should I do next?"]),
+ SOSEC()]},
+
+explain:{n:"Explainer / Tutorial",grp:"Formats",t:240,plat:"LinkedIn · YouTube",formula:"clause",sec:[
+ HOOKSEC(8,"How to prepare for your first internal audit. / In five steps.",[
+  "How to [task]. / In [number] steps.",
+  "Your first [task]? Start here.",
+  "The checklist I'd use to [task].",
+  "Most people skip step [x] of [task]. / Don't."]),
+ SX("promise","Promise",15,"MS","","What they'll be able to do by the end.","By the end, you'll have a simple plan you can use next week.",[
+  "By the end, you'll be able to [result].",
+  "Five steps. Each one takes [time]."]),
+ SX("step1","Step 1",40,"MS","Chapter card: STEP 1.","First step: what, why, how. One example.","Step one: read the last audit report and the open corrective actions. That's where the auditor will start.",[
+  "Step one: [action]. Why: [reason].",
+  "Start with [thing]. It tells you [information]."]),
+ SX("step2","Step 2",40,"MS","Chapter card: STEP 2.","Second step.","Step two: walk the process yourself. Compare what's written with what happens.",[
+  "Step two: [action].",
+  "Then check [thing] against [thing]."]),
+ SX("step3","Step 3",40,"MS","Chapter card: STEP 3.","Third step.","Step three: check that records are complete, signed and easy to find.",[
+  "Step three: [action].",
+  "Make sure [evidence] is [condition]."]),
+ SX("mistake","Common mistake",30,"CU","FINDING stamp optional.","The mistake most people make with this task.","The common mistake: preparing documents instead of preparing people. The auditor will ask the person doing the work.",[
+  "The common mistake: [mistake].",
+  "Don't [mistake]. Do [alternative] instead."]),
+ SX("recap","Recap",25,"MS→CU","Numbered recap list on screen.","Recap the steps in one line each.","So: last report, walk the process, check the records. That's your preparation.",[
+  "So: [step 1], [step 2], [step 3].",
+  "Three steps, one afternoon, and you're ready."]),
+ CTASEC(10,"Which task should I break down next?",[
+  "What should the next tutorial be?"]),
+ SOSEC()]},
+
+confess:{n:"Personal Confession",grp:"Formats",t:100,plat:"LinkedIn",formula:"confession",sec:[
+ HOOKSEC(5,"I used to confuse correction and corrective action. / Most of my early CAPAs were wrong.",[
+  "I used to [mistake]. / Here's what I do now.",
+  "My first [task] was wrong. / Here's why.",
+  "I believed [assumption] for years.",
+  "The advice I ignored, and later needed."]),
+ SX("before","What I did",25,"MS","","What you used to do. Real, specific, and not too harsh on yourself.","I wrote down the fix, closed the action, and moved on. The problem was gone, for a while.",[
+  "I used to [habit].",
+  "For a long time, I thought [belief].",
+  "It looked fine on paper: [why it looked fine]."]),
+ SX("cost","What it cost",20,"CU","Music ducked.","What went wrong because of it. Keep it professional.","The same issue came back, because I'd fixed the result, not the cause.",[
+  "It cost [time / trust / rework].",
+  "The same problem came back, because [reason]."]),
+ SX("now","What I do now",35,"MS","B-roll: pen on a mock CAPA form.","What you changed, and how the viewer can apply it.","Now every corrective action has a root cause, an owner, a date and an effectiveness check. If I can't fill in the cause, it isn't a corrective action yet.",[
+  "Now I [new habit].",
+  "The rule I use now: [rule].",
+  "If I can't [test], it isn't done."]),
+ CTASEC(10,"What's a mistake that made you better at your job? Tell me below.",[
+  "What did you learn the hard way?"]),
+ SOSEC()]},
+
+beforeafter:{n:"Before & After",grp:"Formats",t:120,plat:"LinkedIn",formula:"symptom",sec:[
+ HOOKSEC(5,"Same desk. / Five minutes of 5S. Watch the difference.",[
+  "Same [thing]. / [time] of [method]. Watch.",
+  "Before and after one small process change.",
+  "This [form / desk / process] cost [problem]. / Here's the fixed version."]),
+ SX("before","Before",30,"WS","Film the real 'before' state, own desk or mock only.","Show the before state and name the problem it causes.","Before: every tool in one drawer. Finding the right one took minutes, every time.",[
+  "Before: [state]. The problem: [consequence].",
+  "This is what [thing] looked like: [description]."]),
+ SX("change","The change",35,"OVERHEAD","Timelapse of the change, sped up to 400 %.","What you changed, step by step.","Sort what you need. Give everything a place. Label the place. That's three of the five S's.",[
+  "Step by step: [steps].",
+  "The change took [time] and cost [cost]."]),
+ SX("after","After",25,"WS","Same framing as the 'before' shot. Hold 3 s.","Show the result in the same framing, so the difference is obvious.","After: everything has a place, and the empty place tells you what's missing.",[
+  "After: [state].",
+  "Now [benefit]."]),
+ SX("lesson","Lesson",15,"CU","","What the viewer should take from it.","5S isn't tidying up. It's making problems visible.",[
+  "The point isn't [surface result]. It's [real benefit]."]),
+ CTASEC(8,"What would you 5S first at your workplace?",[
+  "What would you fix first?"]),
+ SOSEC()]},
+
+react:{n:"Reaction / Response",grp:"Formats",t:120,plat:"LinkedIn",formula:"auditor",sec:[
+ HOOKSEC(5,"I saw a post this week that said audits are a waste of time. / Here's my answer.",[
+  "I saw a post that said [claim]. / Here's my answer.",
+  "Someone asked me [question] in the comments. / Let's answer it properly.",
+  "There's news about [topic]. / What it means for quality teams."]),
+ SX("source","What was said",20,"MS","Show the source as a paraphrase or a screenshot with the author's name blurred unless public and fair.","Summarise what was said, fairly, and name the source.","A post this week argued that internal audits only produce paperwork.",[
+  "The claim was: [claim].",
+  "[Source] reported [news], on [date].",
+  "A viewer asked: [question]?"]),
+ SX("agree","Where they're right",25,"MS","","Be fair first. What's true about it?","And sometimes that's true, when audits check documents instead of processes.",[
+  "They're right about one thing: [point].",
+  "Fair point: [point]."]),
+ SX("add","What I'd add",45,"CU","Source badge if you cite anything.","Your perspective, with evidence.","A good internal audit asks the person doing the work, looks at records, and follows up on actions. That's not paperwork. That's the cheapest early warning a company has.",[
+  "What I'd add: [perspective].",
+  "From my experience, [observation].",
+  "The evidence says [evidence]."]),
+ CTASEC(10,"Where do you stand on this? Tell me below, and keep it respectful.",[
+  "What's your view?"]),
+ SOSEC()]},
+
+guest:{n:"Guest Conversation",grp:"Formats",t:600,plat:"LinkedIn · YouTube",formula:"you",sec:[
+ SX("cold","Cold open",10,"CU","Guest's strongest line, cut from later in the conversation.","The best 10 seconds of the conversation, placed first. Fill this after recording.","[Guest's strongest line, from the recording.]",[
+  "[Guest's strongest line.]",
+  "[Guest's most surprising answer.]"]),
+ SX("intro","Introduction",30,"MS","Guest name lower third.","Who the guest is and why this conversation, in two sentences. Ask the guest how they want to be introduced.","Today I'm talking to [name], [role] at [organisation, if they agree]. We're talking about [topic].",[
+  "Today I'm talking to [name], who [role].",
+  "I invited [name] because [reason]."]),
+ SX("q1","Question 1",150,"CU","Guest CU; OTS from behind the host.","Open question about their path or their work.","How did you get into quality management?",[
+  "How did you get into [field]?",
+  "What does a normal week look like in your role?",
+  "What surprised you most when you started?"]),
+ SX("q2","Question 2",180,"CU","Reaction shots of the host every 60 s.","The core question: a problem they solved.","What's a problem you solved that you're still proud of?",[
+  "What's a problem you solved that you're proud of?",
+  "What's the most common audit finding you see?",
+  "How do you get people to follow a new standard?"]),
+ SX("q3","Question 3",150,"CU","","Advice for the audience.","What would you tell someone starting in quality management in Germany today?",[
+  "What would you tell someone starting in [field] today?",
+  "Which skill will matter most in quality in the next five years?",
+  "What's one habit that makes a QM team better?"]),
+ SX("close","Close",40,"MS","","Thank the guest, one-sentence summary, where to find them.","Thank you, [name]. The one idea I'm taking away: [takeaway].",[
+  "Thank you, [name]. My takeaway: [takeaway].",
+  "You can find [name] on LinkedIn: link in the comments."]),
+ CTASEC(10,"Who should I talk to next? Tag them below.",[
+  "Who should my next guest be?"]),
+ SOSEC()]},
+
+intro:{n:"Brand Intro VO",grp:"Brand",t:25,plat:"Every episode",formula:"you",sec:[
+ SX("line1","Line 1",8,"GFX","Over the title card or desk B-roll. Music at 30 %.","The identity line. Short and calm.","Standards. Methods. Real audit lessons.",[
+  "Standards. Methods. Real audit lessons.",
+  "Quality management, clearly explained.",
+  "Qualität, klar erklärt."]),
+ SX("line2","Line 2",10,"GFX","B-roll: highlighter on a mock clause.","Who you are in one line.","I'm Efic, and this is The Quality Desk.",[
+  "I'm Efic, and this is The Quality Desk.",
+  "Ich bin Efic, und das ist The Quality Desk."]),
+ SX("line3","Line 3",5,"GFX","Title card hit.","The promise.","One idea per video.",[
+  "One idea per video.",
+  "Every Tuesday."]),
+ SOSEC()]},
+
+close:{n:"Brand Closing VO",grp:"Brand",t:40,plat:"Every episode",formula:"you",sec:[
+ SX("land","Landing statement",12,"CU","Hold. Music returns at 10 %.","One sentence that sums up what the video proved.","So that's clause 7.5: not a folder, but the right version in the right place.",[
+  "So that's [topic]: [one-line summary].",
+  "One sentence to remember: [summary]."]),
+ SX("next","Next episode",10,"MS","Open loop.","Tease the next video. Leave one loop open.","Next week: why 5-Why often stops at the wrong why.",[
+  "Next week: [topic].",
+  "Next Tuesday I'm answering [question]."]),
+ CTASEC(10,"Follow The Quality Desk so it finds you every Tuesday.",[
+  "Follow so the next one finds you.",
+  "Folgen Sie mir, dann verpassen Sie keine Folge."]),
+ SOSEC()]},
+
+pitch:{n:"Video Application Pitch",grp:"Brand",t:60,de:true,plat:"Unlisted link",formula:"word",sec:[
+ SX("hello","Begrüßung",5,"MS","Ruhiger Hintergrund, Blick in die Linse.","Name und Fachgebiet. Keine Floskeln.","Guten Tag, ich bin Murdock Emisembe, Qualitätsmanagement mit Schwerpunkt ISO 9001 und 14001.",[
+  "Guten Tag, ich bin Murdock Emisembe, Qualitätsmanagement mit Schwerpunkt ISO 9001 und 14001.",
+  "Guten Tag, mein Name ist Murdock Emisembe. Ich bewerbe mich als [Position]."]),
+ SX("proof","Beleg",15,"CU","Stat-Einblendung optional.","Eine Praxis-Erfahrung mit Zahl, passend zur Branche der Firma. Nur Proof-Bank-Fakten.","Bei Wayfair habe ich als Qualitätsauditor durch strukturierte Ursachenanalysen die Fehlerquote um 15 Prozent gesenkt.",[
+  "Bei Wayfair habe ich durch strukturierte Ursachenanalysen die Fehlerquote um 15 Prozent gesenkt.",
+  "Mit einer neuen SOP für Cross-Docking-Aufträge sank die Durchlaufzeit um 30 Prozent.",
+  "Bei Grünstoff habe ich das integrierte Managementsystem nach ISO 9001 und 14001 begleitet."]),
+ SX("plan","Erste 90 Tage",15,"MS","","Zwei konkrete Dinge, die Sie in den ersten 90 Tagen tun würden, aus der Stellenanzeige abgeleitet.","In den ersten 90 Tagen würde ich [Aufgabe 1 aus der Anzeige] und [Aufgabe 2 aus der Anzeige] angehen.",[
+  "In den ersten 90 Tagen würde ich [Aufgabe 1] und [Aufgabe 2] angehen.",
+  "Zuerst würde ich [Prozess] kennenlernen und dann [Verbesserung] vorschlagen."]),
+ SX("facts","Rahmendaten",15,"MS","","Sprachen, Aufenthaltstitel, Ort, Reisebereitschaft.","Ich spreche Deutsch auf B2-Niveau, C1 ist in Vorbereitung, Englisch auf C2. Ich habe eine Blaue Karte EU, wohne in Gießen und bin reisebereit.",[
+  "Deutsch B2, C1 in Vorbereitung, Englisch C2.",
+  "Blaue Karte EU, Wohnort Gießen, reisebereit, ab sofort verfügbar."]),
+ SX("close","Abschluss",8,"CU","","Freundlich, kurz, Ihr Abschlusssatz.","Ich freue mich auf ein Gespräch. Nachweisen. Verbessern.",[
+  "Ich freue mich auf ein Gespräch.",
+  "Vielen Dank für Ihre Zeit. Ich freue mich auf ein Gespräch."])]}
 };
-const sbS=Object.assign({fmt:'norm',topic:'Documented information in 60 seconds',lang:'en',struct:'Type 3 · The system',tx:{}},store.get('qd-sbuild')||{});
+/* Hook formula banks: appear as ideas in every Hook section */
+const HOOKF={
+ clause:["Clause question",["What does ISO [standard] clause [number] actually ask for?","Clause [number] in sixty seconds.","If an auditor opens clause [number], this is what they look for."],["Was verlangt ISO [Norm], Kapitel [Nummer], eigentlich?","Kapitel [Nummer] in sechzig Sekunden."]],
+ number:["Number first",["[Number]. / Here's how we got there.","[Number] percent. / One change did that.","[Number] of [group] [finding]. / Here's what it means."],["[Zahl]. / So sind wir dahin gekommen.","[Zahl] Prozent. / Eine Änderung hat das bewirkt."]],
+ myth:["Myth → Finding",["Everyone says [myth]. / That's not what the standard says.","“[Myth].” / Since [year], that's not true.","The most common ISO myth I hear: [myth]."],["Viele sagen, [Mythos]. / Die Norm sagt etwas anderes.","„[Mythos].“ / Seit [Jahr] stimmt das nicht mehr."]],
+ symptom:["Symptom loop",["We fixed it. / [Time] later it was back.","The same nonconformity. Every week. / Until we asked a different question.","More checks didn't help. / Here's what did."],["Wir haben es behoben. / [Zeit] später war es wieder da.","Mehr Kontrollen haben nicht geholfen. / Das schon."]],
+ onesheet:["One-sheet promise",["[Method] on one sheet of paper. / Watch.","[Task] in [number] steps.","Everything you need for [task], on one page."],["[Methode] auf einem Blatt Papier. / Schauen Sie zu.","[Aufgabe] in [Zahl] Schritten."]],
+ auditor:["Auditor's eye",["The first thing I ask for in an audit / isn't the procedure.","What an auditor notices in the first five minutes.","The audit question that tells me the most."],["Das Erste, was ich im Audit sehen will, / ist nicht die Verfahrensanweisung.","Was ein Auditor in den ersten fünf Minuten bemerkt."]],
+ loss:["Loss frame",["The [clause] gap that shows up in audits again and again.","The mistake that turns a minor finding into a major one.","What a missing [record] costs you in an audit."],["Die Lücke in [Kapitel], die immer wieder auffällt.","Der Fehler, der aus einer Nebenabweichung eine Hauptabweichung macht."]],
+ contrast:["Contrast",["Same standard. / [A] vs. [B]. Different evidence.","[A] and [B]. / Not the same thing.","Two ways to run [process]. / Only one survives an audit."],["Gleiche Norm. / [A] und [B]. Andere Nachweise.","[A] und [B]: nicht dasselbe."]],
+ you:["You statement",["If you've ever [situation], this is for you.","If you work in quality, you've heard this one.","If you're new to QM in Germany, start here."],["Wenn Sie je [Situation] erlebt haben, ist das für Sie.","Wenn Sie neu im Qualitätsmanagement sind, fangen Sie hier an."]],
+ confession:["Confession",["I got [X] wrong. / Here's what I do now.","I used to believe [assumption].","My first [task] was a mess. / Here's why."],["Ich lag bei [X] falsch. / So mache ich es heute.","Früher dachte ich, [Annahme]."]],
+ word:["Word of the week",["[Term]. / Sounds simple. It isn't.","[Term] and [term]: not the same."],["[Begriff]. / Klingt einfach. Ist es nicht.","[Begriff] und [Begriff]: nicht dasselbe."]]
+};
+const CTABANK={en:["Which [topic] gives you the most trouble? Tell me below.","How do you handle this at your site?","New Quality Desk video every Tuesday. Follow so it finds you.","Save this for your next audit prep.","Send this to the colleague who writes your CAPAs.","Next week: [topic]. Don't miss it."],de:["Was macht Ihnen bei [Thema] am meisten Arbeit? Schreiben Sie es mir.","Wie lösen Sie das in Ihrem Betrieb?","Jeden Dienstag ein neues Video. Folgen Sie mir.","Speichern Sie das für Ihre nächste Auditvorbereitung.","Nächste Woche: [Thema]."]};
+const SOBANK={en:["Prove it. Improve it.","That's the evidence. / Prove it. Improve it.","One idea. One video. / Prove it. Improve it."],de:["Nachweisen. Verbessern.","Das ist der Nachweis. / Nachweisen. Verbessern."]};
+
+
+/* ================= PRINT ================= */
+const PRINT_CSS=`@page{size:A4;margin:14mm}
+*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#000}
+body{font:10.5pt/1.45 'IBM Plex Sans','Segoe UI',Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+h1{font:800 20pt/1.15 'Archivo',Arial,sans-serif;margin:0 0 4pt;letter-spacing:-.01em}
+h2{font:800 13pt/1.2 'Archivo',Arial,sans-serif;margin:14pt 0 6pt;padding-bottom:3pt;border-bottom:1.5pt solid #000}
+.meta{font:8.5pt 'IBM Plex Mono',Consolas,monospace;border-top:2.5pt solid #000;border-bottom:.75pt solid #000;padding:4pt 0;margin-bottom:10pt;display:flex;flex-wrap:wrap;gap:3pt 14pt}
+.brand{font:8pt 'IBM Plex Mono',Consolas,monospace;display:flex;justify-content:space-between;margin-bottom:6pt}
+table{width:100%;border-collapse:collapse;font-size:9pt}th,td{border:.75pt solid #000;padding:4pt 5pt;text-align:left;vertical-align:top}
+th{font:600 7.5pt 'IBM Plex Mono',Consolas,monospace;text-transform:uppercase;letter-spacing:.06em;background:#EDEDED}
+td.c{font-family:'IBM Plex Mono',Consolas,monospace;white-space:nowrap}
+tr{break-inside:avoid}.box{display:inline-block;width:10pt;height:10pt;border:1pt solid #000}
+.sec{border:.75pt solid #000;margin-bottom:6pt;break-inside:avoid}
+.sec .hd{display:flex;gap:10pt;flex-wrap:wrap;padding:4pt 6pt;background:#EDEDED;border-bottom:.75pt solid #000;font:8pt 'IBM Plex Mono',Consolas,monospace}
+.sec .hd b{font:700 10pt 'Archivo',Arial,sans-serif}
+.sec .dir{font-style:italic;font-size:8.5pt;padding:4pt 6pt 0}
+.sec .say{font:600 12pt/1.4 'Archivo',Arial,sans-serif;padding:4pt 6pt 6pt;white-space:pre-wrap}
+.lines{padding:4pt 6pt 8pt}.lines i{display:block;height:16pt;border-bottom:.5pt solid #777}
+.tp{font:700 18pt/1.6 'Archivo',Arial,sans-serif;white-space:pre-wrap}
+.pb{break-before:page}
+.frames{display:grid;grid-template-columns:repeat(6,1fr);gap:6pt}.frames.land{grid-template-columns:repeat(4,1fr)}
+.fc{break-inside:avoid;font-size:7.5pt}.fc .fn{font-family:'IBM Plex Mono',Consolas,monospace}
+.fbox{position:relative;aspect-ratio:9/16;border:1pt solid #000;border-top:3pt solid #000;overflow:hidden;background:#fff;container-type:inline-size}
+.land .fbox{aspect-ratio:16/9}
+.fbox .ty{position:absolute;left:4%;top:3%;font:8pt 'IBM Plex Mono',monospace;background:#000;color:#fff;padding:0 3pt;z-index:2}
+.fbox .dur{position:absolute;right:4%;top:3%;font:8pt 'IBM Plex Mono',monospace;border:.75pt solid #000;background:#fff;padding:0 3pt;z-index:2}
+.sil{position:absolute;left:50%;bottom:0;transform:translateX(-50%) scale(var(--s,1));transform-origin:50% 100%;width:70%;aspect-ratio:1/1.25}
+.sil::before{content:"";position:absolute;left:30%;top:0;width:40%;aspect-ratio:1;border-radius:50%;border:1.2pt solid #000;background:#fff}
+.sil::after{content:"";position:absolute;left:5%;right:5%;bottom:0;height:52%;border-radius:45% 45% 0 0;border:1.2pt solid #000;background:#D8D8D8}
+.land .sil{width:32%}
+.paper{position:absolute;left:18%;right:18%;top:22%;bottom:22%;border:1pt solid #000;transform:rotate(-4deg)}
+.paper i{position:absolute;left:12%;right:12%;height:3%;background:#999}
+.paper i:nth-child(1){top:14%}.paper i:nth-child(2){top:26%}.paper i:nth-child(3){top:38%;background:#000}.paper i:nth-child(4){top:50%}.paper i:nth-child(5){top:62%;right:40%}
+.screen{position:absolute;left:10%;right:10%;top:22%;bottom:30%;border:2pt solid #000}
+.screen i{position:absolute;bottom:12%;width:12%;background:#888}
+.screen i:nth-child(1){left:14%;height:30%}.screen i:nth-child(2){left:32%;height:52%}.screen i:nth-child(3){left:50%;height:40%;background:#000}.screen i:nth-child(4){left:68%;height:66%}
+.pip{position:absolute;right:6%;bottom:8%;width:22%;aspect-ratio:1;border-radius:50%;border:1.2pt solid #000;background:#fff}
+.gfxf{position:absolute;inset:0;background:#000;color:#fff;display:grid;place-content:center;text-align:center;font:800 11pt 'Archivo',Arial,sans-serif}
+.gfxf small{display:block;font:7pt 'IBM Plex Mono',monospace}
+.brf{position:absolute;inset:0;background:repeating-linear-gradient(45deg,#fff 0 6px,#E4E4E4 6px 12px);display:grid;place-content:center;font:8pt 'IBM Plex Mono',monospace;text-align:center}
+.wsf{position:absolute;left:0;right:0;bottom:0;height:34%;background:#E4E4E4;border-top:1pt solid #000}
+.arr{position:absolute;right:6%;bottom:6%;font:8pt 'IBM Plex Mono',monospace;background:#fff;border:.75pt solid #000;padding:0 2pt;z-index:2}
+.notes{border:.75pt solid #000;min-height:60pt;padding:4pt 6pt;font:8pt 'IBM Plex Mono',monospace}
+.foot{margin-top:12pt;font:7.5pt 'IBM Plex Mono',monospace;color:#444}`;
+function printDoc(title,body){
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${esc(title)}</title>`+
+  `<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">`+
+  `<style>${PRINT_CSS}</style></head><body><div class="brand"><span>THE QUALITY DESK · PRODUCTION BIBLE</span><span>Prove it. Improve it.</span></div>${body}`+
+  `<div class="foot">Printed from The Quality Desk Bible · ${new Date().toLocaleDateString('de-DE')}</div>`+
+  `<script>window.addEventListener('load',function(){setTimeout(function(){window.print()},600)});<\/script></body></html>`;
+}
+let dlPromise=null;
+function getDownloads(){ if(!dlPromise) dlPromise=(window.claude&&typeof window.claude.use==='function')?window.claude.use('downloads').catch(()=>null):Promise.resolve(null); return dlPromise; }
+function printViaFrame(html){
+  const f=document.createElement('iframe');
+  f.setAttribute('aria-hidden','true');f.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden';
+  document.body.appendChild(f);
+  const d=f.contentWindow.document; d.open(); d.write(html); d.close();
+  setTimeout(()=>f.remove(),60000);
+}
+async function printOut(title,filename,body,msgEl){
+  const html=printDoc(title,body);
+  const say=t=>{if(msgEl)msgEl.textContent=t;};
+  if(window.claude&&typeof window.claude.use==='function'){
+    say('Preparing print file…');
+    const dl=await getDownloads();
+    if(dl){
+      try{await dl.save({filename,data:html});say('Saved. Open the file and its print window appears (choose “Save as PDF” for a PDF).');}
+      catch(e){const c=e&&e.code;say(c==='declined'?'Download cancelled.':c==='rate_limited'?'A download prompt is already open. Try again in a moment.':'Printing isn’t available in this view. Download the bible file and print from there.');}
+      return;
+    }
+  }
+  say('Opening the print window…'); printViaFrame(html);
+}
+
+/* ================= SCRIPT BUILDER ================= */
+const SO=SOBANK?{en:SOBANK.en[0],de:SOBANK.de[0]}:{en:'Prove it. Improve it.',de:'Nachweisen. Verbessern.'};
+const sbS=Object.assign({fmt:'norm',topic:'Documented information in 60 seconds',angle:'',lang:'en',struct:'Type 3 · The system',tx:{},hf:{}},store.get('qd-sbuild')||{});
+if(!sbS.hf) sbS.hf={}; if(!sbS.tx) sbS.tx={};
 if(!SB[sbS.fmt]) sbS.fmt='norm';
+const sbOpen={};
 const sbSave=()=>store.set('qd-sbuild',sbS);
 const words=s=>(s.replace(/\//g,' ').trim().match(/\S+/g)||[]).length;
 const mmss=s=>{s=Math.round(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 const wpm=()=>sbS.lang==='de'?118:130;
-function sbText(k){const f=sbS.tx[sbS.fmt]||{};return f[k]!==undefined?f[k]:null;}
-function sbFirstFill(){ // first visit of a format: prefill examples so the tool opens in a working state
-  if(!sbS.tx[sbS.fmt]){sbS.tx[sbS.fmt]={};SB[sbS.fmt].sec.forEach(s=>{sbS.tx[sbS.fmt][s[0]]=s[0]==='so'?SO[sbS.lang]:s[6];});}
+const curF=()=>SB[sbS.fmt];
+const txOf=()=>(sbS.tx[sbS.fmt]=sbS.tx[sbS.fmt]||{});
+const sbText=k=>txOf()[k]||'';
+const formulaOf=()=>sbS.hf[sbS.fmt]||curF().formula||'you';
+function sbFirstFill(){ if(!store.get('qd-sbuild')&&sbS.fmt==='norm'&&!sbS.tx.norm){const t=txOf();curF().sec.forEach(s=>{t[s.k]=s.k==='so'?SO[sbS.lang]:s.ex;});} }
+function subst(line){const t=(sbS.topic||'').trim();return t?line.replace(/\[topic\]|\[Thema\]/g,t):line;}
+function ideasFor(s,i){
+  const L=sbS.lang; let list=[];
+  if(s.k==='so') list=SOBANK[L]||SOBANK.en;
+  else{
+    list=s.ideas.slice();
+    if(i===0){const b=HOOKF[formulaOf()]; if(b) list=list.concat(L==='de'?b[2]:b[1]);}
+    if(s.k==='cta') list=list.concat(CTABANK[L]||CTABANK.en);
+  }
+  return [...new Set(list)].map(subst);
 }
-function sbDrawFmts(){$('#sbFmts').innerHTML=Object.entries(SB).map(([k,f])=>`<button type="button" data-fk="${k}" aria-pressed="${k===sbS.fmt}"><b>${f.n}</b><span>${mmss(f.t)} · ${f.sec.length} sections${f.de?' · DE':''}</span></button>`).join('');}
+function secTimes(){let c=0;return curF().sec.map(s=>{const a=c;c+=s.s;return [a,c];});}
+function sbDrawFmts(){
+  const groups={Core:'Core formats · start here',Formats:'More formats',Brand:'Brand and application'};
+  $('#sbFmts').innerHTML=Object.entries(groups).map(([g,label])=>`<div class="fgrp"><h4>${label}</h4><div class="fmtpick">${Object.entries(SB).filter(([,f])=>f.grp===g).map(([k,f])=>{const w=Math.round(f.t*(f.de?118:130)/60);return `<button type="button" data-fk="${k}" aria-pressed="${k===sbS.fmt}"><b>${f.n}</b><span>${mmss(f.t)} · ~${w} words · ${f.sec.length} sections</span><span>${f.plat}${f.de?' · Deutsch':''}</span></button>`}).join('')}</div></div>`).join('');
+}
+function sbDrawFormula(){
+  $('#sbFormula').innerHTML=Object.entries(HOOKF).map(([k,v])=>`<option value="${k}"${k===formulaOf()?' selected':''}>${v[0]}</option>`).join('');
+}
 function sbDrawSecs(){
   sbFirstFill();
-  const cur=sbS.tx[sbS.fmt]; if(cur.so===SO.en||cur.so===SO.de) cur.so=SO[sbS.lang]; // sign-off follows the language
-  const f=SB[sbS.fmt];
-  $('#sbSecs').innerHTML=f.sec.map((s,i)=>{const id='sbx_'+sbS.fmt+'_'+s[0];return `<div class="sbx"><div class="hd"><span class="pill">${String(i+1).padStart(2,'0')}</span><b>${s[1]}</b><span class="pill b">${s[3]}</span><span class="pill">${s[2]} s · ~${Math.round(s[2]*wpm()/60)} words</span><span class="wc" id="${id}_wc"></span></div><label class="pr" for="${id}">${esc(s[5])}${s[4]?' <span class="dir">Direction: '+esc(s[4])+'</span>':''}</label><textarea id="${id}" data-k="${s[0]}">${esc(sbText(s[0])||'')}</textarea></div>`}).join('');
+  const t=txOf(); if(t.so===SO.en||t.so===SO.de) t.so=SO[sbS.lang];
+  const f=curF(), tm=secTimes(), w=wpm();
+  $('#sbFmtTitle').textContent=f.n; $('#sbFmtMeta').textContent=`${mmss(f.t)} · ~${Math.round(f.t*w/60)} words · ${f.plat}`;
+  $('#sbSecs').innerHTML=f.sec.map((s,i)=>{
+    const id='sbx_'+sbS.fmt+'_'+s.k, key=sbS.fmt+'.'+s.k, open=sbOpen[key]!==undefined?sbOpen[key]:i===0;
+    const exTxt=s.k==='so'?SO[sbS.lang]:s.ex;
+    return `<details class="sbx" data-key="${key}"${open?' open':''}><summary><span class="pill">${String(i+1).padStart(2,'0')}</span><b>${esc(s.l)}</b><span class="pill mono">${mmss(tm[i][0])}–${mmss(tm[i][1])}</span><span class="pill">${s.shot}</span><span class="pill">Target ~${Math.round(s.s*w/60)} words</span><span class="wc" id="${id}_wc"></span></summary>
+    <div class="sbin"><p class="pr">${esc(s.g)}</p>${s.dir?`<p class="dir">Direction: ${esc(s.dir)}</p>`:''}${exTxt?`<p class="exl"><b>Example:</b> ${esc(exTxt.replace(/\s*\/\s*/g,' '))}</p>`:''}
+    <label class="sr" for="${id}">${esc(s.l)} text</label><textarea id="${id}" data-k="${s.k}" placeholder="Write your ${esc(s.l.toLowerCase())} here, or pick an idea below.">${esc(t[s.k]||'')}</textarea>
+    <div class="row"><button type="button" class="btn" data-act="ideas" aria-expanded="false">💡 Ideas</button><button type="button" class="btn" data-act="example">📝 Use example</button><button type="button" class="btn" data-act="copy">📋 Copy section</button><button type="button" class="btn" data-act="clear">Clear</button></div>
+    <div class="ideas" hidden><p class="dir">Click an idea to paste it as a starting point, then make it yours. Replace anything in [brackets] with true details.</p>${ideasFor(s,i).map(x=>`<button type="button" class="idea" data-idea="${esc(x)}">${esc(x.replace(/\s*\/\s*/g,' / '))}</button>`).join('')}</div></div></details>`}).join('');
 }
 function sbCalc(){
-  const f=SB[sbS.fmt], w=wpm(); let tw=0, filled=0; const warn=[];
-  let full=`${(sbS.topic||f.n).toUpperCase()}\nFormat: ${f.n} · ${sbS.struct} · ${sbS.lang==='de'?'Deutsch':'English'}\n`, tp='';
+  const f=curF(), w=wpm(); let tw=0, filled=0, ph=0; const warn=[];
+  const tm=secTimes();
+  let full=`${(sbS.topic||f.n).toUpperCase()}\nFormat: ${f.n} · ${sbS.struct} · ${sbS.lang==='de'?'Deutsch':'English'}${sbS.angle?'\nHook angle: '+sbS.angle:''}\nHook formula: ${HOOKF[formulaOf()][0]}\n`, tp='';
   let clock=0;
   f.sec.forEach((s,i)=>{
-    const t=(sbText(s[0])||'').trim(), n=words(t), est=n/w*60, tgt=s[2]*w/60;
-    tw+=n; if(t) filled++;
-    const wc=document.getElementById('sbx_'+sbS.fmt+'_'+s[0]+'_wc');
-    if(wc){wc.textContent=n+' words · ~'+Math.round(est)+' s';wc.className='wc'+(n===0?'':(n>tgt*1.35?' over':' ok'));}
-    if(n>tgt*1.35&&n>4) warn.push(`<b>${s[1]}</b> is long: ${n} words against a target of ~${Math.round(tgt)}. Cut it, or accept a longer video.`);
-    if(s[0]==='hook'&&n>18) warn.push('<b>Hook</b> has more than 18 words. Viewers decide in about 3 seconds. Shorten it.');
+    const t=sbText(s.k).trim(), n=words(t), est=n/w*60, tgt=s.s*w/60;
+    tw+=n; if(t) filled++; ph+=(t.match(/\[[^\]]+\]/g)||[]).length;
+    const wc=document.getElementById('sbx_'+sbS.fmt+'_'+s.k+'_wc');
+    if(wc){wc.textContent=n+' words · ~'+Math.round(est)+' s';wc.className='wc'+(n===0?'':(n>tgt*1.35&&n>4?' over':' ok'));}
+    if(n>tgt*1.35&&n>4) warn.push(`<b>${esc(s.l)}</b> is long: ${n} words against a target of ~${Math.round(tgt)}. Cut it, or accept a longer video.`);
+    if(i===0&&n>18) warn.push(`<b>${esc(s.l)}</b> has more than 18 words. Viewers decide in about 3 seconds. Shorten it.`);
     const secT=Math.max(est,t?1.5:0);
-    full+=`\n[${String(i+1).padStart(2,'0')} · ${s[1].toUpperCase()} · ${s[3]} · ${mmss(clock)}–${mmss(clock+secT)}]\n`+(s[4]?`(${s[4]})\n`:'')+(t?t.replace(/\s*\/\s*/g,' '):'— not written yet —')+'\n';
+    full+=`\n[${String(i+1).padStart(2,'0')} · ${s.l.toUpperCase()} · ${s.shot} · ${mmss(clock)}–${mmss(clock+secT)}]\n`+(s.dir?`(${s.dir})\n`:'')+(t?t.replace(/\s*\/\s*/g,' '):'— not written yet —')+'\n';
     clock+=secT;
-    if(t){
-      const lines=t.replace(/\s*\/\s*/g,' [ · ]\n').split(/(?<=[.!?…])\s+(?=[^\s])/).join('\n');
-      tp+=lines.trim()+(s[0]==='so'?'\n\n[ — — ]':'\n\n[ — ]\n\n');
-    }
+    if(t){const lines=t.replace(/\s*\/\s*/g,' [ · ]\n').split(/(?<=[.!?…])\s+(?=\S)/).join('\n');tp+=lines.trim()+(s.k==='so'?'\n\n[ — — ]':'\n\n[ — ]\n\n');}
   });
-  const qCount=[...f.sec].filter(s=>['cta','q'].includes(s[0])).map(s=>(sbText(s[0])||'').split('?').length-1).reduce((a,b)=>a+b,0);
-  if(qCount>1) warn.push('<b>CTA</b> asks more than one question. Keep one clear ask.');
+  const q=f.sec.filter(s=>s.k==='cta'||s.k==='q').map(s=>(sbText(s.k).match(/\?/g)||[]).length).reduce((a,b)=>a+b,0);
+  if(q>1) warn.push('<b>CTA</b> asks more than one question. Keep one clear ask.');
+  if(ph) warn.push(`${ph} placeholder${ph>1?'s':''} in [brackets] still to replace with true details.`);
   const d=tw/w*60;
-  if(d>f.t*1.25) warn.push(`Estimated runtime ${mmss(d)} is well over the ${mmss(f.t)} target for ${f.n}.`);
-  if(f.de&&sbS.lang!=='de') warn.push('This format is meant to be filmed in German. Switch the language to Deutsch.');
-  $('#sbW').textContent=tw; $('#sbD').textContent=mmss(d); $('#sbT').textContent=mmss(f.t); $('#sbF').textContent=filled+'/'+f.sec.length;
-  $('#sbD').className=d>f.t*1.25?'warn':'';
-  $('#sbWarn').innerHTML=warn.length?warn.map(x=>`<div class="note" style="padding:8px 12px">${x}</div>`).join(''):'<div class="note green" style="padding:8px 12px">Checks passed: hook length, section lengths, one CTA question and runtime are all within target.</div>';
+  if(d>f.t*1.25) warn.push(`Estimated runtime ${mmss(d)} is well over the ${mmss(f.t)} target for ${esc(f.n)}.`);
+  if(f.de&&sbS.lang!=='de') warn.push('This format is meant to be in German. Switch the language to Deutsch.');
+  const pct=Math.round(filled/f.sec.length*100);
+  $('#sbW').textContent=tw; $('#sbD').textContent=mmss(d); $('#sbT').textContent=mmss(f.t); $('#sbF').textContent=filled+'/'+f.sec.length; $('#sbP').textContent=pct+'%';
+  $('#sbBar').style.width=pct+'%'; $('#sbD').className=d>f.t*1.25?'warn':'';
+  $('#sbWarn').innerHTML=warn.length?warn.map(x=>`<div class="note" style="padding:8px 12px">${x}</div>`).join(''):'<div class="note green" style="padding:8px 12px">Checks passed: hook, section lengths, one CTA question, no placeholders, runtime on target.</div>';
   $('#sbOutFull').textContent=full; $('#sbOutTP').textContent=tp.trim()||'Write the sections above to build your teleprompter text.';
+  sbTP=tp.trim();
 }
-function sbAll(){sbDrawFmts();sbDrawSecs();sbCalc();$('#sbTopic').value=sbS.topic||'';$('#sbLang').value=sbS.lang;$('#sbStruct').value=sbS.struct;}
-$('#sbFmts').addEventListener('click',e=>{const b=e.target.closest('[data-fk]');if(!b)return;const was=SB[sbS.fmt];sbS.fmt=b.dataset.fk;if(SB[sbS.fmt].de)sbS.lang='de';else if(was.de)sbS.lang='en';sbSave();sbAll();});
-$('#sbSecs').addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;(sbS.tx[sbS.fmt]=sbS.tx[sbS.fmt]||{})[k]=e.target.value;sbSave();sbCalc();});
-$('#sbTopic').addEventListener('input',e=>{sbS.topic=e.target.value;sbSave();sbCalc();});
-$('#sbStruct').addEventListener('change',e=>{sbS.struct=e.target.value;sbSave();sbCalc();});
-$('#sbLang').addEventListener('change',e=>{
-  const old=sbS.lang; sbS.lang=e.target.value;
-  Object.values(sbS.tx).forEach(t=>{if(t.so===SO[old]) t.so=SO[sbS.lang];});
-  sbSave(); sbDrawSecs(); sbCalc();
+let sbTP='';
+function sbAll(){sbDrawFmts();sbDrawFormula();sbDrawSecs();sbCalc();$('#sbTopic').value=sbS.topic||'';$('#sbAngle').value=sbS.angle||'';$('#sbLang').value=sbS.lang;$('#sbStruct').value=sbS.struct;}
+function sbSet(k,v){txOf()[k]=v;sbSave();sbCalc();}
+$('#sbFmts').addEventListener('click',e=>{const b=e.target.closest('[data-fk]');if(!b)return;const was=curF();sbS.fmt=b.dataset.fk;if(curF().de)sbS.lang='de';else if(was.de)sbS.lang='en';sbSave();sbAll();$('#sbStep3').scrollIntoView({block:'start'});});
+$('#sbSecs').addEventListener('input',e=>{const k=e.target.dataset.k;if(k)sbSet(k,e.target.value);});
+$('#sbSecs').addEventListener('toggle',e=>{const d=e.target;if(d.matches&&d.matches('details.sbx'))sbOpen[d.dataset.key]=d.open;},true);
+$('#sbSecs').addEventListener('click',e=>{
+  const box=e.target.closest('details.sbx'); if(!box) return;
+  const ta=box.querySelector('textarea'), k=ta.dataset.k, s=curF().sec.find(x=>x.k===k);
+  const idea=e.target.closest('[data-idea]');
+  if(idea){const v=ta.value.trim();ta.value=v?v+'\n'+idea.dataset.idea:idea.dataset.idea;sbSet(k,ta.value);ta.focus();return;}
+  const b=e.target.closest('button[data-act]'); if(!b) return;
+  const a=b.dataset.act;
+  if(a==='ideas'){const p=box.querySelector('.ideas');p.hidden=!p.hidden;b.setAttribute('aria-expanded',String(!p.hidden));}
+  else if(a==='example'){ta.value=k==='so'?SO[sbS.lang]:s.ex;sbSet(k,ta.value);ta.focus();}
+  else if(a==='clear'){ta.value='';sbSet(k,'');ta.focus();}
+  else if(a==='copy'){const txt=ta.value.replace(/\s*\/\s*/g,' ');const o=b.textContent;const ok=()=>{b.textContent='Copied';setTimeout(()=>b.textContent=o,1400)};try{navigator.clipboard.writeText(txt).then(ok,()=>{ta.select();b.textContent='Selected, press Ctrl+C'})}catch(err){ta.select();}}
 });
-$('#sbExample').addEventListener('click',()=>{const t=(sbS.tx[sbS.fmt]=sbS.tx[sbS.fmt]||{});let c=0;SB[sbS.fmt].sec.forEach(s=>{if(!(t[s[0]]||'').trim()){t[s[0]]=s[0]==='so'?SO[sbS.lang]:s[6];c++;}});sbSave();sbDrawSecs();sbCalc();$('#sbMsg').textContent=c?c+' empty box(es) filled':'Nothing empty to fill';});
-$('#sbClear').addEventListener('click',()=>{sbS.tx[sbS.fmt]={};SB[sbS.fmt].sec.forEach(s=>sbS.tx[sbS.fmt][s[0]]='');sbSave();sbDrawSecs();sbCalc();$('#sbMsg').textContent='Cleared';});
+// Update idea wording in place (never rebuild the sections here: a rebuild on blur would swallow the user's next click)
+function sbRefreshIdeas(){$$('#sbSecs details.sbx').forEach((d,i)=>{const s=curF().sec[i];if(!s)return;const list=ideasFor(s,i);d.querySelectorAll('.idea').forEach((btn,j)=>{if(list[j]!==undefined){btn.dataset.idea=list[j];btn.textContent=list[j].replace(/\s*\/\s*/g,' / ');}});});}
+let topicT;
+$('#sbTopic').addEventListener('input',e=>{sbS.topic=e.target.value;sbSave();sbCalc();clearTimeout(topicT);topicT=setTimeout(sbRefreshIdeas,250);});
+$('#sbAngle').addEventListener('input',e=>{sbS.angle=e.target.value;sbSave();sbCalc();});
+$('#sbStruct').addEventListener('change',e=>{sbS.struct=e.target.value;sbSave();sbCalc();});
+$('#sbFormula').addEventListener('change',e=>{sbS.hf[sbS.fmt]=e.target.value;sbSave();sbDrawSecs();sbCalc();
+  const first=$('#sbSecs details.sbx');if(first){first.open=true;const p=first.querySelector('.ideas');p.hidden=false;first.querySelector('[data-act="ideas"]').setAttribute('aria-expanded','true');}});
+$('#sbLang').addEventListener('change',e=>{sbS.lang=e.target.value;sbSave();sbDrawSecs();sbCalc();});
+$('#sbExample').addEventListener('click',()=>{const t=txOf();let c=0;curF().sec.forEach(s=>{if(!(t[s.k]||'').trim()){t[s.k]=s.k==='so'?SO[sbS.lang]:s.ex;c++;}});sbSave();sbDrawSecs();sbCalc();$('#sbMsg').textContent=c?c+' empty section(s) filled with examples':'Nothing empty to fill';});
+$('#sbClear').addEventListener('click',()=>{sbS.tx[sbS.fmt]={};sbSave();sbDrawSecs();sbCalc();$('#sbMsg').textContent='This format cleared';});
+$('#sbExpand').addEventListener('click',e=>{const all=$$('#sbSecs details.sbx');const openAll=all.some(d=>!d.open);all.forEach(d=>{d.open=openAll;sbOpen[d.dataset.key]=openAll;});e.target.textContent=openAll?'Collapse all':'Expand all';});
+let resetArmed=false;
+$('#sbReset').addEventListener('click',e=>{if(!resetArmed){resetArmed=true;e.target.textContent='Click again to erase all drafts';setTimeout(()=>{resetArmed=false;e.target.textContent='Start over'},3000);return;}
+  resetArmed=false;e.target.textContent='Start over';Object.assign(sbS,{fmt:'norm',topic:'',angle:'',lang:'en',struct:'Type 3 · The system',tx:{norm:{}},hf:{}});sbSave();sbAll();$('#sbMsg').textContent='All drafts erased';});
+
+/* print script */
+function scriptPrintBody(blank){
+  const f=curF(), w=wpm(); let clock=0, tw=0;
+  const secs=f.sec.map((s,i)=>{const t=blank?'':sbText(s.k).trim(); const n=words(t); tw+=n; const d=blank?s.s:Math.max(n/w*60,t?1.5:s.s); const tc=mmss(clock)+'–'+mmss(clock+d); clock+=d;
+    return `<div class="sec"><div class="hd"><b>${String(i+1).padStart(2,'0')} · ${esc(s.l)}</b><span>${tc}</span><span>${esc(s.shot)}</span><span>target ~${Math.round(s.s*w/60)} words</span>${blank?'':`<span>${n} words</span>`}</div>${s.dir?`<div class="dir">${esc(s.dir)}</div>`:''}${t?`<div class="say">${esc(t.replace(/\s*\/\s*/g,' '))}</div>`:`<div class="dir">${esc(s.g)}</div><div class="lines"><i></i><i></i><i></i>${s.s>20?'<i></i><i></i>':''}</div>`}</div>`}).join('');
+  const title=blank?`${f.n} — blank template`:(sbS.topic||f.n);
+  return `<h1>${esc(title)}</h1><div class="meta"><span>Format: ${esc(f.n)}</span><span>${esc(sbS.struct)}</span><span>${sbS.lang==='de'?'Deutsch':'English'}</span><span>Target ${mmss(f.t)}</span>${blank?'':`<span>${tw} words · est. ${mmss(tw/w*60)}</span>`}<span>Hook formula: ${esc(HOOKF[formulaOf()][0])}</span>${sbS.angle&&!blank?`<span>Angle: ${esc(sbS.angle)}</span>`:''}</div>${secs}`+
+   (blank||!sbTP?'':`<div class="pb"></div><h1>${esc(title)} — teleprompter</h1><div class="meta"><span>[ · ] short beat</span><span>[ — ] one second</span><span>[ — — ] hold before the cut</span></div><div class="tp">${esc(sbTP)}</div>`);
+}
+$('#sbPrint').addEventListener('click',()=>printOut(sbS.topic||curF().n,'QD-Script_'+(sbS.topic||curF().n).replace(/[^\w\-]+/g,'-').slice(0,60)+'.html',scriptPrintBody(false),$('#sbPrintMsg')));
+$('#sbPrintBlank').addEventListener('click',()=>printOut(curF().n+' template','QD-Template_'+curF().n.replace(/[^\w\-]+/g,'-')+'.html',scriptPrintBody(true),$('#sbPrintMsg')));
+
+/* teleprompter mode */
+const tpm=$('#tpm'), tpmText=$('#tpmText'), tpmScroll=$('#tpmScroll');
+let tpmRun=false, tpmLast=0, tpmPos=0, tpmLock=null;
+function tpmStep(ts){ if(!tpmRun) return; if(tpmLast){const sp=Number($('#tpmSpeed').value); tpmPos+=sp*14*(ts-tpmLast)/1000; tpmScroll.scrollTop=tpmPos; if(tpmScroll.scrollTop+tpmScroll.clientHeight>=tpmScroll.scrollHeight-2){tpmToggle(false);}} tpmLast=ts; requestAnimationFrame(tpmStep); }
+function tpmToggle(on){ tpmRun=on; tpmLast=0; $('#tpmPlay').textContent=on?'Pause':'Start'; if(on){tpmPos=tpmScroll.scrollTop;requestAnimationFrame(tpmStep);} }
+function tpmOpen(){ if(!sbTP){$('#sbPrintMsg').textContent='Write some sections first.';return;} tpmText.textContent=sbTP; tpm.hidden=false; document.body.style.overflow='hidden'; tpmScroll.scrollTop=0; tpmPos=0; tpmText.style.fontSize=$('#tpmSize').value+'px'; $('#tpmPlay').focus();
+  try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(l=>tpmLock=l).catch(()=>{});}catch(e){} }
+function tpmClose(){ tpmToggle(false); tpm.hidden=true; document.body.style.overflow=''; try{tpmLock&&tpmLock.release();}catch(e){} tpmLock=null; $('#sbTPM').focus(); }
+$('#sbTPM').addEventListener('click',tpmOpen);
+$('#tpmPlay').addEventListener('click',()=>tpmToggle(!tpmRun));
+$('#tpmClose').addEventListener('click',tpmClose);
+$('#tpmTop').addEventListener('click',()=>{tpmScroll.scrollTop=0;tpmPos=0;});
+$('#tpmSize').addEventListener('input',e=>{tpmText.style.fontSize=e.target.value+'px';});
+$('#tpmMirror').addEventListener('change',e=>{tpmText.style.transform=e.target.checked?'scaleX(-1)':'';});
+tpmScroll.addEventListener('wheel',()=>{tpmPos=tpmScroll.scrollTop;},{passive:true});
+document.addEventListener('keydown',e=>{ if(tpm.hidden) return; if(e.key==='Escape'){e.preventDefault();tpmClose();} else if(e.key===' '&&e.target.tagName!=='BUTTON'&&e.target.tagName!=='INPUT'){e.preventDefault();tpmToggle(!tpmRun);} });
 
 /* ================= STORYBOARD BUILDER ================= */
 const SECS=['HOOK','INTRO','BODY','TURN','PROOF','CTA','SIGN-OFF','END','B-ROLL'];
@@ -1765,16 +2349,44 @@ $('#sbdClearAll').addEventListener('click',e=>{if(!clearArmed){clearArmed=true;e
 $('#sbdCopy').addEventListener('click',e=>{const b=e.target;const ok=()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy table as text',1400)};const fb=()=>{const p=document.createElement('pre');p.className='plain';p.textContent=sbdTxt;b.insertAdjacentElement('afterend',p);const r=document.createRange();r.selectNodeContents(p);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected below, press Ctrl+C';};try{navigator.clipboard.writeText(sbdTxt).then(ok,fb)}catch(err){fb()}});
 
 /* Script → Storyboard */
-const SECMAP={hook:'HOOK',cta:'CTA',q:'CTA',so:'SIGN-OFF',number:'PROOF',gap:'TURN',back:'TURN',finding:'TURN',notwhen:'TURN',insight:'TURN',clause:'INTRO',promise:'INTRO',situation:'INTRO',start:'INTRO',def:'INTRO',myth:'HOOK'};
+const SECMAP={hook:'HOOK',myth:'HOOK',stat:'HOOK',cold:'HOOK',hello:'HOOK',line1:'HOOK',cta:'CTA',q:'CTA',so:'SIGN-OFF',close:'SIGN-OFF',number:'PROOF',proof:'PROOF',evidence:'PROOF',gap:'TURN',back:'TURN',finding:'TURN',notwhen:'TURN',insight:'TURN',cost:'TURN',mistake:'TURN',clause:'INTRO',promise:'INTRO',situation:'INTRO',start:'INTRO',def:'INTRO',intro:'INTRO',means:'INTRO'};
 $('#sbToSB').addEventListener('click',()=>{
-  const f=SB[sbS.fmt], w=wpm(); const shots=[];
-  f.sec.forEach(s=>{const t=(sbText(s[0])||'').trim(); if(!t) return;
-    const first=t.replace(/\s*\/\s*/g,' ').split(/(?<=[.!?…])\s+/)[0];
-    shots.push({id:uid++,sec:SECMAP[s[0]]||'BODY',type:s[3],dur:Math.max(2,Math.round(words(t)/w*60)),line:'"'+first+(first.length<t.replace(/\s*\/\s*/g,' ').length?' …"':'"'),cam:s[3]==='MS→CU'?'Push-in':s[3]==='OVERHEAD'?'GoPro overhead':'Static',gfx:s[4]||'',done:false});});
-  if(!shots.length){$('#sbMsg').textContent='Write at least one section first';return;}
+  const f=curF(), w=wpm(); const shots=[];
+  f.sec.forEach(s=>{const t=sbText(s.k).trim(); if(!t) return;
+    const flat=t.replace(/\s*\/\s*/g,' '), first=flat.split(/(?<=[.!?…])\s+/)[0];
+    shots.push({id:uid++,sec:SECMAP[s.k]||'BODY',type:s.shot,dur:Math.max(2,Math.round(words(t)/w*60)),line:'"'+first+(first.length<flat.length?' …"':'"'),cam:s.shot==='MS→CU'?'Push-in':s.shot==='OVERHEAD'?'GoPro overhead':s.shot==='SCREEN'?'Screen recording':'Static',gfx:s.dir||'',done:false});});
+  if(!shots.length){$('#sbPrintMsg').textContent='Write at least one section first.';return;}
   shots.push({id:uid++,sec:'END',type:'GFX',dur:3,line:'End card',cam:'—',gfx:'The Quality Desk · '+SO[sbS.lang],done:false});
-  Object.assign(sbd,{title:sbS.topic||f.n,goal:'',asp:sbS.fmt==='dash'?'h':'v',shots});
+  Object.assign(sbd,{title:sbS.topic||f.n,goal:'',asp:['dash','explain','guest'].includes(sbS.fmt)?'h':'v',shots});
   sbdSave(); sbdAll(); show('storyboard',true); $('#sbdMsg').textContent='Script sent: '+shots.length+' shots created from '+f.n;
+});
+
+/* Storyboard print */
+function sbdPrintBody(st){
+  let clock=0; const rows=[], fr=[];
+  st.shots.forEach((s,i)=>{const d=Math.max(1,Number(s.dur)||1), tc=mmss(clock)+'–'+mmss(clock+d); clock+=d; const no=String(i+1).padStart(2,'0');
+    rows.push(`<tr><td class="c">${no}</td><td class="c">${tc}</td><td>${esc(s.sec)}</td><td>${esc(s.type)}</td><td>${esc(s.line||'')}</td><td>${esc(s.cam||'')}</td><td>${esc(s.gfx||'')}</td><td class="c">${d}s</td><td><span class="box"></span></td></tr>`);
+    fr.push(`<div class="fc"><div class="fbox"><span class="ty">${esc(s.type)}</span><span class="dur">${d}s</span>${frameArt(s.type)}</div><div class="fn">${no} · ${esc(s.sec)} · ${tc}</div><div>${esc((s.line||'').slice(0,90))}</div></div>`);});
+  const faces=st.shots.filter(s=>FACE.includes(s.type)).length;
+  return `<h1>${esc(st.title||'Untitled episode')}</h1><div class="meta">${st.num?`<span>Ep. ${esc(st.num)}</span>`:''}<span>Filming: ${esc(st.date||'________')}</span><span>Location: ${esc(st.loc||'________________')}</span><span>${st.asp==='h'?'16:9 landscape':'9:16 vertical'}</span><span>${st.shots.length} shots · ${mmss(clock)} · ${faces} face shots</span></div>`+
+  (st.goal?`<p><b>Story goal:</b> ${esc(st.goal)}</p>`:'')+
+  `<h2>Shooting table</h2><table><thead><tr><th>#</th><th>Time</th><th>Section</th><th>Type</th><th>Key line / description</th><th>Camera</th><th>Graphic / B-roll</th><th>Dur</th><th>✓</th></tr></thead><tbody>${rows.join('')||'<tr><td colspan="9">No shots.</td></tr>'}</tbody></table>`+
+  `<h2>Frames</h2><div class="frames${st.asp==='h'?' land':''}">${fr.join('')}</div><h2>Notes on set</h2><div class="notes">Reshoots · takes · audio issues</div>`;
+}
+const fname=t=>(t||'Storyboard').replace(/[^\w\-]+/g,'-').replace(/-+/g,'-').slice(0,60);
+$('#sbdPrint').addEventListener('click',()=>printOut(sbd.title||'Storyboard','QD-Storyboard_'+fname(sbd.title)+'.html',sbdPrintBody(sbd),$('#sbdPrintMsg')));
+$('#sbdPrintAll').addEventListener('click',()=>{const body=Object.values(TPL).map((t,i)=>(i?'<div class="pb"></div>':'')+sbdPrintBody({title:t.title||t.n,num:t.num,goal:t.goal,asp:t.a,date:'',loc:'',shots:t.s})).join('');printOut('Storyboard templates','QD-Storyboard-Templates.html',body,$('#sbdPrintMsg'));});
+
+/* Ep. 01 print */
+const ep01Btn=document.getElementById('ep01Print');
+if(ep01Btn) ep01Btn.addEventListener('click',()=>{
+  const sec=document.getElementById('ep01');
+  const table=sec.querySelector('.tw table').outerHTML;
+  const beats=[...sec.querySelectorAll('.beat')].map(b=>{const side=[...b.querySelectorAll('.side > *')].map(x=>x.textContent).join(' · ');const dir=b.querySelector('.dir'),say=b.querySelector('.say'),del=b.querySelector('.deliv');
+    return `<div class="sec"><div class="hd"><b>${esc(side)}</b></div>${dir?`<div class="dir">${esc(dir.textContent)}</div>`:''}${say?`<div class="say">${esc(say.innerText)}</div>`:''}${del?`<div class="dir">Delivery: ${esc(del.textContent)}</div>`:''}</div>`}).join('');
+  const tpEn=document.getElementById('tp-en').textContent, tpDe=document.getElementById('tp-de').textContent;
+  const body=`<h1>Ep. 01 — Quality Is Proof</h1><div class="meta"><span>LinkedIn native 9:16</span><span>~70 s</span><span>9 shots</span></div><h2>Shot table</h2>${table}<h2>Script</h2>${beats}<div class="pb"></div><h1>Teleprompter — English</h1><div class="tp">${esc(tpEn)}</div><div class="pb"></div><h1>Teleprompter — Deutsch</h1><div class="tp">${esc(tpDe)}</div>`;
+  printOut('Ep. 01 — Quality Is Proof','QD-Ep01_QualityIsProof.html',body,document.getElementById('ep01PrintMsg'));
 });
 sbAll();
 if(!store.get('qd-sb')) loadTpl('ep01'); else sbdAll();
