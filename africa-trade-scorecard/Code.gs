@@ -24,6 +24,12 @@
 const APP = {
   sheets: {
     guide: 'Guide',
+    about: 'About',
+    explain: 'Explain_Score',
+    method: 'Methodology',
+    glossary: 'Glossary',
+    sources: 'Data_Sources',
+    faq: 'FAQ',
     dashboard: 'Dashboard',
     top: 'Top_Gaps',
     country: 'Country_View',
@@ -265,8 +271,9 @@ function buildWorkbook_() {
   const ss = SpreadsheetApp.getActive();
   const keptKey = ss.getRangeByName('P_API_KEY') ? ss.getRangeByName('P_API_KEY').getValue() : '';
 
-  const order = [APP.sheets.guide, APP.sheets.dashboard, APP.sheets.top, APP.sheets.country,
-    APP.sheets.score, APP.sheets.settings, APP.sheets.countries, APP.sheets.products, APP.sheets.raw];
+  const s = APP.sheets;
+  const order = [s.guide, s.about, s.dashboard, s.top, s.country, s.explain, s.score, s.settings,
+    s.method, s.glossary, s.sources, s.faq, s.countries, s.products, s.raw];
   order.forEach((name, i) => {
     let sh = ss.getSheetByName(name);
     if (!sh) sh = ss.insertSheet(name, i);
@@ -284,7 +291,14 @@ function buildWorkbook_() {
   buildTopGaps_(ss);
   buildCountryView_(ss);
   buildDashboard_(ss);
+  buildExplainScore_(ss);
   buildGuide_(ss);
+  buildAbout_(ss);
+  buildMethodology_(ss);
+  buildGlossary_(ss);
+  buildDataSources_(ss);
+  buildFaq_(ss);
+  colourTabs_(ss);
   ss.getSheetByName(APP.sheets.guide).activate();
 }
 
@@ -363,7 +377,7 @@ function buildScorecard_(ss) {
     'Importer demand (USD)', 'Exporter supply (USD)', 'Current A→B trade (USD)', 'Untapped gap (USD)',
     'Distance (km)', 'Market access']
     .concat(CRITERIA.map(c => c[0] + ' (0–1)'))
-    .concat(['Composite score (0–100)']);
+    .concat(['Composite score (0–100)', 'Import growth (raw)', 'RCA (raw)']);
   header_(sh.getRange(1, 1, 1, headers.length), headers);
   sh.getRange(1, 1, 1, headers.length).setWrap(true);
   sh.setRowHeight(1, 48);
@@ -373,7 +387,19 @@ function buildScorecard_(ss) {
   sh.getRange('H:L').setNumberFormat('#,##0');
   sh.getRange('N:T').setNumberFormat('0.000');
   sh.getRange('U:U').setNumberFormat('0.0').setFontWeight('bold');
-  sh.getRange(1, 21).setFontWeight('bold');
+  sh.getRange('V:V').setNumberFormat('0.0%');
+  sh.getRange('W:W').setNumberFormat('0.00');
+  const notes = ['Country that could sell', '', 'Country that could buy', '', 'HS 2-digit chapter', '', '',
+    "Importer's imports of this product from the whole world",
+    "Exporter's exports of this product to the whole world",
+    'What the exporter already sells the importer (larger of both reports)',
+    'min(demand, supply) − current trade', 'Great-circle distance between capitals',
+    'Best shared arrangement: customs union > REC/FTA > AfCFTA > other']
+    .concat(CRITERIA.map(c => c[2] + ' Scaled 0–1 — see Methodology.'))
+    .concat(['Weighted average of the 7 sub-scores × 100. Live formula: follows the weights on Settings.',
+      "Importer's import growth vs. previous year (capped −50%…+100%). Blank = unknown.",
+      'Revealed comparative advantage of the exporter in this product (Africa = reference). >1 = specialised.']);
+  sh.getRange(1, 1, 1, notes.length).setNotes([notes]);
 }
 
 function buildTopGaps_(ss) {
@@ -392,6 +418,8 @@ function buildTopGaps_(ss) {
   dropdown_(sh.getRange('B4'), ['All'].concat(sectors));
   dropdown_(sh.getRange('B5'), [10, 25, 50, 100, 250, 500]);
   sh.getRange('D2').setValue('Pick filters in the yellow cells. Ranking follows the weights on the Settings tab.')
+    .setFontStyle('italic');
+  sh.getRange('D3').setValue('Want to know WHY a row scores what it does? Open the Explain_Score tab.')
     .setFontStyle('italic');
 
   header_(sh.getRange(7, 1, 1, 9), ['Rank', 'Exporter', 'Importer', 'HS2', 'Product',
@@ -501,57 +529,398 @@ function buildDashboard_(ss) {
   sh.setConditionalFormatRules([rule]);
 }
 
-function buildGuide_(ss) {
-  const sh = resetSheet_(ss, APP.sheets.guide);
-  const lines = [
-    ['Africa Trade Gap Scorecard', 'title'],
-    ['What African countries import and export, and where they could trade more with each other.', 'italic'],
-    ['', ''],
-    ['HOW TO USE', 'h'],
-    ['1. Menu 🌍 Africa Trade → "1. Build / rebuild workbook" creates every tab (already done if you can read this).', ''],
-    ['2. Load data — pick ONE:', ''],
-    ['   2a. SAMPLE data: synthetic numbers so you can see how everything works. NOT real statistics.', ''],
-    ['   2b. REAL data: paste a free UN Comtrade API key on Settings, then run 2b. It fetches all 54 countries in the background (~5–15 min).', ''],
-    ['   2c. OWN data: clear Raw_Trade and paste rows in the format Year | Reporter ISO3 | Partner ISO3 or WLD | X or M | HS2 | USD.', ''],
-    ['3. Menu → "3. Compute scorecard & dashboard" scores every exporter → importer → product combination.', ''],
-    ['4. Explore Dashboard, Top_Gaps (filters) and Country_View (pick a country). Tune weights on Settings.', ''],
-    ['', ''],
-    ['THE TABS', 'h'],
-    ['Dashboard — totals for Africa, a table per country, intra-African share chart and untapped gap by sector.', ''],
-    ['Top_Gaps — ranked list of the biggest trade opportunities, filter by exporter, importer and sector.', ''],
-    ['Country_View — one country: top exports/imports, African buyers/suppliers, best opportunities.', ''],
-    ['Scorecard — the full composite index: raw inputs, 7 normalised sub-scores (0–1) and the composite score (0–100).', ''],
-    ['Settings — criterion weights and parameters (yellow cells).', ''],
-    ['Countries / Products — reference data. Edit memberships, or untick products to leave them out.', ''],
-    ['Raw_Trade — the trade data everything is built from.', ''],
-    ['', ''],
-    ['HOW THE SCORE WORKS', 'h'],
-    ['For every exporter A, importer B and product p where A exports p to the world and B imports p from the world:', ''],
-    ['   Untapped gap = min(B\'s world imports of p, A\'s world exports of p) − what A already sells to B.', ''],
-    ['   Only gaps above the minimum on Settings are kept (largest first, up to the row limit).', ''],
-    ['Each of 7 criteria is scaled to 0–1:', ''],
-    ['   Demand, Supply capacity, Untapped gap → log scale, then min-max across all opportunities.', ''],
-    ['   Market access → same customs union / same REC or FTA / both in AfCFTA / other (scores on Settings).', ''],
-    ['   Proximity → 1 = closest pair of capitals, 0 = furthest; multiplied down if either side is landlocked.', ''],
-    ['   Demand growth → B\'s import growth for p vs. previous year, capped at −50%…+100%. Unknown = 0.5.', ''],
-    ['   Competitiveness → Balassa RCA of A in p (Africa as reference), scaled as RCA / (1 + RCA).', ''],
-    ['Composite score = weighted average of the 7 sub-scores × 100, using the weights on Settings.', ''],
-    ['', ''],
-    ['KNOW THE LIMITS', 'h'],
-    ['• Many African countries report to UN Comtrade late or not at all. Missing reporters show as zero; 2b lists them in the data status.', ''],
-    ['• Informal cross-border trade is not in official statistics, so real intra-African trade is higher than recorded.', ''],
-    ['• Gaps overlap: one exporter\'s supply is counted against every possible buyer, so sums of gaps show scale, not an achievable total.', ''],
-    ['• HS 2-digit is broad: a gap in "Cereals" may be wheat one side and maize the other. Treat results as leads to investigate.', ''],
-    ['• Country memberships (customs unions, RECs, AfCFTA) are a starting point — verify and edit on the Countries tab.', ''],
-  ];
-  sh.getRange(1, 1, lines.length, 1).setValues(lines.map(l => [l[0]]));
-  lines.forEach((l, i) => {
-    const cell = sh.getRange(i + 1, 1);
-    if (l[1] === 'title') cell.setFontSize(18).setFontWeight('bold').setFontColor(APP.color.title);
-    if (l[1] === 'h') cell.setFontWeight('bold').setFontColor(APP.color.headerText).setBackground(APP.color.header);
-    if (l[1] === 'italic') cell.setFontStyle('italic');
+// ------------------------------------------------------------------
+// Explanation tabs
+// ------------------------------------------------------------------
+
+/**
+ * Writes a readable text page. Blocks:
+ *   ['title', text] ['sub', text] ['h', text] ['p', text] ['gap']
+ *   ['table', [headers], [[row], ...]]
+ */
+function writeDocPage_(ss, name, blocks, widths) {
+  const sh = resetSheet_(ss, name);
+  const w = widths || [24, 230, 430, 320, 260];
+  w.forEach((px, i) => sh.setColumnWidth(i + 1, px));
+  let row = 1;
+  blocks.forEach(b => {
+    const kind = b[0];
+    if (kind === 'gap') { row++; return; }
+    if (kind === 'table') {
+      const head = b[1], rows = b[2];
+      header_(sh.getRange(row, 2, 1, head.length), head);
+      row++;
+      sh.getRange(row, 2, rows.length, head.length).setValues(rows)
+        .setWrap(true).setVerticalAlignment('top');
+      for (let i = 0; i < rows.length; i += 2) {
+        sh.getRange(row + i, 2, 1, head.length).setBackground(APP.color.band);
+      }
+      sh.getRange(row, 2, rows.length, 1).setFontWeight('bold');
+      row += rows.length + 1;
+      return;
+    }
+    const cell = sh.getRange(row, 2).setValue(b[1])
+      .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+    if (kind === 'title') cell.setFontSize(20).setFontWeight('bold').setFontColor(APP.color.title);
+    if (kind === 'sub') cell.setFontSize(11).setFontStyle('italic').setFontColor('#555555');
+    if (kind === 'h') {
+      sh.getRange(row, 2, 1, w.length - 1).setBackground(APP.color.header);
+      cell.setFontSize(12).setFontWeight('bold').setFontColor(APP.color.headerText);
+    }
+    row++;
   });
-  sh.setColumnWidth(1, 1000);
+  sh.setHiddenGridlines(true);
+  return sh;
+}
+
+function buildGuide_(ss) {
+  writeDocPage_(ss, APP.sheets.guide, [
+    ['title', 'START HERE — Africa Trade Gap Scorecard'],
+    ['sub', 'What African countries import and export, and where they could trade more with each other.'],
+    ['gap'],
+    ['h', 'Get going in 4 steps'],
+    ['table', ['Step', 'What to do', 'What happens'], [
+      ['1. Build', 'Menu 🌍 Africa Trade → "1. Build / rebuild workbook"', 'Creates every tab, header, formula and dropdown (already done if you can read this).'],
+      ['2. Load data', 'Pick ONE: 2a SAMPLE, 2b UN Comtrade, 2c your own data', 'Fills Raw_Trade. See the Data_Sources tab for what each option means.'],
+      ['3. Compute', 'Menu → "3. Compute scorecard & dashboard"', 'Scores every exporter → importer → product combination and fills the Dashboard.'],
+      ['4. Explore', 'Dashboard, Top_Gaps, Country_View, Explain_Score', 'Change weights on Settings — rankings update instantly.'],
+    ]],
+    ['h', 'Tab map  (tab colours: blue = explanation · green = results · orange = your inputs · grey = data)'],
+    ['table', ['Tab', 'Type', 'What it is for'], [
+      ['Guide', 'Explanation', 'This page: steps and tab map.'],
+      ['About', 'Explanation', 'What the tool is, why it exists, and which questions it answers.'],
+      ['Dashboard', 'Results', 'Africa-wide totals, one row per country, charts of intra-African share and gaps by sector.'],
+      ['Top_Gaps', 'Results', 'Ranked list of the best trade opportunities. Filter by exporter, importer and sector.'],
+      ['Country_View', 'Results', 'Pick one country: top exports and imports, African buyers and suppliers, best opportunities.'],
+      ['Explain_Score', 'Results', 'Pick one opportunity and see exactly how its score was built, criterion by criterion.'],
+      ['Scorecard', 'Results', 'The full composite index: raw inputs, 7 sub-scores (0–1) and the composite score (0–100).'],
+      ['Settings', 'Your inputs', 'Weights of the 7 criteria and other parameters (yellow cells).'],
+      ['Methodology', 'Explanation', 'Every formula, step by step, with a worked example.'],
+      ['Glossary', 'Explanation', 'Plain-English meaning of every term and abbreviation.'],
+      ['Data_Sources', 'Explanation', 'Where the numbers come from, the data format, and known gaps.'],
+      ['FAQ', 'Explanation', 'Common questions and answers.'],
+      ['Countries', 'Your inputs', '54 countries with region, capital location, customs unions, RECs and AfCFTA status. Editable.'],
+      ['Products', 'Your inputs', '96 HS 2-digit product groups with sector. Untick "Include" to leave a product out.'],
+      ['Raw_Trade', 'Data', 'The trade figures everything is calculated from.'],
+    ]],
+    ['h', 'Before you share results'],
+    ['p', '• Check the data status line on the Dashboard. If it says SAMPLE DATA, the numbers are synthetic and must not be quoted.'],
+    ['p', '• Read "Know the limits" on the Methodology tab. Results are leads to investigate, not conclusions.'],
+  ]);
+}
+
+function buildAbout_(ss) {
+  writeDocPage_(ss, APP.sheets.about, [
+    ['title', 'About this tool'],
+    ['sub', 'A composite index (also called a scorecard or multi-criteria decision tool) for intra-African trade.'],
+    ['gap'],
+    ['h', 'The problem'],
+    ['p', 'African countries trade far more with the rest of the world than with each other. Commonly cited estimates (UNCTAD, Afreximbank)'],
+    ['p', 'put intra-African trade at around 15% of the continent\'s total trade, compared with well over half within Europe or Asia.'],
+    ['p', 'Yet the same product is often exported by one African country and imported by another — from outside Africa.'],
+    ['p', 'The African Continental Free Trade Area (AfCFTA) is lowering tariffs between members, so these gaps are becoming easier to close.'],
+    ['gap'],
+    ['h', 'What this tool does'],
+    ['table', ['Part', 'What it gives you'], [
+      ['1. Trade picture', 'Imports and exports of each of the 54 African countries — by product (HS 2-digit) and by African partner. See Dashboard and Country_View.'],
+      ['2. Gap finder', 'For every pair of countries and every product: does A export it, does B import it, and how much of that already flows from A to B? The difference is the "untapped gap".'],
+      ['3. Composite index', 'Each gap is scored on 7 criteria (demand, supply, gap size, market access, proximity, growth, competitiveness), weighted and combined into one score from 0 to 100.'],
+      ['4. Decision support', 'Rankings you can filter, and weights you can change to reflect your priorities — e.g. give more weight to proximity if logistics is your main concern.'],
+    ]],
+    ['h', 'Questions it answers'],
+    ['p', '• Which African countries could supply what my country currently imports from outside Africa?'],
+    ['p', '• Where are the biggest untapped markets in Africa for my country\'s exports?'],
+    ['p', '• Which sectors hold the largest unrealised intra-African trade?'],
+    ['p', '• How much of each country\'s exports already go to other African countries?'],
+    ['p', '• Why does a particular opportunity rank high or low? (Explain_Score tab)'],
+    ['gap'],
+    ['h', 'Who it is for'],
+    ['p', 'Trade promotion agencies, chambers of commerce, exporters and importers, policy analysts, researchers, students and journalists.'],
+    ['gap'],
+    ['h', 'How it works — in one line'],
+    ['p', 'Raw_Trade data  →  find every exporter/importer/product gap  →  score 7 criteria (0–1)  →  weighted average (0–100)  →  rankings & dashboard.'],
+    ['gap'],
+    ['h', 'What it is NOT'],
+    ['p', '• Not a forecast: a high score says the conditions look favourable, not that trade will happen.'],
+    ['p', '• Not a market study: it does not know about product quality standards, non-tariff barriers, prices or buyer relationships.'],
+    ['p', '• Not complete: official statistics miss informal cross-border trade and some countries report late or not at all.'],
+    ['p', 'Use it to decide WHERE to look first, then investigate the shortlisted opportunities in depth.'],
+  ]);
+}
+
+function buildMethodology_(ss) {
+  const w = CRITERIA.map(c => c[1]);
+  const ex = [0.72, 0.65, 0.70, 0.80, 0.90, 0.60, 0.55];
+  const wSum = w.reduce((a, b) => a + b, 0);
+  const exSum = ex.reduce((a, v, i) => a + v * w[i], 0);
+  writeDocPage_(ss, APP.sheets.method, [
+    ['title', 'Methodology'],
+    ['sub', 'Exactly how every number in the Scorecard is calculated.'],
+    ['gap'],
+    ['h', 'Step 1 — Find the candidate opportunities'],
+    ['p', 'For every exporter A, every importer B (B ≠ A) and every included product p, using the analysis year on Settings:'],
+    ['p', '   Supply  S = A\'s exports of p to the world           Demand  D = B\'s imports of p from the world'],
+    ['p', '   Current C = what A already sells B of p (the larger of A\'s reported exports to B and B\'s reported imports from A)'],
+    ['p', '   Untapped gap  G = min(D, S) − C'],
+    ['p', 'Why min(D, S)? B cannot buy more than it needs, and A cannot sell more than it makes, so the smaller of the two is the ceiling.'],
+    ['p', 'A combination is kept only if S > 0, D > 0 and G is at least the minimum gap on Settings. The largest gaps are kept, up to the row limit.'],
+    ['gap'],
+    ['h', 'Step 2 — Score each criterion from 0 to 1'],
+    ['table', ['Criterion', 'Formula / scaling', 'Why it matters'], [
+      ['Demand', 'log10(1 + D), then min-max across all opportunities: (x − min) / (max − min)', 'A big import market has room for a new supplier.'],
+      ['Supply capacity', 'log10(1 + S), then min-max', 'A big exporter can actually deliver the volumes.'],
+      ['Untapped gap', 'log10(1 + G), then min-max', 'The size of the prize.'],
+      ['Market access', 'Same customs union → P_ACC_CU (1.0). Else same REC/FTA → 0.8. Else both AfCFTA → 0.6. Else 0.3', 'Shared trade agreements mean lower tariffs and simpler customs.'],
+      ['Proximity', '1 − (distance − min) / (max − min), using great-circle distance between capitals. × 0.85 if either country is landlocked', 'Shorter, cheaper transport. Landlocked countries face extra transit costs.'],
+      ['Demand growth', 'g = (D this year − D last year) / D last year, capped to −50%…+100%, scaled as (g + 0.5) / 1.5. Unknown → 0.5', 'A growing market is easier to enter.'],
+      ['Competitiveness (RCA)', 'RCA = (S / A\'s total exports) ÷ (Africa\'s exports of p / Africa\'s total exports). Scaled as RCA / (1 + RCA)', 'RCA > 1 means A is relatively specialised in p — likely competitive. Scaled score > 0.5.'],
+    ]],
+    ['p', 'Why a log scale? Trade values range from thousands to billions of dollars. Without logs, a few giant flows (oil, gold) would squash every other score to near zero.'],
+    ['p', 'Min-max scaling means scores are RELATIVE: 1.0 = the highest value among the opportunities in this Scorecard, 0 = the lowest.'],
+    ['gap'],
+    ['h', 'Step 3 — Combine into the composite score'],
+    ['p', 'Composite = (w1·s1 + w2·s2 + … + w7·s7) ÷ (w1 + w2 + … + w7) × 100'],
+    ['p', 'The weights w come from Settings. They are relative — they do not need to add up to 100. A weight of 0 switches a criterion off.'],
+    ['p', 'The composite is a live sheet formula, so changing a weight re-ranks Scorecard, Top_Gaps and Explain_Score instantly — no need to re-run step 3.'],
+    ['gap'],
+    ['h', 'Worked example (illustrative numbers)'],
+    ['table', ['Criterion', 'Sub-score', 'Default weight', 'Contribution'], [
+      ['Demand', ex[0], w[0], Math.round(ex[0] * w[0] * 100) / 100],
+      ['Supply capacity', ex[1], w[1], Math.round(ex[1] * w[1] * 100) / 100],
+      ['Untapped gap', ex[2], w[2], Math.round(ex[2] * w[2] * 100) / 100],
+      ['Market access', ex[3], w[3], Math.round(ex[3] * w[3] * 100) / 100],
+      ['Proximity', ex[4], w[4], Math.round(ex[4] * w[4] * 100) / 100],
+      ['Demand growth', ex[5], w[5], Math.round(ex[5] * w[5] * 100) / 100],
+      ['Competitiveness (RCA)', ex[6], w[6], Math.round(ex[6] * w[6] * 100) / 100],
+      ['Composite score', '', 'Σ weights = ' + wSum,
+        'Σ = ' + exSum.toFixed(2) + '  →  ' + exSum.toFixed(2) + ' ÷ ' + wSum + ' × 100 = ' + (exSum / wSum * 100).toFixed(1)],
+    ]],
+    ['p', 'Read: sum of contributions ÷ sum of weights × 100. The Explain_Score tab does this live for any real opportunity.'],
+    ['gap'],
+    ['h', 'Step 4 — Summaries'],
+    ['p', '• Intra-African exports of a country = sum of its flows to African partners (exporter-reported, or partner-reported when larger).'],
+    ['p', '• Africa share of exports = intra-African exports ÷ exports to the world.'],
+    ['p', '• Sector gap = sum of gaps in that sector. Gaps overlap (one supplier is counted against every buyer) so this shows scale, not an achievable total.'],
+    ['gap'],
+    ['h', 'Know the limits'],
+    ['p', '• Reporting gaps: several African countries report to UN Comtrade late or not at all; missing reporters appear as zero.'],
+    ['p', '• Informal cross-border trade is not recorded, so actual intra-African trade is higher than the statistics show.'],
+    ['p', '• HS 2-digit is broad: "Cereals" can be wheat on one side and maize on the other. Drill down before acting.'],
+    ['p', '• Capitals are a rough proxy for where goods travel; real routes, ports and corridors differ.'],
+    ['p', '• Access tiers are simplified: they ignore product-specific tariffs, rules of origin, sensitive-product lists and non-tariff barriers.'],
+    ['p', '• Scores are relative to the opportunities in this Scorecard; they are not comparable across different data loads.'],
+  ]);
+}
+
+function buildGlossary_(ss) {
+  writeDocPage_(ss, APP.sheets.glossary, [
+    ['title', 'Glossary'],
+    ['sub', 'Plain-English meaning of the terms used in this workbook.'],
+    ['gap'],
+    ['table', ['Term', 'Meaning'], [
+      ['Composite index', 'A single score built by combining several indicators (criteria) with weights. Also called a scorecard or multi-criteria decision tool.'],
+      ['Criterion / sub-score', 'One of the 7 factors scored from 0 to 1 (e.g. Demand, Proximity).'],
+      ['Weight', 'How much a criterion counts in the composite. Set on the Settings tab. Relative, not percentages.'],
+      ['Normalisation (min-max)', 'Rescaling values to 0–1: (value − smallest) ÷ (largest − smallest).'],
+      ['Log scale', 'Using the logarithm of a value so that very large numbers do not dominate. 1,000 → 3, 1,000,000 → 6, 1,000,000,000 → 9.'],
+      ['Untapped gap', 'min(importer\'s world imports, exporter\'s world exports) minus what already flows between them, for one product.'],
+      ['Exporter / Importer', 'The country that could sell (supplier) and the country that could buy (market).'],
+      ['Reporter / Partner', 'In trade data, the reporter is the country that submitted the figure; the partner is the other side of the flow.'],
+      ['WLD', 'Partner code meaning "the whole world" (total trade).'],
+      ['Flow X / M', 'X = exports by the reporter. M = imports by the reporter.'],
+      ['Mirror data', 'Using the partner\'s report to fill in a missing figure, e.g. B\'s imports from A in place of A\'s exports to B.'],
+      ['HS code', 'Harmonized System — the world standard product classification. HS2 = 96 chapters (e.g. 09 Coffee, tea, spices). HS4/HS6 are finer.'],
+      ['Sector', 'A group of HS chapters used in this tool (e.g. Agri-food = HS 01–24).'],
+      ['RCA', 'Revealed Comparative Advantage (Balassa index). Share of a product in a country\'s exports ÷ its share in Africa\'s exports. Above 1 = relatively specialised.'],
+      ['Intra-African trade', 'Trade between African countries (not with the rest of the world).'],
+      ['Trade balance', 'Exports minus imports. Negative = trade deficit.'],
+      ['AfCFTA', 'African Continental Free Trade Area — the agreement creating a single market across African Union members, in force since 2019, trading since 2021.'],
+      ['REC', 'Regional Economic Community — the regional blocs recognised by the African Union (e.g. ECOWAS, SADC, EAC, COMESA, ECCAS, AMU).'],
+      ['Customs union', 'Members trade freely with each other AND apply a common external tariff. Deeper than a free trade area.'],
+      ['FTA', 'Free Trade Area — members remove tariffs between themselves but keep their own tariffs toward others.'],
+      ['SACU', 'Southern African Customs Union: Botswana, Eswatini, Lesotho, Namibia, South Africa.'],
+      ['EAC', 'East African Community (customs union): Kenya, Uganda, Tanzania, Rwanda, Burundi, South Sudan, DR Congo, Somalia.'],
+      ['ECOWAS', 'Economic Community of West African States; applies a common external tariff (CET).'],
+      ['WAEMU / UEMOA', 'West African Economic and Monetary Union — customs and currency union (CFA franc) of 8 West African states.'],
+      ['CEMAC', 'Economic and Monetary Community of Central Africa — customs and currency union of 6 Central African states.'],
+      ['COMESA', 'Common Market for Eastern and Southern Africa — 21 member states with a free trade area.'],
+      ['SADC', 'Southern African Development Community — 16 member states with a free trade area.'],
+      ['ECCAS', 'Economic Community of Central African States.'],
+      ['AMU', 'Arab Maghreb Union: Algeria, Libya, Mauritania, Morocco, Tunisia (largely inactive).'],
+      ['ISO3', 'Three-letter country code (e.g. NGA = Nigeria).'],
+      ['M49', 'UN numeric country code, used by UN Comtrade (e.g. 566 = Nigeria).'],
+      ['UN Comtrade', 'United Nations database of official international trade statistics reported by countries.'],
+      ['Landlocked', 'A country without a sea coast; its goods must transit through a neighbour\'s port.'],
+      ['Informal cross-border trade', 'Trade that bypasses official customs recording, common across African land borders.'],
+      ['Sensitivity analysis', 'Changing the weights to see whether the top opportunities stay on top. Robust results survive reasonable weight changes.'],
+    ]],
+  ], [24, 230, 820, 120, 120]);
+}
+
+function buildDataSources_(ss) {
+  writeDocPage_(ss, APP.sheets.sources, [
+    ['title', 'Data sources'],
+    ['sub', 'Where the numbers come from and how to load your own.'],
+    ['gap'],
+    ['h', 'Three ways to load data (menu step 2)'],
+    ['table', ['Option', 'What it is', 'When to use it'], [
+      ['2a SAMPLE', 'Synthetic numbers generated by the script with a realistic shape (oil exporters export oil, etc.). NOT real statistics.', 'To learn the tool and test it. Never quote these numbers.'],
+      ['2b UN Comtrade', 'Official statistics downloaded through the UN Comtrade API: each country\'s trade with the world and with every African partner, HS 2-digit, analysis year and the year before.', 'For real analysis. Needs a free API key (see below).'],
+      ['2c Own data', 'Anything you paste into Raw_Trade in the format below — e.g. exports from WITS, ITC Trade Map or CEPII BACI.', 'When you have better or more recent data.'],
+    ]],
+    ['h', 'Getting a free UN Comtrade API key'],
+    ['p', '1. Go to comtradedeveloper.un.org and sign up.'],
+    ['p', '2. Products → subscribe to "comtrade - v1" (free tier).'],
+    ['p', '3. Profile → copy the Primary key → paste into Settings → "UN Comtrade API key".'],
+    ['p', '4. Run menu 2b. It downloads one country at a time and continues automatically in the background until all 54 are done.'],
+    ['gap'],
+    ['h', 'Raw_Trade format (one row per flow)'],
+    ['table', ['Year', 'Reporter ISO3', 'Partner ISO3', 'Flow', 'HS2', 'Value (USD)'], [
+      [2023, 'NGA', 'WLD', 'X', 27, 45000000000],
+      [2023, 'NGA', 'WLD', 'M', 10, 2100000000],
+      [2023, 'NGA', 'GHA', 'X', 27, 900000000],
+      [2022, 'NGA', 'WLD', 'M', 10, 1900000000],
+    ]],
+    ['p', '(Example rows only — illustrative values.) Needed: world rows (WLD) for both X and M, for the analysis year AND the year before;'],
+    ['p', 'plus bilateral rows between African countries for the analysis year. Values in US dollars.'],
+    ['gap'],
+    ['h', 'Other good sources'],
+    ['table', ['Source', 'What it offers'], [
+      ['WITS (World Bank)', 'wits.worldbank.org — Comtrade data with an easier download interface, plus tariff data.'],
+      ['ITC Trade Map', 'trademap.org — detailed trade flows, mirror data, and export-potential indicators.'],
+      ['CEPII BACI', 'cepii.fr — Comtrade data reconciled between reporters and partners; good for countries that report poorly.'],
+      ['AfCFTA Secretariat', 'au-afcfta.org — membership, ratification status and tariff schedules.'],
+      ['UNCTADstat', 'unctadstat.unctad.org — trade aggregates and indicators for checking totals.'],
+    ]],
+    ['h', 'Known data gaps'],
+    ['p', '• Several African countries report late (2+ years) or not at all. After 2b, the data status lists countries with no data.'],
+    ['p', '• When a country does not report, its trade with African partners can still appear through the partner\'s report (mirror data).'],
+    ['p', '• Re-exports and informal trade are not captured.'],
+  ], [24, 170, 420, 300, 120, 120, 150]);
+}
+
+function buildFaq_(ss) {
+  writeDocPage_(ss, APP.sheets.faq, [
+    ['title', 'FAQ'],
+    ['gap'],
+    ['table', ['Question', 'Answer'], [
+      ['Is the data real?', 'Only if the Dashboard data status says UN Comtrade or Own data. SAMPLE DATA is synthetic and for testing only.'],
+      ['I changed a weight — do I need to re-run anything?', 'No. The composite score is a live formula. Scorecard, Top_Gaps, Explain_Score and the "Best score" column update instantly.'],
+      ['When DO I need to re-run step 3?', 'After changing data (Raw_Trade), Countries, Products, the year, minimum gap, row limit, access scores or the landlocked multiplier.'],
+      ['Why is a combination missing from the Scorecard?', 'One side does not trade the product, the gap is below the minimum, it did not fit under the row limit, or the product is unticked on Products.'],
+      ['Why does a country show zero trade?', 'It has not reported data for that year. Try an earlier analysis year on Settings, or paste data from another source.'],
+      ['What does a score of 70 mean?', 'It is a weighted average of 7 relative sub-scores. 70 is strong compared with the other opportunities in this workbook — not an absolute probability.'],
+      ['Which weights should I use?', 'Start with the defaults. Then match your goal: more Proximity/Access for quick wins, more Gap/Demand for big prizes, more Growth for future markets.'],
+      ['How do I check if a result is robust?', 'Change the weights a little (sensitivity analysis). Opportunities that stay near the top are robust.'],
+      ['Can I add more countries or criteria?', 'Countries: add rows on the Countries tab (ISO3, M49, coordinates). New criteria need a small code change.'],
+      ['Can I use HS 4-digit products?', 'Yes with code changes: the Products list and the Comtrade query (cmdCode AG4) must be extended. Expect ~12× more data.'],
+      ['The Comtrade fetch stopped — what now?', 'Check the data status on Settings for the error. Use "Stop a running Comtrade fetch" and start 2b again if needed.'],
+      ['Can I share this workbook?', 'Yes — share the Google Sheet. Others need edit access and must authorise the script to run the menu.'],
+    ]],
+  ], [24, 320, 800, 120, 120]);
+}
+
+function buildExplainScore_(ss) {
+  const sh = resetSheet_(ss, APP.sheets.explain);
+  const names = COUNTRIES.map(c => c[2]).sort();
+  sh.getRange('A1').setValue('Explain a score — how one opportunity was rated')
+    .setFontSize(16).setFontWeight('bold').setFontColor(APP.color.title);
+  sh.getRange('A2').setValue('Pick an exporter, importer and product (tip: copy them from Top_Gaps). Step 3 pre-selects the current #1.')
+    .setFontStyle('italic');
+
+  sh.getRange('A4:B6').setValues([['Exporter (seller)', 'Morocco'], ['Importer (buyer)', 'Algeria'], ['Product', 'Vehicles']]);
+  sh.getRange('A4:A7').setFontWeight('bold');
+  sh.getRange('B4:B6').setBackground(APP.color.input).setFontWeight('bold');
+  dropdown_(sh.getRange('B4'), names);
+  dropdown_(sh.getRange('B5'), names);
+  dropdown_(sh.getRange('B6'), HS2.map(h => h[1]));
+  sh.getRange('A7').setValue('Row in Scorecard');
+  sh.getRange('B7').setFormula('=IFERROR(MATCH(1,INDEX((Scorecard!$B$2:$B=$B$4)*(Scorecard!$D$2:$D=$B$5)*(Scorecard!$F$2:$F=$B$6),0),0),"")');
+  sh.getRange('C7').setFormula('=IF($B$7="","✗ Not in the Scorecard: one side does not trade this product, the gap is below the minimum, or it did not fit under the row limit.","✓ Found")');
+
+  const at = col => `INDEX(Scorecard!${col}2:${col},$B$7)`;
+  const money = col => `TEXT(${at(col)},"$#,##0")`;
+  sh.getRange('A9').setFormula(`=IF($B$7="","",$B$5&" buys "&${money('H')}&" of "&LOWER($B$6)&" a year from the world. "&` +
+    `$B$4&" sells "&${money('I')}&" of it to the world, but only "&${money('J')}&" to "&$B$5&".")`);
+  sh.getRange('A10').setFormula(`=IF($B$7="","","Untapped gap: "&${money('K')}&"   ·   Distance: "&TEXT(${at('L')},"#,##0")&" km   ·   Market access: "&${at('M')})`);
+  sh.getRange('A11').setFormula(`=IF($B$7="","","Composite score: "&TEXT(${at('U')},"0.0")&" / 100   ·   Rank "&RANK(${at('U')},Scorecard!U2:U)&" of "&COUNT(Scorecard!U2:U))`);
+  sh.getRange('A9:A11').setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  sh.getRange('A11').setFontWeight('bold').setFontSize(12).setFontColor(APP.color.title);
+
+  const top = 13;
+  header_(sh.getRange(top, 1, 1, 8), ['Criterion', 'Raw value', 'Sub-score (0–1)', 'Weight',
+    'Share of weight', 'Points added', 'Contribution', 'How to read the sub-score']);
+  const raw = [['H', '$#,##0'], ['I', '$#,##0'], ['K', '$#,##0'], ['M', '@'], ['L', '#,##0" km"'],
+    ['V', '0.0%'], ['W', '0.00']];
+  const reading = [
+    '1 = the largest import market among all opportunities, 0 = the smallest.',
+    '1 = the largest exporter of a product among all opportunities, 0 = the smallest.',
+    '1 = the largest untapped gap among all opportunities, 0 = the smallest.',
+    'Customs union / REC / AfCFTA / other — scores set on Settings.',
+    '1 = the closest pair of capitals, 0 = the furthest; reduced if landlocked.',
+    'Raw value = import growth vs. previous year. 0.33 = no growth; blank raw value = unknown (0.5).',
+    'Raw value = RCA. Above 1 (sub-score > 0.5) = the exporter is specialised in this product.',
+  ];
+  const subCols = ['N', 'O', 'P', 'Q', 'R', 'S', 'T'];
+  const wRange = `Settings!$B$${SETTINGS_WEIGHT_ROW}:$B$${SETTINGS_WEIGHT_ROW + CRITERIA.length - 1}`;
+  CRITERIA.forEach((c, i) => {
+    const r = top + 1 + i;
+    sh.getRange(r, 1, 1, 8).setValues([[
+      `=Settings!A${SETTINGS_WEIGHT_ROW + i}`,
+      `=IF($B$7="","",${at(raw[i][0])})`,
+      `=IF($B$7="","",${at(subCols[i])})`,
+      `=Settings!B${SETTINGS_WEIGHT_ROW + i}`,
+      `=IFERROR(D${r}/SUM(${wRange}),0)`,
+      `=IF($B$7="","",C${r}*E${r}*100)`,
+      `=IF($B$7="","",SPARKLINE(F${r},{"charttype","bar";"max",MAX($F$${top + 1}:$F$${top + 7});"color1","#1f4e3d"}))`,
+      reading[i],
+    ]]);
+    sh.getRange(r, 2).setNumberFormat(raw[i][1]);
+  });
+  const tot = top + 1 + CRITERIA.length;
+  sh.getRange(tot, 1, 1, 8).setValues([['Composite score', '', '', `=SUM(D${top + 1}:D${tot - 1})`,
+    `=SUM(E${top + 1}:E${tot - 1})`, `=IF($B$7="","",SUM(F${top + 1}:F${tot - 1}))`, '',
+    'Sum of points = composite score (same as the Scorecard, up to rounding).']]).setFontWeight('bold');
+  sh.getRange(top + 1, 3, CRITERIA.length, 1).setNumberFormat('0.000');
+  sh.getRange(top + 1, 5, CRITERIA.length + 1, 1).setNumberFormat('0.0%');
+  sh.getRange(top + 1, 6, CRITERIA.length + 1, 1).setNumberFormat('0.0');
+  for (let i = 0; i < CRITERIA.length; i += 2) sh.getRange(top + 1 + i, 1, 1, 8).setBackground(APP.color.band);
+
+  const f = top + CRITERIA.length + 3;
+  const rows = `A${top + 1}:A${tot - 1}`, subs = `C${top + 1}:C${tot - 1}`;
+  sh.getRange(f, 1).setFormula(`=IF($B$7="","","Strongest factor: "&INDEX(${rows},MATCH(MAX(${subs}),${subs},0))&"   ·   Weakest factor: "&INDEX(${rows},MATCH(MIN(${subs}),${subs},0)))`);
+  sh.getRange(f + 1, 1).setValue('Try it: change a weight on Settings and watch the points, composite score and rank change here.')
+    .setFontStyle('italic');
+  sh.getRange(f, 1, 2, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+
+  sh.setColumnWidth(1, 200); sh.setColumnWidth(2, 170); sh.setColumnWidth(3, 120); sh.setColumnWidth(4, 70);
+  sh.setColumnWidth(5, 110); sh.setColumnWidth(6, 100); sh.setColumnWidth(7, 160); sh.setColumnWidth(8, 560);
+}
+
+/** Point Explain_Score at the top-ranked opportunity under the current weights. */
+function selectTopForExplain_(rows) {
+  if (!rows.length) return;
+  const w = SpreadsheetApp.getActive().getRangeByName('WEIGHTS').getValues().map(r => Number(r[0]) || 0);
+  let best = null, bestScore = -1;
+  rows.forEach(r => {
+    const s = w.reduce((acc, wi, i) => acc + wi * r[13 + i], 0);
+    if (s > bestScore) { bestScore = s; best = r; }
+  });
+  sheet_(APP.sheets.explain).getRange('B4:B6').setValues([[best[1]], [best[3]], [best[5]]]);
+}
+
+function colourTabs_(ss) {
+  const s = APP.sheets;
+  const groups = [
+    ['#4a86e8', [s.guide, s.about, s.method, s.glossary, s.sources, s.faq]],
+    ['#1f4e3d', [s.dashboard, s.top, s.country, s.explain, s.score]],
+    ['#e8a33d', [s.settings, s.countries, s.products]],
+    ['#999999', [s.raw]],
+  ];
+  groups.forEach(([colour, names]) => names.forEach(n => {
+    const sh = ss.getSheetByName(n);
+    if (sh) sh.setTabColor(colour);
+  }));
 }
 
 // ------------------------------------------------------------------
@@ -804,6 +1173,7 @@ function computeScorecard() {
   const result = scoreOpportunities_(countries, products, rawRows, params);
   writeScorecard_(result.rows);
   writeDashboard_(result.summary, params);
+  selectTopForExplain_(result.rows);
   notify_(`Scorecard ready: ${result.rows.length.toLocaleString()} opportunities scored.`);
 }
 
@@ -894,6 +1264,8 @@ function scoreOpportunities_(countries, products, rawRows, p) {
       r3(prox),
       r3(c.growth === null ? 0.5 : (c.growth + 0.5) / 1.5),
       r3(c.rca / (1 + c.rca)),
+      c.growth === null ? '' : r3(c.growth),
+      Math.round(c.rca * 100) / 100,
     ];
   });
 
@@ -994,7 +1366,8 @@ function writeScorecard_(rows) {
   clearSheetBody_(sh);
   if (!rows.length) return;
   ensureRows_(sh, rows.length + 1);
-  sh.getRange(2, 1, rows.length, rows[0].length).setValues(rows);
+  sh.getRange(2, 1, rows.length, 20).setValues(rows.map(r => r.slice(0, 20)));
+  sh.getRange(2, 22, rows.length, 2).setValues(rows.map(r => r.slice(20, 22)));
   const w = r => `Settings!$B$${SETTINGS_WEIGHT_ROW + r}`;
   const cols = ['N', 'O', 'P', 'Q', 'R', 'S', 'T'];
   const weighted = cols.map((col, i) => `${col}2:${col}*${w(i)}`).join('+');

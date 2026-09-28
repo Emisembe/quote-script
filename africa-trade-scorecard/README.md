@@ -20,15 +20,24 @@ Quick start builds every tab, loads **sample (synthetic) data** and computes the
 
 ## Tabs
 
-| Tab | What it shows |
-|---|---|
-| Dashboard | Africa-wide totals, a table per country, charts of intra-African export share and untapped gap by sector |
-| Top_Gaps | Ranked opportunities, filtered by exporter, importer and sector |
-| Country_View | One country: top exports and imports, African buyers and suppliers, best opportunities in each direction |
-| Scorecard | Full index: raw inputs, 7 sub-scores (0–1), composite score (0–100) |
-| Settings | Weights and parameters (yellow cells) |
-| Countries / Products | Reference data. Edit memberships, or untick products to exclude them |
-| Raw_Trade | The trade data everything is computed from |
+The tabs are colour-coded: 🔵 explanation, 🟢 results, 🟠 your inputs, ⚪ data.
+
+| Tab | Type | What it shows |
+|---|---|---|
+| Guide | 🔵 | Start here: 4 steps and a map of every tab |
+| About | 🔵 | What the tool is, why it exists, the questions it answers, and what it is *not* |
+| Dashboard | 🟢 | Africa-wide totals, a table per country, charts of intra-African share and gap by sector |
+| Top_Gaps | 🟢 | Ranked opportunities, filtered by exporter, importer and sector |
+| Country_View | 🟢 | One country: top exports and imports, African buyers and suppliers, best opportunities |
+| Explain_Score | 🟢 | Pick one opportunity and see how each of the 7 criteria contributed to its score, with a bar per criterion |
+| Scorecard | 🟢 | The full index: raw inputs, 7 sub-scores (0–1), composite (0–100). Every header has a note |
+| Settings | 🟠 | Weights and parameters (yellow cells) |
+| Methodology | 🔵 | Every formula, step by step, with a worked example and the known limits |
+| Glossary | 🔵 | Plain-English meaning of 35 terms (RCA, HS code, AfCFTA, REC, customs union, SACU, ECOWAS…) |
+| Data_Sources | 🔵 | Sample vs Comtrade vs own data, how to get an API key, the Raw_Trade format, other sources |
+| FAQ | 🔵 | Common questions and answers |
+| Countries / Products | 🟠 | Reference data. Edit memberships, or untick products to exclude them |
+| Raw_Trade | ⚪ | The trade data everything is computed from |
 
 ## How the score works
 
