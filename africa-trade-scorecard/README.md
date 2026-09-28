@@ -6,8 +6,8 @@ A self-building Google Sheets app that shows what African countries import and e
 
 1. Create an empty Google Sheet.
 2. Go to **Extensions → Apps Script**, delete the placeholder code and paste in all of [`Code.gs`](Code.gs). Save.
-3. Reload the Sheet. A **🌍 Africa Trade** menu appears.
-4. Click **🌍 Africa Trade → ▶ Quick start**. Accept the authorisation prompt the first time.
+3. Reload the Sheet. A **Africa Trade** menu appears.
+4. Click **Africa Trade → Quick start**. Accept the authorisation prompt the first time.
 
 Quick start builds every tab, loads **sample (synthetic) data** and computes the scorecard, so you can see how everything works.
 
@@ -22,42 +22,42 @@ Everything is in **one file**, `Code.gs`. `appsscript.json` is optional.
 
 ## Tabs
 
-Colour code: 🔵 explanation · 🟢 results · 🟠 your inputs · ⚪ data. Every results and input tab starts with a **blue box** covering *what you see*, *how to read it*, *a sentence you can use when presenting* and *what to watch out for*. You can hide it with ⊟.
+Colour code of the tabs: blue = explanation · green = results · orange = your inputs · grey = data. Every results and input tab starts with a **blue box** covering *what you see*, *how to read it*, *a sentence you can use when presenting* and *what to watch out for*. You can hide it with −.
 
 | Tab | Type | What it shows |
 |---|---|---|
-| Guide | 🔵 | Start here: steps, tab map, a 5-minute presentation script, **all abbreviations with full names**, all tab explanations |
-| About | 🔵 | What the tool is, why it exists, the questions it answers, and what it is *not* |
-| Dashboard | 🟢 | Africa-wide totals, a table per country, charts of intra-African share and gap by sector |
-| Charts | 🟢 | Flow diagram of the method, live weights diagram, the "untapped gap" illustrated, and 6 charts (sectors, top exporters, regions, top opportunities, market access, score spread) |
-| Top_Gaps | 🟢 | Ranked opportunities, filtered by exporter, importer and sector |
-| Country_View | 🟢 | One country: top exports and imports, African buyers and suppliers, best opportunities |
-| Explain_Score | 🟢 | One opportunity explained: a written summary, points per criterion, and a picture of the gap |
-| Scorecard | 🟢 | The full index: raw inputs, 7 sub-scores (0–1), composite (0–100) |
-| Settings | 🟠 | Weights and parameters (yellow cells), data status, last refresh time, auto-refresh status |
-| Methodology | 🔵 | Every formula, step by step, a worked example, and the limits |
-| Glossary | 🔵 | Plain-English definitions of the terms used |
-| Data_Sources | 🔵 | Sample vs Comtrade vs own data, the API key, the Raw_Trade format, other sources |
-| Refresh_&_Updates | 🔵 | How to refresh data, switch on auto-refresh, and update the code safely |
-| FAQ | 🔵 | Frequently asked questions |
-| Countries / Products | 🟠 | Reference data. Edit memberships, or untick products to exclude them |
-| Raw_Trade | ⚪ | The trade data everything is computed from |
+| Guide | Explanation | Start here: steps, tab map, a 5-minute presentation script, **all abbreviations with full names**, all tab explanations |
+| About | Explanation | What the tool is, why it exists, the questions it answers, and what it is *not* |
+| Dashboard | Results | Africa-wide totals, a table per country, charts of intra-African share and gap by sector |
+| Charts | Results | Flow diagram of the method, live weights diagram, the "untapped gap" illustrated, and 6 charts (sectors, top exporters, regions, top opportunities, market access, score spread) |
+| Top_Gaps | Results | Ranked opportunities, filtered by exporter, importer and sector |
+| Country_View | Results | One country: top exports and imports, African buyers and suppliers, best opportunities |
+| Explain_Score | Results | One opportunity explained: a written summary, points per criterion, and a picture of the gap |
+| Scorecard | Results | The full index: raw inputs, 7 sub-scores (0–1), composite (0–100) |
+| Settings | Input | Weights and parameters (yellow cells), data status, last refresh time, auto-refresh status |
+| Methodology | Explanation | Every formula, step by step, a worked example, and the limits |
+| Glossary | Explanation | Plain-English definitions of the terms used |
+| Data_Sources | Explanation | Sample vs Comtrade vs own data, the API key, the Raw_Trade format, other sources |
+| Refresh_&_Updates | Explanation | How to refresh data, switch on auto-refresh, and update the code safely |
+| FAQ | Explanation | Frequently asked questions |
+| Countries / Products | Input | Reference data. Edit memberships, or untick products to exclude them |
+| Raw_Trade | Data | The trade data everything is computed from |
 
 ## Refreshing the data
 
-- **🔄 Refresh data**: re-loads from the same source as last time (UN Comtrade, sample or your own) and recomputes.
-- **Newer year**: change *Analysis year* on Settings, then run 🔄 Refresh.
-- **⏰ Monthly auto-refresh ON / OFF**: refreshes on the 1st of each month at about 3 am.
+- **Refresh data**: re-loads from the same source as last time (UN Comtrade, sample or your own) and recomputes.
+- **Newer year**: change *Analysis year* on Settings, then run Refresh.
+- **Monthly auto-refresh ON / OFF**: refreshes on the 1st of each month at about 3 am.
 - **Weights**: changes apply instantly, with no refresh needed.
 
 ## Updating the code
 
 1. Go to **Extensions → Apps Script**, replace all the code with the new `Code.gs`, and save.
 2. Reload the sheet. A "New code detected" message may appear.
-3. Run **🌍 Africa Trade → ⬆ Update workbook after pasting new code**.
+3. Run **Africa Trade → Update workbook after pasting new code**.
 
 This rebuilds every tab's layout, explanations and charts. It keeps your Raw_Trade data, weights, settings, API key, and Countries/Products edits, then recomputes.
-Don't use **⚠ Reset workbook to defaults** to update: it deletes your data.
+Don't use **Reset workbook to defaults** to update: it deletes your data.
 
 ## How the score works
 

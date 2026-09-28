@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------
  * A self-building Google Sheets app. Paste this ONE file into
  * Extensions → Apps Script of a Google Sheet, save, reload the sheet,
- * then use the "🌍 Africa Trade" menu.
+ * then use the "Africa Trade" menu.
  *
  * It does two things:
  *   1. Trade picture – imports and exports of every African country,
@@ -14,7 +14,7 @@
  *      the world, but little or nothing flows between them yet.
  *
  * Updating the code later: paste the new version over this one, reload
- * the sheet, then run "⬆ Update workbook after pasting new code". Your
+ * the sheet, then run "Update workbook after pasting new code". Your
  * data, weights, settings and edits are kept.
  */
 
@@ -23,7 +23,7 @@
 // ------------------------------------------------------------------
 
 const APP = {
-  version: '2.0.0',
+  version: '2.1.0',
   sheets: {
     guide: 'Guide',
     about: 'About',
@@ -73,7 +73,7 @@ const CRITERIA = [
 
 // [named range, label, default, note, editable]
 const PARAMS = [
-  ['P_YEAR', 'Analysis year', 2023, 'Latest year analysed. The year before is used for growth. Change it, then 🔄 Refresh data.', true],
+  ['P_YEAR', 'Analysis year', 2023, 'Latest year analysed. The year before is used for growth. Change it, then Refresh data.', true],
   ['P_MIN_GAP', 'Minimum untapped gap (USD – US dollars)', 100000, 'Smaller opportunities are ignored.', true],
   ['P_MAX_ROWS', 'Max rows in Scorecard', 20000, 'Largest gaps are kept. Keep below ~50,000 for speed.', true],
   ['P_ACC_CU', 'Access score: same customs union', 1, '0–1. E.g. SACU, EAC, WAEMU, CEMAC, ECOWAS CET (full names: Guide tab).', true],
@@ -83,9 +83,9 @@ const PARAMS = [
   ['P_LANDLOCK', 'Proximity multiplier if landlocked', 0.85, 'Applied when exporter or importer has no sea coast.', true],
   ['P_API_KEY', 'UN Comtrade API key', '', 'Free key: comtradedeveloper.un.org → subscribe to "comtrade - v1". API = Application Programming Interface.', true],
   ['P_STATUS', 'Data status', 'No data loaded', 'Set automatically. Shown on the Dashboard.', false],
-  ['P_SOURCE', 'Data source', 'NONE', 'Set automatically: SAMPLE, COMTRADE or OWN. 🔄 Refresh uses it.', false],
+  ['P_SOURCE', 'Data source', 'NONE', 'Set automatically: SAMPLE, COMTRADE or OWN. Refresh uses it.', false],
   ['P_LAST_REFRESH', 'Last computed', '—', 'Set automatically when step 3 (Compute) finishes.', false],
-  ['P_AUTO', 'Monthly auto-refresh', 'OFF', 'Switch with the menu: ⏰ Monthly auto-refresh ON / OFF.', false],
+  ['P_AUTO', 'Monthly auto-refresh', 'OFF', 'Switch with the menu: Monthly auto-refresh ON / OFF.', false],
 ];
 
 // What each tab shows and how to explain it. Shown as a blue box at the top of the tab
@@ -149,7 +149,7 @@ const TAB_HELP = {
     read: ['Weights are relative: 20 vs 10 = twice as important; 0 = ignored. Yellow cells are editable. Grey rows are filled in automatically.'],
     say: ['"The weights are our priorities. With the default weights the size of the gap counts most. We can try other priorities and check',
       ' that the top results stay on top."'],
-    watch: ['Weight changes apply instantly. Year, minimum gap, row limit, access scores and landlocked multiplier need 🔄 Refresh or step 3.'],
+    watch: ['Weight changes apply instantly. Year, minimum gap, row limit, access scores and landlocked multiplier need Refresh or step 3.'],
   },
   countries: {
     title: 'Countries — the 54 AU (African Union) member states',
@@ -171,7 +171,7 @@ const TAB_HELP = {
     what: ['One row = one country\'s exports (X) or imports (M) of one product, with the whole world (WLD) or with one African partner, in USD.'],
     read: ['Reporter = the country that reported the figure. Partner = the other side of the trade. Year = calendar year of the trade.'],
     say: ['"All results come from these official figures — nothing is typed in by hand. Any number on the dashboard can be traced back to here."'],
-    watch: ['Replace data with the menu (🔄 Refresh, 2a, 2b or 2c). If you paste your own data, keep exactly these six columns in this order.'],
+    watch: ['Replace data with the menu (Refresh, 2a, 2b or 2c). If you paste your own data, keep exactly these six columns in this order.'],
   },
 };
 
@@ -394,18 +394,18 @@ const SAMPLE_IMPORT_WEIGHT = {
 
 function onOpen() {
   SpreadsheetApp.getUi()
-    .createMenu('🌍 Africa Trade')
-    .addItem('▶ Quick start (build + sample data + score)', 'quickStart')
+    .createMenu('Africa Trade')
+    .addItem('Quick start (build + sample data + score)', 'quickStart')
     .addSeparator()
-    .addItem('🔄 Refresh data (same source) & recompute', 'refreshData')
+    .addItem('Refresh data (same source) & recompute', 'refreshData')
     .addItem('2a. Load SAMPLE data (synthetic, for testing)', 'loadSampleData')
     .addItem('2b. Fetch REAL data from UN Comtrade', 'fetchComtradeData')
     .addItem('2c. Clear Raw_Trade to paste your own data', 'clearRawTrade')
     .addItem('3. Compute scorecard, dashboard & charts', 'computeScorecard')
     .addSeparator()
-    .addItem('⏰ Monthly auto-refresh ON / OFF', 'toggleAutoRefresh')
-    .addItem('⬆ Update workbook after pasting new code (keeps your data)', 'upgradeWorkbook')
-    .addItem('⚠ Reset workbook to defaults (deletes data)', 'buildWorkbook')
+    .addItem('Monthly auto-refresh ON / OFF', 'toggleAutoRefresh')
+    .addItem('Update workbook after pasting new code (keeps your data)', 'upgradeWorkbook')
+    .addItem('Reset workbook to defaults (deletes data)', 'buildWorkbook')
     .addItem('Stop a running Comtrade fetch', 'stopComtradeFetch')
     .addToUi();
   checkVersion_();
@@ -419,7 +419,7 @@ function checkVersion_() {
     const built = PropertiesService.getDocumentProperties().getProperty(APP.versionProp);
     if (built !== APP.version) {
       ss.toast(`This code is version ${APP.version}; the workbook was built with ${built || 'an older version'}. ` +
-        'Run 🌍 Africa Trade → ⬆ Update workbook to apply it — your data is kept.', 'New code detected', 30);
+        'Run Africa Trade → Update workbook to apply it — your data is kept.', 'New code detected', 30);
     }
   } catch (e) {
     // simple triggers may lack permissions; the reminder is optional
@@ -439,7 +439,7 @@ function buildWorkbook() {
   const ss = SpreadsheetApp.getActive();
   if (ss.getSheetByName(APP.sheets.settings) &&
       !confirm_('RESET rebuilds every tab with default settings and DELETES all data (only the API key is kept).\n\n' +
-        'To apply new code and keep your data, cancel and use "⬆ Update workbook" instead.\n\nReset anyway?')) return;
+        'To apply new code and keep your data, cancel and use "Update workbook" instead.\n\nReset anyway?')) return;
   buildWorkbook_();
   notify_('Workbook reset. Next: load data (menu 2a, 2b or 2c).');
 }
@@ -458,7 +458,7 @@ function clearRawTrade() {
   setParam_('P_SOURCE', 'OWN');
   setParam_('P_STATUS', 'Own data (pasted into Raw_Trade by user)');
   sheet_(APP.sheets.raw).activate();
-  notify_(`Raw_Trade cleared. Paste your rows from row ${L.rawFirst} (under the header), then run 🔄 Refresh or step 3.`);
+  notify_(`Raw_Trade cleared. Paste your rows from row ${L.rawFirst} (under the header), then run Refresh or step 3.`);
 }
 
 // ------------------------------------------------------------------
@@ -669,8 +669,8 @@ function writeBanner_(sh, key) {
   const cols = Math.min(sh.getMaxColumns(), 26);
   sh.getRange(1, 1, h, cols).setBackground(APP.color.banner);
 
-  const titleText = `📘 ${help.title}`;
-  const hint = '     ·  this blue box explains the tab — use ⊟ / ⊞ on the left to hide or show it';
+  const titleText = `${help.title}`;
+  const hint = '     ·  this blue box explains the tab — use − / + on the left to hide or show it';
   const bold = SpreadsheetApp.newTextStyle().setBold(true).setFontSize(14).setForegroundColor(APP.color.bannerText).build();
   const small = SpreadsheetApp.newTextStyle().setItalic(true).setFontSize(9).setForegroundColor('#5f6f86').build();
   sh.getRange(1, 1).setRichTextValue(SpreadsheetApp.newRichTextValue()
@@ -960,11 +960,11 @@ function buildCharts_(ss) {
   // 1. Flow diagram drawn with cells.
   heading(T, 2, '1. How the index works — the method in five steps');
   const boxes = [
-    ['📥 1. DATA\nOfficial trade figures\n(Raw_Trade tab)', '#d9e7fb'],
-    ['🔍 2. FIND GAPS\nA exports it, B imports it,\nlittle flows from A to B', '#fde9c8'],
-    ['📏 3. SCORE\n7 criteria, each\nrescaled from 0 to 1', '#e2f0d9'],
-    ['⚖ 4. WEIGHT\nWeighted average × 100\n(weights on Settings)', '#f4dcdc'],
-    ['🏆 5. RANK\nTop_Gaps, Dashboard,\nCountry_View', '#e6dcf3'],
+    ['1. DATA\nOfficial trade figures\n(Raw_Trade tab)', '#d9e7fb'],
+    ['2. FIND GAPS\nA exports it, B imports it,\nlittle flows from A to B', '#fde9c8'],
+    ['3. SCORE\n7 criteria, each\nrescaled from 0 to 1', '#e2f0d9'],
+    ['4. WEIGHT\nWeighted average × 100\n(weights on Settings)', '#f4dcdc'],
+    ['5. RANK\nTop_Gaps, Dashboard,\nCountry_View', '#e6dcf3'],
   ];
   boxes.forEach(([text, colour], i) => {
     const col = 2 + i * 2;
@@ -972,7 +972,7 @@ function buildCharts_(ss) {
       .setHorizontalAlignment('center').setVerticalAlignment('middle').setFontWeight('bold')
       .setBorder(true, true, true, true, false, false, '#888888', SpreadsheetApp.BorderStyle.SOLID);
     if (i < boxes.length - 1) {
-      sh.getRange(T + 1, col + 1, 3, 1).merge().setValue('➜').setFontSize(22).setFontColor('#888888')
+      sh.getRange(T + 1, col + 1, 3, 1).merge().setValue('→').setFontSize(22).setFontColor('#888888')
         .setHorizontalAlignment('center').setVerticalAlignment('middle');
     }
   });
@@ -1016,7 +1016,7 @@ function buildCharts_(ss) {
     'so the smaller of the two is the ceiling. What already flows is subtracted.');
 
   heading(G + 8, 2, '4. Charts about African trade');
-  sh.getRange(G + 9, 2).setValue('Run 🌍 Africa Trade → 3. Compute to draw the charts.').setFontStyle('italic')
+  sh.getRange(G + 9, 2).setValue('Run Africa Trade → 3. Compute to draw the charts.').setFontStyle('italic')
     .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
   sh.setHiddenGridlines(true);
 }
@@ -1041,7 +1041,7 @@ function buildExplainScore_(ss) {
     .setFontStyle('italic');
   sh.getRange(T + 3, 1).setValue('Row in Scorecard');
   sh.getRange(T + 3, 2).setFormula(`=IFERROR(MATCH(1,INDEX((${sc_('B')}=$B$${T})*(${sc_('D')}=$B$${T + 1})*(${sc_('F')}=$B$${T + 2}),0),0),"")`);
-  sh.getRange(T + 3, 3).setFormula(`=IF(${idx}="","✗ Not in the Scorecard: one side does not trade this product, the gap is below the minimum, or it did not fit under the row limit.","✓ Found")`);
+  sh.getRange(T + 3, 3).setFormula(`=IF(${idx}="","Not in the Scorecard: one side does not trade this product, the gap is below the minimum, or it did not fit under the row limit.","Found")`);
 
   const at = col => `INDEX(${sc_(col)},${idx})`;
   const money = col => `TEXT(${at(col)},"$#,##0")`;
@@ -1210,15 +1210,15 @@ function buildGuide_(ss) {
     ['gap'],
     ['h', 'Get going in 4 steps'],
     ['table', ['Step', 'What to do', 'What happens'], [
-      ['1. Build', 'Menu 🌍 Africa Trade → ▶ Quick start (first time only)', 'Creates every tab, header, formula, chart area and dropdown.'],
+      ['1. Build', 'Menu Africa Trade → Quick start (first time only)', 'Creates every tab, header, formula, chart area and dropdown.'],
       ['2. Load data', 'Pick ONE: 2a SAMPLE · 2b UN Comtrade (United Nations Commodity Trade Statistics Database) · 2c your own data', 'Fills Raw_Trade. See Data_Sources for what each option means.'],
       ['3. Compute', 'Menu → 3. Compute scorecard, dashboard & charts', 'Scores every exporter → importer → product combination and draws the charts.'],
       ['4. Explore', 'Dashboard, Charts, Top_Gaps, Country_View, Explain_Score', 'Change weights on Settings — rankings update instantly.'],
-      ['Later', '🔄 Refresh data · ⏰ Monthly auto-refresh · ⬆ Update workbook (new code)', 'All explained on the Refresh_&_Updates tab.'],
+      ['Later', 'Refresh data · Monthly auto-refresh · Update workbook (new code)', 'All explained on the Refresh_&_Updates tab.'],
     ]],
     ['h', 'Every results and input tab starts with a blue box'],
     ['p', 'It has four parts: WHAT YOU SEE · HOW TO READ IT · SAY IT LIKE THIS (a sentence you can use when presenting) · WATCH OUT.'],
-    ['p', 'Use the ⊟ / ⊞ button at the top left of the tab to hide or show it. All the boxes are also collected at the bottom of this page.'],
+    ['p', 'Use the − / + button at the top left of the tab to hide or show it. All the boxes are also collected at the bottom of this page.'],
     ['gap'],
     ['h', 'Tab map  (tab colours: blue = explanation · green = results · orange = your inputs · grey = data)'],
     ['table', ['Tab', 'Type', 'What it is for'], [
@@ -1458,10 +1458,10 @@ function buildUpdates_(ss) {
     ['gap'],
     ['h', 'Refreshing the data'],
     ['table', ['I want to…', 'Do this', 'What happens'], [
-      ['Get the latest official figures', 'Menu → 🔄 Refresh data (same source) & recompute', 'If the source is UN Comtrade: re-downloads all 54 countries for the analysis year and the year before (about 5–15 minutes, in the background), then recomputes everything.'],
-      ['Move to a newer year', 'Settings → Analysis year (e.g. 2024) → 🔄 Refresh data', 'Downloads that year and the one before. Newer years fill up gradually as countries report — the data status lists countries that have not reported yet.'],
-      ['Use updated figures of my own', 'Paste the new rows into Raw_Trade (or 2c to clear it first) → 🔄 Refresh data', 'Recomputes from whatever is in Raw_Trade.'],
-      ['Keep it current automatically', 'Menu → ⏰ Monthly auto-refresh ON / OFF', 'On the 1st of every month (~3–4 am) the workbook refreshes itself. Settings → "Monthly auto-refresh" shows whether it is on. Run the same menu item to turn it off.'],
+      ['Get the latest official figures', 'Menu → Refresh data (same source) & recompute', 'If the source is UN Comtrade: re-downloads all 54 countries for the analysis year and the year before (about 5–15 minutes, in the background), then recomputes everything.'],
+      ['Move to a newer year', 'Settings → Analysis year (e.g. 2024) → Refresh data', 'Downloads that year and the one before. Newer years fill up gradually as countries report — the data status lists countries that have not reported yet.'],
+      ['Use updated figures of my own', 'Paste the new rows into Raw_Trade (or 2c to clear it first) → Refresh data', 'Recomputes from whatever is in Raw_Trade.'],
+      ['Keep it current automatically', 'Menu → Monthly auto-refresh ON / OFF', 'On the 1st of every month (~3–4 am) the workbook refreshes itself. Settings → "Monthly auto-refresh" shows whether it is on. Run the same menu item to turn it off.'],
       ['Only changed weights', 'Nothing', 'Scores, rankings, Explain_Score and the live charts update instantly.'],
       ['Changed Countries, Products or other Settings', 'Menu → 3. Compute', 'Re-scores every opportunity with the new inputs.'],
     ]],
@@ -1471,16 +1471,16 @@ function buildUpdates_(ss) {
     ['h', 'Updating the code (when you get a new version of Code.gs)'],
     ['table', ['Step', 'What to do'], [
       ['1. Back up (optional)', 'File → Make a copy. (File → Version history also lets you go back later.)'],
-      ['2. Replace the code', 'Extensions → Apps Script → click in the code → select all (Ctrl/Cmd + A) → delete → paste the new code → Save (💾).'],
+      ['2. Replace the code', 'Extensions → Apps Script → click in the code → select all (Ctrl/Cmd + A) → delete → paste the new code → Save.'],
       ['3. Reload', 'Reload the Google Sheet tab in your browser. A message may say "New code detected".'],
-      ['4. Apply it', 'Menu 🌍 Africa Trade → ⬆ Update workbook after pasting new code (keeps your data).'],
+      ['4. Apply it', 'Menu Africa Trade → Update workbook after pasting new code (keeps your data).'],
     ]],
     ['h', 'What happens when you update the code'],
     ['p', '• The code and your data live in different places: the code is in Apps Script, the data is in the tabs.'],
     ['p', '• Pasting new code changes NOTHING in the tabs until you run a menu item. The old layout keeps working meanwhile.'],
-    ['p', '• "⬆ Update workbook" rebuilds every tab\'s layout, explanations and charts with the new version, then puts back:'],
+    ['p', '• "Update workbook" rebuilds every tab\'s layout, explanations and charts with the new version, then puts back:'],
     ['p', '      Raw_Trade data · weights · all settings · API key · Countries and Products edits — and recomputes.'],
-    ['p', '• "⚠ Reset workbook to defaults" is different: it deletes the data and resets everything (only the API key is kept). Do not use it for updates.'],
+    ['p', '• "Reset workbook to defaults" is different: it deletes the data and resets everything (only the API key is kept). Do not use it for updates.'],
     ['p', '• Auto-refresh keeps working after an update: the scheduled job calls a function name that never changes.'],
     ['p', '• Anything you typed INSIDE result tabs (Dashboard, Top_Gaps, Scorecard…) is rebuilt — keep your own notes in a separate tab.'],
     ['p', '• The Guide shows which code version built the workbook.'],
@@ -1497,8 +1497,8 @@ function buildFaq_(ss) {
     ['gap'],
     ['table', ['Question', 'Answer'], [
       ['Is the data real?', 'Only if the Dashboard data line says UN Comtrade or Own data. SAMPLE DATA is synthetic and for testing only.'],
-      ['How do I refresh the data?', 'Menu → 🔄 Refresh data. It re-loads from the same source and recomputes. Or turn on ⏰ Monthly auto-refresh. Details: Refresh_&_Updates tab.'],
-      ['What happens when I paste new code?', 'Nothing changes until you run ⬆ Update workbook. That rebuilds layouts and explanations and keeps your data and settings.'],
+      ['How do I refresh the data?', 'Menu → Refresh data. It re-loads from the same source and recomputes. Or turn on Monthly auto-refresh. Details: Refresh_&_Updates tab.'],
+      ['What happens when I paste new code?', 'Nothing changes until you run Update workbook. That rebuilds layouts and explanations and keeps your data and settings.'],
       ['I changed a weight — do I need to re-run anything?', 'No. The composite score is a live formula. Scorecard, Top_Gaps, Explain_Score and the live charts update instantly.'],
       ['When DO I need to re-run step 3?', 'After changing data, Countries, Products, the year, minimum gap, row limit, access scores or the landlocked multiplier.'],
       ['Why is a combination missing from the Scorecard?', 'One side does not trade the product, the gap is below the minimum, it did not fit under the row limit, or the product is unticked on Products.'],
@@ -1506,10 +1506,10 @@ function buildFaq_(ss) {
       ['What does a score of 70 mean?', 'It is a weighted average of 7 relative sub-scores. 70 is strong compared with the other opportunities in this workbook — not an absolute probability.'],
       ['Which weights should I use?', 'Start with the defaults. Then match your goal: more Proximity/Access for quick wins, more Gap/Demand for big prizes, more Growth for future markets.'],
       ['How do I check if a result is robust?', 'Change the weights a little (sensitivity analysis). Opportunities that stay near the top are robust.'],
-      ['How do I hide the blue explanation box?', 'Click the ⊟ button at the top left of the tab (next to the row numbers). Click ⊞ to show it again.'],
+      ['How do I hide the blue explanation box?', 'Click the − button at the top left of the tab (next to the row numbers). Click + to show it again.'],
       ['Can I add more countries or criteria?', 'Countries: add rows on the Countries tab (ISO3, M49, coordinates). New criteria need a code change.'],
       ['Can I use HS 4-digit products?', 'Yes with code changes: the Products list and the Comtrade query must be extended. Expect ~12× more data.'],
-      ['The Comtrade fetch stopped — what now?', 'Check the data status on Settings for the error. Use "Stop a running Comtrade fetch" and start 🔄 Refresh again if needed.'],
+      ['The Comtrade fetch stopped — what now?', 'Check the data status on Settings for the error. Use "Stop a running Comtrade fetch" and start Refresh again if needed.'],
       ['Can I undo a mistake?', 'File → Version history → See version history, then restore an earlier version.'],
       ['Can I share this workbook?', 'Yes — share the Google Sheet. Editors must authorise the script once to use the menu.'],
     ]],
@@ -2212,7 +2212,7 @@ function setParam_(name, value) {
 
 function sheet_(name) {
   const sh = SpreadsheetApp.getActive().getSheetByName(name);
-  if (!sh) throw new Error(`Tab "${name}" is missing — run "⬆ Update workbook" or "▶ Quick start".`);
+  if (!sh) throw new Error(`Tab "${name}" is missing — run "Update workbook" or "Quick start".`);
   return sh;
 }
 
