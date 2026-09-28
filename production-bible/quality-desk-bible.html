@@ -720,6 +720,11 @@ details.sbx[open]>summary::after{content:"▴"}
 .sbin{display:grid;gap:8px;padding:0 14px 14px}
 .exl{font-size:13.5px;background:var(--sunk);border-left:3px solid var(--ink);padding:8px 10px;border-radius:0 4px 4px 0}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.exs{display:grid;gap:8px;padding:10px;border:1px solid var(--ink);border-radius:6px;background:var(--paper)}
+.exs[hidden]{display:none}
+.exitem{display:grid;gap:4px;text-align:left;font:14.5px/1.5 var(--body);padding:10px 12px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);cursor:pointer}
+.exitem:hover{border-color:var(--ink);background:var(--sunk)}
+.exn{font-family:var(--mono);font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
 .ideas{display:grid;gap:6px;padding:10px;border:1px dashed var(--line);border-radius:6px;background:var(--paper)}
 .ideas[hidden]{display:none}
 .idea{text-align:left;font:14px/1.4 var(--body);padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);cursor:pointer}
@@ -739,7 +744,7 @@ details.sbx[open]>summary::after{content:"▴"}
 <section class="tab" id="scriptbuilder" data-grp="Script" data-t="Script Builder">
 <div class="doc"><span><b>QD-PB-SB1</b></span><span>Rev. 2.0</span><span>Tool · 19 formats · drafts saved in this browser only</span></div>
 <h1>Script Builder</h1>
-<p class="lede">Choose a format and say what the video is about. Then write each section, using the guidance, the <b>📝 example</b> and the <b>💡 ideas</b> (click one to paste it as a starting point). The builder times every section, checks the length, and assembles a full script and a teleprompter version you can copy, print, read in teleprompter mode or send to the Storyboard Builder.</p>
+<p class="lede">Choose a format and say what the video is about. Then write each section, using the guidance, the <b>📝 examples</b> (full written texts to choose from) and the <b>💡 ideas</b> (short starting points). Click any of them to use it as your draft; <b>↶ Undo</b> brings your own text back. The builder times every section, checks the length, and assembles a full script and a teleprompter version you can copy, print, read in teleprompter mode or send to the Storyboard Builder.</p>
 
 <div class="sec"><h2>Step 1 · Choose your format</h2><div id="sbFmts" class="secs"></div></div>
 
@@ -1985,6 +1990,511 @@ const CTABANK={en:["Which [topic] gives you the most trouble? Tell me below.","H
 const SOBANK={en:["Prove it. Improve it.","That's the evidence. / Prove it. Improve it.","One idea. One video. / Prove it. Improve it."],de:["Nachweisen. Verbessern.","Das ist der Nachweis. / Nachweisen. Verbessern."]};
 
 
+
+/* ================= FULL WRITTEN EXAMPLES (choose one as your draft) =================
+   Keyed "format.section". Personal claims use only Proof Bank facts; anything only you can know is in [brackets]. */
+const EXS={
+/* ---------- NORM IN 60 ---------- */
+"norm.hook":[
+"What does ISO 9001 clause 7.5 actually ask for? / It's not a folder full of documents.",
+"Clause 10.2. / The one clause almost every audit comes back to.",
+"ISO 9001 clause 9.2 in sixty seconds. / Internal audits, without the jargon.",
+"If an auditor opens clause 8.4 at your site, / this is what they'll ask to see.",
+"Clause 6.1 says “risks and opportunities”. / Most people only read the first half.",
+"Clause 7.2: competence. / It's not about certificates on a wall."],
+"norm.clause":[
+"Clause 7.5 is called documented information. It covers the documents you work with and the records that prove what you did.",
+"Clause 10.2 is about nonconformity and corrective action. In plain words: when something goes wrong, what do you do about it, and how do you stop it happening again?",
+"Clause 9.2 is internal audit. It asks you to check your own system at planned intervals, before anyone from outside does.",
+"Clause 8.4 covers externally provided processes, products and services. That's your suppliers, and anything you outsource.",
+"Clause 6.1 is about actions to address risks and opportunities. It sits in the planning chapter, before you set your quality objectives.",
+"Clause 7.2 is competence. It asks you to decide what skills each role needs, and to make sure people actually have them."],
+"norm.plain":[
+"The standard doesn't tell you how many documents to write. It says: document what your processes need, and what the standard asks for. Nothing more.",
+"When something goes wrong, the standard asks for two things. First, react: control it and deal with the consequences. Second, find the cause, and act so it doesn't come back.",
+"Internal audits need a programme: what you audit, how often, and who audits. And auditors shouldn't audit their own work. That's the whole idea in one breath.",
+"You decide how much control a supplier needs, based on how much they can affect your product. A packaging supplier and a critical parts supplier don't need the same checks.",
+"You look at what could stop you reaching your results, and what could help. Then you plan actions in proportion to the impact. There's no requirement for a formal risk register.",
+"Decide what competence each role needs. Check that people have it through education, training or experience. Where there's a gap, close it, and check the action worked."],
+"norm.evidence":[
+"In an audit, I look for three things. Is the document identified and approved? Is the current version available where the work happens? And are old versions out of circulation?",
+"The evidence is simple: a record of the nonconformity, the root cause, the action taken, and a check that the action worked. If the last part is missing, the action isn't closed.",
+"I'd ask to see the audit programme, the last two audit reports, and what happened to the findings. A finding with no follow-up is a finding of its own.",
+"Show me your supplier criteria, the last evaluation, and what you did when a supplier performed badly. That's clause 8.4 in three records.",
+"I'd ask: which risks did you identify for this process, and what did you do about them? A one-page list with actions and owners is enough evidence.",
+"Pick one role. Show me what competence it needs, and the proof that the person in it has that competence. Training records, qualifications, or an on-the-job assessment."],
+"norm.gap":[
+"The most common gap? / The right procedure, sitting in the office, while the floor works from an old printout.",
+"The most common gap: a correction is recorded, but no root cause. The problem gets fixed once and comes back next month.",
+"Where it usually breaks: audits happen, findings are written, and nobody checks whether the actions worked.",
+"The gap I'd expect: a supplier list with no criteria behind it. Everyone is “approved”, but nobody can say why.",
+"The common gap: a risk list written once for the certification, and never looked at again.",
+"Most sites have training records. What's missing is the link between the record and what the role actually needs."],
+"norm.cta":[
+"Check one document at your site today. Which version is on the floor? Tell me what you find.",
+"Pick your last corrective action. Can you name the root cause in one sentence? Tell me below.",
+"Which clause should I explain next? Tell me in the comments.",
+"How often do you run internal audits at your site? I'm curious what's normal.",
+"Save this for your next audit prep."],
+/* ---------- METHOD MINUTE ---------- */
+"method.hook":[
+"8D on one sheet of paper. / Watch.",
+"PDCA isn't a poster. / It's four questions. Let me draw them.",
+"5-Why in under a minute. / And why it often stops at the wrong why.",
+"FMEA, explained with a coffee machine.",
+"5S in sixty seconds. / The fifth S is the one everyone forgets.",
+"The fishbone diagram. / One sheet, six bones, and the cause is somewhere on it."],
+"method.problem":[
+"When a customer complaint comes back a second time, a quick fix isn't enough. You need a structure. That's 8D.",
+"Most improvement ideas fail because nobody checks whether they worked. PDCA builds that check in.",
+"When a problem looks simple but keeps coming back, you're probably fixing a symptom. 5-Why helps you dig one level deeper, and then another.",
+"Before something fails, FMEA asks: what could fail, how bad would it be, and would we notice? It's prevention on paper.",
+"If people spend minutes looking for tools, files or forms every day, that's waste. 5S makes the workplace show you what's missing.",
+"When a team argues about the cause of a problem, a fishbone puts every possible cause on one page, so you can test them instead of arguing."],
+"method.steps":[
+"D1: build a small team. D2: describe the problem with facts. D3: contain it, so no bad part reaches the customer. D4: find the root cause. D5 and D6: choose the fix and prove it works. D7: stop it happening again. D8: close it and thank the team.",
+"Plan: decide what you'll change and what result you expect. Do: try it on a small scale. Check: compare the result with what you expected. Act: keep it and standardise it, or adjust and go round again.",
+"Write the problem at the top. Ask why it happened. Write the answer. Ask why again. Keep going until the answer is a process you can change, not a person to blame. Often that's around five times, sometimes fewer.",
+"List each way a step can fail. Rate how severe the effect is, how often it happens, and how likely you'd detect it, each from one to ten. Multiply them. Work on the highest numbers first. Newer automotive FMEA uses an action priority instead of that product, but the thinking is the same.",
+"Sort: remove what you don't need. Set in order: a fixed place for everything. Shine: clean, and inspect while you clean. Standardise: make the rules visible. Sustain: audit it, so it doesn't slide back.",
+"Draw the problem as the head of a fish. Add the bones: people, method, machine, material, measurement, environment. Brainstorm causes on each bone. Then test the likely ones with data."],
+"method.example":[
+"Wrong labels on outgoing pallets? D3 is checking every pallet today. D4 is asking why the label template changed.",
+"Say your team wants to cut the time it takes to answer customer complaints. Plan a new triage step, run it for two weeks in one team, check the response times, then roll it out or rethink it.",
+"The printer jams. Why? Paper is damp. Why? It's stored next to the loading door. Why? No defined storage place. That's the fix: a storage rule, not a new printer.",
+"Take an office coffee machine. Failure: it leaks. Severity: four, it's messy but safe. Occurrence: six. Detection: two, you see the puddle. Now compare that with a failure you wouldn't see.",
+"Try it on your own desk. Remove everything you haven't used this week. Give each remaining item one place. Label the place. Tomorrow, the empty spot tells you what's missing.",
+"Late deliveries. Method: no cut-off time. Machine: scanner downtime. People: new staff on the late shift. Measurement: delivery time recorded at dispatch, not at arrival. Suddenly the discussion has structure."],
+"method.notwhen":[
+"For a one-off typo, 8D is overkill. Use it when the problem is costly or keeps coming back.",
+"PDCA isn't for emergencies. When something is on fire, contain it first. Then use PDCA to improve.",
+"If the answer to the first why is already a clear process gap, you can stop. Five is a guideline, not a rule.",
+"Don't run a full FMEA on a process nobody will change. Use it before a launch or a change, when prevention still costs little.",
+"5S isn't a one-day clean-up. If nobody sustains it, don't start with a big event. Start with one shelf.",
+"A fishbone won't find the cause for you. If you skip the testing step, it's just a nicer-looking argument."],
+"method.cta":[
+"Save this for the next complaint that comes back.",
+"Which method should I draw next? Tell me below.",
+"Try it on one problem this week, and tell me what you found.",
+"Send this to the colleague who always asks “but why?”"],
+/* ---------- FLOOR LESSON ---------- */
+"floor.hook":[
+"One SOP. Thirty percent faster. / Here's what was in it.",
+"Minus fifteen percent errors. / Not from more checks.",
+"We fixed it. / [Time] later it was back.",
+"The problem wasn't the people. / It was the process.",
+"5S audits taught me more about quality than any textbook."],
+"floor.symptom":[
+"Cross-docking and Castlegate orders were getting delayed. And delays meant returns.",
+"In our logistics operation, the same kinds of nonconformities kept showing up in the records.",
+"On the warehouse floor, [symptom you really saw] kept happening, week after week.",
+"The supplier scorecards kept pointing at the same issue: [issue from your own memory]."],
+"floor.wrongfix":[
+"[Your own memory: what was tried first, and why it didn't last. Only say what really happened.]",
+"The first reaction was [what really happened]. It helped, for a while.",
+"We did what many teams do first: [quick fix you really saw]."],
+"floor.back":[
+"[Your own memory: the moment you saw it was a process problem.]",
+"Then it came back.",
+"Same problem. Different week. That's when I stopped looking for someone to blame."],
+"floor.root":[
+"[Your own memory: what you found when you looked at the process.]",
+"So we did a structured root-cause analysis. What it showed was [finding].",
+"I walked the process step by step and compared it with what was written. The gap was [gap]."],
+"floor.fix":[
+"So I initiated an SOP for cross-docking and Castlegate orders, and put it into practice.",
+"We changed the process, not the people: structured root-cause analyses, and continuous improvement measures that stayed in place.",
+"The fix was [fix you really made]. Not exciting. But it lasted."],
+"floor.number":[
+"Lead time dropped by thirty percent.",
+"Operational error rates went down by fifteen percent.",
+"[A measurable result from the Proof Bank, with its source.]"],
+"floor.lesson":[
+"If a problem survives every extra check, it isn't a people problem. It's a process problem.",
+"Fix the process, and the people stop firefighting.",
+"A standard only works if it's easier to follow than to ignore.",
+"More checks find problems. Better processes prevent them."],
+"floor.cta":[
+"Where does your process depend on who is on shift? Tell me below.",
+"Which problem at your site keeps coming back? I'd like to hear it.",
+"If this sounds familiar, send it to your team lead."],
+/* ---------- QM-WORT DER WOCHE ---------- */
+"wort.hook":[
+"Nachweisführung. / Klingt einfach. Ist es nicht.",
+"Abweichung und Fehler: / nicht dasselbe.",
+"Korrektur und Korrekturmaßnahme. / Ein Wort Unterschied, ein großer Unterschied.",
+"Das QM-Wort der Woche: / Lenkung.",
+"Ein Wort, das in jedem Audit fällt: / Wirksamkeit."],
+"wort.def":[
+"Nachweisführung heißt: Sie können belegen, dass Sie tun, was Sie beschreiben. Mit Aufzeichnungen, nicht mit Worten.",
+"Eine Abweichung ist die Nichterfüllung einer Anforderung. Ein Fehler ist umgangssprachlich breiter. Im Audit zählt die Anforderung, gegen die man prüft.",
+"Eine Korrektur beseitigt das Problem, das vor Ihnen liegt. Eine Korrekturmaßnahme beseitigt die Ursache, damit es nicht wiederkommt.",
+"Lenkung von Dokumenten heißt: Jedes Dokument ist freigegeben, aktuell und dort verfügbar, wo gearbeitet wird. Veraltete Versionen sind aus dem Verkehr.",
+"Wirksamkeit heißt: Die Maßnahme hat das gewünschte Ergebnis erreicht. Nicht nur umgesetzt, sondern überprüft."],
+"wort.beispiel":[
+"Die Wartung ist nicht erledigt, weil jemand es sagt. Sie ist erledigt, wenn das Protokoll unterschrieben ist.",
+"Das falsche Etikett auf der Palette ist die Abweichung. Die Anforderung war die Kundenspezifikation.",
+"Die fehlerhafte Lieferung auszutauschen ist die Korrektur. Den Prüfschritt im Wareneingang einzuführen ist die Korrekturmaßnahme.",
+"Am Arbeitsplatz hängt die Arbeitsanweisung in Version 4. Im System ist Version 5 freigegeben. Das ist ein Lenkungsproblem.",
+"Eine Schulung wurde durchgeführt. Wirksam ist sie erst, wenn die Fehler danach tatsächlich zurückgehen."],
+"wort.en":[
+"Auf Englisch sagt man dazu: evidence, oder documented information.",
+"Auf Englisch: nonconformity.",
+"Auf Englisch: correction und corrective action.",
+"Auf Englisch: control of documented information.",
+"Auf Englisch: effectiveness."],
+"wort.next":[
+"Nächste Woche: Abweichung oder Fehler?",
+"Nächste Woche: Was ist der Unterschied zwischen Verfahrensanweisung und Arbeitsanweisung?",
+"Nächste Woche: Wirksamkeit. Das Wort, das jede Korrekturmaßnahme prüft.",
+"Nächste Woche: Was bedeutet eigentlich „interessierte Parteien“?"],
+/* ---------- AUDIT ROOM ---------- */
+"audit.hook":[
+"The first thing I ask for in an internal audit / isn't the procedure.",
+"Three questions I ask in every internal audit.",
+"What an auditor notices in the first five minutes / isn't on your checklist.",
+"The audit question that tells me the most / takes four seconds to ask."],
+"audit.situation":[
+"An internal audit. A process owner. A folder of procedures, ready on the table.",
+"Picture a typical audit of goods receipt. The team has prepared the procedure, the forms, the last training records.",
+"Before most audits, teams prepare documents. What they rarely prepare is the people doing the work.",
+"An audit of a small company, first certification coming up. Everyone is nervous. The folders are perfect."],
+"audit.question":[
+"I ask: show me the last time this process went wrong, and what you did about it.",
+"I ask the person doing the work, not the manager: how do you know you did this step correctly?",
+"I ask: which version of this instruction are you using right now? Then I compare it with the system.",
+"I ask: what would you change about this process if you could?"],
+"audit.evidence":[
+"That one question shows me the records, the corrective action, and whether anyone checked it worked. A procedure only shows me the plan.",
+"If the answer matches the record, the system works. If it doesn't, I've found the real process, and that's more useful than a perfect folder.",
+"A procedure shows what should happen. A record shows what did happen. An audit lives in the gap between the two.",
+"Three things tell me the system is alive: records that are complete, actions that are followed up, and people who know why the step matters."],
+"audit.good":[
+"A good answer isn't “nothing ever goes wrong”. It's a clear record, a root cause, and a check that the fix held.",
+"The best teams say: here's what went wrong, here's what we learned, here's the proof it's better now. That's a system that learns.",
+"ISO 19011 names evidence-based and risk-based approaches as audit principles. In practice: follow the evidence, and spend time where the risk is.",
+"Audits aren't a test to pass. They're a second pair of eyes, and the cheapest early warning a company has."],
+"audit.cta":[
+"What's the first thing you ask for in an audit? I'd like to compare.",
+"Auditees: what's the question you dread most? Tell me below.",
+"Save this before your next internal audit."],
+/* ---------- MYTH VS REQUIREMENT ---------- */
+"myth.myth":[
+"“ISO 9001 requires a quality manual.” / You hear it all the time.",
+"“ISO 14001 is about recycling bins.”",
+"“Internal audits are about finding mistakes.”",
+"“A correction and a corrective action are the same thing.”",
+"“You need six mandatory procedures for ISO 9001.”",
+"“Risk-based thinking means you need a risk register.”"],
+"myth.finding":[
+"Since 2015, it doesn't.",
+"Not quite.",
+"That's a myth.",
+"The standard says something else.",
+"Not since the 2015 revision."],
+"myth.req":[
+"The 2015 version replaced the manual and the six mandatory procedures with documented information. You decide what your processes need.",
+"ISO 14001 asks you to identify your environmental aspects, meaning how your activities interact with the environment, and to control the significant ones. Waste is one aspect of many.",
+"ISO 19011 describes auditing as obtaining evidence and evaluating it against criteria. Conformity counts as much as nonconformity. Good practice gets reported too.",
+"ISO 9001 clause 10.2 separates reacting to the nonconformity from eliminating its cause. Two different steps, two different records.",
+"ISO 9001:2015 asks you to determine the risks and opportunities that need to be addressed. It doesn't prescribe a method or a register."],
+"myth.practical":[
+"Many companies keep a short manual anyway, because it helps new people. That's fine. Just keep it because it's useful, not because you think the auditor wants it.",
+"Start with a simple list: activity, aspect, impact, significant or not. Energy, transport, emissions, noise and materials usually matter as much as waste.",
+"Treat the audit as a health check. The team that shows you its weak spots gets more value than the team that hides them.",
+"Write both on the form: what you did immediately, and what you changed so it won't happen again.",
+"A short table with risks, actions and owners, reviewed in management review, is usually enough."],
+"myth.cta":[
+"Which ISO myth should I check next? Put it in the comments.",
+"Heard a myth at work this week? Tell me, and I'll check it against the standard.",
+"Send this to the colleague who still believes it."],
+/* ---------- CAREER BRIDGE ---------- */
+"bridge.hook":[
+"I started in finance in Nairobi. / Now I work in quality management in Hessen.",
+"What it actually took to build a quality career in Germany.",
+"If you're building a career in Germany from abroad, / this one is for you.",
+"The one thing I'd tell anyone starting in quality management in Germany."],
+"bridge.start":[
+"My degree is in co-operative business and finance. My first consulting work was HR compliance in Nairobi: policies, file audits, training.",
+"I studied finance in Kenya. Numbers were my first language at work. Compliance came next.",
+"Before quality, there was compliance: HR policies, audits of personnel files, training sessions, at a consulting firm in Nairobi."],
+"bridge.step":[
+"Then came a warehouse floor in Germany. Running 5S audits showed me that compliance and quality are the same question: can you prove it?",
+"The turning point was becoming a quality auditor in logistics: site audits, root-cause analyses, quality indicators, every day.",
+"In Germany I started on the logistics floor, then moved into quality auditing. That's where the method finally made sense to me."],
+"bridge.took":[
+"It took a recognised degree, a lot of German, and qualifications in the German system: ISO training, internal auditing, and QMB training here in Gießen.",
+"It took the ZAB assessment, which made my Bachelor's comparable to a German one. It took German, from B2 to a full C1 course. And it took a network: I joined the DGQ, the German Society for Quality.",
+"It took learning the German terms: Abweichung, Nachweis, Lenkung. You can know the method in English and still be lost in the meeting."],
+"bridge.advice":[
+"If you're starting this path: get your degree assessed early, and join a professional network like the DGQ. Both open doors faster than applications alone.",
+"Learn the German QM vocabulary before you learn more methods. The method you know; the vocabulary gets you into the room.",
+"Document your own career the way you'd document a process: what you did, what changed, and the evidence."],
+"bridge.cta":[
+"Where are you on your path? Tell me, and I'll answer in a video.",
+"What's your next step this month? Tell me below.",
+"Send this to someone who's starting out in Germany."],
+/* ---------- DASHBOARD BREAKDOWN ---------- */
+"dash.hook":[
+"Five minutes, one PivotTable, / and you'll see where your errors cluster.",
+"A quality KPI tracker in Excel. / No macros, no add-ins.",
+"The one chart every quality meeting needs.",
+"Your nonconformity list is hiding a pattern. / Let's find it."],
+"dash.promise":[
+"By the end you'll have a simple quality tracker that shows you where to look first.",
+"By the end you'll be able to answer “where do most of our errors come from?” in ten seconds.",
+"You'll build a Pareto chart that shows which few causes create most of the problems."],
+"dash.setup":[
+"Here's a list of nonconformities: date, area, type, shift. All dummy data. First, turn it into a table with Ctrl+T.",
+"Before any chart, check the data. Blanks, typos, “Warehouse” and “warehouse” counted twice. Bad data, bad chart.",
+"Add one helper column: the week number. That lets you see trends, not just totals."],
+"dash.build":[
+"Now insert a PivotTable. Areas in rows, types in columns, count of entries in values. Add a chart.",
+"Sort the causes from largest to smallest, add a cumulative percentage, and you have a Pareto chart.",
+"Add conditional formatting so the highest values turn dark. The eye goes straight to the problem.",
+"In Power BI, the same idea is one matrix visual and one slicer for the week."],
+"dash.insight":[
+"And there it is: most errors come from one area on one shift. That's where the root-cause work starts.",
+"Three causes make up most of the entries. That's where your next corrective actions should go.",
+"The chart doesn't solve anything. It tells you where to look, and that's half the work."],
+"dash.cta":[
+"Want the template? Tell me in the comments, and I'll share a clean version.",
+"What do you track that nobody looks at? Tell me below.",
+"Next time: turning this into a one-page monthly report."],
+/* ---------- LEARNING IN PUBLIC ---------- */
+"learn.hook":[
+"200 hours of QMB training. / One idea changed how I see audits.",
+"What I'm studying for my QMB exam this week.",
+"My C1 German course taught me a quality lesson.",
+"Something I understood wrongly until this week."],
+"learn.studying":[
+"This week I'm revising risk-based thinking for my QMB exam.",
+"Today's chapter: the management review, and what has to go into it.",
+"I'm learning the German terms for corrective action. Korrekturmaßnahme. Wirksamkeitsprüfung."],
+"learn.surprise":[
+"What surprised me: risk isn't only about what can go wrong. The standard also asks you to look for opportunities.",
+"I always thought management review was a meeting. It's really a set of inputs and outputs the standard lists.",
+"The German word Wirksamkeitsprüfung says in one word what takes me a sentence in English: checking that the action actually worked."],
+"learn.apply":[
+"So in my next audit I'll ask not only “what could fail here?” but “what could work better?”",
+"At work I'd use this by preparing the review inputs as a one-page summary, not a slide deck.",
+"I'll add one line to every corrective action form: how and when we check it worked."],
+"learn.q":[
+"How does your team handle opportunities? Do they even get recorded?",
+"Did you learn this the same way?",
+"What's the one thing you wish you'd known before your QMB exam?"],
+/* ---------- STAT DROP ---------- */
+"stat.stat":[
+"Minus fifteen percent. / That's what structured root-cause work did to our error rate.",
+"Thirty percent. / That's how much faster one SOP made our lead time.",
+"[Number]. / That's [what it measures], according to [source, year].",
+"[Number] of [group] [finding]. / Source: [study, year]."],
+"stat.means":[
+"That was in a logistics operation. Not with more checks. With better processes.",
+"It came from one standard operating procedure for cross-docking and Castlegate orders, aimed at fewer delays and returns.",
+"What that means in practice: [meaning], measured as [measure], over [period]."],
+"stat.why":[
+"If your error rate stays flat no matter how many checks you add, the checks aren't the answer. The process is.",
+"Most teams try harder when things go wrong. The number says: try differently.",
+"For a quality lead, this is the argument for time spent on root causes instead of inspections."],
+"stat.cta":[
+"Which number do you track that nobody looks at? Tell me below.",
+"What's the one KPI you trust most?",
+"Send this to someone who still thinks more inspection is the answer."],
+/* ---------- COMPARE & CONTRAST ---------- */
+"compare.hook":[
+"Same standard. / A warehouse and a plastics recycler. Different evidence.",
+"ISO 9001 vs. ISO 14001. / Same chapters. Different question.",
+"Correction vs. corrective action. / One sentence each.",
+"Procedure vs. work instruction. / Not the same document."],
+"compare.a":[
+"In a warehouse, ISO 9001 evidence is scans, labels, delivery records. The question is: did the right item reach the right customer on time?",
+"ISO 9001 asks: do our products and services meet requirements, and do customers get what they were promised?",
+"A correction fixes the problem in front of you: rework the part, replace the delivery, correct the record.",
+"A procedure describes a process: who does what, in which order, with which inputs and outputs."],
+"compare.b":[
+"At a plastics recycler, the evidence also includes input material, environmental aspects and certification schemes. The question grows: what's the impact?",
+"ISO 14001 asks: how do our activities affect the environment, which of those effects are significant, and are we controlling them?",
+"A corrective action removes the cause, so the problem doesn't come back: change the process, the check, or the training.",
+"A work instruction describes one task in detail: how exactly to do this step, at this workstation."],
+"compare.insight":[
+"The structure is the same, because both standards share the harmonised structure. What changes is the question you ask of your evidence.",
+"That's why one integrated management system can cover both: same chapters, same audits, different criteria.",
+"You usually need both: the correction today, the corrective action this month.",
+"Procedures are for managers to understand the process. Work instructions are for the person at the workstation."],
+"compare.cta":[
+"Which two should I compare next? Tell me below.",
+"Which one does your company mix up most often?",
+"Save this for your next onboarding."],
+/* ---------- EXPLAINER ---------- */
+"explain.hook":[
+"How to prepare for your first internal audit. / In five steps.",
+"Your first corrective action? / Start here.",
+"How to write a work instruction people actually use.",
+"Most people skip one step of audit preparation. / Don't."],
+"explain.promise":[
+"By the end, you'll have a simple plan you can use next week.",
+"Three steps, each takes under an hour.",
+"You'll walk away with a checklist you can print."],
+"explain.step1":[
+"Step one: read the last audit report and the open corrective actions. That's where the auditor will start.",
+"Step one: describe the problem with facts. What, where, when, how many. No opinions yet.",
+"Step one: watch someone do the task before you write anything."],
+"explain.step2":[
+"Step two: walk the process yourself. Compare what's written with what actually happens.",
+"Step two: find the root cause. Ask why until the answer is something you can change.",
+"Step two: write one action per line, starting with a verb. Add a photo where words are slow."],
+"explain.step3":[
+"Step three: check that records are complete, signed and easy to find.",
+"Step three: decide how and when you'll check the action worked, and write it down now.",
+"Step three: test it. Give it to someone new and watch where they hesitate."],
+"explain.mistake":[
+"The common mistake: preparing documents instead of preparing people. The auditor will ask the person doing the work.",
+"The common mistake: closing the action on the day it's done, instead of the day it's proven to work.",
+"The common mistake: writing the instruction at a desk, for a task done on the floor."],
+"explain.recap":[
+"So: last report, walk the process, check the records. That's your preparation.",
+"Facts, cause, check. Three steps, one form.",
+"Watch, write, test. That's a work instruction people follow."],
+"explain.cta":[
+"Which task should I break down next?",
+"Try it this week and tell me how it went.",
+"Save this for your next audit."],
+/* ---------- CONFESSION ---------- */
+"confess.hook":[
+"I used to confuse correction and corrective action. / [Your own memory: what that led to.]",
+"My first audit checklist was far too long. / [Your own memory.]",
+"I believed more checks meant better quality.",
+"The advice I ignored, and later needed."],
+"confess.before":[
+"I wrote down the fix, closed the action, and moved on. The problem was gone, for a while.",
+"[Your own memory: what you used to do, in one or two true sentences.]",
+"I used to think a good audit meant finding many issues."],
+"confess.cost":[
+"The same issue came back, because I'd fixed the result, not the cause.",
+"[Your own memory: what it cost. Keep it professional.]",
+"It cost time, and it cost trust in the process."],
+"confess.now":[
+"Now every corrective action has a root cause, an owner, a date and an effectiveness check. If I can't fill in the cause, it isn't a corrective action yet.",
+"Now I ask fewer questions, and follow the evidence further.",
+"Now I measure success by what stays fixed, not by what gets found."],
+"confess.cta":[
+"What's a mistake that made you better at your job? Tell me below.",
+"What did you learn the hard way?",
+"Send this to someone new in quality."],
+/* ---------- BEFORE & AFTER ---------- */
+"beforeafter.hook":[
+"Same desk. / Five minutes of 5S. Watch the difference.",
+"One form. / Before and after. Count the fields.",
+"This work instruction had two pages. / Now it has one photo and six lines."],
+"beforeafter.before":[
+"Before: every tool in one drawer. Finding the right one took minutes, every time.",
+"Before: a form with twenty-two fields. Half of them were never filled in.",
+"Before: two pages of text, and nobody at the workstation read past the first paragraph."],
+"beforeafter.change":[
+"Sort what you need. Give everything a place. Label the place. That's three of the five S's.",
+"We asked one question for each field: who uses this, and for what? If nobody could answer, it went.",
+"Watch the task, write one line per step, add one photo for the step people get wrong."],
+"beforeafter.after":[
+"After: everything has a place, and the empty place tells you what's missing.",
+"After: nine fields, all filled in, every time.",
+"After: one page, and people actually use it."],
+"beforeafter.lesson":[
+"5S isn't tidying up. It's making problems visible.",
+"Less documentation, better evidence.",
+"The best instruction is the one that gets read."],
+"beforeafter.cta":[
+"What would you 5S first at your workplace?",
+"Which form at your company needs this treatment?",
+"Save this for your next improvement meeting."],
+/* ---------- REACTION ---------- */
+"react.hook":[
+"I saw a post this week that said audits are a waste of time. / Here's my answer.",
+"Someone asked me in the comments what a QMB actually does all day. / Let's answer it properly.",
+"There's news about [topic]. / What it means for quality teams."],
+"react.source":[
+"A post this week argued that internal audits only produce paperwork.",
+"A viewer asked: what does a quality management representative actually do?",
+"[Source] reported [news] on [date]."],
+"react.agree":[
+"And sometimes that's true, when audits check documents instead of processes.",
+"Fair point: the title sounds more administrative than the job is.",
+"They're right about one thing: [point]."],
+"react.add":[
+"A good internal audit asks the person doing the work, looks at records, and follows up on actions. That's not paperwork. That's the cheapest early warning a company has.",
+"The job is keeping the management system working: documents, audits, corrective actions, and reporting to management on how the system performs. Done well, it's mostly conversations.",
+"From my experience, [observation]. The evidence says [evidence]."],
+"react.cta":[
+"Where do you stand on this? Tell me below, and keep it respectful.",
+"What's your view?",
+"Got a question for the next response video? Ask it below."],
+/* ---------- GUEST ---------- */
+"guest.cold":[
+"[The guest's strongest line, cut from the recording.]",
+"[The guest's most surprising answer.]"],
+"guest.intro":[
+"Today I'm talking to [name], [role]. We're talking about [topic].",
+"I invited [name] because [reason]. Let's start."],
+"guest.q1":[
+"How did you get into quality management?",
+"What does a normal week look like in your role?",
+"What surprised you most when you started?"],
+"guest.q2":[
+"What's a problem you solved that you're still proud of?",
+"What's the most common audit finding you see?",
+"How do you get people to follow a new standard?"],
+"guest.q3":[
+"What would you tell someone starting in quality management in Germany today?",
+"Which skill will matter most in quality over the next five years?",
+"What's one habit that makes a quality team better?"],
+"guest.close":[
+"Thank you, [name]. The one idea I'm taking away: [takeaway].",
+"You can find [name] on LinkedIn. The link is in the comments."],
+"guest.cta":[
+"Who should I talk to next? Tag them below.",
+"What would you have asked? Tell me in the comments."],
+/* ---------- BRAND INTRO / CLOSING ---------- */
+"intro.line1":[
+"Standards. Methods. Real audit lessons.",
+"Quality management, clearly explained.",
+"Qualität, klar erklärt."],
+"intro.line2":[
+"I'm Efic, and this is The Quality Desk.",
+"Ich bin Efic, und das ist The Quality Desk."],
+"intro.line3":[
+"One idea per video.",
+"New video every Tuesday.",
+"Eine Idee pro Video."],
+"close.land":[
+"So that's clause 7.5: not a folder, but the right version in the right place.",
+"One sentence to remember: fix the cause, not just the result.",
+"So: facts first, cause second, check third."],
+"close.next":[
+"Next week: why 5-Why often stops at the wrong why.",
+"Next Tuesday I'm answering your most common question from the comments.",
+"Nächste Woche: Abweichung oder Fehler?"],
+"close.cta":[
+"Follow The Quality Desk so it finds you every Tuesday.",
+"Folgen Sie mir, dann verpassen Sie keine Folge."],
+/* ---------- VIDEO APPLICATION PITCH ---------- */
+"pitch.hello":[
+"Guten Tag, ich bin Murdock Emisembe, Qualitätsmanagement mit Schwerpunkt ISO 9001 und 14001.",
+"Guten Tag, mein Name ist Murdock Emisembe. Ich bewerbe mich als [Position]."],
+"pitch.proof":[
+"Bei Wayfair habe ich als Qualitätsauditor durch strukturierte Ursachenanalysen die Fehlerquote um 15 Prozent gesenkt.",
+"Mit einer neuen SOP für Cross-Docking-Aufträge sank dort die Durchlaufzeit um 30 Prozent.",
+"Bei Grünstoff Kunststoff-Recycling habe ich das integrierte Managementsystem nach ISO 9001 und 14001 begleitet."],
+"pitch.plan":[
+"In den ersten 90 Tagen würde ich [Aufgabe 1 aus der Anzeige] und [Aufgabe 2 aus der Anzeige] angehen.",
+"Zuerst würde ich [Prozess] kennenlernen und dann [Verbesserung] vorschlagen."],
+"pitch.facts":[
+"Ich spreche Deutsch auf B2-Niveau, C1 ist in Vorbereitung, und Englisch auf C2. Ich habe eine Blaue Karte EU, wohne in Gießen und bin reisebereit.",
+"Blaue Karte EU, Wohnort Gießen, reisebereit und ab sofort verfügbar."],
+"pitch.close":[
+"Ich freue mich auf ein Gespräch. Nachweisen. Verbessern.",
+"Vielen Dank für Ihre Zeit. Ich freue mich auf ein Gespräch."]
+};
+
 /* ================= PRINT ================= */
 const PRINT_CSS=`@page{size:A4;margin:14mm}
 *{box-sizing:border-box}html,body{margin:0;background:#fff;color:#000}
@@ -2086,6 +2596,8 @@ function ideasFor(s,i){
   }
   return [...new Set(list)].map(subst);
 }
+function examplesFor(s){ if(s.k==='so') return (SOBANK[sbS.lang]||SOBANK.en).slice(); const l=EXS[sbS.fmt+'.'+s.k]; return l&&l.length?l.slice():(s.ex?[s.ex]:[]); }
+const sbUndo={};
 function secTimes(){let c=0;return curF().sec.map(s=>{const a=c;c+=s.s;return [a,c];});}
 function sbDrawFmts(){
   const groups={Core:'Core formats · start here',Formats:'More formats',Brand:'Brand and application'};
@@ -2105,8 +2617,9 @@ function sbDrawSecs(){
     return `<details class="sbx" data-key="${key}"${open?' open':''}><summary><span class="pill">${String(i+1).padStart(2,'0')}</span><b>${esc(s.l)}</b><span class="pill mono">${mmss(tm[i][0])}–${mmss(tm[i][1])}</span><span class="pill">${s.shot}</span><span class="pill">Target ~${Math.round(s.s*w/60)} words</span><span class="wc" id="${id}_wc"></span></summary>
     <div class="sbin"><p class="pr">${esc(s.g)}</p>${s.dir?`<p class="dir">Direction: ${esc(s.dir)}</p>`:''}${exTxt?`<p class="exl"><b>Example:</b> ${esc(exTxt.replace(/\s*\/\s*/g,' '))}</p>`:''}
     <label class="sr" for="${id}">${esc(s.l)} text</label><textarea id="${id}" data-k="${s.k}" placeholder="Write your ${esc(s.l.toLowerCase())} here, or pick an idea below.">${esc(t[s.k]||'')}</textarea>
-    <div class="row"><button type="button" class="btn" data-act="ideas" aria-expanded="false">💡 Ideas</button><button type="button" class="btn" data-act="example">📝 Use example</button><button type="button" class="btn" data-act="copy">📋 Copy section</button><button type="button" class="btn" data-act="clear">Clear</button></div>
-    <div class="ideas" hidden><p class="dir">Click an idea to paste it as a starting point, then make it yours. Replace anything in [brackets] with true details.</p>${ideasFor(s,i).map(x=>`<button type="button" class="idea" data-idea="${esc(x)}">${esc(x.replace(/\s*\/\s*/g,' / '))}</button>`).join('')}</div></div></details>`}).join('');
+    <div class="row"><button type="button" class="btn" data-act="examples" aria-expanded="false">📝 Examples (${examplesFor(s).length})</button><button type="button" class="btn" data-act="ideas" aria-expanded="false">💡 Ideas (${ideasFor(s,i).length})</button><button type="button" class="btn" data-act="undo"${sbUndo[key]!==undefined?'':' hidden'}>↶ Undo</button><button type="button" class="btn" data-act="copy">📋 Copy section</button><button type="button" class="btn" data-act="clear">Clear</button></div>
+    <div class="exs" hidden><p class="dir">Full written examples. Click one to use it as your draft, then make it yours. It replaces the text in the box; ↶ Undo brings yours back.</p>${examplesFor(s).map((x,j)=>`<button type="button" class="exitem" data-ex="${esc(x)}"><span class="exn">Example ${j+1} · ${words(x)} words</span>${esc(x.replace(/\s*\/\s*/g,' / '))}</button>`).join('')}</div>
+    <div class="ideas" hidden><p class="dir">Short starting points. Click one to use it as your draft, then build on it. Replace anything in [brackets] with true details.</p>${ideasFor(s,i).map(x=>`<button type="button" class="idea" data-idea="${esc(x)}">${esc(x.replace(/\s*\/\s*/g,' / '))}</button>`).join('')}</div></div></details>`}).join('');
 }
 function sbCalc(){
   const f=curF(), w=wpm(); let tw=0, filled=0, ph=0; const warn=[];
@@ -2147,13 +2660,15 @@ $('#sbSecs').addEventListener('toggle',e=>{const d=e.target;if(d.matches&&d.matc
 $('#sbSecs').addEventListener('click',e=>{
   const box=e.target.closest('details.sbx'); if(!box) return;
   const ta=box.querySelector('textarea'), k=ta.dataset.k, s=curF().sec.find(x=>x.k===k);
-  const idea=e.target.closest('[data-idea]');
-  if(idea){const v=ta.value.trim();ta.value=v?v+'\n'+idea.dataset.idea:idea.dataset.idea;sbSet(k,ta.value);ta.focus();return;}
+  const pick=e.target.closest('[data-idea],[data-ex]');
+  if(pick){const key=box.dataset.key;sbUndo[key]=ta.value;ta.value=pick.dataset.ex!==undefined?pick.dataset.ex:pick.dataset.idea;sbSet(k,ta.value);
+    box.querySelectorAll('.exs,.ideas').forEach(p=>p.hidden=true);box.querySelectorAll('[data-act="examples"],[data-act="ideas"]').forEach(x=>x.setAttribute('aria-expanded','false'));
+    const u=box.querySelector('[data-act="undo"]');u.hidden=false;ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);return;}
   const b=e.target.closest('button[data-act]'); if(!b) return;
   const a=b.dataset.act;
-  if(a==='ideas'){const p=box.querySelector('.ideas');p.hidden=!p.hidden;b.setAttribute('aria-expanded',String(!p.hidden));}
-  else if(a==='example'){ta.value=k==='so'?SO[sbS.lang]:s.ex;sbSet(k,ta.value);ta.focus();}
-  else if(a==='clear'){ta.value='';sbSet(k,'');ta.focus();}
+  if(a==='ideas'||a==='examples'){const p=box.querySelector(a==='ideas'?'.ideas':'.exs'),o=box.querySelector(a==='ideas'?'.exs':'.ideas');p.hidden=!p.hidden;b.setAttribute('aria-expanded',String(!p.hidden));if(!p.hidden){o.hidden=true;box.querySelector(`[data-act="${a==='ideas'?'examples':'ideas'}"]`).setAttribute('aria-expanded','false');}}
+  else if(a==='undo'){const key=box.dataset.key;if(sbUndo[key]!==undefined){ta.value=sbUndo[key];delete sbUndo[key];sbSet(k,ta.value);b.hidden=true;ta.focus();}}
+  else if(a==='clear'){sbUndo[box.dataset.key]=ta.value;ta.value='';sbSet(k,'');box.querySelector('[data-act="undo"]').hidden=false;ta.focus();}
   else if(a==='copy'){const txt=ta.value.replace(/\s*\/\s*/g,' ');const o=b.textContent;const ok=()=>{b.textContent='Copied';setTimeout(()=>b.textContent=o,1400)};try{navigator.clipboard.writeText(txt).then(ok,()=>{ta.select();b.textContent='Selected, press Ctrl+C'})}catch(err){ta.select();}}
 });
 // Update idea wording in place (never rebuild the sections here: a rebuild on blur would swallow the user's next click)
