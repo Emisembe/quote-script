@@ -2014,7 +2014,7 @@ function buildExplainScore_(ss) {
     'Step 3: read the story, the points table and the picture of the gap below.']);
   sh.getRange(T, 2, 3, 1).setNote('Pick from the list. Everything below updates automatically — the green NOW SHOWING line confirms it.');
   sh.getRange(T + 3, 1).setValue('Row in Scorecard');
-  sh.getRange(T + 3, 2).setFormula(`=IFERROR(MATCH(1,INDEX((${sc_('B')}=$B$${T})*(${sc_('D')}=$B$${T + 1})*(${sc_('F')}=$B$${T + 2}),0),0),"")`);
+  sh.getRange(T + 3, 2).setFormula(`=IFERROR(MATCH(1,ARRAYFORMULA((${sc_('B')}=$B$${T})*(${sc_('D')}=$B$${T + 1})*(${sc_('F')}=$B$${T + 2})),0),"")`);
   sh.getRange(T + 3, 3).setFormula(`=IF(${idx}="","Not in the Scorecard: one side does not trade this product, the gap is below the minimum, or it did not fit under the row limit.","Found")`);
 
   const at = col => `INDEX(${sc_(col)},${idx})`;

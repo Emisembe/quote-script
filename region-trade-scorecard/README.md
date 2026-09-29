@@ -209,8 +209,28 @@ The optional path is the old Africa v3.2 `Code.gs`. It enables the comparison an
 - it refers only to existing tabs and named ranges
 - it uses only real Google Sheets functions
 
+### Formulas calculated with a real spreadsheet engine
+`test/evaluate.js` builds the workbook, loads every tab into HyperFormula (an open-source spreadsheet engine) and calculates the formulas:
+
+```
+npm install hyperformula
+node region-trade-scorecard/test/evaluate.js EUROPE   (or AFRICA)
+```
+
+It calculates 353 of the 426 formulas in a Europe workbook (374 of 447 in Africa), all with no errors.
+
+**What it confirms:**
+- **Health_Check:** every live check says OK. The only two "need attention" lines are the intended SAMPLE-data warnings.
+- **NOW SHOWING lines** calculate, for example "Germany (DEU) — 326 data rows for 2023" and "Netherlands → Germany · Electrical equipment — score 90.5, rank 1 of 20000".
+- **Explain_Score** points add up to the Scorecard score.
+- **Scores:** the composite and value-addition scores equal the weighted averages, and changing a weight on Settings recalculates them.
+- **Country_Needs:** the GAP flags follow the higher-is-better and lower-is-better rules.
+- **Charts:** all 18 charts point at a data range with a header and data.
+
+**Not calculated here:** the other 73 formulas use Google-only functions (QUERY, SORT, ARRAY_CONSTRAIN, SPARKLINE, COUNTUNIQUE), and HyperFormula has no QUERY, SORT or SPARKLINE. Those were checked for spelling, brackets, tabs and named ranges only. This is why the Top_Gaps NOW SHOWING line reads "no opportunities" in this test: its ranked list is built by SORT and FILTER. It needs a look in Sheets.
+
 ### What only a real Google Sheet can confirm
-- **Formula results.** The mock does not calculate formulas, so NOW SHOWING lines, Health_Check results, Top_Gaps, Explain_Score and the live charts need to be looked at in the sheet.
+- **The 73 formulas that use Google-only functions:** the Top_Gaps list, the Country_View top-10 tables, the live chart tables, and the sparkline bars.
 - **Real UN Comtrade and World Bank responses,** including the Comtrade codes above and the API rate limits.
 - **Appearance:** the look of charts, column widths, and the − / + grouping of the blue boxes.
 - **Authorisation prompts and time-driven triggers** actually firing.

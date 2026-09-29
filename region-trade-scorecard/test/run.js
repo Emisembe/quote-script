@@ -98,7 +98,7 @@ function checkFormulas(env, T, label) {
     const code = f.replace(/"[^"]*"/g, '""');
     if (/undefined|NaN|\[object|null/.test(f)) bad.push(`${sheet}!${cell}: bad token in ${f.slice(0, 140)}`);
     if (/\{[A-Z][A-Z_]*\}/.test(f.replace(/\{B\}/g, ''))) bad.push(`${sheet}!${cell}: unresolved {TOKEN}: ${f.slice(0, 140)}`);
-    (code.match(/([A-Za-z][A-Za-z_&]*)!/g) || []).forEach(m => {
+    (code.match(/([A-Za-z][A-Za-z0-9_&]*)!/g) || []).forEach(m => {
       const t = m.slice(0, -1);
       if (!tabs.has(t)) bad.push(`${sheet}!${cell}: unknown tab "${t}" in ${f.slice(0, 120)}`);
     });
