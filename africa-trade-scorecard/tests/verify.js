@@ -69,6 +69,16 @@ const vw = K('VA_CRITERIA').map((x, i) => S('Settings').get(L.settingsVa + i, 2)
 for (let r = L.vaFirst; r < L.vaFirst + nva; r += 41) { const e = Math.round([13, 14, 15, 16, 17].reduce((a, col, i) => a + va.get(r, col) * vw[i], 0) / vws * 1000) / 10; ok(near(V('VA_Scorecard', r, 18), e), `VA score R${r}`); }
 ok(typeof V('Value_Addition', c.top_('vaSummary') + 7, 12) === 'number', 'Value_Addition best VA score');
 
+// 7b. Estimated revenue (VA column W) = H*home + U*Africa + V*outside, and it is live
+const sh = k => c.getParam_(k);
+const revOk = () => { for (let r = L.vaFirst; r < L.vaFirst + nva; r += 29) { const e = Math.round(va.get(r, 8) * sh('P_SH_HOME') + va.get(r, 21) * sh('P_SH_AF') + va.get(r, 22) * sh('P_SH_EXT')); if (!near(V('VA_Scorecard', r, 23), e, 1)) return `row ${r}: ${V('VA_Scorecard', r, 23)} vs ${e}`; } return true; };
+ok(revOk() === true, 'Estimated revenue formula ' + revOk());
+c.setParam_('P_SH_AF', 0.2); sim.run(8, ['VA_Scorecard']);
+ok(revOk() === true, 'Estimated revenue follows a new Africa share (20%) ' + revOk());
+c.setParam_('P_SH_AF', 0.1); sim.run(8, ['VA_Scorecard']);
+const G2 = c.mkGridTop_(); ok(typeof V('Market_Opportunity', G2 + 1, 3) === 'number' && V('Market_Opportunity', G2 + 1, 5) >= V('Market_Opportunity', G2 + 2, 5), 'Market table filled and sorted by outside-Africa imports');
+ok(/Target share|capture 25%/.test(V('Market_Opportunity', c.top_('market') + 1, 1)), 'Market assumptions line: ' + V('Market_Opportunity', c.top_('market') + 1, 1));
+
 // 8/9. Country pickers across ALL countries
 const names = K('COUNTRIES').map(x => x[2]);
 const setCell = (sheet, r, col, v) => S(sheet).set(r, col, v);
@@ -76,9 +86,11 @@ const Vc = c.vlcLayout_();
 const TN = c.top_('needs');
 let needsStats = { eq: 0, sup: 0, help: 0, mach: 0, none: 0 };
 for (const name of names) {
+  const PM = c.top_('market') + 3;
   setCell('Value_Lost_Charts', Vc.country + 1, 2, name); setCell('Country_Needs', TN, 2, name); setCell('Country_View', TC, 2, name);
-  sim.run(8, ['Value_Lost_Charts', 'Country_Needs', 'Country_View']);
-  const errs = sim.errors().filter(e => ['Value_Lost_Charts', 'Country_Needs', 'Country_View'].includes(e.sheet));
+  setCell('Market_Opportunity', PM + 1, 2, name);
+  sim.run(8, ['Value_Lost_Charts', 'Country_Needs', 'Country_View', 'Market_Opportunity']);
+  const errs = sim.errors().filter(e => ['Value_Lost_Charts', 'Country_Needs', 'Country_View', 'Market_Opportunity'].includes(e.sheet));
   ok(!errs.length, `${name}: ${errs.length} errors ${errs[0] ? errs[0].sheet + ' r' + errs[0].r + ' ' + errs[0].msg : ''}`);
   const iso = K('COUNTRIES').find(x => x[2] === name)[0];
   const nChains = [...va.cells.entries()].filter(([k, v]) => k.endsWith(',1') && v === iso).length;
@@ -109,6 +121,14 @@ for (const name of names) {
   if (eqRows) needsStats.eq++; if (supRows) needsStats.sup++; if (!nChains) needsStats.none++;
   // Country_View
   ok(new RegExp('NOW SHOWING: ' + name.replace(/[()']/g, '.')).test(V('Country_View', TC + 2, 1)), `${name} Country_View NOW SHOWING`);
+  // Market_Opportunity section 1
+  ok(new RegExp('NOW SHOWING: ' + name.replace(/[()']/g, '.')).test(V('Market_Opportunity', PM + 3, 1)), `${name} Market NOW SHOWING`);
+  let mr = 0; const revs = []; while (typeof V('Market_Opportunity', PM + 7 + mr, 6) === 'number') { revs.push(V('Market_Opportunity', PM + 7 + mr, 6)); mr++; }
+  ok(mr === Math.min(nChains, 10), `${name} market rows ${mr} vs ${Math.min(nChains, 10)}`);
+  ok(revs.every((x, i) => !i || revs[i - 1] >= x), `${name} market rows sorted by revenue`);
+  ok(!nChains || /^Value proposition: if /.test(V('Market_Opportunity', PM + 4, 1)), `${name} value proposition sentence`);
+  ok(String(V('Market_Opportunity', PM + 6, 6)).endsWith(name), `${name} market chart legend header`);
+  ok(!nChains || /^Market waiting for its processed goods/.test(V('Country_Needs', Sx + 4, 1)), `${name} Country_Needs market line`);
 }
 console.log('countries with equipment rows', needsStats.eq, '| with suppliers', needsStats.sup, '| with machinery imports', needsStats.mach, '| with no value chains', needsStats.none, 'of', names.length);
 

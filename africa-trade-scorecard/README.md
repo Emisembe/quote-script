@@ -44,6 +44,7 @@ Colour code of the tabs: blue = explanation · green = results · orange = your 
 | Countries / Products | Input | Reference data. Edit memberships, or untick products to exclude them |
 | Value_Addition | Results | Per country: raw vs processed exports, processing share, value lost by exporting raw, enabler gaps; 3 charts |
 | Value_Lost_Charts | Results | Value lost made visual: a 4-step diagram of how value is lost, a value ladder for every chain, a worked example, a live "pick a country" section with 2 charts, and 5 Africa-wide charts (raw vs processed, by sector, by region, round trip, readiness vs value lost) |
+| Market_Opportunity | Results | What buyers already pay for the finished products: at home, across Africa (bought from African suppliers vs from outside Africa) and in 10 outside markets (EU, USA, China, Japan, UK, India, UAE, Saudi Arabia, Türkiye, Brazil). Pick a country to see its **value proposition** and **estimated revenue per year** at the target shares set on Settings. 3 charts |
 | Country_Needs | Results | Pick a country: (1) enablers vs the African median, (2) value-addition opportunities, (3) what processing requires, (4) a summary in words, (5) **equipment to buy**, (6) **suppliers to source it from**, (7) **sources of help** (finance, technical support, certification, trade fairs), (8) **machinery it already imports** |
 | VA_Scorecard | Results | Every country × value chain with 5 sub-scores and a value-addition score (0–100) |
 | Value_Chains | Input | The 25 value chains: raw, semi-processed and processed HS4 codes, value multipliers (assumptions) and needs |
@@ -72,6 +73,13 @@ For 25 value chains, for example cocoa → chocolate, copper ore → cable, crud
 - **Needs**: each chain lists what it requires (energy, industry, logistics, skills, finance, digital, standards). A need is flagged where the country is below the African median on the matching World Bank indicator.
 
 UN Comtrade (2b) downloads the 4-digit data and the World Bank indicators automatically. Menu **2d** refreshes only the World Bank indicators, which are free and need no key.
+
+## Market for finished products
+
+- **Estimated revenue** = home imports × home share + Africa's imports from outside Africa × Africa share + outside markets' imports × outside share.
+- The three **target shares** (defaults 25%, 10% and 1%) are **assumptions on Settings**. They are judgements, not facts: change them to test cautious or ambitious scenarios, and every figure updates instantly.
+- The outside-market list and its UN Comtrade codes are also on Settings.
+- Trade values show what buyers pay, not profit. Each country's estimate assumes it alone wins those shares, so don't add countries together.
 
 ## Refreshing the data
 

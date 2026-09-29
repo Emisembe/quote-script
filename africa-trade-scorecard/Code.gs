@@ -23,7 +23,7 @@
 // ------------------------------------------------------------------
 
 const APP = {
-  version: '3.3.0',
+  version: '3.4.0',
   sheets: {
     guide: 'Guide',
     health: 'Health_Check',
@@ -45,6 +45,7 @@ const APP = {
     raw: 'Raw_Trade',
     vaSummary: 'Value_Addition',
     vaCharts: 'Value_Lost_Charts',
+    market: 'Market_Opportunity',
     vaScore: 'VA_Scorecard',
     needs: 'Country_Needs',
     chains: 'Value_Chains',
@@ -91,6 +92,9 @@ const PARAMS = [
   ['P_ACC_AFCFTA', 'Access score: both in AfCFTA', 0.6, '0–1. AfCFTA = African Continental Free Trade Area (Countries tab).', true],
   ['P_ACC_OTHER', 'Access score: other', 0.3, '0–1.', true],
   ['P_LANDLOCK', 'Proximity multiplier if landlocked', 0.85, 'Applied when exporter or importer has no sea coast.', true],
+  ['P_SH_HOME', 'Target share: country\'s own imports of the finished product', 0.25, 'ASSUMPTION. Share of its own imports a new processor could replace. Used on Market_Opportunity.', true],
+  ['P_SH_AF', 'Target share: what Africa imports from outside Africa', 0.10, 'ASSUMPTION. Share of Africa\'s imports from outside Africa it could win.', true],
+  ['P_SH_EXT', 'Target share: outside markets', 0.01, 'ASSUMPTION. Share of the outside markets (list below) it could win.', true],
   ['P_API_KEY', 'UN Comtrade API key', '', 'Free key: comtradedeveloper.un.org → subscribe to "comtrade - v1". API = Application Programming Interface.', true],
   ['P_STATUS', 'Data status', 'No data loaded', 'Set automatically. Shown on the Dashboard.', false],
   ['P_WB_STATUS', 'Enabler data status', 'No enabler data loaded', 'Set automatically: World Bank indicators or SAMPLE.', false],
@@ -108,7 +112,7 @@ const VA_CRITERIA = [
   ['Value at stake', 30, 'Estimated extra export value if the raw exports were processed first (log scale).'],
   ['Raw material base', 20, 'How much raw and semi-processed material the country already exports (log scale).'],
   ['Processing gap', 15, 'Part of the chain still exported raw: 1 − processing share.'],
-  ['Market for processed goods', 15, 'Home imports and Africa-wide imports of the processed products (log scale).'],
+  ['Market for processed goods', 15, 'Home imports, Africa\'s imports from outside Africa, and outside markets\' imports of the finished products (log scale).'],
   ['Readiness (enablers)', 20, 'How the country scores on the enablers this chain needs (World Bank indicators).'],
 ];
 
@@ -432,6 +436,26 @@ const SUPPLIERS = [
   ['Mining Indaba', 'South Africa (Cape Town)', 'Trade fair', 'African mining investment conference (beneficiation, minerals processing)', 'Copper ore; Cobalt; Iron ore; Bauxite; Manganese & chrome ore; Gold & diamonds; Lithium & graphite', 'miningindaba.com', ''],
 ];
 
+// ------------------------------------------------------------------
+// Finished-product markets — constants
+// ------------------------------------------------------------------
+
+// Outside markets for finished products: [name, UN Comtrade reporter code, short code]. Editable on Settings.
+const MARKETS = [
+  ['European Union', 97, 'EUU'],
+  ['United States', 842, 'USA'],
+  ['China', 156, 'CHN'],
+  ['Japan', 392, 'JPN'],
+  ['United Kingdom', 826, 'GBR'],
+  ['India', 699, 'IND'],
+  ['United Arab Emirates', 784, 'ARE'],
+  ['Saudi Arabia', 682, 'SAU'],
+  ['Türkiye', 792, 'TUR'],
+  ['Brazil', 76, 'BRA'],
+];
+// Sample-data shape only (NOT real statistics): relative import size of each outside market.
+const SAMPLE_MARKET_SIZE = { EUU: 100, USA: 90, CHN: 70, JPN: 30, GBR: 25, IND: 25, ARE: 15, SAU: 12, TUR: 12, BRA: 12 };
+
 // What each tab shows and how to explain it. Shown as a blue box at the top of the tab
 // and collected on the Guide. Each string = one line on screen (keep lines short).
 const TAB_HELP = {
@@ -536,6 +560,16 @@ const TAB_HELP = {
     say: ['"For every dollar of cocoa beans exported raw, someone abroad turns it into about two dollars of chocolate. The green part is the value',
       ' we give away — this page shows how much that is, for which countries and which products."'],
     watch: ['All value-lost figures use the multipliers on Value_Chains (assumptions). Section 4 redraws when you pick another country.'],
+  },
+  market: {
+    title: 'Market_Opportunity — what buyers pay for the finished products',
+    what: ['What buyers pay each year for the finished products of the 25 value chains: at home, across Africa (bought inside vs outside Africa)',
+      'and in 10 big outside markets — plus an estimated yearly revenue for each country if it processed at home (its value proposition).'],
+    read: ['Estimated revenue = home imports × home share + Africa\'s imports from outside Africa × Africa share + outside markets × outside share.',
+      'The three target shares are assumptions on Settings: change them and every revenue figure updates at once.'],
+    say: ['"Africa already pays this much a year for this finished product, mostly to suppliers outside Africa. Winning even 10% of it is worth',
+      ' this much a year to a processor here — before counting export markets."'],
+    watch: ['Trade values show what buyers pay, not profit. Each country\'s revenue assumes it alone wins those shares: do not add countries together.'],
   },
   vaScore: {
     title: 'VA_Scorecard — value-addition opportunities (country × value chain)',
@@ -691,6 +725,8 @@ const L = (() => {
     settingsVa: s + CRITERIA.length + 4,
     settingsParamHead: s + CRITERIA.length + VA_CRITERIA.length + 6,
     settingsParam: s + CRITERIA.length + VA_CRITERIA.length + 7,
+    settingsMktHead: s + CRITERIA.length + VA_CRITERIA.length + 7 + PARAMS.length + 1,
+    settingsMkt: s + CRITERIA.length + VA_CRITERIA.length + 7 + PARAMS.length + 2,
     scoreHead: top_('score'), scoreFirst: top_('score') + 1,
     rawHead: top_('raw'), rawFirst: top_('raw') + 1,
     ctryHead: top_('countries'), ctryFirst: top_('countries') + 1,
@@ -1059,6 +1095,10 @@ function snapshot_(ss) {
   if (vch && vc.getLastRow() > vch) {
     snap.chains = vc.getRange(vch + 1, 1, vc.getLastRow() - vch, 8).getValues().filter(r => String(r[0]).trim());
   }
+  if (st) {
+    const mh = findHeader(st, 'Outside market (for finished products)');
+    if (mh) snap.markets = st.getRange(mh + 1, 1, MARKETS.length + 5, 3).getValues().filter(r => String(r[0]).trim());
+  }
   [['equipment', APP.sheets.equipment, 'Value chain'], ['suppliers', APP.sheets.suppliers, 'Organisation']].forEach(([k, name, head]) => {
     const sh = ss.getSheetByName(name);
     const h = findHeader(sh, head);
@@ -1111,6 +1151,10 @@ function restore_(snap) {
     sh.getRange(L.chainsFirst, 1, snap.chains.length, 8).setValues(snap.chains.map(r => r.map(v => String(v === null ? '' : v))
       .map((v, i) => (i === 5 ? Number(v) || 1 : v))));
   }
+  if (snap.markets && snap.markets.length) {
+    st.getRange(L.settingsMkt, 1, MARKETS.length + 5, 3).clearContent();
+    st.getRange(L.settingsMkt, 1, snap.markets.length, 3).setValues(snap.markets.slice(0, MARKETS.length + 5));
+  }
   [['equipment', APP.sheets.equipment, L.eqFirst], ['suppliers', APP.sheets.suppliers, L.supFirst]].forEach(([k, name, first]) => {
     if (!snap[k] || !snap[k].length) return;
     const sh = sheet_(name);
@@ -1135,7 +1179,7 @@ function buildWorkbook_() {
   const keptKey = ss.getRangeByName('P_API_KEY') ? ss.getRangeByName('P_API_KEY').getValue() : '';
   const s = APP.sheets;
   const order = [s.guide, s.health, s.about, s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.settings,
-    s.vaSummary, s.vaCharts, s.needs, s.vaScore, s.method, s.glossary, s.sources, s.updates, s.faq,
+    s.vaSummary, s.vaCharts, s.market, s.needs, s.vaScore, s.method, s.glossary, s.sources, s.updates, s.faq,
     s.countries, s.products, s.chains, s.equipment, s.suppliers, s.enablers, s.raw, s.rawHs4];
   order.forEach((name, i) => {
     let sh = ss.getSheetByName(name);
@@ -1159,6 +1203,7 @@ function buildWorkbook_() {
   buildVaScorecard_(ss);
   buildValueAddition_(ss);
   buildValueLostCharts_(ss);
+  buildMarketOpportunity_(ss);
   buildCountryNeeds_(ss);
   buildTopGaps_(ss);
   buildCountryView_(ss);
@@ -1248,6 +1293,12 @@ function buildSettings_(ss, keptKey) {
     cell.setBackground(p[4] ? APP.color.input : '#f1f3f4');
   });
   sh.getRange(L.settingsParam + 1, 2).setNumberFormat('#,##0');
+  ['P_SH_HOME', 'P_SH_AF', 'P_SH_EXT'].forEach(n => ss.getRangeByName(n).setNumberFormat('0%'));
+
+  header_(sh.getRange(L.settingsMktHead, 1, 1, 3), ['Outside market (for finished products)', 'UN Comtrade reporter code', 'Short code']);
+  sh.getRange(L.settingsMktHead, 2).setNote('If a market shows no data after a download, look up its reporter code on comtradeplus.un.org and correct it here.');
+  sh.getRange(L.settingsMkt, 1, MARKETS.length, 3).setValues(MARKETS);
+  sh.getRange(L.settingsMkt, 1, MARKETS.length + 5, 2).setBackground(APP.color.input);
   sh.setColumnWidth(1, 280); sh.setColumnWidth(2, 240); sh.setColumnWidth(3, 620);
 }
 
@@ -1676,7 +1727,7 @@ function colourTabs_(ss) {
   const s = APP.sheets;
   const groups = [
     ['#4a86e8', [s.guide, s.about, s.method, s.glossary, s.sources, s.updates, s.faq]],
-    ['#1f4e3d', [s.health, s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.vaSummary, s.vaCharts, s.needs, s.vaScore]],
+    ['#1f4e3d', [s.health, s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.vaSummary, s.vaCharts, s.market, s.needs, s.vaScore]],
     ['#e8a33d', [s.settings, s.countries, s.products, s.chains, s.equipment, s.suppliers]],
     ['#999999', [s.raw, s.enablers, s.rawHs4]],
   ];
@@ -1734,7 +1785,7 @@ function writeDocPage_(ss, name, blocks, widths) {
 function buildGuide_(ss) {
   const s = APP.sheets;
   const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
-  const helpRows = ['health', 'dashboard', 'charts', 'top', 'country', 'explain', 'score', 'vaSummary', 'vaCharts', 'needs', 'vaScore', 'settings',
+  const helpRows = ['health', 'dashboard', 'charts', 'top', 'country', 'explain', 'score', 'vaSummary', 'vaCharts', 'market', 'needs', 'vaScore', 'settings',
     'countries', 'products', 'chains', 'equipment', 'suppliers', 'enablers', 'raw', 'rawHs4']
     .map(k => {
       const h = TAB_HELP[k];
@@ -1782,6 +1833,7 @@ function buildGuide_(ss) {
       [s.score, 'Results', 'The full composite index: raw inputs, 7 sub-scores (0–1) and the composite score (0–100).'],
       [s.vaSummary, 'Results', 'Value addition per country: raw vs processed exports, processing share, value lost, charts.'],
       [s.vaCharts, 'Results', 'Value lost made visual: how it happens (diagram), value ladder per chain, worked example, a live country view, 5 charts.'],
+      [s.market, 'Results', 'What buyers pay for the finished products: at home, across Africa (inside vs outside Africa), in 10 outside markets; estimated revenue per country.'],
       [s.needs, 'Results', 'Pick a country: enablers vs the African median, its value-addition opportunities, what processing requires.'],
       [s.vaScore, 'Results', 'Every country × value chain with 5 sub-scores and a value-addition score (0–100).'],
       [s.settings, 'Your inputs', 'Weights of the 7 criteria and other parameters (yellow cells).'],
@@ -1809,6 +1861,7 @@ function buildGuide_(ss) {
       [6, s.settings, 'Change one weight live', '"If we care more about distance, the ranking changes like this — the method is transparent."'],
       [7, s.vaSummary, 'Top of the country table and the charts', '"Many countries export raw materials and buy the processed goods back. This is the value left on the table."'],
       ['7b', s.vaCharts, 'Diagram 1, the value ladder, then section 4 for your audience\'s country', '"For every dollar exported raw, the processed product is worth more — the green part is what we give away."'],
+      ['7c', s.market, 'Pick your audience\'s country in section 1', '"Buyers already pay this much for the finished product — here is what a processor could earn at modest shares."'],
       [8, s.needs, 'Your audience\'s country, then sections 5–7', '"To capture that value, this country needs these enablers and this equipment — and here is who supplies it and who can help finance it."'],
       [9, s.method, '"Know the limits"', '"These are leads to investigate, not guarantees. Official data misses informal trade."'],
     ]],
@@ -1934,7 +1987,14 @@ function buildMethodology_(ss) {
     ['p', 'Value-addition score = weighted average of the 5 sub-scores × 100, with the value-addition weights on Settings (live formula).'],
     ['p', 'Needs flagged = the enablers a chain needs (Value_Chains → Needs) where the country is below the African median. Standards are always listed "(check)".'],
     ['gap'],
+    ['h', 'Market for finished products (Market_Opportunity tab)'],
+    ['p', 'For each value chain, the finished-product codes (Value_Chains → Processed HS4) are followed in three markets, in US dollars for the analysis year:'],
+    ['p', '   Home market = the country\'s own imports · Africa from outside Africa = all African imports minus imports from African suppliers · Outside markets = 10 markets on Settings'],
+    ['p', '   Estimated revenue = home market × home share + Africa from outside Africa × Africa share + outside markets × outside share (shares on Settings)'],
+    ['p', 'The value-addition criterion "Market for processed goods" = 0.4 × home market + 0.4 × Africa from outside Africa + 0.2 × outside markets (each log-scaled, min-max).'],
+    ['gap'],
     ['h', 'Know the limits'],
+    ['p', '• Market values show what buyers pay, not profit or margins. Each country\'s revenue estimate assumes it alone wins the target shares.'],
     ['p', '• Value lost uses assumed multipliers and 4-digit codes that can be broader than the chain (0901 includes roasted coffee, 7102 cut diamonds).'],
     ['p', '• Enabler indicators are national averages with different latest years; a country can have a strong industrial zone despite a low average.'],
     ['p', '• Reporting gaps: several African countries report to UN Comtrade late or not at all; missing reporters appear as zero.'],
@@ -1995,6 +2055,11 @@ function buildGlossary_(ss) {
       ['Enabler', 'A condition that makes processing possible: electricity, industrial base, logistics, skills, finance, digital connectivity, standards.'],
       ['Readiness', 'Average of the enabler indicators a value chain needs, scaled 0–1 across African countries.'],
       ['African median', 'The middle value of all African countries for an indicator: half are above, half below. Below it = a GAP flag.'],
+      ['Market value (what buyers pay)', 'The value of imports of a product: what buyers already pay each year. It shows market size, not profit.'],
+      ['Import substitution', 'Producing at home (or in Africa) what is now imported from outside — the clearest market for a new processor.'],
+      ['Target share', 'An assumption: the part of a market a new processor could realistically win. Set on Settings.'],
+      ['Value proposition', 'Why processing makes sense: the market already paying for the finished product and the revenue within reach.'],
+      ['Estimated revenue', 'Home imports × home share + Africa\'s imports from outside Africa × Africa share + outside markets × outside share.'],
       ['Machine maker', 'A company that builds processing machines (e.g. roasters, spinning machines, sawmills).'],
       ['Engineering & plant builder', 'A company that designs and builds a complete plant (often called EPC: engineering, procurement and construction).'],
       ['Technology licensor', 'A company that owns a process (e.g. for ammonia or aluminium smelting) and licenses it to plant owners.'],
@@ -2117,6 +2182,9 @@ function buildFaq_(ss) {
       ['How do I know the page changed after I picked a country?', 'Look at the green NOW SHOWING line under the yellow cell: it names what you picked and counts what was found. On Value_Lost_Charts the chart legends show the country name too.'],
       ['A country shows nothing — is it broken?', 'No: the green line says why — no data for that year, no raw exports in the 25 value chains, or the data is not loaded yet. Health_Check shows which.'],
       ['How do I check everything works?', 'Open Health_Check: every line should say OK. Run Africa Trade → Run full audit to scan every tab for errors.'],
+      ['Why are the target shares on Settings?', 'They are judgements, not facts: data shows how big a market is, not how much a new processor would win. On Settings you can choose them, test cautious and ambitious scenarios instantly, and show exactly what the revenue figures are based on.'],
+      ['Can I add up the revenue of several countries?', 'No. Each country\'s estimate assumes it alone wins those shares of the same markets.'],
+      ['A market shows no data — why?', 'The country may not report yet for that year, or its UN Comtrade code on Settings may need correcting (look it up on comtradeplus.un.org).'],
       ['Where does the supplier list come from?', 'It is a starting list of well-known, established organisations in each field. It is not an endorsement and not complete: compare several quotes, check references, and add local suppliers on the Suppliers tab.'],
       ['Why are some websites missing?', 'Websites are given only where certain. For the others, search the organisation\'s name.'],
       ['Which equipment should a country buy first?', 'Usually the first processing stages (Equipment tab, stages 1–2): they need less money and power. A feasibility study should confirm the plant size.'],
@@ -2272,13 +2340,31 @@ function runComtradeFetch_() {
   const started = Date.now();
   const missing = (props.getProperty(APP.missingProp) || '').split(',').filter(String);
 
-  while (cursor < countries.length && Date.now() - started < 4.5 * 60 * 1000) {
+  const markets = readMarkets_();
+  const total = countries.length + markets.length;
+  while (cursor < total && Date.now() - started < 4.5 * 60 * 1000) {
+    if (cursor >= countries.length) {
+      const m = markets[cursor - countries.length];
+      try {
+        const rowsM = fetchMarketHs4_(m, countries, chains, year, key);
+        if (rowsM.length) writeHs4_(rowsM, false);
+        else missing.push(m.iso);
+      } catch (e) {
+        missing.push(m.iso + ' (' + e.message.slice(0, 40) + ')');
+      }
+      cursor++;
+      props.setProperty(APP.fetchProp, String(cursor));
+      props.setProperty(APP.missingProp, missing.join(','));
+      setParam_('P_STATUS', `Fetching outside markets from UN Comtrade… ${cursor - countries.length}/${markets.length}`);
+      Utilities.sleep(1200);
+      continue;
+    }
     const c = countries[cursor];
     let rows, rows4;
     try {
       rows = fetchReporter_(c, countries, year, key);
       Utilities.sleep(1200); // stay under the API rate limit
-      rows4 = fetchReporterHs4_(c, chains, year, key);
+      rows4 = fetchReporterHs4_(c, chains, year, key, countries);
     } catch (e) {
       setParam_('P_STATUS', `UN Comtrade fetch failed at ${c.name}: ${e.message}`);
       props.deleteProperty(APP.fetchProp);
@@ -2295,9 +2381,9 @@ function runComtradeFetch_() {
     Utilities.sleep(1200); // stay under the API rate limit
   }
 
-  if (cursor < countries.length) {
+  if (cursor < total) {
     ScriptApp.newTrigger(APP.fetchHandler).timeBased().after(60 * 1000).create();
-    notify_(`Fetched ${cursor}/${countries.length} countries. Continuing automatically in about a minute…`);
+    notify_(`Fetched ${cursor}/${total} countries and markets. Continuing automatically in about a minute…`);
     return;
   }
 
@@ -2956,7 +3042,9 @@ function buildVaScorecard_(ss) {
     'Processed exports (USD)', 'Processed imports (USD)', 'Processing share', 'Value multiplier (assumption)',
     'Value lost (estimate, USD)', 'Round-trip imports (USD)']
     .concat(VA_CRITERIA.map(c => c[0] + ' (0–1)'))
-    .concat(['Value-addition score (0–100)', 'Needs flagged for this chain', 'What processing requires']);
+    .concat(['Value-addition score (0–100)', 'Needs flagged for this chain', 'What processing requires',
+      'Africa\'s imports of the finished products from outside Africa (USD)', 'Outside markets\' imports of the finished products (USD)',
+      'Estimated revenue per year (USD)']);
   header_(sh.getRange(L.vaHead, 1, 1, head.length), head);
   sh.getRange(L.vaHead, 1, 1, head.length).setWrap(true);
   sh.setRowHeight(L.vaHead, 60);
@@ -2968,7 +3056,9 @@ function buildVaScorecard_(ss) {
     'Processed imports bought while exporting the raw material: min(raw exports, processed imports)']
     .concat(VA_CRITERIA.map(c => c[2] + ' Scaled 0–1.'))
     .concat(['Weighted average of the 5 sub-scores × 100. Live formula: follows the value-addition weights on Settings.',
-      'Enablers this chain needs where the country is below the African median', '']);
+      'Enablers this chain needs where the country is below the African median', '',
+      'Same for every country in this chain: the Africa-wide import-substitution market', 'Same for every country in this chain: 10 outside markets (list on Settings)',
+      'Home imports × home share + Africa\'s imports from outside Africa × Africa share + outside markets × outside share. Live: shares on Settings.']);
   sh.getRange(L.vaHead, 1, 1, notes.length).setNotes([notes]);
   sh.setFrozenRows(L.vaHead);
   const n = sh.getMaxRows() - L.vaFirst + 1;
@@ -2979,6 +3069,8 @@ function buildVaScorecard_(ss) {
   sh.getRange(L.vaFirst, 13, n, 5).setNumberFormat('0.000');
   sh.getRange(L.vaFirst, 18, n, 1).setNumberFormat('0.0').setFontWeight('bold');
   sh.setColumnWidth(2, 170); sh.setColumnWidth(3, 260); sh.setColumnWidth(19, 320); sh.setColumnWidth(20, 500);
+  sh.getRange(L.vaFirst, 21, n, 3).setNumberFormat('#,##0');
+  sh.getRange(L.vaFirst, 23, n, 1).setFontWeight('bold');
 }
 
 function buildValueAddition_(ss) {
@@ -3071,7 +3163,9 @@ function buildCountryNeeds_(ss) {
   sh.getRange(S + 1, 1).setFormula(`=IF(${iso}="","",$B$${T}&" — biggest enabler gaps: "&IFERROR(TEXTJOIN(", ",TRUE,FILTER(${firstLabel},LEFT(${firstStatus},3)="GAP")),"none flagged")&".")`);
   sh.getRange(S + 2, 1).setFormula(`=IF(ISNUMBER(D${O + 2}),"Largest value lost: "&A${O + 2}&" — about "&TEXT(D${O + 2},"$#,##0")&" a year (estimate). Processing share today: "&TEXT(C${O + 2},"0%")&".","")`);
   sh.getRange(S + 3, 1).setValue('Always check as well: quality standards and certification, which no indicator measures.');
-  sh.getRange(S + 1, 1, 3, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  sh.getRange(S + 4, 1).setFormula(`=IF(COUNTIF(${va_('A')},${iso})=0,"","Market waiting for its processed goods: about "&` +
+    `TEXT(SUMIF(${va_('A')},${iso},${va_('W')}),"$#,##0")&" a year of estimated revenue across its value chains, at the target shares on Settings (details: Market_Opportunity).")`);
+  sh.getRange(S + 1, 1, 4, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
   buildNeedsEquipment_(sh, S, O, iso);
 
   sh.setConditionalFormatRules([
@@ -3197,7 +3291,9 @@ function generateSampleEnablers_(countries) {
 
 function loadSampleValueAddition_() {
   const countries = readCountries_();
-  writeHs4_(generateSampleHs4_(countries, readChains_(), Number(getParam_('P_YEAR'))), true);
+  const chains = readChains_(), year = Number(getParam_('P_YEAR'));
+  const base = generateSampleHs4_(countries, chains, year);
+  writeHs4_(base.concat(generateSampleMarketRows_(countries, chains, readMarkets_(), year, base)), true);
   const e = generateSampleEnablers_(countries);
   writeEnablers_(e.byIso, e.years, 'SAMPLE — synthetic enabler values, NOT real World Bank data');
 }
@@ -3260,16 +3356,20 @@ function comtradeGet_(query, key) {
 }
 
 /** One reporter, analysis year, trade with the world, HS4 codes of all value chains. */
-function fetchReporterHs4_(reporter, chains, year, key) {
+function fetchReporterHs4_(reporter, chains, year, key, countries) {
+  countries = countries || [];
   const codes = {};
   chains.forEach(k => k.raw.concat(k.semi, k.fin).forEach(c => { codes[c] = true; }));
   MACHINERY.forEach(m => { codes[m[0]] = true; });
   const list = Object.keys(codes).map(c => ('000' + c).slice(-4));
   if (!list.length) return [];
   const data = comtradeGet_({
-    reporterCode: reporter.m49, period: year, partnerCode: 0, partner2Code: 0, flowCode: 'M,X',
+    reporterCode: reporter.m49, period: `${year},${year - 1}`,
+    partnerCode: ['0'].concat(countries.filter(c => c.iso !== reporter.iso).map(c => c.m49)).join(','), partner2Code: 0, flowCode: 'M,X',
     cmdCode: list.join(','), customsCode: 'C00', motCode: 0, maxRecords: 250000, includeDesc: 'false',
   }, key);
+  const byM49 = {};
+  countries.forEach(c => { byM49[c.m49] = c.iso; });
   const seen = {};
   data.forEach(d => {
     const code = Number(d.cmdCode), value = Number(d.primaryValue);
@@ -3277,8 +3377,9 @@ function fetchReporterHs4_(reporter, chains, year, key) {
     if (d.motCode !== undefined && Number(d.motCode) !== 0) return;
     if (d.partner2Code !== undefined && Number(d.partner2Code) !== 0) return;
     if (d.customsCode !== undefined && d.customsCode !== 'C00') return;
-    if (Number(d.partnerCode) !== 0) return;
-    seen[[d.flowCode, code].join('|')] = [Number(d.period), reporter.iso, 'WLD', d.flowCode, code, Math.round(value)];
+    const partner = Number(d.partnerCode) === 0 ? 'WLD' : byM49[Number(d.partnerCode)];
+    if (!partner) return;
+    seen[[d.period, partner, d.flowCode, code].join('|')] = [Number(d.period), reporter.iso, partner, d.flowCode, code, Math.round(value)];
   });
   return Object.keys(seen).map(k => seen[k]);
 }
@@ -3291,7 +3392,7 @@ function fetchReporterHs4_(reporter, chains, year, key) {
  * countries, chains: parsed objects. hs4Rows: [year, reporter, partner, flow, hs4, value].
  * enablers: { ISO3: [values] }. Returns { rows: VA_Scorecard rows, summary }.
  */
-function valueAddition_(countries, chains, hs4Rows, enablers, year) {
+function valueAddition_(countries, chains, hs4Rows, enablers, year, mk) {
   const X = {}, M = {};
   hs4Rows.forEach(r => {
     if (Number(r[0]) !== year || String(r[2]).trim() !== 'WLD') return;
@@ -3355,14 +3456,20 @@ function valueAddition_(countries, chains, hs4Rows, enablers, year) {
   const nBase = scaler_(cands.map(x => lg(x.raw + x.semi)));
   const nHome = scaler_(cands.map(x => lg(x.finM)));
   const nAf = scaler_(afFinM.map(lg));
+  const outAf = chains.map((k, i) => (mk ? mk.chains[i].outside : 0));
+  const ext = chains.map((k, i) => (mk ? mk.chains[i].ext : 0));
+  const nOut = scaler_(outAf.map(lg)), nExt = scaler_(ext.map(lg));
+  const market = x => (mk
+    ? 0.4 * nHome(lg(x.finM)) + 0.4 * nOut(lg(outAf[x.i])) + 0.2 * nExt(lg(ext[x.i]))
+    : 0.5 * nHome(lg(x.finM)) + 0.5 * nAf(lg(afFinM[x.i])));
   const r3 = v => Math.round(v * 1000) / 1000;
 
   const rows = cands.map(x => [
     x.c.iso, x.c.name, x.k.name, x.k.sector, Math.round(x.raw), Math.round(x.semi), Math.round(x.fin), Math.round(x.finM),
     r3(x.share), x.k.mult, Math.round(x.lost), Math.round(x.round),
     r3(nStake(lg(x.lost))), r3(nBase(lg(x.raw + x.semi))), r3(1 - x.share),
-    r3(0.5 * nHome(lg(x.finM)) + 0.5 * nAf(lg(afFinM[x.i]))), r3(readiness(x.c.iso, x.k.needs)),
-    needsText(x.c.iso, x.k.needs), x.k.requires,
+    r3(market(x)), r3(readiness(x.c.iso, x.k.needs)),
+    needsText(x.c.iso, x.k.needs), x.k.requires, Math.round(outAf[x.i]), Math.round(ext[x.i]),
   ]);
 
   // Country summary.
@@ -3423,8 +3530,11 @@ function computeValueAddition_() {
   }
   const sh4 = sheet_(APP.sheets.rawHs4);
   const rows4 = sh4.getRange(L.hs4First, 1, sh4.getLastRow() - L.hs4First + 1, 6).getValues();
-  const res = valueAddition_(readCountries_(), readChains_(), rows4, readEnablers_(), Number(getParam_('P_YEAR')));
+  const countries = readCountries_(), chains = readChains_(), year = Number(getParam_('P_YEAR'));
+  const mk = marketData_(countries, chains, readMarkets_(), rows4, year);
+  const res = valueAddition_(countries, chains, rows4, readEnablers_(), year, mk);
   writeVaScorecard_(res.rows);
+  writeMarketOpportunity_(mk);
   writeValueAddition_(res.summary);
   writeValueLostCharts_(res.summary);
 }
@@ -3437,6 +3547,8 @@ function writeVaScorecard_(rows) {
   ensureRows_(sh, F + rows.length);
   sh.getRange(F, 1, rows.length, 17).setValues(rows.map(r => r.slice(0, 17)));
   sh.getRange(F, 19, rows.length, 2).setValues(rows.map(r => r.slice(17, 19)));
+  sh.getRange(F, 21, rows.length, 2).setValues(rows.map(r => [r[19] || 0, r[20] || 0]));
+  sh.getRange(F, 23).setFormula(`=ARRAYFORMULA(IF(A${F}:A="",,ROUND(H${F}:H*P_SH_HOME+U${F}:U*P_SH_AF+V${F}:V*P_SH_EXT,0)))`);
   const weighted = ['M', 'N', 'O', 'P', 'Q'].map((col, i) => `${col}${F}:${col}*${vaWeightCell_(i)}`).join('+');
   sh.getRange(F, 18).setFormula(
     `=ARRAYFORMULA(IF(A${F}:A="",,ROUND((${weighted})/MAX(SUM(${vaWeightRange_()}),0.0001)*100,1)))`);
@@ -3726,6 +3838,15 @@ function fillMissingValueAddition_() {
       'Run Africa Trade → Refresh data to download it. Until then the value-addition tabs say "no value-addition data yet".';
   }
   if (noEnablers && source !== 'SAMPLE') { try { fetchWorldBank_(); } catch (e) { /* optional */ } }
+  const sh4 = sheet_(APP.sheets.rawHs4);
+  const reps = sh4.getRange(L.hs4First, 2, hs4Count_(), 1).getValues().map(r => r[0]);
+  if (!reps.some(r => MARKETS.some(m => m[2] === r))) {
+    if (source === 'SAMPLE') {
+      loadSampleValueAddition_();
+      return 'Sample market data was added (the older version did not have it). Market_Opportunity is now filled.';
+    }
+    return 'The new Market_Opportunity tab needs finished-product market data.\n\nRun Africa Trade → Refresh data to download it.';
+  }
   return '';
 }
 
@@ -3776,6 +3897,10 @@ function healthChecks_() {
       'The Suppliers tab should list suppliers and sources of help.', 'Suppliers'],
     ['Machinery import rows (Raw_HS4)', `=SUMPRODUCT(COUNTIFS(Raw_HS4!$E$${L.hs4First}:$E,{${MACHINERY.map(m => m[0]).join(',')}},Raw_HS4!$D$${L.hs4First}:$D,"M"))`,
       '=IF({B}>0,"OK","CHECK")', 'Run Refresh data (UN Comtrade) or 2a (sample) to load machinery imports.', 'Raw_HS4'],
+    ['Outside-market rows (Raw_HS4)', `=SUMPRODUCT(COUNTIF(Raw_HS4!$B$${L.hs4First}:$B,{${MARKETS.map(m => '"' + m[2] + '"').join(',')}}))`,
+      '=IF({B}>0,"OK","CHECK")', 'Run Refresh data (UN Comtrade) or 2a (sample). If still empty, check the market codes on Settings.', 'Raw_HS4'],
+    ['Target shares between 0% and 100%', '=AND(P_SH_HOME>=0,P_SH_HOME<=1,P_SH_AF>=0,P_SH_AF<=1,P_SH_EXT>=0,P_SH_EXT<=1)',
+      '=IF({B},"OK","CHECK")', 'Each target share on Settings must be between 0% and 100%.', 'Settings'],
     ['Countries listed', `=COUNTA(Countries!$A$${L.ctryFirst}:$A)`, '=IF({B}>=50,"OK","CHECK")',
       'The Countries tab should list the 54 African countries.', 'Countries'],
     ['Products included', `=COUNTIF(Products!$D$${L.prodFirst}:$D,TRUE)`, '=IF({B}>0,"OK","CHECK")',
@@ -3980,10 +4105,258 @@ function buildNeedsEquipment_(sh, S, O, iso) {
   MACHINERY.forEach(([code, name], i) => {
     const r = first + i;
     sh.getRange(r, 1, 1, 4).setValues([[code, name,
-      `=SUMIFS(Raw_HS4!$F:$F,Raw_HS4!$A:$A,P_YEAR,Raw_HS4!$B:$B,${iso},Raw_HS4!$D:$D,"M",Raw_HS4!$E:$E,A${r})`,
+      `=SUMIFS(Raw_HS4!$F:$F,Raw_HS4!$A:$A,P_YEAR,Raw_HS4!$B:$B,${iso},Raw_HS4!$C:$C,"WLD",Raw_HS4!$D:$D,"M",Raw_HS4!$E:$E,A${r})`,
       `=IF(MAX($C$${first}:$C$${last})=0,"",SPARKLINE(C${r},{"charttype","bar";"max",MAX($C$${first}:$C$${last});"color1","#4a86e8"}))`]]);
   });
   sh.getRange(first, 1, MACHINERY.length, 1).setNumberFormat('0000');
   sh.getRange(first, 3, MACHINERY.length, 1).setNumberFormat('#,##0');
   note(last + 1, 'Zero = no imports recorded for that year, or the country did not report. The data comes with UN Comtrade (Refresh) or sample data.');
+}
+
+// ------------------------------------------------------------------
+// Finished-product markets — data, compute and tab
+// ------------------------------------------------------------------
+
+function readMarkets_() {
+  const sh = SpreadsheetApp.getActive().getSheetByName(APP.sheets.settings);
+  if (!sh || sh.getLastRow() < L.settingsMkt) return MARKETS.map(m => ({ name: m[0], code: Number(m[1]), iso: m[2] }));
+  return sh.getRange(L.settingsMkt, 1, MARKETS.length + 10, 3).getValues()
+    .filter(r => String(r[0]).trim() && String(r[2]).trim())
+    .map(r => ({ name: String(r[0]).trim(), code: Number(r[1]), iso: String(r[2]).trim() }));
+}
+
+/** Synthetic partner detail and outside-market rows for finished products (NOT real statistics). */
+function generateSampleMarketRows_(countries, chains, markets, year, baseRows) {
+  const rng = mulberry32_(20261003);
+  const rows = [];
+  const finCode = {};
+  chains.forEach((k, i) => k.fin.forEach(c => { finCode[c] = i; }));
+  const sellers = i => (SAMPLE_CHAIN_PROCESSORS[i] || []).concat(SAMPLE_CHAIN_PRODUCERS[i] || []);
+  // African imports of finished products: previous year + part bought from African suppliers.
+  baseRows.forEach(r => {
+    if (r[3] !== 'M' || r[2] !== 'WLD' || finCode[r[4]] === undefined) return;
+    const v = r[5], i = finCode[r[4]];
+    rows.push([year - 1, r[1], 'WLD', 'M', r[4], Math.round(v / (0.85 + 0.4 * rng()))]);
+    const fromAfrica = v * (0.03 + 0.25 * rng());
+    const partners = sellers(i).filter(p => p !== r[1]);
+    if (!partners.length) return;
+    const p = partners[Math.floor(rng() * partners.length)];
+    if (fromAfrica >= 1000) rows.push([year, r[1], p, 'M', r[4], Math.round(fromAfrica)]);
+  });
+  // Outside markets.
+  markets.forEach(m => {
+    const size = SAMPLE_MARKET_SIZE[m.iso] || 10;
+    chains.forEach((k, i) => k.fin.forEach(code => {
+      const v = size * 2e7 * (0.2 + rng()) * (3 / (1 + k.fin.length));
+      rows.push([year, m.iso, 'WLD', 'M', code, Math.round(v)]);
+      rows.push([year - 1, m.iso, 'WLD', 'M', code, Math.round(v / (0.85 + 0.4 * rng()))]);
+      const partners = sellers(i);
+      if (partners.length && rng() < 0.7) {
+        const p = partners[Math.floor(rng() * partners.length)];
+        rows.push([year, m.iso, p, 'M', code, Math.round(v * (0.005 + 0.06 * rng()))]);
+      }
+    }));
+  });
+  return rows;
+}
+
+/** One outside market: imports of all finished products, from the world and from each African country, two years. */
+function fetchMarketHs4_(market, countries, chains, year, key) {
+  const byM49 = {};
+  countries.forEach(c => { byM49[c.m49] = c.iso; });
+  const codes = {};
+  chains.forEach(k => k.fin.forEach(c => { codes[c] = true; }));
+  const list = Object.keys(codes).map(c => ('000' + c).slice(-4));
+  if (!list.length || !market.code) return [];
+  const data = comtradeGet_({
+    reporterCode: market.code, period: `${year},${year - 1}`, partnerCode: ['0'].concat(countries.map(c => c.m49)).join(','),
+    partner2Code: 0, flowCode: 'M', cmdCode: list.join(','), customsCode: 'C00', motCode: 0, maxRecords: 250000, includeDesc: 'false',
+  }, key);
+  const seen = {};
+  data.forEach(d => {
+    const code = Number(d.cmdCode), value = Number(d.primaryValue);
+    if (d.flowCode !== 'M' || !codes[code] || !(value > 0)) return;
+    if (d.motCode !== undefined && Number(d.motCode) !== 0) return;
+    if (d.partner2Code !== undefined && Number(d.partner2Code) !== 0) return;
+    if (d.customsCode !== undefined && d.customsCode !== 'C00') return;
+    const partner = Number(d.partnerCode) === 0 ? 'WLD' : byM49[Number(d.partnerCode)];
+    if (!partner) return;
+    seen[[d.period, partner, code].join('|')] = [Number(d.period), market.iso, partner, 'M', code, Math.round(value)];
+  });
+  return Object.keys(seen).map(k => seen[k]);
+}
+
+/**
+ * Pure computation: the market for each chain's finished products.
+ * Returns { chains: [...], markets: [...], hasMarkets }.
+ */
+function marketData_(countries, chains, markets, hs4Rows, year) {
+  const af = {};
+  countries.forEach(c => { af[c.iso] = true; });
+  const mk = {};
+  markets.forEach((m, j) => { mk[m.iso] = j; });
+  const chainOf = {};
+  chains.forEach((k, i) => k.fin.forEach(c => { (chainOf[c] = chainOf[c] || []).push(i); }));
+  const C = chains.map(() => ({ afImp: 0, afPrev: 0, afFromAf: 0, mImp: markets.map(() => 0), mPrev: markets.map(() => 0), mFromAf: markets.map(() => 0) }));
+  hs4Rows.forEach(r => {
+    const yr = Number(r[0]);
+    if ((yr !== year && yr !== year - 1) || String(r[3]).trim().toUpperCase() !== 'M') return;
+    const idx = chainOf[Number(r[4])];
+    if (!idx) return;
+    const rep = String(r[1]).trim(), par = String(r[2]).trim(), v = Number(r[5]);
+    if (!(v > 0)) return;
+    idx.forEach(i => {
+      const x = C[i];
+      if (af[rep]) {
+        if (par === 'WLD') { if (yr === year) x.afImp += v; else x.afPrev += v; }
+        else if (af[par] && par !== rep && yr === year) x.afFromAf += v;
+      } else if (mk[rep] !== undefined) {
+        const j = mk[rep];
+        if (par === 'WLD') { if (yr === year) x.mImp[j] += v; else x.mPrev[j] += v; }
+        else if (af[par] && yr === year) x.mFromAf[j] += v;
+      }
+    });
+  });
+  const growth = (now, prev) => (prev > 0 ? now / prev - 1 : '');
+  const outChains = chains.map((k, i) => {
+    const x = C[i];
+    const ext = x.mImp.reduce((a, b) => a + b, 0), extPrev = x.mPrev.reduce((a, b) => a + b, 0);
+    const extAf = x.mFromAf.reduce((a, b) => a + b, 0);
+    let top = '—', topV = 0;
+    x.mImp.forEach((v, j) => { if (v > topV) { topV = v; top = markets[j].name; } });
+    const fromAf = Math.min(x.afFromAf, x.afImp);
+    const outside = Math.max(x.afImp - fromAf, 0);
+    return {
+      name: k.name, codes: k.fin.map(c => ('000' + c).slice(-4)).join(', '), afImp: x.afImp, afFromAf: fromAf,
+      outside, outsideShare: x.afImp ? outside / x.afImp : 0, afGrowth: growth(x.afImp, x.afPrev),
+      ext, extAfShare: ext ? Math.min(extAf / ext, 1) : 0, extGrowth: growth(ext, extPrev), top,
+    };
+  });
+  const outMarkets = markets.map((m, j) => {
+    let imp = 0, prev = 0, fromAf = 0;
+    C.forEach(x => { imp += x.mImp[j]; prev += x.mPrev[j]; fromAf += x.mFromAf[j]; });
+    return { name: m.name, iso: m.iso, imp, fromAf, afShare: imp ? Math.min(fromAf / imp, 1) : 0, growth: growth(imp, prev) };
+  });
+  return { chains: outChains, markets: outMarkets, hasMarkets: outMarkets.some(m => m.imp > 0) };
+}
+
+function buildMarketOpportunity_(ss) {
+  const sh = resetSheet_(ss, APP.sheets.market);
+  writeBanner_(sh, 'market');
+  const T = top_('market');
+  [260, 140, 160, 190, 170, 170, 330, 150, 170, 180].forEach((w, i) => sh.setColumnWidth(i + 1, w));
+  const heading = (row, text) => sh.getRange(row, 1).setValue(text).setFontSize(13).setFontWeight('bold')
+    .setFontColor(APP.color.title).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  sh.getRange(T, 1).setFormula('="Trade data: "&P_STATUS&"   |   Year: "&P_YEAR').setFontStyle('italic')
+    .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  sh.getRange(T + 1, 1).setFormula('="Assumptions (change them on Settings): capture "&TEXT(P_SH_HOME,"0%")&" of the country\'s own imports  ·  "&' +
+    'TEXT(P_SH_AF,"0%")&" of what Africa imports from outside Africa  ·  "&TEXT(P_SH_EXT,"0%")&" of the outside markets."')
+    .setFontWeight('bold').setFontColor('#7a4b00').setBackground(APP.color.input).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  sh.setConditionalFormatRules([SpreadsheetApp.newConditionalFormatRule()
+    .whenFormulaSatisfied(`=ISNUMBER(SEARCH("SAMPLE",$A$${T}))`).setBackground(APP.color.warn).setFontColor('#a50e0e')
+    .setRanges([sh.getRange(T, 1, 1, 10)]).build()]);
+
+  // 1. Pick a country (live).
+  const P = T + 3, iso = `$B$${P + 2}`, name = `$B$${P + 1}`;
+  heading(P, '1. Pick a country — its value proposition for finished products');
+  sh.getRange(P + 1, 1, 1, 2).setValues([['Country', 'Côte d\'Ivoire']]);
+  sh.getRange(P + 1, 2).setBackground(APP.color.input).setFontWeight('bold')
+    .setNote('Pick a country. The table, sentence and chart update automatically — the green NOW SHOWING line confirms it.');
+  dropdown_(sh.getRange(P + 1, 2), COUNTRIES.map(c => c[2]).sort());
+  sh.getRange(P + 2, 1, 1, 2).setValues([['ISO3 code',
+    `=IFERROR(INDEX(Countries!$A$${L.ctryFirst}:$A,MATCH(${name},Countries!$C$${L.ctryFirst}:$C,0)),"")`]]);
+  steps_(sh, P + 1, 4, ['Step 1: choose a country (yellow). Step 2: the green NOW SHOWING line confirms it.',
+    'Step 3: read the value proposition and the table below. Change the target shares on Settings to test other scenarios.']);
+  const n = `COUNTIF(${va_('A')},${iso})`, rev = `SUMIF(${va_('A')},${iso},${va_('W')})`;
+  nowShowing_(sh.getRange(P + 3, 1), `=IF(COUNTA(${va_('A')})=0,"No value-addition data yet: run Africa Trade → Refresh data (or 2a for sample data).",` +
+    `IF(${n}=0,"NOW SHOWING: "&${name}&" — it exports little raw material in the 25 value chains, so there is no value proposition to show.",` +
+    `"NOW SHOWING: "&${name}&" ("&${iso}&") — "&${n}&" value chains · estimated revenue "&TEXT(${rev},"$#,##0")&" a year in total."))`);
+  const H = P + 6;
+  const first = H + 1;
+  sh.getRange(P + 4, 1).setFormula(`=IF(ISNUMBER(F${first}),"Value proposition: if "&${name}&" processed its "&LOWER(A${first})&` +
+    `" at home, buyers already pay "&TEXT(C${first},"$#,##0")&" at home, "&TEXT(D${first},"$#,##0")&" across Africa to suppliers outside Africa, and "&` +
+    `TEXT(E${first},"$#,##0")&" in the outside markets — about "&TEXT(F${first},"$#,##0")&" a year at the target shares.","")`)
+    .setFontWeight('bold').setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  header_(sh.getRange(H, 1, 1, 7), ['Value chain', 'Raw exports (USD)', 'Home market: its own imports (USD)',
+    'Africa\'s imports from outside Africa (USD)', 'Outside markets\' imports (USD)', 'Estimated revenue per year (USD)', 'Needs flagged']);
+  sh.getRange(H, 1, 1, 7).setWrap(true);
+  sh.setRowHeight(H, 48);
+  sh.getRange(H, 6).setFormula(`="Estimated revenue: "&${name}`);
+  sh.getRange(first, 1).setFormula(`=IFERROR(ARRAY_CONSTRAIN(SORT(FILTER({${va_('C')},${va_('E')},${va_('H')},${va_('U')},${va_('V')},${va_('W')},${va_('S')}},` +
+    `${va_('A')}=${iso}),6,FALSE),10,7),"")`);
+  sh.getRange(first, 2, 10, 5).setNumberFormat('#,##0');
+  sh.getRange(first, 7, 10, 1).setWrap(true);
+  sh.getRange(first + 10, 1).setValue('Each country\'s revenue assumes it alone wins these shares — do not add countries together. Trade values show what buyers pay, not profit.')
+    .setFontStyle('italic').setFontColor('#555555').setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+
+  heading(mkGridTop_() - 1, 'Sections 2 and 3 are filled by menu step 3 (Compute).');
+  sh.setHiddenGridlines(true);
+}
+
+/** Row of the Africa-wide chain table header on Market_Opportunity. */
+function mkGridTop_() { return top_('market') + 3 + 6 + 1 + 13; }
+
+function writeMarketOpportunity_(mk) {
+  const sh = SpreadsheetApp.getActive().getSheetByName(APP.sheets.market);
+  if (!sh) return;
+  const T = top_('market'), P = T + 3, H = P + 6, G = mkGridTop_();
+  sh.getCharts().forEach(c => sh.removeChart(c));
+  const area = sh.getRange(G - 1, 1, Math.max(sh.getMaxRows() - G + 2, 1), sh.getMaxColumns());
+  area.breakApart();
+  area.clear();
+  ensureRows_(sh, G + 80);
+  const heading = (row, text) => sh.getRange(row, 1).setValue(text).setFontSize(13).setFontWeight('bold')
+    .setFontColor(APP.color.title).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+
+  // Live chart for section 1.
+  sh.insertChart(sh.newChart().setChartType(Charts.ChartType.BAR).setNumHeaders(1)
+    .addRange(sh.getRange(H, 1, 11, 1)).addRange(sh.getRange(H, 6, 11, 1))
+    .setOption('title', 'Estimated revenue per year by value chain — country chosen above (live)')
+    .setOption('legend', { position: 'top' }).setOption('colors', ['#1f4e3d'])
+    .setOption('width', 600).setOption('height', 360).setPosition(P, 8, 0, 0).build());
+
+  // 2. Africa-wide market per chain.
+  heading(G - 1, '2. The market for finished products across Africa (value chain by value chain)');
+  const head = ['Value chain', 'Finished products (HS4)', 'Africa\'s imports (USD)', 'Bought from African suppliers (USD)',
+    'Bought from outside Africa (USD)', 'Share bought outside Africa', 'Growth vs previous year',
+    'Outside markets\' imports (USD)', 'Africa\'s share of outside markets', 'Biggest outside market'];
+  header_(sh.getRange(G, 1, 1, head.length), head);
+  sh.getRange(G, 1, 1, head.length).setWrap(true);
+  sh.setRowHeight(G, 48);
+  const rows = mk.chains.slice().sort((a, b) => b.outside - a.outside)
+    .map(x => [x.name, x.codes, x.afImp, x.afFromAf, x.outside, x.outsideShare, x.afGrowth, x.ext, x.extAfShare, x.top]);
+  sh.getRange(G + 1, 2, rows.length, 1).setNumberFormat('@');
+  sh.getRange(G + 1, 1, rows.length, head.length).setValues(rows);
+  sh.getRange(G + 1, 3, rows.length, 3).setNumberFormat('#,##0');
+  sh.getRange(G + 1, 6, rows.length, 2).setNumberFormat('0.0%');
+  sh.getRange(G + 1, 8, rows.length, 1).setNumberFormat('#,##0');
+  sh.getRange(G + 1, 9, rows.length, 1).setNumberFormat('0.0%');
+  for (let i = 0; i < rows.length; i += 2) sh.getRange(G + 1 + i, 1, 1, head.length).setBackground(APP.color.band);
+  sh.getRange(G + 1 + rows.length, 1).setValue('Sorted by what Africa buys from outside Africa — the clearest opportunity for African processors (import substitution). ' +
+    'Chains that end in the same finished product (e.g. both battery chains: 8507 batteries) show the same market.')
+    .setFontStyle('italic').setFontColor('#555555').setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+
+  // 3. Outside markets.
+  const M = G + rows.length + 3;
+  heading(M, '3. Outside markets — imports of all 25 finished-product groups');
+  header_(sh.getRange(M + 1, 1, 1, 5), ['Market', 'Imports (USD)', 'Bought from African suppliers (USD)', 'Africa\'s share', 'Growth vs previous year']);
+  const mrows = mk.markets.slice().sort((a, b) => b.imp - a.imp).map(x => [x.name, x.imp, x.fromAf, x.afShare, x.growth]);
+  sh.getRange(M + 2, 1, mrows.length, 5).setValues(mrows);
+  sh.getRange(M + 2, 2, mrows.length, 2).setNumberFormat('#,##0');
+  sh.getRange(M + 2, 4, mrows.length, 2).setNumberFormat('0.0%');
+  sh.getRange(M + 2 + mrows.length, 1).setValue(mk.hasMarkets
+    ? 'Market list and UN Comtrade codes are editable on Settings. Africa\'s share = imports from African countries ÷ all imports.'
+    : 'No outside-market data yet: run Africa Trade → Refresh data (UN Comtrade) or 2a (sample). If one market stays empty, check its code on Settings.')
+    .setFontStyle('italic').setFontColor('#555555').setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+
+  sh.insertChart(sh.newChart().setChartType(Charts.ChartType.BAR).setNumHeaders(1)
+    .addRange(sh.getRange(G, 1, rows.length + 1, 1)).addRange(sh.getRange(G, 4, rows.length + 1, 2))
+    .setOption('title', 'Africa\'s imports of finished products: from African suppliers vs from outside Africa')
+    .setOption('isStacked', true).setOption('colors', ['#1f4e3d', '#e8a33d']).setOption('legend', { position: 'top' })
+    .setOption('width', 700).setOption('height', 560).setPosition(G, 12, 0, 0).build());
+  sh.insertChart(sh.newChart().setChartType(Charts.ChartType.COLUMN).setNumHeaders(1)
+    .addRange(sh.getRange(M + 1, 1, mrows.length + 1, 2))
+    .setOption('title', 'Outside markets: what they pay each year for these finished products')
+    .setOption('legend', { position: 'none' }).setOption('colors', ['#4a86e8'])
+    .setOption('width', 700).setOption('height', 360).setPosition(M, 12, 0, 0).build());
 }
