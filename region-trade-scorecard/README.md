@@ -22,7 +22,11 @@ More regions can be added as one data block each.
 
 Quick start builds every tab, loads **SAMPLE (synthetic) data** and computes the scorecard. The SAMPLE numbers are not real statistics. For real figures, get a free UN Comtrade key and run **2b** (see the Data_Sources tab).
 
-`appsscript.json` is optional. The `test/` folder is only for checking the code on a computer; you do not paste it into Apps Script.
+**Everything runs from this one file.** `Code.gs` has no libraries, no extra script or HTML files, and needs nothing else. Its region data, its logic, and the checks on the region data all live inside it.
+
+The other files in this folder are optional:
+- `appsscript.json` only sets the time zone.
+- `test/` is a separate check that a developer can run on a computer. You never paste either into Apps Script.
 
 ## Choosing the region
 
@@ -139,14 +143,26 @@ The session had no internet access to UN Comtrade or the World Bank, so the code
    - optional World Bank indicators
    - sample shape, default picks, and the short texts
    The comment above `REGIONS` explains every field.
-3. Run `node region-trade-scorecard/test/run.js` on a computer. The first section checks every region block: unique codes, valid HS4 codes, agreements that point to real countries or groups, sample lists that use listed countries, and default picks that exist.
-4. Paste the code into the sheet, then **Switch region** and type the new key.
+3. Paste the code into the sheet, then **Switch region** and type the new key.
+4. Run **Run full audit**. `Code.gs` itself checks the new region and lists any problem on Health_Check:
+   - duplicate or badly formed country codes, and missing capital coordinates
+   - agreements with an unknown tier, or sides that are not a country or group
+   - invalid HS4 codes, multipliers below 1, and unknown needs
+   - sample lists or default picks that name an unlisted country
+
+   The same check also covers any edits you make later on the Countries, Agreements and Value_Chains tabs.
+5. Optional, for developers: `node region-trade-scorecard/test/run.js` runs the same checks and every menu flow on a computer.
 
 No other code needs to change.
 
 ## How it was tested
 
-`node --check` passes. The suite `test/run.js` runs **1,910 checks, all passing**:
+`node --check` passes. A static check confirms that `Code.gs` is self-contained:
+- 136 functions, none defined twice
+- every helper and every menu item points to a function in the same file
+- no libraries, HTML files or other services beyond Sheets, Properties, Triggers, UrlFetch and Utilities
+
+The suite `test/run.js` runs **1,914 checks, all passing**:
 
 ```
 node region-trade-scorecard/test/run.js path/to/africa-trade-scorecard/Code.gs
@@ -166,7 +182,7 @@ The optional path is the old Africa v3.2 `Code.gs`. It enables the comparison an
 - UN Comtrade fetch with fake API responses, resuming in background chunks (took 10 runs)
 - Stop fetch, and a rejected API key
 - World Bank fetch with fake responses
-- Full audit
+- Full audit, including a deliberately broken agreement and value chain, which the audit reports and then clears
 - Reset
 - Switch region: Europe → Africa → Europe, and an unknown region name is refused
 

@@ -162,7 +162,7 @@ function checkAbbreviations(env, T, R, label) {
     'GL', 'EDIT', 'LBMA', 'CE', 'ETS', 'FSC', 'PEFC', 'R&D', 'TCA', 'SAA', 'SAAs', 'DCFTA', 'DCFTAs', 'CEFTA', 'EFTA', 'EEA', 'CIS',
     'EAEU', 'CBAM', 'UNMIK', 'PDO', 'REACH', 'UK', 'CH', 'TR', 'UA', 'MD', 'CU', 'FTAs', 'CSV', 'WWW', 'OECD', 'XLSX', 'EDT', 'AM', 'PM',
     'DEU', 'BTC', 'FOR', 'IN', 'OF', 'BE', 'MAY', 'AS', 'AT', 'BY', 'IF', 'AN', 'IMPORTANT', 'REF', 'WHERE', 'RELATIVE',
-    'NOTHING', 'INSIDE', 'TEST'].concat(Object.keys(T.REGIONS));
+    'NOTHING', 'INSIDE', 'TEST', 'BAD', 'ATLANTIS'].concat(Object.keys(T.REGIONS));
   plain.forEach(p => known.add(p));
   const unknown = {};
   env.state.texts.forEach(({ t }) => {
@@ -419,6 +419,22 @@ function europeFlows(T0) {
   g.runFullAudit();
   const hc = values(env, 'Health_Check', 1, 4).map(r => String(r[0]));
   check(hc.some(t => /^Audit run .*no problems found/.test(t)), 'full audit finds no problems');
+
+  // Broken edits on the input tabs must be reported by the audit (checks built into Code.gs).
+  const agRow = L.agrFirst + 40;
+  env.sheet('Agreements').getRange(agRow, 1, 1, 6).setValues([['BAD', 'Broken row', 'Customs heaven', 'EU', 'ATLANTIS', 'test']]);
+  const chRow = L.chainsFirst + 30;
+  env.sheet('Value_Chains').getRange(chRow, 1, 1, 8).setValues([['Bad chain', 'Metals', '7702', '', '9999', 0.5, 'magic', '']]);
+  g.runFullAudit();
+  const probs = values(env, 'Health_Check', 1, 4).map(r => r.join(' | '));
+  check(probs.some(t => /Customs heaven/.test(t)), 'audit reports an agreement with an unknown tier');
+  check(probs.some(t => /ATLANTIS/.test(t)), 'audit reports an agreement side that is not a country or group');
+  check(probs.some(t => /7702/.test(t)) && probs.some(t => /multiplier below 1/.test(t)) && probs.some(t => /Unknown need "magic"/.test(t)),
+    'audit reports a bad HS4 code, a multiplier below 1 and an unknown need');
+  env.sheet('Agreements').getRange(agRow, 1, 1, 6).setValues([['', '', '', '', '', '']]);
+  env.sheet('Value_Chains').getRange(chRow, 1, 1, 8).setValues([['', '', '', '', '', '', '', '']]);
+  g.runFullAudit();
+  check(values(env, 'Health_Check', 1, 4).some(r => /no problems found/.test(String(r[0]))), 'audit is clean again after removing the broken rows');
 
   checkFormulas(env, T, 'EUROPE');
   checkTexts(env, 'EUROPE', 'Europe');

@@ -4343,6 +4343,82 @@ function buildHealthCheck_(ss) {
 /** Row where the audit results start on Health_Check. */
 function auditRow_() { return top_('health') + 2 + healthChecks_().length + 2; }
 
+/**
+ * Checks the region data as it is now on the Countries, Agreements and Value_Chains tabs, plus the
+ * region block in the code (sample shape, default picks, indicators). Runs inside the full audit, so a
+ * new or edited region is checked without any other file. Returns [tab, where, problem, what to do] rows.
+ */
+function regionProblems_() {
+  const R = region_();
+  const s = APP.sheets;
+  const out = [];
+  const add = (tab, where, problem, fix) => { if (out.length < 60) out.push([tab, where, problem, fix]); };
+
+  const countries = readCountries_();
+  const isos = countries.map(c => c.iso);
+  const groups = {};
+  countries.forEach(c => c.groups.forEach(g => { groups[g.toUpperCase()] = true; }));
+  const seen = {}, seenCt = {};
+  countries.forEach(c => {
+    if (!/^[A-Z]{3}$/.test(c.iso)) add(s.countries, c.iso, 'ISO3 code is not three capital letters', 'Correct the code in column A.');
+    if (seen[c.iso]) add(s.countries, c.iso, 'ISO3 code listed twice', 'Delete the duplicate row.');
+    seen[c.iso] = true;
+    if (c.ct) {
+      if (seenCt[c.ct]) add(s.countries, c.iso, `UN Comtrade code ${c.ct} also used by ${seenCt[c.ct]}`, 'Correct column C.');
+      seenCt[c.ct] = c.iso;
+    }
+    if (!(Math.abs(c.lat) <= 90 && Math.abs(c.lon) <= 180) || (c.lat === 0 && c.lon === 0)) {
+      add(s.countries, c.iso, 'Capital latitude / longitude missing or out of range', 'Enter the capital\'s coordinates in columns G and H.');
+    }
+  });
+  if (!countries.length) add(s.countries, '—', 'No countries listed', `Run ${R.menu} → Update workbook.`);
+
+  const tiers = R.tiers.map(x => x[0].toUpperCase());
+  readAgreements_().forEach(a => {
+    const t = tiers.indexOf(a.tier.trim().toUpperCase());
+    if (t < 0 || t === tiers.length - 1) {
+      add(s.agreements, a.name, `Access tier "${a.tier}" is not one of: ${R.tiers.slice(0, -1).map(x => x[0]).join(', ')}`, 'Pick a tier from the dropdown in column C.');
+    }
+    [a.sideA, a.sideB].forEach(side => String(side || '').split(/[;,]/).map(x => x.trim()).filter(String).forEach(tok => {
+      if (isos.indexOf(tok.toUpperCase()) < 0 && !groups[tok.toUpperCase()]) {
+        add(s.agreements, a.name, `"${tok}" is neither an ISO3 code nor a group on the Countries tab`, 'Correct the side, or add the group to the countries (column J).');
+      }
+    }));
+    if (!String(a.sideA || '').trim()) add(s.agreements, a.name, 'Side A is empty', 'Enter the countries or group on side A.');
+  });
+
+  const needKeys = Object.keys(NEED_LABELS);
+  readChains_().forEach(k => {
+    k.raw.concat(k.semi, k.fin).forEach(code => {
+      const ch = Math.floor(code / 100);
+      if (!(code >= 100 && code <= 9799) || ch === 77) add(s.chains, k.name, `HS4 code ${code} is not a valid 4-digit code`, 'Correct the code (e.g. 0401, 2601).');
+    });
+    if (!k.raw.length && !k.semi.length) add(s.chains, k.name, 'No raw or semi-processed codes', 'Enter at least one code in column C or D.');
+    if (!(k.mult >= 1)) add(s.chains, k.name, 'Value multiplier below 1', 'Enter a multiplier of 1 or more in column F.');
+    k.needs.forEach(n => { if (needKeys.indexOf(n) < 0) add(s.chains, k.name, `Unknown need "${n}"`, `Use: ${needKeys.join(', ')}.`); });
+  });
+
+  const blockIsos = R.countries.map(c => c[0]);
+  const code = `Code.gs region block ${R.key}`;
+  R.sample.producers.concat(R.sample.processors).forEach(list => list.forEach(iso => {
+    if (blockIsos.indexOf(iso) < 0) add(code, 'sample', `Sample list uses ${iso}, which is not in the countries list`, 'Correct the region block in the code.');
+  }));
+  if (R.sample.producers.length !== R.chains.length || R.sample.processors.length !== R.chains.length) {
+    add(code, 'sample', 'Sample producers / processors must have one list per value chain', 'Correct the region block in the code.');
+  }
+  const names = R.countries.map(c => c[3]);
+  ['country', 'exporter', 'importer', 'needs'].forEach(k => {
+    if (names.indexOf(R.defaults[k]) < 0) add(code, 'defaults', `Default ${k} "${R.defaults[k]}" is not a listed country`, 'Correct the region block in the code.');
+  });
+  if (!HS2.some(h => h[1] === R.defaults.product)) add(code, 'defaults', `Default product "${R.defaults.product}" is not an HS2 name`, 'Use a name from the Products tab.');
+  R.indicators.forEach(i => {
+    if (i.length !== 7 || (i[5] !== 1 && i[5] !== -1) || needKeys.indexOf(i[3]) < 0) {
+      add(code, i[0], 'Indicator row is incomplete (needs 7 fields, direction 1 or -1, a known need key)', 'Correct the region block in the code.');
+    }
+  });
+  return out;
+}
+
 /** Menu: scans every tab for error values, missing tabs, named ranges and charts. */
 function runFullAudit() {
   requireBuilt_();
@@ -4355,6 +4431,7 @@ function runFullAudit() {
   ['WEIGHTS', 'VA_WEIGHTS'].concat(params_().map(p => p[0])).forEach(n => {
     if (!ss.getRangeByName(n)) problems.push([s.settings, '—', `Named range ${n} is missing`, `Run ${region_().menu} → Update workbook.`]);
   });
+  regionProblems_().forEach(p => problems.push(p));
   const ERR = /^#(REF!|N\/A|ERROR!|VALUE!|DIV\/0!|NAME\?|NUM!|NULL!)/;
   let scanned = 0;
   Object.keys(s).forEach(k => {
@@ -4389,7 +4466,8 @@ function runFullAudit() {
   const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
   const summary = problems.length
     ? `Audit run ${stamp}: ${problems.length} problem(s) found in ${scanned.toLocaleString()} cells — see the list below.`
-    : `Audit run ${stamp}: no problems found. ${scanned.toLocaleString()} cells on ${Object.keys(s).length} tabs checked, all named ranges and charts present.`;
+    : `Audit run ${stamp}: no problems found. ${scanned.toLocaleString()} cells on ${Object.keys(s).length} tabs checked, all named ranges and charts present, ` +
+      `countries, agreements and value chains valid.`;
   sh.getRange(A + 1, 1).setValue(summary).setFontWeight('bold')
     .setFontColor(problems.length ? '#a50e0e' : '#0d652d').setBackground(problems.length ? APP.color.warn : '#e6f4ea')
     .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
