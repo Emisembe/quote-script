@@ -23,7 +23,7 @@
 // ------------------------------------------------------------------
 
 const APP = {
-  version: '3.2.0',
+  version: '3.3.0',
   sheets: {
     guide: 'Guide',
     health: 'Health_Check',
@@ -48,6 +48,8 @@ const APP = {
     vaScore: 'VA_Scorecard',
     needs: 'Country_Needs',
     chains: 'Value_Chains',
+    equipment: 'Equipment',
+    suppliers: 'Suppliers',
     enablers: 'Enablers',
     rawHs4: 'Raw_HS4',
   },
@@ -220,6 +222,216 @@ const SAMPLE_CHAIN_PROCESSORS = [
   ['MAR', 'ZAF', 'EGY', 'KEN'], ['ZAF', 'KEN', 'EGY'], ['ZAF', 'NGA'], ['MAR', 'ZAF'], ['ETH', 'BWA', 'NAM', 'SDN'], ['NGA', 'GHA'],
 ];
 
+// ------------------------------------------------------------------
+// Equipment and suppliers — reference data (editable on their tabs)
+// ------------------------------------------------------------------
+
+// Machinery product codes (HS4) tracked as imports — a sign of investment in processing.
+const MACHINERY = [
+  [8417, 'Industrial furnaces and ovens (non-electric)'],
+  [8418, 'Refrigerating and freezing equipment (cold chain)'],
+  [8419, 'Heating, drying, roasting, evaporating and sterilising machinery'],
+  [8421, 'Centrifuges and filtering machinery'],
+  [8422, 'Packing, filling and bottling machinery'],
+  [8437, 'Machines for cleaning, sorting and milling grain'],
+  [8438, 'Food and drink processing machinery'],
+  [8439, 'Pulp and paper making machinery'],
+  [8445, 'Textile fibre preparation and spinning machines'],
+  [8446, 'Weaving machines (looms)'],
+  [8447, 'Knitting machines'],
+  [8451, 'Textile washing, dyeing and finishing machinery'],
+  [8452, 'Sewing machines'],
+  [8453, 'Leather, tanning and footwear machinery'],
+  [8454, 'Converters, ladles and casting machines (metallurgy)'],
+  [8455, 'Metal-rolling mills'],
+  [8464, 'Machines for working stone, ceramics and glass (incl. gem cutting)'],
+  [8465, 'Woodworking machinery'],
+  [8474, 'Crushing, grinding, sorting and mixing machinery for minerals'],
+  [8477, 'Rubber and plastics processing machinery'],
+  [8478, 'Tobacco processing machinery'],
+  [8479, 'Other industrial machinery (incl. oil extraction)'],
+  [8514, 'Industrial electric furnaces and ovens'],
+];
+
+// [value chain (exact name from Value_Chains), stage, step, equipment to buy, machinery code(s), scale, power need]
+const EQUIPMENT = [
+  ['Cocoa → chocolate', 1, 'Cleaning & roasting', 'Bean cleaners, roasters, winnowers (remove the shell)', '8438', 'Medium', 'Medium'],
+  ['Cocoa → chocolate', 2, 'Grinding', 'Nib grinders and liquor mills', '8438', 'Medium', 'High'],
+  ['Cocoa → chocolate', 3, 'Pressing', 'Hydraulic butter presses, cake breakers, powder mills', '8438', 'Medium to large', 'High'],
+  ['Cocoa → chocolate', 4, 'Chocolate making', 'Mixers, refiners, conches, tempering and moulding lines', '8438', 'Medium', 'High'],
+  ['Cocoa → chocolate', 5, 'Packing', 'Wrapping and packing machines', '8422', 'Small to medium', 'Low'],
+  ['Coffee & tea → roasted, instant & packaged', 1, 'Roasting', 'Destoners, batch or continuous roasters', '8419', 'Small to medium', 'Medium'],
+  ['Coffee & tea → roasted, instant & packaged', 2, 'Instant coffee', 'Extraction plus spray- or freeze-drying plant', '8419', 'Large', 'High'],
+  ['Coffee & tea → roasted, instant & packaged', 3, 'Blending & packing', 'Grinders, blending, tea-bag and packing machines', '8422', 'Small to medium', 'Low'],
+  ['Cashew & nuts → kernels & snacks', 1, 'Drying & grading', 'Dryers, calibrators and graders', '8438', 'Small', 'Low'],
+  ['Cashew & nuts → kernels & snacks', 2, 'Shelling & peeling', 'Steam cookers, shelling machines, peelers', '8438', 'Small to medium', 'Medium'],
+  ['Cashew & nuts → kernels & snacks', 3, 'Sorting & roasting', 'Optical colour sorters, roasters, seasoning', '8438', 'Medium', 'Medium'],
+  ['Cashew & nuts → kernels & snacks', 4, 'Packing', 'Vacuum and nitrogen-flush packing machines', '8422', 'Small', 'Low'],
+  ['Cotton → yarn, fabric & clothing', 1, 'Ginning', 'Saw or roller gins, bale presses', '8445', 'Medium', 'Medium'],
+  ['Cotton → yarn, fabric & clothing', 2, 'Spinning', 'Blowroom, carding, drawing, ring or rotor spinning machines', '8445', 'Large', 'High'],
+  ['Cotton → yarn, fabric & clothing', 3, 'Weaving & knitting', 'Looms and circular knitting machines', '8446 / 8447', 'Medium to large', 'High'],
+  ['Cotton → yarn, fabric & clothing', 4, 'Dyeing & finishing', 'Bleaching, dyeing and finishing ranges, effluent treatment', '8451', 'Medium to large', 'High'],
+  ['Cotton → yarn, fabric & clothing', 5, 'Garment making', 'Cutting tables and industrial sewing machines', '8452', 'Small to medium', 'Low'],
+  ['Crude oil → refined fuels', 1, 'Refining', 'Distillation, hydrotreating and reforming units — or smaller modular (skid-mounted) refineries', '8419', 'Very large (modular: medium)', 'High'],
+  ['Crude oil → refined fuels', 2, 'Storage & blending', 'Tank farms, blending and loading systems', '8479', 'Large', 'Medium'],
+  ['Natural gas → ammonia & fertiliser', 1, 'Gas treatment', 'Gas processing units', '8419', 'Large', 'High'],
+  ['Natural gas → ammonia & fertiliser', 2, 'Ammonia', 'Reformers, compressors, ammonia synthesis loop', '8419', 'Very large', 'High'],
+  ['Natural gas → ammonia & fertiliser', 3, 'Urea & granulation', 'Urea synthesis, granulators, bagging', '8479 / 8422', 'Large', 'High'],
+  ['Phosphate rock → phosphate fertiliser', 1, 'Beneficiation', 'Crushers, screens, flotation cells', '8474', 'Large', 'High'],
+  ['Phosphate rock → phosphate fertiliser', 2, 'Acid making', 'Sulphuric and phosphoric acid plants', '8419', 'Very large', 'High'],
+  ['Phosphate rock → phosphate fertiliser', 3, 'Granulation', 'Granulators, dryers, blenders, bagging', '8474 / 8422', 'Medium to large', 'Medium'],
+  ['Copper ore → cathodes, wire & cable', 1, 'Concentrating', 'Crushers, grinding mills, flotation cells', '8474', 'Large', 'High'],
+  ['Copper ore → cathodes, wire & cable', 2, 'Smelting or SX-EW', 'Smelting furnaces, or solvent extraction and electrowinning (SX-EW)', '8417 / 8514', 'Very large', 'Very high'],
+  ['Copper ore → cathodes, wire & cable', 3, 'Wire & cable', 'Rod casting and rolling, wire drawing, cable extrusion lines', '8455 / 8479', 'Medium to large', 'High'],
+  ['Cobalt → chemicals & battery materials', 1, 'Hydrometallurgy', 'Leaching, solvent extraction and crystallisation units', '8419', 'Large', 'High'],
+  ['Cobalt → chemicals & battery materials', 2, 'Refining', 'Refinery for cobalt sulphate or hydroxide', '8419', 'Large', 'High'],
+  ['Cobalt → chemicals & battery materials', 3, 'Battery materials & cells', 'Precursor and cathode lines; electrode coating and cell assembly', '8479', 'Very large', 'High'],
+  ['Iron ore → iron & steel', 1, 'Pellets & direct reduction', 'Pelletising plant; DRI (direct reduced iron) plant', '8417', 'Very large', 'High (gas)'],
+  ['Iron ore → iron & steel', 2, 'Steelmaking', 'Electric arc furnaces, ladle furnaces, continuous casters', '8514 / 8454', 'Large', 'Very high'],
+  ['Iron ore → iron & steel', 3, 'Rolling', 'Rolling mills for bars, rods and sheets', '8455', 'Large', 'High'],
+  ['Bauxite → alumina & aluminium', 1, 'Alumina refining', 'Digesters, clarifiers and calciners (Bayer process)', '8419 / 8417', 'Very large', 'High'],
+  ['Bauxite → alumina & aluminium', 2, 'Smelting', 'Electrolysis pot lines and anode plant', '8514', 'Very large', 'Very high'],
+  ['Bauxite → alumina & aluminium', 3, 'Casting, rolling & extrusion', 'Casthouse, rolling mills, extrusion presses', '8454 / 8455', 'Large', 'High'],
+  ['Manganese & chrome ore → ferro-alloys', 1, 'Beneficiation', 'Crushers, jigs, dense-media separation', '8474', 'Medium', 'Medium'],
+  ['Manganese & chrome ore → ferro-alloys', 2, 'Smelting', 'Submerged-arc furnaces', '8514', 'Large', 'Very high'],
+  ['Gold & diamonds → refining, cutting & jewellery', 1, 'Gold refining', 'Refinery (electrolytic or chemical) and assay laboratory', '8417 / 8514', 'Medium', 'Medium'],
+  ['Gold & diamonds → refining, cutting & jewellery', 2, 'Diamond cutting', 'Planning scanners, laser cutters, polishing machines', '8464', 'Small to medium', 'Low'],
+  ['Gold & diamonds → refining, cutting & jewellery', 3, 'Jewellery making', 'Casting, rolling, polishing; CAD (computer-aided design) and 3D printing', '8479', 'Small', 'Low'],
+  ['Hides & skins → leather & footwear', 1, 'Tanning', 'Tanning drums, fleshing and splitting machines, effluent treatment', '8453', 'Medium', 'Medium'],
+  ['Hides & skins → leather & footwear', 2, 'Finishing', 'Setting, drying, spraying and ironing machines', '8453', 'Medium', 'Medium'],
+  ['Hides & skins → leather & footwear', 3, 'Footwear & bags', 'Cutting, stitching, lasting and sole-injection machines', '8453 / 8452', 'Small to medium', 'Low'],
+  ['Logs → sawn wood, panels & furniture', 1, 'Sawmilling', 'Log saws, band saws, drying kilns', '8465 / 8419', 'Medium', 'High'],
+  ['Logs → sawn wood, panels & furniture', 2, 'Panels', 'Veneer lathes, plywood presses, MDF and particleboard lines', '8465 / 8479', 'Large', 'High'],
+  ['Logs → sawn wood, panels & furniture', 3, 'Furniture', 'CNC routers, edge banders, sanders, finishing lines', '8465', 'Small to medium', 'Medium'],
+  ['Oilseeds → vegetable oils', 1, 'Cleaning & pressing', 'Cleaners, dehullers, screw presses (expellers)', '8479', 'Small to medium', 'Medium'],
+  ['Oilseeds → vegetable oils', 2, 'Solvent extraction', 'Extraction plant', '8479', 'Large', 'High'],
+  ['Oilseeds → vegetable oils', 3, 'Refining & bottling', 'Degumming, bleaching, deodorising; bottling lines', '8479 / 8422', 'Medium', 'Medium'],
+  ['Raw sugar → confectionery & drinks', 1, 'Sugar refining', 'Melters, clarifiers, centrifuges, dryers', '8421 / 8419', 'Large', 'High'],
+  ['Raw sugar → confectionery & drinks', 2, 'Confectionery', 'Cookers, depositors, forming and wrapping lines', '8438 / 8422', 'Medium', 'Medium'],
+  ['Raw sugar → confectionery & drinks', 3, 'Soft drinks', 'Water treatment, syrup room, bottling lines', '8422', 'Medium to large', 'Medium'],
+  ['Cereals → flour, pasta & bakery', 1, 'Cleaning & milling', 'Grain cleaners, roller mills, sifters', '8437', 'Medium', 'High'],
+  ['Cereals → flour, pasta & bakery', 2, 'Pasta', 'Pasta presses and dryers', '8438', 'Medium', 'Medium'],
+  ['Cereals → flour, pasta & bakery', 3, 'Bakery & biscuits', 'Mixers, ovens, biscuit lines', '8438 / 8417', 'Small to large', 'Medium'],
+  ['Fish → fillets & canned fish', 1, 'Cold chain', 'Ice plants, blast freezers, cold stores', '8418', 'Small to medium', 'High'],
+  ['Fish → fillets & canned fish', 2, 'Filleting', 'Filleting and skinning machines', '8438', 'Medium', 'Medium'],
+  ['Fish → fillets & canned fish', 3, 'Canning', 'Cookers, can seamers, retorts', '8422 / 8419', 'Medium', 'Medium'],
+  ['Fruit → juices & preserves', 1, 'Sorting & washing', 'Washers, sorters, pulpers', '8438', 'Small to medium', 'Low'],
+  ['Fruit → juices & preserves', 2, 'Juice', 'Extractors, pasteurisers, evaporators, aseptic filling', '8438 / 8419 / 8422', 'Medium', 'Medium'],
+  ['Fruit → juices & preserves', 3, 'Preserves & drying', 'Cookers, solar or electric dryers, jar filling', '8419 / 8422', 'Small', 'Medium'],
+  ['Tobacco leaf → cigarettes', 1, 'Primary processing', 'Threshing and redrying lines', '8478', 'Large', 'High'],
+  ['Tobacco leaf → cigarettes', 2, 'Cigarette making', 'Making and packing machines', '8478', 'Large', 'Medium'],
+  ['Natural rubber → tyres & gloves', 1, 'Primary processing', 'Crumb rubber and sheet processing lines', '8477', 'Medium', 'Medium'],
+  ['Natural rubber → tyres & gloves', 2, 'Tyres', 'Mixers, extruders, tyre building machines, curing presses', '8477', 'Large', 'High'],
+  ['Natural rubber → tyres & gloves', 3, 'Gloves & other goods', 'Dipping lines and moulding machines', '8477', 'Medium', 'Medium'],
+  ['Lithium & graphite → battery materials', 1, 'Concentrating', 'Crushers, dense-media separation, flotation', '8474', 'Large', 'High'],
+  ['Lithium & graphite → battery materials', 2, 'Chemical refining', 'Lithium hydroxide or carbonate refinery; graphite purification and shaping', '8419 / 8474', 'Very large', 'High'],
+  ['Lithium & graphite → battery materials', 3, 'Battery materials', 'Anode and cathode material lines', '8479', 'Large', 'High'],
+  ['Live animals → meat', 1, 'Slaughtering', 'Abattoir line: stunning, bleeding, hide removal', '8438', 'Medium', 'Medium'],
+  ['Live animals → meat', 2, 'Chilling & cutting', 'Chillers, cold rooms, cutting and deboning', '8418 / 8438', 'Medium', 'High'],
+  ['Live animals → meat', 3, 'Processing & packing', 'Mincers, sausage lines, vacuum packers', '8438 / 8422', 'Small to medium', 'Medium'],
+  ['Cassava → starch & flour products', 1, 'Peeling & grating', 'Peelers, graters, presses', '8438', 'Small', 'Low'],
+  ['Cassava → starch & flour products', 2, 'Drying & milling', 'Flash dryers and mills (high-quality cassava flour)', '8419 / 8437', 'Small to medium', 'Medium'],
+  ['Cassava → starch & flour products', 3, 'Starch', 'Rasping, separation (centrifuges, hydrocyclones), starch dryers', '8421 / 8419', 'Medium to large', 'High'],
+];
+
+// [organisation, country (headquarters), type, what they supply / do, value chains (keys or All), website (only where certain), note]
+const SUPPLIERS = [
+  ['Bühler', 'Switzerland', 'Machine maker', 'Cocoa, grain milling, pasta, nut and oilseed processing lines', 'Cocoa; Cereals; Cashew & nuts; Oilseeds; Coffee & tea', 'buhlergroup.com', ''],
+  ['Royal Duyvis Wiener', 'Netherlands', 'Machine maker', 'Cocoa processing and chocolate-making equipment', 'Cocoa', '', ''],
+  ['NETZSCH', 'Germany', 'Machine maker', 'Grinding and dispersing (cocoa, chocolate, battery materials)', 'Cocoa; Lithium & graphite; Cobalt', 'netzsch.com', ''],
+  ['Aasted', 'Denmark', 'Machine maker', 'Chocolate tempering, moulding and enrobing lines', 'Cocoa', '', ''],
+  ['Probat', 'Germany', 'Machine maker', 'Coffee roasters', 'Coffee & tea', 'probat.com', ''],
+  ['Pinhalense', 'Brazil', 'Lower-cost machine maker', 'Coffee cleaning, hulling and sorting machines', 'Coffee & tea', '', ''],
+  ['GEA Group', 'Germany', 'Machine maker', 'Food, drinks and dairy processing; instant coffee plants; separators; freezing; starch', 'Coffee & tea; Fruit; Cassava; Cereals; Live animals; Lithium & graphite', 'gea.com', ''],
+  ['Oltremare', 'Italy', 'Machine maker', 'Nut cracking, shelling and sorting machines', 'Cashew & nuts', '', ''],
+  ['TOMRA', 'Norway', 'Machine maker', 'Optical sorting for nuts, fruit and minerals (incl. diamonds)', 'Cashew & nuts; Fruit; Gold & diamonds', 'tomra.com', ''],
+  ['Alfa Laval', 'Sweden', 'Machine maker', 'Separators, heat exchangers, edible-oil refining, juice and starch processing', 'Oilseeds; Fruit; Cassava; Raw sugar', 'alfalaval.com', ''],
+  ['Desmet', 'Belgium', 'Engineering & plant builder', 'Oilseed crushing, solvent extraction and oil refining plants', 'Oilseeds', '', ''],
+  ['Crown Iron Works', 'United States', 'Engineering & plant builder', 'Oilseed extraction and refining plants', 'Oilseeds', 'crowniron.com', ''],
+  ['Myande Group', 'China', 'Lower-cost machine maker', 'Oil and fat plants, starch processing', 'Oilseeds; Cassava', '', ''],
+  ['Krones', 'Germany', 'Machine maker', 'Bottling, filling and packaging lines for drinks', 'Raw sugar; Fruit', 'krones.com', ''],
+  ['Tetra Pak', 'Sweden / Switzerland', 'Machine maker', 'Juice and dairy processing, carton packaging', 'Fruit; Raw sugar', 'tetrapak.com', ''],
+  ['Sidel', 'France', 'Machine maker', 'Plastic (PET) bottle blowing, filling and packaging', 'Raw sugar; Fruit', 'sidel.com', ''],
+  ['Syntegon', 'Germany', 'Machine maker', 'Packaging machines for food and confectionery', 'Cocoa; Raw sugar; Cereals; Cashew & nuts', 'syntegon.com', ''],
+  ['Baker Perkins', 'United Kingdom', 'Machine maker', 'Confectionery, biscuit and bakery lines', 'Raw sugar; Cereals', 'bakerperkins.com', ''],
+  ['Ocrim', 'Italy', 'Machine maker', 'Flour milling plants', 'Cereals', '', ''],
+  ['Alapala', 'Türkiye', 'Lower-cost machine maker', 'Flour, feed and rice milling plants', 'Cereals', '', ''],
+  ['JBT Marel', 'United States / Iceland', 'Machine maker', 'Meat, fish and fruit processing, canning and juice extraction', 'Fish; Live animals; Fruit', '', 'JBT and Marel merged in 2025'],
+  ['BAADER', 'Germany', 'Machine maker', 'Fish and poultry filleting and processing machines', 'Fish', 'baader.com', ''],
+  ['Frontmatec', 'Denmark', 'Machine maker', 'Slaughter and meat processing lines', 'Live animals', '', ''],
+  ['ANDRITZ', 'Austria', 'Machine maker', 'Starch, sugar, pulp and paper, and separation equipment', 'Cassava; Raw sugar; Logs', 'andritz.com', ''],
+  ['Körber (Hauni)', 'Germany', 'Machine maker', 'Tobacco processing and cigarette-making machines', 'Tobacco leaf', '', ''],
+  ['Rieter', 'Switzerland', 'Machine maker', 'Spinning machines and complete spinning mills', 'Cotton', 'rieter.com', ''],
+  ['Trützschler', 'Germany', 'Machine maker', 'Blowroom, carding and drawing machines', 'Cotton', 'truetzschler.com', ''],
+  ['Saurer', 'Switzerland', 'Machine maker', 'Spinning and twisting machines', 'Cotton', '', ''],
+  ['Picanol', 'Belgium', 'Machine maker', 'Weaving machines (looms)', 'Cotton', 'picanol.be', ''],
+  ['Toyota Industries', 'Japan', 'Machine maker', 'Spinning machines and air-jet looms', 'Cotton', '', ''],
+  ['Lakshmi Machine Works', 'India', 'Lower-cost machine maker', 'Spinning machines', 'Cotton', '', ''],
+  ['Bajaj Steel Industries', 'India', 'Lower-cost machine maker', 'Cotton ginning and pressing machinery', 'Cotton', '', ''],
+  ['JUKI', 'Japan', 'Machine maker', 'Industrial sewing machines', 'Cotton; Hides & skins', '', ''],
+  ['DESMA', 'Germany', 'Machine maker', 'Shoe-sole injection moulding machines', 'Hides & skins', '', ''],
+  ['HOMAG', 'Germany', 'Machine maker', 'Furniture and woodworking machines', 'Logs', 'homag.com', ''],
+  ['Biesse', 'Italy', 'Machine maker', 'CNC woodworking machines', 'Logs', 'biesse.com', ''],
+  ['SCM Group', 'Italy', 'Machine maker', 'Woodworking machinery', 'Logs', 'scmgroup.com', ''],
+  ['Weinig', 'Germany', 'Machine maker', 'Planing, moulding and sawmill machines', 'Logs', 'weinig.com', ''],
+  ['Siempelkamp', 'Germany', 'Machine maker', 'Press lines for particleboard, MDF and plywood', 'Logs', 'siempelkamp.com', ''],
+  ['Dieffenbacher', 'Germany', 'Machine maker', 'Wood-based panel plants', 'Logs', 'dieffenbacher.com', ''],
+  ['Metso', 'Finland', 'Machine maker', 'Crushing, grinding, flotation, smelting and hydrometallurgy equipment', 'Copper ore; Cobalt; Phosphate rock; Manganese & chrome ore; Lithium & graphite; Iron ore; Gold & diamonds', 'metso.com', ''],
+  ['FLSmidth', 'Denmark', 'Machine maker', 'Mineral processing equipment', 'Copper ore; Phosphate rock; Gold & diamonds; Bauxite', 'flsmidth.com', ''],
+  ['SMS group', 'Germany', 'Machine maker', 'Steel and aluminium plants, rolling mills, ferro-alloy furnaces', 'Iron ore; Bauxite; Copper ore; Manganese & chrome ore', 'sms-group.com', ''],
+  ['Danieli', 'Italy', 'Machine maker', 'Steel mills, mini-mills and rolling mills', 'Iron ore; Bauxite', 'danieli.com', ''],
+  ['Primetals Technologies', 'United Kingdom / Japan', 'Machine maker', 'Iron and steel making and rolling technology', 'Iron ore', 'primetals.com', ''],
+  ['Midrex Technologies', 'United States', 'Technology licensor', 'Direct reduced iron (DRI) plants', 'Iron ore', 'midrex.com', ''],
+  ['Tenova', 'Italy', 'Machine maker', 'DRI plants, furnaces and mineral processing', 'Iron ore; Manganese & chrome ore', 'tenova.com', ''],
+  ['Niehoff', 'Germany', 'Machine maker', 'Wire drawing and stranding machines', 'Copper ore', '', ''],
+  ['Maillefer', 'Switzerland / Finland', 'Machine maker', 'Cable extrusion lines', 'Copper ore', '', ''],
+  ['Rio Tinto (AP smelting technology)', 'United Kingdom / Australia', 'Technology licensor', 'Aluminium smelting technology', 'Bauxite', '', ''],
+  ['Emirates Global Aluminium (EGA)', 'United Arab Emirates', 'Technology licensor', 'Aluminium smelting technology', 'Bauxite', '', ''],
+  ['Dürr', 'Germany', 'Machine maker', 'Electrode coating and drying for battery cells', 'Cobalt; Lithium & graphite', 'durr.com', ''],
+  ['Manz', 'Germany', 'Machine maker', 'Battery cell production equipment', 'Cobalt; Lithium & graphite', '', ''],
+  ['Wuxi Lead Intelligent Equipment', 'China', 'Lower-cost machine maker', 'Battery cell production equipment', 'Cobalt; Lithium & graphite', '', ''],
+  ['Sarine Technologies', 'Israel', 'Machine maker', 'Diamond planning, scanning and laser cutting', 'Gold & diamonds', '', ''],
+  ['Metalor', 'Switzerland', 'Refining partner', 'Precious-metal refining services', 'Gold & diamonds', 'metalor.com', ''],
+  ['Honeywell UOP', 'United States', 'Technology licensor', 'Refining and petrochemical process technology', 'Crude oil; Natural gas', '', ''],
+  ['Axens', 'France', 'Technology licensor', 'Refining and fertiliser process technology', 'Crude oil; Natural gas', 'axens.net', ''],
+  ['Technip Energies', 'France', 'Engineering & plant builder', 'Refineries, gas and fertiliser plants', 'Crude oil; Natural gas; Phosphate rock', 'technipenergies.com', ''],
+  ['Saipem', 'Italy', 'Engineering & plant builder', 'Refinery, gas and fertiliser plant construction', 'Crude oil; Natural gas', 'saipem.com', ''],
+  ['KBR', 'United States', 'Technology licensor', 'Ammonia and refining technology', 'Natural gas; Crude oil', 'kbr.com', ''],
+  ['Topsoe', 'Denmark', 'Technology licensor', 'Ammonia, hydrogen and refining catalysts and technology', 'Natural gas; Crude oil', 'topsoe.com', ''],
+  ['Casale', 'Switzerland', 'Technology licensor', 'Ammonia, urea and phosphate fertiliser technology', 'Natural gas; Phosphate rock', 'casale.ch', ''],
+  ['thyssenkrupp Uhde', 'Germany', 'Engineering & plant builder', 'Ammonia, urea and fertiliser plants', 'Natural gas; Phosphate rock', '', ''],
+  ['Prayon Technologies', 'Belgium', 'Technology licensor', 'Phosphoric acid technology', 'Phosphate rock', '', ''],
+  ['VMI Group', 'Netherlands', 'Machine maker', 'Tyre building machines', 'Natural rubber', '', ''],
+  ['HF Mixing Group', 'Germany', 'Machine maker', 'Rubber mixers', 'Natural rubber', '', ''],
+  ['Mesnac', 'China', 'Lower-cost machine maker', 'Tyre and rubber machinery', 'Natural rubber', '', ''],
+  ['Local and regional fabricators', 'Africa', 'Local fabrication', 'Small machines made in Africa (cassava graters, dryers, oil expellers, cashew shellers); ask national engineering associations and technology centres', 'Cassava; Cashew & nuts; Oilseeds; Fruit', '', 'Often cheaper and easier to maintain'],
+  ['Carrier', 'United States', 'Cold chain', 'Refrigeration and cold-chain equipment', 'Fish; Fruit; Live animals', 'carrier.com', ''],
+  ['Siemens Energy', 'Germany', 'Power & utilities', 'Power generation and grid equipment', 'All', 'siemens-energy.com', ''],
+  ['ABB', 'Switzerland', 'Power & utilities', 'Electrification, motors, drives and automation', 'All', 'abb.com', ''],
+  ['Schneider Electric', 'France', 'Power & utilities', 'Electrical distribution, energy management and automation', 'All', 'se.com', ''],
+  ['Mettler-Toledo', 'Switzerland / United States', 'Certification & testing', 'Weighing and laboratory instruments for quality control', 'All', 'mt.com', ''],
+  ['SGS', 'Switzerland', 'Certification & testing', 'Inspection, testing and certification (food safety, minerals, products)', 'All', 'sgs.com', ''],
+  ['Bureau Veritas', 'France', 'Certification & testing', 'Inspection, testing and certification', 'All', 'bureauveritas.com', ''],
+  ['Intertek', 'United Kingdom', 'Certification & testing', 'Testing, inspection and certification', 'All', 'intertek.com', ''],
+  ['Afreximbank (African Export-Import Bank)', 'Egypt', 'Finance', 'Trade and project finance, including industrial and value-addition projects', 'All', 'afreximbank.com', ''],
+  ['African Development Bank (AfDB)', 'Côte d\'Ivoire', 'Finance', 'Loans and programmes for industry, agro-processing and infrastructure', 'All', 'afdb.org', ''],
+  ['Africa Finance Corporation (AFC)', 'Nigeria', 'Finance', 'Investment in infrastructure, natural resources and heavy industry', 'All', 'africafc.org', ''],
+  ['International Finance Corporation (IFC)', 'United States', 'Finance', 'World Bank Group investment in private companies', 'All', 'ifc.org', ''],
+  ['UNIDO (United Nations Industrial Development Organization)', 'Austria', 'Technical assistance', 'Industrial development support, agro-industry and technology transfer', 'All', 'unido.org', ''],
+  ['ITC (International Trade Centre)', 'Switzerland', 'Technical assistance', 'Export development, market information and value-chain programmes', 'All', 'intracen.org', ''],
+  ['AfCFTA Secretariat', 'Ghana', 'Technical assistance', 'Rules of origin, tariff schedules, regional value-chain programmes', 'All', 'au-afcfta.org', ''],
+  ['VDMA (German Engineering Federation)', 'Germany', 'Industry association', 'Connects buyers with German machine makers in every sector', 'All', 'vdma.org', ''],
+  ['ACIMIT (Italian textile machinery association)', 'Italy', 'Industry association', 'Italian textile machinery makers', 'Cotton', 'acimit.it', ''],
+  ['ASSOMAC (Italian footwear and leather machinery association)', 'Italy', 'Industry association', 'Italian tannery, footwear and leather-goods machinery makers', 'Hides & skins', 'assomac.it', ''],
+  ['UCIMA (Italian packaging machinery association)', 'Italy', 'Industry association', 'Italian packaging machinery makers', 'Cocoa; Coffee & tea; Raw sugar; Fruit; Cereals', 'ucima.it', ''],
+  ['interpack', 'Germany (Düsseldorf)', 'Trade fair', 'Packaging, confectionery and bakery machinery fair', 'Cocoa; Raw sugar; Cereals; Cashew & nuts; Coffee & tea', 'interpack.com', ''],
+  ['Anuga FoodTec', 'Germany (Cologne)', 'Trade fair', 'Food and drink technology fair', 'Fruit; Fish; Live animals; Oilseeds; Cereals', 'anugafoodtec.com', ''],
+  ['ITMA', 'Europe / Asia (rotating)', 'Trade fair', 'Textile and garment machinery fair', 'Cotton', 'itma.com', ''],
+  ['LIGNA', 'Germany (Hanover)', 'Trade fair', 'Woodworking and wood-processing machinery fair', 'Logs', 'ligna.de', ''],
+  ['ACHEMA', 'Germany (Frankfurt)', 'Trade fair', 'Chemical and process industry fair (refining, fertiliser, battery materials)', 'Crude oil; Natural gas; Phosphate rock; Cobalt; Lithium & graphite', 'achema.de', ''],
+  ['Mining Indaba', 'South Africa (Cape Town)', 'Trade fair', 'African mining investment conference (beneficiation, minerals processing)', 'Copper ore; Cobalt; Iron ore; Bauxite; Manganese & chrome ore; Gold & diamonds; Lithium & graphite', 'miningindaba.com', ''],
+];
+
 // What each tab shows and how to explain it. Shown as a blue box at the top of the tab
 // and collected on the Guide. Each string = one line on screen (keep lines short).
 const TAB_HELP = {
@@ -335,9 +547,10 @@ const TAB_HELP = {
   },
   needs: {
     title: 'Country_Needs — what a country needs to add value',
-    what: ['Pick a country: its enablers compared with the African median, its value-addition opportunities, and what each processing step requires.'],
+    what: ['Pick a country: enablers vs the African median (1), value-addition opportunities (2), what processing requires (3), a summary (4),',
+      'equipment to buy (5), suppliers to source it from (6), sources of help (7) and the machinery it already imports (8).'],
     read: ['GAP = below the African median on that enabler. Opportunities are sorted by value lost (largest first).',
-      'Section 3 explains what it takes to process each raw material; section 4 sums it up in words.'],
+      'Sections 5–6 follow the top 3 value chains in section 2, so they change with the country.'],
     say: ['"To capture this value, this country mainly needs what is flagged as a gap here. For its biggest chain, processing requires what section 3 lists."'],
     watch: ['Below the median is a flag, not a verdict: check national studies. Standards and certification have no indicator, so always check them.'],
   },
@@ -348,6 +561,22 @@ const TAB_HELP = {
       'Needs keywords: energy, industry, logistics, skills, finance, digital, standards. Some codes are broad (0901 also covers roasted coffee).'],
     say: ['"We follow each raw material through its processing stages — for example cocoa beans, then cocoa butter and powder, then chocolate."'],
     watch: ['After editing product codes, download the data again (Refresh). After editing multipliers or needs, run step 3.'],
+  },
+  equipment: {
+    title: 'Equipment — what to buy to add value (editable)',
+    what: ['For each value chain: the processing steps, the equipment to buy at each step, its machinery code (HS4), scale and power need.'],
+    read: ['Stage 1 is the first step after the raw material. Scale runs from small (workshop) to very large (industrial plant).',
+      'Machinery codes link to trade data: Country_Needs section 8 shows how much of each machinery type a country already imports.'],
+    say: ['"To turn cocoa beans into chocolate a country needs roasters, grinders, presses and conches — this tab lists what to buy, step by step."'],
+    watch: ['A starting list, not an engineering study. Plant size and technology depend on volumes, power and budget: get a feasibility study first.'],
+  },
+  suppliers: {
+    title: 'Suppliers — where to source equipment and help (editable)',
+    what: ['About 95 organisations: machine makers, plant builders and technology licensors per value chain, plus finance, certification and trade fairs.'],
+    read: ['"Type" says what kind of partner it is; "Value chains" lists the chains it serves (All = every chain). Websites only where certain.',
+      'Lower-cost machine makers (China, India, Türkiye, Brazil) and local African fabricators are included for smaller budgets.'],
+    say: ['"These are well-known suppliers to start a conversation with. A buyer should always compare several quotes and check references."'],
+    watch: ['NOT an endorsement and not complete. Companies merge and rename: verify before contacting. Add your own suppliers in new rows.'],
   },
   enablers: {
     title: 'Enablers — World Bank indicators of readiness for value addition',
@@ -384,12 +613,16 @@ const ABBREVIATIONS = [
   ['BACI', 'Base pour l\'Analyse du Commerce International — CEPII\'s reconciled world trade database'],
   ['CEMAC', 'Economic and Monetary Community of Central Africa (Communauté Économique et Monétaire de l\'Afrique Centrale)'],
   ['CEPII', 'Centre d\'Études Prospectives et d\'Informations Internationales (French research centre)'],
+  ['CAD', 'Computer-aided design'],
   ['CET', 'Common External Tariff'],
   ['CFA franc', 'Currency of WAEMU (West African CFA franc) and CEMAC (Central African CFA franc) countries'],
+  ['CNC', 'Computer numerical control — machines steered by a computer program'],
   ['COMESA', 'Common Market for Eastern and Southern Africa'],
   ['CU', 'Customs Union'],
+  ['DRI', 'Direct reduced iron — iron made from ore with gas instead of a blast furnace'],
   ['EAC', 'East African Community'],
   ['ESG', 'Environmental, Social and Governance (standards buyers ask suppliers to meet)'],
+  ['EPC', 'Engineering, procurement and construction — a contractor that designs, buys and builds a whole plant'],
   ['EU', 'European Union'],
   ['ECCAS', 'Economic Community of Central African States'],
   ['ECOWAS', 'Economic Community of West African States'],
@@ -402,21 +635,27 @@ const ABBREVIATIONS = [
   ['HS4', 'Harmonized System at 4-digit (heading) level — about 1,200 products, e.g. 1801 cocoa beans'],
   ['ISO 22000', 'International food-safety management standard'],
   ['ISO3', 'ISO 3166-1 alpha-3 three-letter country code (ISO = International Organization for Standardization), e.g. NGA = Nigeria'],
+  ['IFC', 'International Finance Corporation (World Bank Group)'],
   ['ITC', 'International Trade Centre (UN / WTO agency)'],
   ['KPI', 'Key Performance Indicator — the headline tiles on the Dashboard'],
   ['LBMA', 'London Bullion Market Association — sets the standard for refined gold'],
   ['LPI', 'Logistics Performance Index (World Bank), from 1 = low to 5 = high'],
   ['M', 'Imports (trade flow code)'],
+  ['MDF', 'Medium-density fibreboard'],
   ['M49', 'UN standard numeric country code, used by UN Comtrade (e.g. 566 = Nigeria)'],
   ['RCA', 'Revealed Comparative Advantage (Balassa index)'],
+  ['PET', 'Polyethylene terephthalate — the plastic used for drink bottles'],
   ['REC', 'Regional Economic Community — the regional blocs recognised by the African Union'],
   ['SACU', 'Southern African Customs Union'],
   ['SADC', 'Southern African Development Community'],
+  ['SX-EW', 'Solvent extraction and electrowinning — a way to make pure copper or cobalt from ore using chemicals and electricity'],
   ['UEMOA', 'Union Économique et Monétaire Ouest-Africaine (French name of WAEMU)'],
   ['UN', 'United Nations'],
+  ['UNIDO', 'United Nations Industrial Development Organization'],
   ['UN Comtrade', 'United Nations Commodity Trade Statistics Database'],
   ['UNCTAD', 'United Nations Conference on Trade and Development'],
   ['USD', 'United States dollars'],
+  ['VDMA', 'German Engineering Federation (Verband Deutscher Maschinen- und Anlagenbau)'],
   ['VA', 'Value addition — processing raw materials into higher-value products'],
   ['WAEMU', 'West African Economic and Monetary Union'],
   ['WDI', 'World Development Indicators — the World Bank\'s main database of country statistics'],
@@ -427,7 +666,7 @@ const ABBREVIATIONS = [
 ];
 
 // Tabs whose first content row is a table header (frozen under the blue box).
-const DATA_TABS = ['score', 'raw', 'countries', 'products', 'vaScore', 'chains', 'enablers', 'rawHs4'];
+const DATA_TABS = ['score', 'raw', 'countries', 'products', 'vaScore', 'chains', 'enablers', 'rawHs4', 'equipment', 'suppliers'];
 
 function bannerLines_(key) {
   const h = TAB_HELP[key];
@@ -460,6 +699,8 @@ const L = (() => {
     chainsHead: top_('chains'), chainsFirst: top_('chains') + 1,
     enHead: top_('enablers'), enFirst: top_('enablers') + 1,
     hs4Head: top_('rawHs4'), hs4First: top_('rawHs4') + 1,
+    eqHead: top_('equipment'), eqFirst: top_('equipment') + 1,
+    supHead: top_('suppliers'), supFirst: top_('suppliers') + 1,
   };
 })();
 
@@ -763,7 +1004,8 @@ function snapshot_(ss) {
     for (let i = 0; i < col.length; i++) if (String(col[i][0]).trim() === text) return i + 1;
     return 0;
   };
-  const snap = { weights: {}, params: {}, countries: null, products: null, raw: [], hs4: [], enablers: [], chains: null };
+  const snap = { weights: {}, params: {}, countries: null, products: null, raw: [], hs4: [], enablers: [], chains: null,
+    equipment: null, suppliers: null };
 
   const st = ss.getSheetByName(APP.sheets.settings);
   if (st && st.getLastRow()) {
@@ -817,6 +1059,11 @@ function snapshot_(ss) {
   if (vch && vc.getLastRow() > vch) {
     snap.chains = vc.getRange(vch + 1, 1, vc.getLastRow() - vch, 8).getValues().filter(r => String(r[0]).trim());
   }
+  [['equipment', APP.sheets.equipment, 'Value chain'], ['suppliers', APP.sheets.suppliers, 'Organisation']].forEach(([k, name, head]) => {
+    const sh = ss.getSheetByName(name);
+    const h = findHeader(sh, head);
+    if (h && sh.getLastRow() > h) snap[k] = sh.getRange(h + 1, 1, sh.getLastRow() - h, 7).getValues().filter(r => String(r[0]).trim());
+  });
   return snap;
 }
 
@@ -864,6 +1111,13 @@ function restore_(snap) {
     sh.getRange(L.chainsFirst, 1, snap.chains.length, 8).setValues(snap.chains.map(r => r.map(v => String(v === null ? '' : v))
       .map((v, i) => (i === 5 ? Number(v) || 1 : v))));
   }
+  [['equipment', APP.sheets.equipment, L.eqFirst], ['suppliers', APP.sheets.suppliers, L.supFirst]].forEach(([k, name, first]) => {
+    if (!snap[k] || !snap[k].length) return;
+    const sh = sheet_(name);
+    clearSheetBody_(sh, first);
+    ensureRows_(sh, first + snap[k].length);
+    sh.getRange(first, 1, snap[k].length, 7).setValues(snap[k]);
+  });
   if (snap.enablers.length) {
     const sh = sheet_(APP.sheets.enablers);
     clearSheetBody_(sh, L.enFirst);
@@ -882,7 +1136,7 @@ function buildWorkbook_() {
   const s = APP.sheets;
   const order = [s.guide, s.health, s.about, s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.settings,
     s.vaSummary, s.vaCharts, s.needs, s.vaScore, s.method, s.glossary, s.sources, s.updates, s.faq,
-    s.countries, s.products, s.chains, s.enablers, s.raw, s.rawHs4];
+    s.countries, s.products, s.chains, s.equipment, s.suppliers, s.enablers, s.raw, s.rawHs4];
   order.forEach((name, i) => {
     let sh = ss.getSheetByName(name);
     if (!sh) sh = ss.insertSheet(name, i);
@@ -897,6 +1151,8 @@ function buildWorkbook_() {
   buildProducts_(ss);
   buildRawTrade_(ss);
   buildValueChains_(ss);
+  buildEquipment_(ss);
+  buildSuppliers_(ss);
   buildEnablers_(ss);
   buildRawHs4_(ss);
   buildScorecard_(ss);
@@ -1421,7 +1677,7 @@ function colourTabs_(ss) {
   const groups = [
     ['#4a86e8', [s.guide, s.about, s.method, s.glossary, s.sources, s.updates, s.faq]],
     ['#1f4e3d', [s.health, s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.vaSummary, s.vaCharts, s.needs, s.vaScore]],
-    ['#e8a33d', [s.settings, s.countries, s.products, s.chains]],
+    ['#e8a33d', [s.settings, s.countries, s.products, s.chains, s.equipment, s.suppliers]],
     ['#999999', [s.raw, s.enablers, s.rawHs4]],
   ];
   groups.forEach(([colour, names]) => names.forEach(n => {
@@ -1479,7 +1735,7 @@ function buildGuide_(ss) {
   const s = APP.sheets;
   const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
   const helpRows = ['health', 'dashboard', 'charts', 'top', 'country', 'explain', 'score', 'vaSummary', 'vaCharts', 'needs', 'vaScore', 'settings',
-    'countries', 'products', 'chains', 'enablers', 'raw', 'rawHs4']
+    'countries', 'products', 'chains', 'equipment', 'suppliers', 'enablers', 'raw', 'rawHs4']
     .map(k => {
       const h = TAB_HELP[k];
       return [h.title.split(' — ')[0], h.what.join(' '), h.read.join(' '), h.say.join('').trim(), h.watch.join(' ')];
@@ -1537,6 +1793,8 @@ function buildGuide_(ss) {
       [s.countries, 'Your inputs', '54 countries with region, capital location, customs unions, RECs and AfCFTA status. Editable.'],
       [s.products, 'Your inputs', '96 HS (Harmonized System) product groups with sector. Untick "Include" to leave one out.'],
       [s.chains, 'Your inputs', 'The 25 value chains: raw, semi-processed and processed HS4 codes, value multipliers and needs.'],
+      [s.equipment, 'Your inputs', 'What to buy to add value: equipment per processing step, machinery code, scale and power need.'],
+      [s.suppliers, 'Your inputs', 'Where to source it: machine makers, plant builders, licensors, finance, certification, trade fairs.'],
       [s.enablers, 'Data', 'World Bank indicators of readiness: electricity, industry, logistics, skills, finance, internet.'],
       [s.raw, 'Data', 'The 2-digit trade figures the trade-gap analysis is calculated from.'],
       [s.rawHs4, 'Data', 'The 4-digit trade figures the value-addition analysis is calculated from.'],
@@ -1551,7 +1809,7 @@ function buildGuide_(ss) {
       [6, s.settings, 'Change one weight live', '"If we care more about distance, the ranking changes like this — the method is transparent."'],
       [7, s.vaSummary, 'Top of the country table and the charts', '"Many countries export raw materials and buy the processed goods back. This is the value left on the table."'],
       ['7b', s.vaCharts, 'Diagram 1, the value ladder, then section 4 for your audience\'s country', '"For every dollar exported raw, the processed product is worth more — the green part is what we give away."'],
-      [8, s.needs, 'Your audience\'s country', '"To capture that value, this country needs these enablers — and this is what processing each material requires."'],
+      [8, s.needs, 'Your audience\'s country, then sections 5–7', '"To capture that value, this country needs these enablers and this equipment — and here is who supplies it and who can help finance it."'],
       [9, s.method, '"Know the limits"', '"These are leads to investigate, not guarantees. Official data misses informal trade."'],
     ]],
     ['h', 'Abbreviations — full names'],
@@ -1737,6 +1995,11 @@ function buildGlossary_(ss) {
       ['Enabler', 'A condition that makes processing possible: electricity, industrial base, logistics, skills, finance, digital connectivity, standards.'],
       ['Readiness', 'Average of the enabler indicators a value chain needs, scaled 0–1 across African countries.'],
       ['African median', 'The middle value of all African countries for an indicator: half are above, half below. Below it = a GAP flag.'],
+      ['Machine maker', 'A company that builds processing machines (e.g. roasters, spinning machines, sawmills).'],
+      ['Engineering & plant builder', 'A company that designs and builds a complete plant (often called EPC: engineering, procurement and construction).'],
+      ['Technology licensor', 'A company that owns a process (e.g. for ammonia or aluminium smelting) and licenses it to plant owners.'],
+      ['Turnkey plant', 'A plant delivered complete and ready to run by one contractor.'],
+      ['Feasibility study', 'A study that checks whether a plant makes sense: raw-material supply, market, technology, cost, power and profit.'],
       ['Sensitivity analysis', 'Changing the weights to see whether the top opportunities stay on top. Robust results survive reasonable weight changes.'],
     ]],
   ], [24, 330, 760, 120, 120]);
@@ -1854,6 +2117,9 @@ function buildFaq_(ss) {
       ['How do I know the page changed after I picked a country?', 'Look at the green NOW SHOWING line under the yellow cell: it names what you picked and counts what was found. On Value_Lost_Charts the chart legends show the country name too.'],
       ['A country shows nothing — is it broken?', 'No: the green line says why — no data for that year, no raw exports in the 25 value chains, or the data is not loaded yet. Health_Check shows which.'],
       ['How do I check everything works?', 'Open Health_Check: every line should say OK. Run Africa Trade → Run full audit to scan every tab for errors.'],
+      ['Where does the supplier list come from?', 'It is a starting list of well-known, established organisations in each field. It is not an endorsement and not complete: compare several quotes, check references, and add local suppliers on the Suppliers tab.'],
+      ['Why are some websites missing?', 'Websites are given only where certain. For the others, search the organisation\'s name.'],
+      ['Which equipment should a country buy first?', 'Usually the first processing stages (Equipment tab, stages 1–2): they need less money and power. A feasibility study should confirm the plant size.'],
       ['Can I undo a mistake?', 'File → Version history → See version history, then restore an earlier version.'],
       ['Can I share this workbook?', 'Yes — share the Google Sheet. Editors must authorise the script once to use the menu.'],
     ]],
@@ -2806,6 +3072,7 @@ function buildCountryNeeds_(ss) {
   sh.getRange(S + 2, 1).setFormula(`=IF(ISNUMBER(D${O + 2}),"Largest value lost: "&A${O + 2}&" — about "&TEXT(D${O + 2},"$#,##0")&" a year (estimate). Processing share today: "&TEXT(C${O + 2},"0%")&".","")`);
   sh.getRange(S + 3, 1).setValue('Always check as well: quality standards and certification, which no indicator measures.');
   sh.getRange(S + 1, 1, 3, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  buildNeedsEquipment_(sh, S, O, iso);
 
   sh.setConditionalFormatRules([
     SpreadsheetApp.newConditionalFormatRule().whenTextStartsWith('GAP').setBackground(APP.color.warn).setFontColor('#a50e0e')
@@ -2813,7 +3080,7 @@ function buildCountryNeeds_(ss) {
     SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('OK').setBackground(APP.color.band).setFontColor('#1f4e3d')
       .setRanges([statusRange]).build(),
   ]);
-  [290, 150, 130, 200, 420, 380].forEach((w, i) => sh.setColumnWidth(i + 1, w));
+  [290, 150, 130, 330, 300, 170, 110].forEach((w, i) => sh.setColumnWidth(i + 1, w));
 }
 
 // ------------------------------------------------------------------
@@ -2910,6 +3177,7 @@ function generateSampleHs4_(countries, chains, year) {
       push(c.iso, 'M', k.fin, size * 4e7 * (0.2 + rng()));
       if (rng() < 0.3) push(c.iso, 'M', k.semi, size * 1e7 * rng());
     });
+    MACHINERY.forEach(m => { if (rng() < 0.8) push(c.iso, 'M', [m[0]], size * 3e6 * (0.2 + 2 * rng())); });
   });
   return rows;
 }
@@ -2995,6 +3263,7 @@ function comtradeGet_(query, key) {
 function fetchReporterHs4_(reporter, chains, year, key) {
   const codes = {};
   chains.forEach(k => k.raw.concat(k.semi, k.fin).forEach(c => { codes[c] = true; }));
+  MACHINERY.forEach(m => { codes[m[0]] = true; });
   const list = Object.keys(codes).map(c => ('000' + c).slice(-4));
   if (!list.length) return [];
   const data = comtradeGet_({
@@ -3501,6 +3770,12 @@ function healthChecks_() {
       'At least one value-addition weight on Settings must be above 0.', 'Settings'],
     ['Countries with enabler data (of 54)', `=COUNT(${en_('C')})`, '=IF({B}>=30,"OK","CHECK")',
       'Run menu 2d (World Bank indicators, free).', 'Enablers'],
+    ['Equipment steps listed', `=COUNTA(Equipment!$A$${L.eqFirst}:$A)`, '=IF({B}>0,"OK","CHECK")',
+      'The Equipment tab should list the equipment for each value chain.', 'Equipment'],
+    ['Suppliers listed', `=COUNTA(Suppliers!$A$${L.supFirst}:$A)`, '=IF({B}>0,"OK","CHECK")',
+      'The Suppliers tab should list suppliers and sources of help.', 'Suppliers'],
+    ['Machinery import rows (Raw_HS4)', `=SUMPRODUCT(COUNTIFS(Raw_HS4!$E$${L.hs4First}:$E,{${MACHINERY.map(m => m[0]).join(',')}},Raw_HS4!$D$${L.hs4First}:$D,"M"))`,
+      '=IF({B}>0,"OK","CHECK")', 'Run Refresh data (UN Comtrade) or 2a (sample) to load machinery imports.', 'Raw_HS4'],
     ['Countries listed', `=COUNTA(Countries!$A$${L.ctryFirst}:$A)`, '=IF({B}>=50,"OK","CHECK")',
       'The Countries tab should list the 54 African countries.', 'Countries'],
     ['Products included', `=COUNTIF(Products!$D$${L.prodFirst}:$D,TRUE)`, '=IF({B}>0,"OK","CHECK")',
@@ -3613,4 +3888,102 @@ function runFullAudit() {
   }
   sh.activate();
   notify_(problems.length ? `Audit: ${problems.length} problem(s) found — see Health_Check.` : 'Audit: no problems found.');
+}
+
+// ------------------------------------------------------------------
+// Equipment and suppliers — tabs
+// ------------------------------------------------------------------
+
+function eq_(col) { return `Equipment!$${col}$${L.eqFirst}:$${col}`; }
+function sup_(col) { return `Suppliers!$${col}$${L.supFirst}:$${col}`; }
+
+function buildEquipment_(ss) {
+  const sh = resetSheet_(ss, APP.sheets.equipment);
+  writeBanner_(sh, 'equipment');
+  const head = ['Value chain', 'Stage', 'Step', 'Equipment to buy', 'Machinery code (HS4)', 'Scale', 'Power need'];
+  header_(sh.getRange(L.eqHead, 1, 1, head.length), head);
+  sh.getRange(L.eqHead, 1, 1, head.length).setNotes([[
+    'Must match a chain name on the Value_Chains tab exactly', 'Order of the processing steps (1 = first step after the raw material)', '',
+    'What to buy for this step', 'HS4 machinery codes: ' + MACHINERY.map(m => `${m[0]} ${m[1]}`).join('; '),
+    'Small = workshop, medium = factory, large / very large = industrial plant', 'Electricity (or gas) the step needs']]);
+  sh.getRange(L.eqFirst, 5, EQUIPMENT.length, 1).setNumberFormat('@');
+  sh.getRange(L.eqFirst, 1, EQUIPMENT.length, head.length).setValues(EQUIPMENT.map(r => r.map(String)).map(r => { r[1] = Number(r[1]); return r; }));
+  sh.setFrozenRows(L.eqHead);
+  [280, 60, 170, 480, 150, 170, 110].forEach((w, i) => sh.setColumnWidth(i + 1, w));
+}
+
+function buildSuppliers_(ss) {
+  const sh = resetSheet_(ss, APP.sheets.suppliers);
+  writeBanner_(sh, 'suppliers');
+  const head = ['Organisation', 'Country (headquarters)', 'Type', 'What they supply / do', 'Value chains', 'Website', 'Note'];
+  header_(sh.getRange(L.supHead, 1, 1, head.length), head);
+  sh.getRange(L.supHead, 1, 1, head.length).setNotes([['', '',
+    'Machine maker · Lower-cost machine maker · Engineering & plant builder · Technology licensor · Refining partner · Local fabrication · ' +
+    'Cold chain · Power & utilities · Certification & testing · Finance · Technical assistance · Industry association · Trade fair', '',
+    'Short chain names (the part before the arrow on Value_Chains), separated by ";". All = every chain.',
+    'Given only where certain. Otherwise search the organisation\'s name.', '']]);
+  const rows = SUPPLIERS.map(r => r.slice(0, 6).concat([r[6] ? r[6] + '. Verify before contacting.' : 'Verify before contacting.']));
+  sh.getRange(L.supFirst, 1, rows.length, head.length).setValues(rows);
+  sh.setFrozenRows(L.supHead);
+  [300, 190, 190, 470, 320, 170, 280].forEach((w, i) => sh.setColumnWidth(i + 1, w));
+}
+
+/** Country_Needs sections 5–8. S = row of section 4 heading, O = section 2 heading, iso = ISO cell. */
+function buildNeedsEquipment_(sh, S, O, iso) {
+  const heading = (row, text) => sh.getRange(row, 1).setValue(text).setFontWeight('bold').setFontSize(12)
+    .setFontColor(APP.color.title).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  const note = (row, text) => sh.getRange(row, 1).setValue(text).setFontStyle('italic').setFontColor('#555555')
+    .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+
+  // Helper cells (columns I–K): the country's top 3 chains and their short names.
+  const Q = S + 5;
+  sh.getRange(Q, 8).setValue('Top chains →').setFontColor('#999999').setFontSize(8);
+  sh.getRange(Q + 1, 8).setValue('Short names →').setFontColor('#999999').setFontSize(8);
+  const chainCell = i => `$${colLetter_(9 + i)}$${Q}`, keyCell = i => `$${colLetter_(9 + i)}$${Q + 1}`;
+  for (let i = 0; i < 3; i++) {
+    sh.getRange(Q, 9 + i).setFormula(`=IF(ISNUMBER($D$${O + 2 + i}),$A$${O + 2 + i},"")`).setFontColor('#999999').setFontSize(8);
+    sh.getRange(Q + 1, 9 + i).setFormula(`=IFERROR(LEFT(${chainCell(i)},FIND(" → ",${chainCell(i)})-1),${chainCell(i)})`)
+      .setFontColor('#999999').setFontSize(8);
+  }
+
+  // 5. Equipment to buy.
+  heading(Q, '5. Equipment to buy for its top 3 value chains (from section 2)');
+  header_(sh.getRange(Q + 1, 1, 1, 7), ['Value chain', 'Stage', 'Step', 'Equipment to buy', 'Machinery code (HS4)', 'Scale', 'Power need']);
+  const match = `((${eq_('A')}=${chainCell(0)})+(${eq_('A')}=${chainCell(1)})+(${eq_('A')}=${chainCell(2)}))*(${eq_('A')}<>"")`;
+  sh.getRange(Q + 2, 1).setFormula(`=IFERROR(FILTER(Equipment!$A$${L.eqFirst}:$G,${match}),` +
+    `"No value chains for this country yet (see section 2), so there is no equipment to list.")`);
+  sh.getRange(Q + 2, 4, 18, 1).setWrap(true);
+  note(Q + 20, 'Start with the first stages: they need less money and power. A feasibility study should confirm plant size and technology.');
+
+  // 6. Suppliers for those chains.
+  const P = Q + 22;
+  heading(P, '6. Where to source it — suppliers for these value chains (verify before contacting; not an endorsement)');
+  header_(sh.getRange(P + 1, 1, 1, 6), ['Organisation', 'Country (headquarters)', 'Type', 'What they supply', 'Value chains', 'Website']);
+  const cond = [0, 1, 2].map(i => `IF(${keyCell(i)}="",0,ISNUMBER(SEARCH(${keyCell(i)},${sup_('E')})))`).join('+');
+  sh.getRange(P + 2, 1).setFormula(`=ARRAYFORMULA(IFERROR(FILTER(Suppliers!$A$${L.supFirst}:$F,(${cond})>0),` +
+    `"No suppliers listed for these value chains — see the Suppliers tab, or section 7 for general help."))`);
+  sh.getRange(P + 2, 4, 40, 1).setWrap(true);
+
+  // 7. Help that applies to every chain.
+  const H = P + 44;
+  heading(H, '7. Help for any value chain — finance, technical support, certification, power, associations and trade fairs');
+  header_(sh.getRange(H + 1, 1, 1, 6), ['Organisation', 'Country (headquarters)', 'Type', 'What they do', 'Value chains', 'Website']);
+  sh.getRange(H + 2, 1).setFormula(`=IFERROR(FILTER(Suppliers!$A$${L.supFirst}:$F,(${sup_('E')}="All")+(${sup_('C')}="Trade fair")+` +
+    `(${sup_('C')}="Industry association")),"None listed — add organisations on the Suppliers tab.")`);
+  sh.getRange(H + 2, 4, 35, 1).setWrap(true);
+
+  // 8. Machinery the country already imports.
+  const M = H + 38;
+  heading(M, '8. Machinery this country already imports (a sign of investment in processing)');
+  header_(sh.getRange(M + 1, 1, 1, 4), ['Machinery code (HS4)', 'Machinery', 'Imports (USD)', 'Compared with its other machinery imports']);
+  const first = M + 2, last = M + 1 + MACHINERY.length;
+  MACHINERY.forEach(([code, name], i) => {
+    const r = first + i;
+    sh.getRange(r, 1, 1, 4).setValues([[code, name,
+      `=SUMIFS(Raw_HS4!$F:$F,Raw_HS4!$A:$A,P_YEAR,Raw_HS4!$B:$B,${iso},Raw_HS4!$D:$D,"M",Raw_HS4!$E:$E,A${r})`,
+      `=IF(MAX($C$${first}:$C$${last})=0,"",SPARKLINE(C${r},{"charttype","bar";"max",MAX($C$${first}:$C$${last});"color1","#4a86e8"}))`]]);
+  });
+  sh.getRange(first, 1, MACHINERY.length, 1).setNumberFormat('0000');
+  sh.getRange(first, 3, MACHINERY.length, 1).setNumberFormat('#,##0');
+  note(last + 1, 'Zero = no imports recorded for that year, or the country did not report. The data comes with UN Comtrade (Refresh) or sample data.');
 }

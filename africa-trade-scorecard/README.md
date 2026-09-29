@@ -44,9 +44,11 @@ Colour code of the tabs: blue = explanation · green = results · orange = your 
 | Countries / Products | Input | Reference data. Edit memberships, or untick products to exclude them |
 | Value_Addition | Results | Per country: raw vs processed exports, processing share, value lost by exporting raw, enabler gaps; 3 charts |
 | Value_Lost_Charts | Results | Value lost made visual: a 4-step diagram of how value is lost, a value ladder for every chain, a worked example, a live "pick a country" section with 2 charts, and 5 Africa-wide charts (raw vs processed, by sector, by region, round trip, readiness vs value lost) |
-| Country_Needs | Results | Pick a country: enablers vs the African median, value-addition opportunities, what processing requires, a summary in words |
+| Country_Needs | Results | Pick a country: (1) enablers vs the African median, (2) value-addition opportunities, (3) what processing requires, (4) a summary in words, (5) **equipment to buy**, (6) **suppliers to source it from**, (7) **sources of help** (finance, technical support, certification, trade fairs), (8) **machinery it already imports** |
 | VA_Scorecard | Results | Every country × value chain with 5 sub-scores and a value-addition score (0–100) |
 | Value_Chains | Input | The 25 value chains: raw, semi-processed and processed HS4 codes, value multipliers (assumptions) and needs |
+| Equipment | Input | What to buy to add value: 77 processing steps across the 25 chains, with the equipment, machinery code (HS4), scale and power need |
+| Suppliers | Input | About 95 organisations: machine makers, plant builders, technology licensors, lower-cost makers, local fabricators, finance, certification, associations and trade fairs. A starting list, **not an endorsement**; verify before contacting |
 | Enablers | Data | 7 World Bank indicators per country (electricity, manufacturing, manufactured exports, logistics, schooling, credit, internet) |
 | Raw_Trade | Data | The 2-digit trade data the trade-gap analysis uses |
 | Raw_HS4 | Data | The 4-digit trade data the value-addition analysis uses |
