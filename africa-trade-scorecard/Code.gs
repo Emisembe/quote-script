@@ -23,7 +23,7 @@
 // ------------------------------------------------------------------
 
 const APP = {
-  version: '3.4.0',
+  version: '3.5.0',
   sheets: {
     guide: 'Guide',
     health: 'Health_Check',
@@ -581,9 +581,10 @@ const TAB_HELP = {
   },
   needs: {
     title: 'Country_Needs — what a country needs to add value',
-    what: ['Pick a country: enablers vs the African median (1), value-addition opportunities (2), what processing requires (3), a summary (4),',
-      'equipment to buy (5), suppliers to source it from (6), sources of help (7) and the machinery it already imports (8).'],
-    read: ['GAP = below the African median on that enabler. Opportunities are sorted by value lost (largest first).',
+    what: ['Pick a country: 4 charts at the top, then enablers vs the African median (1), value-addition opportunities (2), what processing requires (3),',
+      'a summary (4), equipment to buy (5), suppliers to source it from (6), sources of help (7) and the machinery it already imports (8).'],
+    read: ['The charts redraw when you pick a country; their legends name it. Chart A: 100 = African median, below 100 = a gap.',
+      'GAP = below the African median on that enabler. Opportunities are sorted by value lost (largest first).',
       'Sections 5–6 follow the top 3 value chains in section 2, so they change with the country.'],
     say: ['"To capture this value, this country mainly needs what is flagged as a gap here. For its biggest chain, processing requires what section 3 lists."'],
     watch: ['Below the median is a flag, not a verdict: check national studies. Standards and certification have no indicator, so always check them.'],
@@ -3102,11 +3103,11 @@ function buildCountryNeeds_(ss) {
     `=IFERROR(INDEX(Countries!$A$${L.ctryFirst}:$A,MATCH($B$${T},Countries!$C$${L.ctryFirst}:$C,0)),"")`]]);
   sh.getRange(T, 1, 2, 1).setFontWeight('bold');
   sh.getRange(T, 4).setFormula('="Enabler data: "&P_WB_STATUS').setFontStyle('italic');
-  steps_(sh, T + 1, 4, ['Step 1: choose a country (yellow). Step 2: the green NOW SHOWING line confirms it. Step 3: read sections 1–4 below.']);
+  steps_(sh, T + 1, 4, ['Step 1: choose a country (yellow). Step 2: the green NOW SHOWING line and the chart legends confirm it. Step 3: read the charts, then sections 1–8.']);
   sh.getRange(T, 2).setNote('Pick a country. Everything on this tab updates automatically — the green NOW SHOWING line confirms it.');
 
-  // 1. Enablers vs African median.
-  const E = T + 3;
+  // 1. Enablers vs African median (below the chart area).
+  const E = T + 3 + NEEDS_CHART_ROWS;
   heading(E, '1. Enablers — how ready is this country to add value? (compared with the African median)');
   header_(sh.getRange(E + 1, 1, 1, 6), ['Enabler', 'This country', 'African median', 'Status', 'Why it matters', 'Indicator (full name)']);
   INDICATORS.forEach((ind, i) => {
@@ -3167,6 +3168,7 @@ function buildCountryNeeds_(ss) {
     `TEXT(SUMIF(${va_('A')},${iso},${va_('W')}),"$#,##0")&" a year of estimated revenue across its value chains, at the target shares on Settings (details: Market_Opportunity).")`);
   sh.getRange(S + 1, 1, 4, 1).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
   buildNeedsEquipment_(sh, S, O, iso);
+  buildNeedsCharts_(sh, T, E, O, S + 5);
 
   sh.setConditionalFormatRules([
     SpreadsheetApp.newConditionalFormatRule().whenTextStartsWith('GAP').setBackground(APP.color.warn).setFontColor('#a50e0e')
@@ -3988,7 +3990,7 @@ function runFullAudit() {
     if (found > 20) problems.push([s[k], '…', `${found - 20} more error cells`, 'See above.']);
   });
   if (rawCount_() > 0) {
-    [[s.dashboard, 2], [s.charts, 6], [s.vaSummary, 3], [s.vaCharts, 7]].forEach(([name, n]) => {
+    [[s.dashboard, 2], [s.charts, 6], [s.vaSummary, 3], [s.vaCharts, 7], [s.needs, 4]].forEach(([name, n]) => {
       const sh = ss.getSheetByName(name);
       if (sh && hs4Count_() === 0 && (name === s.vaSummary || name === s.vaCharts)) return;
       if (sh && sh.getCharts().length < n) {
@@ -4054,6 +4056,90 @@ function buildSuppliers_(ss) {
 }
 
 /** Country_Needs sections 5–8. S = row of section 4 heading, O = section 2 heading, iso = ISO cell. */
+// Rows reserved at the top of Country_Needs for its 4 live charts.
+const NEEDS_CHART_ROWS = 40;
+
+/** Four live charts at the top of Country_Needs. Data tables from column I follow the picker. */
+function buildNeedsCharts_(sh, T, E, O, Q) {
+  const K = T + 3, name = `$B$${T}`, DC = 9;
+  const tableTitle = (row, text) => sh.getRange(row, DC).setValue(text).setFontWeight('bold').setFontColor(APP.color.title)
+    .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  const headRow = (row, cells) => {
+    header_(sh.getRange(row, DC, 1, cells.length), cells.map(c => (String(c).charAt(0) === '=' ? '' : c)));
+    cells.forEach((c, i) => { if (String(c).charAt(0) === '=') sh.getRange(row, DC + i).setFormula(c); });
+  };
+  sh.getRange(K, 1).setValue('Charts for this country — they redraw when you pick a country (the legends name it)')
+    .setFontWeight('bold').setFontSize(12).setFontColor(APP.color.title).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+  sh.getRange(K + 1, 1).setValue('Present them in order: A where it is weak, B where to start, C what is lost and what could be earned, D how big the equipment job is. ' +
+    'The tables from column I are the data behind the charts.').setFontStyle('italic').setFontColor('#555555')
+    .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+
+  // A. Enablers as an index: African median = 100.
+  const A = K + 2, nI = INDICATORS.length;
+  tableTitle(A, 'Data for chart A (index, African median = 100)');
+  headRow(A + 1, ['Enabler', `=${name}&" (African median = 100)"`, 'African median']);
+  INDICATORS.forEach((ind, i) => {
+    const r = A + 2 + i, src = E + 2 + i;
+    sh.getRange(r, DC, 1, 3).setValues([[`=A${src}`,
+      `=IF(AND(ISNUMBER(B${src}),ISNUMBER(C${src})),IF(C${src}>0,ROUND(B${src}/C${src}*100,0),""),"")`, 100]]);
+  });
+
+  // B and C. Top value chains from section 2.
+  const B = A + nI + 3;
+  tableTitle(B, 'Data for charts B and C (top value chains from section 2)');
+  headRow(B + 1, ['Value chain', `="Score (0–100): "&${name}`, `="Value lost (USD): "&${name}`, `="Estimated revenue (USD): "&${name}`]);
+  for (let i = 0; i < 10; i++) {
+    const r = B + 2 + i, src = O + 2 + i;
+    sh.getRange(r, DC, 1, 4).setValues([[
+      `=IF(ISNUMBER($D$${src}),IFERROR(LEFT($A$${src},FIND(" → ",$A$${src})-1),$A$${src}),"")`,
+      `=IF(ISNUMBER($D$${src}),$E$${src},"")`,
+      `=IF(ISNUMBER($D$${src}),$D$${src},"")`,
+      `=IF(ISNUMBER($D$${src}),SUMIFS(${va_('W')},${va_('A')},$B$${T + 1},${va_('C')},$A$${src}),"")`,
+    ]]);
+  }
+  sh.getRange(B + 2, DC + 2, 10, 2).setNumberFormat('#,##0');
+
+  // D. Equipment steps for the top 3 chains, by power need.
+  const D = B + 13, powers = [['Low', 'Low'], ['Medium', 'Medium'], ['High', 'High*'], ['Very high', 'Very high']];
+  tableTitle(D, 'Data for chart D (equipment steps for the top 3 chains, by power need)');
+  headRow(D + 1, ['Value chain'].concat(powers.map(p => `="${p[0]} power: "&${name}`)));
+  for (let i = 0; i < 3; i++) {
+    const r = D + 2 + i, chain = `$${colLetter_(9 + i)}$${Q}`;
+    sh.getRange(r, DC).setFormula(`=IFERROR(LEFT(${chain},FIND(" → ",${chain})-1),${chain})`);
+    powers.forEach((p, j) => sh.getRange(r, DC + 1 + j)
+      .setFormula(`=IF(${chain}="","",COUNTIFS(${eq_('A')},${chain},${eq_('G')},"${p[1]}"))`));
+  }
+  sh.getRange(A, DC, D + 5 - A, 5).setFontSize(9);
+
+  const place = (row, col, width, title, caption, builder) => {
+    sh.getRange(row, col).setValue(title).setFontWeight('bold').setFontSize(11).setFontColor(APP.color.title)
+      .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+    sh.getRange(row + 1, col).setValue(caption).setFontStyle('italic').setFontSize(9).setFontColor('#555555')
+      .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
+    sh.insertChart(builder.setOption('width', width).setOption('height', 320).setOption('legend', { position: 'top' })
+      .setPosition(row + 2, col, 0, 0).build());
+  };
+  const range = (row, col, rows) => sh.getRange(row, col, rows, 1);
+  const bar = () => sh.newChart().setChartType(Charts.ChartType.BAR).setNumHeaders(1);
+  place(K + 2, 1, 560, 'A. Where it is weak — enablers compared with the African median',
+    'Blue bar shorter than the grey one (100) = a gap. Longer = stronger than most African countries.',
+    bar().addRange(range(A + 1, DC, nI + 1)).addRange(range(A + 1, DC + 1, nI + 1)).addRange(range(A + 1, DC + 2, nI + 1))
+      .setOption('colors', ['#4a86e8', '#bbbbbb']));
+  place(K + 2, 4, 620, 'B. Where to start — value-addition score of its top chains',
+    'Longer bar = better chance: more value at stake, a bigger raw base and market, better readiness.',
+    bar().addRange(range(B + 1, DC, 11)).addRange(range(B + 1, DC + 1, 11)).setOption('colors', ['#1f4e3d']));
+  place(K + 21, 1, 560, 'C. What is lost and what could be earned (USD a year, estimates)',
+    'Red = lost today by exporting raw. Blue = revenue at the target shares on Settings.',
+    bar().addRange(range(B + 1, DC, 11)).addRange(range(B + 1, DC + 2, 11)).addRange(range(B + 1, DC + 3, 11))
+      .setOption('colors', ['#a50e0e', '#4a86e8']));
+  place(K + 21, 4, 620, 'D. How big the equipment job is — steps for its top 3 chains',
+    'Each block = one processing step to equip (section 5). More red = more power needed.',
+    sh.newChart().setChartType(Charts.ChartType.COLUMN).setNumHeaders(1).addRange(range(D + 1, DC, 4))
+      .addRange(range(D + 1, DC + 1, 4)).addRange(range(D + 1, DC + 2, 4)).addRange(range(D + 1, DC + 3, 4)).addRange(range(D + 1, DC + 4, 4))
+      .setOption('isStacked', true).setOption('colors', ['#b7e1cd', '#f6b26b', '#e06666', '#990000']));
+  [140, 150, 150, 150, 150].forEach((w, i) => sh.setColumnWidth(DC + i, w));
+}
+
 function buildNeedsEquipment_(sh, S, O, iso) {
   const heading = (row, text) => sh.getRange(row, 1).setValue(text).setFontWeight('bold').setFontSize(12)
     .setFontColor(APP.color.title).setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);

@@ -45,7 +45,7 @@ Colour code of the tabs: blue = explanation · green = results · orange = your 
 | Value_Addition | Results | Per country: raw vs processed exports, processing share, value lost by exporting raw, enabler gaps; 3 charts |
 | Value_Lost_Charts | Results | Value lost made visual: a 4-step diagram of how value is lost, a value ladder for every chain, a worked example, a live "pick a country" section with 2 charts, and 5 Africa-wide charts (raw vs processed, by sector, by region, round trip, readiness vs value lost) |
 | Market_Opportunity | Results | What buyers already pay for the finished products: at home, across Africa (bought from African suppliers vs from outside Africa) and in 10 outside markets (EU, USA, China, Japan, UK, India, UAE, Saudi Arabia, Türkiye, Brazil). Pick a country to see its **value proposition** and **estimated revenue per year** at the target shares set on Settings. 3 charts |
-| Country_Needs | Results | Pick a country: (1) enablers vs the African median, (2) value-addition opportunities, (3) what processing requires, (4) a summary in words, (5) **equipment to buy**, (6) **suppliers to source it from**, (7) **sources of help** (finance, technical support, certification, trade fairs), (8) **machinery it already imports** |
+| Country_Needs | Results | Pick a country: **4 live charts** at the top (A where it is weak vs the African median, B where to start, C value lost vs revenue it could earn, D how big the equipment job is), then (1) enablers vs the African median, (2) value-addition opportunities, (3) what processing requires, (4) a summary in words, (5) **equipment to buy**, (6) **suppliers to source it from**, (7) **sources of help** (finance, technical support, certification, trade fairs), (8) **machinery it already imports** |
 | VA_Scorecard | Results | Every country × value chain with 5 sub-scores and a value-addition score (0–100) |
 | Value_Chains | Input | The 25 value chains: raw, semi-processed and processed HS4 codes, value multipliers (assumptions) and needs |
 | Equipment | Input | What to buy to add value: 77 processing steps across the 25 chains, with the equipment, machinery code (HS4), scale and power need |
@@ -127,6 +127,6 @@ For every exporter **A**, importer **B** and product **p** (HS 2-digit), where A
 The `tests/` folder checks the whole app without Google Sheets. It needs Node.js.
 
 - `node tests/workflows.js` runs every menu action against a mock of the Apps Script services, including the UN Comtrade and World Bank downloads with fake answers. It takes about 10 seconds.
-- `node tests/verify.js` builds the workbook, calculates all ~500 formulas with `tests/sheetsim.js` (a small evaluator that follows Google Sheets rules), and checks the results: 726 checks, including every country in every picker. It takes about 10–20 minutes.
+- `node tests/verify.js` builds the workbook, calculates all the formulas with `tests/sheetsim.js` (a small evaluator that follows Google Sheets rules), and checks the results, including every country in every picker and the data behind the Country_Needs charts. It takes about 10–20 minutes.
 
 Neither replaces a real check in Google Sheets. After installing, run **Africa Trade → Run full audit** in the sheet.

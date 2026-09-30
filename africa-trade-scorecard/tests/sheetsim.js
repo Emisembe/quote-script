@@ -163,6 +163,11 @@ function critMatcher(crit) {
     }
     if (rest === '') { const empty = v === null || v === ''; return op === '<>' ? !empty : op === '=' ? empty : false; }
     if (typeof v !== 'string') return op === '<>';
+    if ((op === '=' || op === '<>') && /[*?]/.test(rest)) {
+      const re = new RegExp('^' + rest.replace(/~([*?~])|([*?])|([.+^${}()|[\]\\])/g,
+        (x, esc, w, meta) => esc ? '\\' + esc : w ? (w === '*' ? '.*' : '.') : '\\' + meta) + '$', 'i');
+      return re.test(v) === (op === '=');
+    }
     return compare(v, rest, op);
   };
 }

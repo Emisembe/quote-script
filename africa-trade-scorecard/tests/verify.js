@@ -101,7 +101,7 @@ for (const name of names) {
   ok(tr === Math.min(nChains, 10), `${name} VLC table rows ${tr} vs ${Math.min(nChains, 10)}`);
   ok(String(V('Value_Lost_Charts', Vc.country + 4, 8)).endsWith(name), `${name} chart legend header`);
   // Country_Needs
-  const O = TN + 3 + 2 + 7 + 1; const Rq = O + 13, Sx = Rq + 13, Q = Sx + 5, P = Q + 22, Hh = P + 44, Mm = Hh + 38;
+  const E = TN + 3 + K('NEEDS_CHART_ROWS'), O = E + 2 + 7 + 1; const Rq = O + 13, Sx = Rq + 13, Q = Sx + 5, P = Q + 22, Hh = P + 44, Mm = Hh + 38;
   ok(new RegExp('NOW SHOWING: ' + name.replace(/[()']/g, '.')).test(V('Country_Needs', TN + 2, 1)), `${name} needs NOW SHOWING`);
   const topChains = []; for (let i = 0; i < 3; i++) { const v = V('Country_Needs', O + 2 + i, 1); if (typeof V('Country_Needs', O + 2 + i, 4) === 'number') topChains.push(v); }
   ok(topChains.length === Math.min(3, nChains), `${name} top chains ${topChains.length}`);
@@ -119,6 +119,31 @@ for (const name of names) {
   const expM = [...S('Raw_HS4').cells.entries()].length ? null : 0;
   if (mach > 0) needsStats.mach++;
   if (eqRows) needsStats.eq++; if (supRows) needsStats.sup++; if (!nChains) needsStats.none++;
+  // Country_Needs charts (data tables from column I)
+  const CA = TN + 5, CB = CA + 10, CD = CB + 13;
+  ok(String(V('Country_Needs', CA + 1, 10)).startsWith(name + ' ('), `${name} needs chart A legend`);
+  ok(String(V('Country_Needs', CB + 1, 12)).endsWith(name) && String(V('Country_Needs', CD + 1, 12)).endsWith(name), `${name} needs charts B-D legends`);
+  for (let i = 0; i < 7; i++) {
+    const b = V('Country_Needs', E + 2 + i, 2), m = V('Country_Needs', E + 2 + i, 3), x = V('Country_Needs', CA + 2 + i, 10);
+    const want = typeof b === 'number' && typeof m === 'number' && m > 0 ? Math.round(b / m * 100) : '';
+    ok(want === '' ? (x === '' || x == null) : Math.abs(x - want) <= 1, `${name} chart A enabler ${i}: ${x} vs ${want}`);
+    ok(V('Country_Needs', CA + 2 + i, 11) === 100, `${name} chart A median`);
+  }
+  let chartRows = 0, revSum = 0;
+  for (let i = 0; i < 10; i++) {
+    const lost = V('Country_Needs', CB + 2 + i, 11);
+    if (typeof lost !== 'number') continue;
+    chartRows++;
+    ok(lost === V('Country_Needs', O + 2 + i, 4) && V('Country_Needs', CB + 2 + i, 10) === V('Country_Needs', O + 2 + i, 5), `${name} chart B/C row ${i}`);
+    const chain = V('Country_Needs', O + 2 + i, 1);
+    let want = 0; for (let r = L.vaFirst; ; r++) { const a = V('VA_Scorecard', r, 1); if (!a) break; if (a === iso && V('VA_Scorecard', r, 3) === chain) want += V('VA_Scorecard', r, 23); }
+    ok(Math.abs(V('Country_Needs', CB + 2 + i, 12) - want) < 1, `${name} chart C revenue ${i}`);
+    revSum += V('Country_Needs', CB + 2 + i, 12);
+  }
+  ok(chartRows === Math.min(nChains, 10), `${name} chart B rows ${chartRows}`);
+  let steps = 0; for (let i = 0; i < 3; i++) for (let j = 0; j < 4; j++) { const v = V('Country_Needs', CD + 2 + i, 10 + j); if (typeof v === 'number') steps += v; }
+  ok(steps === eqRows, `${name} chart D steps ${steps} vs equipment rows ${eqRows}`);
+  if (chartRows) needsStats.charts = (needsStats.charts || 0) + 1;
   // Country_View
   ok(new RegExp('NOW SHOWING: ' + name.replace(/[()']/g, '.')).test(V('Country_View', TC + 2, 1)), `${name} Country_View NOW SHOWING`);
   // Market_Opportunity section 1
@@ -130,7 +155,8 @@ for (const name of names) {
   ok(String(V('Market_Opportunity', PM + 6, 6)).endsWith(name), `${name} market chart legend header`);
   ok(!nChains || /^Market waiting for its processed goods/.test(V('Country_Needs', Sx + 4, 1)), `${name} Country_Needs market line`);
 }
-console.log('countries with equipment rows', needsStats.eq, '| with suppliers', needsStats.sup, '| with machinery imports', needsStats.mach, '| with no value chains', needsStats.none, 'of', names.length);
+ok(S('Country_Needs').charts ? S('Country_Needs').charts.length === 4 : true, 'Country_Needs has 4 charts');
+console.log('countries with needs charts filled', needsStats.charts, '| with equipment rows', needsStats.eq, '| with suppliers', needsStats.sup, '| with machinery imports', needsStats.mach, '| with no value chains', needsStats.none, 'of', names.length);
 
 // 10. Explain_Score for 25 random opportunities + one that does not exist
 for (let t = 0; t < 26; t++) {
