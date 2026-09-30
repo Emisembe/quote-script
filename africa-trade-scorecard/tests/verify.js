@@ -121,14 +121,23 @@ for (const name of names) {
   if (eqRows) needsStats.eq++; if (supRows) needsStats.sup++; if (!nChains) needsStats.none++;
   // Country_Needs charts (data tables from column I)
   const CA = TN + 5, CB = CA + 10, CD = CB + 13;
-  ok(String(V('Country_Needs', CA + 1, 10)).startsWith(name + ' ('), `${name} needs chart A legend`);
+  ok(String(V('Country_Needs', CA + 1, 10)).startsWith(name + ' (European median = 100)'), `${name} needs chart A legend`);
   ok(String(V('Country_Needs', CB + 1, 12)).endsWith(name) && String(V('Country_Needs', CD + 1, 12)).endsWith(name), `${name} needs charts B-D legends`);
+  const EUc = K('EU_COL'), nEU = K('EU27').length;
   for (let i = 0; i < 7; i++) {
-    const b = V('Country_Needs', E + 2 + i, 2), m = V('Country_Needs', E + 2 + i, 3), x = V('Country_Needs', CA + 2 + i, 10);
-    const want = typeof b === 'number' && typeof m === 'number' && m > 0 ? Math.round(b / m * 100) : '';
-    ok(want === '' ? (x === '' || x == null) : Math.abs(x - want) <= 1, `${name} chart A enabler ${i}: ${x} vs ${want}`);
-    ok(V('Country_Needs', CA + 2 + i, 11) === 100, `${name} chart A median`);
+    const r = E + 2 + i, b = V('Country_Needs', r, 2), m = V('Country_Needs', r, 3), eu = V('Country_Needs', r, 5);
+    const vals = []; for (let k = 0; k < nEU; k++) { const v = V('Enablers', L.enFirst + k, EUc + 2 + i); if (typeof v === 'number') vals.push(v); }
+    vals.sort((p, q) => p - q);
+    const med = vals.length % 2 ? vals[(vals.length - 1) / 2] : (vals[vals.length / 2 - 1] + vals[vals.length / 2]) / 2;
+    ok(vals.length === nEU && Math.abs(eu - med) < 1e-9, `${name} European median ${i}: ${eu} vs ${med}`);
+    const pct = V('Country_Needs', r, 6);
+    ok(typeof b === 'number' ? Math.abs(pct - b / eu) < 1e-9 : (pct === '' || pct == null), `${name} % of European median ${i}`);
+    const idx = (v) => (typeof v === 'number' ? Math.round(v / eu * 100) : '');
+    const x = V('Country_Needs', CA + 2 + i, 10), y = V('Country_Needs', CA + 2 + i, 11);
+    ok(idx(b) === '' ? (x === '' || x == null) : Math.abs(x - idx(b)) <= 1, `${name} chart A country ${i}: ${x} vs ${idx(b)}`);
+    ok(Math.abs(y - idx(m)) <= 1 && V('Country_Needs', CA + 2 + i, 12) === 100, `${name} chart A medians ${i}`);
   }
+  ok(/Furthest from Europe: /.test(V('Country_Needs', Sx + 1, 1)), `${name} summary mentions Europe`);
   let chartRows = 0, revSum = 0;
   for (let i = 0; i < 10; i++) {
     const lost = V('Country_Needs', CB + 2 + i, 11);

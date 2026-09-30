@@ -15,6 +15,12 @@ const step = (name, fn) => { const t = Date.now(); fn(); console.log('OK', name,
   step('update from a workbook without HS4 data', () => c.upgradeWorkbook());
   assert(c.hs4Count_() > 0, 'HS4 data restored'); }
 { const m = fresh(), c = m.ctx; c.quickStart();
+  assert(c.euBenchmarkCount_() === 27, 'EU benchmark after quick start');
+  const en = m.sheets.find(s => s.name === 'Enablers');
+  en.getRange(c.L.enFirst, require('vm').runInContext('EU_COL', c), 27, 10).clearContent();
+  step('update from a workbook without the European benchmark', () => c.upgradeWorkbook());
+  assert(c.euBenchmarkCount_() === 27, 'EU benchmark restored by update'); }
+{ const m = fresh(), c = m.ctx; c.quickStart();
   c.UrlFetchApp = { fetch: url => {
     if (url.includes('worldbank')) return { getResponseCode: () => 200, getContentText: () => JSON.stringify([{}, [{ countryiso3code: 'NGA', date: '2023', value: 55 }]]) };
     const d = url.includes('AG2') ? [{ flowCode: 'X', cmdCode: '18', partnerCode: 0, period: 2023, primaryValue: 1e9, motCode: 0, partner2Code: 0, customsCode: 'C00' }]

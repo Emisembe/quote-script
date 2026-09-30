@@ -23,7 +23,7 @@
 // ------------------------------------------------------------------
 
 const APP = {
-  version: '3.5.0',
+  version: '3.6.0',
   sheets: {
     guide: 'Guide',
     health: 'Health_Check',
@@ -134,6 +134,17 @@ const INDICATORS = [
   ['IT.NET.USER.ZS', 'Internet use (%)', 'Individuals using the Internet (% of population)', 'digital',
     'Digital links help firms find buyers, meet standards and get paid.'],
 ];
+
+// European Union benchmark (27 member states): World Bank values for the same indicators, shown on the Enablers tab
+// from column EU_COL. Country_Needs compares each African country with their median. Not used in any score.
+const EU27 = [
+  ['AUT', 'Austria'], ['BEL', 'Belgium'], ['BGR', 'Bulgaria'], ['HRV', 'Croatia'], ['CYP', 'Cyprus'], ['CZE', 'Czechia'],
+  ['DNK', 'Denmark'], ['EST', 'Estonia'], ['FIN', 'Finland'], ['FRA', 'France'], ['DEU', 'Germany'], ['GRC', 'Greece'],
+  ['HUN', 'Hungary'], ['IRL', 'Ireland'], ['ITA', 'Italy'], ['LVA', 'Latvia'], ['LTU', 'Lithuania'], ['LUX', 'Luxembourg'],
+  ['MLT', 'Malta'], ['NLD', 'Netherlands'], ['POL', 'Poland'], ['PRT', 'Portugal'], ['ROU', 'Romania'], ['SVK', 'Slovakia'],
+  ['SVN', 'Slovenia'], ['ESP', 'Spain'], ['SWE', 'Sweden'],
+];
+const EU_COL = 13;
 
 const NEED_LABELS = {
   energy: 'Reliable, affordable electricity',
@@ -583,7 +594,8 @@ const TAB_HELP = {
     title: 'Country_Needs — what a country needs to add value',
     what: ['Pick a country: 4 charts at the top, then enablers vs the African median (1), value-addition opportunities (2), what processing requires (3),',
       'a summary (4), equipment to buy (5), suppliers to source it from (6), sources of help (7) and the machinery it already imports (8).'],
-    read: ['The charts redraw when you pick a country; their legends name it. Chart A: 100 = African median, below 100 = a gap.',
+    read: ['The charts redraw when you pick a country; their legends name it. Chart A: 100 = European Union median; grey bar = African median.',
+      'European median = the middle value of the 27 EU countries: a benchmark showing the distance to an advanced economy. It changes no score or flag.',
       'GAP = below the African median on that enabler. Opportunities are sorted by value lost (largest first).',
       'Sections 5–6 follow the top 3 value chains in section 2, so they change with the country.'],
     say: ['"To capture this value, this country mainly needs what is flagged as a gap here. For its biggest chain, processing requires what section 3 lists."'],
@@ -616,7 +628,8 @@ const TAB_HELP = {
   enablers: {
     title: 'Enablers — World Bank indicators of readiness for value addition',
     what: ['Seven indicators per country from the World Bank WDI (World Development Indicators): power, industry, logistics, skills, finance, internet.'],
-    read: ['Latest available value for each country; higher is better for all seven. "Data years" shows how recent the values are.'],
+    read: ['Latest available value for each country; higher is better for all seven. "Data years" shows how recent the values are.',
+      'From column M: the same indicators for the 27 European Union countries, a benchmark for Country_Needs. Not used in any score.'],
     say: ['"These show whether the basics for processing are in place — power, skills, finance, logistics and an industrial base."'],
     watch: ['If the status says SAMPLE the values are synthetic. Menu "Fetch World Bank enabler indicators" loads real data (free, no key).'],
   },
@@ -1088,7 +1101,7 @@ function snapshot_(ss) {
   const en = ss.getSheetByName(APP.sheets.enablers);
   const enh = findHeader(en, 'ISO3');
   if (enh && en.getLastRow() > enh) {
-    snap.enablers = en.getRange(enh + 1, 1, en.getLastRow() - enh, 3 + INDICATORS.length).getValues()
+    snap.enablers = en.getRange(enh + 1, 1, en.getLastRow() - enh, Math.min(EU_COL + 2 + INDICATORS.length, en.getMaxColumns())).getValues()
       .filter(r => String(r[0]).trim().length === 3);
   }
   const vc = ss.getSheetByName(APP.sheets.chains);
@@ -2056,6 +2069,7 @@ function buildGlossary_(ss) {
       ['Enabler', 'A condition that makes processing possible: electricity, industrial base, logistics, skills, finance, digital connectivity, standards.'],
       ['Readiness', 'Average of the enabler indicators a value chain needs, scaled 0–1 across African countries.'],
       ['African median', 'The middle value of all African countries for an indicator: half are above, half below. Below it = a GAP flag.'],
+      ['European median', 'The middle value of the 27 European Union countries for the same indicator. A benchmark on Country_Needs showing the distance to an advanced economy; it does not change any score or GAP flag.'],
       ['Market value (what buyers pay)', 'The value of imports of a product: what buyers already pay each year. It shows market size, not profit.'],
       ['Import substitution', 'Producing at home (or in Africa) what is now imported from outside — the clearest market for a new processor.'],
       ['Target share', 'An assumption: the part of a market a new processor could realistically win. Set on Settings.'],
@@ -2180,6 +2194,7 @@ function buildFaq_(ss) {
       ['Why does a country have no value-addition rows?', 'It exports little of the raw materials in the 25 chains, or its HS4 data is missing for that year.'],
       ['Can I add a value chain?', 'Yes: add a row on the Value_Chains tab (codes, multiplier, needs), download data again with Refresh, then run step 3.'],
       ['What does "GAP" mean on Country_Needs?', 'The country is below the African median on that enabler. It is a flag to investigate, not a verdict.'],
+      ['Why compare with the European median as well?', 'The African median shows whether a country is behind its neighbours; the European Union median shows how far it is from an advanced economy. GAP flags and scores use only the African median, because almost every African country is below Europe on most indicators.'],
       ['How do I know the page changed after I picked a country?', 'Look at the green NOW SHOWING line under the yellow cell: it names what you picked and counts what was found. On Value_Lost_Charts the chart legends show the country name too.'],
       ['A country shows nothing — is it broken?', 'No: the green line says why — no data for that year, no raw exports in the 25 value chains, or the data is not loaded yet. Health_Check shows which.'],
       ['How do I check everything works?', 'Open Health_Check: every line should say OK. Run Africa Trade → Run full audit to scan every tab for errors.'],
@@ -2982,6 +2997,11 @@ function confirm_(msg) {
 /** Open-ended VA_Scorecard column reference, e.g. va_('A') → VA_Scorecard!$A$8:$A */
 function va_(col) { return `VA_Scorecard!$${col}$${L.vaFirst}:$${col}`; }
 function en_(col) { return `Enablers!$${col}$${L.enFirst}:$${col}`; }
+/** Enablers range holding the 27 EU values of indicator j. */
+function euRange_(j) {
+  const col = colLetter_(EU_COL + 2 + j);
+  return `Enablers!$${col}$${L.enFirst}:$${col}$${L.enFirst + EU27.length - 1}`;
+}
 function vaWeightCell_(i) { return `Settings!$B$${L.settingsVa + i}`; }
 function vaWeightRange_() { return `Settings!$B$${L.settingsVa}:$B$${L.settingsVa + VA_CRITERIA.length - 1}`; }
 
@@ -3021,8 +3041,15 @@ function buildEnablers_(ss) {
     .concat(INDICATORS.map(i => `${i[2]}. World Bank code ${i[0]}. ${i[4]}`))
     .concat(['Years of the latest available values'])]);
   sh.getRange(L.enFirst, 3, sh.getMaxRows() - L.enFirst + 1, INDICATORS.length).setNumberFormat('0.0');
+  const euHead = ['EU ISO3', 'European Union country (benchmark)'].concat(INDICATORS.map(i => i[1])).concat(['Data years']);
+  header_(sh.getRange(L.enHead, EU_COL, 1, euHead.length), euHead);
+  sh.getRange(L.enHead, EU_COL, 1, euHead.length).setWrap(true);
+  sh.getRange(L.enHead, EU_COL).setNote('Benchmark only: the same World Bank indicators for the 27 European Union countries. ' +
+    'Country_Needs shows their median next to the African median. They are not used in any score.');
+  sh.getRange(L.enFirst, EU_COL + 2, EU27.length, INDICATORS.length).setNumberFormat('0.0');
   sh.setFrozenRows(L.enHead);
   sh.setColumnWidth(2, 190);
+  sh.setColumnWidth(EU_COL + 1, 170);
 }
 
 function buildRawHs4_(ss) {
@@ -3108,21 +3135,27 @@ function buildCountryNeeds_(ss) {
 
   // 1. Enablers vs African median (below the chart area).
   const E = T + 3 + NEEDS_CHART_ROWS;
-  heading(E, '1. Enablers — how ready is this country to add value? (compared with the African median)');
-  header_(sh.getRange(E + 1, 1, 1, 6), ['Enabler', 'This country', 'African median', 'Status', 'Why it matters', 'Indicator (full name)']);
+  heading(E, '1. Enablers — how ready is this country to add value? (compared with the African median and the European Union median)');
+  header_(sh.getRange(E + 1, 1, 1, 8), ['Enabler', 'This country', 'African median', 'Status (vs Africa)', 'European median',
+    '% of European median', 'Why it matters', 'Indicator (full name)']);
+  sh.getRange(E + 1, 5).setNote('Median of the 27 European Union countries (World Bank, same indicator). A benchmark only: it does not change the GAP status or any score.');
   INDICATORS.forEach((ind, i) => {
     const r = E + 2 + i;
     const col = colLetter_(3 + i);
-    sh.getRange(r, 1, 1, 6).setValues([[
+    sh.getRange(r, 1, 1, 8).setValues([[
       ind[1],
       `=IFERROR(INDEX(${en_(col)},MATCH(${iso},${en_('A')},0)),"")`,
       `=IFERROR(MEDIAN(${en_(col)}),"")`,
       `=IF(ISNUMBER(B${r}),IF(B${r}<C${r},"GAP: below African median","OK"),"No data")`,
+      `=IFERROR(MEDIAN(${euRange_(i)}),"")`,
+      `=IF(AND(ISNUMBER(B${r}),ISNUMBER(E${r})),IF(E${r}>0,B${r}/E${r},""),"")`,
       ind[4],
       ind[2],
     ]]);
   });
   sh.getRange(E + 2, 2, INDICATORS.length, 2).setNumberFormat('0.0');
+  sh.getRange(E + 2, 5, INDICATORS.length, 1).setNumberFormat('0.0');
+  sh.getRange(E + 2, 6, INDICATORS.length, 1).setNumberFormat('0%');
   const statusRange = sh.getRange(E + 2, 4, INDICATORS.length, 1);
   nowShowing_(sh.getRange(T + 2, 1), `=IF(${iso}="","Choose a country in the yellow cell.","NOW SHOWING: "&$B$${T}&" ("&${iso}&")` +
     ` — enabler indicators available: "&COUNT(B${E + 2}:B${E + 1 + INDICATORS.length})&" of ${INDICATORS.length}  ·  value chains: "&COUNTIF(${va_('A')},${iso})&` +
@@ -3161,7 +3194,9 @@ function buildCountryNeeds_(ss) {
   const S = R + 13;
   heading(S, '4. In one paragraph');
   const firstStatus = `D${E + 2}:D${E + 1 + INDICATORS.length}`, firstLabel = `A${E + 2}:A${E + 1 + INDICATORS.length}`;
-  sh.getRange(S + 1, 1).setFormula(`=IF(${iso}="","",$B$${T}&" — biggest enabler gaps: "&IFERROR(TEXTJOIN(", ",TRUE,FILTER(${firstLabel},LEFT(${firstStatus},3)="GAP")),"none flagged")&".")`);
+  const euPct = `F${E + 2}:F${E + 1 + INDICATORS.length}`;
+  sh.getRange(S + 1, 1).setFormula(`=IF(${iso}="","",$B$${T}&" — biggest enabler gaps: "&IFERROR(TEXTJOIN(", ",TRUE,FILTER(${firstLabel},LEFT(${firstStatus},3)="GAP")),"none flagged")&"."` +
+    `&IFERROR(IF(COUNT(${euPct})=0,""," Furthest from Europe: "&INDEX(${firstLabel},MATCH(MIN(${euPct}),${euPct},0))&" ("&TEXT(MIN(${euPct}),"0%")&" of the European median)."),""))`);
   sh.getRange(S + 2, 1).setFormula(`=IF(ISNUMBER(D${O + 2}),"Largest value lost: "&A${O + 2}&" — about "&TEXT(D${O + 2},"$#,##0")&" a year (estimate). Processing share today: "&TEXT(C${O + 2},"0%")&".","")`);
   sh.getRange(S + 3, 1).setValue('Always check as well: quality standards and certification, which no indicator measures.');
   sh.getRange(S + 4, 1).setFormula(`=IF(COUNTIF(${va_('A')},${iso})=0,"","Market waiting for its processed goods: about "&` +
@@ -3176,7 +3211,7 @@ function buildCountryNeeds_(ss) {
     SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('OK').setBackground(APP.color.band).setFontColor('#1f4e3d')
       .setRanges([statusRange]).build(),
   ]);
-  [290, 150, 130, 330, 300, 170, 110].forEach((w, i) => sh.setColumnWidth(i + 1, w));
+  [290, 150, 130, 330, 170, 170, 300, 330].forEach((w, i) => sh.setColumnWidth(i + 1, w));
 }
 
 // ------------------------------------------------------------------
@@ -3237,7 +3272,23 @@ function writeEnablers_(byIso, years, status) {
     .concat([years[c.iso] || '']));
   ensureRows_(sh, L.enFirst + rows.length);
   sh.getRange(L.enFirst, 1, rows.length, rows[0].length).setValues(rows);
+  writeEuBenchmark_(byIso, years);
   setParam_('P_WB_STATUS', status);
+}
+
+/** The 27 EU rows (benchmark) from column EU_COL of the Enablers tab. */
+function writeEuBenchmark_(byIso, years) {
+  const sh = sheet_(APP.sheets.enablers);
+  const rows = EU27.map(([iso, name]) => [iso, name]
+    .concat((byIso[iso] || []).concat(new Array(INDICATORS.length).fill(null)).slice(0, INDICATORS.length).map(v => (v === null || v === undefined ? '' : v)))
+    .concat([years[iso] || '']));
+  sh.getRange(L.enFirst, EU_COL, rows.length, rows[0].length).setValues(rows);
+}
+
+function euBenchmarkCount_() {
+  const sh = SpreadsheetApp.getActive().getSheetByName(APP.sheets.enablers);
+  if (!sh || sh.getMaxColumns() < EU_COL + 2) return 0;
+  return sh.getRange(L.enFirst, EU_COL + 2, EU27.length, 1).getValues().filter(r => typeof r[0] === 'number').length;
 }
 
 /** Synthetic HS4 flows with a realistic shape (NOT real statistics). */
@@ -3288,7 +3339,20 @@ function generateSampleEnablers_(countries) {
     byIso[c.iso] = ranges.map(([lo, hi]) => Math.round((lo + (hi - lo) * (0.6 * rng() + 0.4 * tilt)) * 10) / 10);
     years[c.iso] = 'sample';
   });
+  Object.assign(byIso, sampleEuEnablers_(years));
   return { byIso, years };
+}
+
+/** Synthetic EU benchmark values (NOT real statistics); separate random stream so African values stay unchanged. */
+function sampleEuEnablers_(years) {
+  const rng = mulberry32_(20261004);
+  const ranges = [[99.5, 100], [8, 22], [45, 90], [3.0, 4.2], [95, 150], [40, 140], [78, 98]];
+  const out = {};
+  EU27.forEach(([iso]) => {
+    out[iso] = ranges.map(([lo, hi]) => Math.round((lo + (hi - lo) * rng()) * 10) / 10);
+    years[iso] = 'sample';
+  });
+  return out;
 }
 
 function loadSampleValueAddition_() {
@@ -3315,9 +3379,10 @@ function fetchWorldBankData() {
 
 function fetchWorldBank_() {
   const countries = readCountries_();
-  const isoList = countries.map(c => c.iso).join(';');
+  const isos = countries.map(c => c.iso).concat(EU27.map(e => e[0]));
+  const isoList = isos.join(';');
   const byIso = {}, yearsSeen = {};
-  countries.forEach(c => { byIso[c.iso] = new Array(INDICATORS.length).fill(null); yearsSeen[c.iso] = []; });
+  isos.forEach(iso => { byIso[iso] = new Array(INDICATORS.length).fill(null); yearsSeen[iso] = []; });
   INDICATORS.forEach((ind, j) => {
     const url = `https://api.worldbank.org/v2/country/${isoList}/indicator/${ind[0]}?format=json&mrnev=1&per_page=1000`;
     const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
@@ -3827,6 +3892,10 @@ function writeValueLostCharts_(s) {
  * Returns a message for the user, or '' when nothing was needed.
  */
 function fillMissingValueAddition_() {
+  if (Object.keys(readEnablers_()).length && euBenchmarkCount_() === 0) {
+    if (/SAMPLE/.test(String(getParam_('P_WB_STATUS')))) { const y = {}; writeEuBenchmark_(sampleEuEnablers_(y), y); }
+    else { try { fetchWorldBank_(); } catch (e) { /* optional: menu 2d loads it later */ } }
+  }
   if (rawCount_() === 0) return '';
   const source = String(getParam_('P_SOURCE'));
   const noEnablers = Object.keys(readEnablers_()).length === 0;
@@ -3913,6 +3982,8 @@ function healthChecks_() {
       'SAMPLE = synthetic numbers. Use 2b (UN Comtrade) for real data before sharing results.', 'Settings'],
     ['Enabler data source', '=P_WB_STATUS', '=IF(OR(ISNUMBER(SEARCH("SAMPLE",{B})),ISNUMBER(SEARCH("fail",{B})),ISNUMBER(SEARCH("No enabler",{B}))),"CHECK","OK")',
       'Run menu 2d to load real World Bank indicators.', 'Enablers'],
+    ['European benchmark (EU countries with data)', `=COUNT(${euRange_(0)})`, '=IF({B}>=20,"OK","CHECK")',
+      'Run menu 2d to load the World Bank indicators for the 27 European Union countries (used on Country_Needs).', 'Enablers'],
     ['Last computed', '=P_LAST_REFRESH', '=IF(OR({B}="",{B}="—"),"CHECK","OK")', 'Run menu 3 (Compute).', 'Settings'],
     ['Monthly auto-refresh', '=P_AUTO', '="INFO"', 'Switch with the menu: Monthly auto-refresh ON / OFF.', 'Settings'],
   ];
@@ -4074,14 +4145,14 @@ function buildNeedsCharts_(sh, T, E, O, Q) {
     'The tables from column I are the data behind the charts.').setFontStyle('italic').setFontColor('#555555')
     .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
 
-  // A. Enablers as an index: African median = 100.
+  // A. Enablers as an index: European Union median = 100.
   const A = K + 2, nI = INDICATORS.length;
-  tableTitle(A, 'Data for chart A (index, African median = 100)');
-  headRow(A + 1, ['Enabler', `=${name}&" (African median = 100)"`, 'African median']);
+  tableTitle(A, 'Data for chart A (index, European Union median = 100)');
+  headRow(A + 1, ['Enabler', `=${name}&" (European median = 100)"`, 'African median', 'European Union median']);
+  const idx = (v, src) => `=IF(AND(ISNUMBER(${v}${src}),ISNUMBER(E${src})),IF(E${src}>0,ROUND(${v}${src}/E${src}*100,0),""),"")`;
   INDICATORS.forEach((ind, i) => {
     const r = A + 2 + i, src = E + 2 + i;
-    sh.getRange(r, DC, 1, 3).setValues([[`=A${src}`,
-      `=IF(AND(ISNUMBER(B${src}),ISNUMBER(C${src})),IF(C${src}>0,ROUND(B${src}/C${src}*100,0),""),"")`, 100]]);
+    sh.getRange(r, DC, 1, 4).setValues([[`=A${src}`, idx('B', src), idx('C', src), `=IF(ISNUMBER(E${src}),100,"")`]]);
   });
 
   // B and C. Top value chains from section 2.
@@ -4121,10 +4192,10 @@ function buildNeedsCharts_(sh, T, E, O, Q) {
   };
   const range = (row, col, rows) => sh.getRange(row, col, rows, 1);
   const bar = () => sh.newChart().setChartType(Charts.ChartType.BAR).setNumHeaders(1);
-  place(K + 2, 1, 560, 'A. Where it is weak — enablers compared with the African median',
-    'Blue bar shorter than the grey one (100) = a gap. Longer = stronger than most African countries.',
+  place(K + 2, 1, 560, 'A. Where it is weak — compared with Africa and with Europe',
+    'Green = European Union median (100). Blue shorter than grey = below the African median (a GAP). The gap to 100 = distance to Europe.',
     bar().addRange(range(A + 1, DC, nI + 1)).addRange(range(A + 1, DC + 1, nI + 1)).addRange(range(A + 1, DC + 2, nI + 1))
-      .setOption('colors', ['#4a86e8', '#bbbbbb']));
+      .addRange(range(A + 1, DC + 3, nI + 1)).setOption('colors', ['#4a86e8', '#bbbbbb', '#1f4e3d']));
   place(K + 2, 4, 620, 'B. Where to start — value-addition score of its top chains',
     'Longer bar = better chance: more value at stake, a bigger raw base and market, better readiness.',
     bar().addRange(range(B + 1, DC, 11)).addRange(range(B + 1, DC + 1, 11)).setOption('colors', ['#1f4e3d']));
@@ -4173,7 +4244,7 @@ function buildNeedsEquipment_(sh, S, O, iso) {
   const cond = [0, 1, 2].map(i => `IF(${keyCell(i)}="",0,ISNUMBER(SEARCH(${keyCell(i)},${sup_('E')})))`).join('+');
   sh.getRange(P + 2, 1).setFormula(`=ARRAYFORMULA(IFERROR(FILTER(Suppliers!$A$${L.supFirst}:$F,(${cond})>0),` +
     `"No suppliers listed for these value chains — see the Suppliers tab, or section 7 for general help."))`);
-  sh.getRange(P + 2, 4, 40, 1).setWrap(true);
+  sh.getRange(P + 2, 4, 40, 2).setWrap(true);
 
   // 7. Help that applies to every chain.
   const H = P + 44;
@@ -4181,7 +4252,7 @@ function buildNeedsEquipment_(sh, S, O, iso) {
   header_(sh.getRange(H + 1, 1, 1, 6), ['Organisation', 'Country (headquarters)', 'Type', 'What they do', 'Value chains', 'Website']);
   sh.getRange(H + 2, 1).setFormula(`=IFERROR(FILTER(Suppliers!$A$${L.supFirst}:$F,(${sup_('E')}="All")+(${sup_('C')}="Trade fair")+` +
     `(${sup_('C')}="Industry association")),"None listed — add organisations on the Suppliers tab.")`);
-  sh.getRange(H + 2, 4, 35, 1).setWrap(true);
+  sh.getRange(H + 2, 4, 35, 2).setWrap(true);
 
   // 8. Machinery the country already imports.
   const M = H + 38;

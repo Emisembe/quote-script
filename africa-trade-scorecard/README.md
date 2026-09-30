@@ -45,12 +45,12 @@ Colour code of the tabs: blue = explanation · green = results · orange = your 
 | Value_Addition | Results | Per country: raw vs processed exports, processing share, value lost by exporting raw, enabler gaps; 3 charts |
 | Value_Lost_Charts | Results | Value lost made visual: a 4-step diagram of how value is lost, a value ladder for every chain, a worked example, a live "pick a country" section with 2 charts, and 5 Africa-wide charts (raw vs processed, by sector, by region, round trip, readiness vs value lost) |
 | Market_Opportunity | Results | What buyers already pay for the finished products: at home, across Africa (bought from African suppliers vs from outside Africa) and in 10 outside markets (EU, USA, China, Japan, UK, India, UAE, Saudi Arabia, Türkiye, Brazil). Pick a country to see its **value proposition** and **estimated revenue per year** at the target shares set on Settings. 3 charts |
-| Country_Needs | Results | Pick a country: **4 live charts** at the top (A where it is weak vs the African median, B where to start, C value lost vs revenue it could earn, D how big the equipment job is), then (1) enablers vs the African median, (2) value-addition opportunities, (3) what processing requires, (4) a summary in words, (5) **equipment to buy**, (6) **suppliers to source it from**, (7) **sources of help** (finance, technical support, certification, trade fairs), (8) **machinery it already imports** |
+| Country_Needs | Results | Pick a country: **4 live charts** at the top (A where it is weak compared with the African median and the European Union median, B where to start, C value lost vs revenue it could earn, D how big the equipment job is), then (1) enablers vs the African median, (2) value-addition opportunities, (3) what processing requires, (4) a summary in words, (5) **equipment to buy**, (6) **suppliers to source it from**, (7) **sources of help** (finance, technical support, certification, trade fairs), (8) **machinery it already imports** |
 | VA_Scorecard | Results | Every country × value chain with 5 sub-scores and a value-addition score (0–100) |
 | Value_Chains | Input | The 25 value chains: raw, semi-processed and processed HS4 codes, value multipliers (assumptions) and needs |
 | Equipment | Input | What to buy to add value: 77 processing steps across the 25 chains, with the equipment, machinery code (HS4), scale and power need |
 | Suppliers | Input | About 95 organisations: machine makers, plant builders, technology licensors, lower-cost makers, local fabricators, finance, certification, associations and trade fairs. A starting list, **not an endorsement**; verify before contacting |
-| Enablers | Data | 7 World Bank indicators per country (electricity, manufacturing, manufactured exports, logistics, schooling, credit, internet) |
+| Enablers | Data | 7 World Bank indicators per country (electricity, manufacturing, manufactured exports, logistics, schooling, credit, internet), plus the same indicators for the 27 European Union countries as a benchmark |
 | Raw_Trade | Data | The 2-digit trade data the trade-gap analysis uses |
 | Raw_HS4 | Data | The 4-digit trade data the value-addition analysis uses |
 
@@ -70,6 +70,7 @@ For 25 value chains, for example cocoa → chocolate, copper ore → cable, crud
 - **Value lost (estimate)** = raw exports × (multiplier − 1) + semi-processed exports × (multiplier − 1) ÷ 2. The multipliers are **editable assumptions** on the Value_Chains tab.
 - **Round-trip imports** = processed goods bought back while the raw material is exported
 - **Value-addition score (0–100)** combines 5 weighted criteria: value at stake, raw material base, processing gap, market for processed goods, and readiness
+- **European benchmark**: Country_Needs also shows the European Union median (27 countries) and each indicator as a % of it, to show the distance to an advanced economy. GAP flags and scores still use only the African median.
 - **Needs**: each chain lists what it requires (energy, industry, logistics, skills, finance, digital, standards). A need is flagged where the country is below the African median on the matching World Bank indicator.
 
 UN Comtrade (2b) downloads the 4-digit data and the World Bank indicators automatically. Menu **2d** refreshes only the World Bank indicators, which are free and need no key.
