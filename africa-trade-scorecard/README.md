@@ -127,7 +127,7 @@ For every exporter **A**, importer **B** and product **p** (HS 2-digit), where A
 
 The `tests/` folder checks the whole app without Google Sheets. It needs Node.js.
 
-- `node tests/workflows.js` runs every menu action against a mock of the Apps Script services, including the UN Comtrade and World Bank downloads with fake answers. It takes about 10 seconds.
+- `node tests/workflows.js` runs every menu action and every function in `Code.gs` against a mock of the Apps Script services. With fake answers from UN Comtrade and the World Bank, it also runs the background download in chunks, a country that fails, a download that stops, and a World Bank error. It takes about 20 seconds.
 - `node tests/verify.js` builds the workbook, calculates all the formulas with `tests/sheetsim.js` (a small evaluator that follows Google Sheets rules), and checks the results, including every country in every picker and the data behind the Country_Needs charts. It takes about 10–20 minutes.
 
 Neither replaces a real check in Google Sheets. After installing, run **Africa Trade → Run full audit** in the sheet.

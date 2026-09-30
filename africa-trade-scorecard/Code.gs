@@ -23,7 +23,7 @@
 // ------------------------------------------------------------------
 
 const APP = {
-  version: '3.6.0',
+  version: '3.6.1',
   sheets: {
     guide: 'Guide',
     health: 'Health_Check',
@@ -1356,6 +1356,7 @@ function buildProducts_(ss) {
 
 function buildRawTrade_(ss) {
   const sh = resetSheet_(ss, APP.sheets.raw);
+  trimColumns_(sh, 12);
   writeBanner_(sh, 'raw');
   header_(sh.getRange(L.rawHead, 1, 1, 6), ['Year', 'Reporter ISO3', 'Partner ISO3 (WLD = world)',
     'Flow (X/M)', 'HS2', 'Value (USD)']);
@@ -2189,7 +2190,8 @@ function buildFaq_(ss) {
       ['How do I hide the blue explanation box?', 'Click the − button at the top left of the tab (next to the row numbers). Click + to show it again.'],
       ['Can I add more countries or criteria?', 'Countries: add rows on the Countries tab (ISO3, M49, coordinates). New criteria need a code change.'],
       ['Can I use HS 4-digit products?', 'Yes with code changes: the Products list and the Comtrade query must be extended. Expect ~12× more data.'],
-      ['The Comtrade fetch stopped — what now?', 'Check the data status on Settings for the error. Use "Stop a running Comtrade fetch" and start Refresh again if needed.'],
+      ['The Comtrade fetch stopped — what now?', 'Check the data status on Settings. A single country that fails is listed there and the fetch carries on. It stops only if the API key is rejected or three countries fail in a row (often the daily call limit of the free key): the data loaded so far is kept, so run Refresh again later.'],
+      ['The status has said "Fetching…" for a long time — is it stuck?', 'Each chunk takes about 4 minutes and the next one starts about a minute later. If Google stops a chunk early, it restarts by itself within about 8 minutes. If nothing changes for 20 minutes, use "Stop a running Comtrade fetch" and run Refresh again.'],
       ['How is "value lost" calculated?', 'Raw exports × (value multiplier − 1), plus half of that for semi-processed exports. The multipliers are assumptions on the Value_Chains tab — replace them with study values.'],
       ['Why does a country have no value-addition rows?', 'It exports little of the raw materials in the 25 chains, or its HS4 data is missing for that year.'],
       ['Can I add a value chain?', 'Yes: add a row on the Value_Chains tab (codes, multiplier, needs), download data again with Refresh, then run step 3.'],
@@ -2358,7 +2360,11 @@ function runComtradeFetch_() {
 
   const markets = readMarkets_();
   const total = countries.length + markets.length;
-  while (cursor < total && Date.now() - started < 4.5 * 60 * 1000) {
+  // Safety net: if Google stops this run at its 6-minute limit, this trigger resumes the fetch. It is removed
+  // when the run ends normally (continueComtradeFetch deletes all fetch triggers before it starts).
+  ScriptApp.newTrigger(APP.fetchHandler).timeBased().after(8 * 60 * 1000).create();
+  let failedInRow = 0;
+  while (cursor < total && Date.now() - started < 4 * 60 * 1000) {
     if (cursor >= countries.length) {
       const m = markets[cursor - countries.length];
       try {
@@ -2381,14 +2387,25 @@ function runComtradeFetch_() {
       rows = fetchReporter_(c, countries, year, key);
       Utilities.sleep(1200); // stay under the API rate limit
       rows4 = fetchReporterHs4_(c, chains, year, key, countries);
+      failedInRow = 0;
     } catch (e) {
-      setParam_('P_STATUS', `UN Comtrade fetch failed at ${c.name}: ${e.message}`);
-      props.deleteProperty(APP.fetchProp);
-      notify_('Comtrade fetch failed: ' + e.message);
-      return;
+      failedInRow++;
+      // A rejected key, or three countries failing in a row (daily limit or outage), stops the fetch; the data
+      // loaded so far is kept. A single failure is recorded and the fetch moves on.
+      if (/API key/.test(e.message) || failedInRow >= 3) {
+        deleteFetchTriggers_();
+        setParam_('P_STATUS', `UN Comtrade fetch stopped at ${c.name} (${cursor}/${countries.length}): ${e.message}. ` +
+          'Partial data kept. Try Refresh data again later (the free key allows a limited number of calls per day).');
+        props.deleteProperty(APP.fetchProp);
+        notify_('Comtrade fetch stopped: ' + e.message);
+        return;
+      }
+      rows = [];
+      rows4 = [];
+      missing.push(c.iso + ' (error: ' + e.message.slice(0, 40) + ')');
     }
     if (rows.length) writeRaw_(rows, false);
-    else missing.push(c.iso);
+    else if (!failedInRow) missing.push(c.iso);
     if (rows4.length) writeHs4_(rows4, false);
     cursor++;
     props.setProperty(APP.fetchProp, String(cursor));
@@ -2397,6 +2414,7 @@ function runComtradeFetch_() {
     Utilities.sleep(1200); // stay under the API rate limit
   }
 
+  deleteFetchTriggers_();
   if (cursor < total) {
     ScriptApp.newTrigger(APP.fetchHandler).timeBased().after(60 * 1000).create();
     notify_(`Fetched ${cursor}/${total} countries and markets. Continuing automatically in about a minute…`);
@@ -2429,7 +2447,7 @@ function fetchReporter_(reporter, countries, year, key) {
     cmdCode: 'AG2',
     customsCode: 'C00',
     motCode: 0,
-    maxRecords: 250000,
+    maxRecords: 100000,
     includeDesc: 'false',
   };
   const data = comtradeGet_(query, key);
@@ -2959,6 +2977,12 @@ function clearSheetBody_(sh, firstRow) {
   }
 }
 
+/** Google Sheets counts every grid cell (empty ones too) towards its 10 million cell limit, so the long data tabs keep only the columns they need. */
+function trimColumns_(sh, n) {
+  const max = sh.getMaxColumns();
+  if (max > n) sh.deleteColumns(n + 1, max - n);
+}
+
 function ensureRows_(sh, n) {
   const max = sh.getMaxRows();
   if (n > max) sh.insertRowsAfter(max, n - max);
@@ -3054,6 +3078,7 @@ function buildEnablers_(ss) {
 
 function buildRawHs4_(ss) {
   const sh = resetSheet_(ss, APP.sheets.rawHs4);
+  trimColumns_(sh, 12);
   writeBanner_(sh, 'rawHs4');
   header_(sh.getRange(L.hs4Head, 1, 1, 6), ['Year', 'Reporter ISO3', 'Partner ISO3 (WLD = world)',
     'Flow (X/M)', 'HS4', 'Value (USD)']);
@@ -3388,7 +3413,11 @@ function fetchWorldBank_() {
     const res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
     if (res.getResponseCode() !== 200) throw new Error(`HTTP ${res.getResponseCode()} for ${ind[0]}`);
     const json = JSON.parse(res.getContentText());
-    (Array.isArray(json) && json[1] ? json[1] : []).forEach(d => {
+    if (!Array.isArray(json) || !Array.isArray(json[1]) || !json[1].length) {
+      const msg = Array.isArray(json) && json[0] && json[0].message ? JSON.stringify(json[0].message).slice(0, 120) : 'no data returned';
+      throw new Error(`World Bank: ${msg} for ${ind[0]}`);
+    }
+    json[1].forEach(d => {
       const iso = d.countryiso3code;
       if (byIso[iso] && d.value !== null && d.value !== undefined) {
         byIso[iso][j] = Math.round(Number(d.value) * 10) / 10;
@@ -3433,7 +3462,7 @@ function fetchReporterHs4_(reporter, chains, year, key, countries) {
   const data = comtradeGet_({
     reporterCode: reporter.m49, period: `${year},${year - 1}`,
     partnerCode: ['0'].concat(countries.filter(c => c.iso !== reporter.iso).map(c => c.m49)).join(','), partner2Code: 0, flowCode: 'M,X',
-    cmdCode: list.join(','), customsCode: 'C00', motCode: 0, maxRecords: 250000, includeDesc: 'false',
+    cmdCode: list.join(','), customsCode: 'C00', motCode: 0, maxRecords: 100000, includeDesc: 'false',
   }, key);
   const byM49 = {};
   countries.forEach(c => { byM49[c.m49] = c.iso; });
@@ -4327,7 +4356,7 @@ function fetchMarketHs4_(market, countries, chains, year, key) {
   if (!list.length || !market.code) return [];
   const data = comtradeGet_({
     reporterCode: market.code, period: `${year},${year - 1}`, partnerCode: ['0'].concat(countries.map(c => c.m49)).join(','),
-    partner2Code: 0, flowCode: 'M', cmdCode: list.join(','), customsCode: 'C00', motCode: 0, maxRecords: 250000, includeDesc: 'false',
+    partner2Code: 0, flowCode: 'M', cmdCode: list.join(','), customsCode: 'C00', motCode: 0, maxRecords: 100000, includeDesc: 'false',
   }, key);
   const seen = {};
   data.forEach(d => {

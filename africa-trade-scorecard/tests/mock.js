@@ -14,6 +14,7 @@ class Sheet {
   getLastColumn(){let m=0;for(const k of this.cells.keys()){const c=+k.split(',')[1];if(c>m)m=c;}return m;}
   getMaxRows(){return this.maxRows;} getMaxColumns(){return this.maxCols;}
   insertRowsAfter(a,n){this.maxRows+=n;}
+  deleteColumns(c,n){if(c<1||n<1||c+n-1>this.maxCols)throw new Error(`${this.name}: bad deleteColumns ${c},${n}`);for(const k of [...this.cells.keys()]){const cc=+k.split(',')[1];if(cc>=c)this.cells.delete(k);}this.maxCols-=n;}
   getRange(a,b,c,d){
     if(typeof a==='string'){ let m;
       if((m=a.match(/^([A-Z]+)(\d+)$/)))return new Range(this,+m[2],colNum(m[1]),1,1);
