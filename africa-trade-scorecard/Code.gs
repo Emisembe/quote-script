@@ -23,7 +23,7 @@
 // ------------------------------------------------------------------
 
 const APP = {
-  version: '3.7.0',
+  version: '3.7.1',
   sheets: {
     guide: 'Guide',
     health: 'Health_Check',
@@ -3351,7 +3351,8 @@ function buildCountryNeeds_(ss) {
   const statusRange = sh.getRange(E + 2, 4, INDICATORS.length, 1);
   nowShowing_(sh.getRange(T + 2, 1), `=IF(${iso}="","Choose a country in the yellow cell.","NOW SHOWING: "&$B$${T}&" ("&${iso}&")` +
     ` — enabler indicators available: "&COUNT(B${E + 2}:B${E + 1 + INDICATORS.length})&" of ${INDICATORS.length}  ·  value chains: "&COUNTIF(${va_('A')},${iso})&` +
-    `IF(COUNTA(${va_('A')})=0,"  (no value-addition data yet: run Africa Trade → Refresh data)","")&". Everything below is for this country.")`);
+    `IF(COUNTA(${va_('A')})=0,"  (no value-addition data yet: run Africa Trade → Refresh data)","")&` +
+    `IF(COUNT(E${E + 2}:E${E + 1 + INDICATORS.length})=0,"  ·  European figures not loaded yet: run menu 2d","")&". Everything below is for this country.")`);
 
   // 2. Value-addition opportunities.
   const O = E + 2 + INDICATORS.length + 1;
@@ -4347,9 +4348,14 @@ function buildNeedsCharts_(sh, T, E, O, Q) {
 
   // A. Enablers as an index: European Union median = 100.
   const A = K + 2, nI = INDICATORS.length;
-  tableTitle(A, 'Data for chart A (index, European Union median = 100)');
-  headRow(A + 1, ['Enabler', `=${name}&" (European median = 100)"`, 'African median', 'European Union median']);
-  const idx = (v, src) => `=IF(AND(ISNUMBER(${v}${src}),ISNUMBER(E${src})),IF(E${src}>0,ROUND(${v}${src}/E${src}*100,0),""),"")`;
+  // Base = European median; if the European figures are not loaded (menu 2d), the African median, so the chart never goes blank.
+  const euLoaded = `COUNT(E${E + 2}:E${E + 1 + nI})>0`;
+  tableTitle(A, 'Data for chart A (index: European Union median = 100, or African median = 100 if the European figures are not loaded)');
+  headRow(A + 1, ['Enabler', `=${name}&IF(${euLoaded}," (European median = 100)"," (African median = 100)")`, 'African median', 'European Union median']);
+  const idx = (v, src) => {
+    const base = `IF(ISNUMBER(E${src}),E${src},C${src})`;
+    return `=IF(AND(ISNUMBER(${v}${src}),ISNUMBER(${base})),IF(${base}>0,ROUND(${v}${src}/${base}*100,0),""),"")`;
+  };
   INDICATORS.forEach((ind, i) => {
     const r = A + 2 + i, src = E + 2 + i;
     sh.getRange(r, DC, 1, 4).setValues([[`=A${src}`, idx('B', src), idx('C', src), `=IF(ISNUMBER(E${src}),100,"")`]]);

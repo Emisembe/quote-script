@@ -196,4 +196,18 @@ const TH = c.top_('health'); c.healthChecks_().forEach((h, i) => {
   const expected = /data source/i.test(h[0]) ? 'CHECK' : h[0] === 'Monthly auto-refresh' ? 'INFO' : 'OK';
   ok(st === expected, `Health "${h[0]}" = ${st} (result ${V('Health_Check', TH + 2 + i, 2)}), expected ${expected}`);
 });
+// 13. Country_Needs without the European figures (e.g. menu 2d not run yet): chart A falls back to the African median.
+{ const EUc = K('EU_COL'), en = S('Enablers');
+  for (let k = 0; k < K('EU27').length; k++) for (let col = EUc; col <= EUc + 9; col++) en.set(L.enFirst + k, col, '');
+  setCell('Country_Needs', TN, 2, 'Kenya'); sim.run(8, ['Country_Needs']);
+  const E2 = TN + 3 + K('NEEDS_CHART_ROWS'), CA = TN + 5;
+  ok(String(V('Country_Needs', CA + 1, 10)) === 'Kenya (African median = 100)', 'chart A legend falls back: ' + V('Country_Needs', CA + 1, 10));
+  for (let i = 0; i < 7; i++) {
+    const b = V('Country_Needs', E2 + 2 + i, 2), m2 = V('Country_Needs', E2 + 2 + i, 3);
+    const x = V('Country_Needs', CA + 2 + i, 10), y = V('Country_Needs', CA + 2 + i, 11);
+    ok(Math.abs(x - Math.round(b / m2 * 100)) <= 1 && y === 100, `fallback chart A row ${i}: ${x}, ${y}`);
+  }
+  ok(/European figures not loaded yet: run menu 2d/.test(V('Country_Needs', TN + 2, 1)), 'NOW SHOWING says the European figures are missing');
+  ok(!sim.errors().some(e => e.sheet === 'Country_Needs'), 'no errors without European figures');
+}
 console.log(`\nRESULT: ${oks} checks passed, ${fails} failed`);
