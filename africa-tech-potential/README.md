@@ -12,8 +12,8 @@ A single Google Apps Script file (`AfricaTechPotential.gs`). It builds a workboo
 | Sheet | Contents |
 |---|---|
 | Dashboard | 6 KPI tiles, 6 insight sentences that update themselves, 6 charts |
-| Africa Potential | The model for each company: Conservative / Base / Bull today, Base 2050, market value, "one startup" value, plus African success stories |
-| Global Firms | 17 Western firms (Amazon, Google, Microsoft, Meta, Uber, Netflix, PayPal, Spotify, Airbnb, DoorDash, Shopify, Revolut, Robinhood, Teladoc, Zillow, Upwork, Duolingo), their revenue, the African players in each space and an idea to build |
+| Africa Potential | The model for each company: Conservative / Base / Bull today, Base 2050, market value, "one startup" value, plus African success stories and 8 Africa-first models with no Western twin |
+| Global Firms | 33 Western firms across 11 sectors: e-commerce, ads/social, cloud & software, AI, fintech (payments, banking, lending, crypto, remittances, insurance, credit/ID), mobility & freight, media & gaming, property & travel, health/education/work, energy & clean mobility, agritech. Shows their revenue, the African players in each space and an idea to build |
 | Population | Africa vs the West (2024 and 2050), population 1950–2100, 21-country comparison |
 | Assumptions | Every input. The yellow cells can be edited |
 | Read Me | Method, sources and caveats |

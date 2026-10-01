@@ -77,8 +77,9 @@ const UNIT = {
   x:        { text: 'multiplier',      fmt: '0.0"×"' }
 };
 
-/* --- Western firms (sorted by revenue). Revenue = FY2024, USD bn, rounded.
- *     "West share" = estimated share of revenue earned in USA/Canada/Europe. */
+/* --- Western firms. Revenue = latest full year (mostly FY2024), USD bn, rounded.
+ *     "West share" = estimated share of revenue earned in USA/Canada/Europe.
+ *     Sorted by revenue automatically (see .sort at the end). */
 const FIRMS = [
   // Company, Sector, HQ, What they do, Revenue, West share, African players today, Idea to build for Africa
   ['Amazon', 'E-commerce & Logistics', 'USA', 'Online marketplace, logistics, AWS cloud', 638, 0.80,
@@ -114,7 +115,51 @@ const FIRMS = [
   ['Upwork', 'Health, Education & Work', 'USA', 'Freelance talent marketplace', 0.77, 0.75,
    'Andela, Gebeya, Moringa', 'Export African developers, designers and support staff to global clients'],
   ['Duolingo', 'Health, Education & Work', 'USA', 'Gamified language-learning app', 0.75, 0.65,
-   'uLesson, Eneza, Gradely', 'Exam-prep and skills app in local languages that works offline on cheap phones']
+   'uLesson, Eneza, Gradely', 'Exam-prep and skills app in local languages that works offline on cheap phones'],
+  ['Tesla', 'Energy & Clean Mobility', 'USA', 'Electric vehicles, batteries, solar', 97.7, 0.70,
+   'Roam, Spiro, BasiGo, Ampersand', 'Electric motorbikes and buses with battery-swap stations, paid in daily instalments'],
+  ['Deere & Company', 'Agritech', 'USA', 'Precision farming machinery & software', 51.7, 0.75,
+   'Hello Tractor, Twiga Foods, Apollo Agriculture, ThriveAgric', 'Tractor-sharing, farm-input credit and market access for smallholder farmers'],
+  ['Booking Holdings', 'Property & Travel', 'USA', 'Online hotel & flight booking', 23.7, 0.75,
+   'Wakanow, Travelstart', 'Africa-wide flights & hotels booking with local payment methods'],
+  ['ADP', 'Cloud & Software', 'USA', 'Payroll & HR software', 19.2, 0.90,
+   'SeamlessHR, Workpay, PaySpace', 'Payroll, tax and pension compliance for African employers'],
+  ['C.H. Robinson', 'Mobility & Delivery', 'USA', 'Digital freight brokerage', 17.7, 0.95,
+   'Kobo360, Lori Systems, Trella', 'Truck-freight marketplace: matches cargo to trucks, tracks loads, pays drivers fast'],
+  ['Intuit', 'Cloud & Software', 'USA', 'QuickBooks accounting, TurboTax, Credit Karma', 16.3, 0.95,
+   'Kippa, Bumpa, Sage (UK)', 'Bookkeeping, invoicing and tax filing for small businesses on a phone'],
+  ['eBay', 'E-commerce & Logistics', 'USA', 'Second-hand & peer-to-peer marketplace', 10.3, 0.80,
+   'Jiji, OLX, Jumia', 'Classifieds for cars, phones and used goods with escrow and delivery'],
+  ['Experian', 'Fintech', 'Ireland/UK', 'Credit scores, identity checks, fraud data', 7.5, 0.80,
+   'Smile ID, Youverify, Creditinfo, Dojah', 'Digital ID checks and credit scores built from mobile-money and phone data'],
+  ['Coinbase', 'Fintech', 'USA', 'Crypto & stablecoin exchange', 6.6, 0.90,
+   'Yellow Card, Luno, Quidax, Busha', 'Stablecoin dollar savings and cheap cross-border payments'],
+  ['OpenAI (private, est.)', 'Artificial Intelligence', 'USA', 'ChatGPT and AI models (revenue is an estimate)', 3.7, 0.70,
+   'Lelapa AI, InstaDeep (sold to BioNTech)', 'AI assistants that speak Yoruba, Swahili, Hausa, Amharic, Zulu…'],
+  ['Roblox', 'Media & Entertainment', 'USA', 'Online gaming platform', 3.6, 0.80,
+   'Carry1st, Kucheza Gaming, Maliyo Games', 'Mobile games and in-game payments built on African stories'],
+  ['Affirm', 'Fintech', 'USA', 'Buy-now-pay-later & consumer loans', 2.3, 1.00,
+   'Carbon, FairMoney, Branch, Tala, M-Shwari', 'Instant small loans and pay-later for phones, school fees and shop stock'],
+  ['Sunrun', 'Energy & Clean Mobility', 'USA', 'Home solar as a subscription', 2.0, 1.00,
+   'M-KOPA, Sun King, d.light, Bboxx', 'Pay-as-you-go solar for homes and shops off the power grid'],
+  ['Wise', 'Fintech', 'UK', 'Cheap international money transfers', 1.6, 0.80,
+   'LemFi, NALA, Afriex, Mukuru', 'Low-cost diaspora remittances and multi-currency accounts'],
+  ['Coursera', 'Health, Education & Work', 'USA', 'Online courses & degrees', 0.69, 0.60,
+   'ALX, AltSchool Africa, Moringa', 'Online degrees and job-ready tech certificates'],
+  ['Lemonade', 'Fintech', 'USA', 'App-based insurance', 0.53, 1.00,
+   'Turaco, Pula, Lami', 'Micro-insurance for health, crops and phones sold inside apps']
+].sort((a, b) => b[4] - a[4]);
+
+/* --- Africa-first models with no exact Western twin (shown as text) --- */
+const AFRICA_FIRST = [
+  ['B2B ordering for corner shops', 'Millions of kiosks/dukas restock daily by cash; apps bring ordering, delivery and credit', 'Wasoko, TradeDepot, MaxAB, Omnibiz'],
+  ['Agent banking & cash points', 'Most money is still cash; agents let people cash in/out and pay bills', 'Moniepoint, OPay, Paga, M-Pesa agents'],
+  ['Digital savings groups', 'Esusu / ajo / chama groups move onto phones with interest and loans', 'PiggyVest, Cowrywise, Chamasoft'],
+  ['Super-apps', 'One app for payments, rides, food and bills (the Asian WeChat/Grab model)', 'OPay, M-Pesa Super App, Yango'],
+  ['Medical drone & supply chains', 'Blood, vaccines and medicine delivered to rural clinics', 'Zipline (Rwanda/Ghana), LifeBank'],
+  ['Cold chain for farmers', 'Solar-powered cold rooms cut food waste after harvest', 'ColdHubs, Koolboks, Inspira Farms'],
+  ['Rural internet', 'Satellite and low-cost towers for the ~60% still offline', 'Starlink (private), Africa Mobile Networks'],
+  ['Cybersecurity', 'Fraud and cyber-attacks grow with digital money', 'Few African leaders yet — open space']
 ];
 
 /* --- Proof it already works in Africa --- */
@@ -218,11 +263,11 @@ function build_(resetInputs) {
 function readSaved_(ss) {
   const out = { inputs: {}, firms: {} };
   ASSUMPTIONS.forEach(a => {
-    const r = ss.getRangeByName(a.name);
-    if (r) {
-      const v = r.getValue();
+    try {
+      const r = ss.getRangeByName(a.name);
+      const v = r ? r.getValue() : null;
       if (typeof v === 'number') out.inputs[a.name] = v;
-    }
+    } catch (e) { /* broken named range — fall back to default */ }
   });
   const fs = ss.getSheetByName(SHEETS.FIRMS);
   if (fs && fs.getLastRow() >= FIRST_ROW) {
@@ -247,6 +292,11 @@ function buildAssumptions_(ss, saved) {
     sh.getRange(r, 1, 1, 4).setValues([[a.label, v, UNIT[a.unit].text, a.note]]);
     const cell = sh.getRange(r, 2);
     cell.setNumberFormat(UNIT[a.unit].fmt).setBackground(COLORS.input).setFontWeight('bold').setHorizontalAlignment('center');
+    cell.setDataValidation(SpreadsheetApp.newDataValidation()
+      .requireNumberBetween(a.unit === 'share' ? 0 : 0.0001, a.unit === 'share' ? 1 : 1e9)
+      .setAllowInvalid(false)
+      .setHelpText(a.unit === 'share' ? 'Enter a percentage, e.g. 38%' : 'Enter a positive number')
+      .build());
     setName_(ss, a.name, cell);
   });
   const last = 4 + ASSUMPTIONS.length;
@@ -370,17 +420,18 @@ function buildFirms_(ss, saved) {
   sh.getRange(4, 1, n + 2, 11).setBorder(true, true, true, true, true, true, '#D0D5DB', SpreadsheetApp.BorderStyle.SOLID);
 
   [30, 150, 170, 70, 230, 115, 115, 115, 125, 250, 360].forEach((w, i) => sh.setColumnWidth(i + 1, w));
-  sh.setFrozenRows(4); sh.setFrozenColumns(2);
+  sh.setFrozenRows(4); // no frozen columns: the merged title row would block it
 
   const chartRow = tot + 3;
+  const ch = Math.max(520, 60 + n * 22);
   chart_(sh, Charts.ChartType.BAR,
     [sh.getRange(4, 2, n + 1, 1), sh.getRange(4, 6, n + 1, 1), sh.getRange(4, 8, n + 1, 1)], chartRow, 2, {
     title: 'Global revenue vs revenue from the West (USD bn, FY2024)', colors: [COLORS.grey, COLORS.blue],
-    width: 700, height: 520, legend: { position: 'bottom' }
+    width: 700, height: ch, legend: { position: 'bottom' }
   });
   chart_(sh, Charts.ChartType.BAR, [sh.getRange(4, 2, n + 1, 1), sh.getRange(4, 9, n + 1, 1)], chartRow, 8, {
     title: 'What the average Western person spends with each firm per year (USD)', colors: [COLORS.gold],
-    width: 640, height: 520, legend: { position: 'none' }
+    width: 640, height: ch, legend: { position: 'none' }
   });
 }
 
@@ -439,18 +490,26 @@ function buildAfrica_(ss) {
 
   [230, 170, 110, 115, 110, 120, 105, 105, 105, 105, 130, 135, 130].forEach((w, i) => sh.setColumnWidth(i + 1, w));
   sh.setRowHeight(4, 60);
-  sh.setFrozenRows(4); sh.setFrozenColumns(1);
+  sh.setFrozenRows(4); // no frozen columns: the merged title row would block it
 
-  const cr = pr + AFRICAN_WINS.length + 4;
+  const af = pr + AFRICAN_WINS.length + 4;
+  sh.getRange(af, 1).setValue('🌱 Africa-first models — no exact Western twin, but big local demand').setFontWeight('bold').setFontSize(12);
+  header_(sh.getRange(af + 1, 1, 1, 3).setValues([['Model', 'Why it works in Africa', 'Players today']]));
+  sh.getRange(af + 2, 1, AFRICA_FIRST.length, 3).setValues(AFRICA_FIRST).setWrap(true).setVerticalAlignment('middle');
+  zebra_(sh.getRange(af + 2, 1, AFRICA_FIRST.length, 3));
+  sh.getRange(af + 1, 1, AFRICA_FIRST.length + 1, 3).setBorder(true, true, true, true, true, true, '#D0D5DB', SpreadsheetApp.BorderStyle.SOLID);
+
+  const cr = af + AFRICA_FIRST.length + 4;
+  const ch = Math.max(560, 60 + n * 22);
   chart_(sh, Charts.ChartType.BAR,
     [sh.getRange(4, 1, n + 1, 1), sh.getRange(4, 7, n + 1, 3)], cr, 1, {
     title: 'Yearly revenue potential in Africa today, 3 scenarios (USD bn)',
-    colors: [COLORS.grey, COLORS.green, COLORS.gold], width: 720, height: 560, legend: { position: 'bottom' }
+    colors: [COLORS.grey, COLORS.green, COLORS.gold], width: 720, height: ch, legend: { position: 'bottom' }
   });
   chart_(sh, Charts.ChartType.BAR,
     [sh.getRange(4, 1, n + 1, 1), sh.getRange(4, 8, n + 1, 1), sh.getRange(4, 10, n + 1, 1)], cr, 6, {
     title: 'Today vs 2050 — base case (USD bn per year)',
-    colors: [COLORS.green, COLORS.gold], width: 720, height: 560, legend: { position: 'bottom' }
+    colors: [COLORS.green, COLORS.gold], width: 720, height: ch, legend: { position: 'bottom' }
   });
 }
 
@@ -472,12 +531,12 @@ function buildDashboard_(ss) {
 
   /* KPI tiles */
   const kpis = [
-    ['AFRICA POPULATION 2024', '=AFR_POP/1000', '0.00" bn"', '="vs "&TEXT(WEST_POP/1000,"0.00")&" bn in the West"'],
-    ['AFRICANS ONLINE TODAY', '=AFR_POP*AFR_NET', '#,##0" m"', `="USA population: "&TEXT(VLOOKUP("USA",${cty},3,FALSE),"#,##0")&" m"`],
-    ['AFRICA POPULATION 2050', '=AFR_POP_2050/1000', '0.00" bn"', '=TEXT(AFR_POP_2050/WEST_POP_2050,"0.0")&"× the West"'],
+    ['AFRICA POPULATION 2024', '=AFR_POP/1000', '0.00" bn"', '="vs "&FIXED(WEST_POP/1000,2)&" bn in the West"'],
+    ['AFRICANS ONLINE TODAY', '=AFR_POP*AFR_NET', '#,##0" m"', `="USA population: "&FIXED(VLOOKUP("USA",${cty},3,FALSE),0)&" m"`],
+    ['AFRICA POPULATION 2050', '=AFR_POP_2050/1000', '0.00" bn"', '=FIXED(AFR_POP_2050/WEST_POP_2050,1)&"× the West"'],
     [`WESTERN REVENUE, ${n} FIRMS`, `=${GF}H${tot}`, '"$"#,##0" bn"', '="per year, earned in the West"'],
     ['AFRICA POTENTIAL TODAY', `=${AP}H${tot}`, '"$"#,##0" bn"', '="per year (base case)"'],
-    ['AFRICA POTENTIAL 2050', `=${AP}J${tot}`, '"$"#,##0" bn"', `="worth ~$"&TEXT(${AP}K${tot},"#,##0")&" bn as companies"`]
+    ['AFRICA POTENTIAL 2050', `=${AP}J${tot}`, '"$"#,##0" bn"', `="worth ~$"&FIXED(${AP}K${tot},0)&" bn as companies"`]
   ];
   kpis.forEach((k, i) => {
     const col = 2 + i * 2;
@@ -531,12 +590,12 @@ function buildDashboard_(ss) {
   sh.getRange('B8:M8').merge().setValue('KEY INSIGHTS').setFontWeight('bold').setFontColor(COLORS.white).setBackground(COLORS.dark);
   const usPop = `VLOOKUP("USA",${cty},3,FALSE)`, ukPop = `VLOOKUP("UK",${cty},3,FALSE)`, ngNet = `VLOOKUP("Nigeria",${cty},5,FALSE)`;
   const insights = [
-    `="👥  Africa has "&TEXT(AFR_POP/1000,"0.00")&" billion people — "&TEXT(AFR_POP/WEST_POP,"0.0")&"× the population of the whole West (USA, Canada, EU-27 and UK combined)."`,
-    `="🌐  "&TEXT(AFR_POP*AFR_NET,"#,##0")&" million Africans are already online — "&IF(AFR_POP*AFR_NET>${usPop},"more than","close to")&" the entire population of the USA ("&TEXT(${usPop},"#,##0")&" m). Yet only "&TEXT(AFR_NET,"0%")&" of Africans are online, vs "&TEXT(WEST_NET,"0%")&" in the West — the growth is still ahead."`,
-    `="🇳🇬  Nigeria alone has ~"&TEXT(${ngNet},"#,##0")&" million internet users — "&IF(${ngNet}>${ukPop},"more than","close to")&" the whole population of the UK ("&TEXT(${ukPop},"#,##0")&" m)."`,
-    `="📈  By 2050 Africa adds "&TEXT(AFR_POP_2050-AFR_POP,"#,##0")&" million people while the West adds only "&TEXT(WEST_POP_2050-WEST_POP,"#,##0")&" million. Median age: Africa "&${PP}B12&" vs West "&${PP}C12&" — a young, mobile-first customer base for decades."`,
-    `="💰  These ${n} Western firms earn ~$"&TEXT(${GF}H${tot},"#,##0")&" bn a year in the West. Adjusted for Africa's population, income and internet reach, the same models are worth ~$"&TEXT(${AP}H${tot},"#,##0")&" bn a year in Africa today and ~$"&TEXT(${AP}J${tot},"#,##0")&" bn a year by 2050 (base case)."`,
-    `="🚀  Biggest opportunity: the "&O16&" model — ~$"&TEXT(P16,"#,##0.0")&" bn/yr in Africa by 2050. One African startup winning "&TEXT(MKT_SHARE,"0%")&" of it would earn ~$"&TEXT(P16*MKT_SHARE,"#,##0.0")&" bn/yr and could be worth ~$"&TEXT(P16*MKT_SHARE*VAL_MULT,"#,##0.0")&" bn."`
+    `="👥  Africa has "&FIXED(AFR_POP/1000,2)&" billion people — "&FIXED(AFR_POP/WEST_POP,1)&"× the population of the whole West (USA, Canada, EU-27 and UK combined)."`,
+    `="🌐  "&FIXED(AFR_POP*AFR_NET,0)&" million Africans are already online — "&IF(AFR_POP*AFR_NET>${usPop},"more than","close to")&" the entire population of the USA ("&FIXED(${usPop},0)&" m). Yet only "&FIXED(AFR_NET*100,0)&"%"&" of Africans are online, vs "&FIXED(WEST_NET*100,0)&"%"&" in the West — the growth is still ahead."`,
+    `="🇳🇬  Nigeria alone has ~"&FIXED(${ngNet},0)&" million internet users — "&IF(${ngNet}>${ukPop},"more than","close to")&" the whole population of the UK ("&FIXED(${ukPop},0)&" m)."`,
+    `="📈  By 2050 Africa adds "&FIXED(AFR_POP_2050-AFR_POP,0)&" million people while the West adds only "&FIXED(WEST_POP_2050-WEST_POP,0)&" million. Median age: Africa "&${PP}B12&" vs West "&${PP}C12&" — a young, mobile-first customer base for decades."`,
+    `="💰  These ${n} Western firms earn ~$"&FIXED(${GF}H${tot},0)&" bn a year in the West. Adjusted for Africa's population, income and internet reach, the same models are worth ~$"&FIXED(${AP}H${tot},0)&" bn a year in Africa today and ~$"&FIXED(${AP}J${tot},0)&" bn a year by 2050 (base case)."`,
+    `="🚀  Biggest opportunity: the "&O16&" model — ~$"&FIXED(P16,1)&" bn/yr in Africa by 2050. One African startup winning "&FIXED(MKT_SHARE*100,0)&"%"&" of it would earn ~$"&FIXED(P16*MKT_SHARE,1)&" bn/yr and could be worth ~$"&FIXED(P16*MKT_SHARE*VAL_MULT,1)&" bn."`
   ];
   insights.forEach((f, i) => {
     const r = 9 + i;
@@ -558,7 +617,7 @@ function buildDashboard_(ss) {
   });
   chart_(sh, Charts.ChartType.PIE, [sh.getRange(29, 15, sectors.length + 1, 2)], 34, 2, {
     title: 'Where the value is — by sector (base 2050)', pieHole: 0.45,
-    colors: [COLORS.green, COLORS.gold, COLORS.blue, '#C2410C', '#7C3AED', '#0891B2', COLORS.grey, '#65A30D'],
+    colors: [COLORS.green, COLORS.gold, COLORS.blue, '#C2410C', '#7C3AED', '#0891B2', COLORS.grey, '#65A30D', '#DB2777', '#854D0E', '#1E3A8A', '#14B8A6'],
     width: W, height: H, legend: { position: 'right' }
   });
   chart_(sh, Charts.ChartType.COLUMN, [sh.getRange(scenRow + 1, 15, 5, 2)], 34, 8, {
@@ -609,13 +668,16 @@ function buildReadMe_(ss) {
     ['• All figures are rounded public estimates. Verify before using them in a pitch or investment decision.'],
     ['• Totals add up different markets that overlap (e.g. Meta and Google both sell ads) — read the total as "size of the prize", not one market.'],
     ['• Some Western firms already earn money in Africa; the model shows the potential for African-built alternatives, not untouched space.'],
+    ['• Tesla and Deere sell hardware (vehicles, machinery); their numbers show the size of the clean-mobility and farming markets, not software-only revenue.'],
+    ['• OpenAI is private: its revenue is a public estimate. Starlink, Stripe and other private firms are left out because they publish no revenue.'],
+    ['• Remittances flow INTO Africa, so the Wise row understates that market (Africa receives ~$95bn a year from its diaspora).'],
     [''],
     ['SOURCES'],
     ['Company annual reports / 10-K filings FY2024 · UN World Population Prospects 2024 · ITU Facts & Figures · IMF World Economic Outlook · DataReportal · Public funding announcements for African startups.']
   ];
   sh.getRange(4, 1, lines.length, 1).setValues(lines).setWrap(true).setVerticalAlignment('top');
   lines.forEach((l, i) => {
-    if (/^[A-Z ()]+$/.test(l[0]) && l[0].trim()) sh.getRange(4 + i, 1).setFontWeight('bold').setFontColor(COLORS.green).setFontSize(12);
+    if (/^[A-Z][A-Z ]+[A-Z]( \(|$)/.test(l[0])) sh.getRange(4 + i, 1).setFontWeight('bold').setFontColor(COLORS.green).setFontSize(12);
   });
   sh.setColumnWidth(1, 900);
 }
@@ -630,6 +692,7 @@ function resetSheet_(ss, name) {
   sh.setFrozenRows(0); sh.setFrozenColumns(0);
   sh.getRange(1, 1, sh.getMaxRows(), sh.getMaxColumns()).breakApart();
   sh.clear();
+  sh.getRange(1, 1, sh.getMaxRows(), sh.getMaxColumns()).clearDataValidations();
   sh.setConditionalFormatRules([]);
   sh.setHiddenGridlines(true);
   sh.getRange(1, 1, sh.getMaxRows(), sh.getMaxColumns()).setFontFamily('Arial');
@@ -637,9 +700,12 @@ function resetSheet_(ss, name) {
 }
 
 function title_(sh, titleA1, subA1, text, sub) {
-  sh.getRange(titleA1).merge().setValue(text).setFontSize(18).setFontWeight('bold')
+  const t = sh.getRange(titleA1), s = sh.getRange(subA1);
+  if (t.getNumColumns() > 1) t.merge();
+  if (s.getNumColumns() > 1) s.merge();
+  t.setValue(text).setFontSize(18).setFontWeight('bold')
     .setFontColor(COLORS.white).setBackground(COLORS.green).setVerticalAlignment('middle');
-  sh.getRange(subA1).merge().setValue(sub).setFontStyle('italic').setFontColor(COLORS.dark)
+  s.setValue(sub).setFontStyle('italic').setFontColor(COLORS.dark)
     .setBackground(COLORS.greenLight).setWrap(true).setVerticalAlignment('middle');
   sh.setRowHeight(1, 46);
   sh.setRowHeight(2, 38);
