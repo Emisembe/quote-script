@@ -88,4 +88,9 @@ const drain = (m, c) => { let runs = 1, guard = 0;
   const before = c.getParam_('P_WB_STATUS'); fakeApi(c, { wbError: true });
   step('fetchWorldBankData with an API error', () => c.fetchWorldBankData());
   assert(m.alerts.some(a => /World Bank: /.test(a)) && c.getParam_('P_WB_STATUS') === before, 'error reported, data kept'); }
+{ const m = fresh(), c = m.ctx; c.quickStart();
+  const all = m.sheets.flatMap(sh => sh.getCharts().map(ch => ({ sheet: sh.name, opts: ch.opts || {} })));
+  const untitled = all.filter(x => !String(x.opts.title || '').trim() || !x.opts.titleTextStyle);
+  console.log('   charts:', all.length, 'without a heading inside:', untitled.length);
+  assert(all.length >= 25 && !untitled.length, 'every chart has its heading inside: ' + untitled.map(x => x.sheet).join(', ')); }
 console.log('All workflows passed.');

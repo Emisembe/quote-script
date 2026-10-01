@@ -23,7 +23,7 @@
 // ------------------------------------------------------------------
 
 const APP = {
-  version: '3.6.1',
+  version: '3.6.2',
   sheets: {
     guide: 'Guide',
     health: 'Health_Check',
@@ -145,6 +145,9 @@ const EU27 = [
   ['SVN', 'Slovenia'], ['ESP', 'Spain'], ['SWE', 'Sweden'],
 ];
 const EU_COL = 13;
+
+// Every chart shows its heading inside the chart frame, in the same style.
+const CHART_TITLE_STYLE = { fontSize: 14, bold: true, color: '#1c3d6e' };
 
 const NEED_LABELS = {
   energy: 'Reliable, affordable electricity',
@@ -2780,7 +2783,7 @@ function writeDashboard_(s) {
     sh.insertChart(sh.newChart().setChartType(Charts.ChartType.BAR)
       .addRange(sh.getRange(H, sc, s.sectors.length + 1, 2))
       .setNumHeaders(1)
-      .setOption('title', 'Untapped intra-African trade gap by sector (USD)')
+      .setOption('title', 'Untapped intra-African trade gap by sector (USD)').setOption('titleTextStyle', CHART_TITLE_STYLE)
       .setOption('legend', { position: 'none' })
       .setOption('colors', ['#1f4e3d'])
       .setOption('width', 620).setOption('height', 380)
@@ -2792,7 +2795,7 @@ function writeDashboard_(s) {
       .addRange(sh.getRange(H, 2, s.table.length + 1, 1))
       .addRange(sh.getRange(H, 8, s.table.length + 1, 1))
       .setNumHeaders(1)
-      .setOption('title', 'Share of each country\'s exports that go to other African countries')
+      .setOption('title', 'Share of each country\'s exports that go to other African countries').setOption('titleTextStyle', CHART_TITLE_STYLE)
       .setOption('legend', { position: 'none' })
       .setOption('colors', ['#e8a33d'])
       .setOption('vAxis', { format: 'percent' })
@@ -2869,12 +2872,11 @@ function writeCharts_(s) {
   specs.forEach(([range, type, title, caption, options], i) => {
     const row = G0 + Math.floor(i / 2) * 22;
     const col = i % 2 === 0 ? 2 : 8;
-    sh.getRange(row, col).setValue(title).setFontWeight('bold').setFontSize(11).setFontColor(APP.color.title)
-      .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
     sh.getRange(row + 1, col).setValue(caption).setFontStyle('italic').setFontColor('#555555').setFontSize(9)
       .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
     let b = sh.newChart().setChartType(type).addRange(range).setNumHeaders(1)
-      .setOption('width', 620).setOption('height', 380)
+      .setOption('title', title).setOption('titleTextStyle', CHART_TITLE_STYLE)
+      .setOption('width', 620).setOption('height', 400)
       .setPosition(row + 2, col, 0, 0);
     Object.keys(options).forEach(k => { b = b.setOption(k, options[k]); });
     sh.insertChart(b.build());
@@ -3710,7 +3712,7 @@ function writeValueAddition_(s) {
   ];
   charts.forEach(([ranges, title, colour, fmt], i) => {
     let b = sh.newChart().setChartType(Charts.ChartType.BAR).setNumHeaders(1)
-      .setOption('title', title).setOption('legend', { position: 'none' }).setOption('colors', [colour])
+      .setOption('title', title).setOption('titleTextStyle', CHART_TITLE_STYLE).setOption('legend', { position: 'none' }).setOption('colors', [colour])
       .setOption('width', 640).setOption('height', 420)
       .setPosition(H + i * 22, 20, 0, 0);
     ranges.forEach(r => { b = b.addRange(r); });
@@ -3848,11 +3850,10 @@ function writeValueLostCharts_(s) {
     .setFontStyle('italic').setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
 
   const place = (row, col, title, caption, builder) => {
-    sh.getRange(row, col).setValue(title).setFontWeight('bold').setFontSize(11).setFontColor(APP.color.title)
-      .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
     sh.getRange(row + 1, col).setValue(caption).setFontStyle('italic').setFontSize(9).setFontColor('#555555')
       .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
-    sh.insertChart(builder.setOption('width', 600).setOption('height', 380).setPosition(row + 2, col, 0, 0).build());
+    sh.insertChart(builder.setOption('title', title).setOption('titleTextStyle', CHART_TITLE_STYLE)
+      .setOption('width', 600).setOption('height', 380).setPosition(row + 2, col, 0, 0).build());
   };
 
   // Section 4 (live) charts — ranges hold formulas that follow the country dropdown.
@@ -4212,11 +4213,10 @@ function buildNeedsCharts_(sh, T, E, O, Q) {
   sh.getRange(A, DC, D + 5 - A, 5).setFontSize(9);
 
   const place = (row, col, width, title, caption, builder) => {
-    sh.getRange(row, col).setValue(title).setFontWeight('bold').setFontSize(11).setFontColor(APP.color.title)
-      .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
     sh.getRange(row + 1, col).setValue(caption).setFontStyle('italic').setFontSize(9).setFontColor('#555555')
       .setWrapStrategy(SpreadsheetApp.WrapStrategy.OVERFLOW);
-    sh.insertChart(builder.setOption('width', width).setOption('height', 320).setOption('legend', { position: 'top' })
+    sh.insertChart(builder.setOption('title', title).setOption('titleTextStyle', CHART_TITLE_STYLE)
+      .setOption('width', width).setOption('height', 330).setOption('legend', { position: 'top' })
       .setPosition(row + 2, col, 0, 0).build());
   };
   const range = (row, col, rows) => sh.getRange(row, col, rows, 1);
@@ -4497,7 +4497,7 @@ function writeMarketOpportunity_(mk) {
   // Live chart for section 1.
   sh.insertChart(sh.newChart().setChartType(Charts.ChartType.BAR).setNumHeaders(1)
     .addRange(sh.getRange(H, 1, 11, 1)).addRange(sh.getRange(H, 6, 11, 1))
-    .setOption('title', 'Estimated revenue per year by value chain — country chosen above (live)')
+    .setOption('title', 'Estimated revenue per year by value chain — country chosen above (live)').setOption('titleTextStyle', CHART_TITLE_STYLE)
     .setOption('legend', { position: 'top' }).setOption('colors', ['#1f4e3d'])
     .setOption('width', 600).setOption('height', 360).setPosition(P, 8, 0, 0).build());
 
@@ -4537,12 +4537,12 @@ function writeMarketOpportunity_(mk) {
 
   sh.insertChart(sh.newChart().setChartType(Charts.ChartType.BAR).setNumHeaders(1)
     .addRange(sh.getRange(G, 1, rows.length + 1, 1)).addRange(sh.getRange(G, 4, rows.length + 1, 2))
-    .setOption('title', 'Africa\'s imports of finished products: from African suppliers vs from outside Africa')
+    .setOption('title', 'Africa\'s imports of finished products: from African suppliers vs from outside Africa').setOption('titleTextStyle', CHART_TITLE_STYLE)
     .setOption('isStacked', true).setOption('colors', ['#1f4e3d', '#e8a33d']).setOption('legend', { position: 'top' })
     .setOption('width', 700).setOption('height', 560).setPosition(G, 12, 0, 0).build());
   sh.insertChart(sh.newChart().setChartType(Charts.ChartType.COLUMN).setNumHeaders(1)
     .addRange(sh.getRange(M + 1, 1, mrows.length + 1, 2))
-    .setOption('title', 'Outside markets: what they pay each year for these finished products')
+    .setOption('title', 'Outside markets: what they pay each year for these finished products').setOption('titleTextStyle', CHART_TITLE_STYLE)
     .setOption('legend', { position: 'none' }).setOption('colors', ['#4a86e8'])
     .setOption('width', 700).setOption('height', 360).setPosition(M, 12, 0, 0).build());
 }

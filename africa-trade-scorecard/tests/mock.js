@@ -25,7 +25,7 @@ class Sheet {
   getDataRange(){return new Range(this,1,1,Math.max(this.getLastRow(),1),this.maxCols);}
   clear(){this.cells.clear();return this;}
   getCharts(){return this.charts.slice();} removeChart(c){this.charts=this.charts.filter(x=>x!==c);}
-  newChart(){const b=chain({build:()=>({chart:1})});return b;}
+  newChart(){const o={};let b;b=chain({setOption:(k,v)=>{o[k]=v;return b;},build:()=>({chart:1,opts:o})});return b;}
   insertChart(c){this.charts.push(c);}
   getRowGroup(){return null;}
   setFrozenRows(n){if(n>this.maxRows)throw new Error('freeze');this.frozen=n;return this;}
