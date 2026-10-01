@@ -262,12 +262,14 @@ function build_(resetInputs) {
 /** Keep the user's edited inputs when rebuilding. */
 function readSaved_(ss) {
   const out = { inputs: {}, firms: {} };
+  const names = {};
+  ss.getNamedRanges().forEach(nr => { names[nr.getName()] = nr; });
   ASSUMPTIONS.forEach(a => {
+    if (!names[a.name]) return;
     try {
-      const r = ss.getRangeByName(a.name);
-      const v = r ? r.getValue() : null;
+      const v = names[a.name].getRange().getValue();
       if (typeof v === 'number') out.inputs[a.name] = v;
-    } catch (e) { /* broken named range — fall back to default */ }
+    } catch (e) { /* named range points at a deleted sheet — use the default */ }
   });
   const fs = ss.getSheetByName(SHEETS.FIRMS);
   if (fs && fs.getLastRow() >= FIRST_ROW) {
@@ -747,7 +749,10 @@ function chart_(sh, type, ranges, row, col, options) {
   sh.insertChart(b.build());
 }
 
+/** Create or re-point a named range. Never deletes blindly: Apps Script batches
+ *  writes, so a failed removeNamedRange() surfaces later, outside any try/catch. */
 function setName_(ss, name, range) {
-  try { ss.removeNamedRange(name); } catch (e) { /* not there yet */ }
-  ss.setNamedRange(name, range);
+  const existing = ss.getNamedRanges().filter(nr => nr.getName() === name)[0];
+  if (existing) existing.setRange(range);
+  else ss.setNamedRange(name, range);
 }
