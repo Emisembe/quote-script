@@ -14,6 +14,7 @@ is a European country a realistic destination for African professionals?
 - Tabs: Guide, Dashboard, Findings & Advice, Data, Professions, Organisations, Evidence, Weights, Scores, Indicators, Sources, Rubrics, Log.
 - Findings & Advice: the answer in plain language (one sentence, what it means, country-by-country advice with a profession selector, editable wording) and two charts.
 - Professions: shortage status per profession and country, links to official shortage lists, most-needed ranking on the Dashboard.
+- Policies, Policy Activity, Policy Analysis: tracker of ~20 policies (barrier, effect, stage, strength score), a log of what bodies do, and charts incl. a need-vs-attention gap analysis.
 - Organisations: starter list of EU, global and national bodies that shape migration, labour and anti-discrimination policy, with engagement tracking.
 - Control-panel sidebar with buttons: build, fetch, refresh, navigate, reset.
 - Add your own **source links**: Eurostat (data-browser link, API link or dataset code, with filters

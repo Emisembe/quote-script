@@ -23,7 +23,7 @@
 // ============================================================================
 
 var APP_NAME = 'Destination Index';
-var VERSION = '1.6.0';
+var VERSION = '1.7.0';
 
 // Where "Update code" downloads the newest version from (changeable in the menu).
 var DEFAULT_UPDATE_URL =
@@ -43,9 +43,12 @@ var SHEETS = {
   RUBRICS: 'Rubrics',
   PROFESSIONS: 'Professions',
   ORGS: 'Organisations',
+  POLICIES: 'Policies',
+  ACTIVITY: 'Policy Activity',
+  POLICY_ANALYSIS: 'Policy Analysis',
   LOG: 'Log'
 };
-var SHEET_ORDER = ['GUIDE', 'DASHBOARD', 'FINDINGS', 'DATA', 'PROFESSIONS', 'ORGS', 'EVIDENCE', 'WEIGHTS', 'SCORES',
+var SHEET_ORDER = ['GUIDE', 'DASHBOARD', 'FINDINGS', 'DATA', 'PROFESSIONS', 'ORGS', 'POLICY_ANALYSIS', 'POLICIES', 'ACTIVITY', 'EVIDENCE', 'WEIGHTS', 'SCORES',
                    'INDICATORS', 'SOURCES', 'RUBRICS', 'LOG'];
 
 // Country name + Eurostat geo code (Eurostat uses EL for Greece).
@@ -149,6 +152,9 @@ function onOpen() {
     .addItem('Go to Sources', 'goSources')
     .addItem('Go to Professions in demand', 'goProfessions')
     .addItem('Go to Organisations', 'goOrganisations')
+    .addItem('Go to Policy Analysis', 'goPolicyAnalysis')
+    .addItem('Go to Policies', 'goPolicies')
+    .addItem('Go to Policy Activity', 'goActivity')
     .addSeparator()
     .addSubMenu(SpreadsheetApp.getUi().createMenu('Code updates')
       .addItem('Update code to the latest version', 'updateCode')
@@ -167,6 +173,9 @@ function goData() { goTo_(SHEETS.DATA); }
 function goSources() { goTo_(SHEETS.SOURCES); }
 function goProfessions() { goTo_(SHEETS.PROFESSIONS); }
 function goOrganisations() { goTo_(SHEETS.ORGS); }
+function goPolicyAnalysis() { goTo_(SHEETS.POLICY_ANALYSIS); }
+function goPolicies() { goTo_(SHEETS.POLICIES); }
+function goActivity() { goTo_(SHEETS.ACTIVITY); }
 function goTo_(name) {
   var ss = SpreadsheetApp.getActive(), sh = ss.getSheetByName(name);
   if (!sh) { setupIndex(); sh = ss.getSheetByName(name); }
@@ -219,6 +228,9 @@ function controlPanelHtml_(section) {
   '<button class="btn sec" onclick="run(\'goSources\')">Go to Sources</button>' +
   '<button class="btn sec" onclick="run(\'goProfessions\')">Go to Professions in demand</button>' +
   '<button class="btn sec" onclick="run(\'goOrganisations\')">Go to Organisations</button>' +
+  '<button class="btn sec" onclick="run(\'goPolicyAnalysis\')">Go to Policy Analysis</button>' +
+  '<button class="btn sec" onclick="run(\'goPolicies\')">Go to Policies</button>' +
+  '<button class="btn sec" onclick="run(\'goActivity\')">Go to Policy Activity</button>' +
   '<button class="btn sec" onclick="run(\'goGuide\')">Go to Guide</button>' +
 
   '<h3>Add your own</h3>' +
@@ -309,6 +321,8 @@ function setupIndex() {
   if (!ss.getSheetByName(SHEETS.LOG)) buildLog_(ss);
   if (!ss.getSheetByName(SHEETS.PROFESSIONS)) buildProfessions_(ss);
   if (!ss.getSheetByName(SHEETS.ORGS)) buildOrganisations_(ss);
+  if (!ss.getSheetByName(SHEETS.POLICIES)) buildPolicies_(ss);
+  if (!ss.getSheetByName(SHEETS.ACTIVITY)) buildActivity_(ss);
   rebuildFormulas();
   orderSheets_(ss);
   removeDefaultSheet_(ss);
@@ -395,7 +409,7 @@ function guideLines_() {
     ['Contents: 1 What this tool is | 2 First-time setup | 3 Menu | 4 Control panel | 5 Recommended workflow | 6 The tabs | 7 The indicators | ' +
      '8 Source links (Eurostat & CSV) | 9 Adding indicators & countries | 10 How the score is calculated | 11 Weights & thresholds | ' +
      '12 Reading the Dashboard | 13 Evidence rules | 14 Updating the code | 15 Troubleshooting | 16 FAQ | 17 Glossary | 18 Limits | ' +
-     '19 Professions in demand | 20 Organisations that influence policy | 21 Findings & Advice', 'sub']
+     '19 Professions in demand | 20 Organisations that influence policy | 21 Findings & Advice | 22 Policies & who drives them | 23 Policy Analysis', 'sub']
   ]); blank();
 
   // 1
@@ -485,6 +499,8 @@ function guideLines_() {
     ['Indicators - the list of indicators: code, pillar, name, direction, unit, how to get it, source, link. This tab is yours: edit names, directions or links, add rows. Then click Refresh.', 'text'],
     ['Sources - the links the script downloads from. One row per link. Columns: Indicator, Type, Link, Filters A, Filters B, Since year, CSV country/value/year column, Enabled (tick box), Note, Last status (written by the script).', 'text'],
     ['Rubrics - the fixed rules for 0-10 ratings (A1, A3, S3). Use them so every country is judged the same way.', 'text'],
+    ['Policy Analysis - charts and findings on which policies help African talent uptake, who drives them and which barriers are neglected (section 23).', 'text'],
+    ['Policies - tracker of policies with their barrier, effect, stage and a strength score (section 22). Policy Activity - your log of what organisations actually do.', 'text'],
     ['Findings & Advice - the answer in plain language: one-sentence answer, what it means, country-by-country advice and two charts (section 21).', 'text'],
     ['Professions - which professions are in shortage in each country, with links to the official lists (section 19).', 'text'],
     ['Organisations - bodies that shape migration, labour and anti-discrimination policy, and how to engage with them (section 20).', 'text'],
@@ -786,6 +802,42 @@ function guideLines_() {
     ['4) Agree on one or two target countries and the concrete next step from the advice (recognition, language level, shortage route, employer type).  5) Point them to the Organisations tab for help and rights.', 'text'],
     ['To share: File > Download > PDF (choose "Current sheet") gives a clean handout; or copy a chart (three dots on the chart > Copy chart) into a presentation or post.', 'tip'],
     ['Be honest about limits: national averages, relative scores, and data that is 1-3 years old. Use the tab to guide a decision, not to promise an outcome.', 'warn']
+  ]); blank();
+
+  // 22
+  add([
+    ['22. POLICIES & WHO DRIVES THEM (Policies and Policy Activity tabs)', 'h'],
+    ['Second question of the tool: ' + POLICY_QUESTION, 'h2'],
+    ['Policies tab - one row per policy or initiative. It starts with about 20 real examples: EU Blue Card and Single Permit, EU Talent Pool and Talent Partnerships, North-Africa mobility programmes, recognition conventions, ' +
+     'EU anti-discrimination law, and national schemes (Germany Opportunity Card and citizenship reform, France Talent Passport, Netherlands skilled-migrant scheme and 30% ruling, Ireland Critical Skills permit, Sweden salary threshold, Spain reform).', 'text'],
+    ['The starting list is written from general knowledge. Stages, dates and links change: check each row, then put the date in "Status checked on". The Notes column says "Check status and link" until you do.', 'warn'],
+    ['Columns:', 'h2'],
+    ['   Level / Country / Lead body (pick from the Organisations list or type a new one) / Type.', 'code'],
+    ['   Barrier addressed = the pillar it acts on (Access, Fairness, Reward, Settlement) - the same pillars as the country index, so the two can be compared.', 'code'],
+    ['   Effect on African talent = Opens (makes it easier), Mixed, or Restricts (makes it harder). Restrictive policies belong in the list too - they are part of the picture.', 'code'],
+    ['   Stage = Idea, Proposed, Adopted, Implemented, Evaluated.', 'code'],
+    ['   Africa relevance (0-3): 3 = designed for African countries, 2 = applies to all non-EU nationals incl. Africans, 1 = indirect, 0 = none.', 'code'],
+    ['   Reach (0-3): 3 = EU-wide or global, 2 = several countries, 1 = one country, 0 = local / tiny pilot.', 'code'],
+    ['   Evidence of impact (0-3) - YOU fill this: 0 = no data, 1 = anecdotes, 2 = official numbers (e.g. permits issued), 3 = independent evaluation.', 'code'],
+    ['Policy strength (0-100, automatic) = stage (40%) + Africa relevance (25%) + reach (20%) + evidence of impact (15%). It measures how real and relevant a policy is - not whether it is good or bad; that is the Effect column.', 'text'],
+    ['Policy Activity tab - your log of what bodies actually DO: one row per report, consultation answer, law, programme launch, funding, event, campaign, court case or evaluation, with date, organisation, related policy, pillar, outcome and link.', 'text'],
+    ['This log is how "effort" becomes numbers: the Policy Analysis tab counts activities per organisation and per year. It starts empty on purpose - every entry should be a real, linked event.', 'tip'],
+    ['Where to find activities: the "Have your say" portal (consultations), EUR-Lex (laws), press pages of the Commission and ministries, the reports pages of OECD, IOM, ILO, ICMPD, MPI, SVR, DeZIM, and the equality bodies\' annual reports.', 'text']
+  ]); blank();
+
+  // 23
+  add([
+    ['23. POLICY ANALYSIS (Policy Analysis tab)', 'h'],
+    ['Automatic charts and findings from the Policies and Policy Activity tabs, linked to your country scores. Refresh scores & dashboard after changes.', 'text'],
+    ['Key findings - number of policies by effect; which barrier gets the most opening policies; the most neglected barrier; the most active bodies; what is still in the pipeline; how many policies have evaluated impact.', 'text'],
+    ['A. Which barriers do policies address - opening, mixed and restricting policies per pillar, with the average strength of the opening ones. Chart: stacked bars.', 'text'],
+    ['B. Policy pipeline - how many policies are at each stage. Many "Proposed" = change is coming and advocacy still matters.', 'text'],
+    ['C. Gap analysis - for each pillar: NEED (100 minus the average country score from your index) against ATTENTION (share of opening policies targeting it). The biggest positive gap is the barrier that hurts most and gets least policy support.', 'text'],
+    ['   Example: if Fairness need is 60 but only 10% of opening policies address Fairness, the gap is 50 - a strong argument for anti-discrimination and recognition measures.', 'code'],
+    ['D. Who is driving change - per organisation: policies it leads + activities you logged. Chart: top 15.', 'text'],
+    ['E. Activity over time - activities logged per year, to see whether effort is growing or fading.', 'text'],
+    ['How to use it: in advocacy (point to the neglected barrier with numbers), when choosing which organisations to contact (Organisations tab), and when advising young professionals (new opening policies = new routes, e.g. a Talent Partnership with their country).', 'text'],
+    ['Limits: counting policies is not the same as measuring their effect. Use Evidence of impact and evaluations wherever they exist, and say clearly when a finding rests on counts only.', 'warn']
   ]);
   return L;
 }
@@ -985,6 +1037,7 @@ function rebuildFormulas() {
   var profCountCol = syncProfessions_(ss);
   buildDashboard_(ss, n, indicators.length, profCountCol);
   buildFindings_(ss, n, indicators.length, profCountCol);
+  if (ss.getSheetByName(SHEETS.POLICIES) && ss.getSheetByName(SHEETS.ACTIVITY)) buildPolicyAnalysis_(ss, n, indicators.length);
   ss.toast('Scores refreshed: ' + n + ' countries, ' + indicators.length + ' indicators.', APP_NAME, 4);
   return 'Scores refreshed: ' + n + ' countries, ' + indicators.length + ' indicators.';
 }
@@ -1909,6 +1962,251 @@ function buildFindings_(ss, n, nI, profCountCol) {
 function section_(sh, row, title) {
   sh.getRange(row, 1, 1, 7).setBackground(COLORS.header);
   sh.getRange(row, 1).setValue(title).setFontWeight('bold').setFontColor(COLORS.headerText);
+}
+
+// ============================================================================
+// POLICIES, POLICY ACTIVITY, POLICY ANALYSIS
+// ============================================================================
+
+var POLICY_QUESTION = 'Which policies help - or hold back - the uptake of African talent in Europe, ' +
+  'who is driving them, and which barriers are still neglected?';
+
+var POL_HEAD = ['ID', 'Policy / initiative', 'Level', 'Country', 'Lead body', 'Type', 'Barrier addressed (pillar)',
+  'Effect on African talent', 'Year', 'Stage', 'Africa relevance (0-3)', 'Reach (0-3)', 'Evidence of impact (0-3)',
+  'Policy strength (0-100)', 'What it does', 'Link', 'Status checked on', 'Notes'];
+var POL = { ID: 1, NAME: 2, LEVEL: 3, COUNTRY: 4, BODY: 5, TYPE: 6, PILLAR: 7, EFFECT: 8, YEAR: 9, STAGE: 10,
+  REL: 11, REACH: 12, EVID: 13, STRENGTH: 14, WHAT: 15, LINK: 16, CHECKED: 17, NOTES: 18 };
+var POL_STAGES = ['Idea', 'Proposed', 'Adopted', 'Implemented', 'Evaluated'];
+var POL_EFFECTS = ['Opens', 'Mixed', 'Restricts'];
+var POL_LEVELS = ['EU', 'Africa-EU', 'Global', 'Africa', 'Country'];
+var POL_TYPES = ['Law / directive', 'Regulation', 'Residence permit', 'Bilateral agreement', 'Programme', 'Action plan',
+  'Convention', 'Dialogue process', 'Tax measure', 'Pilot project', 'Proposal'];
+
+// Starting list (written from general knowledge; check each status and link - see "Status checked on").
+// ID, name, level, country, lead body, type, pillar, effect, year, stage, Africa relevance, reach, what it does, link
+var DEFAULT_POLICIES = [
+  ['P01', 'EU Blue Card Directive (recast, Directive 2021/1883)', 'EU', '', 'European Commission - DG Migration and Home Affairs', 'Law / directive', 'Access', 'Opens', 2021, 'Implemented', 2, 3,
+   'Lower salary thresholds, shorter contracts accepted, easier moves between EU countries, faster family reunification.', 'https://eur-lex.europa.eu/eli/dir/2021/1883/oj'],
+  ['P02', 'Single Permit Directive (recast, Directive 2024/1233)', 'EU', '', 'European Commission - DG Migration and Home Affairs', 'Law / directive', 'Access', 'Opens', 2024, 'Adopted', 2, 3,
+   'One procedure for work and residence permit; right to change employer; equal treatment at work.', 'https://eur-lex.europa.eu/eli/dir/2024/1233/oj'],
+  ['P03', 'EU Talent Pool (EU-wide job-matching platform)', 'EU', '', 'European Commission - DG Migration and Home Affairs', 'Proposal', 'Access', 'Opens', 2023, 'Proposed', 2, 3,
+   'Platform to match non-EU jobseekers with EU employers in shortage occupations. Check current negotiation status.', 'https://home-affairs.ec.europa.eu'],
+  ['P04', 'EU Talent Partnerships (incl. Morocco, Tunisia, Egypt)', 'Africa-EU', '', 'European Commission - DG Migration and Home Affairs', 'Programme', 'Access', 'Opens', 2021, 'Implemented', 3, 2,
+   'Mobility schemes for work, study and training combined with skills development in partner countries.', 'https://home-affairs.ec.europa.eu'],
+  ['P05', 'THAMM - labour migration and mobility in North Africa', 'Africa-EU', '', 'International Labour Organization (ILO)', 'Programme', 'Access', 'Opens', 2019, 'Implemented', 3, 2,
+   'EU-funded programme (ILO, IOM, GIZ, Enabel) supporting legal labour mobility from Morocco, Tunisia and Egypt.', 'https://www.ilo.org'],
+  ['P06', 'Joint Valletta Action Plan (legal migration and mobility pillar)', 'Africa-EU', '', 'African Union - Citizens and Diaspora Directorate (CIDO)', 'Action plan', 'Access', 'Opens', 2015, 'Implemented', 3, 3,
+   'Africa-EU commitments incl. legal pathways and mobility; followed up in the Rabat and Khartoum processes.', 'https://www.rabat-process.org'],
+  ['P07', 'UNESCO Global Convention on Recognition of Higher Education Qualifications', 'Global', '', 'UNESCO', 'Convention', 'Access', 'Opens', 2019, 'Implemented', 2, 3,
+   'Right to a fair assessment of foreign higher-education qualifications in ratifying states.', 'https://www.unesco.org'],
+  ['P08', 'Addis Recognition Convention (Africa)', 'Africa', '', 'UNESCO', 'Convention', 'Access', 'Opens', 2014, 'Implemented', 3, 2,
+   'African regional convention on recognition of higher-education qualifications - makes African degrees easier to compare.', 'https://www.unesco.org'],
+  ['P09', 'Racial Equality Directive (2000/43/EC)', 'EU', '', 'European Commission - DG Migration and Home Affairs', 'Law / directive', 'Fairness', 'Opens', 2000, 'Implemented', 2, 3,
+   'Bans discrimination on grounds of racial or ethnic origin, including in hiring; requires national equality bodies.', 'https://eur-lex.europa.eu/eli/dir/2000/43/oj'],
+  ['P10', 'EU Anti-racism Action Plan 2020-2025', 'EU', '', 'European Commission - DG Migration and Home Affairs', 'Action plan', 'Fairness', 'Opens', 2020, 'Implemented', 2, 3,
+   'EU strategy against structural racism, including in employment. Check whether a follow-up plan exists.', 'https://commission.europa.eu'],
+  ['P11', 'Germany - Skilled Immigration Act reform incl. Opportunity Card', 'Country', 'Germany', 'Make it in Germany', 'Law / directive', 'Access', 'Opens', 2023, 'Implemented', 2, 1,
+   'Points-based Opportunity Card to look for work, lower Blue Card thresholds, recognition partly after arrival.', 'https://www.make-it-in-germany.com'],
+  ['P12', 'Germany - Recognition Act (Anerkennungsgesetz)', 'Country', 'Germany', 'Make it in Germany', 'Law / directive', 'Access', 'Opens', 2012, 'Implemented', 2, 1,
+   'Legal right to have foreign professional qualifications assessed against German standards.', 'https://www.anerkennung-in-deutschland.de'],
+  ['P13', 'Germany - Kenya migration and mobility agreement', 'Country', 'Germany', 'Make it in Germany', 'Bilateral agreement', 'Access', 'Opens', 2024, 'Adopted', 3, 1,
+   'Bilateral framework for skilled-worker mobility from Kenya. Check implementation status.', 'https://www.make-it-in-germany.com'],
+  ['P14', 'Germany - Citizenship modernisation (5 years, dual citizenship)', 'Country', 'Germany', '', 'Law / directive', 'Settlement', 'Opens', 2024, 'Implemented', 2, 1,
+   'Shorter residence requirement for naturalisation and general acceptance of dual citizenship.', ''],
+  ['P15', 'France - Talent Passport (passeport talent)', 'Country', 'France', '', 'Residence permit', 'Access', 'Opens', 2016, 'Implemented', 2, 1,
+   'Multi-year residence permit for skilled workers, researchers, founders and their families.', 'https://france-visas.gouv.fr'],
+  ['P16', 'Netherlands - Highly Skilled Migrant scheme', 'Country', 'Netherlands', '', 'Residence permit', 'Access', 'Opens', 2004, 'Implemented', 2, 1,
+   'Fast-track permit via recognised sponsor employers above a salary threshold.', 'https://ind.nl'],
+  ['P17', 'Netherlands - 30% ruling (tax facility for skilled migrants)', 'Country', 'Netherlands', '', 'Tax measure', 'Reward', 'Mixed', 2012, 'Implemented', 2, 1,
+   'Tax-free allowance for recruited skilled migrants; has been reduced in recent reforms - check the current rate.', ''],
+  ['P18', 'Ireland - Critical Skills Employment Permit', 'Country', 'Ireland', '', 'Residence permit', 'Access', 'Opens', 2014, 'Implemented', 2, 1,
+   'Permit for occupations on the critical skills list, with a faster route to longer-term residence.', 'https://enterprise.gov.ie'],
+  ['P19', 'Sweden - higher salary threshold for work permits', 'Country', 'Sweden', '', 'Law / directive', 'Access', 'Restricts', 2023, 'Implemented', 2, 1,
+   'Minimum salary for work permits raised to a share of the median wage - harder entry for early-career graduates.', ''],
+  ['P20', 'Spain - immigration regulation reform (Reglamento de Extranjeria)', 'Country', 'Spain', '', 'Regulation', 'Settlement', 'Opens', 2024, 'Implemented', 2, 1,
+   'Wider routes to regularise and settle (arraigo), job-search visas. Check details and dates.', ''],
+  ['P21', 'Belgium-Morocco ICT mobility pilot (PALIM)', 'Africa-EU', 'Belgium', 'Enabel (Belgian development agency)', 'Pilot project', 'Access', 'Opens', 2019, 'Evaluated', 3, 1,
+   'Pilot training Moroccan ICT graduates for jobs in Belgium; an early test of skills partnerships.', ''],
+  ['P22', 'Rabat Process (Euro-African dialogue on migration and development)', 'Africa-EU', '', 'ICMPD - International Centre for Migration Policy Development', 'Dialogue process', 'Access', 'Mixed', 2006, 'Implemented', 3, 3,
+   'Intergovernmental dialogue between European and African states; covers legal migration but also border control.', 'https://www.rabat-process.org']
+];
+
+var ACT_HEAD = ['Date', 'Organisation', 'Related policy', 'Activity type', 'Barrier (pillar)', 'What happened / outcome', 'Link', 'Notes'];
+var ACT_TYPES = ['Report / study', 'Consultation response', 'Law / decision', 'Programme launch', 'Funding', 'Event',
+  'Statement / campaign', 'Complaint / court case', 'Evaluation'];
+
+function buildPolicies_(ss) {
+  var sh = freshSheet_(ss, SHEETS.POLICIES);
+  var rows = DEFAULT_POLICIES.map(function (p) {
+    // ID..Year, Stage, relevance, reach, evidence (yours), strength (formula later), what, link, checked, notes
+    var body = p[4] || (p[3] ? 'Government of ' + p[3] : '');
+    return [p[0], p[1], p[2], p[3], body, p[5], p[6], p[7], p[8], p[9], p[10], p[11], '', '', p[12], p[13], '', 'Check status and link'];
+  });
+  writeTable_(sh, POL_HEAD, rows);
+  formatPolicyRows_(ss, sh, 2, rows.length + 60);
+  [45, 300, 85, 95, 230, 120, 110, 95, 55, 95, 80, 70, 85, 85, 380, 230, 95, 160].forEach(function (w, i) { sh.setColumnWidth(i + 1, w); });
+  sh.setFrozenColumns(2);
+  sh.getRange(1, 1, rows.length + 61, POL_HEAD.length).createFilter();
+}
+
+function formatPolicyRows_(ss, sh, first, n) {
+  var list = function (col, values) {
+    sh.getRange(first, col, n, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(values, true).build());
+  };
+  list(POL.LEVEL, POL_LEVELS); list(POL.TYPE, POL_TYPES); list(POL.PILLAR, PILLARS);
+  list(POL.EFFECT, POL_EFFECTS); list(POL.STAGE, POL_STAGES);
+  [POL.REL, POL.REACH, POL.EVID].forEach(function (c) {
+    sh.getRange(first, c, n, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireNumberBetween(0, 3).setAllowInvalid(false).build());
+  });
+  var orgs = ss.getSheetByName(SHEETS.ORGS);
+  if (orgs) sh.getRange(first, POL.BODY, n, 1).setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInRange(orgs.getRange('A2:A'), true).setAllowInvalid(true).build());
+  sh.getRange(first, POL.CHECKED, n, 1).setNumberFormat('yyyy-mm-dd');
+  sh.getRange(first, 1, n, POL_HEAD.length).setBackground(COLORS.input).setVerticalAlignment('top');
+  sh.getRange(first, POL.WHAT, n, 1).setWrap(true);
+
+  var f = [];
+  for (var r = first; r < first + n; r++) {
+    f.push(['=IF($B' + r + '="","",ROUND(IFERROR(MATCH($J' + r + ',{"Idea","Proposed","Adopted","Implemented","Evaluated"},0)-1,0)/4*40+' +
+      'N($K' + r + ')/3*25+N($L' + r + ')/3*20+N($M' + r + ')/3*15,0))']);
+  }
+  sh.getRange(first, POL.STRENGTH, n, 1).setFormulas(f).setBackground(COLORS.calc).setFontWeight('bold').setHorizontalAlignment('center');
+  sh.setConditionalFormatRules([
+    SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('Opens').setBackground('#B7E1CD').setRanges([sh.getRange(first, POL.EFFECT, n, 1)]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('Mixed').setBackground(COLORS.mid).setRanges([sh.getRange(first, POL.EFFECT, n, 1)]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('Restricts').setBackground(COLORS.bad).setRanges([sh.getRange(first, POL.EFFECT, n, 1)]).build()
+  ]);
+}
+
+function buildActivity_(ss) {
+  var sh = freshSheet_(ss, SHEETS.ACTIVITY);
+  writeTable_(sh, ACT_HEAD, []);
+  var n = 300;
+  sh.getRange(2, 1, n, ACT_HEAD.length).setBackground(COLORS.input).setVerticalAlignment('top');
+  sh.getRange(2, 1, n, 1).setNumberFormat('yyyy-mm-dd')
+    .setDataValidation(SpreadsheetApp.newDataValidation().requireDate().setAllowInvalid(false).setHelpText('Enter a date').build());
+  var orgs = ss.getSheetByName(SHEETS.ORGS), pols = ss.getSheetByName(SHEETS.POLICIES);
+  if (orgs) sh.getRange(2, 2, n, 1).setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInRange(orgs.getRange('A2:A'), true).setAllowInvalid(true).build());
+  if (pols) sh.getRange(2, 3, n, 1).setDataValidation(SpreadsheetApp.newDataValidation()
+    .requireValueInRange(pols.getRange('B2:B'), true).setAllowInvalid(true).build());
+  sh.getRange(2, 4, n, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(ACT_TYPES, true).build());
+  sh.getRange(2, 5, n, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(PILLARS, true).build());
+  sh.getRange(2, 6, n, 1).setWrap(true);
+  [95, 280, 280, 150, 110, 380, 230, 200].forEach(function (w, i) { sh.setColumnWidth(i + 1, w); });
+}
+
+function buildPolicyAnalysis_(ss, n, nI) {
+  var sh = freshSheet_(ss, SHEETS.POLICY_ANALYSIS);
+  var P = SHEETS.POLICIES, Aq = "'" + SHEETS.ACTIVITY + "'", S = SHEETS.SCORES, L = scoreLayout_(nI);
+  var pc = function (col) { return P + '!$' + colLetter_(col) + '$2:$' + colLetter_(col); };
+  var pillarR = pc(POL.PILLAR), effectR = pc(POL.EFFECT), stageR = pc(POL.STAGE), strengthR = pc(POL.STRENGTH),
+      bodyR = pc(POL.BODY), nameR = pc(POL.NAME);
+  var actOrg = Aq + '!$B$2:$B', actDate = Aq + '!$A$2:$A';
+
+  sh.getRange('A1').setValue('Policy Analysis').setFontSize(20).setFontWeight('bold').setFontColor(COLORS.title);
+  sh.getRange('A2').setValue('THE QUESTION: ' + POLICY_QUESTION).setFontStyle('italic');
+
+  // --- A. barriers addressed
+  section_(sh, 11, 'A. WHICH BARRIERS DO POLICIES ADDRESS?');
+  sh.getRange(12, 1, 1, 5).setValues([['Pillar', 'Opens', 'Mixed', 'Restricts', 'Avg strength of opening policies']]);
+  styleHeader_(sh.getRange(12, 1, 1, 5));
+  var a = PILLARS.map(function (p, k) {
+    var r = 13 + k;
+    return [p,
+      '=COUNTIFS(' + pillarR + ',$A' + r + ',' + effectR + ',"Opens")',
+      '=COUNTIFS(' + pillarR + ',$A' + r + ',' + effectR + ',"Mixed")',
+      '=COUNTIFS(' + pillarR + ',$A' + r + ',' + effectR + ',"Restricts")',
+      '=IFERROR(ROUND(AVERAGEIFS(' + strengthR + ',' + pillarR + ',$A' + r + ',' + effectR + ',"Opens"),0),"")'];
+  });
+  sh.getRange(13, 1, 4, 5).setValues(a.map(function (x) { return [x[0], '', '', '', '']; }));
+  sh.getRange(13, 2, 4, 4).setFormulas(a.map(function (x) { return x.slice(1); }));
+
+  // --- B. pipeline
+  section_(sh, 18, 'B. POLICY PIPELINE - HOW FAR ALONG ARE THEY?');
+  sh.getRange(19, 1, 1, 2).setValues([['Stage', 'Number of policies']]);
+  styleHeader_(sh.getRange(19, 1, 1, 2));
+  sh.getRange(20, 1, POL_STAGES.length, 1).setValues(POL_STAGES.map(function (s) { return [s]; }));
+  sh.getRange(20, 2, POL_STAGES.length, 1).setFormulas(POL_STAGES.map(function (s, k) {
+    return ['=COUNTIF(' + stageR + ',$A' + (20 + k) + ')'];
+  }));
+
+  // --- C. gap analysis
+  section_(sh, 26, 'C. GAP ANALYSIS - WHERE COUNTRIES ARE WEAK vs WHERE POLICIES FOCUS');
+  sh.getRange(27, 1, 1, 4).setValues([['Pillar', 'Need (100 - average country score)', 'Policy attention (% of opening policies)', 'Gap (need - attention)']]);
+  styleHeader_(sh.getRange(27, 1, 1, 4));
+  var c = PILLARS.map(function (p, k) {
+    var r = 28 + k;
+    var col = colLetter_(L.pillarStart + k);
+    var rng = S + '!$' + col + '$' + DATA_FIRST_ROW + ':$' + col + '$' + (DATA_FIRST_ROW + Math.max(n, 1) - 1);
+    return ['=IF(COUNT(' + rng + ')=0,"",ROUND(100-AVERAGE(' + rng + '),0))',
+            '=IF(COUNTIF(' + effectR + ',"Opens")=0,"",ROUND(COUNTIFS(' + pillarR + ',$A' + r + ',' + effectR + ',"Opens")/COUNTIF(' + effectR + ',"Opens")*100,0))',
+            '=IF(OR(B' + r + '="",C' + r + '=""),"",B' + r + '-C' + r + ')'];
+  });
+  sh.getRange(28, 1, 4, 1).setValues(PILLARS.map(function (p) { return [p]; }));
+  sh.getRange(28, 2, 4, 3).setFormulas(c);
+  sh.getRange(32, 1).setValue('Need comes from the Scores tab (low country scores = high need). Attention = share of all "Opens" policies that target this pillar. A large positive gap = a neglected barrier.')
+    .setFontStyle('italic').setFontColor('#666666');
+
+  // --- D. effort by body
+  section_(sh, 34, 'D. WHO IS DRIVING CHANGE? (policies led + activities logged)');
+  sh.getRange(35, 1, 1, 4).setValues([['Organisation / body', 'Policies led', 'Activities logged', 'Total']]);
+  styleHeader_(sh.getRange(35, 1, 1, 4));
+  sh.getRange(36, 1).setFormula('=IFERROR(ARRAY_CONSTRAIN(ARRAYFORMULA(LET(' +
+    'all,{' + bodyR + ';' + actOrg + '},' +
+    'u,UNIQUE(FILTER(all,all<>"")),' +
+    'p,COUNTIF(' + bodyR + ',u),' +
+    'a,COUNTIF(' + actOrg + ',u),' +
+    'SORT({u,p,a,p+a},4,FALSE))),15,4),' +
+    '"Fill Lead body in Policies or log activities in Policy Activity to see who drives change.")');
+
+  // --- E. activity over time
+  section_(sh, 53, 'E. ACTIVITY OVER TIME (from the Policy Activity log)');
+  sh.getRange(54, 1, 1, 2).setValues([['Year', 'Activities logged']]);
+  styleHeader_(sh.getRange(54, 1, 1, 2));
+  var thisYear = new Date().getFullYear(), years = [];
+  for (var y = 2015; y <= thisYear + 1; y++) years.push(y);
+  sh.getRange(55, 1, years.length, 1).setValues(years.map(function (v) { return [v]; })).setNumberFormat('0');
+  sh.getRange(55, 2, years.length, 1).setFormulas(years.map(function (v, k) {
+    var r = 55 + k;
+    return ['=COUNTIFS(' + actDate + ',">="&DATE($A' + r + ',1,1),' + actDate + ',"<"&DATE($A' + r + '+1,1,1))'];
+  }));
+
+  // --- key findings (top, uses the tables above)
+  section_(sh, 4, 'KEY FINDINGS');
+  var findings = [
+    '="Policies tracked: "&COUNTA(' + nameR + ')&".   Opening doors: "&COUNTIF(' + effectR + ',"Opens")&"   |   Mixed: "&COUNTIF(' + effectR +
+      ',"Mixed")&"   |   Restricting: "&COUNTIF(' + effectR + ',"Restricts")&"."',
+    '=IF(MAX(B13:B16)=0,"Most policy attention will appear here once policies are marked.","Most opening policies target: "&UPPER(INDEX(A13:A16,MATCH(MAX(B13:B16),B13:B16,0)))&" ("&MAX(B13:B16)&" policies).")',
+    '=IF(COUNT(D28:D31)=0,"The biggest neglected barrier appears here once the Data tab has scores.","Most neglected barrier: "&UPPER(INDEX(A28:A31,MATCH(MAX(D28:D31),D28:D31,0)))&" - countries score weakest there relative to the policy attention it gets (gap "&MAX(D28:D31)&").")',
+    '=IFERROR(IF(A36="","","Most active bodies: "&TEXTJOIN(", ",TRUE,ARRAY_CONSTRAIN(A36:A50,3,1))&"."),"")',
+    '="In the pipeline (proposed or adopted, not yet in force): "&(COUNTIF(' + stageR + ',"Proposed")+COUNTIF(' + stageR + ',"Adopted"))&" - these are the ones where consultations and advocacy can still change the outcome."',
+    '="Policies with evaluated impact: "&COUNTIF(' + stageR + ',"Evaluated")&". Few evaluations means effort is visible, but results are not yet proven - fill Evidence of impact (0-3) as you find evaluations."'
+  ];
+  sh.getRange(5, 1, findings.length, 1).setFormulas(findings.map(function (x) { return [x]; }));
+
+  // --- charts (right side)
+  var cc = 7; // column G
+  var chart = function (type, ranges, row, title, opts) {
+    var b = sh.newChart().setChartType(type).setPosition(row, cc, 0, 0).setOption('title', title)
+      .setOption('width', 560).setOption('height', 300);
+    ranges.forEach(function (r) { b.addRange(r); });
+    Object.keys(opts || {}).forEach(function (k) { b.setOption(k, opts[k]); });
+    sh.insertChart(b.build());
+  };
+  chart(Charts.ChartType.BAR, [sh.getRange(12, 1, 5, 4)], 1, 'Policies by barrier and effect',
+    { isStacked: true, colors: ['#6A994E', '#F2A541', '#C0392B'], legend: { position: 'top' } });
+  chart(Charts.ChartType.COLUMN, [sh.getRange(19, 1, POL_STAGES.length + 1, 2)], 17, 'Policy pipeline (number of policies per stage)',
+    { colors: ['#1F4E78'], legend: { position: 'none' } });
+  chart(Charts.ChartType.COLUMN, [sh.getRange(27, 1, 5, 3)], 33, 'Need vs policy attention per barrier (0-100)',
+    { colors: ['#C0392B', '#2E86AB'], legend: { position: 'top' }, vAxis: { minValue: 0, maxValue: 100 } });
+  chart(Charts.ChartType.BAR, [sh.getRange(35, 1, 16, 3)], 49, 'Who is driving change (top 15)',
+    { isStacked: true, colors: ['#1F4E78', '#F2A541'], legend: { position: 'top' } });
+  chart(Charts.ChartType.LINE, [sh.getRange(54, 1, years.length + 1, 2)], 65, 'Policy activity logged per year',
+    { colors: ['#1F4E78'], legend: { position: 'none' } });
+
+  [210, 90, 90, 90, 120, 30].forEach(function (w, i) { sh.setColumnWidth(i + 1, w); });
+  sh.setHiddenGridlines(true);
 }
 
 // ============================================================================
