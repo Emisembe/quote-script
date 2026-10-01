@@ -14,6 +14,9 @@ class Sheet {
   getLastColumn(){let m=0;for(const k of this.cells.keys()){const c=+k.split(',')[1];if(c>m)m=c;}return m;}
   getMaxRows(){return this.maxRows;} getMaxColumns(){return this.maxCols;}
   insertRowsAfter(a,n){this.maxRows+=n;}
+  insertRowsBefore(r,n){if(r<1||n<1)throw new Error('insertRowsBefore');const m=new Map();for(const [k,v] of this.cells){const [rr,cc]=k.split(',').map(Number);m.set((rr>=r?rr+n:rr)+','+cc,v);}this.cells=m;this.maxRows+=n;}
+  deleteRows(r,n){if(r<1||n<1||r+n-1>this.maxRows)throw new Error('deleteRows');const m=new Map();for(const [k,v] of this.cells){const [rr,cc]=k.split(',').map(Number);if(rr>=r&&rr<r+n)continue;m.set((rr>=r+n?rr-n:rr)+','+cc,v);}this.cells=m;this.maxRows-=n;}
+  hideSheet(){this.hidden=true;return this;}
   deleteColumns(c,n){if(c<1||n<1||c+n-1>this.maxCols)throw new Error(`${this.name}: bad deleteColumns ${c},${n}`);for(const k of [...this.cells.keys()]){const cc=+k.split(',')[1];if(cc>=c)this.cells.delete(k);}this.maxCols-=n;}
   getRange(a,b,c,d){
     if(typeof a==='string'){ let m;

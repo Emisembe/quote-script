@@ -23,7 +23,7 @@
 // ------------------------------------------------------------------
 
 const APP = {
-  version: '3.6.2',
+  version: '3.7.0',
   sheets: {
     guide: 'Guide',
     health: 'Health_Check',
@@ -67,7 +67,9 @@ const APP = {
   fetchProp: 'CT_CURSOR',
   missingProp: 'CT_MISSING',
   versionProp: 'APP_VERSION',
+  buildProp: 'BUILD_STATE',
   fetchHandler: 'continueComtradeFetch', // trigger handler names — keep stable across code updates
+  buildHandler: 'continueBuild',
   autoHandler: 'autoRefresh',
 };
 
@@ -101,6 +103,7 @@ const PARAMS = [
   ['P_SOURCE', 'Data source', 'NONE', 'Set automatically: SAMPLE, COMTRADE or OWN. Refresh uses it.', false],
   ['P_LAST_REFRESH', 'Last computed', '—', 'Set automatically when step 3 (Compute) finishes.', false],
   ['P_AUTO', 'Monthly auto-refresh', 'OFF', 'Switch with the menu: Monthly auto-refresh ON / OFF.', false],
+  ['P_BUILD', 'Workbook update status', 'Done', 'Set automatically. Quick start, Update and Reset run in steps; while they run, this shows the progress.', false],
 ];
 
 // ------------------------------------------------------------------
@@ -938,10 +941,7 @@ function checkVersion_() {
 function quickStart() {
   if (!confirm_('Quick start will (re)build every tab, load SAMPLE data and compute the scorecard. ' +
       'Anything already in this workbook\'s app tabs will be replaced. Continue?')) return;
-  buildWorkbook_();
-  loadSampleData_();
-  computeScorecard();
-  SpreadsheetApp.getActive().getSheetByName(APP.sheets.dashboard).activate();
+  startBuild_('quick');
 }
 
 function buildWorkbook() {
@@ -949,8 +949,7 @@ function buildWorkbook() {
   if (ss.getSheetByName(APP.sheets.settings) &&
       !confirm_('RESET rebuilds every tab with default settings and DELETES all data (only the API key is kept).\n\n' +
         'To apply new code and keep your data, cancel and use "Update workbook" instead.\n\nReset anyway?')) return;
-  buildWorkbook_();
-  notify_('Workbook reset. Next: load data (menu 2a, 2b or 2c).');
+  startBuild_('reset');
 }
 
 function loadSampleData() {
@@ -1032,25 +1031,184 @@ function autoTriggers_() {
 function upgradeWorkbook() {
   const ss = SpreadsheetApp.getActive();
   if (!ss.getSheetByName(APP.sheets.settings)) {
-    buildWorkbook_();
-    notify_('Workbook built. Next: load data (menu 2a, 2b or 2c).');
+    startBuild_('reset');
     return;
   }
   if (!confirm_(`Update this workbook to code version ${APP.version}?\n\n` +
       'Rebuilt: every tab\'s layout, explanations and charts.\n' +
-      'Kept: Raw_Trade data, weights, settings, API key, and your Countries and Products edits.\n\n' +
+      'Kept: all your data, weights, settings, API key, and your edits on Countries, Products, Value_Chains, Equipment and Suppliers.\n\n' +
+      'It runs in steps and may continue by itself for a few minutes: watch "Workbook update status" on Settings.\n\n' +
       'Tip: File → Version history lets you go back if needed.')) return;
-  const snap = snapshot_(ss);
-  buildWorkbook_();
-  restore_(snap);
-  const filled = fillMissingValueAddition_();
-  if (snap.raw.length) computeScorecard();
-  if (filled) alert_(filled);
-  notify_(`Workbook updated to version ${APP.version}. Kept ${snap.raw.length.toLocaleString()} data rows and your settings.`);
+  startBuild_('update');
+}
+
+// ------------------------------------------------------------------
+// Staged build: Quick start, Update and Reset run as a list of steps. When a run nears Google's 6-minute limit
+// it saves its place and a trigger continues about a minute later. Your data tabs stay where they are.
+// ------------------------------------------------------------------
+
+function buildSteps_(mode) {
+  const keep = mode === 'update';
+  const steps = [];
+  if (keep) steps.push(['Saving your settings', ss => backupSettings_(ss)]);
+  steps.push(['Arranging tabs', ss => arrangeTabs_(ss)]);
+  steps.push(['Settings', ss => buildSettings_(ss, ss.getRangeByName('P_API_KEY') ? ss.getRangeByName('P_API_KEY').getValue() : '')]);
+  steps.push(['Countries, Products and Raw_Trade', ss => { buildCountries_(ss); buildProducts_(ss); buildRawTrade_(ss, keep); }]);
+  steps.push(['Value_Chains, Equipment and Suppliers', ss => { buildValueChains_(ss); buildEquipment_(ss); buildSuppliers_(ss); }]);
+  steps.push(['Enablers and Raw_HS4', ss => { buildEnablers_(ss, keep); buildRawHs4_(ss, keep); }]);
+  steps.push(['Scorecard and VA_Scorecard', ss => { buildScorecard_(ss); buildVaScorecard_(ss); }]);
+  steps.push(['Value_Addition and Value_Lost_Charts', ss => { buildValueAddition_(ss); buildValueLostCharts_(ss); }]);
+  steps.push(['Market_Opportunity and Country_Needs', ss => { buildMarketOpportunity_(ss); buildCountryNeeds_(ss); }]);
+  steps.push(['Top_Gaps, Country_View and Dashboard', ss => { buildTopGaps_(ss); buildCountryView_(ss); buildDashboard_(ss); }]);
+  steps.push(['Charts and Explain_Score', ss => { buildCharts_(ss); buildExplainScore_(ss); }]);
+  steps.push(['Explanation tabs', ss => { buildGuide_(ss); buildAbout_(ss); buildMethodology_(ss); buildGlossary_(ss); }]);
+  steps.push(['Data_Sources, Refresh_&_Updates, FAQ and Health_Check', ss => {
+    buildDataSources_(ss); buildUpdates_(ss); buildFaq_(ss); buildHealthCheck_(ss); colourTabs_(ss);
+    PropertiesService.getDocumentProperties().setProperty(APP.versionProp, APP.version);
+  }]);
+  if (keep) {
+    steps.push(['Restoring your settings', ss => restoreSettings_(ss)]);
+    steps.push(['Checking for missing data', (ss, st) => { const m = fillMissingValueAddition_(); if (m) st.messages.push(m); }]);
+  }
+  if (mode === 'quick') steps.push(['Loading sample data', () => loadSampleData_()]);
+  if (mode !== 'reset') {
+    steps.push(['Scoring trade gaps', () => { if (rawCount_() > 0) computeTrade_(); }]);
+    steps.push(['Scoring value addition', () => {
+      if (rawCount_() === 0) return;
+      computeValueAddition_();
+      setParam_('P_LAST_REFRESH', Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm'));
+    }]);
+  }
+  return steps;
+}
+
+function startBuild_(mode) {
+  const props = PropertiesService.getDocumentProperties();
+  const running = props.getProperty(APP.buildProp);
+  if (running && !confirm_('An update or build is already running in the background. Start again from the beginning?')) return;
+  deleteBuildTriggers_();
+  props.setProperty(APP.buildProp, JSON.stringify({ mode, step: 0, tries: 0, messages: [] }));
+  runBuild_();
+}
+
+/** Trigger handler: continues a staged build. Keep the name stable across code updates. */
+function continueBuild() {
+  deleteBuildTriggers_();
+  runBuild_();
+}
+
+function runBuild_() {
+  const props = PropertiesService.getDocumentProperties();
+  const saved = props.getProperty(APP.buildProp);
+  if (!saved) return;
+  const st = JSON.parse(saved);
+  const steps = buildSteps_(st.mode);
+  const ss = SpreadsheetApp.getActive();
+  const started = Date.now();
+  const progress = text => { try { setParam_('P_BUILD', text); } catch (e) { /* Settings not built yet */ } };
+  // Safety net: if Google stops this run at its 6-minute limit, this trigger resumes at the same step.
+  ScriptApp.newTrigger(APP.buildHandler).timeBased().after(8 * 60 * 1000).create();
+  let ran = 0;
+  while (st.step < steps.length) {
+    if (ran > 0 && Date.now() - started > 3 * 60 * 1000) {
+      deleteBuildTriggers_();
+      ScriptApp.newTrigger(APP.buildHandler).timeBased().after(60 * 1000).create();
+      const msg = `In progress: ${st.step} of ${steps.length} steps done. It continues by itself in about a minute; please wait and do not edit.`;
+      progress(msg);
+      notify_(msg);
+      return;
+    }
+    const [label, fn] = steps[st.step];
+    st.tries = (st.tries || 0) + 1;
+    if (st.tries > 3) {
+      props.deleteProperty(APP.buildProp);
+      deleteBuildTriggers_();
+      progress(`Stopped at step "${label}" after 3 attempts. Run the menu item again; if it repeats, send this line to whoever maintains the code.`);
+      notify_(`Stopped at step "${label}". See "Workbook update status" on Settings.`, true);
+      return;
+    }
+    props.setProperty(APP.buildProp, JSON.stringify(st));
+    progress(`In progress: step ${st.step + 1} of ${steps.length} (${label})…`);
+    notify_(`Step ${st.step + 1} of ${steps.length}: ${label}…`);
+    try {
+      fn(ss, st);
+    } catch (e) {
+      props.deleteProperty(APP.buildProp);
+      deleteBuildTriggers_();
+      progress(`Stopped at step "${label}": ${e.message}`);
+      notify_(`Stopped at step "${label}": ${e.message}`, true);
+      return;
+    }
+    st.step++;
+    st.tries = 0;
+    ran++;
+    props.setProperty(APP.buildProp, JSON.stringify(st));
+  }
+  props.deleteProperty(APP.buildProp);
+  deleteBuildTriggers_();
+  const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
+  const done = { update: `Workbook updated to version ${APP.version}. Your data and settings were kept.`,
+    reset: 'Workbook reset. Next: load data (menu 2a, 2b or 2c).',
+    quick: 'Quick start finished: sample data loaded and scored. Open the Dashboard.' }[st.mode];
+  progress(`Done (${st.mode}, version ${APP.version}, ${stamp})`);
+  const target = ss.getSheetByName(st.mode === 'quick' ? APP.sheets.dashboard : APP.sheets.guide);
+  if (target) target.activate();
+  notify_(done);
+  st.messages.forEach(m => alert_(m));
+}
+
+function deleteBuildTriggers_() {
+  ScriptApp.getProjectTriggers()
+    .filter(t => t.getHandlerFunction() === APP.buildHandler)
+    .forEach(t => ScriptApp.deleteTrigger(t));
+}
+
+/** Update step 1: settings and edits (not the big data tabs, which stay in place) go to a hidden backup tab. */
+function backupSettings_(ss) {
+  const snap = snapshot_(ss, true);
+  Object.keys(snap.params).forEach(k => {
+    const v = snap.params[k];
+    if (v instanceof Date) snap.params[k] = Utilities.formatDate(v, Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
+  });
+  delete snap.params.P_BUILD;
+  const json = JSON.stringify(snap);
+  const chunks = [];
+  for (let i = 0; i < json.length; i += 40000) chunks.push([json.slice(i, i + 40000)]);
+  const sh = ss.getSheetByName(BACKUP_SHEET) || ss.insertSheet(BACKUP_SHEET);
+  sh.clear();
+  ensureRows_(sh, chunks.length);
+  sh.getRange(1, 1, chunks.length, 1).setValues(chunks);
+  sh.hideSheet();
+}
+
+function restoreSettings_(ss) {
+  const sh = ss.getSheetByName(BACKUP_SHEET);
+  if (!sh || sh.getLastRow() === 0) return;
+  const json = sh.getRange(1, 1, sh.getLastRow(), 1).getValues().map(r => r[0]).join('');
+  restore_(JSON.parse(json));
+  ss.deleteSheet(sh);
+}
+
+const BACKUP_SHEET = '_Update_Backup';
+
+/** Creates the tabs that are missing and puts all tabs in order. */
+function arrangeTabs_(ss) {
+  const s = APP.sheets;
+  const order = [s.guide, s.health, s.about, s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.settings,
+    s.vaSummary, s.vaCharts, s.market, s.needs, s.vaScore, s.method, s.glossary, s.sources, s.updates, s.faq,
+    s.countries, s.products, s.chains, s.equipment, s.suppliers, s.enablers, s.raw, s.rawHs4];
+  order.forEach((name, i) => {
+    let sh = ss.getSheetByName(name);
+    if (!sh) sh = ss.insertSheet(name, i);
+    ss.setActiveSheet(sh);
+    ss.moveActiveSheet(i + 1);
+  });
+  const stray = ss.getSheetByName('Sheet1');
+  if (stray && stray.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(stray);
 }
 
 /** Reads everything worth keeping. Works with the old (v1) and new layouts. */
-function snapshot_(ss) {
+function snapshot_(ss, skipData) {
   const findHeader = (sh, text) => {
     if (!sh || sh.getLastRow() === 0) return 0;
     const col = sh.getRange(1, 1, Math.min(sh.getLastRow(), 40), 1).getValues();
@@ -1090,18 +1248,18 @@ function snapshot_(ss) {
     pr.getRange(ph + 1, 1, pr.getLastRow() - ph, 4).getValues()
       .forEach(r => { if (Number(r[0]) > 0) snap.products[Number(r[0])] = r[3] === true; });
   }
-  const rw = ss.getSheetByName(APP.sheets.raw);
+  const rw = skipData ? null : ss.getSheetByName(APP.sheets.raw);
   const rh = findHeader(rw, 'Year');
   if (rh && rw.getLastRow() > rh) {
     snap.raw = rw.getRange(rh + 1, 1, rw.getLastRow() - rh, 6).getValues()
       .filter(r => r[0] !== '' && r[1] !== '');
   }
-  const h4 = ss.getSheetByName(APP.sheets.rawHs4);
+  const h4 = skipData ? null : ss.getSheetByName(APP.sheets.rawHs4);
   const h4h = findHeader(h4, 'Year');
   if (h4h && h4.getLastRow() > h4h) {
     snap.hs4 = h4.getRange(h4h + 1, 1, h4.getLastRow() - h4h, 6).getValues().filter(r => r[0] !== '' && r[1] !== '');
   }
-  const en = ss.getSheetByName(APP.sheets.enablers);
+  const en = skipData ? null : ss.getSheetByName(APP.sheets.enablers);
   const enh = findHeader(en, 'ISO3');
   if (enh && en.getLastRow() > enh) {
     snap.enablers = en.getRange(enh + 1, 1, en.getLastRow() - enh, Math.min(EU_COL + 2 + INDICATORS.length, en.getMaxColumns())).getValues()
@@ -1134,7 +1292,7 @@ function restore_(snap) {
   });
   Object.keys(snap.params).forEach(k => {
     const v = snap.params[k];
-    if (v !== '' && v !== undefined && v !== null) setParam_(k, v);
+    if (k !== 'P_BUILD' && v !== '' && v !== undefined && v !== null) setParam_(k, v);
   });
   setParam_('P_AUTO', autoTriggers_().length ? 'ON — 1st of each month, ~3 am' : 'OFF');
 
@@ -1191,52 +1349,11 @@ function restore_(snap) {
 // Build
 // ------------------------------------------------------------------
 
+/** Builds every tab in one run (a brand-new, empty workbook). Menu actions use the staged build instead. */
 function buildWorkbook_() {
   const ss = SpreadsheetApp.getActive();
-  const keptKey = ss.getRangeByName('P_API_KEY') ? ss.getRangeByName('P_API_KEY').getValue() : '';
-  const s = APP.sheets;
-  const order = [s.guide, s.health, s.about, s.dashboard, s.charts, s.top, s.country, s.explain, s.score, s.settings,
-    s.vaSummary, s.vaCharts, s.market, s.needs, s.vaScore, s.method, s.glossary, s.sources, s.updates, s.faq,
-    s.countries, s.products, s.chains, s.equipment, s.suppliers, s.enablers, s.raw, s.rawHs4];
-  order.forEach((name, i) => {
-    let sh = ss.getSheetByName(name);
-    if (!sh) sh = ss.insertSheet(name, i);
-    ss.setActiveSheet(sh);
-    ss.moveActiveSheet(i + 1);
-  });
-  const stray = ss.getSheetByName('Sheet1');
-  if (stray && stray.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(stray);
-
-  buildSettings_(ss, keptKey);
-  buildCountries_(ss);
-  buildProducts_(ss);
-  buildRawTrade_(ss);
-  buildValueChains_(ss);
-  buildEquipment_(ss);
-  buildSuppliers_(ss);
-  buildEnablers_(ss);
-  buildRawHs4_(ss);
-  buildScorecard_(ss);
-  buildVaScorecard_(ss);
-  buildValueAddition_(ss);
-  buildValueLostCharts_(ss);
-  buildMarketOpportunity_(ss);
-  buildCountryNeeds_(ss);
-  buildTopGaps_(ss);
-  buildCountryView_(ss);
-  buildDashboard_(ss);
-  buildCharts_(ss);
-  buildExplainScore_(ss);
-  buildGuide_(ss);
-  buildAbout_(ss);
-  buildMethodology_(ss);
-  buildGlossary_(ss);
-  buildDataSources_(ss);
-  buildUpdates_(ss);
-  buildFaq_(ss);
-  buildHealthCheck_(ss);
-  colourTabs_(ss);
-  PropertiesService.getDocumentProperties().setProperty(APP.versionProp, APP.version);
+  const st = { messages: [] };
+  buildSteps_('reset').forEach(([, fn]) => fn(ss, st));
   ss.getSheetByName(APP.sheets.guide).activate();
 }
 
@@ -1357,8 +1474,8 @@ function buildProducts_(ss) {
   sh.setColumnWidth(2, 240); sh.setColumnWidth(3, 190); sh.setColumnWidth(4, 170);
 }
 
-function buildRawTrade_(ss) {
-  const sh = resetSheet_(ss, APP.sheets.raw);
+function buildRawTrade_(ss, keep) {
+  const sh = keep ? dataSheet_(ss, APP.sheets.raw, 'Year', L.rawHead) : resetSheet_(ss, APP.sheets.raw);
   trimColumns_(sh, 12);
   writeBanner_(sh, 'raw');
   header_(sh.getRange(L.rawHead, 1, 1, 6), ['Year', 'Reporter ISO3', 'Partner ISO3 (WLD = world)',
@@ -2162,8 +2279,10 @@ function buildUpdates_(ss) {
     ['h', 'What happens when you update the code'],
     ['p', '• The code and your data live in different places: the code is in Apps Script, the data is in the tabs.'],
     ['p', '• Pasting new code changes NOTHING in the tabs until you run a menu item. The old layout keeps working meanwhile.'],
-    ['p', '• "Update workbook" rebuilds every tab\'s layout, explanations and charts with the new version, then puts back:'],
-    ['p', '      Raw_Trade data · weights · all settings · API key · Countries and Products edits — and recomputes.'],
+    ['p', '• "Update workbook" rebuilds every tab\'s layout, explanations and charts with the new version. Your data tabs (Raw_Trade, Raw_HS4,'],
+    ['p', '      Enablers) stay where they are; weights, settings, API key and your edits on Countries, Products, Value_Chains, Equipment and Suppliers are kept.'],
+    ['p', '• It runs in about 17 steps. If Google\'s 6-minute limit comes near, it saves its place and continues by itself a minute later:'],
+    ['p', '      watch "Workbook update status" on Settings (or Health_Check) until it says Done. Please do not edit while it runs.'],
     ['p', '• "Reset workbook to defaults" is different: it deletes the data and resets everything (only the API key is kept). Do not use it for updates.'],
     ['p', '• Auto-refresh keeps working after an update: the scheduled job calls a function name that never changes.'],
     ['p', '• Anything you typed INSIDE result tabs (Dashboard, Top_Gaps, Scorecard…) is rebuilt — keep your own notes in a separate tab.'],
@@ -2183,6 +2302,7 @@ function buildFaq_(ss) {
       ['Is the data real?', 'Only if the Dashboard data line says UN Comtrade or Own data. SAMPLE DATA is synthetic and for testing only.'],
       ['How do I refresh the data?', 'Menu → Refresh data. It re-loads from the same source and recomputes. Or turn on Monthly auto-refresh. Details: Refresh_&_Updates tab.'],
       ['What happens when I paste new code?', 'Nothing changes until you run Update workbook. That rebuilds layouts and explanations and keeps your data and settings.'],
+      ['I saw "Exceeded maximum execution time" — what now?', 'Google stops any script after 6 minutes. Quick start, Update and Reset now run in steps and continue by themselves, so wait until "Workbook update status" on Settings says Done. If it says Stopped, run the same menu item again.'],
       ['I changed a weight — do I need to re-run anything?', 'No. The composite score is a live formula. Scorecard, Top_Gaps, Explain_Score and the live charts update instantly.'],
       ['When DO I need to re-run step 3?', 'After changing data, Countries, Products, the year, minimum gap, row limit, access scores or the landlocked multiplier.'],
       ['Why is a combination missing from the Scorecard?', 'One side does not trade the product, the gap is below the minimum, it did not fit under the row limit, or the product is unticked on Products.'],
@@ -2484,11 +2604,19 @@ function deleteFetchTriggers_() {
 
 function computeScorecard() {
   requireBuilt_();
-  const raw = sheet_(APP.sheets.raw);
   if (rawCount_() === 0) {
     notify_('Raw_Trade is empty — load data first (menu 2a, 2b or 2c).', true);
     return;
   }
+  const n = computeTrade_();
+  computeValueAddition_();
+  setParam_('P_LAST_REFRESH', Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm'));
+  notify_(`Scorecard ready: ${n.toLocaleString()} opportunities scored.`);
+}
+
+/** Trade-gap part of step 3: scores every opportunity and writes Scorecard, Dashboard, Charts and Explain_Score. */
+function computeTrade_() {
+  const raw = sheet_(APP.sheets.raw);
   const rawRows = raw.getRange(L.rawFirst, 1, raw.getLastRow() - L.rawFirst + 1, 6).getValues();
   const countries = readCountries_();
   const products = readProducts_();
@@ -2510,9 +2638,7 @@ function computeScorecard() {
   writeDashboard_(result.summary);
   writeCharts_(result.summary);
   selectTopForExplain_(result.rows);
-  computeValueAddition_();
-  setParam_('P_LAST_REFRESH', Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm'));
-  notify_(`Scorecard ready: ${result.rows.length.toLocaleString()} opportunities scored.`);
+  return result.rows.length;
 }
 
 /**
@@ -2572,6 +2698,7 @@ function scoreOpportunities_(countries, products, rawRows, p) {
   // 2. Raw criterion values.
   cands.forEach(c => {
     c.dist = distanceKm_(c.a, c.b);
+    if (!isFinite(c.dist)) c.dist = null; // capital coordinates missing or not numbers on the Countries tab
     const acc = accessTier_(c.a, c.b, p.acc);
     c.accLabel = acc.label; c.accScore = acc.score;
     const prev = W(year - 1, 'M', c.b.iso, c.pr.hs);
@@ -2584,17 +2711,18 @@ function scoreOpportunities_(countries, products, rawRows, p) {
   // 3. Normalise to 0–1.
   const logScale = key => scaler_(cands.map(c => Math.log10(1 + c[key])));
   const nDemand = logScale('demand'), nSupply = logScale('supply'), nGap = logScale('gap');
-  const distMin = Math.min.apply(null, cands.map(c => c.dist).concat([Infinity]));
-  const distMax = Math.max.apply(null, cands.map(c => c.dist).concat([-Infinity]));
+  const dists = cands.map(c => c.dist).filter(d => d !== null);
+  const distMin = Math.min.apply(null, dists.concat([Infinity]));
+  const distMax = Math.max.apply(null, dists.concat([-Infinity]));
 
   const r3 = v => Math.round(v * 1000) / 1000;
   const rows = cands.map(c => {
-    let prox = distMax > distMin ? 1 - (c.dist - distMin) / (distMax - distMin) : 1;
+    let prox = c.dist === null ? 0.5 : distMax > distMin ? 1 - (c.dist - distMin) / (distMax - distMin) : 1;
     if (c.a.landlocked || c.b.landlocked) prox *= p.landlock;
     return [
       c.a.iso, c.a.name, c.b.iso, c.b.name, c.pr.hs, c.pr.name, c.pr.sector,
       Math.round(c.demand), Math.round(c.supply), Math.round(c.current), Math.round(c.gap),
-      Math.round(c.dist), c.accLabel,
+      c.dist === null ? '' : Math.round(c.dist), c.accLabel,
       r3(nDemand(Math.log10(1 + c.demand))),
       r3(nSupply(Math.log10(1 + c.supply))),
       r3(nGap(Math.log10(1 + c.gap))),
@@ -2973,6 +3101,43 @@ function resetSheet_(ss, name) {
   return sh;
 }
 
+/**
+ * Update: keeps a data tab's rows where they are and resets only the part above the data (explanation box and
+ * header). If the explanation box changed height, rows are inserted or deleted at the top so the header lands on
+ * newHead; the data moves with it without being rewritten. Without data, the tab is simply reset.
+ */
+function dataSheet_(ss, name, headText, newHead) {
+  const sh = ss.getSheetByName(name);
+  const oldHead = findHeaderRow_(sh, headText);
+  if (!oldHead || sh.getLastRow() <= oldHead) return resetSheet_(ss, name);
+  for (let i = 0; i < 5; i++) {
+    try {
+      const g = sh.getRowGroup(2, 1);
+      if (!g) break;
+      g.remove();
+    } catch (e) {
+      break;
+    }
+  }
+  sh.setFrozenRows(0);
+  sh.getRange(1, 1, oldHead, sh.getMaxColumns()).breakApart();
+  if (oldHead < newHead) sh.insertRowsBefore(1, newHead - oldHead);
+  else if (oldHead > newHead) sh.deleteRows(1, oldHead - newHead);
+  const top = sh.getRange(1, 1, newHead, sh.getMaxColumns());
+  top.clear();
+  top.clearNote();
+  sh.setRowHeights(1, newHead, 21);
+  return sh;
+}
+
+/** Row (1–40) whose column A reads `text`, or 0. */
+function findHeaderRow_(sh, text) {
+  if (!sh || sh.getLastRow() === 0) return 0;
+  const col = sh.getRange(1, 1, Math.min(sh.getLastRow(), 40), 1).getValues();
+  for (let i = 0; i < col.length; i++) if (String(col[i][0]).trim() === text) return i + 1;
+  return 0;
+}
+
 function clearSheetBody_(sh, firstRow) {
   if (sh.getMaxRows() >= firstRow) {
     sh.getRange(firstRow, 1, sh.getMaxRows() - firstRow + 1, sh.getMaxColumns()).clearContent();
@@ -3056,8 +3221,8 @@ function buildValueChains_(ss) {
   [260, 150, 140, 200, 260, 120, 230, 700].forEach((w, i) => sh.setColumnWidth(i + 1, w));
 }
 
-function buildEnablers_(ss) {
-  const sh = resetSheet_(ss, APP.sheets.enablers);
+function buildEnablers_(ss, keep) {
+  const sh = keep ? dataSheet_(ss, APP.sheets.enablers, 'ISO3', L.enHead) : resetSheet_(ss, APP.sheets.enablers);
   writeBanner_(sh, 'enablers');
   const head = ['ISO3', 'Country'].concat(INDICATORS.map(i => i[1])).concat(['Data years']);
   header_(sh.getRange(L.enHead, 1, 1, head.length), head);
@@ -3078,8 +3243,8 @@ function buildEnablers_(ss) {
   sh.setColumnWidth(EU_COL + 1, 170);
 }
 
-function buildRawHs4_(ss) {
-  const sh = resetSheet_(ss, APP.sheets.rawHs4);
+function buildRawHs4_(ss, keep) {
+  const sh = keep ? dataSheet_(ss, APP.sheets.rawHs4, 'Year', L.hs4Head) : resetSheet_(ss, APP.sheets.rawHs4);
   trimColumns_(sh, 12);
   writeBanner_(sh, 'rawHs4');
   header_(sh.getRange(L.hs4Head, 1, 1, 6), ['Year', 'Reporter ISO3', 'Partner ISO3 (WLD = world)',
@@ -4004,6 +4169,9 @@ function healthChecks_() {
       '=IF({B},"OK","CHECK")', 'Each target share on Settings must be between 0% and 100%.', 'Settings'],
     ['Countries listed', `=COUNTA(Countries!$A$${L.ctryFirst}:$A)`, '=IF({B}>=50,"OK","CHECK")',
       'The Countries tab should list the 54 African countries.', 'Countries'],
+    ['Countries with capital coordinates as numbers', `=SUMPRODUCT(ISNUMBER(Countries!$E$${L.ctryFirst}:$E)*ISNUMBER(Countries!$F$${L.ctryFirst}:$F))`,
+      `=IF({B}>=COUNTA(Countries!$A$${L.ctryFirst}:$A),"OK","CHECK")`,
+      'Capital lat and lon on Countries must be numbers. A country without them gets a neutral proximity score (0.5).', 'Countries'],
     ['Products included', `=COUNTIF(Products!$D$${L.prodFirst}:$D,TRUE)`, '=IF({B}>0,"OK","CHECK")',
       'Tick at least one product on the Products tab.', 'Products'],
     ['Value chains listed', `=COUNTA(Value_Chains!$A$${L.chainsFirst}:$A)`, '=IF({B}>0,"OK","CHECK")',
@@ -4014,6 +4182,8 @@ function healthChecks_() {
       'Run menu 2d to load real World Bank indicators.', 'Enablers'],
     ['European benchmark (EU countries with data)', `=COUNT(${euRange_(0)})`, '=IF({B}>=20,"OK","CHECK")',
       'Run menu 2d to load the World Bank indicators for the 27 European Union countries (used on Country_Needs).', 'Enablers'],
+    ['Workbook update status', '=P_BUILD', '=IF(LEFT({B},4)="Done","OK","CHECK")',
+      'Quick start, Update and Reset run in steps. "In progress" = wait a few minutes; "Stopped" = run the menu item again.', 'Settings'],
     ['Last computed', '=P_LAST_REFRESH', '=IF(OR({B}="",{B}="—"),"CHECK","OK")', 'Run menu 3 (Compute).', 'Settings'],
     ['Monthly auto-refresh', '=P_AUTO', '="INFO"', 'Switch with the menu: Monthly auto-refresh ON / OFF.', 'Settings'],
   ];

@@ -95,7 +95,9 @@ UN Comtrade (2b) downloads the 4-digit data and the World Bank indicators automa
 2. Reload the sheet. A "New code detected" message may appear.
 3. Run **Africa Trade → Update workbook after pasting new code**.
 
-This rebuilds every tab's layout, explanations and charts. It keeps your Raw_Trade data, weights, settings, API key, and Countries/Products edits, then recomputes.
+This rebuilds every tab's layout, explanations and charts, then recomputes. Your data tabs (Raw_Trade, Raw_HS4, Enablers) stay where they are. Your weights, settings and API key are kept, as are your edits on Countries, Products, Value_Chains, Equipment and Suppliers.
+
+Update, Quick start and Reset run in steps (about 17). Google stops any script after 6 minutes, so when a run gets close to that, it saves its place and continues by itself about a minute later. Watch **Workbook update status** on Settings or Health_Check until it says Done, and don't edit while it runs. If you saw "Exceeded maximum execution time" with an older version, just run Update again.
 Don't use **Reset workbook to defaults** to update: it deletes your data.
 
 ## How the score works

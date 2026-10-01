@@ -93,4 +93,59 @@ const drain = (m, c) => { let runs = 1, guard = 0;
   const untitled = all.filter(x => !String(x.opts.title || '').trim() || !x.opts.titleTextStyle);
   console.log('   charts:', all.length, 'without a heading inside:', untitled.length);
   assert(all.length >= 25 && !untitled.length, 'every chart has its heading inside: ' + untitled.map(x => x.sheet).join(', ')); }
+
+// Staged Update: data stays in place and identical, edits and settings are kept, layout shifts are handled.
+const vmK = (c, n) => require('vm').runInContext(n, c);
+const dump = (sh) => JSON.stringify([...sh.cells.entries()].filter(([k]) => +k.split(',')[0] > 0).sort());
+const dataOf = (m, name, first) => { const sh = m.sheets.find(x => x.name === name); const rows = [];
+  const last = sh.getLastRow(); for (let r = first; r <= last; r++) { const row = []; for (let col = 1; col <= 22; col++) row.push(sh.get(r, col)); rows.push(row.join('|')); }
+  return rows; };
+{ const m = fresh(), c = m.ctx; c.quickStart();
+  const L = c.L;
+  const before = { raw: dataOf(m, 'Raw_Trade', L.rawFirst), hs4: dataOf(m, 'Raw_HS4', L.hs4First), en: dataOf(m, 'Enablers', L.enFirst) };
+  // user edits
+  const st = m.sheets.find(x => x.name === 'Settings'); st.set(L.settingsWeight, 2, 33);
+  c.setParam_('P_MIN_GAP', 250000);
+  const sup = m.sheets.find(x => x.name === 'Suppliers'); sup.set(L.supFirst, 1, 'My own supplier');
+  const ct = m.sheets.find(x => x.name === 'Countries'); ct.set(L.ctryFirst, 6, 'MY-REC');
+  // an older layout: Raw_Trade data two rows lower, Raw_HS4 one row higher
+  m.sheets.find(x => x.name === 'Raw_Trade').insertRowsBefore(1, 2);
+  m.sheets.find(x => x.name === 'Raw_HS4').deleteRows(1, 1);
+  step('Update keeps data in place (staged)', () => c.upgradeWorkbook());
+  assert.deepStrictEqual(dataOf(m, 'Raw_Trade', L.rawFirst), before.raw, 'Raw_Trade identical and at the right row');
+  assert.deepStrictEqual(dataOf(m, 'Raw_HS4', L.hs4First), before.hs4, 'Raw_HS4 identical and at the right row');
+  assert.deepStrictEqual(dataOf(m, 'Enablers', L.enFirst), before.en, 'Enablers (incl. EU) identical');
+  assert(st.get(L.settingsWeight, 2) === 33 && c.getParam_('P_MIN_GAP') === 250000, 'weights and parameters kept');
+  assert(sup.get(L.supFirst, 1) === 'My own supplier' && ct.get(L.ctryFirst, 6) === 'MY-REC', 'edits kept');
+  assert(/^Done \(update/.test(c.getParam_('P_BUILD')), 'status Done: ' + c.getParam_('P_BUILD'));
+  assert(!m.sheets.find(x => x.name === '_Update_Backup') && m.triggers.length === 0, 'backup removed, no triggers left');
+  assert(m.sheets.find(x => x.name === 'Raw_Trade').get(L.rawHead, 1) === 'Year', 'Raw_Trade header in place');
+  assert(c.PropertiesService.getDocumentProperties().getProperty(c.APP.buildProp) === null, 'build state cleared'); }
+{ const m = fresh(), c = m.ctx; c.quickStart();
+  const before = dataOf(m, 'Raw_Trade', c.L.rawFirst);
+  let t = 0; const RealDate = Date; c.Date = class extends RealDate { static now() { t += 40000; return t; } };
+  step('Update spread over several background runs', () => {
+    c.upgradeWorkbook();
+    let runs = 1;
+    while (m.triggers.length) { assert(m.triggers.length === 1, 'one pending trigger'); c.continueBuild(); runs++; }
+    console.log('   runs:', runs);
+    assert(runs > 3, 'used several runs');
+  });
+  assert.deepStrictEqual(dataOf(m, 'Raw_Trade', c.L.rawFirst), before, 'data kept across runs');
+  assert(/^Done/.test(c.getParam_('P_BUILD')), 'finished'); }
+{ const m = fresh(), c = m.ctx; c.quickStart();
+  const props = c.PropertiesService.getDocumentProperties();
+  // Simulate a run that Google stopped half-way: state saved at step 6, only the safety-net trigger left.
+  props.setProperty(c.APP.buildProp, JSON.stringify({ mode: 'update', step: 0, tries: 0, messages: [] }));
+  c.backupSettings_(c.SpreadsheetApp.getActive());
+  props.setProperty(c.APP.buildProp, JSON.stringify({ mode: 'update', step: 6, tries: 1, messages: [] }));
+  step('Safety net resumes an interrupted update', () => c.continueBuild());
+  assert(/^Done/.test(c.getParam_('P_BUILD')) && m.triggers.length === 0, 'resumed and finished'); }
+{ const m = fresh(), c = m.ctx; c.quickStart();
+  const orig = c.buildCharts_; c.buildCharts_ = () => { throw new Error('test failure'); };
+  step('A failing step stops cleanly', () => c.upgradeWorkbook());
+  c.buildCharts_ = orig;
+  assert(/Stopped at step .*test failure/.test(c.getParam_('P_BUILD')) && m.triggers.length === 0, 'stopped: ' + c.getParam_('P_BUILD'));
+  step('Running Update again after a failure', () => c.upgradeWorkbook());
+  assert(/^Done/.test(c.getParam_('P_BUILD')), 'recovered'); }
 console.log('All workflows passed.');
