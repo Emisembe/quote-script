@@ -180,10 +180,24 @@ function syncFormResponses() {
   var form = getForm_();
   if (!form) throw new Error('No form found. Run setup first.');
   var res = syncResponses_(ss, form);
+  scheduleSyncContinuation_(res.more);
   ss.toast(res.rows + ' record rows imported.' +
-    (res.more ? ' Stopped early to stay within Google\'s time limit: run Import missing form responses again for the rest.' : ''),
-    'QC Tools', 10);
+    (res.more ? ' More remain: the import continues by itself in about a minute.' : ''), 'QC Tools', 10);
   return res.rows;
+}
+
+/** Continuation trigger target: imports the next batch and re-schedules itself only while work remains. */
+function continueSyncFormResponses() {
+  var form = getForm_();
+  var res = form ? syncResponses_(getSpreadsheet_(), form) : { more: false };
+  scheduleSyncContinuation_(res.more);
+}
+
+function scheduleSyncContinuation_(more) {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === 'continueSyncFormResponses') ScriptApp.deleteTrigger(t);
+  });
+  if (more) ScriptApp.newTrigger('continueSyncFormResponses').timeBased().after(60 * 1000).create();
 }
 
 /**
@@ -258,8 +272,11 @@ function doGet() {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
-/** Everything the dashboard needs to build its menus. */
-function apiMeta() {
+/**
+ * Everything the dashboard needs to build its menus. When firstTool is given, the first chart
+ * is computed from the same read of QC Records, so opening the dashboard reads the data once.
+ */
+function apiMeta(firstTool, filters, opts) {
   var ss = getSpreadsheet_();
   var lists = readLists_(ss);
   var st = readSettings_(ss);
@@ -286,7 +303,11 @@ function apiMeta() {
     lastDay: days[days.length - 1] || '',
     recordCount: recs.length,
     formUrl: props.getProperty('FORM_URL') || '',
-    sheetUrl: ss.getUrl()
+    sheetUrl: ss.getUrl(),
+    first: firstTool ? runTool_(firstTool, filterRecords_(recs, filters), opts || {}, {
+      specs: readSpecs_(ss),
+      events: readEvents_(ss, filters && filters.project)
+    }) : null
   };
 }
 
@@ -443,18 +464,24 @@ function buildForm_(ss, st) {
   };
   var cast = { DATE: 'asDateItem', LIST: 'asListItem', TEXT: 'asTextItem', PARAGRAPH_TEXT: 'asParagraphTextItem', SECTION_HEADER: 'asSectionHeaderItem' };
   var used = {};
+  // Every Forms call is a slow round-trip, so an existing question is only written to
+  // where it differs. Validation never changes for a question's role, so it is set on new ones only.
   want.forEach(function (w, index) {
     var it = byKey[w.role + '|' + w.name];
-    var item = it && String(it.getType()) === String(FormApp.ItemType[w.type]) ? it[cast[w.type]]() : create[w.type]();
-    item.setTitle(w.title);
-    if (w.help !== undefined) item.setHelpText(w.help);
-    if (w.required !== undefined) item.setRequired(w.required);
-    if (w.choices) item.setChoiceValues(w.choices);
-    if (w.validation) item.setValidation(w.validation);
+    var isNew = !(it && String(it.getType()) === String(FormApp.ItemType[w.type]));
+    var item = isNew ? create[w.type]() : it[cast[w.type]]();
+    if (isNew || item.getTitle() !== w.title) item.setTitle(w.title);
+    if (w.help !== undefined && (isNew || item.getHelpText() !== w.help)) item.setHelpText(w.help);
+    if (w.required !== undefined && (isNew || item.isRequired() !== w.required)) item.setRequired(w.required);
+    if (w.choices && (isNew || item.getChoices().map(function (c) { return c.getValue(); }).join('\n') !== w.choices.join('\n'))) {
+      item.setChoiceValues(w.choices);
+    }
+    if (w.validation && isNew) item.setValidation(w.validation);
     var id = String(item.getId());
     used[id] = true;
     map[id] = { role: w.role, name: w.name };
-    if (item.getIndex() !== index) form.moveItem(item.getIndex(), index);
+    var at = item.getIndex();
+    if (at !== index) form.moveItem(at, index);
   });
   form.getItems().forEach(function (it) { if (!used[String(it.getId())]) form.deleteItem(it); });
 
@@ -547,7 +574,11 @@ function detachResponseTabs_(ss, form) {
   var hasDest = false;
   try { hasDest = !!form.getDestinationId(); } catch (e) { hasDest = false; }
   if (!linked.length && !hasDest) return 0;
-  if (syncResponses_(ss, form).more) return 0; // not everything copied yet: keep the tab until the next run
+  var res = syncResponses_(ss, form);
+  if (res.more) { // not everything copied yet: keep the tab, finish in the background, remove it on the next setup
+    scheduleSyncContinuation_(true);
+    return 0;
+  }
   if (hasDest) form.removeDestination();
   SpreadsheetApp.flush();
   linked.forEach(function (sh) { ss.deleteSheet(sh); });
@@ -1526,11 +1557,12 @@ function options() {
   }
 }
 
-function setTool(t) {
+function setTool(t) { showTool(t); run(); }
+
+function showTool(t) {
   TOOL = t;
   Array.prototype.forEach.call(document.querySelectorAll('#tabs button'), function (b) { b.className = b.getAttribute('data-tool') === t ? 'on' : ''; });
   Array.prototype.forEach.call(document.querySelectorAll('[data-for]'), function (el) { el.hidden = el.getAttribute('data-for') !== t; });
-  run();
 }
 
 function run() { call('apiRun', [TOOL, filters(), options()], render); }
@@ -1735,14 +1767,15 @@ function init(meta) {
   fillSelect($('oHist'), all);
   fillSelect($('oCtrl'), meta.countSeries.concat(meta.measureSeries));
   if (!meta.recordCount) $('status').innerHTML = 'No records yet. Use the check sheet form, paste rows into the QC Records tab, or use the menu → Load demo data.';
-  setTool('check');
+  showTool('check');
+  if (meta.first) render(meta.first); else run();
 }
 
 document.getElementById('tabs').addEventListener('click', function (e) { var t = e.target.getAttribute('data-tool'); if (t) setTool(t); });
 $('refresh').addEventListener('click', run);
 ['fProject', 'fArea', 'fShift', 'oColumns', 'oGroup', 'oX', 'oY', 'oHist', 'oCtrl', 'oType'].forEach(function (id) { $(id).addEventListener('change', run); });
 ['oTarget', 'oThreshold', 'oBins', 'fFrom', 'fTo'].forEach(function (id) { $(id).addEventListener('change', run); });
-call('apiMeta', [], init);
+call('apiMeta', ['check', {}, { columnsBy: 'day' }], init);
 </script>
 </body>
 </html>`;

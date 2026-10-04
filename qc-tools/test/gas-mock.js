@@ -103,10 +103,14 @@ Object.keys(ITEM_TYPES).forEach(m => {
       getType: () => item.type,
       getIndex: () => form.items.findIndex(x => x.getId() === id),
       getTitle: () => item.title,
-      setTitle(t) { item.title = t; return api; },
-      setHelpText(t) { item.help = t; return api; },
-      setChoiceValues(c) { item.choices = c.slice(); return api; },
-      setRequired(r) { item.required = r; return api; },
+      getHelpText: () => item.help,
+      isRequired: () => item.required,
+      getChoices: () => (item.choices || []).map(v => ({ getValue: () => v })),
+      setTitle(t) { form.env.formWrites++; item.title = t; return api; },
+      setHelpText(t) { form.env.formWrites++; item.help = t; return api; },
+      setChoiceValues(c) { form.env.formWrites++; item.choices = c.slice(); return api; },
+      setRequired(r) { form.env.formWrites++; item.required = r; return api; },
+      setValidation() { form.env.formWrites++; return api; },
       asDateItem: () => api, asListItem: () => api, asTextItem: () => api, asParagraphTextItem: () => api, asSectionHeaderItem: () => api,
       _item: item
     });
@@ -114,7 +118,7 @@ Object.keys(ITEM_TYPES).forEach(m => {
     return api;
   };
 });
-Form.prototype.moveItem = function (from, to) { const [it] = this.items.splice(from, 1); this.items.splice(to, 0, it); };
+Form.prototype.moveItem = function (from, to) { this.env.formWrites++; const [it] = this.items.splice(from, 1); this.items.splice(to, 0, it); };
 Form.prototype.setConfirmationMessage = function (m) { this.confirmation = m; return this; };
 Form.prototype.setAcceptingResponses = function (b) { this.accepting = b; return this; };
 Form.prototype.titles = function () { return this.items.map(i => i.getTitle()); };
@@ -122,7 +126,7 @@ Form.prototype.setTitle = function (t) { this.title = t; return this; };
 Form.prototype.setDescription = function (d) { this.description = d; return this; };
 
 function createEnv(ss) {
-  const env = { props: {}, triggers: [], forms: {}, formsCreated: 0, driveNames: {}, sheetsById: { [ss.getId()]: ss }, user: 'owner@example.com' };
+  const env = { props: {}, triggers: [], forms: {}, formsCreated: 0, driveNames: {}, formWrites: 0, sheetsById: { [ss.getId()]: ss }, user: 'owner@example.com' };
   const ctx = {
     console, Logger: { log() {} },
     SpreadsheetApp: {

@@ -231,3 +231,42 @@ test('Import missing form responses only adds what is missing, and resumes after
   const recs = env.ctx.readRecords_(ss);
   assert.equal(recs.filter(r => r.item === 'Scratch').reduce((a, r) => a + r.value, 0), 15);
 });
+
+test('Apply settings with nothing changed writes nothing to the form questions', () => {
+  const ss = new Spreadsheet('ss1', 'Quiet');
+  const env = createEnv(ss);
+  env.ctx.setup();
+  env.formWrites = 0;
+  env.ctx.applySettings();
+  assert.equal(env.formWrites, 0);
+  setSetting(ss, 'labelArea', 'Line');
+  env.ctx.applySettings();
+  assert.equal(env.formWrites, 1, 'only the renamed question is written');
+  assert.equal(env.forms.form1.titles()[2], 'Line');
+});
+
+test('opening the dashboard returns the first chart with the menus (one read of the data)', () => {
+  const ss = new Spreadsheet('ss1', 'Dash');
+  const env = createEnv(ss);
+  env.ctx.setup();
+  env.ctx.loadDemoData();
+  const meta = env.ctx.apiMeta('check', {}, { columnsBy: 'day' });
+  assert.equal(meta.first.tool, 'check');
+  assert.equal(meta.first.dayCount, 35);
+  assert.equal(env.ctx.apiMeta().first, null);
+});
+
+test('an import that runs out of time schedules its own continuation, which removes itself when done', () => {
+  const ss = new Spreadsheet('ss1', 'Resume');
+  const env = createEnv(ss);
+  env.ctx.setup();
+  const form = env.forms.form1;
+  for (let i = 1; i <= 3; i++) form.responses.push(fakeResponse(form, 'r' + i, { 'Date': '2026-10-01', 'Project': 'General', 'Recorded by': 'Ann', 'Dent': '1' }));
+  const cont = () => env.triggers.filter(t => t.getHandlerFunction() === 'continueSyncFormResponses').length;
+
+  env.ctx.scheduleSyncContinuation_(env.ctx.syncResponses_(ss, form, -1).more);
+  assert.equal(cont(), 1);
+  env.ctx.continueSyncFormResponses();
+  assert.equal(cont(), 0, 'continuation removed once everything is imported');
+  assert.equal(env.ctx.readRecords_(ss).filter(r => r.item === 'Dent').length, 3);
+});
