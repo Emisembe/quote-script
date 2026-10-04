@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { Spreadsheet, createEnv } = require('./gas-mock');
+const { Spreadsheet, createEnv, fakeResponse } = require('./gas-mock');
 
 const QC_TABS = ['QC Guide', 'QC Settings', 'QC Summary', 'QC Records', 'QC Lists', 'QC Specs', 'QC Events'];
 
@@ -194,4 +194,40 @@ test('an existing install gets QC Settings placed right after QC Guide', () => {
   ss.sheets = ss.sheets.filter(s => s.getName() !== 'QC Settings');
   env.ctx.setup();
   assert.deepEqual(ss.names(), QC_TABS);
+});
+
+test('setup and Apply settings do not re-insert the summary charts every time', () => {
+  const ss = new Spreadsheet('ss1', 'Speed');
+  const env = createEnv(ss);
+  env.ctx.setup();
+  assert.equal(ss.chartInserts, 2);
+  env.ctx.setup();
+  env.ctx.setup();
+  assert.equal(ss.chartInserts, 2, 'setup reuses existing charts');
+  env.ctx.applySettings();
+  assert.equal(ss.chartInserts, 4, 'Apply settings refreshes them once');
+  assert.equal(ss.getSheetByName('QC Summary').charts.length, 2);
+});
+
+test('Import missing form responses only adds what is missing, and resumes after a time stop', () => {
+  const ss = new Spreadsheet('ss1', 'Sync');
+  const env = createEnv(ss);
+  env.ctx.setup();
+  const form = env.forms.form1;
+  for (let i = 1; i <= 5; i++) {
+    form.responses.push(fakeResponse(form, 'resp' + i, { 'Date': '2026-10-0' + i, 'Project': 'General', 'Recorded by': 'Ann', 'Scratch': String(i) }));
+  }
+  const rec = ss.getSheetByName('QC Records');
+
+  // A zero time budget stops before importing anything, and says there is more.
+  const first = env.ctx.syncResponses_(ss, form, -1);
+  assert.equal(first.rows, 0);
+  assert.equal(first.more, true);
+
+  assert.equal(env.ctx.syncFormResponses(), 25, '5 answers x 5 defect types');
+  const n = rec.getLastRow();
+  assert.equal(env.ctx.syncFormResponses(), 0, 'nothing imported twice');
+  assert.equal(rec.getLastRow(), n);
+  const recs = env.ctx.readRecords_(ss);
+  assert.equal(recs.filter(r => r.item === 'Scratch').reduce((a, r) => a + r.value, 0), 15);
 });

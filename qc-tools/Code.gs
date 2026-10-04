@@ -106,14 +106,14 @@ function setup() {
   props.setProperty('SPREADSHEET_ID', ss.getId());
 
   ensureSheets_(ss);
-  var form = buildForm_(ss);
+  var st = readSettings_(ss); // read once, passed to every builder
+  var form = buildForm_(ss, st);
   detachResponseTabs_(ss, form);
   installTriggers_(form);
-  buildSummary_(ss);
-  buildGuide_(ss, form);
+  buildSummary_(ss, st);
+  buildGuide_(ss, form, st);
   ss.setActiveSheet(ss.getSheetByName(QC.SHEETS.GUIDE));
 
-  var st = readSettings_(ss);
   var msg = 'QC Tools is ready in "' + ss.getName() + '".\n' +
     'Check sheet form (' + st.formTitle + '): ' + form.getPublishedUrl() + '\n' +
     'Start at the "QC Guide" tab. Reload the Sheet if the "' + st.menuName + '" menu is missing.';
@@ -162,10 +162,10 @@ function applySettings() {
   assertOwner_();
   var ss = getSpreadsheet_();
   ensureSheets_(ss);
-  var form = buildForm_(ss);
-  buildSummary_(ss);
-  buildGuide_(ss, form);
   var st = readSettings_(ss);
+  var form = buildForm_(ss, st);
+  buildSummary_(ss, st, true);
+  buildGuide_(ss, form, st);
   ss.toast('Form is now "' + st.formTitle + '". Reload the Sheet to see the menu as "' + st.menuName + '".', st.menuName, 10);
   return form.getPublishedUrl();
 }
@@ -179,28 +179,49 @@ function syncFormResponses() {
   var ss = getSpreadsheet_();
   var form = getForm_();
   if (!form) throw new Error('No form found. Run setup first.');
-  var n = syncResponses_(ss, form);
-  ss.toast(n + ' record rows imported.', 'QC Tools', 6);
-  return n;
+  var res = syncResponses_(ss, form);
+  ss.toast(res.rows + ' record rows imported.' +
+    (res.more ? ' Stopped early to stay within Google\'s time limit: run Import missing form responses again for the rest.' : ''),
+    'QC Tools', 10);
+  return res.rows;
 }
 
-function syncResponses_(ss, form) {
+/**
+ * Copies form answers that are not yet in QC Records. Only the ID column is read to find
+ * them, and it stops after ~4.5 minutes (Google stops scripts at 6), saving what it has;
+ * running it again continues where it stopped because finished answers are skipped.
+ */
+function syncResponses_(ss, form, budgetMs) {
+  var deadline = Date.now() + (budgetMs || 270000);
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
-    var have = {};
-    readRecords_(ss).forEach(function (r) { have[String(r.id).split('#')[0]] = true; });
+    var have = readImportedResponseIds_(ss);
     var map = getFormMap_();
     var rows = [];
-    form.getResponses().forEach(function (resp) {
-      if (have[resp.getId()]) return;
-      rows = rows.concat(answersToRecords_(responseToSubmission_(resp, ss), map));
-    });
+    var more = false;
+    var responses = form.getResponses();
+    for (var i = 0; i < responses.length; i++) {
+      if (have[responses[i].getId()]) continue;
+      if (Date.now() > deadline) { more = true; break; }
+      rows = rows.concat(answersToRecords_(responseToSubmission_(responses[i], ss), map));
+    }
     appendRecords_(ss, rows);
-    return rows.length;
+    return { rows: rows.length, more: more };
   } finally {
     lock.releaseLock();
   }
+}
+
+/** Form response IDs already in QC Records, read from the Record ID column only. */
+function readImportedResponseIds_(ss) {
+  var have = {};
+  var sh = ss.getSheetByName(QC.SHEETS.RECORDS);
+  if (!sh || sh.getLastRow() < 2) return have;
+  sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues().forEach(function (r) {
+    if (r[0]) have[String(r[0]).split('#')[0]] = true;
+  });
+  return have;
 }
 
 /** Adds 5 weeks of example data (the toaster story from the video). */
@@ -212,7 +233,8 @@ function loadDemoData() {
   var demo = buildDemoRecords_(addDays_(today, -34));
   appendRecords_(ss, demo.rows);
   var ev = ss.getSheetByName(QC.SHEETS.EVENTS);
-  demo.events.forEach(function (e) { ev.appendRow([e.day, e.project, e.label]); });
+  var evRows = demo.events.map(function (e) { return [e.day, e.project, e.label]; });
+  ev.getRange(ev.getLastRow() + 1, 1, evRows.length, 3).setValues(evRows);
   var specs = ss.getSheetByName(QC.SHEETS.SPECS);
   var haveSpec = readSpecs_(ss)[demo.spec[0]];
   if (!haveSpec) specs.appendRow(demo.spec);
@@ -358,11 +380,11 @@ function answersToRecords_(sub, map) {
  * Existing questions are updated in place (same question, new wording), so the form link
  * and earlier answers stay intact; questions for removed list entries are deleted.
  */
-function buildForm_(ss) {
+function buildForm_(ss, st) {
   var props = PropertiesService.getScriptProperties();
   var lists = readLists_(ss);
   var specs = readSpecs_(ss);
-  var st = readSettings_(ss);
+  st = st || readSettings_(ss);
   var form = getForm_();
   if (!form) {
     // No setDestination: answers are written straight to QC Records by handleFormSubmit,
@@ -525,7 +547,7 @@ function detachResponseTabs_(ss, form) {
   var hasDest = false;
   try { hasDest = !!form.getDestinationId(); } catch (e) { hasDest = false; }
   if (!linked.length && !hasDest) return 0;
-  syncResponses_(ss, form);
+  if (syncResponses_(ss, form).more) return 0; // not everything copied yet: keep the tab until the next run
   if (hasDest) form.removeDestination();
   SpreadsheetApp.flush();
   linked.forEach(function (sh) { ss.deleteSheet(sh); });
@@ -595,10 +617,10 @@ function migrateOldTabs_(ss) {
 }
 
 /** "QC Guide" tab: everything a new user needs, in your own names. Rewritten on every setup / Apply settings. */
-function buildGuide_(ss, form) {
+function buildGuide_(ss, form, st) {
   var sh = ss.getSheetByName(QC.SHEETS.GUIDE);
   sh.clear();
-  var st = readSettings_(ss);
+  st = st || readSettings_(ss);
   var M = st.menuName;
   var P = st.labelProject, A = st.labelArea, SH = st.labelShift, BY = st.labelBy;
   var tab = function (name) {
@@ -709,23 +731,29 @@ function buildGuide_(ss, form) {
   sh.getRange('A2:B2').merge().setFontColor('#5b6475').setWrap(true);
   sh.getRange(4, 1, values.length - 3, 1).setFontWeight('bold').setVerticalAlignment('top').setWrap(true);
   sh.getRange(4, 2, values.length - 3, 1).setWrap(true).setVerticalAlignment('top');
-  sections.forEach(function (r) {
-    sh.getRange(r, 1, 1, 2).setBackground('#e8eefc').setFontWeight('bold').setFontColor('#2f5fd0');
-  });
+  if (sections.length) {
+    sh.getRangeList(sections.map(function (r) { return 'A' + r + ':B' + r; }))
+      .setBackground('#e8eefc').setFontWeight('bold').setFontColor('#2f5fd0');
+  }
   sh.setColumnWidth(1, 210);
   sh.setColumnWidth(2, 760);
   sh.setHiddenGridlines(true);
 }
 
-/** "QC Summary" tab: live formulas and charts on QC Records. Rewritten on every setup (charts are replaced, not added). */
-function buildSummary_(ss) {
+/**
+ * "QC Summary" tab: live formulas and charts on QC Records. Formulas are rewritten every time;
+ * the two charts never change, so they are only inserted when missing (inserting charts is slow).
+ */
+function buildSummary_(ss, st, resetCharts) {
   var sh = ss.getSheetByName(QC.SHEETS.SUMMARY);
-  sh.getCharts().forEach(function (c) { sh.removeChart(c); });
+  var charts = sh.getCharts();
+  var needCharts = resetCharts || charts.length !== 2;
+  if (needCharts) charts.forEach(function (c) { sh.removeChart(c); });
   sh.clear();
   var R = "'" + QC.SHEETS.RECORDS + "'!";
   var q = function (sql) { return '=IFERROR(QUERY(' + R + 'A1:L,"' + sql + '",1),"No data yet")'; };
 
-  var st = readSettings_(ss);
+  st = st || readSettings_(ss);
   sh.getRange('A1').setValue(st.org + ' - QC Summary').setFontSize(18).setFontWeight('bold');
   sh.getRange('A2').setValue('Live: updates automatically from QC Records. For filters and all five tools use ' + st.menuName + ' -> Open dashboard.')
     .setFontColor('#5b6475');
@@ -761,6 +789,12 @@ function buildSummary_(ss) {
   sh.getRange('J14:L').setNumberFormat('0.00');
   sh.getRange('A13:L13').setFontWeight('bold').setBackground('#e8eefc');
 
+  if (needCharts) insertSummaryCharts_(sh);
+  sh.setColumnWidth(1, 190);
+  sh.setColumnWidth(5, 100);
+}
+
+function insertSummaryCharts_(sh) {
   sh.insertChart(sh.newChart().asComboChart()
     .addRange(sh.getRange('A13:C200'))
     .setNumHeaders(1)
@@ -780,8 +814,6 @@ function buildSummary_(ss) {
     .setOption('width', 620).setOption('height', 300)
     .setPosition(19, 14, 0, 0)
     .build());
-  sh.setColumnWidth(1, 190);
-  sh.setColumnWidth(5, 100);
 }
 
 function readRecords_(ss) {
@@ -797,16 +829,21 @@ function rowsToRecords_(vals, tz) {
   kinds[QC.KIND.COUNT.toLowerCase()] = QC.KIND.COUNT;
   kinds[QC.KIND.MEASURE.toLowerCase()] = QC.KIND.MEASURE;
   kinds[QC.KIND.INSPECTED.toLowerCase()] = QC.KIND.INSPECTED;
+  var cache = {};
+  var fmt = function (d, pattern) {
+    var k = pattern + d.getTime();
+    return k in cache ? cache[k] : (cache[k] = Utilities.formatDate(d, tz, pattern));
+  };
   var out = [];
   vals.forEach(function (v) {
     var kind = kinds[String(v[7]).trim().toLowerCase()];
     var item = String(v[8]).trim();
     var value = typeof v[9] === 'number' ? v[9] : Number(String(v[9]).trim());
-    var day = normalizeDay_(v[2], tz);
+    var day = isDate_(v[2]) ? fmt(v[2], 'yyyy-MM-dd') : normalizeDay_(v[2], tz);
     if (!kind || !item || v[9] === '' || !isFinite(value) || !day) return;
     out.push({
       id: String(v[0]),
-      ts: isDate_(v[1]) ? Utilities.formatDate(v[1], tz, 'yyyy-MM-dd HH:mm') : String(v[1] || ''),
+      ts: isDate_(v[1]) ? fmt(v[1], 'yyyy-MM-dd HH:mm') : String(v[1] || ''),
       day: day,
       project: String(v[3]).trim(),
       area: String(v[4]).trim(),

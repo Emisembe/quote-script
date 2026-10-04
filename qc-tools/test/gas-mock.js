@@ -36,7 +36,7 @@ class Sheet {
   appendRow(row) { const r = this.getLastRow() + 1; row.forEach((v, i) => this.set(r, i + 1, v)); return chain(this); }
   getCharts() { return this.charts.slice(); }
   removeChart(c) { this.charts = this.charts.filter(x => x !== c); }
-  insertChart(c) { this.charts.push(c); }
+  insertChart(c) { this.charts.push(c); this.ss.chartInserts = (this.ss.chartInserts || 0) + 1; }
   newChart() { return chain({ build: () => ({ chart: true }) }); }
   getDataRange() { return this.getRange(1, 1, Math.max(1, this.getLastRow()), Math.max(1, this.getLastColumn())); }
   getRange(a, b, c, d) {
@@ -161,4 +161,16 @@ function createEnv(ss) {
   return env;
 }
 
-module.exports = { Spreadsheet, createEnv };
+// A fake form answer: answers = { itemTitle: value }
+function fakeResponse(form, id, answers, when) {
+  return {
+    getId: () => id,
+    getTimestamp: () => when || new Date(Date.UTC(2026, 9, 1, 8)),
+    getItemResponses: () => Object.keys(answers).map(title => {
+      const item = form.items.find(i => i.getTitle() === title);
+      return { getItem: () => item, getResponse: () => answers[title] };
+    })
+  };
+}
+
+module.exports = { Spreadsheet, createEnv, fakeResponse };
