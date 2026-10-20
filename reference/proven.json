@@ -1,0 +1,444 @@
+{
+  "_about": "Facts taken from the blog's original theme export, which Blogger itself generated and accepted. scripts/check.py only allows what is listed here (plus 'extra' entries, each with a reason).",
+  "html_attributes": [
+    "b:version",
+    "expr:dir"
+  ],
+  "b_tags": [
+    "b:else",
+    "b:elseif",
+    "b:if",
+    "b:includable",
+    "b:include",
+    "b:loop",
+    "b:section",
+    "b:skin",
+    "b:widget",
+    "b:widget-setting",
+    "b:widget-settings"
+  ],
+  "data_tags": [
+    "data:adCode",
+    "data:adEnd",
+    "data:adStart",
+    "data:attribution",
+    "data:backgroundPositionStyleStr",
+    "data:backlink.adminClass",
+    "data:backlink.author",
+    "data:backlink.deleteUrl",
+    "data:backlink.snippet",
+    "data:backlink.timestamp",
+    "data:backlink.title",
+    "data:backlink.url",
+    "data:blog.blogId",
+    "data:blog.canonicalUrl",
+    "data:blog.enabledCommentProfileImages",
+    "data:blog.homepageUrl",
+    "data:blog.languageDirection",
+    "data:blog.metaDescription",
+    "data:blog.mobileClass",
+    "data:blog.pageName",
+    "data:blog.pageTitle",
+    "data:blog.pageType",
+    "data:blog.postImageThumbnailUrl",
+    "data:blog.postImageUrl",
+    "data:blog.searchQuery",
+    "data:blog.title",
+    "data:blog.url",
+    "data:blogCommentMessage",
+    "data:blogTeamBlogMessage",
+    "data:comment.adminClass",
+    "data:comment.anchorName",
+    "data:comment.author",
+    "data:comment.authorAvatarImage",
+    "data:comment.authorClass",
+    "data:comment.authorUrl",
+    "data:comment.body",
+    "data:comment.cmtBodyIdPostfix",
+    "data:comment.deleteUrl",
+    "data:comment.favicon",
+    "data:comment.isDeleted",
+    "data:comment.timestamp",
+    "data:comment.url",
+    "data:commentLabel",
+    "data:commentLabelPlural",
+    "data:commentPostedByMsg",
+    "data:content",
+    "data:defaultAdEnd",
+    "data:defaultAdStart",
+    "data:description",
+    "data:desktopLinkMsg",
+    "data:desktopLinkUrl",
+    "data:display",
+    "data:f.feedType",
+    "data:f.mimeType",
+    "data:f.name",
+    "data:f.url",
+    "data:feedLinks",
+    "data:feedLinksMsg",
+    "data:height",
+    "data:homeMsg",
+    "data:imagePlacement",
+    "data:label.count",
+    "data:label.cssSize",
+    "data:label.isLast",
+    "data:label.name",
+    "data:label.url",
+    "data:labels",
+    "data:links",
+    "data:mobile",
+    "data:mobileLinkMsg",
+    "data:mobileLinkUrl",
+    "data:navMessage",
+    "data:newerPageTitle",
+    "data:newerPageUrl",
+    "data:numPosts",
+    "data:olderPageTitle",
+    "data:olderPageUrl",
+    "data:post.addCommentOnclick",
+    "data:post.addCommentUrl",
+    "data:post.adminClass",
+    "data:post.allowComments",
+    "data:post.allowIframeComments",
+    "data:post.allowNewComments",
+    "data:post.appRpcRelayPath",
+    "data:post.author",
+    "data:post.authorLabel",
+    "data:post.authorProfileUrl",
+    "data:post.avatarIndentClass",
+    "data:post.backlinks",
+    "data:post.backlinksLabel",
+    "data:post.body",
+    "data:post.canonicalUrl",
+    "data:post.cmtfpIframe",
+    "data:post.commentConfig",
+    "data:post.commentFormIframeSrc",
+    "data:post.commentHtml",
+    "data:post.commentJso",
+    "data:post.commentLabelFull",
+    "data:post.commentMsgs",
+    "data:post.commentPagingRequired",
+    "data:post.commentRangeText",
+    "data:post.commentSource",
+    "data:post.commentSrc",
+    "data:post.comments",
+    "data:post.communityId",
+    "data:post.createLinkLabel",
+    "data:post.createLinkUrl",
+    "data:post.dummyTag",
+    "data:post.editUrl",
+    "data:post.embedCommentForm",
+    "data:post.feedLinks",
+    "data:post.firstImageUrl",
+    "data:post.friendConnectJs",
+    "data:post.href",
+    "data:post.id",
+    "data:post.iframeCommentSrc",
+    "data:post.includeAd",
+    "data:post.isDateStart",
+    "data:post.isFirstPost",
+    "data:post.labels",
+    "data:post.link",
+    "data:post.newLinkClass",
+    "data:post.newerLinkText",
+    "data:post.newerLinkUrl",
+    "data:post.newestLinkText",
+    "data:post.newestLinkUrl",
+    "data:post.noNewCommentsText",
+    "data:post.numBacklinks",
+    "data:post.numComments",
+    "data:post.oldLinkClass",
+    "data:post.olderLinkText",
+    "data:post.olderLinkUrl",
+    "data:post.oldestLinkText",
+    "data:post.oldestLinkUrl",
+    "data:post.sharePostUrl",
+    "data:post.showBacklinks",
+    "data:post.showThreadedComments",
+    "data:post.snippet",
+    "data:post.thumbnail",
+    "data:post.thumbnailUrl",
+    "data:post.timestamp",
+    "data:post.timestampISO8601",
+    "data:post.timestampLabel",
+    "data:post.title",
+    "data:post.url",
+    "data:post.viewType",
+    "data:postCommentMsg",
+    "data:posts",
+    "data:showCmtPopup",
+    "data:showFreqNumbers",
+    "data:showSnippets",
+    "data:showThumbnails",
+    "data:sourceUrl",
+    "data:thumbnailSize",
+    "data:title",
+    "data:top.blogThisMsg",
+    "data:top.blogspotReviews",
+    "data:top.deleteBacklinkMsg",
+    "data:top.deleteCommentMsg",
+    "data:top.dummyBootstrap",
+    "data:top.editPostMsg",
+    "data:top.emailThisMsg",
+    "data:top.languageCode",
+    "data:top.shareToFacebookMsg",
+    "data:top.shareToOrkutMsg",
+    "data:top.shareToTwitterMsg",
+    "data:top.showAuthor",
+    "data:top.showBlogThisButton",
+    "data:top.showDummy",
+    "data:top.showEmailButton",
+    "data:top.showFacebookButton",
+    "data:top.showOrkutButton",
+    "data:top.showStars",
+    "data:top.showTimestamp",
+    "data:top.showTwitterButton",
+    "data:top.timestampLabel",
+    "data:useImage",
+    "data:widget.instanceId",
+    "data:width",
+    "data:widthStyleStr",
+    "data:x"
+  ],
+  "section_attributes": [
+    "class",
+    "id",
+    "maxwidgets",
+    "preferred",
+    "showaddelement"
+  ],
+  "widget_attributes": [
+    "id",
+    "locked",
+    "title",
+    "type",
+    "version"
+  ],
+  "widget_types": {
+    "AdSense": {
+      "versions": [
+        ""
+      ],
+      "settings": [],
+      "blank_ok": []
+    },
+    "Attribution": {
+      "versions": [
+        ""
+      ],
+      "settings": [
+        "copyright"
+      ],
+      "blank_ok": [
+        "copyright"
+      ],
+      "values": {
+        "copyright": [
+          ""
+        ]
+      }
+    },
+    "Blog": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "authorLabel",
+        "postsPerAd",
+        "reactionsLabel",
+        "showAuthor",
+        "showAuthorProfile",
+        "showBacklinks",
+        "showCommentLink",
+        "showDateHeader",
+        "showInlineAds",
+        "showLabels",
+        "showLocation",
+        "showReactions",
+        "showShareButtons",
+        "showTimestamp",
+        "style.layout",
+        "style.unittype"
+      ],
+      "blank_ok": [
+        "reactionsLabel"
+      ],
+      "values": {
+        "authorLabel": [
+          "By"
+        ],
+        "postsPerAd": [
+          "3"
+        ],
+        "reactionsLabel": [
+          ""
+        ],
+        "showAuthor": [
+          "false"
+        ],
+        "showAuthorProfile": [
+          "false"
+        ],
+        "showBacklinks": [
+          "false"
+        ],
+        "showCommentLink": [
+          "true"
+        ],
+        "showDateHeader": [
+          "true"
+        ],
+        "showInlineAds": [
+          "true"
+        ],
+        "showLabels": [
+          "true"
+        ],
+        "showLocation": [
+          "false"
+        ],
+        "showReactions": [
+          "false"
+        ],
+        "showShareButtons": [
+          "true"
+        ],
+        "showTimestamp": [
+          "true"
+        ],
+        "style.layout": [
+          "1x1"
+        ],
+        "style.unittype": [
+          "TextAndImage"
+        ]
+      }
+    },
+    "HTML": {
+      "versions": [
+        "",
+        "1"
+      ],
+      "settings": [
+        "content"
+      ],
+      "blank_ok": []
+    },
+    "Header": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "displayHeight",
+        "displayUrl",
+        "displayWidth",
+        "imagePlacement",
+        "sectionWidth",
+        "shrinkToFit",
+        "useImage"
+      ],
+      "blank_ok": [],
+      "values": {
+        "displayHeight": [
+          "82"
+        ],
+        "displayUrl": [
+          "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEju6lebqcincr8y3bcJr5EELRZ47kmtJ29GF0FXYHu0wF9klRJR5xw0sl3iR1W5otsE7tR1owo6EcgwI9kiZ8r7A62GpJIDCoFL1uVkldXcEfLe0C6ObAy_hq6NlaLcrNGT0_JPbLbiWXs/s1600/blogger+logo+1.png"
+        ],
+        "displayWidth": [
+          "230"
+        ],
+        "imagePlacement": [
+          "REPLACE"
+        ],
+        "sectionWidth": [
+          "150"
+        ],
+        "shrinkToFit": [
+          "false"
+        ],
+        "useImage": [
+          "true"
+        ]
+      }
+    },
+    "Label": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "display",
+        "selectedLabelsList",
+        "showFreqNumbers",
+        "showType",
+        "sorting"
+      ],
+      "blank_ok": [
+        "selectedLabelsList"
+      ],
+      "values": {
+        "display": [
+          "LIST"
+        ],
+        "selectedLabelsList": [
+          ""
+        ],
+        "showFreqNumbers": [
+          "false"
+        ],
+        "showType": [
+          "ALL"
+        ],
+        "sorting": [
+          "ALPHA"
+        ]
+      }
+    },
+    "Navbar": {
+      "versions": [
+        "1"
+      ],
+      "settings": [],
+      "blank_ok": []
+    },
+    "PopularPosts": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "numItemsToShow",
+        "showSnippets",
+        "showThumbnails",
+        "timeRange"
+      ],
+      "blank_ok": [],
+      "values": {
+        "numItemsToShow": [
+          "3"
+        ],
+        "showSnippets": [
+          "true"
+        ],
+        "showThumbnails": [
+          "true"
+        ],
+        "timeRange": [
+          "LAST_YEAR"
+        ]
+      }
+    }
+  },
+  "builtin_includes": [
+    "quickedit"
+  ],
+  "extra": {
+    "data_tags": {},
+    "setting_values": {
+      "boolean settings may be true or false": [
+        "true",
+        "false"
+      ]
+    },
+    "notes": "Anything allowed beyond the original export must be listed here with a reason."
+  }
+}

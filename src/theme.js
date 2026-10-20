@@ -89,6 +89,36 @@
     }
   }
 
+  // Card images: ask Blogger/YouTube for a 16:9 size instead of the full image or a 72px thumbnail
+  var cardImgs = doc.querySelectorAll('img.js-resize');
+  for (var c = 0; c < cardImgs.length; c++) {
+    var src = cardImgs[c].getAttribute('src') || '';
+    var sized = src
+      .replace(/\/s\d+(-c)?\//, '/w720-h405-c/')
+      .replace(/\/w\d+-h\d+(-[a-z]+)*\//, '/w720-h405-c/')
+      .replace(/=s\d+(-c)?$/, '=w720-h405-c')
+      .replace(/=w\d+-h\d+(-[a-z]+)*$/, '=w720-h405-c')
+      .replace(/(ytimg\.com\/vi\/[^/]+\/)default\.jpg$/, '$1hqdefault.jpg');
+    if (sized !== src) cardImgs[c].setAttribute('src', sized);
+  }
+
+  // Dates: show "12 October 2026" style dates whatever the blog's timestamp format is
+  var dates = doc.querySelectorAll('time.js-date');
+  for (var d = 0; d < dates.length; d++) {
+    var when = new Date(dates[d].getAttribute('datetime'));
+    if (!isNaN(when.getTime())) {
+      dates[d].textContent = when.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+  }
+
+  // Host card: a photo placed in the gadget's content replaces the microphone icon
+  var hostImg = doc.querySelector('.host-role img');
+  var avatar = doc.querySelector('.host-avatar');
+  if (hostImg && avatar) {
+    avatar.innerHTML = '';
+    avatar.appendChild(hostImg);
+  }
+
   // Copy-link share button
   var copyBtns = doc.querySelectorAll('[data-copy-url]');
   for (var i = 0; i < copyBtns.length; i++) {

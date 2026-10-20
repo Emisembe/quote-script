@@ -8,20 +8,14 @@ License:  Free to use on any Blogger blog
 
 /* Variable definitions (editable in Theme > Customize > Advanced)
 ====================
-<Group description="Brand colours" selector="body">
-  <Variable name="keycolor" description="Main colour" type="color" default="#00C0A8" value="#00C0A8"/>
-  <Variable name="primary.color" description="Primary (header, hero, footer)" type="color" default="#0D1C2E" value="#0D1C2E"/>
-  <Variable name="primary.soft.color" description="Cards on the primary colour" type="color" default="#17263A" value="#17263A"/>
-  <Variable name="accent.color" description="Accent (buttons, highlights)" type="color" default="#00C0A8" value="#00C0A8"/>
-  <Variable name="accent.hover.color" description="Accent hover" type="color" default="#33D4C0" value="#33D4C0"/>
-  <Variable name="page.background.color" description="Page background" type="color" default="#F5F7FA" value="#F5F7FA"/>
-  <Variable name="text.color" description="Body text" type="color" default="#1C2B3A" value="#1C2B3A"/>
-  <Variable name="muted.color" description="Muted text" type="color" default="#6B7A8D" value="#6B7A8D"/>
-  <Variable name="border.color" description="Borders and dividers" type="color" default="#DDE2EA" value="#DDE2EA"/>
-</Group>
-<Group description="Typography" selector="body">
-  <Variable name="body.font" description="Body font" type="font" default="normal normal 16px Arial, Helvetica, sans-serif" value="normal normal 16px Arial, Helvetica, sans-serif"/>
-</Group>
+<Variable name="primary.color" description="Primary (header, hero, footer)" type="color" default="#0D1C2E" value="#0D1C2E"/>
+<Variable name="primary.soft.color" description="Cards on the primary colour" type="color" default="#17263A" value="#17263A"/>
+<Variable name="accent.color" description="Accent (buttons, highlights)" type="color" default="#00C0A8" value="#00C0A8"/>
+<Variable name="accent.hover.color" description="Accent hover" type="color" default="#33D4C0" value="#33D4C0"/>
+<Variable name="page.background.color" description="Page background" type="color" default="#F5F7FA" value="#F5F7FA"/>
+<Variable name="text.color" description="Body text" type="color" default="#1C2B3A" value="#1C2B3A"/>
+<Variable name="muted.color" description="Muted text" type="color" default="#6B7A8D" value="#6B7A8D"/>
+<Variable name="border.color" description="Borders and dividers" type="color" default="#DDE2EA" value="#DDE2EA"/>
 */
 
 :root {
@@ -54,7 +48,8 @@ html {
 }
 body {
   margin: 0;
-  font: $(body.font);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
   line-height: 1.65;
   color: var(--rm-text);
   background: var(--rm-bg);
@@ -111,8 +106,8 @@ a.badge:hover { background: var(--rm-primary); color: var(--rm-accent); }
 
 /* ---------- Buttons ---------- */
 .btn,
-.header-cta .widget a,
-.hero-grid .LinkList a {
+.header-cta .widget-content a,
+.hero-main .widget-content a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -130,25 +125,25 @@ a.badge:hover { background: var(--rm-primary); color: var(--rm-accent); }
   transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
 }
 .btn-primary,
-.header-cta .widget a,
-.hero-grid .LinkList li:first-child a {
+.header-cta .widget-content a,
+.hero-main .widget-content li:first-child a {
   background: var(--rm-accent);
   border-color: var(--rm-accent);
   color: var(--rm-primary);
 }
 .btn-primary:hover,
-.header-cta .widget a:hover,
-.hero-grid .LinkList li:first-child a:hover {
+.header-cta .widget-content a:hover,
+.hero-main .widget-content li:first-child a:hover {
   background: var(--rm-accent-hover);
   border-color: var(--rm-accent-hover);
   color: var(--rm-primary);
 }
-.hero-grid .LinkList li a {
+.hero-main .widget-content li a {
   background: transparent;
   border-color: rgba(255, 255, 255, 0.55);
   color: #fff;
 }
-.hero-grid .LinkList li a:hover { border-color: var(--rm-accent); color: var(--rm-accent); }
+.hero-main .widget-content li a:hover { border-color: var(--rm-accent); color: var(--rm-accent); }
 .btn-outline {
   background: transparent;
   border-color: var(--rm-border);
@@ -263,8 +258,8 @@ a.badge:hover { background: var(--rm-primary); color: var(--rm-accent); }
   transition: color 0.2s, border-color 0.2s;
 }
 .site-nav li a:hover { color: var(--rm-accent); }
-.header-cta .widget ul { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
-.header-cta .widget a { width: 100%; }
+.header-cta .widget-content { margin-top: 18px; }
+.header-cta .widget-content a { display: flex; width: 100%; }
 
 @media (min-width: 1024px) {
   .nav-toggle { display: none; }
@@ -282,19 +277,20 @@ a.badge:hover { background: var(--rm-primary); color: var(--rm-accent); }
     max-height: none;
     overflow: visible;
   }
-  .site-nav .widget ul { display: flex; align-items: center; gap: 26px; }
+  .site-nav .widget-content ul { display: flex; align-items: center; gap: 26px; }
   .site-nav li a {
     padding: 6px 0;
     font-size: 15px;
     border-bottom: 2px solid transparent;
   }
   .site-nav li a:hover { border-bottom-color: var(--rm-accent); }
-  .header-cta .widget ul { flex-direction: row; margin: 0; }
-  .header-cta .widget a { width: auto; min-height: 40px; padding: 9px 18px; font-size: 14px; }
+  .header-cta .widget-content { margin: 0; }
+  .header-cta .widget-content a { display: inline-flex; width: auto; min-height: 40px; padding: 9px 18px; font-size: 14px; }
 }
 
 /* ---------- Hero (homepage) ---------- */
 .hero {
+  display: none;
   position: relative;
   overflow: hidden;
   background: var(--rm-primary);
@@ -322,8 +318,8 @@ a.badge:hover { background: var(--rm-primary); color: var(--rm-accent); }
   gap: 32px;
   width: 100%;
 }
-.hero-grid .widget > .title,
-.hero-grid .LinkList > h2, .hero-grid .LinkList > h3 { display: none; }
+.hero .widget > h2.title { display: none; }
+.hero-main .widget + .widget { margin-top: 28px; }
 .hero-eyebrow {
   margin: 0 0 18px;
   font-size: 13px;
@@ -359,7 +355,7 @@ a.badge:hover { background: var(--rm-primary); color: var(--rm-accent); }
 .hero-text { max-width: 560px; font-size: 17px; line-height: 1.75; color: var(--rm-on-dark); }
 .hero-text p:last-child { margin-bottom: 0; }
 .hero-text a { color: var(--rm-accent); text-decoration: underline; }
-.hero-grid .LinkList ul { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-main .widget-content ul { display: flex; flex-wrap: wrap; gap: 12px; }
 
 .host-card {
   display: block;
@@ -389,23 +385,15 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 }
 .host-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .host-name { margin: 0 0 4px; font-size: 20px; font-weight: 700; color: #fff; }
-.host-role { margin: 0; font-size: 14px; font-weight: 600; color: var(--rm-accent); }
-/* Image widgets added later through Layout use Blogger's default markup */
-.hero-grid .Image .widget-content { text-align: center; }
-.hero-grid .Image img { border-radius: 16px; }
-.hero-grid .Image .caption { display: block; margin-top: 10px; color: var(--rm-accent); }
+.host-role { font-size: 14px; font-weight: 600; color: var(--rm-accent); }
+.host-role p { margin: 0; }
 
 @media (min-width: 960px) {
   .hero-grid {
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
     column-gap: 72px;
-    row-gap: 32px;
     align-items: center;
   }
-  .hero-grid > .widget { grid-column: 1; }
-  .hero-grid > .widget.Image { grid-column: 2; grid-row: 1 / span 2; }
-  .hero-grid > .widget.Text { align-self: end; }
-  .hero-grid > .widget.LinkList { align-self: start; }
   .host-card { padding: 44px 28px; }
 }
 
@@ -528,7 +516,16 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.post-card-meta { margin-top: auto; font-size: 12.5px; color: var(--rm-muted); }
+.post-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-top: auto;
+  padding-top: 6px;
+  font-size: 12.5px;
+  color: var(--rm-muted);
+}
 
 .empty-state {
   padding: 48px 24px;
@@ -580,6 +577,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
   color: var(--rm-muted);
 }
 .post-meta .post-author { font-weight: 700; color: var(--rm-primary); }
+.post-meta .quick-edit-link { font-weight: 700; color: var(--rm-accent); }
 .post-meta .sep { width: 4px; height: 4px; border-radius: 50%; background: var(--rm-accent); }
 
 .post-body {
@@ -732,6 +730,11 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
   .comments .comment-replies { margin-left: 8px; }
 }
 
+#comments-block dt { margin: 18px 0 4px; font-weight: 700; color: var(--rm-primary); }
+#comments-block dd { margin: 0 0 6px; }
+#comments-block .comment-footer { font-size: 12px; color: var(--rm-muted); }
+.comment-footer { margin: 16px 0 0; }
+
 /* 404 */
 .not-found { padding: 56px 20px; text-align: center; }
 .not-found-code {
@@ -746,6 +749,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 .not-found .search-form { margin: 24px auto; }
 
 /* ---------- Sidebar ---------- */
+.pt-index .sidebar, .pt-archive .sidebar, .pt-error_page .sidebar { display: none; }
 .sidebar .widget {
   margin-bottom: 24px;
   padding: 22px;
@@ -773,7 +777,8 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 .sidebar .PopularPosts li { margin: 0 0 14px; padding: 0 0 14px; border-bottom: 1px solid var(--rm-border); }
 .sidebar .PopularPosts .post:last-child,
 .sidebar .PopularPosts li:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
-.sidebar .PopularPosts img { border-radius: var(--rm-radius-sm); }
+.sidebar .PopularPosts .item-thumbnail { float: left; margin: 0 12px 4px 0; }
+.sidebar .PopularPosts img { display: block; width: 64px; height: 64px; object-fit: cover; border-radius: var(--rm-radius-sm); }
 .sidebar .PopularPosts .post-title, .sidebar .PopularPosts .item-title {
   font-size: 15px;
   font-weight: 700;
@@ -790,8 +795,8 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 }
 
 /* ---------- Topics (homepage) ---------- */
-.topics { padding: 0 0 72px; }
-.topics .widget ul, .topics .cloud-label-widget-content, .sidebar .Label ul,
+.topics { display: none; padding: 0 0 72px; }
+.topics .Label ul, .topics .cloud-label-widget-content, .sidebar .Label ul,
 .sidebar .cloud-label-widget-content { display: flex; flex-wrap: wrap; gap: 10px; }
 .topics .Label a, .sidebar .Label a {
   display: inline-block;
@@ -836,10 +841,10 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 .site-footer a { color: var(--rm-on-dark); transition: color 0.2s, border-color 0.2s; }
 .site-footer a:hover { color: var(--rm-accent); }
 .site-footer .widget-content { font-size: 15px; line-height: 1.75; }
-.site-footer .LinkList li { margin: 0 0 10px; }
-#footer-connect .LinkList ul { display: flex; flex-wrap: wrap; gap: 8px; }
-#footer-connect .LinkList li { margin: 0; }
-#footer-connect .LinkList a {
+.site-footer .widget-content li { margin: 0 0 10px; }
+#footer-connect .widget-content ul { display: flex; flex-wrap: wrap; gap: 8px; }
+#footer-connect .widget-content li { margin: 0; }
+#footer-connect .widget-content a {
   display: inline-block;
   padding: 6px 14px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -847,7 +852,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
   font-size: 13px;
   color: rgba(255, 255, 255, 0.75);
 }
-#footer-connect .LinkList a:hover { border-color: var(--rm-accent); color: var(--rm-accent); }
+#footer-connect .widget-content a:hover { border-color: var(--rm-accent); color: var(--rm-accent); }
 .footer-bottom {
   display: flex;
   flex-wrap: wrap;
@@ -868,9 +873,19 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 @media (max-width: 380px) {
   body { font-size: 15px; }
   .brand-tagline { display: none; }
-  .hero-grid .LinkList ul { flex-direction: column; }
-  .hero-grid .LinkList a { width: 100%; }
+  .hero-main .widget-content ul { flex-direction: column; }
+  .hero-main .widget-content a { width: 100%; }
 }
+
+/* ---------- Blogger Layout editor ---------- */
+body#layout .site-header { position: static; }
+body#layout .hero, body#layout .topics, body#layout .sidebar { display: block; }
+body#layout .container { max-width: none; padding: 0; }
+body#layout .header-inner, body#layout .hero-grid, body#layout .main-grid,
+body#layout .footer-grid, body#layout .footer-bottom { display: block; }
+body#layout .nav-drawer { display: block; position: static; }
+body#layout .nav-toggle, body#layout .skip-link, body#layout .copyright { display: none; }
+body#layout .hero-inner { min-height: 0; padding: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

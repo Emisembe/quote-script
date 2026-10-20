@@ -8,13 +8,15 @@
 <title>Preview: homepage</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <link href="../dist/theme.css" rel="stylesheet">
+<!-- Blogger adds this rule on the homepage only -->
+<style>.hero, .topics { display: block; }</style>
 </head>
 <body class="rm pt-index">
 <a class="skip-link" href="#content">Skip to content</a>
 
 <header class="site-header" id="site-header">
   <div class="container header-inner">
-    <div class="brand-section section" id="brand"><div class="widget Header" data-version="2" id="Header1">
+    <div class="brand-section section" id="header"><div class="widget Header" id="Header1">
       <a class="brand" href="#">
         <span aria-hidden="true" class="brand-mark"></span>
         <span class="brand-text">
@@ -28,12 +30,10 @@
       <svg aria-hidden="true" class="icon-close" fill="none" height="26" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="26"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
     </button>
     <nav aria-label="Main" class="nav-drawer" id="site-nav">
-      <div class="site-nav section" id="menu"><div class="widget LinkList" data-version="2" id="LinkList1"><div class="widget-content"><ul>
+      <div class="site-nav section" id="menu"><div class="widget HTML" id="HTML1"><div class="widget-content"><ul>
         <li><a href="#about">About</a></li><li><a href="#episodes">Episodes</a></li><li><a href="#topics">Topics</a></li><li><a href="#connect">Connect</a></li>
       </ul></div></div></div>
-      <div class="header-cta section" id="header-cta"><div class="widget LinkList" data-version="2" id="LinkList3"><div class="widget-content"><ul>
-        <li><a href="#">Watch on YouTube</a></li>
-      </ul></div></div></div>
+      <div class="header-cta section" id="header-cta"><div class="widget HTML" id="HTML2"><div class="widget-content"><a href="#">Watch on YouTube</a></div></div></div>
     </nav>
   </div>
 </header>
@@ -41,24 +41,28 @@
 <main id="content">
   <section class="hero" id="about">
     <div class="container hero-inner">
-      <div class="hero-grid section" id="hero">
-        <div class="widget Text" data-version="2" id="Text1">
+      <div class="hero-grid">
+      <div class="hero-main section" id="hero-main">
+        <div class="widget HTML" id="HTML3">
           <div class="hero-copy">
             <p class="hero-eyebrow">Culture. Conversation. Connection.</p>
             <h1 class="hero-title">The River Musa Show</h1>
             <div class="hero-text"><p>The River Musa Show explores governance, identity, and the lived experience of moving between African and European worlds. Hosted by Efic &mdash; governance professional, storyteller, and bridge-builder between two worlds.</p></div>
           </div>
         </div>
-        <div class="widget LinkList" data-version="2" id="LinkList2"><div class="widget-content"><ul>
+        <div class="widget HTML" id="HTML4"><div class="widget-content"><ul>
           <li><a href="#">Watch on YouTube</a></li><li><a href="#">Learn More</a></li><li><a href="#">Shop</a></li>
         </ul></div></div>
-        <div class="widget Image" data-version="2" id="Image1">
+      </div>
+      <div class="hero-side section" id="hero-side">
+        <div class="widget HTML" id="HTML5">
           <div class="host-card">
             <div class="host-avatar"><svg aria-hidden="true" fill="none" height="44" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="44"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="23"/><line x1="8" x2="16" y1="23" y2="23"/></svg></div>
             <p class="host-name">Murdock Emisembe</p>
-            <p class="host-role">Host &amp; Creator</p>
+            <div class="host-role"><p>Host &amp; Creator</p></div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </section>
@@ -66,7 +70,7 @@
   <div class="page-main" id="episodes">
     <div class="container main-grid">
       <div class="main-col">
-        <div class="main section" id="main"><div class="widget Blog" data-version="2" id="Blog1">
+        <div class="main section" id="main"><div class="widget Blog" id="Blog1">
           <div class="section-head">
             <h2 class="section-title">Latest Episodes</h2>
             <form class="search-form" action="#" method="get" role="search">
@@ -83,15 +87,11 @@
 
   <section class="topics" id="topics">
     <div class="container">
-      <div class="topics-section section" id="topics-widgets"><div class="widget Label" data-version="2" id="Label1">
-        <h3 class="title">Topics</h3>
-        <div class="widget-content cloud-label-widget-content">
-          <span class="label-size label-size-3"><a class="label-name" href="#">Careers</a></span>
-          <span class="label-size label-size-3"><a class="label-name" href="#">Culture</a></span>
-          <span class="label-size label-size-3"><a class="label-name" href="#">Governance</a></span>
-          <span class="label-size label-size-3"><a class="label-name" href="#">Identity</a></span>
-          <span class="label-size label-size-3"><a class="label-name" href="#">Two Worlds</a></span>
-        </div>
+      <div class="topics-section section" id="topics-widgets"><div class="widget Label" id="Label1">
+        <h2>Topics</h2>
+        <div class="widget-content list-label-widget-content"><ul>
+          <li><a dir="ltr" href="#">Careers</a></li><li><a dir="ltr" href="#">Culture</a></li><li><a dir="ltr" href="#">Governance</a></li><li><a dir="ltr" href="#">Identity</a></li><li><a dir="ltr" href="#">Two Worlds</a></li>
+        </ul></div>
       </div></div>
     </div>
   </section>
@@ -100,22 +100,22 @@
 <footer class="site-footer" id="connect">
   <div class="container">
     <div class="footer-grid">
-      <div class="footer-col section" id="footer-about"><div class="widget Text" data-version="2" id="Text2">
-        <h3 class="title">About the Show</h3>
+      <div class="footer-col section" id="footer-about"><div class="widget HTML" id="HTML6">
+        <h2 class="title">About the Show</h2>
         <div class="widget-content"><p>Culture. Conversation. Connection. Stories and conversations from the riverbank, where African and European worlds meet.</p></div>
       </div></div>
-      <div class="footer-col section" id="footer-connect"><div class="widget LinkList" data-version="2" id="LinkList4">
-        <h3 class="title">Connect</h3>
+      <div class="footer-col section" id="footer-connect"><div class="widget HTML" id="HTML7">
+        <h2 class="title">Connect</h2>
         <div class="widget-content"><ul><li><a href="#">YouTube</a></li><li><a href="#">TikTok</a></li><li><a href="#">Instagram</a></li><li><a href="#">LinkedIn</a></li></ul></div>
       </div></div>
-      <div class="footer-col section" id="footer-explore"><div class="widget LinkList" data-version="2" id="LinkList5">
-        <h3 class="title">Explore</h3>
+      <div class="footer-col section" id="footer-explore"><div class="widget HTML" id="HTML8">
+        <h2 class="title">Explore</h2>
         <div class="widget-content"><ul><li><a href="#">Home</a></li><li><a href="#">Episodes</a></li><li><a href="#">Topics</a></li><li><a href="#">About</a></li></ul></div>
       </div></div>
     </div>
     <div class="footer-bottom">
       <p class="copyright">&#169; <span class="js-year"></span> The River Musa Show</p>
-      <div class="footer-credit section" id="footer-credit"><div class="widget Attribution" data-version="2" id="Attribution1"><div class="widget-content">Powered by <a href="#">Blogger</a></div></div></div>
+      <div class="footer-credit section" id="footer-credit"><div class="widget Attribution" id="Attribution1"><div class="widget-content" style="text-align: center;">Powered by <a href="#">Blogger</a></div></div></div>
     </div>
   </div>
 </footer>
@@ -136,8 +136,7 @@
     return '<article class="post-card"><a aria-hidden="true" class="post-card-media" href="post.html" tabindex="-1"><span class="post-card-placeholder">' + mic + '</span></a>' +
       '<div class="post-card-body"><div class="post-card-labels"><a class="badge" href="#">' + p[0] + '</a></div>' +
       '<h3 class="post-card-title"><a href="post.html">' + p[1] + '</a></h3>' +
-      '<p class="post-card-excerpt">A conversation about the lived experience of moving between African and European worlds, and what each can teach the other.</p>' +
-      '<div class="post-card-meta"><time>October 12, 2026</time></div></div></article>';
+            '<div class="post-card-meta"><time class="js-date" datetime="2026-10-12T09:00:00+02:00">9:00 AM</time><span class="post-card-comments">3 comments</span></div></div></article>';
   }).join('');
 })();
 </script>
