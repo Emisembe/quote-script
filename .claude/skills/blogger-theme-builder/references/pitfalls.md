@@ -75,6 +75,10 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 → Blogger wraps aligned images in `.separator a` with inline floats and margins. Forcing margins to 0 everywhere ruins desktop alignment.
 → Only at ≤600px: `.post-body .separator a { float: none !important; margin-left: 0 !important; margin-right: 0 !important }`.
 
+**Mobile view looks unbalanced (left-aligned text above a centred card)**
+→ A responsive layout that only stacks into one column still reads as lopsided on phones.
+→ With phone-only rules (no structure change), centre the hero (whenever it is a single column, ≤959px), section headings, card text and meta, topic pills, post header (labels/title/date), share buttons, pager buttons (full width) and footer. Keep long article paragraphs left-aligned for readability. Turn the hero title's vertical accent bar into a centred bar under the title. Verify with a measurement, not by eye: at 320/360/375/390/414px, compare each element's left and right gap (≤2px difference) and confirm `scrollWidth == innerWidth`.
+
 **Layout editor**
 → The legacy engine applies the skin to Layout too (`body#layout`). Make hidden-by-default sections visible there: `body#layout .hero, body#layout .sidebar { display: block }`, and un-stick the header.
 

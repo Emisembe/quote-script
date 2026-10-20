@@ -61,7 +61,7 @@ python3 scripts/build.py && python3 scripts/check.py
 
 When you add a new check, **prove it works**: run it against a deliberately broken copy and confirm it fails. One check in the original project silently passed everything because of a regex escaping bug.
 
-Then open `preview/home.html` and `preview/post.html` (update their markup if you changed structure) with Playwright at roughly 1440, 820 and 390px wide. Check for no horizontal scroll, no JS errors and the menu working (open, Escape, link click, resize to desktop). Take screenshots and actually look at them. Chromium lives under `/opt/pw-browsers/` in cloud sessions; use the `chromium_headless_shell-*/…/headless_shell` binary.
+Then open `preview/home.html` and `preview/post.html` (update their markup if you changed structure) with Playwright at roughly 1440, 820 and 390px wide. Check for no horizontal scroll, no JS errors and the menu working (open, Escape, link click, resize to desktop). Measure mobile centring at 320–414px (left gap equals right gap for headings, cards, buttons, footer). Take screenshots and actually look at them. Chromium lives under `/opt/pw-browsers/` in cloud sessions; use the `chromium_headless_shell-*/…/headless_shell` binary.
 
 ### 5. Deliver and install
 

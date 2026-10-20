@@ -876,6 +876,45 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 .footer-bottom .widget-content { font-size: 13px; }
 @media (max-width: 600px) { .footer-bottom { justify-content: center; text-align: center; } }
 
+/* ---------- Centred mobile layout (styling only; structure unchanged) ---------- */
+/* Hero: centred whenever it is a single column */
+@media (max-width: 959px) {
+  .hero-inner { text-align: center; }
+  .hero-title { padding-left: 0; padding-bottom: 18px; }
+  .hero-title::before {
+    top: auto;
+    bottom: 0;
+    left: 50%;
+    width: 64px;
+    height: 4px;
+    margin-left: -32px;
+    background: linear-gradient(to right, #1A7BC4, $(accent.color));
+  }
+  .hero-text { margin-left: auto; margin-right: auto; }
+  .hero-main .widget-content ul { justify-content: center; }
+}
+/* Phones and small tablets */
+@media (max-width: 767px) {
+  .section-head { flex-direction: column; align-items: center; text-align: center; }
+  .section-head .search-form { max-width: none; }
+  .post-card-body { text-align: center; align-items: center; }
+  .post-card-meta { justify-content: center; }
+  .topics .container, .topics .widget { text-align: center; }
+  .topics .Label ul, .topics .cloud-label-widget-content { justify-content: center; }
+  .post-head { text-align: center; }
+  .post-labels, .post-meta { justify-content: center; }
+  .post-share { justify-content: center; }
+  .post-share-label { flex-basis: 100%; margin: 0 0 4px; text-align: center; }
+  .blog-pager-nav { flex-direction: column; }
+  .blog-pager-nav .btn { width: 100%; }
+  .blog-pager-nav .older { margin-left: 0; }
+  .empty-state, .not-found { text-align: center; }
+  .sidebar .widget > .title, .sidebar .widget > h2, .sidebar .widget > h3 { display: table; margin-left: auto; margin-right: auto; }
+  .site-footer .footer-grid { text-align: center; }
+  #footer-connect .widget-content ul { justify-content: center; }
+  .header-cta .widget-content a { justify-content: center; }
+}
+
 /* ---------- Small screens ---------- */
 @media (max-width: 380px) {
   body { font-size: 15px; }
