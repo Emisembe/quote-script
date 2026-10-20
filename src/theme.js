@@ -90,15 +90,21 @@
   }
 
   // Card images: ask Blogger/YouTube for a 16:9 size instead of the full image or a 72px thumbnail
+  var googleImage = /^https?:\/\/([a-z0-9-]+\.)*(googleusercontent\.com|blogspot\.com|bp\.blogspot\.com|ggpht\.com)\//i;
+  var youtubeThumb = /^(https?:\/\/(img\.youtube\.com|i\.ytimg\.com)\/vi\/[^/]+\/)[a-z]*default\.jpg$/i;
   var cardImgs = doc.querySelectorAll('img.js-resize');
   for (var c = 0; c < cardImgs.length; c++) {
     var src = cardImgs[c].getAttribute('src') || '';
-    var sized = src
-      .replace(/\/s\d+(-c)?\//, '/w720-h405-c/')
-      .replace(/\/w\d+-h\d+(-[a-z]+)*\//, '/w720-h405-c/')
-      .replace(/=s\d+(-c)?$/, '=w720-h405-c')
-      .replace(/=w\d+-h\d+(-[a-z]+)*$/, '=w720-h405-c')
-      .replace(/(ytimg\.com\/vi\/[^/]+\/)default\.jpg$/, '$1hqdefault.jpg');
+    var sized = src;
+    if (googleImage.test(src)) {
+      sized = src
+        .replace(/\/s\d+(-[a-z]+)*\//i, '/w720-h405-c/')
+        .replace(/\/w\d+-h\d+(-[a-z]+)*\//i, '/w720-h405-c/')
+        .replace(/=s\d+(-[a-z]+)*$/i, '=w720-h405-c')
+        .replace(/=w\d+-h\d+(-[a-z]+)*$/i, '=w720-h405-c');
+    } else if (youtubeThumb.test(src)) {
+      sized = src.replace(youtubeThumb, '$1hqdefault.jpg');
+    }
     if (sized !== src) cardImgs[c].setAttribute('src', sized);
   }
 

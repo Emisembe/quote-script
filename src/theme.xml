@@ -22,6 +22,9 @@ Page not found - <data:blog.title/>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
 <style type='text/css'>.hero, .topics { display: block; }</style>
 </b:if>
+<b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+<style type='text/css'>.hero, .topics { display: block; }</style>
+</b:if>
 </head>
 <body expr:class='&quot;rm pt-&quot; + data:blog.pageType'>
 <a class='skip-link' href='#content'>Skip to content</a>
@@ -193,7 +196,13 @@ Page not found - <data:blog.title/>
 
           <b:includable id='rmList'>
             <div class='section-head'>
-              <h2 class='section-title'>
+              <b:if cond='data:blog.url == data:blog.homepageUrl'>
+                <h2 class='section-title'><data:title/></h2>
+              <b:else/>
+              <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+                <h2 class='section-title'><data:title/></h2>
+              <b:else/>
+                <h1 class='section-title'>
                 <b:if cond='data:blog.searchQuery'>
                   Search: <data:blog.searchQuery/>
                 <b:else/>
@@ -207,7 +216,9 @@ Page not found - <data:blog.title/>
                     </b:if>
                   </b:if>
                 </b:if>
-              </h2>
+              </h1>
+              </b:if>
+              </b:if>
               <b:include name='rmSearchForm'/>
             </div>
             <b:if cond='data:numPosts != 0'>
@@ -272,7 +283,7 @@ Page not found - <data:blog.title/>
           </b:includable>
 
           <b:includable id='rmSingle' var='post'>
-            <article class='post-single post hentry'>
+            <article class='post-single post'>
               <a expr:name='data:post.id'/>
               <header class='post-head'>
                 <b:if cond='data:post.labels'>

@@ -176,6 +176,17 @@ check(not leftovers, 'no leftover content from other blogs/templates', str(lefto
 check('maximum-scale' not in text and 'user-scalable' not in text, 'pinch-zoom is not disabled')
 check(len(text.encode('utf-8')) < 900_000, 'theme file is well under Blogger size limits')
 
+# Behaviour that only shows up on a live blog
+check(not re.search(r"class='[^']*\bhentry\b", text),
+      'no incomplete hentry microformat (Search Console reports missing author/updated)')
+home_reveal = re.findall(r"<b:if cond='data:blog\.(url|canonicalUrl) == data:blog\.homepageUrl'>\s*<style[^>]*>\.hero", text)
+check(set(home_reveal) == {'url', 'canonicalUrl'},
+      'homepage hero is revealed even with ?fbclid=/?m=1 style parameters (url and canonicalUrl checks)', str(home_reveal))
+check(bool(re.search(r'body \.widget ul', skin)),
+      "skin resets beat Blogger's injected widget stylesheet (body-prefixed selectors)")
+check(text.count('<h1') >= 1 and "<h1 class='section-title'>" in text,
+      'list pages (labels, search, archive) get their own h1')
+
 scripts = re.findall(r'//<!\[CDATA\[(.*?)//\]\]>', text, flags=re.S)
 node = shutil.which('node')
 if node:

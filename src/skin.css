@@ -63,9 +63,10 @@ a { color: inherit; text-decoration: none; }
 p { margin: 0 0 1em; }
 h1, h2, h3, h4, h5, h6 { margin: 0 0 0.5em; line-height: 1.15; color: inherit; }
 button, input, select, textarea { font: inherit; color: inherit; }
-.section, .widget { margin: 0; padding: 0; }
-.widget ul, .widget ol { list-style: none; margin: 0; padding: 0; }
-.widget li { margin: 0; padding: 0; }
+/* "body" prefix: Blogger injects its own widget stylesheet, sometimes after this skin */
+body .section, body .widget { margin: 0; padding: 0; }
+body .widget ul, body .widget ol { list-style: none; margin: 0; padding: 0; }
+body .widget li { margin: 0; padding: 0; }
 :focus-visible { outline: 2px solid var(--rm-accent); outline-offset: 3px; }
 
 .container {
@@ -606,7 +607,11 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 }
 .post-body a:hover { color: var(--rm-accent); }
 .post-body img { max-width: 100%; height: auto; border-radius: var(--rm-radius-sm); }
-.post-body .separator a { margin-left: 0 !important; margin-right: 0 !important; text-decoration: none; }
+.post-body .separator a { text-decoration: none; }
+@media (max-width: 600px) {
+  .post-body .separator a { float: none !important; margin-left: 0 !important; margin-right: 0 !important; }
+  .post-body .separator { text-align: center; }
+}
 .post-body iframe { max-width: 100%; border: 0; }
 .post-body iframe[src*="youtube"], .post-body iframe[src*="vimeo"] {
   display: block;
@@ -615,10 +620,10 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
   aspect-ratio: 16 / 9;
   border-radius: var(--rm-radius-sm);
 }
-.post-body ul, .post-body ol { margin: 0 0 1.2em; padding-left: 1.4em; }
-.post-body ul { list-style: disc; }
-.post-body ol { list-style: decimal; }
-.post-body li { margin: 0.3em 0; }
+body .widget .post-body ul, body .widget .post-body ol { margin: 0 0 1.2em; padding-left: 1.4em; }
+body .widget .post-body ul { list-style: disc; }
+body .widget .post-body ol { list-style: decimal; }
+body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 .post-body blockquote {
   margin: 28px 0;
   padding: 18px 22px;

@@ -18,7 +18,7 @@ The theme was rebuilt on the foundation of the blog's **original theme**, which 
 | Gadget code | HTML, Labels, Popular Posts and Attribution use the original's code verbatim, apart from opening popular posts in the same tab |
 | Stylesheet | Plain CSS with Blogger `$(variables)`, like the original's. CSS custom properties are resolved at build time. |
 
-## Automated audit (`python3 scripts/check.py`), 58 checks, all passing
+## Automated audit (`python3 scripts/check.py`), 62 checks, all passing
 
 **Proven-only rules** (from `reference/proven.json`, extracted from the original theme):
 - Only Blogger tags the original used (`b:if`, `b:loop`, `b:include`, ...): no `b:eval`, no `b:template-skin`.
@@ -33,6 +33,16 @@ The theme was rebuilt on the foundation of the blog's **original theme**, which 
 - Skin variables are defined, CSS braces balance, and there are no CSS custom properties or `//` comments.
 - HTTPS only, no `document.write`, no jQuery, no hard-coded blog addresses, no leftovers from other templates.
 - Pinch-zoom allowed. Inline JavaScript passes `node --check`.
+
+**Live-blog behaviour** (added after the successful upload):
+- The homepage hero still appears when visitors arrive with tracking parameters (`?fbclid=` from Facebook or Instagram, `?m=1`). The theme checks both the page address and Blogger's canonical address.
+- Blogger injects its own widget stylesheet, sometimes after the theme. The theme's resets use stronger selectors, so gadget spacing and list styles can't be overridden. This was tested by loading a copy of Blogger's rules after the theme: widget margins stayed at 0 and post bullet lists kept their bullets.
+- Label, search and archive pages each get exactly one main heading (h1).
+- No incomplete `hentry` microformat, which Google Search Console reports as "missing author/updated".
+- Card images are resized only on Blogger/Google and YouTube addresses, and images hosted elsewhere are never rewritten. Tested on 10 sample addresses.
+- Images aligned left or right in posts keep Blogger's alignment on desktop and stack centred on phones.
+
+Each of these checks was confirmed to fail on a deliberately broken copy of the theme, so they really do catch the problem.
 
 Run against the version Blogger rejected, the audit reports 23 failures, including the Image gadget. The current theme passes all 58 checks.
 
