@@ -1,0 +1,14 @@
+/* Styles for Blogger's Layout editor only (Theme > Layout). */
+body#layout .site-header { position: static; }
+body#layout .container { max-width: none; padding: 0; }
+body#layout .header-inner,
+body#layout .hero-grid,
+body#layout .main-grid,
+body#layout .footer-grid,
+body#layout .footer-bottom { display: block; }
+body#layout .nav-drawer { display: block; position: static; }
+body#layout .nav-toggle,
+body#layout .skip-link,
+body#layout .copyright { display: none; }
+body#layout .hero-inner { min-height: 0; padding: 0; }
+body#layout div.section { margin: 0 0 12px; }
