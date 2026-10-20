@@ -44,7 +44,7 @@ The theme was rebuilt on the foundation of the blog's **original theme**, which 
 
 Each of these checks was confirmed to fail on a deliberately broken copy of the theme, so they really do catch the problem.
 
-Run against the version Blogger rejected, the audit reports 23 failures, including the Image gadget. The current theme passes all 58 checks.
+Run against the version Blogger rejected, the audit reports 23 failures, including the Image gadget. The current theme passes all 62 checks.
 
 ## Browser checks (preview pages, Chromium)
 

@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:version='2' expr:dir='data:blog.languageDirection' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<meta content='width=device-width, initial-scale=1' name='viewport'/>
+<b:include data='blog' name='all-head-content'/>
+<title>
+<b:if cond='data:blog.pageType == &quot;index&quot;'>
+<data:blog.pageTitle/>
+<b:else/>
+<b:if cond='data:blog.pageType != &quot;error_page&quot;'>
+<data:blog.pageName/> - <data:blog.title/>
+<b:else/>
+Page not found - <data:blog.title/>
+</b:if>
+</b:if>
+</title>
+<link href='https://fonts.googleapis.com' rel='preconnect'/>
+<link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
+<link href='https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;display=swap' rel='stylesheet'/>
+<b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
+<b:if cond='data:blog.url == data:blog.homepageUrl'>
+<style type='text/css'>.hero, .topics { display: block; }</style>
+</b:if>
+<b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+<style type='text/css'>.hero, .topics { display: block; }</style>
+</b:if>
+</head>
+<body expr:class='&quot;rm pt-&quot; + data:blog.pageType'>
+<a class='skip-link' href='#content'>Skip to content</a>
+
+<!-- ================= Header ================= -->
+<header class='site-header' id='site-header'>
+  <div class='container header-inner'>
+    <b:section class='brand-section' id='header' maxwidgets='1' showaddelement='no'>
+      <b:widget id='Header1' locked='true' title='Blog title (Header)' type='Header' version='1'>
+        <b:includable id='main'>
+          <a class='brand' expr:href='data:blog.homepageUrl'>
+            <b:if cond='data:useImage'>
+              <b:if cond='data:imagePlacement == &quot;REPLACE&quot;'>
+                <span class='brand-logo'><img expr:alt='data:title' expr:src='data:sourceUrl'/></span>
+              <b:else/>
+                <span aria-hidden='true' class='brand-mark'><img alt='' expr:src='data:sourceUrl'/></span>
+                <span class='brand-text'>
+                  <span class='brand-name'><data:title/></span>
+                  <b:if cond='data:description != &quot;&quot;'>
+                    <span class='brand-tagline'><data:description/></span>
+                  </b:if>
+                </span>
+              </b:if>
+            <b:else/>
+              <span aria-hidden='true' class='brand-mark'/>
+              <span class='brand-text'>
+                <span class='brand-name'><data:title/></span>
+                <b:if cond='data:description != &quot;&quot;'>
+                  <span class='brand-tagline'><data:description/></span>
+                </b:if>
+              </span>
+            </b:if>
+          </a>
+        </b:includable>
+      </b:widget>
+    </b:section>
+
+    <button aria-controls='site-nav' aria-expanded='false' aria-label='Open menu' class='nav-toggle' id='nav-toggle' type='button'>
+      <svg aria-hidden='true' class='icon-menu' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='3' x2='21' y1='6' y2='6'/><line x1='3' x2='21' y1='12' y2='12'/><line x1='3' x2='21' y1='18' y2='18'/></svg>
+      <svg aria-hidden='true' class='icon-close' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='18' x2='6' y1='6' y2='18'/><line x1='6' x2='18' y1='6' y2='18'/></svg>
+    </button>
+
+    <nav aria-label='Main' class='nav-drawer' id='site-nav'>
+      <b:section class='site-nav' id='menu' maxwidgets='1' showaddelement='no'>
+        <b:widget id='HTML1' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/#about">About</a></li>
+<li><a href="/#episodes">Episodes</a></li>
+<li><a href="/#topics">Topics</a></li>
+<li><a href="#connect">Connect</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='header-cta' id='header-cta' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML2' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<a href="https://www.youtube.com/">Watch on YouTube</a>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+    </nav>
+  </div>
+</header>
+
+<main id='content'>
+
+<!-- ================= Hero (shown on the homepage) ================= -->
+<section class='hero' id='about'>
+  <div class='container hero-inner'>
+    <div class='hero-grid'>
+      <b:section class='hero-main' id='hero-main' showaddelement='yes'>
+        <b:widget id='HTML3' locked='false' title='Culture. Conversation. Connection.' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<p>The River Musa Show explores governance, identity, and the lived experience of moving between African and European worlds. Hosted by Efic &mdash; governance professional, storyteller, and bridge-builder between two worlds.</p>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+            <div class='hero-copy'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <p class='hero-eyebrow'><data:title/></p>
+              </b:if>
+              <h1 class='hero-title'><data:blog.title/></h1>
+              <div class='hero-text'><data:content/></div>
+            </div>
+            <b:include name='quickedit'/>
+          </b:includable>
+        </b:widget>
+        <b:widget id='HTML4' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="https://www.youtube.com/">Watch on YouTube</a></li>
+<li><a href="/p/about.html">Learn More</a></li>
+<li><a href="/p/shop.html">Shop</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='hero-side' id='hero-side' showaddelement='yes'>
+        <b:widget id='HTML5' locked='false' title='Murdock Emisembe' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<p>Host &amp; Creator</p>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+            <div class='host-card'>
+              <div class='host-avatar'>
+                <svg aria-hidden='true' fill='none' height='44' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8' viewBox='0 0 24 24' width='44'><path d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'/><path d='M19 10v2a7 7 0 0 1-14 0v-2'/><line x1='12' x2='12' y1='19' y2='23'/><line x1='8' x2='16' y1='23' y2='23'/></svg>
+              </div>
+              <b:if cond='data:title != &quot;&quot;'>
+                <p class='host-name'><data:title/></p>
+              </b:if>
+              <div class='host-role'><data:content/></div>
+            </div>
+            <b:include name='quickedit'/>
+          </b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Posts ================= -->
+<div class='page-main' id='episodes'>
+  <div class='container main-grid'>
+    <div class='main-col'>
+      <b:section class='main' id='main' showaddelement='no'>
+        <b:widget id='Blog1' locked='true' title='Latest Episodes' type='Blog' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='showDateHeader'>false</b:widget-setting>
+            <b:widget-setting name='showShareButtons'>false</b:widget-setting>
+            <b:widget-setting name='authorLabel'>By</b:widget-setting>
+            <b:widget-setting name='showCommentLink'>true</b:widget-setting>
+            <b:widget-setting name='showAuthor'>true</b:widget-setting>
+            <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
+            <b:widget-setting name='reactionsLabel'/>
+            <b:widget-setting name='showAuthorProfile'>false</b:widget-setting>
+            <b:widget-setting name='style.layout'>1x1</b:widget-setting>
+            <b:widget-setting name='showLabels'>true</b:widget-setting>
+            <b:widget-setting name='showLocation'>false</b:widget-setting>
+            <b:widget-setting name='showTimestamp'>true</b:widget-setting>
+            <b:widget-setting name='postsPerAd'>3</b:widget-setting>
+            <b:widget-setting name='showBacklinks'>false</b:widget-setting>
+            <b:widget-setting name='showInlineAds'>false</b:widget-setting>
+            <b:widget-setting name='showReactions'>false</b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main' var='top'>
+            <b:if cond='data:blog.pageType == &quot;error_page&quot;'>
+              <b:include name='rmNotFound'/>
+            <b:else/>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='rmSingle'/>
+                </b:loop>
+                <b:include name='rmItemPager'/>
+              <b:else/>
+                <b:if cond='data:blog.pageType == &quot;static_page&quot;'>
+                  <b:loop values='data:posts' var='post'>
+                    <b:include data='post' name='rmSingle'/>
+                  </b:loop>
+                <b:else/>
+                  <b:include name='rmList'/>
+                </b:if>
+              </b:if>
+            </b:if>
+          </b:includable>
+
+          <b:includable id='rmList'>
+            <div class='section-head'>
+              <b:if cond='data:blog.url == data:blog.homepageUrl'>
+                <h2 class='section-title'><data:title/></h2>
+              <b:else/>
+              <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+                <h2 class='section-title'><data:title/></h2>
+              <b:else/>
+                <h1 class='section-title'>
+                <b:if cond='data:blog.searchQuery'>
+                  Search: <data:blog.searchQuery/>
+                <b:else/>
+                  <b:if cond='data:blog.url == data:blog.homepageUrl'>
+                    <data:title/>
+                  <b:else/>
+                    <b:if cond='data:blog.pageName != &quot;&quot;'>
+                      <data:blog.pageName/>
+                    <b:else/>
+                      <data:title/>
+                    </b:if>
+                  </b:if>
+                </b:if>
+              </h1>
+              </b:if>
+              </b:if>
+              <b:include name='rmSearchForm'/>
+            </div>
+            <b:if cond='data:numPosts != 0'>
+              <div class='post-grid'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='rmCard'/>
+                </b:loop>
+              </div>
+            <b:else/>
+              <div class='empty-state'>
+                <p>No posts found here yet.</p>
+                <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+              </div>
+            </b:if>
+            <b:if cond='data:newerPageUrl'>
+              <b:include name='rmListPager'/>
+            <b:else/>
+              <b:if cond='data:olderPageUrl'>
+                <b:include name='rmListPager'/>
+              </b:if>
+            </b:if>
+          </b:includable>
+
+          <b:includable id='rmCard' var='post'>
+            <article class='post-card'>
+              <a aria-hidden='true' class='post-card-media' expr:href='data:post.url' tabindex='-1'>
+                <b:if cond='data:post.firstImageUrl'>
+                  <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
+                <b:else/>
+                  <b:if cond='data:post.thumbnailUrl'>
+                    <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
+                  <b:else/>
+                    <span class='post-card-placeholder'>
+                      <svg aria-hidden='true' fill='none' height='40' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8' viewBox='0 0 24 24' width='40'><path d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'/><path d='M19 10v2a7 7 0 0 1-14 0v-2'/><line x1='12' x2='12' y1='19' y2='23'/><line x1='8' x2='16' y1='23' y2='23'/></svg>
+                    </span>
+                  </b:if>
+                </b:if>
+              </a>
+              <div class='post-card-body'>
+                <b:if cond='data:post.labels'>
+                  <div class='post-card-labels'>
+                    <b:loop index='x' values='data:post.labels' var='label'>
+                      <b:if cond='data:x == 0'>
+                        <a class='badge' expr:href='data:label.url'><data:label.name/></a>
+                      </b:if>
+                    </b:loop>
+                  </div>
+                </b:if>
+                <h3 class='post-card-title'>
+                  <a expr:href='data:post.url'><b:if cond='data:post.title'><data:post.title/><b:else/>Untitled post</b:if></a>
+                </h3>
+                <div class='post-card-meta'>
+                  <time class='js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time>
+                  <b:if cond='data:post.allowComments'>
+                    <b:if cond='data:post.numComments != 0'>
+                      <span class='post-card-comments'><data:post.numComments/> <b:if cond='data:post.numComments == 1'>comment<b:else/>comments</b:if></span>
+                    </b:if>
+                  </b:if>
+                </div>
+              </div>
+            </article>
+          </b:includable>
+
+          <b:includable id='rmSingle' var='post'>
+            <article class='post-single post'>
+              <a expr:name='data:post.id'/>
+              <header class='post-head'>
+                <b:if cond='data:post.labels'>
+                  <div class='post-labels'>
+                    <b:loop values='data:post.labels' var='label'>
+                      <a class='badge' expr:href='data:label.url' rel='tag'><data:label.name/></a>
+                    </b:loop>
+                  </div>
+                </b:if>
+                <b:if cond='data:post.title'>
+                  <h1 class='post-title entry-title'><data:post.title/></h1>
+                </b:if>
+                <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                  <div class='post-meta'>
+                    <b:if cond='data:post.authorProfileUrl'>
+                      <a class='post-author' expr:href='data:post.authorProfileUrl' rel='author'><data:post.author/></a>
+                    <b:else/>
+                      <span class='post-author'><data:post.author/></span>
+                    </b:if>
+                    <span aria-hidden='true' class='sep'/>
+                    <time class='published js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time>
+                    <b:include data='post' name='postQuickEdit'/>
+                  </div>
+                </b:if>
+              </header>
+              <div class='post-body entry-content' expr:id='&quot;post-body-&quot; + data:post.id'>
+                <data:post.body/>
+              </div>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                <div class='post-share'>
+                  <span class='post-share-label'>Share</span>
+                  <a expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+                  <a expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
+                  <a expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
+                  <a expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+                  <button expr:data-copy-url='data:post.url' type='button'>Copy link</button>
+                </div>
+              </b:if>
+              <b:include data='post' name='comment_picker'/>
+            </article>
+          </b:includable>
+
+          <b:includable id='rmItemPager'>
+            <nav aria-label='More posts' class='blog-pager-nav'>
+              <b:if cond='data:newerPageUrl'>
+                <a class='btn btn-outline newer' expr:href='data:newerPageUrl' expr:title='data:newerPageTitle'>&#8592; Newer post</a>
+              </b:if>
+              <b:if cond='data:olderPageUrl'>
+                <a class='btn btn-outline older' expr:href='data:olderPageUrl' expr:title='data:olderPageTitle'>Older post &#8594;</a>
+              </b:if>
+            </nav>
+          </b:includable>
+
+          <b:includable id='rmListPager'>
+            <nav aria-label='Pages' class='blog-pager-nav'>
+              <b:if cond='data:newerPageUrl'>
+                <a class='btn btn-outline newer' expr:href='data:newerPageUrl'>&#8592; Newer posts</a>
+              </b:if>
+              <b:if cond='data:olderPageUrl'>
+                <a class='btn btn-primary older' expr:href='data:olderPageUrl'>Older posts &#8594;</a>
+              </b:if>
+            </nav>
+          </b:includable>
+
+          <b:includable id='rmSearchForm'>
+            <form action='/search' class='search-form' method='get' role='search'>
+              <input aria-label='Search this site' name='q' placeholder='Search episodes...' type='search'/>
+              <button aria-label='Search' type='submit'>
+                <svg aria-hidden='true' fill='none' height='20' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='20'><circle cx='11' cy='11' r='8'/><line x1='21' x2='16.65' y1='21' y2='16.65'/></svg>
+              </button>
+            </form>
+          </b:includable>
+
+          <b:includable id='rmNotFound'>
+            <div class='not-found'>
+              <p class='not-found-code'>404</p>
+              <h1>Page not found</h1>
+              <p>The page you were looking for has moved or no longer exists.</p>
+              <b:include name='rmSearchForm'/>
+              <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+            </div>
+          </b:includable>
+
+          <!-- Comment includables below are Blogger's own, taken from the blog's original theme -->
+@@BLOG_COMMENTS@@
+        </b:widget>
+      </b:section>
+    </div>
+
+    <aside class='sidebar'>
+      <b:section class='sidebar-section' id='sidebar' preferred='yes'>
+        <b:widget id='PopularPosts1' locked='false' title='Popular Episodes' type='PopularPosts' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='numItemsToShow'>3</b:widget-setting>
+            <b:widget-setting name='showThumbnails'>true</b:widget-setting>
+            <b:widget-setting name='showSnippets'>false</b:widget-setting>
+            <b:widget-setting name='timeRange'>LAST_YEAR</b:widget-setting>
+          </b:widget-settings>
+          @@POPULARPOSTS_MAIN@@
+        </b:widget>
+        <b:widget id='Label2' locked='false' title='Topics' type='Label' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+            <b:widget-setting name='display'>LIST</b:widget-setting>
+            <b:widget-setting name='selectedLabelsList'/>
+            <b:widget-setting name='showType'>ALL</b:widget-setting>
+            <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+          </b:widget-settings>
+          @@LABEL_MAIN@@
+        </b:widget>
+      </b:section>
+    </aside>
+  </div>
+</div>
+
+<!-- ================= Topics (shown on the homepage) ================= -->
+<section class='topics' id='topics'>
+  <div class='container'>
+    <b:section class='topics-section' id='topics-widgets' showaddelement='yes'>
+      <b:widget id='Label1' locked='false' title='Topics' type='Label' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+          <b:widget-setting name='display'>LIST</b:widget-setting>
+          <b:widget-setting name='selectedLabelsList'/>
+          <b:widget-setting name='showType'>ALL</b:widget-setting>
+          <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+        </b:widget-settings>
+        @@LABEL_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= Footer ================= -->
+<footer class='site-footer' id='connect'>
+  <div class='container'>
+    <div class='footer-grid'>
+      <b:section class='footer-col' id='footer-about' preferred='yes'>
+        <b:widget id='HTML6' locked='false' title='About the Show' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<p>Culture. Conversation. Connection. Stories and conversations from the riverbank, where African and European worlds meet.</p>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='footer-connect' preferred='yes'>
+        <b:widget id='HTML7' locked='false' title='Connect' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="https://www.youtube.com/">YouTube</a></li>
+<li><a href="https://www.tiktok.com/">TikTok</a></li>
+<li><a href="https://www.instagram.com/">Instagram</a></li>
+<li><a href="https://www.linkedin.com/">LinkedIn</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='footer-explore' preferred='yes'>
+        <b:widget id='HTML8' locked='false' title='Explore' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/">Home</a></li>
+<li><a href="/#episodes">Episodes</a></li>
+<li><a href="/#topics">Topics</a></li>
+<li><a href="/p/about.html">About</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+    </div>
+    <div class='footer-bottom'>
+      <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/></p>
+      <b:section class='footer-credit' id='footer-credit' maxwidgets='1' showaddelement='no'>
+        <b:widget id='Attribution1' locked='false' title='' type='Attribution'>
+          <b:widget-settings>
+            <b:widget-setting name='copyright'/>
+          </b:widget-settings>
+          @@ATTRIBUTION_MAIN@@
+        </b:widget>
+      </b:section>
+    </div>
+  </div>
+</footer>
+
+<script type='text/javascript'>
+//<![CDATA[
+@@THEME_JS@@
+//]]>
+</script>
+</body>
+</html>
