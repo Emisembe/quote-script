@@ -27,6 +27,10 @@ def card_image(n):
     return 'data:image/svg+xml,' + svg.replace('#', '%23').replace("'", '%27').replace('<', '%3C').replace('>', '%3E')
 
 
+LOGO_SVG = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='64'%3E"
+            "%3Crect x='2' y='2' width='60' height='60' fill='none' stroke='%23E7B165' stroke-width='3'/%3E"
+            "%3Ctext x='32' y='42' font-family='Arial' font-weight='900' font-size='26' fill='%23E7B165' text-anchor='middle'%3EE%3C/text%3E"
+            "%3Ctext x='76' y='42' font-family='Arial' font-weight='900' font-size='26' fill='white'%3EEFIC%3C/text%3E%3C/svg%3E")
 MENU = ['Quality Management', '_ISO Compliance', '_Certification', 'Logistics', '_Supplier Audits',
         '_Risk Management', '_Supply Chain Optimization', '_Trade Facilitation', 'Business Process Optimization',
         '_Project Management', '_Process Mapping', 'contact', 'Our Services', '_Client Interest Form', 'News']
@@ -61,7 +65,9 @@ def sections(page):
               "<a class='fac-art' href='#'><i class='fa fa-facebook'></i><span class='resp_del'> Facebook</span></a>"
               "<a class='twi-art' href='#'><i class='fa fa-twitter'></i><span class='resp_del2'> Twitter</span></a>"
               "<a class='lin-art' href='#'><i class='fa fa-linkedin-square'></i><span class='resp_del5'> Linkedin</span></a>"
-              "<a class='wat-art' href='#'><i class='fa fa-whatsapp'></i><span class='resp_del5'> Whatsapp</span></a>"
+              "<a class='wat-art' href='#'><i class='fa fa-whatsapp'></i><span class='resp_del5'> WhatsApp</span></a>"
+              "<a class='tel-art' href='#'><i class='fa fa-telegram'></i><span class='resp_del5'> Telegram</span></a>"
+              "<a class='prt-art' href='#print' onclick='window.print(); return false;'><i class='fa fa-print'></i><span class='resp_del5'> Print</span></a>"
               "</div></div><div style='clear:both'></div></div></div>"
               "<div class='comments' id='comments'><h4>2 comments:</h4></div></div></div>")
     labels = ''.join(f"<span class='label-size'><a href='#'>{t}</a><span class='label-count'>{n}</span></span>"
@@ -89,8 +95,11 @@ def sections(page):
                           "<p></p><span class='send-bg'><input class='contact-form-button contact-form-button-submit' type='button' value='Send'/></span>"
                           "<span class='clear-bg'><input class='contact-form-button contact-form-button-submit clear-button' type='reset' value='Clear'/></span>"
                           '</form></div></div></div>',
-        'Footer social widget': social([('facebook', '#'), ('linkedin', 'https://www.linkedin.com/company/efic-consultancy-ltd/'),
-                                        ('youtube', 'https://youtube.com/')]),
+        'Footer social widget': social([('facebook', '#'), ('LinkedIn', 'https://www.linkedin.com/company/efic-consultancy-ltd/'),
+                                        ('youtube', 'https://youtube.com/'), ('WhatsApp', 'https://wa.me/'),
+                                        ('Telegram', 'https://t.me/'), ('TikTok', 'https://tiktok.com/'), ('X', 'https://x.com/'),
+                                        ('Email', 'mailto:askeficc@gmail.com'), ('Mastodon', 'https://mastodon.social/')]),
+        'footer-logo': "<div class='widget HTML'><div class='widget-content'><a href='home.html'><img alt='Efic Consultancy Ltd' src=\"" + LOGO_SVG + "\"/></a></div></div>",
         'Featured Post': '',
     }
 

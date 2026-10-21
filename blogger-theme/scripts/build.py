@@ -244,6 +244,66 @@ sub("</body>", """<script type='text/javascript'>
 # SmoothScroll (2014) hijacks the mouse wheel; CSS scroll-behavior replaces it.
 resub(r"<script language='javascript' type='text/javascript'>//<!\[CDATA\[\n// SmoothScroll for websites.*?//\]\]></script>\n", '')
 
+# Share box: Telegram and Print next to WhatsApp (WhatsApp now shows on desktop too, via brand.css)
+sub("<i class='fa fa-whatsapp'/><span class='resp_del5'> Whatsapp</span></a>",
+    "<i class='fa fa-whatsapp'/><span class='resp_del5'> WhatsApp</span></a>\n"
+    "<a class='tel-art' expr:href='&quot;https://t.me/share/url?url=&quot; + data:post.url + &quot;&amp;text=&quot; + data:post.title' "
+    "onclick='window.open(this.href, &apos;windowName&apos;, &apos;width=600, height=500, left=24, top=24, scrollbars, resizable&apos;); return false;' "
+    "rel='nofollow' target='_blank'><i class='fa fa-telegram'/><span class='resp_del5'> Telegram</span></a>\n"
+    "<a class='prt-art' href='#print' onclick='window.print(); return false;' rel='nofollow' title='Print this article'>"
+    "<i class='fa fa-print'/><span class='resp_del5'> Print</span></a>")
+
+# Footer logo: its own section with an HTML gadget, so it can be changed or
+# swapped in Layout (replaces the logo that was hard-coded in CSS).
+FOOTER_LOGO = ('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgG0aQBMZGz0PVqsPP8tF_fpSHG5I59mZOc4LhSQjlHYa9fN'
+               '67o1wDvlDFRIqt4QQpIGuZRGS9OQFv9DbQLOWqyHSFaYI8NpgWm0rvaFzOUd4cI88h7xAJEaqcZ6wwtg-7gO2N4iEfp43mbT3EXqnqDi1BetV'
+               'LV9hJsqyJ7XlMiEryrgjhhSbt62mxRKb-q/s320/white%20logo%20new%20Efic%20consultancy%20logo.png')
+sub("""<div id='jugas_footer'>
+        <div class='copy-container row'>
+         <div class='foot-social'>""", f"""<div id='jugas_footer'>
+        <div class='copy-container row'>
+         <div class='foot-logo'>
+<b:section class='foot-logo-section' id='footer-logo' maxwidgets='3' name='Footer Logo' showaddelement='yes'>
+  <b:widget id='HTML7' locked='false' title='' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[<a href="/" title="Efic Consultancy Ltd"><img alt="Efic Consultancy Ltd" src="{FOOTER_LOGO}"/></a>]]></b:widget-setting>
+    </b:widget-settings>
+    <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+  </b:widget>
+</b:section>
+         </div>
+         <div class='foot-social'>""")
+sub("body#layout .FollowByEmail .widget-content:before, body#layout .jugas_footer_copyright {",
+    "body#layout #jugas_footer .copy-container.row::before {\ndisplay:none;\n}\n"
+    "body#layout .FollowByEmail .widget-content:before, body#layout .jugas_footer_copyright {")
+
+# Social icons: lower-case the names typed in Layout ("LinkedIn" -> "linkedin")
+# so the matching icon is found; unknown names get a generic link icon (CSS).
+sub("""  var els = document.querySelectorAll('.footer-year');
+  for (var i = 0; i < els.length; i++) { els[i].textContent = y; }""",
+    """  var els = document.querySelectorAll('.footer-year');
+  for (var i = 0; i < els.length; i++) { els[i].textContent = y; }
+  var links = document.querySelectorAll('ul[id="social"] a');
+  for (var j = 0; j < links.length; j++) {
+    var name = (links[j].getAttribute('title') || '').trim();
+    links[j].className = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    links[j].setAttribute('aria-label', name);
+    if (/^https?:/.test(links[j].getAttribute('href') || '')) {
+      links[j].setAttribute('target', '_blank');
+      links[j].setAttribute('rel', 'noopener');
+    }
+  }""")
+
 out = text
 if '--check' in sys.argv:
     if not OUT.exists() or OUT.read_text(encoding='utf-8') != out:

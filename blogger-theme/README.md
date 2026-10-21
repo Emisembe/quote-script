@@ -33,6 +33,13 @@ python3 scripts/build.py && python3 scripts/check.py theme-eficc.xml && python3 
 - Post, page and 404 headers are a compact navy bar.
 - Section titles have gold rules. Expertise tiles are cards. The process rings and the post-card edge are gold, and sidebar titles use the guide's gold left edge.
 
+**Sharing, social links and footer logo**
+- Posts have WhatsApp (now on desktop too), Telegram and Print share buttons. Print gives a clean, EFIC-headed article: no menu, sidebar, comments or footer, and each link's address is printed after it.
+- **Social icons:** in **Layout → Footer Social Widget** (or **Top Social Widget**) → *Edit* → *Add new link*. The **Link name** chooses the icon, capitals don't matter, and any other name gets a link icon. Links left as `#` stay hidden.
+  - **Brand icons:** facebook, twitter, x, linkedin, instagram, youtube, tiktok, whatsapp, telegram, pinterest, github, medium, reddit, snapchat, spotify, twitch, vimeo, flickr, slack, wechat, xing, quora, google, tumblr, behance, dribbble, soundcloud, skype, rss.
+  - **Other icons:** email, website, phone, podcast.
+- **Footer logo:** **Layout → Footer Logo → HTML/JavaScript → Edit**. Change the image link, or delete the gadget and use *Add a Gadget* in the same spot.
+
 **Fixes inherited from the 2017 template**
 - Pinch-to-zoom works again (`maximum-scale=1` removed).
 - Placeholder meta removed (`YOUR DESCRIPTION HERE`, `@username`, `YOUR-LOGO-IMAGE.png`). Each post now gets its own `og:url`, title and image, and pages without an image fall back to the logo.
