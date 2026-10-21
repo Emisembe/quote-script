@@ -3044,6 +3044,46 @@ div#sora_blogger_cntct_form span.send-bg:hover:before, div#sora_blogger_cntct_fo
   blockquote { background: none; }
 }
 
+/* ---------- One menu bar: Layout logo left, Layout menu right ---------- */
+html { scroll-padding-top: 84px; }
+.tm-menu, .item .tm-menu, .static_page .tm-menu, .error_page .tm-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  height: 72px;
+  text-align: left;
+  background: rgba(20, 33, 61, 0.97);
+  border-bottom: 2px solid #E7B165;
+  box-shadow: 0 6px 18px rgba(15, 26, 48, 0.25);
+  transition: background .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+#outer-wrapper.home .tm-menu:not(.is-scrolled) {
+  background: transparent;
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+.tm-menu .menu-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+.tm-menu #menu-logo { flex: 0 0 auto; margin: 0 24px 0 0; }
+.tm-menu #menu-logo .widget, .tm-menu #menu-logo .widget-content, .tm-menu #menu-logo p { margin: 0; line-height: 0; }
+.tm-menu #menu-logo h2.title { display: none; }
+.tm-menu #menu-logo a { display: inline-block; }
+.tm-menu #menu-logo img { display: block; width: auto; height: auto; max-height: 48px; max-width: 180px; padding: 0; }
+.tm-menu #menu { flex: 1 1 auto; height: 72px; margin: 0; text-align: right; }
+#outer-wrapper #menu ul > li > a { line-height: 72px; padding: 0 11px; font-size: 12.5px; }
+#outer-wrapper #menu ul > li > ul > li a { line-height: 40px; padding: 0 14px; }
+#menu ul#nav1 > li:last-child > a { padding-right: 0; }
+#menu ul > li > ul { text-align: left; }
+#menu ul#nav1 > li:nth-last-child(-n+2) > ul { left: auto; right: 0; }
+#menu ul#nav1 > li:nth-last-child(-n+2) > ul > li > ul { left: auto; right: 180px; }
+.item #header-wrapper, .static_page #header-wrapper, .error_page #header-wrapper { padding-top: 96px; }
+
 /* ---------- Responsive ---------- */
 @media only screen and (max-width: 1100px) {
   .map-me { margin-top: 28px; }
@@ -3073,6 +3113,32 @@ div#sora_blogger_cntct_form span.send-bg:hover:before, div#sora_blogger_cntct_fo
   #header h1, #header h1 a { font-size: 32px; }
   .item #header h1, .item #header h1 a, .static_page #header h1, .static_page #header h1 a { font-size: 26px; }
 }
+@media only screen and (max-width: 1180px) {
+  #nav1, .tm-menu #menu { display: none; }
+  .tm-menu .slicknav_menu {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0 16px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .tm-menu .slicknav_btn, .tm-menu .slicknav_nav { pointer-events: auto; }
+  .tm-menu .slicknav_btn { float: right; margin: 17px 0 0; }
+  .tm-menu .slicknav_nav { margin-top: 15px; }
+}
+@media only screen and (max-width: 600px) {
+  .tm-menu, .item .tm-menu, .static_page .tm-menu, .error_page .tm-menu, .tm-menu .menu-wrap, .tm-menu #menu { height: 64px; }
+  .tm-menu #menu-logo img { max-height: 40px; max-width: 150px; }
+  .tm-menu .slicknav_btn { margin-top: 13px; }
+  .tm-menu .slicknav_nav { margin-top: 11px; }
+  .item #header-wrapper, .static_page #header-wrapper, .error_page #header-wrapper { padding-top: 84px; }
+}
+@media only screen and (max-width: 1200px) {
+  .tm-menu .row.menu-wrap { padding-left: 16px !important; padding-right: 16px !important; }
+}
 ]]></b:skin>
 <style>
 /*-------Typography and ShortCodes-------*/
@@ -3098,6 +3164,9 @@ text-transform:uppercase;
 letter-spacing:1.5px;
 }
 
+body#layout .menu-wrap {
+display: block;
+}
 body#layout .tm-menu, body#layout #menu {
 height: auto;
 position:static;
@@ -3217,28 +3286,27 @@ var pagenav_next = "Next";
 </head>
 <body expr:class='data:blog.pageType'>
 &lt;div id=&quot;outer-wrapper&quot; class=&quot;<data:blog.pageType/><b:if cond='data:blog.url == data:blog.homepageUrl or data:blog.canonicalUrl == data:blog.homepageUrl'> home</b:if><b:if cond='data:blog.pageType == &quot;static_page&quot;'> item</b:if><b:if cond='data:blog.pageType == &quot;archive&quot;'> index</b:if>&quot;&gt;
-<b:if cond='data:blog.url == data:blog.homepageUrl or data:blog.canonicalUrl == data:blog.homepageUrl'>
-<div class='scroll-header' id='head-trigger'>
-<div class='scroll-head-wrap row'>
-<div class='scrollin-logo'>
-    <span class='logo-title'>
-        <img alt='Efic Logo' class='logo-img' src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhucOvxCXLKVV7Z2TkCIDpfkNwX0oKO29CvT0-YIzfjrwXvRSRtSt4zXpUHdVGQUhUJ5vGEnxjdHKPobnNDvWEZ9WzpGqFx0DpclJzz8C1nkfozQ3GSoJyVrhrVpgHbdf7-2PghqXIIAA89mhHWzEsB4fz-DkrbAXa6FZnuZAw69j-oGTLEil53QfQR1Nw/s600/Efic%20consultancy%20web%20logo.png'/>
-    </span>
-</div>
-<div class='scrolling-menu'>
-<ul id='nav'>
-		<li class='current'><a href='#header-wrapper'>Home</a></li>
-		<li><a href='#section-2'>Services</a></li>
-  <li><a href='#section-3'>Works</a></li>
-<li><a href='#main-wrapper'>Portfolio</a></li>
-<li><a href='#section-5'>About</a></li>
-<li><a href='#section-6'>Contact</a></li>
-	</ul><div class='menu-mobile2'/>
-  </div></div></div>
-  </b:if>
 <div id='header-wrapper'>
 <div class='tm-menu'>
 <div class='row menu-wrap'>
+        <b:section class='menu-logo' id='menu-logo' maxwidgets='1' name='Menu Logo' showaddelement='yes'>
+          <b:widget id='HTML8' locked='false' title='' type='HTML'>
+            <b:widget-settings>
+              <b:widget-setting name='content'><![CDATA[<a href="/" title="Efic Consultancy Ltd"><img alt="Efic Consultancy Ltd" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhucOvxCXLKVV7Z2TkCIDpfkNwX0oKO29CvT0-YIzfjrwXvRSRtSt4zXpUHdVGQUhUJ5vGEnxjdHKPobnNDvWEZ9WzpGqFx0DpclJzz8C1nkfozQ3GSoJyVrhrVpgHbdf7-2PghqXIIAA89mhHWzEsB4fz-DkrbAXa6FZnuZAw69j-oGTLEil53QfQR1Nw/s600/Efic%20consultancy%20web%20logo.png"/></a>]]></b:widget-setting>
+            </b:widget-settings>
+            <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+          </b:widget>
+        </b:section>
         <b:section class='menu' id='menu' maxwidgets='1' name='Main Menu' showaddelement='yes'>
           <b:widget id='LinkList210' locked='true' title='Menu' type='LinkList' version='1'>
             <b:widget-settings>
@@ -5511,30 +5579,6 @@ display:i};a[s.property]="",e.css(a),e.outerHeight(!1)>n&&(n=e.outerHeight(!1)),
 this},r._applyDataApi=function(){var e={};t("[data-match-height], [data-mh]").each(function(){var o=t(this),i=o.attr("data-mh")||o.attr("data-match-height");i in e?e[i]=e[i].add(o):e[i]=o}),t.each(e,function(){this.matchHeight(!0)})};var s=function(e){r._beforeUpdate&&r._beforeUpdate(e,r._groups),t.each(r._groups,function(){r._apply(this.elements,this.options)}),r._afterUpdate&&r._afterUpdate(e,r._groups)};r._update=function(i,a){if(a&&"resize"===a.type){var n=t(window).width();if(n===e)return;e=n;
 }i?-1===o&&(o=setTimeout(function(){s(a),o=-1},r._throttle)):s(a)},t(r._applyDataApi),t(window).bind("load",function(t){r._update(!1,t)}),t(window).bind("resize orientationchange",function(t){r._update(!0,t)})});
 
-$(function () {
-
-		 $(window).on("scroll", function(e){
-    
-    var height = 0;
-    var scrollTop = $(this).scrollTop();
-    console.log(scrollTop);
-    
-    if ( scrollTop < 200 ) {
-      height = $("#head-trigger").height();
-      $("#head-trigger").removeClass("scrolled-header");
-      $("#head-trigger").fadeOut();
-    }
-    
-    else {
-      $("#head-trigger").addClass("scrolled-header");
-      $("body").css({"marginTop": height});
-      $("#head-trigger").fadeIn();
-    }
-    
-  });
-  
-
-	});
 
 $(document).ready(function($) {
     var k = -1,
@@ -5557,10 +5601,6 @@ $(document).ready(function($) {
 $(document).ready(function() {
  $('.menu').slicknav({
         prependTo: '.menu-mobile',
-        label: ''
-    });
-$('.scrolling-menu').slicknav({
-        prependTo: '.menu-mobile2',
         label: ''
     });
 });
@@ -5934,11 +5974,6 @@ $(".comments .avatar-image-container img").attr("src", function($this, img) {
 
 })( jQuery, window , document );
 //]]></script>
-<script>
-		$(document).ready(function() {
-			$(&#39;#nav&#39;).onePageNav();
-		});
-	</script>
 
 <script>
 //<![CDATA[
@@ -6402,6 +6437,14 @@ article {
   var y = String(new Date().getFullYear());
   var els = document.querySelectorAll('.footer-year');
   for (var i = 0; i < els.length; i++) { els[i].textContent = y; }
+  var bar = document.querySelector('.tm-menu');
+  if (bar) {
+    var onScroll = function () {
+      bar.className = bar.className.replace(/\s*is-scrolled/g, '') + (window.pageYOffset > 40 ? ' is-scrolled' : '');
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
   var links = document.querySelectorAll('ul[id="social"] a');
   for (var j = 0; j < links.length; j++) {
     var name = (links[j].getAttribute('title') || '').trim();

@@ -99,6 +99,7 @@ def sections(page):
                                         ('youtube', 'https://youtube.com/'), ('WhatsApp', 'https://wa.me/'),
                                         ('Telegram', 'https://t.me/'), ('TikTok', 'https://tiktok.com/'), ('X', 'https://x.com/'),
                                         ('Email', 'mailto:askeficc@gmail.com'), ('Mastodon', 'https://mastodon.social/')]),
+        'menu-logo': "<div class='widget HTML'><div class='widget-content'><a href='home.html'><img alt='Efic Consultancy Ltd' src=\"" + LOGO_SVG + "\"/></a></div></div>",
         'footer-logo': "<div class='widget HTML'><div class='widget-content'><a href='home.html'><img alt='Efic Consultancy Ltd' src=\"" + LOGO_SVG + "\"/></a></div></div>",
         'Featured Post': '',
     }

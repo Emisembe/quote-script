@@ -40,6 +40,11 @@ python3 scripts/build.py && python3 scripts/check.py theme-eficc.xml && python3 
   - **Other icons:** email, website, phone, podcast.
 - **Footer logo:** **Layout → Footer Logo → HTML/JavaScript → Edit**. Change the image link, or delete the gadget and use *Add a Gadget* in the same spot.
 
+**One menu bar**
+- The homepage-only second menu, with its fixed links and logo, is gone. One bar stays fixed at the top of every page: the logo on the left and the **Main Menu** gadget on the right, dropdowns included. It's see-through over the homepage photo and solid navy once you scroll. Below 1180px wide it switches to a hamburger button on the right.
+- **Logo:** **Layout → Menu Logo → HTML/JavaScript → Edit**, then change the image link. You can also delete the gadget and use *Add a Gadget* in the same spot.
+- **Menu links:** **Layout → Main Menu → Edit**. Start a name with `_` to put it in the dropdown under the item above it. To jump to a homepage section, use links like `/#section-2` (Expertise), `/#section-3` (Process), `/#main-wrapper` (Work & Insights), `/#section-5` (Videos) or `/#section-6` (Contact).
+
 **Fixes inherited from the 2017 template**
 - Pinch-to-zoom works again (`maximum-scale=1` removed).
 - Placeholder meta removed (`YOUR DESCRIPTION HERE`, `@username`, `YOUR-LOGO-IMAGE.png`). Each post now gets its own `og:url`, title and image, and pages without an image fall back to the logo.

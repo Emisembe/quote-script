@@ -304,6 +304,51 @@ sub("""  var els = document.querySelectorAll('.footer-year');
     }
   }""")
 
+# One menu: drop the homepage-only scrolling header (hard-coded links and logo)
+# and turn the Layout menu into a fixed bar with a Layout-editable logo on the left.
+resub(r"<b:if cond='[^']*'>\n<div class='scroll-header' id='head-trigger'>.*?</b:if>\n(?=<div id='header-wrapper'>)", '')
+resub(r"\$\(function \(\) \{\s*\$\(window\)\.on\(\"scroll\", function\(e\)\{.*?\}\);\s*\}\);\n", '')
+sub("""$('.scrolling-menu').slicknav({
+        prependTo: '.menu-mobile2',
+        label: ''
+    });
+""", '')
+resub(r"<script>\s*\$\(document\)\.ready\(function\(\) \{\s*\$\(&#39;#nav&#39;\)\.onePageNav\(\);\s*\}\);\s*</script>\n", '')
+
+sub("""<div class='row menu-wrap'>
+        <b:section class='menu' id='menu'""", f"""<div class='row menu-wrap'>
+        <b:section class='menu-logo' id='menu-logo' maxwidgets='1' name='Menu Logo' showaddelement='yes'>
+          <b:widget id='HTML8' locked='false' title='' type='HTML'>
+            <b:widget-settings>
+              <b:widget-setting name='content'><![CDATA[<a href="/" title="Efic Consultancy Ltd"><img alt="Efic Consultancy Ltd" src="{LOGO}"/></a>]]></b:widget-setting>
+            </b:widget-settings>
+            <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+          </b:widget>
+        </b:section>
+        <b:section class='menu' id='menu'""")
+sub("body#layout .tm-menu, body#layout #menu {", "body#layout .menu-wrap {\ndisplay: block;\n}\nbody#layout .tm-menu, body#layout #menu {")
+
+# Menu bar is see-through over the homepage hero until the visitor scrolls.
+sub("""  var links = document.querySelectorAll('ul[id="social"] a');""", """  var bar = document.querySelector('.tm-menu');
+  if (bar) {
+    var onScroll = function () {
+      bar.className = bar.className.replace(/\\s*is-scrolled/g, '') + (window.pageYOffset > 40 ? ' is-scrolled' : '');
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+  var links = document.querySelectorAll('ul[id="social"] a');""")
+
 out = text
 if '--check' in sys.argv:
     if not OUT.exists() or OUT.read_text(encoding='utf-8') != out:
