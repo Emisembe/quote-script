@@ -432,6 +432,19 @@ border: 0;
 # homepage tiles) points at whichever blog it is installed on, not eficc.
 sub('https://eficc.blogspot.com/p/', '/p/', count=31)
 
+# Share bar on Pages as well as Posts (it was posts-only); related posts stay
+# posts-only because pages have no labels.
+sub("""<b:if cond='data:blog.pageType == &quot;item&quot;'>
+<div class='share-box'>""", """<b:if cond='data:blog.pageType in {&quot;static_page&quot;,&quot;item&quot;}'>
+<div class='share-box'>""")
+sub("""      <div style='clear:both'/>  
+<div id='related-posts'>""", """      <div style='clear:both'/>  
+</b:if>
+<b:if cond='data:blog.pageType == &quot;item&quot;'>
+<div id='related-posts'>""")
+# Leftover non-HTML <whatsapp> tag from the template (the real button is wat-art)
+resub(r"<whatsapp expr:href='data:post.url' expr:src='data:post.firstImageUrl' expr:text='data:post.title'/>\n", '')
+
 out = text
 if '--check' in sys.argv:
     if not OUT.exists() or OUT.read_text(encoding='utf-8') != out:

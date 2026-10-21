@@ -118,8 +118,12 @@ def resolve_ifs(src, page):
                 val = page == 'home'
             elif 'pageType !=' in cond:
                 val = page == 'home' and False   # index-only infinite scroll & smooth scroll: skip in preview
+            elif 'pageType in' in cond:
+                kind = {'item': '"item"', 'static': '"static_page"'}.get(page, '"index"')
+                val = kind in cond
             elif 'pageType ==' in cond:
-                val = ('"item"' in cond) == (page == 'item')
+                kind = {'item': '"item"', 'static': '"static_page"'}.get(page, '"index"')
+                val = kind in cond
             else:
                 val = True
             stack.append([val, val])
@@ -144,7 +148,7 @@ def render(page):
     head_scripts = re.findall(r"<script src='[^']*jquery[^']*' type='text/javascript'/>", head)
 
     body = THEME.split('<body', 1)[1].split('>', 1)[1].split('</body>', 1)[0]
-    sample = sections('home' if page == 'layout' else page)
+    sample = sections({'layout': 'home', 'static': 'item'}.get(page, page))
 
     def widget_html(wid, title, wtype, wsrc):
         if page == 'layout':
@@ -171,7 +175,7 @@ def render(page):
 
     body = re.sub(r"<b:section ([^>]*)>(.*?)</b:section>", section_html, body, flags=re.S)
     body = resolve_ifs(body, 'home' if page == 'layout' else page)
-    cls = 'index home' if page in ('home', 'layout') else 'item'
+    cls = {'home': 'index home', 'layout': 'index home', 'item': 'item', 'static': 'static_page item'}[page]
     body = re.sub(r'&lt;div id=&quot;outer-wrapper&quot; class=&quot;.*?&quot;&gt;', f'<div id="outer-wrapper" class="{cls}">', body, count=1)
     body = body.replace('&lt;/div&gt;', '</div>')
     body = re.sub(r"<(iframe|textarea|span|div|ul|li|h1|a|i|p)(\s[^<>]*?)?/>", lambda m: f'<{m.group(1)}{m.group(2) or ""}></{m.group(1)}>', body)
@@ -180,7 +184,7 @@ def render(page):
     body = re.sub(r'(<script[^>]*>)((?:(?!</script>).)*)(</script>)',
                   lambda m: m.group(0) if 'CDATA' in m.group(2) else m.group(1) + html.unescape(m.group(2)) + m.group(3),
                   body, flags=re.S)
-    if page == 'item':
+    if page in ('item', 'static'):
         body = body.replace("<div id='related-posts'>", "<div id='related-posts' style='display:none'>")
     if page == 'layout':
         body = re.sub(r'<script.*?</script>', '', body, flags=re.S)
@@ -190,11 +194,11 @@ def render(page):
             f"<title>EFIC preview ({page})</title>{links}"
             f"{''.join(s.replace('/>', '></script>') for s in head_scripts)}"
             f"<style>{skin}</style>{head_styles}</head>"
-            f"<body class='{'item' if page == 'item' else 'index'}'{' id=\"layout\"' if page == 'layout' else ''}>{body}</body></html>")
+            f"<body class='{ {'item': 'item', 'static': 'static_page'}.get(page, 'index') }'{' id=\"layout\"' if page == 'layout' else ''}>{body}</body></html>")
 
 
 OUT.mkdir(exist_ok=True)
-for page in ('home', 'item', 'layout'):
-    name = {'home': 'home.html', 'item': 'post.html', 'layout': 'layout.html'}[page]
+for page in ('home', 'item', 'static', 'layout'):
+    name = {'home': 'home.html', 'item': 'post.html', 'static': 'page.html', 'layout': 'layout.html'}[page]
     (OUT / name).write_text(render(page), encoding='utf-8')
     print(f'wrote preview/{name}')

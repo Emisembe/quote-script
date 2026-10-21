@@ -4539,7 +4539,7 @@ Driving Efficacy and Effective Solutions.
     </b:if>
 
     <div class='post-footer'>
-<b:if cond='data:blog.pageType == &quot;item&quot;'>
+<b:if cond='data:blog.pageType in {&quot;static_page&quot;,&quot;item&quot;}'>
 <div class='share-box'>
  
           <h8 class='share-title'>Share This:</h8>
@@ -4552,7 +4552,6 @@ Driving Efficacy and Effective Solutions.
 
 <a class='lin-art' expr:href='&quot;https://www.linkedin.com/shareArticle?url=&quot; + data:post.url + &quot;&amp;title=&quot;+ data:post.title' onclick='window.open(this.href, &apos;windowName&apos;, &apos;width=600, height=400, left=24, top=24, scrollbars, resizable&apos;); return false;' rel='nofollow' target='_blank'><i class='fa fa-linkedin-square'/><span class='resp_del5'> Linkedin</span></a>
 
-<whatsapp expr:href='data:post.url' expr:src='data:post.firstImageUrl' expr:text='data:post.title'/>
 <a class='wat-art' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.title + &quot; | &quot; + data:post.url' rel='nofollow' target='_blank'><i class='fa fa-whatsapp'/><span class='resp_del5'> WhatsApp</span></a>
 <a class='tel-art' expr:href='&quot;https://t.me/share/url?url=&quot; + data:post.url + &quot;&amp;text=&quot; + data:post.title' onclick='window.open(this.href, &apos;windowName&apos;, &apos;width=600, height=500, left=24, top=24, scrollbars, resizable&apos;); return false;' rel='nofollow' target='_blank'><i class='fa fa-telegram'/><span class='resp_del5'> Telegram</span></a>
 <a class='prt-art' href='#print' onclick='window.print(); return false;' rel='nofollow' title='Print this article'><i class='fa fa-print'/><span class='resp_del5'> Print</span></a>
@@ -4561,6 +4560,8 @@ Driving Efficacy and Effective Solutions.
          </div>
                  
       <div style='clear:both'/>  
+</b:if>
+<b:if cond='data:blog.pageType == &quot;item&quot;'>
 <div id='related-posts'>
         <b:if cond='data:post.labels'>
           <b:loop values='data:post.labels' var='label'>
