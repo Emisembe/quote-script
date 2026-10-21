@@ -1,0 +1,684 @@
+{
+ "_about": "Facts taken from a theme export that Blogger generated and accepted. scripts/check.py only allows what is listed here, plus 'extra' entries (each needs a reason).",
+ "html_attributes": [
+  "b:version",
+  "class",
+  "expr:dir"
+ ],
+ "b_tags": [
+  "b:attr",
+  "b:else",
+  "b:elseif",
+  "b:if",
+  "b:includable",
+  "b:include",
+  "b:loop",
+  "b:section",
+  "b:skin",
+  "b:template-skin",
+  "b:widget",
+  "b:widget-setting",
+  "b:widget-settings"
+ ],
+ "data_tags": [
+  "data:adCode",
+  "data:attribution",
+  "data:backgroundPositionStyleStr",
+  "data:backlink.adminClass",
+  "data:backlink.author",
+  "data:backlink.deleteUrl",
+  "data:backlink.snippet",
+  "data:backlink.timestamp",
+  "data:backlink.title",
+  "data:backlink.url",
+  "data:blog.blogId",
+  "data:blog.canonicalUrl",
+  "data:blog.enabledCommentProfileImages",
+  "data:blog.homepageUrl",
+  "data:blog.languageDirection",
+  "data:blog.metaDescription",
+  "data:blog.pageName",
+  "data:blog.pageTitle",
+  "data:blog.pageType",
+  "data:blog.postImageThumbnailUrl",
+  "data:blog.postImageUrl",
+  "data:blog.searchUrl",
+  "data:blog.title",
+  "data:blog.url",
+  "data:blogCommentMessage",
+  "data:blogTeamBlogMessage",
+  "data:cmtIframeInitialHeight",
+  "data:comment.adminClass",
+  "data:comment.anchorName",
+  "data:comment.author",
+  "data:comment.authorAvatarImage",
+  "data:comment.authorClass",
+  "data:comment.authorUrl",
+  "data:comment.body",
+  "data:comment.cmtBodyIdPostfix",
+  "data:comment.deleteUrl",
+  "data:comment.favicon",
+  "data:comment.isDeleted",
+  "data:comment.timestamp",
+  "data:comment.url",
+  "data:commentPostedByMsg",
+  "data:contactFormSendMsg",
+  "data:content",
+  "data:description",
+  "data:desktopLinkMsg",
+  "data:desktopLinkUrl",
+  "data:display",
+  "data:f.feedType",
+  "data:f.mimeType",
+  "data:f.name",
+  "data:f.url",
+  "data:feedLinks",
+  "data:feedLinksMsg",
+  "data:height",
+  "data:homeMsg",
+  "data:imagePlacement",
+  "data:label.count",
+  "data:label.cssSize",
+  "data:label.isLast",
+  "data:label.name",
+  "data:label.url",
+  "data:labels",
+  "data:link.name",
+  "data:link.target",
+  "data:links",
+  "data:messages.search",
+  "data:mobile",
+  "data:mobileLinkMsg",
+  "data:mobileLinkUrl",
+  "data:navMessage",
+  "data:newerPageTitle",
+  "data:newerPageUrl",
+  "data:olderPageTitle",
+  "data:olderPageUrl",
+  "data:post.addCommentOnclick",
+  "data:post.addCommentUrl",
+  "data:post.adminClass",
+  "data:post.allowComments",
+  "data:post.allowIframeComments",
+  "data:post.allowNewComments",
+  "data:post.appRpcRelayPath",
+  "data:post.author",
+  "data:post.authorAboutMe",
+  "data:post.authorLabel",
+  "data:post.authorPhoto.url",
+  "data:post.authorProfileUrl",
+  "data:post.avatarIndentClass",
+  "data:post.backlinks",
+  "data:post.backlinksLabel",
+  "data:post.body",
+  "data:post.canonicalUrl",
+  "data:post.cmtfpIframe",
+  "data:post.commentConfig",
+  "data:post.commentFormIframeSrc",
+  "data:post.commentHtml",
+  "data:post.commentJso",
+  "data:post.commentLabelFull",
+  "data:post.commentMsgs",
+  "data:post.commentPagingRequired",
+  "data:post.commentRangeText",
+  "data:post.commentSource",
+  "data:post.commentSrc",
+  "data:post.comments",
+  "data:post.createLinkLabel",
+  "data:post.createLinkUrl",
+  "data:post.dateHeader",
+  "data:post.dummyTag",
+  "data:post.editUrl",
+  "data:post.emailPostUrl",
+  "data:post.embedCommentForm",
+  "data:post.feedLinks",
+  "data:post.firstImageUrl",
+  "data:post.googlePlusShareTag",
+  "data:post.hasJumpLink",
+  "data:post.hasNewerLinks",
+  "data:post.hasOlderLinks",
+  "data:post.href",
+  "data:post.id",
+  "data:post.iframeCommentSrc",
+  "data:post.jumpText",
+  "data:post.labels",
+  "data:post.link",
+  "data:post.location",
+  "data:post.location.mapsUrl",
+  "data:post.location.name",
+  "data:post.newLinkClass",
+  "data:post.newerLinkText",
+  "data:post.newerLinkUrl",
+  "data:post.newestLinkText",
+  "data:post.newestLinkUrl",
+  "data:post.noNewCommentsText",
+  "data:post.numBacklinks",
+  "data:post.numComments",
+  "data:post.oldLinkClass",
+  "data:post.olderLinkText",
+  "data:post.olderLinkUrl",
+  "data:post.oldestLinkText",
+  "data:post.oldestLinkUrl",
+  "data:post.reactionsUrl",
+  "data:post.sharePostUrl",
+  "data:post.showBacklinks",
+  "data:post.showThreadedComments",
+  "data:post.snippet",
+  "data:post.thumbnail",
+  "data:post.thumbnailUrl",
+  "data:post.timestamp",
+  "data:post.timestampISO8601",
+  "data:post.timestampLabel",
+  "data:post.title",
+  "data:post.url",
+  "data:post.url.canonical",
+  "data:post.url.canonical.http",
+  "data:post.viewType",
+  "data:postCommentMsg",
+  "data:postLabelsLabel",
+  "data:postLocationLabel",
+  "data:posts",
+  "data:shareMsg",
+  "data:showCmtPopup",
+  "data:showFreqNumbers",
+  "data:showSnippets",
+  "data:showThumbnails",
+  "data:sourceUrl",
+  "data:thumbnailSize",
+  "data:title",
+  "data:top.authorLabel",
+  "data:top.backlinkLabel",
+  "data:top.blogThisMsg",
+  "data:top.deleteBacklinkMsg",
+  "data:top.deleteCommentMsg",
+  "data:top.editPostMsg",
+  "data:top.emailPostMsg",
+  "data:top.emailThisMsg",
+  "data:top.googlePlusBootstrap",
+  "data:top.reactionsLabel",
+  "data:top.shareToFacebookMsg",
+  "data:top.shareToPinterestMsg",
+  "data:top.shareToTwitterMsg",
+  "data:top.showAuthor",
+  "data:top.showBlogThisButton",
+  "data:top.showDummy",
+  "data:top.showEmailButton",
+  "data:top.showFacebookButton",
+  "data:top.showLocation",
+  "data:top.showMobileShare",
+  "data:top.showPinterestButton",
+  "data:top.showPlusOne",
+  "data:top.showReactions",
+  "data:top.showTimestamp",
+  "data:top.showTwitterButton",
+  "data:top.timestampLabel",
+  "data:useImage",
+  "data:view.isPreview",
+  "data:view.isSearch",
+  "data:view.search.query.escaped",
+  "data:widget.instanceId",
+  "data:width",
+  "data:widthStyleStr"
+ ],
+ "section_attributes": [
+  "class",
+  "id",
+  "maxwidgets",
+  "name",
+  "preferred",
+  "showaddelement"
+ ],
+ "widget_attributes": [
+  "id",
+  "locked",
+  "title",
+  "type",
+  "version"
+ ],
+ "widget_types": {
+  "AdSense": {
+   "versions": [
+    ""
+   ],
+   "settings": [],
+   "blank_ok": [],
+   "values": {}
+  },
+  "Attribution": {
+   "versions": [
+    ""
+   ],
+   "settings": [
+    "copyright"
+   ],
+   "blank_ok": [
+    "copyright"
+   ],
+   "values": {}
+  },
+  "Blog": {
+   "versions": [
+    "1"
+   ],
+   "settings": [
+    "authorLabel",
+    "postsPerAd",
+    "reactionsLabel",
+    "showAuthor",
+    "showAuthorProfile",
+    "showBacklinks",
+    "showCommentLink",
+    "showDateHeader",
+    "showInlineAds",
+    "showLabels",
+    "showLocation",
+    "showReactions",
+    "showShareButtons",
+    "showTimestamp",
+    "style.layout",
+    "style.unittype"
+   ],
+   "blank_ok": [
+    "reactionsLabel"
+   ],
+   "values": {
+    "authorLabel": [
+     "By"
+    ],
+    "postsPerAd": [
+     "1"
+    ],
+    "showAuthor": [
+     "false"
+    ],
+    "showAuthorProfile": [
+     "false"
+    ],
+    "showBacklinks": [
+     "false"
+    ],
+    "showCommentLink": [
+     "true"
+    ],
+    "showDateHeader": [
+     "true"
+    ],
+    "showInlineAds": [
+     "false"
+    ],
+    "showLabels": [
+     "true"
+    ],
+    "showLocation": [
+     "true"
+    ],
+    "showReactions": [
+     "false"
+    ],
+    "showShareButtons": [
+     "true"
+    ],
+    "showTimestamp": [
+     "true"
+    ],
+    "style.layout": [
+     "1x1"
+    ],
+    "style.unittype": [
+     "TextAndImage"
+    ]
+   }
+  },
+  "BlogSearch": {
+   "versions": [
+    ""
+   ],
+   "settings": [],
+   "blank_ok": [],
+   "values": {}
+  },
+  "ContactForm": {
+   "versions": [
+    "1"
+   ],
+   "settings": [],
+   "blank_ok": [],
+   "values": {}
+  },
+  "HTML": {
+   "versions": [
+    ""
+   ],
+   "settings": [
+    "content"
+   ],
+   "blank_ok": [],
+   "values": {}
+  },
+  "Header": {
+   "versions": [
+    "1"
+   ],
+   "settings": [
+    "displayHeight",
+    "displayUrl",
+    "displayWidth",
+    "imagePlacement",
+    "sectionWidth",
+    "shrinkToFit",
+    "useImage"
+   ],
+   "blank_ok": [
+    "displayUrl"
+   ],
+   "values": {
+    "displayHeight": [
+     "0"
+    ],
+    "displayWidth": [
+     "0"
+    ],
+    "imagePlacement": [
+     "BEHIND"
+    ],
+    "sectionWidth": [
+     "600"
+    ],
+    "shrinkToFit": [
+     "false"
+    ],
+    "useImage": [
+     "false"
+    ]
+   }
+  },
+  "Label": {
+   "versions": [
+    "",
+    "1"
+   ],
+   "settings": [
+    "display",
+    "selectedLabelsList",
+    "showFreqNumbers",
+    "showType",
+    "sorting"
+   ],
+   "blank_ok": [
+    "selectedLabelsList"
+   ],
+   "values": {
+    "display": [
+     "CLOUD",
+     "LIST"
+    ],
+    "selectedLabelsList": [
+     "Beauty,Fashion,Food,Nature,Photography"
+    ],
+    "showFreqNumbers": [
+     "false"
+    ],
+    "showType": [
+     "ALL",
+     "USER_SELECTED"
+    ],
+    "sorting": [
+     "ALPHA"
+    ]
+   }
+  },
+  "LinkList": {
+   "versions": [
+    "1"
+   ],
+   "settings": [
+    "link-0",
+    "link-1",
+    "link-10",
+    "link-11",
+    "link-12",
+    "link-13",
+    "link-14",
+    "link-15",
+    "link-16",
+    "link-17",
+    "link-18",
+    "link-19",
+    "link-2",
+    "link-20",
+    "link-3",
+    "link-4",
+    "link-5",
+    "link-6",
+    "link-7",
+    "link-8",
+    "link-9",
+    "sorting",
+    "text-0",
+    "text-1",
+    "text-10",
+    "text-11",
+    "text-12",
+    "text-13",
+    "text-14",
+    "text-15",
+    "text-16",
+    "text-17",
+    "text-18",
+    "text-19",
+    "text-2",
+    "text-20",
+    "text-3",
+    "text-4",
+    "text-5",
+    "text-6",
+    "text-7",
+    "text-8",
+    "text-9"
+   ],
+   "blank_ok": [],
+   "values": {
+    "link-0": [
+     "#",
+     "https://eficc.blogspot.com/p/our-services.html"
+    ],
+    "link-1": [
+     "#",
+     "https://eficc.blogspot.com/p/iso-compliance_24.html"
+    ],
+    "link-10": [
+     "https://eficc.blogspot.com/p/process-mapping.html"
+    ],
+    "link-11": [
+     "https://eficc.blogspot.com/p/contact-us.html"
+    ],
+    "link-12": [
+     "https://eficc.blogspot.com/p/our-services.html"
+    ],
+    "link-13": [
+     "https://eficc.blogspot.com/p/services.html"
+    ],
+    "link-14": [
+     "https://eficc.blogspot.com/p/name_7.html"
+    ],
+    "link-15": [
+     "https://eficc.blogspot.com/p/rrr.html"
+    ],
+    "link-16": [
+     "https://eficc.blogspot.com/p/efic-product-catalog-grid-shop-style.html"
+    ],
+    "link-17": [
+     "https://eficc.blogspot.com/p/news.html"
+    ],
+    "link-18": [
+     "https://eficc.blogspot.com/p/blog-page.html"
+    ],
+    "link-19": [
+     "https://eficc.blogspot.com/p/efic-consultancy-event-calendar_9.html"
+    ],
+    "link-2": [
+     "#",
+     "https://eficc.blogspot.com/p/certification_24.html"
+    ],
+    "link-20": [
+     "https://eficc.blogspot.com/p/efic-videos-font-family-open-sans-sans.html"
+    ],
+    "link-3": [
+     "#",
+     "https://eficc.blogspot.com/p/our-services.html"
+    ],
+    "link-4": [
+     "#",
+     "https://eficc.blogspot.com/p/supplier-audits.html",
+     "https://www.linkedin.com/company/efic-consultancy-ltd/"
+    ],
+    "link-5": [
+     "#",
+     "https://eficc.blogspot.com/p/risk-management-in-logistics.html"
+    ],
+    "link-6": [
+     "#",
+     "https://eficc.blogspot.com/p/supply-chain-optimization.html"
+    ],
+    "link-7": [
+     "https://eficc.blogspot.com/p/trade-facilitation.html"
+    ],
+    "link-8": [
+     "https://eficc.blogspot.com/p/project-management.html"
+    ],
+    "link-9": [
+     "https://eficc.blogspot.com/p/project-management.html"
+    ],
+    "sorting": [
+     "NONE"
+    ],
+    "text-0": [
+     "Quality Management",
+     "facebook"
+    ],
+    "text-1": [
+     "_ISO Compliance",
+     "twitter"
+    ],
+    "text-10": [
+     "_Process Mapping"
+    ],
+    "text-11": [
+     "contact"
+    ],
+    "text-12": [
+     "Our Services"
+    ],
+    "text-13": [
+     "_Client Interest Form"
+    ],
+    "text-14": [
+     "_Our Partners"
+    ],
+    "text-15": [
+     "_Finance"
+    ],
+    "text-16": [
+     "_Products"
+    ],
+    "text-17": [
+     "News"
+    ],
+    "text-18": [
+     "_Story"
+    ],
+    "text-19": [
+     "_Event Calendar"
+    ],
+    "text-2": [
+     "_Certification",
+     "instagram",
+     "rss"
+    ],
+    "text-20": [
+     "_Video Library"
+    ],
+    "text-3": [
+     "Logistics",
+     "linkedin",
+     "pinterest"
+    ],
+    "text-4": [
+     "_Supplier Audits",
+     "linkedin",
+     "youtube"
+    ],
+    "text-5": [
+     "_Risk Management",
+     "instagram"
+    ],
+    "text-6": [
+     "_Supply Chain Optimization",
+     "pinterest"
+    ],
+    "text-7": [
+     "_Trade Facilitation"
+    ],
+    "text-8": [
+     "Business Process Optimization"
+    ],
+    "text-9": [
+     "_Project Management"
+    ]
+   }
+  },
+  "PopularPosts": {
+   "versions": [
+    "1"
+   ],
+   "settings": [
+    "numItemsToShow",
+    "showSnippets",
+    "showThumbnails",
+    "timeRange"
+   ],
+   "blank_ok": [],
+   "values": {
+    "numItemsToShow": [
+     "4"
+    ],
+    "showSnippets": [
+     "true"
+    ],
+    "showThumbnails": [
+     "true"
+    ],
+    "timeRange": [
+     "LAST_MONTH"
+    ]
+   }
+  }
+ },
+ "builtin_includes": [
+  "all-head-content",
+  "google-analytics",
+  "quickedit"
+ ],
+ "extra": {
+  "data_tags": {},
+  "setting_values": {
+   "boolean settings may be true or false": [
+    "true",
+    "false"
+   ]
+  },
+  "banned_strings": [
+   "YOUR_",
+   "YOUR DESCRIPTION",
+   "YOUR KEYWORDS",
+   "soratemplates",
+   "@username",
+   "Facebook App ID here"
+  ],
+  "notes": "Anything allowed beyond the reference export goes here with a reason. Add names/addresses of other blogs found in the reference to banned_strings.",
+  "accepted": {
+   "no jQuery dependency": "Kept on purpose: the blog's menu builder, SlickNav mobile menu, one-page scroll nav, related posts and 'load more' all run on jQuery. It loads once, over https, from Google's CDN.",
+   "no hard-coded blogspot addresses": "These are the blog's own page links (eficc.blogspot.com) in the menu gadget and homepage tiles, not leftovers from another blog."
+  }
+ }
+}
