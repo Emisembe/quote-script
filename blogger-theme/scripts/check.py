@@ -27,6 +27,7 @@ REF = json.loads((ROOT / 'reference' / 'proven.json').read_text(encoding='utf-8'
 
 B = '{http://www.google.com/2005/gml/b}'
 EXPR = '{http://www.google.com/2005/gml/expr}'
+FREE_TEXT = re.compile('|'.join(REF['extra'].get('free_text_settings', {}).get('patterns', ['content'])))
 BOOLEANS = set(REF['extra']['setting_values']['boolean settings may be true or false'])
 
 failures = []
@@ -132,7 +133,7 @@ for w in widgets:
             problems.append(f'setting "{key}" not proven')
         elif not value and key not in proven['blank_ok']:
             problems.append(f'setting "{key}" is blank (Blogger rejects blank required settings)')
-        elif value and key != 'content' and key in proven.get('values', {}):
+        elif value and not FREE_TEXT.fullmatch(key) and key in proven.get('values', {}):
             known = proven['values'][key]
             if value not in known and not (value in BOOLEANS and set(known) <= BOOLEANS):
                 problems.append(f'setting "{key}" = "{value}" not proven (proven: {known})')
@@ -177,7 +178,8 @@ insecure = re.findall(r'''(?:src|href|action)\s*=\s*['"](http://[^'"]+)''', text
 check(not insecure, 'no insecure http:// resources (blocked on HTTPS blogs)', str(insecure))
 check('document.write' not in text, 'no document.write')
 check('jquery' not in text.lower(), 'no jQuery dependency')
-check(not re.search(r'[a-z0-9-]+\.blogspot\.com', text), 'no hard-coded blogspot addresses')
+# Blog addresses only; [0-9].bp.blogspot.com is Google's image CDN
+check(not re.search(r'(?<![\w.-])(?!\d+\.bp\.)[a-z0-9-]+\.blogspot\.com', text), 'no hard-coded blogspot addresses')
 banned = REF.get('extra', {}).get('banned_strings', ['YOUR_', 'YOUR DESCRIPTION', 'soratemplates'])
 leftovers = [w for w in banned if w.lower() in text.lower()]
 check(not leftovers, 'no leftover content from other blogs/templates', str(leftovers))

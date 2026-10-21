@@ -428,6 +428,10 @@ border: 0;
 }
 /*------Layout (end)----------*/""")
 
+# Links to the blog's own pages are relative, so the theme (menu gadget and
+# homepage tiles) points at whichever blog it is installed on, not eficc.
+sub('https://eficc.blogspot.com/p/', '/p/', count=31)
+
 out = text
 if '--check' in sys.argv:
     if not OUT.exists() or OUT.read_text(encoding='utf-8') != out:

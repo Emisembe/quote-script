@@ -3376,30 +3376,30 @@ var pagenav_next = "Next";
           <b:widget id='LinkList210' locked='true' title='Menu' type='LinkList' version='1'>
             <b:widget-settings>
               <b:widget-setting name='text-10'>_Process Mapping</b:widget-setting>
-              <b:widget-setting name='link-17'>https://eficc.blogspot.com/p/news.html</b:widget-setting>
-              <b:widget-setting name='link-16'>https://eficc.blogspot.com/p/efic-product-catalog-grid-shop-style.html</b:widget-setting>
-              <b:widget-setting name='link-19'>https://eficc.blogspot.com/p/efic-consultancy-event-calendar_9.html</b:widget-setting>
+              <b:widget-setting name='link-17'>/p/news.html</b:widget-setting>
+              <b:widget-setting name='link-16'>/p/efic-product-catalog-grid-shop-style.html</b:widget-setting>
+              <b:widget-setting name='link-19'>/p/efic-consultancy-event-calendar_9.html</b:widget-setting>
               <b:widget-setting name='sorting'>NONE</b:widget-setting>
-              <b:widget-setting name='link-18'>https://eficc.blogspot.com/p/blog-page.html</b:widget-setting>
-              <b:widget-setting name='link-1'>https://eficc.blogspot.com/p/iso-compliance_24.html</b:widget-setting>
-              <b:widget-setting name='link-13'>https://eficc.blogspot.com/p/services.html</b:widget-setting>
-              <b:widget-setting name='link-2'>https://eficc.blogspot.com/p/certification_24.html</b:widget-setting>
-              <b:widget-setting name='link-12'>https://eficc.blogspot.com/p/our-services.html</b:widget-setting>
-              <b:widget-setting name='link-15'>https://eficc.blogspot.com/p/rrr.html</b:widget-setting>
-              <b:widget-setting name='link-0'>https://eficc.blogspot.com/p/our-services.html</b:widget-setting>
-              <b:widget-setting name='link-14'>https://eficc.blogspot.com/p/name_7.html</b:widget-setting>
-              <b:widget-setting name='link-11'>https://eficc.blogspot.com/p/contact-us.html</b:widget-setting>
-              <b:widget-setting name='link-10'>https://eficc.blogspot.com/p/process-mapping.html</b:widget-setting>
+              <b:widget-setting name='link-18'>/p/blog-page.html</b:widget-setting>
+              <b:widget-setting name='link-1'>/p/iso-compliance_24.html</b:widget-setting>
+              <b:widget-setting name='link-13'>/p/services.html</b:widget-setting>
+              <b:widget-setting name='link-2'>/p/certification_24.html</b:widget-setting>
+              <b:widget-setting name='link-12'>/p/our-services.html</b:widget-setting>
+              <b:widget-setting name='link-15'>/p/rrr.html</b:widget-setting>
+              <b:widget-setting name='link-0'>/p/our-services.html</b:widget-setting>
+              <b:widget-setting name='link-14'>/p/name_7.html</b:widget-setting>
+              <b:widget-setting name='link-11'>/p/contact-us.html</b:widget-setting>
+              <b:widget-setting name='link-10'>/p/process-mapping.html</b:widget-setting>
               <b:widget-setting name='text-9'>_Project Management</b:widget-setting>
-              <b:widget-setting name='link-9'>https://eficc.blogspot.com/p/project-management.html</b:widget-setting>
+              <b:widget-setting name='link-9'>/p/project-management.html</b:widget-setting>
               <b:widget-setting name='text-8'>Business Process Optimization</b:widget-setting>
-              <b:widget-setting name='link-7'>https://eficc.blogspot.com/p/trade-facilitation.html</b:widget-setting>
+              <b:widget-setting name='link-7'>/p/trade-facilitation.html</b:widget-setting>
               <b:widget-setting name='text-20'>_Video Library</b:widget-setting>
-              <b:widget-setting name='link-8'>https://eficc.blogspot.com/p/project-management.html</b:widget-setting>
-              <b:widget-setting name='link-5'>https://eficc.blogspot.com/p/risk-management-in-logistics.html</b:widget-setting>
-              <b:widget-setting name='link-6'>https://eficc.blogspot.com/p/supply-chain-optimization.html</b:widget-setting>
-              <b:widget-setting name='link-3'>https://eficc.blogspot.com/p/our-services.html</b:widget-setting>
-              <b:widget-setting name='link-4'>https://eficc.blogspot.com/p/supplier-audits.html</b:widget-setting>
+              <b:widget-setting name='link-8'>/p/project-management.html</b:widget-setting>
+              <b:widget-setting name='link-5'>/p/risk-management-in-logistics.html</b:widget-setting>
+              <b:widget-setting name='link-6'>/p/supply-chain-optimization.html</b:widget-setting>
+              <b:widget-setting name='link-3'>/p/our-services.html</b:widget-setting>
+              <b:widget-setting name='link-4'>/p/supplier-audits.html</b:widget-setting>
               <b:widget-setting name='text-1'>_ISO Compliance</b:widget-setting>
               <b:widget-setting name='text-0'>Quality Management</b:widget-setting>
               <b:widget-setting name='text-3'>Logistics</b:widget-setting>
@@ -3414,7 +3414,7 @@ var pagenav_next = "Next";
               <b:widget-setting name='text-17'>News</b:widget-setting>
               <b:widget-setting name='text-18'>_Story</b:widget-setting>
               <b:widget-setting name='text-11'>contact</b:widget-setting>
-              <b:widget-setting name='link-20'>https://eficc.blogspot.com/p/efic-videos-font-family-open-sans-sans.html</b:widget-setting>
+              <b:widget-setting name='link-20'>/p/efic-videos-font-family-open-sans-sans.html</b:widget-setting>
               <b:widget-setting name='text-12'>Our Services</b:widget-setting>
               <b:widget-setting name='text-13'>_Client Interest Form</b:widget-setting>
               <b:widget-setting name='text-14'>_Our Partners</b:widget-setting>
@@ -3591,7 +3591,7 @@ Driving Efficacy and Effective Solutions.
   </div>
 <div style='clear: both;'/>
 <!-- First -->
-<a class='special-tiles-link' href='https://eficc.blogspot.com/p/our-services.html'>
+<a class='special-tiles-link' href='/p/our-services.html'>
 <div class='special-tiles'>
 <span class='special-icons'>
  <i aria-hidden='true' class='fa fa-anchor'/>
@@ -3603,7 +3603,7 @@ Driving Efficacy and Effective Solutions.
 <!-- First One Ends -->
 
 <!-- Second -->
-<a class='special-tiles-link' href='https://eficc.blogspot.com/p/our-services.html'>
+<a class='special-tiles-link' href='/p/our-services.html'>
 <div class='special-tiles'>
 <span class='special-icons'>
  <i aria-hidden='true' class='fa fa-balance-scale'/>
@@ -3615,7 +3615,7 @@ Driving Efficacy and Effective Solutions.
 <!-- Second Ends -->
 
 <!-- Third -->
-<a class='special-tiles-link' href='https://eficc.blogspot.com/p/our-services.html'>
+<a class='special-tiles-link' href='/p/our-services.html'>
 <div class='special-tiles'>
 <span class='special-icons'>
 <i aria-hidden='true' class='fa fa-heartbeat'/>
@@ -3627,7 +3627,7 @@ Driving Efficacy and Effective Solutions.
 <!-- Third Ends -->
 
 <!-- Fourth -->
-<a class='special-tiles-link' href='https://eficc.blogspot.com/p/our-services.html'>
+<a class='special-tiles-link' href='/p/our-services.html'>
 <div class='special-tiles'>
 <span class='special-icons'>
  <i aria-hidden='true' class='fa fa-cogs'/>
@@ -3639,7 +3639,7 @@ Driving Efficacy and Effective Solutions.
 <!-- Fourth Ends -->
 
 <!-- Fifth -->
-<a class='special-tiles-link' href='https://eficc.blogspot.com/p/our-services.html'>
+<a class='special-tiles-link' href='/p/our-services.html'>
 <div class='special-tiles'>
 <span class='special-icons'>
  <i aria-hidden='true' class='fa fa-truck'/>
@@ -3651,7 +3651,7 @@ Driving Efficacy and Effective Solutions.
 <!-- Fifth Ends -->
 
 <!-- Sixth -->
-<a class='special-tiles-link' href='https://eficc.blogspot.com/p/our-services.html'>
+<a class='special-tiles-link' href='/p/our-services.html'>
 <div class='special-tiles'>
 <span class='special-icons'>
 <i aria-hidden='true' class='fa fa-recycle'/>
@@ -3671,7 +3671,7 @@ Driving Efficacy and Effective Solutions.
   </div>
 <div style='clear: both;'/>
 <!-- First -->
-<a class='works-tiles-link' href='https://eficc.blogspot.com/p/our-process-how-we-deliver-excellence.html'>
+<a class='works-tiles-link' href='/p/our-process-how-we-deliver-excellence.html'>
 <div class='works-tiles'>
 <span class='works-icons'>
 <li data-percent='25'><span class='text'><i aria-hidden='true' class='fa fa-lightbulb-o'/></span><span class='bar-circle-right' style='transform: rotate(90deg);'/><span class='bar-circle-left'/><span class='bar-circle-cover'/></li>
@@ -3685,7 +3685,7 @@ Driving Efficacy and Effective Solutions.
 <!-- First One Ends -->
 
 <!-- Second -->
-<a class='works-tiles-link' href='https://eficc.blogspot.com/p/our-process-how-we-deliver-excellence.html'>
+<a class='works-tiles-link' href='/p/our-process-how-we-deliver-excellence.html'>
 <div class='works-tiles'>
 <span class='works-icons'>
 <li data-percent='50'><span class='text'><i aria-hidden='true' class='fa fa-clipboard'/></span><span class='bar-circle-right' style='transform: rotate(180deg);'/><span class='bar-circle-left' style='clip: rect(0px 150px 150px 75px); background: #E7B165;'/><span class='bar-circle-cover'/></li>
@@ -3698,7 +3698,7 @@ Driving Efficacy and Effective Solutions.
 <!-- Second Ends -->
 
 <!-- Third -->
-<a class='works-tiles-link' href='https://eficc.blogspot.com/p/our-process-how-we-deliver-excellence.html'>
+<a class='works-tiles-link' href='/p/our-process-how-we-deliver-excellence.html'>
 <div class='works-tiles'>
 <span class='works-icons'>
 <li data-percent='75'><span class='text'><i aria-hidden='true' class='fa fa-rocket'/></span><span class='bar-circle-right' style='transform: rotate(270deg);'/><span class='bar-circle-left' style='clip: rect(0px 150px 150px 75px); background: #E7B165;'/><span class='bar-circle-cover'/></li>
@@ -3711,7 +3711,7 @@ Driving Efficacy and Effective Solutions.
 <!-- Third Ends -->
 
 <!-- Fourth -->
-<a class='works-tiles-link' href='https://eficc.blogspot.com/p/our-process-how-we-deliver-excellence.html'>
+<a class='works-tiles-link' href='/p/our-process-how-we-deliver-excellence.html'>
 <div class='works-tiles'>
 <span class='works-icons'>
 <li data-percent='100'><span class='text'><i aria-hidden='true' class='fa fa-flag-checkered'/></span><span class='bar-circle-right' style='transform: rotate(360deg);'/><span class='bar-circle-left' style='clip: rect(0px 150px 150px 75px); background: #E7B165;'/><span class='bar-circle-cover'/></li>

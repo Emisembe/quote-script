@@ -677,8 +677,15 @@
   ],
   "notes": "Anything allowed beyond the reference export goes here with a reason. Add names/addresses of other blogs found in the reference to banned_strings.",
   "accepted": {
-   "no jQuery dependency": "Kept on purpose: the blog's menu builder, SlickNav mobile menu, one-page scroll nav, related posts and 'load more' all run on jQuery. It loads once, over https, from Google's CDN.",
-   "no hard-coded blogspot addresses": "These are the blog's own page links (eficc.blogspot.com) in the menu gadget and homepage tiles, not leftovers from another blog."
+   "no jQuery dependency": "Kept on purpose: the blog's menu builder, SlickNav mobile menu, one-page scroll nav, related posts and 'load more' all run on jQuery. It loads once, over https, from Google's CDN."
+  },
+  "free_text_settings": {
+   "patterns": [
+    "content",
+    "link-\\d+",
+    "text-\\d+"
+   ],
+   "reason": "Gadget text and link addresses are typed by the blog owner; only enum-like settings (sorting, timeRange, booleans...) must match proven values. Relative links such as /p/page.html are standard in LinkList menus."
   }
  }
 }
