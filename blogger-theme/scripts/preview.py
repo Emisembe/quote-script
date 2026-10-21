@@ -73,35 +73,34 @@ def sections(page):
     labels = ''.join(f"<span class='label-size'><a href='#'>{t}</a><span class='label-count'>{n}</span></span>"
                      for t, n in [('Quality', 6), ('Logistics', 4), ('Compliance', 3), ('Risk', 2)])
     return {
-        'menu': "<div class='widget LinkList' style='display:block'><div class='widget-content'><ul>"
+        'LinkList210': "<div class='widget LinkList' style='display:block'><div class='widget-content'><ul>"
                 "<li><a href='home.html'>Home</a></li>" + ''.join(f"<li><a href='#'>{m}</a></li>" for m in MENU) + '</ul></div></div>',
-        'header': "<div class='widget Header'><div id='header-inner'><div class='titlewrapper'><h1 class='title'>"
+        'Header1': "<div class='widget Header'><div id='header-inner'><div class='titlewrapper'><h1 class='title'>"
                   + ('Efic Consultancy Ltd' if page == 'home' else "<a href='home.html'>Efic Consultancy Ltd</a>")
                   + '</h1></div></div></div>',
-        'Logo Description': "<div class='widget HTML'><div class='widget-content'><p>Driving Efficacy and Effective Solutions.</p></div></div>",
-        'header social widget': social([('facebook', '#'), ('twitter', '#'), ('instagram', '#'),
+        'HTML3': "<div class='widget HTML'><div class='widget-content'><p>Driving Efficacy and Effective Solutions.</p></div></div>",
+        'LinkList230': social([('facebook', '#'), ('twitter', '#'), ('instagram', '#'),
                                         ('linkedin', 'https://www.linkedin.com/company/efic-consultancy-ltd/')]),
-        'main': "<div class='widget Blog'><div class='blog-posts hfeed'><div class='post-grid'>"
+        'Blog1': "<div class='widget Blog'><div class='blog-posts hfeed'><div class='post-grid'>"
                 + (posts if page == 'home' else single) + "</div></div>"
                 + ("<div class='blog-pager' id='blog-pager'><span id='blog-pager-older-link'><a class='blog-pager-older-link' href='#'>Older Posts</a></span></div>" if page == 'home' else '')
                 + '</div>',
-        'sidebar': "<div class='widget Label'><h2>Tags</h2><div class='widget-content cloud-label-widget-content'>" + labels + "</div></div>"
-                   "<div class='widget PopularPosts'><h2>Popular</h2><div class='widget-content popular-posts'><ul>"
-                   + ''.join(f"<li><div class='item-title'><a href='#'>{t}</a></div></li>" for t in POSTS[1:4]) + '</ul></div></div>',
-        'Contact Widget': "<div class='widget ContactForm'><div class='contact-form-widget'><div class='form'><form name='contact-form'>"
+        'Label1': "<div class='widget Label'><h2>Tags</h2><div class='widget-content cloud-label-widget-content'>" + labels + "</div></div>",
+        'PopularPosts1': "<div class='widget PopularPosts'><h2>Popular</h2><div class='widget-content popular-posts'><ul>"
+                         + ''.join(f"<li><div class='item-title'><a href='#'>{t}</a></div></li>" for t in POSTS[1:4]) + '</ul></div></div>',
+        'ContactForm1': "<div class='widget ContactForm'><div class='contact-form-widget'><div class='form'><form name='contact-form'>"
                           "<p></p><span class='name-bg'>Your Name</span><br/><input class='contact-form-name' id='ContactForm1_contact-form-name' type='text'/>"
                           "<p></p><span class='email-bg'>Your Email*</span><br/><input class='contact-form-email' id='ContactForm1_contact-form-email' type='text'/>"
                           "<p></p><span class='message-bg'>Your Message*</span><br/><textarea class='contact-form-email-message' id='ContactForm1_contact-form-email-message' rows='5'></textarea>"
                           "<p></p><span class='send-bg'><input class='contact-form-button contact-form-button-submit' type='button' value='Send'/></span>"
                           "<span class='clear-bg'><input class='contact-form-button contact-form-button-submit clear-button' type='reset' value='Clear'/></span>"
                           '</form></div></div></div>',
-        'Footer social widget': social([('facebook', '#'), ('LinkedIn', 'https://www.linkedin.com/company/efic-consultancy-ltd/'),
+        'LinkList250': social([('facebook', '#'), ('LinkedIn', 'https://www.linkedin.com/company/efic-consultancy-ltd/'),
                                         ('youtube', 'https://youtube.com/'), ('WhatsApp', 'https://wa.me/'),
                                         ('Telegram', 'https://t.me/'), ('TikTok', 'https://tiktok.com/'), ('X', 'https://x.com/'),
                                         ('Email', 'mailto:askeficc@gmail.com'), ('Mastodon', 'https://mastodon.social/')]),
-        'menu-logo': "<div class='widget HTML'><div class='widget-content'><a href='home.html'><img alt='Efic Consultancy Ltd' src=\"" + LOGO_SVG + "\"/></a></div></div>",
-        'footer-logo': "<div class='widget HTML'><div class='widget-content'><a href='home.html'><img alt='Efic Consultancy Ltd' src=\"" + LOGO_SVG + "\"/></a></div></div>",
-        'Featured Post': '',
+        'HTML8': "<div class='widget HTML'><div class='widget-content'><a href='home.html'><img alt='Efic Consultancy Ltd' src=\"" + LOGO_SVG + "\"/></a></div></div>",
+        'HTML7': "<div class='widget HTML'><div class='widget-content'><a href='home.html'><img alt='Efic Consultancy Ltd' src=\"" + LOGO_SVG + "\"/></a></div></div>",
     }
 
 
@@ -138,15 +137,41 @@ def render(page):
     skin = re.search(r'<b:skin><!\[CDATA\[(.*?)\]\]></b:skin>', head, re.S).group(1).replace('$maincolor', '#E7B165')
     head_styles = ''.join(re.findall(r'<style>.*?</style>', resolve_ifs(head.split(']]></b:template-skin>')[1], page), re.S))
     head_styles += ''.join(re.findall(r'<style>.*?</style>', head.split('<b:template-skin>')[0].split(']]></b:skin>')[1], re.S))
+    if page == 'layout':
+        head_styles += '<style>' + re.search(r'<b:template-skin><!\[CDATA\[(.*?)\]\]></b:template-skin>', head, re.S).group(1) + '</style>'
+        head_scripts = []
     links = ''.join(re.findall(r"<link [^>]*/>", head))
     head_scripts = re.findall(r"<script src='[^']*jquery[^']*' type='text/javascript'/>", head)
 
     body = THEME.split('<body', 1)[1].split('>', 1)[1].split('</body>', 1)[0]
-    sample = sections(page)
-    body = re.sub(r"<b:section class='([^']*)'[^>]*?id='([^']+)'[^>]*>.*?</b:section>",
-                  lambda m: f"<div class='section {m.group(1)}' id='{m.group(2)}'>{sample.get(m.group(2), '')}</div>", body, flags=re.S)
-    body = resolve_ifs(body, page)
-    cls = 'index home' if page == 'home' else 'item'
+    sample = sections('home' if page == 'layout' else page)
+
+    def widget_html(wid, title, wtype, wsrc):
+        if page == 'layout':
+            return (f"<div class='widget {wtype} draggable-widget' id='{wid}'><div class='widget-wrap1'><div class='widget-wrap2'>"
+                    f"<div class='widget-wrap3'><div class='widget-content'><div class='layout-title'>{html.escape(title or wtype)}</div>"
+                    f"<a class='editlink' href='#'>Edit</a></div></div></div></div></div>")
+        if wid in sample:
+            return sample[wid].replace("<div class='widget ", f"<div id='{wid}' class='widget ", 1)
+        content = re.search(r"<b:widget-setting name='content'><!\[CDATA\[(.*?)\]\]>", wsrc, re.S)
+        inner = content.group(1) if content else f"<p>{wtype} gadget</p>"
+        heading = f"<h2 class='title'>{html.escape(title)}</h2>" if title else ''
+        return f"<div id='{wid}' class='widget {wtype}'>{heading}<div class='widget-content'>{inner}</div></div>"
+
+    def section_html(m):
+        attrs, inner = m.group(1), m.group(2)
+        cls = re.search(r"class='([^']*)'", attrs).group(1)
+        sid = re.search(r"id='([^']*)'", attrs).group(1)
+        name = re.search(r"name='([^']*)'", attrs)
+        widgets = re.findall(r"(<b:widget id='([^']+)'[^>]*?title='([^']*)'[^>]*?type='([^']+)'.*?</b:widget>)", inner, re.S)
+        out = ''.join(widget_html(wid, html.unescape(t), wt, src) for src, wid, t, wt in widgets)
+        if page == 'layout':
+            out = f"<h4>{html.escape(html.unescape(name.group(1)) if name else sid)}</h4>" + out + "<div class='add_widget'><a href='#'>Add a Gadget</a></div>"
+        return f"<div class='section {cls}' id='{sid}' data-section-name='{html.escape(name.group(1) if name else sid)}'>{out}</div>"
+
+    body = re.sub(r"<b:section ([^>]*)>(.*?)</b:section>", section_html, body, flags=re.S)
+    body = resolve_ifs(body, 'home' if page == 'layout' else page)
+    cls = 'index home' if page in ('home', 'layout') else 'item'
     body = re.sub(r'&lt;div id=&quot;outer-wrapper&quot; class=&quot;.*?&quot;&gt;', f'<div id="outer-wrapper" class="{cls}">', body, count=1)
     body = body.replace('&lt;/div&gt;', '</div>')
     body = re.sub(r"<(iframe|textarea|span|div|ul|li|h1|a|i|p)(\s[^<>]*?)?/>", lambda m: f'<{m.group(1)}{m.group(2) or ""}></{m.group(1)}>', body)
@@ -157,17 +182,19 @@ def render(page):
                   body, flags=re.S)
     if page == 'item':
         body = body.replace("<div id='related-posts'>", "<div id='related-posts' style='display:none'>")
+    if page == 'layout':
+        body = re.sub(r'<script.*?</script>', '', body, flags=re.S)
 
     return (f"<!DOCTYPE html>\n<html><head><meta charset='utf-8'/>"
             f"<meta content='width=device-width, initial-scale=1' name='viewport'/>"
             f"<title>EFIC preview ({page})</title>{links}"
             f"{''.join(s.replace('/>', '></script>') for s in head_scripts)}"
             f"<style>{skin}</style>{head_styles}</head>"
-            f"<body class='{'index' if page == 'home' else 'item'}'>{body}</body></html>")
+            f"<body class='{'item' if page == 'item' else 'index'}'{' id=\"layout\"' if page == 'layout' else ''}>{body}</body></html>")
 
 
 OUT.mkdir(exist_ok=True)
-for page in ('home', 'item'):
-    name = 'home.html' if page == 'home' else 'post.html'
+for page in ('home', 'item', 'layout'):
+    name = {'home': 'home.html', 'item': 'post.html', 'layout': 'layout.html'}[page]
     (OUT / name).write_text(render(page), encoding='utf-8')
     print(f'wrote preview/{name}')

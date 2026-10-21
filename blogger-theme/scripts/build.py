@@ -347,7 +347,86 @@ sub("""  var links = document.querySelectorAll('ul[id="social"] a');""", """  va
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   }
+  // Share links: build them with properly encoded URL and title, so titles
+  // containing & or # are not cut off.
+  var shareBox = document.querySelector('.share-art');
+  if (shareBox) {
+    var h1 = document.querySelector('h1.post-title');
+    var canonical = document.querySelector('link[rel="canonical"]');
+    var U = encodeURIComponent(canonical ? canonical.href : location.href.split('#')[0]);
+    var T = encodeURIComponent(h1 ? h1.textContent.replace(/\\s+/g, ' ').trim() : document.title);
+    var share = {
+      'fac-art': 'https://www.facebook.com/sharer.php?u=' + U,
+      'twi-art': 'https://twitter.com/intent/tweet?url=' + U + '&text=' + T,
+      'lin-art': 'https://www.linkedin.com/sharing/share-offsite/?url=' + U,
+      'wat-art': 'https://api.whatsapp.com/send?text=' + T + '%20' + U,
+      'tel-art': 'https://t.me/share/url?url=' + U + '&text=' + T
+    };
+    for (var cls in share) {
+      var a = shareBox.querySelector('a.' + cls);
+      if (a) { a.setAttribute('href', share[cls]); }
+    }
+  }
+  // The mobile menu button is created by SlickNav once the page is ready.
+  var labelMenu = function () {
+    var btns = document.querySelectorAll('.slicknav_btn');
+    for (var k = 0; k < btns.length; k++) { btns[k].setAttribute('aria-label', 'Menu'); }
+  };
+  document.addEventListener('DOMContentLoaded', function () { setTimeout(labelMenu, 0); });
+  window.addEventListener('load', labelMenu);
   var links = document.querySelectorAll('ul[id="social"] a');""")
+
+# Layout editor: every section must be visible and editable there.
+sub("""#layout .sora-contact-widget {
+display:none;
+}""", """body#layout .insta-wrap, body#layout .sora-contact-widget, body#layout .Attribution,
+body#layout .tm-menu #menu, body#layout #menu .widget {
+display: block !important;
+}
+body#layout .insta-wrap .contact-title, body#layout .insta-wrap .contact_list_wrapper, body#layout .map-me {
+display: none;
+}
+body#layout #sora_blogger_cntct_form {
+padding: 0;
+}
+body#layout #sora_blogger_cntct_form .wrap-me {
+float: none;
+max-width: 100%;
+}""")
+sub("body#layout .sora-special-box, body#layout .sora-works-box, body#layout .sora-about-box, body#layout .insta-wrap, body#layout  .Portfolio-title {display:none;}",
+    "body#layout .sora-special-box, body#layout .sora-works-box, body#layout .sora-about-box, body#layout  .Portfolio-title {display:none;}")
+
+# Layout editor: plain, readable backgrounds and no fixed heights, so every
+# section box is fully visible and clickable.
+sub("/*------Layout (end)----------*/", """body#layout .tm-menu, body#layout .tm-menu .menu-wrap, body#layout .tm-menu #menu, body#layout #header-wrapper {
+height: auto !important;
+position: static !important;
+background: #fff !important;
+border: 0;
+box-shadow: none;
+padding: 0;
+}
+body#layout #header-wrapper:before, body#layout .header-logo-desc:before, body#layout .hero-cta, body#layout .slicknav_menu {
+display: none !important;
+}
+body#layout .row {
+width: auto !important;
+}
+body#layout .tm-menu #menu {
+text-align: left;
+}
+body#layout .fenix-head, body#layout .fenix-sub-head {
+display: block;
+transform: none !important;
+}
+body#layout #jugas_footer, body#layout #jugas_footer .copy-container.row, body#layout #jugas_footer .foot-logo,
+body#layout #jugas_footer .foot-social, body#layout #jugas_footer .footer-copy {
+background: #fff !important;
+display: block;
+padding: 0;
+border: 0;
+}
+/*------Layout (end)----------*/""")
 
 out = text
 if '--check' in sys.argv:

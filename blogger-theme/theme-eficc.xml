@@ -2678,6 +2678,32 @@ body .widget .post-body ul, body .widget .post-body ol { padding-left: 1.4em; }
 body .slicknav_menu .slicknav_icon-bar { background-color: #E7B165; }
 .slicknav_menu .slicknav_icon-bar { height: 2px; width: 22px; }
 .tm-menu .slicknav_menu { left: 0; right: 0; }
+/* Hamburger: three gold lines centred in the button */
+.tm-menu .slicknav_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 40px;
+  padding: 0;
+  box-sizing: border-box;
+  line-height: 1;
+}
+.tm-menu .slicknav_btn .slicknav_menutxt { display: none; }
+.tm-menu .slicknav_btn .slicknav_icon, .tm-menu .slicknav_btn .slicknav_no-text {
+  float: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  margin: 0;
+}
+.tm-menu .slicknav_btn .slicknav_icon-bar, .tm-menu .slicknav_btn .slicknav_icon-bar + .slicknav_icon-bar {
+  width: 22px;
+  height: 2px;
+  margin: 0;
+  border-radius: 1px;
+}
 .slicknav_nav {
   background: #14213D;
   border-top: 2px solid #E7B165;
@@ -3127,13 +3153,13 @@ html { scroll-padding-top: 84px; }
   }
   .tm-menu .slicknav_btn, .tm-menu .slicknav_nav { pointer-events: auto; }
   .tm-menu .slicknav_btn { float: right; margin: 17px 0 0; }
-  .tm-menu .slicknav_nav { margin-top: 15px; }
+  .tm-menu .slicknav_nav { margin-top: 0; position: relative; top: 17px; }
 }
 @media only screen and (max-width: 600px) {
   .tm-menu, .item .tm-menu, .static_page .tm-menu, .error_page .tm-menu, .tm-menu .menu-wrap, .tm-menu #menu { height: 64px; }
   .tm-menu #menu-logo img { max-height: 40px; max-width: 150px; }
-  .tm-menu .slicknav_btn { margin-top: 13px; }
-  .tm-menu .slicknav_nav { margin-top: 11px; }
+  .tm-menu .slicknav_btn { margin-top: 12px; }
+  .tm-menu .slicknav_nav { top: 14px; }
   .item #header-wrapper, .static_page #header-wrapper, .error_page #header-wrapper { padding-top: 84px; }
 }
 @media only screen and (max-width: 1200px) {
@@ -3150,8 +3176,19 @@ html { scroll-padding-top: 84px; }
 
 <b:template-skin><![CDATA[
 /*------Layout (No Edit)----------*/
-#layout .sora-contact-widget {
-display:none;
+body#layout .insta-wrap, body#layout .sora-contact-widget, body#layout .Attribution,
+body#layout .tm-menu #menu, body#layout #menu .widget {
+display: block !important;
+}
+body#layout .insta-wrap .contact-title, body#layout .insta-wrap .contact_list_wrapper, body#layout .map-me {
+display: none;
+}
+body#layout #sora_blogger_cntct_form {
+padding: 0;
+}
+body#layout #sora_blogger_cntct_form .wrap-me {
+float: none;
+max-width: 100%;
 }
 body#layout #outer-wrapper {
 padding: 0;
@@ -3265,7 +3302,35 @@ body#layout .FollowByEmail .widget-content:before, body#layout .jugas_footer_cop
 display:none;
 }
 
-body#layout .sora-special-box, body#layout .sora-works-box, body#layout .sora-about-box, body#layout .insta-wrap, body#layout  .Portfolio-title {display:none;}
+body#layout .sora-special-box, body#layout .sora-works-box, body#layout .sora-about-box, body#layout  .Portfolio-title {display:none;}
+body#layout .tm-menu, body#layout .tm-menu .menu-wrap, body#layout .tm-menu #menu, body#layout #header-wrapper {
+height: auto !important;
+position: static !important;
+background: #fff !important;
+border: 0;
+box-shadow: none;
+padding: 0;
+}
+body#layout #header-wrapper:before, body#layout .header-logo-desc:before, body#layout .hero-cta, body#layout .slicknav_menu {
+display: none !important;
+}
+body#layout .row {
+width: auto !important;
+}
+body#layout .tm-menu #menu {
+text-align: left;
+}
+body#layout .fenix-head, body#layout .fenix-sub-head {
+display: block;
+transform: none !important;
+}
+body#layout #jugas_footer, body#layout #jugas_footer .copy-container.row, body#layout #jugas_footer .foot-logo,
+body#layout #jugas_footer .foot-social, body#layout #jugas_footer .footer-copy {
+background: #fff !important;
+display: block;
+padding: 0;
+border: 0;
+}
 /*------Layout (end)----------*/
 ]]></b:template-skin>
 
@@ -6445,6 +6510,33 @@ article {
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   }
+  // Share links: build them with properly encoded URL and title, so titles
+  // containing & or # are not cut off.
+  var shareBox = document.querySelector('.share-art');
+  if (shareBox) {
+    var h1 = document.querySelector('h1.post-title');
+    var canonical = document.querySelector('link[rel="canonical"]');
+    var U = encodeURIComponent(canonical ? canonical.href : location.href.split('#')[0]);
+    var T = encodeURIComponent(h1 ? h1.textContent.replace(/\s+/g, ' ').trim() : document.title);
+    var share = {
+      'fac-art': 'https://www.facebook.com/sharer.php?u=' + U,
+      'twi-art': 'https://twitter.com/intent/tweet?url=' + U + '&text=' + T,
+      'lin-art': 'https://www.linkedin.com/sharing/share-offsite/?url=' + U,
+      'wat-art': 'https://api.whatsapp.com/send?text=' + T + '%20' + U,
+      'tel-art': 'https://t.me/share/url?url=' + U + '&text=' + T
+    };
+    for (var cls in share) {
+      var a = shareBox.querySelector('a.' + cls);
+      if (a) { a.setAttribute('href', share[cls]); }
+    }
+  }
+  // The mobile menu button is created by SlickNav once the page is ready.
+  var labelMenu = function () {
+    var btns = document.querySelectorAll('.slicknav_btn');
+    for (var k = 0; k < btns.length; k++) { btns[k].setAttribute('aria-label', 'Menu'); }
+  };
+  document.addEventListener('DOMContentLoaded', function () { setTimeout(labelMenu, 0); });
+  window.addEventListener('load', labelMenu);
   var links = document.querySelectorAll('ul[id="social"] a');
   for (var j = 0; j < links.length; j++) {
     var name = (links[j].getAttribute('title') || '').trim();

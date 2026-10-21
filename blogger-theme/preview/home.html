@@ -2618,6 +2618,32 @@ body .widget .post-body ul, body .widget .post-body ol { padding-left: 1.4em; }
 body .slicknav_menu .slicknav_icon-bar { background-color: #E7B165; }
 .slicknav_menu .slicknav_icon-bar { height: 2px; width: 22px; }
 .tm-menu .slicknav_menu { left: 0; right: 0; }
+/* Hamburger: three gold lines centred in the button */
+.tm-menu .slicknav_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 40px;
+  padding: 0;
+  box-sizing: border-box;
+  line-height: 1;
+}
+.tm-menu .slicknav_btn .slicknav_menutxt { display: none; }
+.tm-menu .slicknav_btn .slicknav_icon, .tm-menu .slicknav_btn .slicknav_no-text {
+  float: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  margin: 0;
+}
+.tm-menu .slicknav_btn .slicknav_icon-bar, .tm-menu .slicknav_btn .slicknav_icon-bar + .slicknav_icon-bar {
+  width: 22px;
+  height: 2px;
+  margin: 0;
+  border-radius: 1px;
+}
 .slicknav_nav {
   background: #14213D;
   border-top: 2px solid #E7B165;
@@ -3067,13 +3093,13 @@ html { scroll-padding-top: 84px; }
   }
   .tm-menu .slicknav_btn, .tm-menu .slicknav_nav { pointer-events: auto; }
   .tm-menu .slicknav_btn { float: right; margin: 17px 0 0; }
-  .tm-menu .slicknav_nav { margin-top: 15px; }
+  .tm-menu .slicknav_nav { margin-top: 0; position: relative; top: 17px; }
 }
 @media only screen and (max-width: 600px) {
   .tm-menu, .item .tm-menu, .static_page .tm-menu, .error_page .tm-menu, .tm-menu .menu-wrap, .tm-menu #menu { height: 64px; }
   .tm-menu #menu-logo img { max-height: 40px; max-width: 150px; }
-  .tm-menu .slicknav_btn { margin-top: 13px; }
-  .tm-menu .slicknav_nav { margin-top: 11px; }
+  .tm-menu .slicknav_btn { margin-top: 12px; }
+  .tm-menu .slicknav_nav { top: 14px; }
   .item #header-wrapper, .static_page #header-wrapper, .error_page #header-wrapper { padding-top: 84px; }
 }
 @media only screen and (max-width: 1200px) {
@@ -3090,8 +3116,8 @@ html { scroll-padding-top: 84px; }
 <div id='header-wrapper'>
 <div class='tm-menu'>
 <div class='row menu-wrap'>
-        <div class='section menu-logo' id='menu-logo'><div class='widget HTML'><div class='widget-content'><a href='home.html'><img alt='Efic Consultancy Ltd' src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='64'%3E%3Crect x='2' y='2' width='60' height='60' fill='none' stroke='%23E7B165' stroke-width='3'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='900' font-size='26' fill='%23E7B165' text-anchor='middle'%3EE%3C/text%3E%3Ctext x='76' y='42' font-family='Arial' font-weight='900' font-size='26' fill='white'%3EEFIC%3C/text%3E%3C/svg%3E"/></a></div></div></div>
-        <div class='section menu' id='menu'><div class='widget LinkList' style='display:block'><div class='widget-content'><ul><li><a href='home.html'>Home</a></li><li><a href='#'>Quality Management</a></li><li><a href='#'>_ISO Compliance</a></li><li><a href='#'>_Certification</a></li><li><a href='#'>Logistics</a></li><li><a href='#'>_Supplier Audits</a></li><li><a href='#'>_Risk Management</a></li><li><a href='#'>_Supply Chain Optimization</a></li><li><a href='#'>_Trade Facilitation</a></li><li><a href='#'>Business Process Optimization</a></li><li><a href='#'>_Project Management</a></li><li><a href='#'>_Process Mapping</a></li><li><a href='#'>contact</a></li><li><a href='#'>Our Services</a></li><li><a href='#'>_Client Interest Form</a></li><li><a href='#'>News</a></li></ul></div></div></div>
+        <div class='section menu-logo' id='menu-logo' data-section-name='Menu Logo'><div id='HTML8' class='widget HTML'><div class='widget-content'><a href='home.html'><img alt='Efic Consultancy Ltd' src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='64'%3E%3Crect x='2' y='2' width='60' height='60' fill='none' stroke='%23E7B165' stroke-width='3'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='900' font-size='26' fill='%23E7B165' text-anchor='middle'%3EE%3C/text%3E%3Ctext x='76' y='42' font-family='Arial' font-weight='900' font-size='26' fill='white'%3EEFIC%3C/text%3E%3C/svg%3E"/></a></div></div></div>
+        <div class='section menu' id='menu' data-section-name='Main Menu'><div id='LinkList210' class='widget LinkList' style='display:block'><div class='widget-content'><ul><li><a href='home.html'>Home</a></li><li><a href='#'>Quality Management</a></li><li><a href='#'>_ISO Compliance</a></li><li><a href='#'>_Certification</a></li><li><a href='#'>Logistics</a></li><li><a href='#'>_Supplier Audits</a></li><li><a href='#'>_Risk Management</a></li><li><a href='#'>_Supply Chain Optimization</a></li><li><a href='#'>_Trade Facilitation</a></li><li><a href='#'>Business Process Optimization</a></li><li><a href='#'>_Project Management</a></li><li><a href='#'>_Process Mapping</a></li><li><a href='#'>contact</a></li><li><a href='#'>Our Services</a></li><li><a href='#'>_Client Interest Form</a></li><li><a href='#'>News</a></li></ul></div></div></div>
 	<div class='menu-mobile'></div>
 	
   </div>
@@ -3100,11 +3126,11 @@ html { scroll-padding-top: 84px; }
 <div class='fenix-head'>
 <div class='fenix-sub-head row'>
 <div class='header-logo'>
-      <div class='section header' id='header'><div class='widget Header'><div id='header-inner'><div class='titlewrapper'><h1 class='title'>Efic Consultancy Ltd</h1></div></div></div></div>
+      <div class='section header' id='header' data-section-name='Logo &amp;amp; Title'><div id='Header1' class='widget Header'><div id='header-inner'><div class='titlewrapper'><h1 class='title'>Efic Consultancy Ltd</h1></div></div></div></div>
   </div>
 <div style='clear: both;'></div>
 <div class='header-logo-desc'>
-<div class='section logo-desc' id='Logo Description'><div class='widget HTML'><div class='widget-content'><p>Driving Efficacy and Effective Solutions.</p></div></div></div> 
+<div class='section logo-desc' id='Logo Description' data-section-name='Logo Description Widget'><div id='HTML3' class='widget HTML'><div class='widget-content'><p>Driving Efficacy and Effective Solutions.</p></div></div></div> 
   </div>
 <div style='clear: both;'></div>
 
@@ -3114,7 +3140,7 @@ html { scroll-padding-top: 84px; }
 </div>
 
 <div class='social-head'>
-<div class='section top-bar-social blue' id='header social widget'><div class='widget LinkList'><div class='widget-content'><ul id='social'><li><a class='facebook' href='#' title='facebook'></a></li><li><a class='twitter' href='#' title='twitter'></a></li><li><a class='instagram' href='#' title='instagram'></a></li><li><a class='linkedin' href='https://www.linkedin.com/company/efic-consultancy-ltd/' title='linkedin'></a></li></ul></div></div></div>
+<div class='section top-bar-social blue' id='header social widget' data-section-name='Top Social Widget'><div id='LinkList230' class='widget LinkList'><div class='widget-content'><ul id='social'><li><a class='facebook' href='#' title='facebook'></a></li><li><a class='twitter' href='#' title='twitter'></a></li><li><a class='instagram' href='#' title='instagram'></a></li><li><a class='linkedin' href='https://www.linkedin.com/company/efic-consultancy-ltd/' title='linkedin'></a></li></ul></div></div></div>
   </div>
   </div>
   </div>
@@ -3269,11 +3295,109 @@ html { scroll-padding-top: 84px; }
     
     <div class='row' id='content-wrapper'>
     <div id='main-wrapper'>
-   <div class='section main' id='main'><div class='widget Blog'><div class='blog-posts hfeed'><div class='post-grid'><div class='post-grid-item'><div class='post-outer'><div class='post'><div class='block-image'><a class='thumb' href='post.html'><img alt='' src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27720%27 height=%27405%27%3E%3Crect width=%27720%27 height=%27405%27 fill=%27%232B3753%27/%3E%3Ccircle cx=%27520%27 cy=%27120%27 r=%27160%27 fill=%27%23E7B165%27 opacity=%270.18%27/%3E%3Crect x=%2760%27 y=%27230%27 width=%27300%27 height=%2722%27 fill=%27%23FFFFFF%27 opacity=%270.12%27/%3E%3C/svg%3E'/></a><font class='retitle'><span class='post-retitle'><h2 class='post-title entry-title'><a href='post.html'>ISO 9001 Readiness: A Practical Checklist for Kenyan SMEs</a></h2></span></font></div></div></div></div><div class='post-grid-item'><div class='post-outer'><div class='post'><div class='block-image'><a class='thumb' href='post.html'><img alt='' src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27720%27 height=%27405%27%3E%3Crect width=%27720%27 height=%27405%27 fill=%27%233A4A6B%27/%3E%3Ccircle cx=%27480%27 cy=%27140%27 r=%27160%27 fill=%27%23E7B165%27 opacity=%270.18%27/%3E%3Crect x=%2760%27 y=%27220%27 width=%27300%27 height=%2722%27 fill=%27%23FFFFFF%27 opacity=%270.12%27/%3E%3C/svg%3E'/></a><font class='retitle'><span class='post-retitle'><h2 class='post-title entry-title'><a href='post.html'>Sourcing German Industrial Equipment Without the Risk</a></h2></span></font></div></div></div></div><div class='post-grid-item'><div class='post-outer'><div class='post'><div class='block-image'><a class='thumb' href='post.html'><img alt='' src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27720%27 height=%27405%27%3E%3Crect width=%27720%27 height=%27405%27 fill=%27%231E2C4A%27/%3E%3Ccircle cx=%27440%27 cy=%27160%27 r=%27160%27 fill=%27%23E7B165%27 opacity=%270.18%27/%3E%3Crect x=%2760%27 y=%27210%27 width=%27300%27 height=%2722%27 fill=%27%23FFFFFF%27 opacity=%270.12%27/%3E%3C/svg%3E'/></a><font class='retitle'><span class='post-retitle'><h2 class='post-title entry-title'><a href='post.html'>Process Mapping That Actually Gets Used</a></h2></span></font></div></div></div></div><div class='post-grid-item'><div class='post-outer'><div class='post'><div class='block-image'><a class='thumb' href='post.html'><img alt='' src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27720%27 height=%27405%27%3E%3Crect width=%27720%27 height=%27405%27 fill=%27%234A5568%27/%3E%3Ccircle cx=%27400%27 cy=%27180%27 r=%27160%27 fill=%27%23E7B165%27 opacity=%270.18%27/%3E%3Crect x=%2760%27 y=%27200%27 width=%27300%27 height=%2722%27 fill=%27%23FFFFFF%27 opacity=%270.12%27/%3E%3C/svg%3E'/></a><font class='retitle'><span class='post-retitle'><h2 class='post-title entry-title'><a href='post.html'>Supplier Audits: What Good Looks Like</a></h2></span></font></div></div></div></div><div class='post-grid-item'><div class='post-outer'><div class='post'><div class='block-image'><a class='thumb' href='post.html'><img alt='' src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27720%27 height=%27405%27%3E%3Crect width=%27720%27 height=%27405%27 fill=%27%232F3E5C%27/%3E%3Ccircle cx=%27360%27 cy=%27200%27 r=%27160%27 fill=%27%23E7B165%27 opacity=%270.18%27/%3E%3Crect x=%2760%27 y=%27190%27 width=%27300%27 height=%2722%27 fill=%27%23FFFFFF%27 opacity=%270.12%27/%3E%3C/svg%3E'/></a><font class='retitle'><span class='post-retitle'><h2 class='post-title entry-title'><a href='post.html'>Trade Facilitation and the East African Community</a></h2></span></font></div></div></div></div><div class='post-grid-item'><div class='post-outer'><div class='post'><div class='block-image'><a class='thumb' href='post.html'><img alt='' src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27720%27 height=%27405%27%3E%3Crect width=%27720%27 height=%27405%27 fill=%27%2322304D%27/%3E%3Ccircle cx=%27320%27 cy=%27220%27 r=%27160%27 fill=%27%23E7B165%27 opacity=%270.18%27/%3E%3Crect x=%2760%27 y=%27180%27 width=%27300%27 height=%2722%27 fill=%27%23FFFFFF%27 opacity=%270.12%27/%3E%3C/svg%3E'/></a><font class='retitle'><span class='post-retitle'><h2 class='post-title entry-title'><a href='post.html'>Building a Risk Register Your Board Will Read</a></h2></span></font></div></div></div></div></div></div><div class='blog-pager' id='blog-pager'><span id='blog-pager-older-link'><a class='blog-pager-older-link' href='#'>Older Posts</a></span></div></div></div>    
+   <div class='section main' id='main' data-section-name='main'><div id='Blog1' class='widget Blog'><div class='blog-posts hfeed'><div class='post-grid'><div class='post-grid-item'><div class='post-outer'><div class='post'><div class='block-image'><a class='thumb' href='post.html'><img alt='' src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27720%27 height=%27405%27%3E%3Crect width=%27720%27 height=%27405%27 fill=%27%232B3753%27/%3E%3Ccircle cx=%27520%27 cy=%27120%27 r=%27160%27 fill=%27%23E7B165%27 opacity=%270.18%27/%3E%3Crect x=%2760%27 y=%27230%27 width=%27300%27 height=%2722%27 fill=%27%23FFFFFF%27 opacity=%270.12%27/%3E%3C/svg%3E'/></a><font class='retitle'><span class='post-retitle'><h2 class='post-title entry-title'><a href='post.html'>ISO 9001 Readiness: A Practical Checklist for Kenyan SMEs</a></h2></span></font></div></div></div></div><div class='post-grid-item'><div class='post-outer'><div class='post'><div class='block-image'><a class='thumb' href='post.html'><img alt='' src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27720%27 height=%27405%27%3E%3Crect width=%27720%27 height=%27405%27 fill=%27%233A4A6B%27/%3E%3Ccircle cx=%27480%27 cy=%27140%27 r=%27160%27 fill=%27%23E7B165%27 opacity=%270.18%27/%3E%3Crect x=%2760%27 y=%27220%27 width=%27300%27 height=%2722%27 fill=%27%23FFFFFF%27 opacity=%270.12%27/%3E%3C/svg%3E'/></a><font class='retitle'><span class='post-retitle'><h2 class='post-title entry-title'><a href='post.html'>Sourcing German Industrial Equipment Without the Risk</a></h2></span></font></div></div></div></div><div class='post-grid-item'><div class='post-outer'><div class='post'><div class='block-image'><a class='thumb' href='post.html'><img alt='' src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27720%27 height=%27405%27%3E%3Crect width=%27720%27 height=%27405%27 fill=%27%231E2C4A%27/%3E%3Ccircle cx=%27440%27 cy=%27160%27 r=%27160%27 fill=%27%23E7B165%27 opacity=%270.18%27/%3E%3Crect x=%2760%27 y=%27210%27 width=%27300%27 height=%2722%27 fill=%27%23FFFFFF%27 opacity=%270.12%27/%3E%3C/svg%3E'/></a><font class='retitle'><span class='post-retitle'><h2 class='post-title entry-title'><a href='post.html'>Process Mapping That Actually Gets Used</a></h2></span></font></div></div></div></div><div class='post-grid-item'><div class='post-outer'><div class='post'><div class='block-image'><a class='thumb' href='post.html'><img alt='' src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27720%27 height=%27405%27%3E%3Crect width=%27720%27 height=%27405%27 fill=%27%234A5568%27/%3E%3Ccircle cx=%27400%27 cy=%27180%27 r=%27160%27 fill=%27%23E7B165%27 opacity=%270.18%27/%3E%3Crect x=%2760%27 y=%27200%27 width=%27300%27 height=%2722%27 fill=%27%23FFFFFF%27 opacity=%270.12%27/%3E%3C/svg%3E'/></a><font class='retitle'><span class='post-retitle'><h2 class='post-title entry-title'><a href='post.html'>Supplier Audits: What Good Looks Like</a></h2></span></font></div></div></div></div><div class='post-grid-item'><div class='post-outer'><div class='post'><div class='block-image'><a class='thumb' href='post.html'><img alt='' src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27720%27 height=%27405%27%3E%3Crect width=%27720%27 height=%27405%27 fill=%27%232F3E5C%27/%3E%3Ccircle cx=%27360%27 cy=%27200%27 r=%27160%27 fill=%27%23E7B165%27 opacity=%270.18%27/%3E%3Crect x=%2760%27 y=%27190%27 width=%27300%27 height=%2722%27 fill=%27%23FFFFFF%27 opacity=%270.12%27/%3E%3C/svg%3E'/></a><font class='retitle'><span class='post-retitle'><h2 class='post-title entry-title'><a href='post.html'>Trade Facilitation and the East African Community</a></h2></span></font></div></div></div></div><div class='post-grid-item'><div class='post-outer'><div class='post'><div class='block-image'><a class='thumb' href='post.html'><img alt='' src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27720%27 height=%27405%27%3E%3Crect width=%27720%27 height=%27405%27 fill=%27%2322304D%27/%3E%3Ccircle cx=%27320%27 cy=%27220%27 r=%27160%27 fill=%27%23E7B165%27 opacity=%270.18%27/%3E%3Crect x=%2760%27 y=%27180%27 width=%27300%27 height=%2722%27 fill=%27%23FFFFFF%27 opacity=%270.12%27/%3E%3C/svg%3E'/></a><font class='retitle'><span class='post-retitle'><h2 class='post-title entry-title'><a href='post.html'>Building a Risk Register Your Board Will Read</a></h2></span></font></div></div></div></div></div></div><div class='blog-pager' id='blog-pager'><span id='blog-pager-older-link'><a class='blog-pager-older-link' href='#'>Older Posts</a></span></div></div><div id='HTML5' class='widget HTML'><div class='widget-content'><p>HTML gadget</p></div></div><div id='HTML2' class='widget HTML'><div class='widget-content'><p>HTML gadget</p></div></div></div>    
 
 </div>
   <div id='sidebar-wrapper'>
-<div class='section sidebar' id='sidebar'><div class='widget Label'><h2>Tags</h2><div class='widget-content cloud-label-widget-content'><span class='label-size'><a href='#'>Quality</a><span class='label-count'>6</span></span><span class='label-size'><a href='#'>Logistics</a><span class='label-count'>4</span></span><span class='label-size'><a href='#'>Compliance</a><span class='label-count'>3</span></span><span class='label-size'><a href='#'>Risk</a><span class='label-count'>2</span></span></div></div><div class='widget PopularPosts'><h2>Popular</h2><div class='widget-content popular-posts'><ul><li><div class='item-title'><a href='#'>Sourcing German Industrial Equipment Without the Risk</a></div></li><li><div class='item-title'><a href='#'>Process Mapping That Actually Gets Used</a></div></li><li><div class='item-title'><a href='#'>Supplier Audits: What Good Looks Like</a></div></li></ul></div></div></div>
+<div class='section sidebar' id='sidebar' data-section-name='sidebar'><div id='HTML6' class='widget HTML'><h2 class='title'>test</h2><div class='widget-content'><p><!-- ============================================================
+     EFIC — FOOTER LINKS BAR  (links left + logo centre + links right)
+     WHERE TO PUT IT: Blogger dashboard -> Layout -> "Add a Gadget"
+     in the FOOTER area -> "HTML/JavaScript" -> paste this -> Save.
+     Background is transparent so it sits on your dark footer.
+
+     If your theme already shows a footer logo and you want only ONE,
+     either remove the <a class='fb-logo'> line below, or hide the
+     theme's logo with CSS.
+   ┌──────────────────────────────────────────────────────┐
+     │  ★ Edit link text + href below. Colours at the top.    │
+   └──────────────────────────────────────────────────────┘
+   ============================================================ -->
+<style>
+.fb-wrap{ --link:#06182C; --hover:#5ab0e0; --logo-h:42px;
+  --font:'Open Sans',Arial,sans-serif; }
+.fb-wrap *{box-sizing:border-box;margin:0;padding:0}
+.fb-wrap{font-family:var(--font);padding:16px 20px;background:transparent}
+.fb-bar{max-width:920px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap}
+.fb-group{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;flex:1}
+.fb-group a{color:var(--link);text-decoration:none;font-size:12.5px;text-transform:uppercase;letter-spacing:.6px;transition:color .2s}
+.fb-group a:hover{color:var(--hover)}
+.fb-logo{flex:0 0 auto}
+.fb-logo img{height:var(--logo-h);display:block}
+@media(max-width:620px){
+  .fb-bar{flex-direction:column;gap:16px}
+  .fb-group{order:2}
+}
+</style>
+<link href='https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&amp;display=swap' rel='stylesheet'/>
+
+<div class='fb-wrap'>
+  <div class='fb-bar'>
+    <!-- LEFT links -->
+    <div class='fb-group'>
+      <a href='#'>Home</a>
+      <a href='#'>Services</a>
+      <a href='#'>Products</a>
+      <a href='#'>Contact</a>
+    </div>
+
+    <!-- CENTRE logo (replace src, or delete this block to use your theme logo) -->
+    <a class='fb-logo' href='#'><img src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhucOvxCXLKVV7Z2TkCIDpfkNwX0oKO29CvT0-YIzfjrwXvRSRtSt4zXpUHdVGQUhUJ5vGEnxjdHKPobnNDvWEZ9WzpGqFx0DpclJzz8C1nkfozQ3GSoJyVrhrVpgHbdf7-2PghqXIIAA89mhHWzEsB4fz-DkrbAXa6FZnuZAw69j-oGTLEil53QfQR1Nw/s320/Efic%20consultancy%20web%20logo.png'/></a>
+    <!-- RIGHT links -->
+    <div class='fb-group'>
+      <a href='#'>About</a>
+      <a href='#'>Careers</a>
+      <a href='#'>Track Order</a>
+      <a href='#'>Privacy</a>
+    </div>
+  </div>
+</div>
+</p></div></div><div id='PopularPosts1' class='widget PopularPosts'><h2>Popular</h2><div class='widget-content popular-posts'><ul><li><div class='item-title'><a href='#'>Sourcing German Industrial Equipment Without the Risk</a></div></li><li><div class='item-title'><a href='#'>Process Mapping That Actually Gets Used</a></div></li><li><div class='item-title'><a href='#'>Supplier Audits: What Good Looks Like</a></div></li></ul></div></div><div id='HTML1' class='widget HTML'><h2 class='title'>Subscribe Us</h2><div class='widget-content'><div class="videoWrapper">
+    <!-- Copy & Pasted from YouTube -->
+    <iframe width="560" height="349" src="https://www.youtube.com/embed/LFtTl70cjVw" frameborder="0" allowfullscreen></iframe>
+</div>
+<style>
+.videoWrapper {
+position: relative;
+padding-bottom: 56.25%; /* 16:9 */
+padding-top: 25px;
+height: 0;
+}
+.videoWrapper iframe {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+}
+</style></div></div><div id='Label1' class='widget Label'><h2>Tags</h2><div class='widget-content cloud-label-widget-content'><span class='label-size'><a href='#'>Quality</a><span class='label-count'>6</span></span><span class='label-size'><a href='#'>Logistics</a><span class='label-count'>4</span></span><span class='label-size'><a href='#'>Compliance</a><span class='label-count'>3</span></span><span class='label-size'><a href='#'>Risk</a><span class='label-count'>2</span></span></div></div><div id='AdSense1' class='widget AdSense'><div class='widget-content'><p>AdSense gadget</p></div></div><div id='BlogSearch1' class='widget BlogSearch'><h2 class='title'>Search Blog</h2><div class='widget-content'><p>BlogSearch gadget</p></div></div><div id='Attribution1' class='widget Attribution'><div class='widget-content'><p>Attribution gadget</p></div></div><div id='AdSense2' class='widget AdSense'><div class='widget-content'><p>AdSense gadget</p></div></div><div id='Label2' class='widget Label'><h2 class='title'>Categories</h2><div class='widget-content'><p>Label gadget</p></div></div><div id='HTML4' class='widget HTML'><h2 class='title'>Our process</h2><div class='widget-content'><div class="videoWrapper">
+    <!-- Updated YouTube Embed Code -->
+    <iframe width="560" height="349" 
+        src="https://www.youtube.com/embed/HHP_3h1BjhA" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        allowfullscreen>
+    </iframe>
+</div>
+
+<!-- CSS for Responsive Video Embed -->
+<style>
+.videoWrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    padding-top: 25px;
+    height: 0;
+    overflow: hidden;
+}
+
+.videoWrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+</style></div></div><div id='Label5' class='widget Label'><h2 class='title'>Labels</h2><div class='widget-content'><p>Label gadget</p></div></div></div>
     </div>
  <div style='clear: both;'></div>
     </div>
@@ -3360,7 +3484,7 @@ html { scroll-padding-top: 84px; }
  <div style='clear:both'></div>
 <div class='row' id='sora_blogger_cntct_form'>
 <div class='wrap-me'>
-<div class='section sora-contact-widget' id='Contact Widget'><div class='widget ContactForm'><div class='contact-form-widget'><div class='form'><form name='contact-form'><p></p><span class='name-bg'>Your Name</span><br/><input class='contact-form-name' id='ContactForm1_contact-form-name' type='text'/><p></p><span class='email-bg'>Your Email*</span><br/><input class='contact-form-email' id='ContactForm1_contact-form-email' type='text'/><p></p><span class='message-bg'>Your Message*</span><br/><textarea class='contact-form-email-message' id='ContactForm1_contact-form-email-message' rows='5'></textarea><p></p><span class='send-bg'><input class='contact-form-button contact-form-button-submit' type='button' value='Send'/></span><span class='clear-bg'><input class='contact-form-button contact-form-button-submit clear-button' type='reset' value='Clear'/></span></form></div></div></div></div>
+<div class='section sora-contact-widget' id='Contact Widget' data-section-name='Contact Form Widget'><div id='ContactForm1' class='widget ContactForm'><div class='contact-form-widget'><div class='form'><form name='contact-form'><p></p><span class='name-bg'>Your Name</span><br/><input class='contact-form-name' id='ContactForm1_contact-form-name' type='text'/><p></p><span class='email-bg'>Your Email*</span><br/><input class='contact-form-email' id='ContactForm1_contact-form-email' type='text'/><p></p><span class='message-bg'>Your Message*</span><br/><textarea class='contact-form-email-message' id='ContactForm1_contact-form-email-message' rows='5'></textarea><p></p><span class='send-bg'><input class='contact-form-button contact-form-button-submit' type='button' value='Send'/></span><span class='clear-bg'><input class='contact-form-button contact-form-button-submit clear-button' type='reset' value='Clear'/></span></form></div></div></div></div>
 <br/>
 </div><div class='map-me'>
  <div id='map'>
@@ -3373,10 +3497,10 @@ html { scroll-padding-top: 84px; }
 <div id='jugas_footer'>
         <div class='copy-container row'>
          <div class='foot-logo'>
-<div class='section foot-logo-section' id='footer-logo'><div class='widget HTML'><div class='widget-content'><a href='home.html'><img alt='Efic Consultancy Ltd' src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='64'%3E%3Crect x='2' y='2' width='60' height='60' fill='none' stroke='%23E7B165' stroke-width='3'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='900' font-size='26' fill='%23E7B165' text-anchor='middle'%3EE%3C/text%3E%3Ctext x='76' y='42' font-family='Arial' font-weight='900' font-size='26' fill='white'%3EEFIC%3C/text%3E%3C/svg%3E"/></a></div></div></div>
+<div class='section foot-logo-section' id='footer-logo' data-section-name='Footer Logo'><div id='HTML7' class='widget HTML'><div class='widget-content'><a href='home.html'><img alt='Efic Consultancy Ltd' src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='64'%3E%3Crect x='2' y='2' width='60' height='60' fill='none' stroke='%23E7B165' stroke-width='3'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='900' font-size='26' fill='%23E7B165' text-anchor='middle'%3EE%3C/text%3E%3Ctext x='76' y='42' font-family='Arial' font-weight='900' font-size='26' fill='white'%3EEFIC%3C/text%3E%3C/svg%3E"/></a></div></div></div>
          </div>
          <div class='foot-social'>
-<div class='section foot-bar-social blue' id='Footer social widget'><div class='widget LinkList'><div class='widget-content'><ul id='social'><li><a class='facebook' href='#' title='facebook'></a></li><li><a class='LinkedIn' href='https://www.linkedin.com/company/efic-consultancy-ltd/' title='LinkedIn'></a></li><li><a class='youtube' href='https://youtube.com/' title='youtube'></a></li><li><a class='WhatsApp' href='https://wa.me/' title='WhatsApp'></a></li><li><a class='Telegram' href='https://t.me/' title='Telegram'></a></li><li><a class='TikTok' href='https://tiktok.com/' title='TikTok'></a></li><li><a class='X' href='https://x.com/' title='X'></a></li><li><a class='Email' href='mailto:askeficc@gmail.com' title='Email'></a></li><li><a class='Mastodon' href='https://mastodon.social/' title='Mastodon'></a></li></ul></div></div></div>
+<div class='section foot-bar-social blue' id='Footer social widget' data-section-name='Footer Social Widget'><div id='LinkList250' class='widget LinkList'><div class='widget-content'><ul id='social'><li><a class='facebook' href='#' title='facebook'></a></li><li><a class='LinkedIn' href='https://www.linkedin.com/company/efic-consultancy-ltd/' title='LinkedIn'></a></li><li><a class='youtube' href='https://youtube.com/' title='youtube'></a></li><li><a class='WhatsApp' href='https://wa.me/' title='WhatsApp'></a></li><li><a class='Telegram' href='https://t.me/' title='Telegram'></a></li><li><a class='TikTok' href='https://tiktok.com/' title='TikTok'></a></li><li><a class='X' href='https://x.com/' title='X'></a></li><li><a class='Email' href='mailto:askeficc@gmail.com' title='Email'></a></li><li><a class='Mastodon' href='https://mastodon.social/' title='Mastodon'></a></li></ul></div></div></div>
 </div>
 
 <div style='clear:both'></div>
@@ -3834,6 +3958,33 @@ $("#related-posts").each(function(){var g=$(this),e=g.text(),r=3;relatedPost(g,e
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   }
+  // Share links: build them with properly encoded URL and title, so titles
+  // containing & or # are not cut off.
+  var shareBox = document.querySelector('.share-art');
+  if (shareBox) {
+    var h1 = document.querySelector('h1.post-title');
+    var canonical = document.querySelector('link[rel="canonical"]');
+    var U = encodeURIComponent(canonical ? canonical.href : location.href.split('#')[0]);
+    var T = encodeURIComponent(h1 ? h1.textContent.replace(/\s+/g, ' ').trim() : document.title);
+    var share = {
+      'fac-art': 'https://www.facebook.com/sharer.php?u=' + U,
+      'twi-art': 'https://twitter.com/intent/tweet?url=' + U + '&text=' + T,
+      'lin-art': 'https://www.linkedin.com/sharing/share-offsite/?url=' + U,
+      'wat-art': 'https://api.whatsapp.com/send?text=' + T + '%20' + U,
+      'tel-art': 'https://t.me/share/url?url=' + U + '&text=' + T
+    };
+    for (var cls in share) {
+      var a = shareBox.querySelector('a.' + cls);
+      if (a) { a.setAttribute('href', share[cls]); }
+    }
+  }
+  // The mobile menu button is created by SlickNav once the page is ready.
+  var labelMenu = function () {
+    var btns = document.querySelectorAll('.slicknav_btn');
+    for (var k = 0; k < btns.length; k++) { btns[k].setAttribute('aria-label', 'Menu'); }
+  };
+  document.addEventListener('DOMContentLoaded', function () { setTimeout(labelMenu, 0); });
+  window.addEventListener('load', labelMenu);
   var links = document.querySelectorAll('ul[id="social"] a');
   for (var j = 0; j < links.length; j++) {
     var name = (links[j].getAttribute('title') || '').trim();
