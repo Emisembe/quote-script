@@ -84,6 +84,10 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 
 ## 5. JavaScript and images
 
+- **Video in a card or hero**: let the user paste a plain YouTube link into an HTML gadget. JS extracts the 11-character id (watch, youtu.be, shorts, live, embed), removes the link text, and shows a thumbnail (`i.ytimg.com/vi/ID/hqdefault.jpg`) with a play button. Only on click insert `youtube-nocookie.com/embed/ID?autoplay=1`. This keeps the page fast and never needs an Image gadget.
+- **"Powered by Blogger"** is the Attribution gadget. Blogger doesn't require it, so removing the gadget is fine. Keep your own copyright line.
+- **Flex on a menu `ul`** also hits nested sub-menus. Use `.widget-content > ul` for the top row.
+
 - **Card images**: legacy `data:post.thumbnailUrl` is 72px (`/s72-c/`) and `data:post.firstImageUrl` is full size. Rewrite to `/w720-h405-c/` (path form) or `=w720-h405-c` (the newer `=s1600` form), **but only on Google hosts**: `googleusercontent.com`, `blogspot.com`, `ggpht.com`. Never touch other hosts, or you'll break their URLs.
 - **YouTube thumbnails** come from both `img.youtube.com` and `i.ytimg.com`. Upgrade `default.jpg` to `hqdefault.jpg`.
 - **Dates**: `data:post.timestamp` follows the blog's *timestamp* setting (often a time like "9:00 AM"). Output `<time datetime="{timestampISO8601}">` and format it with `toLocaleDateString` in JS.

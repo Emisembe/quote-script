@@ -280,7 +280,7 @@ a.badge:hover { background: $(primary.color); color: $(accent.color); }
     max-height: none;
     overflow: visible;
   }
-  .site-nav .widget-content ul { display: flex; align-items: center; gap: 26px; }
+  .site-nav .widget-content > ul { display: flex; align-items: center; gap: 26px; }
   .site-nav li a {
     padding: 6px 0;
     font-size: 15px;
@@ -289,6 +289,81 @@ a.badge:hover { background: $(primary.color); color: $(accent.color); }
   .site-nav li a:hover { border-bottom-color: $(accent.color); }
   .header-cta .widget-content { margin: 0; }
   .header-cta .widget-content a { display: inline-flex; width: auto; min-height: 40px; padding: 9px 18px; font-size: 14px; }
+}
+
+/* Sub-menus (Link List items starting with "_") */
+.site-nav li.has-sub { position: relative; display: flex; flex-wrap: wrap; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.site-nav li.has-sub > a { flex: 1 1 auto; border-bottom: 0; }
+.site-nav .sub-menu li:last-child a { border-bottom: 0; }
+.sub-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: #E6ECF3;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+.sub-toggle:hover { color: $(accent.color); }
+.site-nav li.open > .sub-toggle { transform: rotate(180deg); color: $(accent.color); }
+body .widget .site-nav .sub-menu,
+.site-nav .sub-menu {
+  display: none;
+  flex-basis: 100%;
+  margin: 0 0 8px;
+  padding: 0 0 0 14px;
+  border-left: 2px solid $(accent.color);
+}
+.site-nav li.open > .sub-menu { display: block; }
+.site-nav .sub-menu li a {
+  padding: 11px 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #C9D2E0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+@media (min-width: 1024px) {
+  .site-nav li.has-sub { flex-wrap: nowrap; border-bottom: 0; }
+  .site-nav li.has-sub > a { border-bottom: 2px solid transparent; }
+  .site-nav li.has-sub > a:hover { border-bottom-color: $(accent.color); }
+  .sub-toggle { width: 22px; height: 22px; margin-left: 2px; }
+  body .widget .site-nav .sub-menu,
+  .site-nav .sub-menu {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: -16px;
+    z-index: 120;
+    min-width: 230px;
+    margin: 0;
+    padding: 8px 0;
+    background: $(primary.color);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 2px solid $(accent.color);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+  }
+  .site-nav li.has-sub:hover > .sub-menu,
+  .site-nav li.has-sub:focus-within > .sub-menu,
+  .site-nav li.has-sub.open > .sub-menu { visibility: visible; opacity: 1; transform: translateY(0); }
+  .site-nav li.has-sub:hover > .sub-toggle { color: $(accent.color); }
+  .site-nav .sub-menu li a {
+    display: block;
+    padding: 9px 18px;
+    font-size: 14px;
+    white-space: nowrap;
+    border-bottom: 0;
+  }
+  .site-nav .sub-menu li a:hover { background: rgba(0, 192, 168, 0.08); border-bottom-color: transparent; }
 }
 
 /* ---------- Hero (homepage) ---------- */
@@ -388,6 +463,47 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 }
 .host-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .host-name { margin: 0 0 4px; font-size: 20px; font-weight: 700; color: #fff; }
+.host-card.has-video { max-width: 520px; padding: 16px 16px 26px; }
+.host-video {
+  position: relative;
+  width: 100%;
+  margin: 0 0 18px;
+  padding-top: 56.25%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+.host-video iframe,
+.host-video-play {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.host-video-play { display: block; padding: 0; background: #000; cursor: pointer; }
+.host-video-play img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: opacity 0.2s; }
+.host-video-play:hover img { opacity: 1; }
+.host-video-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px;
+  border-radius: 50%;
+  background: $(accent.color);
+  color: $(primary.color);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s, background 0.2s;
+}
+.host-video-play:hover .host-video-icon,
+.host-video-play:focus-visible .host-video-icon { transform: scale(1.08); background: $(accent.hover.color); }
 .host-role { font-size: 14px; font-weight: 600; color: $(accent.color); }
 .host-role p { margin: 0; }
 
@@ -852,14 +968,17 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 #footer-connect .widget-content ul { display: flex; flex-wrap: wrap; gap: 8px; }
 #footer-connect .widget-content li { margin: 0; }
 #footer-connect .widget-content a {
-  display: inline-block;
-  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.75);
 }
 #footer-connect .widget-content a:hover { border-color: $(accent.color); color: $(accent.color); }
+#footer-connect .social-icon { flex: 0 0 auto; color: $(accent.color); }
 .footer-bottom {
   display: flex;
   flex-wrap: wrap;
@@ -988,24 +1107,29 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
 
     <nav aria-label='Main' class='nav-drawer' id='site-nav'>
       <b:section class='site-nav' id='menu' maxwidgets='1' showaddelement='no'>
-        <b:widget id='HTML1' locked='false' title='' type='HTML'>
+        <b:widget id='LinkList1' locked='false' title='Menu' type='LinkList' version='1'>
           <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[<ul>
-<li><a href="/#about">About</a></li>
-<li><a href="/#episodes">Episodes</a></li>
-<li><a href="/#topics">Topics</a></li>
-<li><a href="#connect">Connect</a></li>
-</ul>]]></b:widget-setting>
+            <b:widget-setting name='sorting'>NONE</b:widget-setting>
+            <b:widget-setting name='text-0'>About</b:widget-setting>
+            <b:widget-setting name='link-0'>/#about</b:widget-setting>
+            <b:widget-setting name='text-1'>Episodes</b:widget-setting>
+            <b:widget-setting name='link-1'>/#episodes</b:widget-setting>
+            <b:widget-setting name='text-2'>Topics</b:widget-setting>
+            <b:widget-setting name='link-2'>/#topics</b:widget-setting>
+            <b:widget-setting name='text-3'>Connect</b:widget-setting>
+            <b:widget-setting name='link-3'>#connect</b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
-  <!-- only display title if it's non-empty -->
   <b:if cond='data:title != &quot;&quot;'>
     <h2 class='title'><data:title/></h2>
   </b:if>
   <div class='widget-content'>
-    <data:content/>
+    <ul>
+      <b:loop values='data:links' var='link'>
+        <li><a expr:href='data:link.target'><data:link.name/></a></li>
+      </b:loop>
+    </ul>
   </div>
-
   <b:include name='quickedit'/>
 </b:includable>
         </b:widget>
@@ -2065,24 +2189,29 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
         </b:widget>
       </b:section>
       <b:section class='footer-col' id='footer-connect' preferred='yes'>
-        <b:widget id='HTML7' locked='false' title='Connect' type='HTML'>
+        <b:widget id='LinkList2' locked='false' title='Connect' type='LinkList' version='1'>
           <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[<ul>
-<li><a href="https://www.youtube.com/">YouTube</a></li>
-<li><a href="https://www.tiktok.com/">TikTok</a></li>
-<li><a href="https://www.instagram.com/">Instagram</a></li>
-<li><a href="https://www.linkedin.com/">LinkedIn</a></li>
-</ul>]]></b:widget-setting>
+            <b:widget-setting name='sorting'>NONE</b:widget-setting>
+            <b:widget-setting name='text-0'>YouTube</b:widget-setting>
+            <b:widget-setting name='link-0'>https://www.youtube.com/</b:widget-setting>
+            <b:widget-setting name='text-1'>TikTok</b:widget-setting>
+            <b:widget-setting name='link-1'>https://www.tiktok.com/</b:widget-setting>
+            <b:widget-setting name='text-2'>Instagram</b:widget-setting>
+            <b:widget-setting name='link-2'>https://www.instagram.com/</b:widget-setting>
+            <b:widget-setting name='text-3'>LinkedIn</b:widget-setting>
+            <b:widget-setting name='link-3'>https://www.linkedin.com/</b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
-  <!-- only display title if it's non-empty -->
   <b:if cond='data:title != &quot;&quot;'>
     <h2 class='title'><data:title/></h2>
   </b:if>
   <div class='widget-content'>
-    <data:content/>
+    <ul>
+      <b:loop values='data:links' var='link'>
+        <li><a expr:href='data:link.target'><data:link.name/></a></li>
+      </b:loop>
+    </ul>
   </div>
-
   <b:include name='quickedit'/>
 </b:includable>
         </b:widget>
@@ -2113,22 +2242,6 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
     </div>
     <div class='footer-bottom'>
       <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/></p>
-      <b:section class='footer-credit' id='footer-credit' maxwidgets='1' showaddelement='no'>
-        <b:widget id='Attribution1' locked='false' title='' type='Attribution'>
-          <b:widget-settings>
-            <b:widget-setting name='copyright'/>
-          </b:widget-settings>
-          <b:includable id='main'>
-  <div class='widget-content' style='text-align: center;'>
-    <b:if cond='data:attribution != &quot;&quot;'>
-     <data:attribution/>
-    </b:if>
-  </div>
-
-  <b:include name='quickedit'/>
-</b:includable>
-        </b:widget>
-      </b:section>
     </div>
   </div>
 </footer>
@@ -2141,6 +2254,157 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
   'use strict';
   var doc = document;
   var root = doc.documentElement;
+
+  // Sub-menus: in the Link List, a link whose name starts with "_" becomes a
+  // sub-item of the closest link above it without "_".
+  var menuList = doc.querySelector('.site-nav .widget-content > ul');
+  if (menuList) {
+    var parentItem = null;
+    var menuItems = Array.prototype.slice.call(menuList.children);
+    for (var mi = 0; mi < menuItems.length; mi++) {
+      var item = menuItems[mi];
+      var link = item.querySelector('a');
+      if (!link) continue;
+      var label = link.textContent.replace(/^\s+/, '');
+      if (label.charAt(0) === '_' && parentItem) {
+        link.textContent = label.replace(/^_+\s*/, '');
+        var sub = parentItem.querySelector('ul.sub-menu');
+        if (!sub) {
+          sub = doc.createElement('ul');
+          sub.className = 'sub-menu';
+          parentItem.appendChild(sub);
+          parentItem.classList.add('has-sub');
+          var subToggle = doc.createElement('button');
+          subToggle.type = 'button';
+          subToggle.className = 'sub-toggle';
+          subToggle.setAttribute('aria-expanded', 'false');
+          subToggle.setAttribute('aria-label', 'Show ' + parentItem.querySelector('a').textContent.trim() + ' pages');
+          subToggle.innerHTML = '<svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" viewBox="0 0 24 24" width="16"><polyline points="6 9 12 15 18 9"/></svg>';
+          parentItem.insertBefore(subToggle, sub);
+        }
+        sub.appendChild(item);
+      } else {
+        if (label.charAt(0) === '_') link.textContent = label.replace(/^_+\s*/, '');
+        parentItem = item;
+      }
+    }
+    menuList.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('.sub-toggle') : null;
+      if (!btn) return;
+      var li = btn.parentNode;
+      var open = !li.classList.contains('open');
+      var siblings = menuList.querySelectorAll('li.has-sub.open');
+      for (var si = 0; si < siblings.length; si++) {
+        siblings[si].classList.remove('open');
+        siblings[si].querySelector('.sub-toggle').setAttribute('aria-expanded', 'false');
+      }
+      if (open) li.classList.add('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+
+  // Social links: add an icon based on the link's address
+  var socialIcons = {
+    youtube: '<rect x="2" y="5" width="20" height="14" rx="4"/><polygon points="10 9 15 12 10 15 10 9"/>',
+    tiktok: '<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.6 2.6 2.6 4.6 5 4.8"/>',
+    instagram: '<rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>',
+    linkedin: '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>',
+    facebook: '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
+    x: '<path d="M4 4l16 16"/><path d="M20 4L4 20"/>',
+    whatsapp: '<path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.4A8.4 8.4 0 1 1 21 11.5z"/>',
+    spotify: '<circle cx="12" cy="12" r="10"/><path d="M7 9.5c3.5-1 7.5-.7 10.5 1"/><path d="M7.5 12.7c2.9-.8 6-.5 8.5.9"/><path d="M8 15.8c2.3-.6 4.6-.4 6.6.7"/>',
+    podcast: '<circle cx="12" cy="11" r="3"/><path d="M8.5 16.5a6 6 0 1 1 7 0"/><path d="M12 14v8"/>',
+    email: '<rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/>',
+    link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>'
+  };
+  function socialType(href) {
+    var h = (href || '').toLowerCase();
+    if (h.indexOf('mailto:') === 0) return 'email';
+    if (/youtube\.com|youtu\.be/.test(h)) return 'youtube';
+    if (/tiktok\.com/.test(h)) return 'tiktok';
+    if (/instagram\.com/.test(h)) return 'instagram';
+    if (/linkedin\.com/.test(h)) return 'linkedin';
+    if (/facebook\.com|fb\.com|fb\.me/.test(h)) return 'facebook';
+    if (/(^|\/\/|\.)(x|twitter)\.com/.test(h)) return 'x';
+    if (/whatsapp\.com|wa\.me/.test(h)) return 'whatsapp';
+    if (/spotify\.com/.test(h)) return 'spotify';
+    if (/podcasts\.apple\.com|anchor\.fm|podbean|buzzsprout/.test(h)) return 'podcast';
+    return 'link';
+  }
+  var socialLinks = doc.querySelectorAll('#footer-connect .widget-content a');
+  for (var so = 0; so < socialLinks.length; so++) {
+    var sl = socialLinks[so];
+    if (sl.querySelector('svg')) continue;
+    var svg = '<svg aria-hidden="true" class="social-icon" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="18">' + socialIcons[socialType(sl.getAttribute('href'))] + '</svg>';
+    sl.insertAdjacentHTML('afterbegin', svg);
+    if (/^https?:/i.test(sl.getAttribute('href') || '')) {
+      sl.setAttribute('target', '_blank');
+      sl.setAttribute('rel', 'noopener');
+    }
+  }
+
+  // Host card video: a YouTube link (or YouTube embed) in the host card gadget
+  // replaces the microphone with the video. The player loads only on play.
+  var hostCard = doc.querySelector('.host-card');
+  var hostRole = hostCard ? hostCard.querySelector('.host-role') : null;
+  var ytPattern = /(?:youtube\.com\/(?:watch\?(?:[^\s"'<>]*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})[^\s"'<>]*/;
+  function findVideoId(node) {
+    var frames = node.querySelectorAll('iframe');
+    for (var fi = 0; fi < frames.length; fi++) {
+      var fm = ytPattern.exec(frames[fi].getAttribute('src') || '');
+      if (fm) { frames[fi].parentNode.removeChild(frames[fi]); return fm[1]; }
+    }
+    var anchors = node.querySelectorAll('a');
+    for (var ai = 0; ai < anchors.length; ai++) {
+      var am = ytPattern.exec(anchors[ai].getAttribute('href') || '');
+      if (am) { anchors[ai].parentNode.removeChild(anchors[ai]); return am[1]; }
+    }
+    var walker = doc.createTreeWalker(node, 4, null, false);
+    var textNode;
+    while ((textNode = walker.nextNode())) {
+      var tm = ytPattern.exec(textNode.nodeValue);
+      if (tm) {
+        textNode.nodeValue = textNode.nodeValue.replace(/\S*(?:youtube\.com|youtu\.be)\S*/, '').replace(/\s+$/, '');
+        return tm[1];
+      }
+    }
+    return null;
+  }
+  if (hostCard && hostRole) {
+    var videoId = findVideoId(hostRole);
+    if (videoId) {
+      var paras = hostRole.querySelectorAll('p, div');
+      for (var pi = 0; pi < paras.length; pi++) {
+        if (!paras[pi].textContent.trim() && !paras[pi].querySelector('img')) paras[pi].parentNode.removeChild(paras[pi]);
+      }
+      var avatarSlot = hostCard.querySelector('.host-avatar');
+      var video = doc.createElement('div');
+      video.className = 'host-video';
+      var playBtn = doc.createElement('button');
+      playBtn.type = 'button';
+      playBtn.className = 'host-video-play';
+      playBtn.setAttribute('aria-label', 'Play video');
+      var thumb = doc.createElement('img');
+      thumb.alt = '';
+      thumb.loading = 'lazy';
+      thumb.src = 'https://i.ytimg.com/vi/' + videoId + '/hqdefault.jpg';
+      playBtn.appendChild(thumb);
+      playBtn.insertAdjacentHTML('beforeend', '<span class="host-video-icon"><svg aria-hidden="true" fill="currentColor" height="28" viewBox="0 0 24 24" width="28"><polygon points="8 5 19 12 8 19 8 5"/></svg></span>');
+      playBtn.addEventListener('click', function () {
+        var frame = doc.createElement('iframe');
+        frame.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&rel=0';
+        frame.title = 'Video';
+        frame.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        frame.setAttribute('allowfullscreen', '');
+        video.innerHTML = '';
+        video.appendChild(frame);
+      });
+      video.appendChild(playBtn);
+      if (avatarSlot) avatarSlot.parentNode.replaceChild(video, avatarSlot);
+      else hostCard.insertBefore(video, hostCard.firstChild);
+      hostCard.classList.add('has-video');
+    }
+  }
 
   // Mobile menu
   var header = doc.getElementById('site-header');

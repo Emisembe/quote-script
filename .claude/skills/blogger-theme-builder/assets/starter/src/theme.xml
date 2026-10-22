@@ -69,16 +69,19 @@ Page not found - <data:blog.title/>
 
     <nav aria-label='Main' class='nav-drawer' id='site-nav'>
       <b:section class='site-nav' id='menu' maxwidgets='1' showaddelement='no'>
-        <b:widget id='HTML1' locked='false' title='' type='HTML'>
+        <b:widget id='LinkList1' locked='false' title='Menu' type='LinkList' version='1'>
           <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[<ul>
-<li><a href="/#about">About</a></li>
-<li><a href="/#episodes">Episodes</a></li>
-<li><a href="/#topics">Topics</a></li>
-<li><a href="#connect">Connect</a></li>
-</ul>]]></b:widget-setting>
+            <b:widget-setting name='sorting'>NONE</b:widget-setting>
+            <b:widget-setting name='text-0'>About</b:widget-setting>
+            <b:widget-setting name='link-0'>/#about</b:widget-setting>
+            <b:widget-setting name='text-1'>Episodes</b:widget-setting>
+            <b:widget-setting name='link-1'>/#episodes</b:widget-setting>
+            <b:widget-setting name='text-2'>Topics</b:widget-setting>
+            <b:widget-setting name='link-2'>/#topics</b:widget-setting>
+            <b:widget-setting name='text-3'>Connect</b:widget-setting>
+            <b:widget-setting name='link-3'>#connect</b:widget-setting>
           </b:widget-settings>
-          @@HTML_MAIN@@
+          @@LINKLIST_MAIN@@
         </b:widget>
       </b:section>
       <b:section class='header-cta' id='header-cta' maxwidgets='1' showaddelement='yes'>
@@ -432,16 +435,19 @@ Page not found - <data:blog.title/>
         </b:widget>
       </b:section>
       <b:section class='footer-col' id='footer-connect' preferred='yes'>
-        <b:widget id='HTML7' locked='false' title='Connect' type='HTML'>
+        <b:widget id='LinkList2' locked='false' title='Connect' type='LinkList' version='1'>
           <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[<ul>
-<li><a href="https://www.youtube.com/">YouTube</a></li>
-<li><a href="https://www.tiktok.com/">TikTok</a></li>
-<li><a href="https://www.instagram.com/">Instagram</a></li>
-<li><a href="https://www.linkedin.com/">LinkedIn</a></li>
-</ul>]]></b:widget-setting>
+            <b:widget-setting name='sorting'>NONE</b:widget-setting>
+            <b:widget-setting name='text-0'>YouTube</b:widget-setting>
+            <b:widget-setting name='link-0'>https://www.youtube.com/</b:widget-setting>
+            <b:widget-setting name='text-1'>TikTok</b:widget-setting>
+            <b:widget-setting name='link-1'>https://www.tiktok.com/</b:widget-setting>
+            <b:widget-setting name='text-2'>Instagram</b:widget-setting>
+            <b:widget-setting name='link-2'>https://www.instagram.com/</b:widget-setting>
+            <b:widget-setting name='text-3'>LinkedIn</b:widget-setting>
+            <b:widget-setting name='link-3'>https://www.linkedin.com/</b:widget-setting>
           </b:widget-settings>
-          @@HTML_MAIN@@
+          @@LINKLIST_MAIN@@
         </b:widget>
       </b:section>
       <b:section class='footer-col' id='footer-explore' preferred='yes'>
@@ -460,14 +466,6 @@ Page not found - <data:blog.title/>
     </div>
     <div class='footer-bottom'>
       <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/></p>
-      <b:section class='footer-credit' id='footer-credit' maxwidgets='1' showaddelement='no'>
-        <b:widget id='Attribution1' locked='false' title='' type='Attribution'>
-          <b:widget-settings>
-            <b:widget-setting name='copyright'/>
-          </b:widget-settings>
-          @@ATTRIBUTION_MAIN@@
-        </b:widget>
-      </b:section>
     </div>
   </div>
 </footer>

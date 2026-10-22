@@ -1,0 +1,13 @@
+<b:includable id='main'>
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <ul>
+      <b:loop values='data:links' var='link'>
+        <li><a expr:href='data:link.target'><data:link.name/></a></li>
+      </b:loop>
+    </ul>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>

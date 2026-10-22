@@ -28,6 +28,9 @@ Common conditions:
 ## HTML / JavaScript gadget (`HTMLn`, no version)
 `data:title`, `data:content`. Setting: `content` (put the HTML in CDATA). The safest gadget for editable links, buttons and text.
 
+## LinkList (`LinkListn`, version 1)
+`data:links` loop with `data:link.name`, `data:link.target`. Settings: `sorting` (`NONE`), `text-0…`, `link-0…` (free text). Gives users add/reorder/delete buttons in Layout, so it's the best gadget for menus and social links. Common convention: names starting with `_` are sub-items of the link above; turn them into a nested `ul.sub-menu` with JS (hover/focus dropdown on desktop, tap toggle on phones).
+
 ## Label (`Labeln`, version 1)
 `data:labels` loop with `data:label.url`, `data:label.name`, `data:label.count`, `data:label.cssSize`; `data:display`, `data:showFreqNumbers`. Settings: `sorting` (`ALPHA`), `display` (`LIST` proven; check `CLOUD` against the reference), `selectedLabelsList` (blank OK), `showType` (`ALL`), `showFreqNumbers`.
 
