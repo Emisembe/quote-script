@@ -1,0 +1,1039 @@
+<!--
+  EFIC LETTER GENERATOR (EFIC brand edition)
+  Blogger: Pages > your page > Edit > switch to "HTML view" > replace everything with this file > Update.
+  Also works as a stand-alone page (wrap it in <html><body> ... </body></html>).
+  Layout: DIN 5008 Form B (or A) on real A4 pages; brand: EFIC Brand Colour Guide v1.0.
+  Keep this file ASCII-only (python3 ../skills/efic-brand-web/scripts/blogger_safe.py check FILE): Blogger
+  rewrites special characters on save and they break inside script and style blocks.
+-->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+
+<style>
+/* -- FULL PAGE: hide the theme around this tool (this page only) -- */
+#header-wrapper, #jugas_footer, .tm-menu, .scroll-header, #sidebar-wrapper,
+.foot-bar-social, .Attribution, .feed-links, #blog-pager, .slicknav_menu,
+.post-header, .post-head, h1.post-title, .post-footer, .share-box, #related-posts,
+.comments, #comments, .insta-wrap, #main > .widget:not(.Blog) { display: none !important; }
+#outer-wrapper { box-shadow: none !important; background: #ECEAE4 !important; }
+#content-wrapper { padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; }
+#main-wrapper, .item #main-wrapper, .static_page #main-wrapper { float: none !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+.post-body { padding: 0 !important; margin: 0 !important; }
+
+/* -- APP SHELL -- */
+#ldg-app { font-family: Calibri, Arial, 'Helvetica Neue', sans-serif; font-size: 14px; line-height: 1.4; background: #ECEAE4; min-height: 100vh; color: #14213D; text-align: left; }
+#ldg-app *, #ldg-app *:before, #ldg-app *:after { box-sizing: border-box; }
+#ldg-app [hidden] { display: none !important; }
+#ldg-app h1, #ldg-app h2, #ldg-app h3, #ldg-app p { margin: 0; text-transform: none; }
+#ldg-app button { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; }
+#ldg-app :focus-visible { outline: 2px solid #E7B165; outline-offset: 2px; }
+
+/* top bar */
+#ldg-app .ldg-topbar { background: #14213D; border-bottom: 3px solid #E7B165; color: #FFFFFF; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px; position: sticky; top: 0; z-index: 999; box-shadow: 0 4px 16px rgba(15, 26, 48, 0.3); }
+#ldg-app .ldg-title { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 17px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+#ldg-app .ldg-title span { color: #E7B165; font-weight: 600; }
+#ldg-app .ldg-title:before { content: ''; width: 4px; height: 22px; background: linear-gradient(180deg, #F5D08A 0%, #E7B165 50%, #C9924A 100%); }
+#ldg-app .ldg-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+#ldg-app .ldg-sep { width: 1px; height: 24px; background: rgba(255, 255, 255, 0.2); margin: 0 4px; }
+#ldg-app .ldg-lang { background: transparent; color: #FFFFFF; border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 2px; padding: 8px 10px; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; }
+#ldg-app .ldg-lang option { color: #14213D; background: #FFFFFF; }
+
+/* buttons */
+#ldg-app .ldg-btn { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; line-height: 1; padding: 10px 14px; border: 1px solid transparent; border-radius: 2px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; transition: background .2s, color .2s, border-color .2s; }
+#ldg-app .ldg-btn-gold { background: #E7B165; color: #14213D; border-color: #E7B165; }
+#ldg-app .ldg-btn-gold:hover { background: linear-gradient(135deg, #F5D08A 0%, #E7B165 55%, #C9924A 100%); }
+#ldg-app .ldg-btn-ghost { background: transparent; color: #FFFFFF; border-color: rgba(255, 255, 255, 0.35); }
+#ldg-app .ldg-btn-ghost:hover { color: #E7B165; border-color: #E7B165; }
+#ldg-app .ldg-btn-navy { background: #14213D; color: #FFFFFF; border-color: #14213D; }
+#ldg-app .ldg-btn-navy:hover { background: #0F1A30; }
+#ldg-app .ldg-btn-outline { background: #FFFFFF; color: #14213D; border-color: #14213D; }
+#ldg-app .ldg-btn-outline:hover { background: #14213D; color: #FFFFFF; }
+#ldg-app .ldg-btn-small { padding: 7px 10px; font-size: 10px; }
+#ldg-app .ldg-btn-add { width: 100%; justify-content: center; padding: 11px; border: 1px dashed #14213D; background: #F7F6F2; color: #14213D; }
+#ldg-app .ldg-btn-add:hover { background: #14213D; color: #FFFFFF; border-style: solid; }
+#ldg-app .ldg-btn-add[disabled] { opacity: .45; cursor: not-allowed; }
+
+/* saved letters */
+#ldg-app .ldg-saved { display: none; background: #FFFFFF; border-bottom: 3px solid #E7B165; max-height: 260px; overflow-y: auto; box-shadow: 0 8px 20px rgba(15, 26, 48, 0.15); position: relative; z-index: 998; }
+#ldg-app .ldg-saved.open { display: block; }
+#ldg-app .ldg-saved-head { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #4A5568; padding: 10px 24px 6px; }
+#ldg-app .ldg-saved-item { display: flex; align-items: center; gap: 12px; padding: 0 24px; border-top: 1px solid #F0EEE8; }
+#ldg-app .ldg-saved-item:hover { background: #F7F6F2; }
+#ldg-app .ldg-saved-open { flex: 1; text-align: left; background: none; border: 0; padding: 11px 0; cursor: pointer; font-family: Calibri, Arial, 'Helvetica Neue', sans-serif; font-size: 14px; color: #14213D; }
+#ldg-app .ldg-saved-open small { color: #4A5568; margin-left: 8px; }
+#ldg-app .ldg-empty { padding: 12px 24px 16px; color: #4A5568; font-size: 13px; }
+
+/* layout */
+#ldg-app .ldg-layout { display: grid; grid-template-columns: 430px minmax(0, 1fr); min-height: calc(100vh - 60px); }
+#ldg-app .ldg-panel, #ldg-app .ldg-preview, #ldg-app .fg > *, #ldg-app .ldg-row > * { min-width: 0; }
+#ldg-app .ldg-panel { background: #FFFFFF; border-right: 1px solid #E8E5DC; overflow-y: auto; height: calc(100vh - 60px); position: sticky; top: 60px; }
+#ldg-app .ldg-preview { background: #ECEAE4; padding: 28px; overflow-y: auto; height: calc(100vh - 60px); position: sticky; top: 60px; }
+#ldg-app .ldg-preview-label { max-width: 794px; margin: 0 auto 10px; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #4A5568; display: flex; justify-content: space-between; gap: 12px; }
+
+/* panel sections */
+#ldg-app .ldg-section { border-bottom: 1px solid #E8E5DC; }
+#ldg-app .ldg-head { width: 100%; display: flex; align-items: center; gap: 10px; padding: 14px 20px; background: #F7F6F2; border: 0; border-left: 3px solid #E7B165; cursor: pointer; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #14213D; }
+#ldg-app .ldg-head:hover { background: #F0EEE8; }
+#ldg-app .ldg-head[aria-expanded="false"] { border-left-color: transparent; background: #FFFFFF; }
+#ldg-app .ldg-head:after { content: ''; margin-left: auto; width: 7px; height: 7px; border-right: 2px solid #4A5568; border-bottom: 2px solid #4A5568; transform: rotate(45deg); transition: transform .2s; }
+#ldg-app .ldg-head[aria-expanded="false"]:after { transform: rotate(-45deg); }
+#ldg-app .ldg-body { padding: 16px 20px 8px; }
+#ldg-app .ldg-body[hidden] { display: none; }
+
+/* form */
+#ldg-app .ldg-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+#ldg-app .ldg-row.three { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); }
+#ldg-app .ldg-row.zip { grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr); }
+#ldg-app .fg { display: flex; flex-direction: column; margin-bottom: 12px; }
+#ldg-app .fg label { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 9.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #4A5568; margin-bottom: 5px; }
+#ldg-app .fg input, #ldg-app .fg select, #ldg-app .fg textarea, #ldg-app .fcol input, #ldg-app .fcol textarea {
+  width: 100%; min-height: 38px; padding: 9px 10px; border: 1px solid #D9D5CA; border-radius: 2px;
+  font-family: Calibri, Arial, 'Helvetica Neue', sans-serif; font-size: 14px; color: #14213D; background: #FFFFFF; outline: none; transition: border-color .2s, box-shadow .2s;
+}
+#ldg-app .fg textarea, #ldg-app .fcol textarea { resize: vertical; line-height: 1.45; }
+#ldg-app .fg input:focus, #ldg-app .fg select:focus, #ldg-app .fg textarea:focus, #ldg-app .fcol input:focus, #ldg-app .fcol textarea:focus { border-color: #E7B165; box-shadow: 0 0 0 3px rgba(231, 177, 101, 0.3); }
+#ldg-app .ldg-check { display: flex; align-items: center; gap: 10px; margin: 2px 0 12px; cursor: pointer; font-size: 14px; color: #14213D; }
+#ldg-app .ldg-check input { width: 18px; height: 18px; margin: 0; accent-color: #14213D; cursor: pointer; flex: 0 0 auto; }
+#ldg-app .ldg-hint { font-size: 12px; color: #4A5568; margin: -6px 0 12px; }
+#ldg-app .ldg-warn { font-size: 12px; color: #14213D; background: #F7F6F2; border-left: 3px solid #E7B165; padding: 6px 10px; margin: -4px 0 12px; }
+#ldg-app .ldg-warn[hidden] { display: none; }
+#ldg-app .ldg-file { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+#ldg-app .ldg-file input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+#ldg-app .ldg-thumb { max-height: 34px; max-width: 120px; border: 1px solid #E8E5DC; background: #FFFFFF; padding: 2px; }
+#ldg-app .ldg-thumb[hidden] { display: none; }
+#ldg-app .fcol { background: #F7F6F2; border-left: 3px solid #E7B165; padding: 10px 12px 2px; margin-bottom: 10px; }
+#ldg-app .fcol-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #14213D; }
+#ldg-app .fcol input { margin-bottom: 6px; }
+#ldg-app .fcol textarea { min-height: 70px; margin-bottom: 8px; }
+#ldg-app .ldg-x { width: 28px; height: 28px; background: #FFFFFF; color: #4A5568; border: 1px solid #D9D5CA; border-radius: 2px; cursor: pointer; font-size: 15px; line-height: 1; }
+#ldg-app .ldg-x:hover { background: #14213D; color: #FFFFFF; border-color: #14213D; }
+#ldg-app .ldg-sub { display: block; }
+#ldg-app .ldg-sub[hidden] { display: none; }
+
+/* -- A4 LETTER PAGES (210 x 297 mm). Positions follow DIN 5008. -- */
+#ldg-app .ldg-pages-wrap { margin: 0 auto; }
+#ldg-app .ldg-pages { width: 210mm; transform-origin: 0 0; }
+#ldg-app .ldg-sheet {
+  width: 210mm; height: 297mm; position: relative; overflow: hidden; background: #FFFFFF; margin: 0 0 24px;
+  box-shadow: 0 6px 28px rgba(15, 26, 48, 0.14);
+  font-family: Calibri, Carlito, Arial, 'Helvetica Neue', 'Microsoft YaHei', sans-serif; font-size: 11pt; line-height: 1.4; color: #14213D;
+}
+#ldg-app .ldg-sheet:last-child { margin-bottom: 0; }
+#ldg-app .lt-band { position: absolute; top: 0; left: 0; right: 0; height: 3mm; background: #14213D; border-bottom: 0.8mm solid #E7B165; }
+#ldg-app .lt-head { position: absolute; left: 25mm; right: 20mm; display: flex; justify-content: space-between; align-items: center; gap: 8mm; }
+#ldg-app .lt-logo img { display: block; max-width: 70mm; object-fit: contain; }
+#ldg-app .lt-orgname { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-weight: 800; font-size: 15pt; letter-spacing: .5px; color: #14213D; line-height: 1.15; }
+#ldg-app .lt-headright { text-align: right; }
+#ldg-app .lt-headright .lt-orgname { font-size: 11pt; font-weight: 700; }
+#ldg-app .lt-tagline { font-size: 8.5pt; color: #4A5568; margin-top: 1mm; }
+#ldg-app .lt-rule { position: absolute; left: 25mm; right: 20mm; height: 0; border-top: 0.5pt solid #E7B165; }
+#ldg-app .lt-address { position: absolute; left: 25mm; width: 80mm; height: 45mm; }
+#ldg-app .lt-zusatz { height: 17.7mm; display: flex; flex-direction: column; justify-content: flex-end; }
+#ldg-app .lt-return { font-size: 7pt; color: #4A5568; text-decoration: underline; text-decoration-color: #D9D5CA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; margin-bottom: 1mm; }
+#ldg-app .lt-anschrift { height: 27.3mm; font-size: 10.5pt; line-height: 1.3; overflow: hidden; }
+#ldg-app .lt-anschrift .country { text-transform: uppercase; }
+#ldg-app .lt-info { position: absolute; left: 125mm; width: 75mm; font-size: 8.5pt; line-height: 1.45; }
+#ldg-app .lt-info table { border-collapse: collapse; width: 100%; }
+#ldg-app .lt-info td { padding: 0 0 0.6mm; vertical-align: top; border: 0; }
+#ldg-app .lt-info td.lbl { color: #4A5568; padding-right: 3mm; white-space: nowrap; width: 1%; }
+#ldg-app .lt-info td.val { color: #14213D; font-weight: 600; word-break: break-word; }
+#ldg-app .lt-info tr.date td { padding-top: 1.5mm; }
+#ldg-app .lt-mark { position: absolute; left: 4mm; width: 5mm; height: 0; border-top: 0.3pt solid #4A5568; }
+#ldg-app .lt-mark.hole { width: 7mm; }
+#ldg-app .lt-strip { position: absolute; left: 13mm; top: 240mm; transform: rotate(-90deg); transform-origin: 0 0; font-size: 6pt; letter-spacing: 2px; text-transform: uppercase; color: #D9D5CA; white-space: nowrap; }
+#ldg-app .lt-cont { position: absolute; left: 25mm; right: 20mm; top: 10mm; display: flex; justify-content: space-between; align-items: baseline; gap: 6mm; padding-bottom: 2mm; border-bottom: 0.5pt solid #E7B165; font-size: 8.5pt; color: #4A5568; }
+#ldg-app .lt-cont strong { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 9pt; color: #14213D; }
+#ldg-app .lt-flow { position: absolute; left: 25mm; right: 20mm; }
+#ldg-app .lt-subject { font-weight: 700; font-size: 11pt; margin: 0 0 8.46mm; color: #14213D; }
+#ldg-app .lt-flow p { margin: 0 0 4.23mm; text-align: left; }
+#ldg-app .lt-flow p.cut { margin-bottom: 0; }
+#ldg-app .lt-signoff { margin-top: 0; }
+#ldg-app .lt-closing { white-space: pre-line; }
+#ldg-app .lt-place { margin-top: 2mm; color: #4A5568; font-size: 10pt; }
+#ldg-app .lt-sigspace { height: 15mm; }
+#ldg-app .lt-sigimg { height: 18mm; display: flex; align-items: flex-end; margin: 2mm 0 1mm; }
+#ldg-app .lt-sigimg img { max-height: 18mm; max-width: 60mm; object-fit: contain; }
+#ldg-app .lt-signame { font-weight: 700; }
+#ldg-app .lt-sigtitle { color: #4A5568; font-size: 10pt; }
+#ldg-app .lt-extra { margin-top: 8.46mm; font-size: 10pt; }
+#ldg-app .lt-extra strong { display: block; }
+#ldg-app .lt-footer { position: absolute; left: 25mm; right: 20mm; bottom: 8mm; font-size: 7pt; line-height: 1.5; color: #4A5568; }
+#ldg-app .lt-pageno { text-align: right; font-size: 8pt; color: #14213D; font-weight: 600; margin-bottom: 1.5mm; min-height: 3.5mm; }
+#ldg-app .lt-cols { display: flex; gap: 4mm; align-items: flex-start; border-top: 0.5pt solid #E7B165; padding-top: 2.5mm; }
+#ldg-app .lt-col { flex: 1 1 0; min-width: 0; word-break: break-word; }
+#ldg-app .lt-col strong { display: block; color: #14213D; font-size: 7.5pt; }
+#ldg-app .lt-qr { flex: 0 0 22mm; text-align: center; }
+#ldg-app .lt-qr img { width: 20mm; height: 20mm; display: block; margin: 0 auto; image-rendering: pixelated; }
+#ldg-app .lt-qr span { display: block; font-size: 6pt; color: #4A5568; margin-top: .5mm; }
+
+/* modal */
+#ldg-app .ldg-modal { display: none; position: fixed; inset: 0; background: rgba(15, 26, 48, 0.8); z-index: 99999; align-items: center; justify-content: center; padding: 16px; }
+#ldg-app .ldg-modal.open { display: flex; }
+#ldg-app .ldg-modal-box { background: #FFFFFF; padding: 32px 28px 28px; border-top: 4px solid #E7B165; max-width: 460px; width: 100%; text-align: center; box-shadow: 0 12px 40px rgba(15, 26, 48, 0.4); }
+#ldg-app .ldg-modal-box h2 { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; color: #14213D; margin: 0 0 12px; font-size: 20px; font-weight: 800; }
+#ldg-app .ldg-modal-box p { color: #4A5568; margin: 0 0 18px; line-height: 1.6; font-size: 15px; }
+#ldg-app .ldg-modal-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+#ldg-app .ldg-spinner { width: 40px; height: 40px; margin: 0 auto 16px; border: 3px solid #E8E5DC; border-top-color: #E7B165; border-radius: 50%; animation: ldg-spin .8s linear infinite; }
+#ldg-app .ldg-tick { width: 56px; height: 56px; margin: 0 auto 14px; border-radius: 50%; background: #14213D; color: #E7B165; font-size: 26px; line-height: 56px; font-weight: 800; }
+@keyframes ldg-spin { to { transform: rotate(360deg); } }
+
+/* -- PRINT: the A4 pages only, one sheet per paper page -- */
+@media print {
+  @page { size: A4; margin: 0; }
+  html.ldg-printing, html.ldg-printing body { margin: 0 !important; padding: 0 !important; background: #FFFFFF !important; }
+  html.ldg-printing body > *:not(#ldg-app) { display: none !important; }
+  #ldg-app .ldg-topbar, #ldg-app .ldg-panel, #ldg-app .ldg-saved, #ldg-app .ldg-preview-label, #ldg-app .ldg-modal { display: none !important; }
+  #ldg-app, #ldg-app .ldg-preview { background: #FFFFFF !important; min-height: 0 !important; }
+  #ldg-app .ldg-layout { display: block !important; min-height: 0 !important; }
+  #ldg-app .ldg-preview { height: auto !important; padding: 0 !important; position: static !important; overflow: visible !important; }
+  #ldg-app .ldg-pages-wrap { width: auto !important; height: auto !important; }
+  #ldg-app .ldg-pages { transform: none !important; }
+  #ldg-app .ldg-sheet { box-shadow: none; margin: 0; break-after: page; page-break-after: always; }
+  #ldg-app .ldg-sheet:last-child { break-after: auto; page-break-after: auto; }
+  #content-wrapper:before { content: none !important; display: none !important; }
+  #ldg-app * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* -- RESPONSIVE -- */
+@media (max-width: 980px) {
+  #ldg-app .ldg-layout { grid-template-columns: minmax(0, 1fr); }
+  #ldg-app .ldg-panel, #ldg-app .ldg-preview { height: auto; position: static; overflow: visible; }
+  #ldg-app .ldg-panel { border-right: 0; }
+  #ldg-app .ldg-preview { padding: 20px 16px; }
+}
+@media (max-width: 600px) {
+  #ldg-app .ldg-topbar { padding: 10px 16px; position: static; }
+  #ldg-app .ldg-title { font-size: 14px; }
+  #ldg-app .ldg-actions { width: 100%; }
+  #ldg-app .ldg-actions .ldg-btn, #ldg-app .ldg-actions .ldg-lang { flex: 1 1 auto; justify-content: center; }
+  #ldg-app .ldg-sep { display: none; }
+  #ldg-app .ldg-head, #ldg-app .ldg-body { padding-left: 16px; padding-right: 16px; }
+  #ldg-app .ldg-row, #ldg-app .ldg-row.three { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  #ldg-app .ldg-row.zip { grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr); gap: 10px; }
+}
+</style>
+
+<div id="ldg-app">
+
+  <div class="ldg-topbar">
+    <div class="ldg-title">EFIC <span data-t="title">Letter Generator</span></div>
+    <div class="ldg-actions">
+      <select class="ldg-lang" id="lang" aria-label="Language">
+        <option value="en">English</option>
+        <option value="de">Deutsch</option>
+        <option value="fr">Fran&#231;ais</option>
+        <option value="sw">Kiswahili</option>
+        <option value="zh">&#20013;&#25991;</option>
+      </select>
+      <span class="ldg-sep" aria-hidden="true"></span>
+      <button type="button" class="ldg-btn ldg-btn-ghost" onclick="ldgNew()" data-t="btnNew">New</button>
+      <button type="button" class="ldg-btn ldg-btn-ghost" onclick="ldgSave()" data-t="btnSave">Save</button>
+      <button type="button" class="ldg-btn ldg-btn-ghost" onclick="ldgToggleSaved()" id="ldgLoadBtn" aria-controls="ldgSaved" aria-expanded="false" data-t="btnLoad">Load</button>
+      <span class="ldg-sep" aria-hidden="true"></span>
+      <button type="button" class="ldg-btn ldg-btn-ghost" onclick="ldgPrint()" data-t="btnPrint">Print</button>
+      <button type="button" class="ldg-btn ldg-btn-gold" onclick="ldgPdf()" data-t="btnPdf">Download PDF</button>
+    </div>
+  </div>
+
+  <div class="ldg-saved" id="ldgSaved">
+    <div class="ldg-saved-head" data-t="savedHead">Saved on this device</div>
+    <div id="ldgSavedItems"></div>
+  </div>
+
+  <div class="ldg-layout">
+    <div class="ldg-panel" id="ldgPanel">
+
+      <div class="ldg-section">
+        <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secSettings">Letter Settings</button>
+        <div class="ldg-body">
+          <div class="fg"><label for="layout" data-t="lLayout">Layout</label>
+            <select id="layout"><option value="B" data-t="optB">DIN 5008 Form B (standard)</option><option value="A" data-t="optA">DIN 5008 Form A (short letterhead)</option></select></div>
+          <label class="ldg-check"><input type="checkbox" id="fold" checked> <span data-t="lFold">Fold and hole marks</span></label>
+          <label class="ldg-check"><input type="checkbox" id="strip" checked> <span data-t="lStrip">Reference strip in the margin</span></label>
+        </div>
+      </div>
+
+      <div class="ldg-section">
+        <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secOrg">Letterhead</button>
+        <div class="ldg-body">
+          <div class="fg"><label for="orgName" data-t="lOrgName">Organisation Name</label><input id="orgName" value="EFIC Consultancy Ltd"></div>
+          <div class="fg"><label for="tagline" data-t="lTagline">Tagline</label><input id="tagline" value="Driving Efficacy and Effective Solutions."></div>
+          <div class="fg"><label data-t="lLogo">Logo</label>
+            <div class="ldg-file">
+              <label class="ldg-btn ldg-btn-outline ldg-btn-small" for="logoFile"><span data-t="upload">Upload image</span></label>
+              <input type="file" id="logoFile" accept="image/*">
+              <img class="ldg-thumb" id="logoThumb" alt="" hidden>
+              <button type="button" class="ldg-btn ldg-btn-outline ldg-btn-small" id="logoClear" onclick="ldgClearImage('logo')" hidden data-t="remove">Remove</button>
+            </div>
+          </div>
+          <div class="fg"><label for="logoUrl" data-t="lLogoUrl">Or image link</label><input id="logoUrl" type="url" placeholder="https://"></div>
+          <div class="fg"><label for="returnAddr" data-t="lReturn">Return Address (envelope window)</label><input id="returnAddr" data-tp="returnPh" placeholder="Built from your name and footer column 1"></div>
+          <div class="ldg-row">
+            <div class="fg"><label for="orgPhone" data-t="lPhone">Phone</label><input id="orgPhone" type="tel"></div>
+            <div class="fg"><label for="orgFax" data-t="lFax">Fax</label><input id="orgFax" type="tel"></div>
+          </div>
+          <div class="ldg-row">
+            <div class="fg"><label for="orgEmail" data-t="lEmail">Email</label><input id="orgEmail" type="email" value="askeficc@gmail.com"></div>
+            <div class="fg"><label for="orgWeb" data-t="lWeb">Website</label><input id="orgWeb" value="eficc.blogspot.com"></div>
+          </div>
+          <div class="ldg-row">
+            <div class="fg"><label for="orgContact" data-t="lContact">Contact Person</label><input id="orgContact"></div>
+            <div class="fg"><label for="orgRoom" data-t="lRoom">Room / Dept.</label><input id="orgRoom"></div>
+          </div>
+          <label class="ldg-check"><input type="checkbox" id="remember" checked> <span data-t="lRemember">Remember my letterhead on this device</span></label>
+        </div>
+      </div>
+
+      <div class="ldg-section">
+        <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secRec">Recipient</button>
+        <div class="ldg-body">
+          <div class="fg"><label for="recCompany" data-t="lCo">Company / Organisation</label><input id="recCompany" value="Musterfirma AG"></div>
+          <div class="ldg-row">
+            <div class="fg"><label for="recTitle" data-t="lTitle">Title</label>
+              <select id="recTitle"><option value="" data-t="optNone">None</option><option value="mr" data-t="optMr">Mr</option><option value="ms" data-t="optMs" selected>Ms</option><option value="mrs" data-t="optMrs">Mrs</option></select></div>
+            <div class="fg"><label for="recAcad" data-t="lAcad">Academic Title</label><input id="recAcad" placeholder="Dr."></div>
+          </div>
+          <div class="ldg-row">
+            <div class="fg"><label for="recFirst" data-t="lFirst">First Name</label><input id="recFirst" value="Erika"></div>
+            <div class="fg"><label for="recLast" data-t="lLast">Last Name</label><input id="recLast" value="Musterfrau"></div>
+          </div>
+          <div class="fg"><label for="recDept" data-t="lDept">Department / c/o</label><input id="recDept"></div>
+          <div class="fg"><label for="recStreet" data-t="lStreet">Street and Number / P.O. Box</label><input id="recStreet" value="Musterstra&#223;e 42"></div>
+          <div class="ldg-row zip">
+            <div class="fg"><label for="recZip" data-t="lZip">Postal Code</label><input id="recZip" value="10115"></div>
+            <div class="fg"><label for="recCity" data-t="lCity">City</label><input id="recCity" value="Berlin"></div>
+          </div>
+          <div class="fg"><label for="recCountry" data-t="lCountry">Country (only for letters abroad)</label><input id="recCountry" value="Germany"></div>
+          <p class="ldg-warn" id="addrWarn" hidden data-t="addrWarn">The address has more than 6 lines and may not fit the envelope window.</p>
+        </div>
+      </div>
+
+      <div class="ldg-section">
+        <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secLetter">Letter</button>
+        <div class="ldg-body">
+          <div class="ldg-row">
+            <div class="fg"><label for="yourRef" data-t="lYourRef">Your Reference</label><input id="yourRef"></div>
+            <div class="fg"><label for="ourRef" data-t="lOurRef">Our Reference</label><input id="ourRef" value="2026-001"></div>
+          </div>
+          <div class="fg"><label for="docDate" data-t="lDate">Date</label><input id="docDate" type="date"></div>
+          <div class="fg"><label for="subject" data-t="lSubject">Subject</label><input id="subject"></div>
+          <div class="fg"><label for="greeting" data-t="lGreeting">Greeting</label><input id="greeting"></div>
+          <p class="ldg-hint" data-t="autoHint">Leave Greeting and Closing empty to use the suggested wording for the recipient and language.</p>
+          <div class="fg"><label for="body" data-t="lBody">Letter Text</label><textarea id="body" rows="10"></textarea></div>
+          <p class="ldg-hint" data-t="bodyHint">Leave an empty line between paragraphs.</p>
+          <div class="fg"><label for="closing" data-t="lClosing">Closing</label><input id="closing"></div>
+          <div class="ldg-row">
+            <div class="fg"><label for="encl" data-t="lEncl">Enclosures (one per line)</label><textarea id="encl" rows="2"></textarea></div>
+            <div class="fg"><label for="cc" data-t="lCc">Copy to (one per line)</label><textarea id="cc" rows="2"></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ldg-section">
+        <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secSig">Signature</button>
+        <div class="ldg-body">
+          <div class="ldg-row">
+            <div class="fg"><label for="sigName" data-t="lSigName">Name</label><input id="sigName"></div>
+            <div class="fg"><label for="sigTitle" data-t="lSigTitle">Position</label><input id="sigTitle"></div>
+          </div>
+          <div class="fg"><label for="sigPlace" data-t="lPlace">Place (optional)</label><input id="sigPlace"></div>
+          <p class="ldg-hint" data-t="placeHint">If you fill in a place, "Place, date" prints above the signature.</p>
+          <div class="fg"><label data-t="lSigImg">Signature Image (optional)</label>
+            <div class="ldg-file">
+              <label class="ldg-btn ldg-btn-outline ldg-btn-small" for="sigFile"><span data-t="upload">Upload image</span></label>
+              <input type="file" id="sigFile" accept="image/*">
+              <img class="ldg-thumb" id="sigThumb" alt="" hidden>
+              <button type="button" class="ldg-btn ldg-btn-outline ldg-btn-small" id="sigClear" onclick="ldgClearImage('sig')" hidden data-t="remove">Remove</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ldg-section">
+        <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secFooter">Footer Columns</button>
+        <div class="ldg-body">
+          <div id="fcols"></div>
+          <button type="button" class="ldg-btn ldg-btn-add" id="addCol" onclick="ldgAddCol()">+ <span data-t="addCol">Add Column</span></button>
+          <p class="ldg-hint" style="margin-top:8px" data-t="maxCols">Up to 4 columns.</p>
+        </div>
+      </div>
+
+      <div class="ldg-section">
+        <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secQR">Payment QR Code (GiroCode)</button>
+        <div class="ldg-body">
+          <label class="ldg-check"><input type="checkbox" id="qrOn"> <span data-t="lQR">Show GiroCode in the footer</span></label>
+          <div class="ldg-sub" id="qrFields" hidden>
+            <p class="ldg-hint" data-t="qrHint">For SEPA bank transfers in euro: the payer scans it with their banking app.</p>
+            <div class="ldg-row">
+              <div class="fg"><label for="qrIban">IBAN</label><input id="qrIban" placeholder="DE89 3704 0044 0532 0130 00"></div>
+              <div class="fg"><label for="qrBic" data-t="lBic">BIC (optional)</label><input id="qrBic" placeholder="COBADEFFXXX"></div>
+            </div>
+            <p class="ldg-warn" id="ibanWarn" hidden data-t="ibanWarn">This IBAN is not valid. Please check it.</p>
+            <div class="ldg-row">
+              <div class="fg"><label for="qrAmt" data-t="lAmt">Amount in EUR (optional)</label><input id="qrAmt" inputmode="decimal" placeholder="250.00"></div>
+              <div class="fg"><label for="qrRef" data-t="lQrRef">Payment Reference</label><input id="qrRef" placeholder="2026-001"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ldg-preview">
+      <div class="ldg-preview-label"><span><span data-t="preview">Live preview</span> &#183; <span id="ldgPageCount"></span></span><span id="ldgPrevRef"></span></div>
+      <div class="ldg-pages-wrap" id="ldgPagesWrap"><div class="ldg-pages" id="ldgPages"></div></div>
+    </div>
+  </div>
+
+  <div class="ldg-modal" id="ldgModal" role="dialog" aria-modal="true" aria-labelledby="ldgModalTitle">
+    <div class="ldg-modal-box">
+      <div class="ldg-spinner" id="ldgSpinner"></div>
+      <div class="ldg-tick" id="ldgTick" hidden>&#10003;</div>
+      <h2 id="ldgModalTitle"></h2>
+      <p id="ldgModalText"></p>
+      <div class="ldg-modal-btns" id="ldgModalBtns"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  // -- Interface text (the form and buttons) --
+  var UI = {
+    en: {title: 'Letter Generator', btnNew: 'New', btnSave: 'Save', btnLoad: 'Load', btnPrint: 'Print', btnPdf: 'Download PDF', savedHead: 'Saved on this device',
+      secSettings: 'Letter Settings', lLayout: 'Layout', optB: 'DIN 5008 Form B (standard)', optA: 'DIN 5008 Form A (short letterhead)', lFold: 'Fold and hole marks', lStrip: 'Reference strip in the margin',
+      secOrg: 'Letterhead', lOrgName: 'Organisation Name', lTagline: 'Tagline', lLogo: 'Logo', upload: 'Upload image', remove: 'Remove', lLogoUrl: 'Or image link', lReturn: 'Return Address (envelope window)', returnPh: 'Built from your name and footer column 1',
+      lPhone: 'Phone', lFax: 'Fax', lEmail: 'Email', lWeb: 'Website', lContact: 'Contact Person', lRoom: 'Room / Dept.', lRemember: 'Remember my letterhead on this device',
+      secRec: 'Recipient', lCo: 'Company / Organisation', lTitle: 'Title', optNone: 'None', optMr: 'Mr', optMs: 'Ms', optMrs: 'Mrs', lAcad: 'Academic Title', lFirst: 'First Name', lLast: 'Last Name', lDept: 'Department / c/o',
+      lStreet: 'Street and Number / P.O. Box', lZip: 'Postal Code', lCity: 'City', lCountry: 'Country (only for letters abroad)', addrWarn: 'The address has more than 6 lines and may not fit the envelope window.',
+      secLetter: 'Letter', lYourRef: 'Your Reference', lOurRef: 'Our Reference', lDate: 'Date', lSubject: 'Subject', lGreeting: 'Greeting', autoHint: 'Leave Greeting and Closing empty to use the suggested wording for the recipient and language.',
+      lBody: 'Letter Text', bodyHint: 'Leave an empty line between paragraphs.', lClosing: 'Closing', lEncl: 'Enclosures (one per line)', lCc: 'Copy to (one per line)',
+      secSig: 'Signature', lSigName: 'Name', lSigTitle: 'Position', lPlace: 'Place (optional)', placeHint: 'If you fill in a place, "Place, date" prints above the signature.', lSigImg: 'Signature Image (optional)',
+      secFooter: 'Footer Columns', addCol: 'Add Column', maxCols: 'Up to 4 columns.', colN: 'Column', colHead: 'Heading', colLines: 'Lines',
+      secQR: 'Payment QR Code (GiroCode)', lQR: 'Show GiroCode in the footer', qrHint: 'For SEPA bank transfers in euro: the payer scans it with their banking app.', lBic: 'BIC (optional)', ibanWarn: 'This IBAN is not valid. Please check it.', lAmt: 'Amount in EUR (optional)', lQrRef: 'Payment Reference',
+      preview: 'Live preview', page1: '1 page', pagesN: '{n} pages', making: 'Creating PDF\u2026', pageProgress: 'Page {x} of {y}\u2026', ready: 'PDF ready', savedTo: '{f} has been saved to your device.', failed: 'PDF could not be created',
+      failedText: 'Please try again. A logo added by link may block the PDF: upload it instead, or use Print and choose "Save as PDF".', noLibs: 'The PDF tools did not load. Check your internet connection, or use Print and choose "Save as PDF".',
+      close: 'Close', done: 'Done', share: 'Share PDF', nameIt: 'Name this letter:', saved: 'Saved: ', noSaved: 'No saved letters yet.', del: 'Delete', confirmDel: 'Delete this letter?', confirmNew: 'Start a new letter? The recipient and text are cleared; your letterhead stays.', storageFull: 'Could not save on this device (storage is full or blocked).'},
+    de: {title: 'Briefgenerator', btnNew: 'Neu', btnSave: 'Speichern', btnLoad: 'Laden', btnPrint: 'Drucken', btnPdf: 'PDF herunterladen', savedHead: 'Auf diesem Ger\u00e4t gespeichert',
+      secSettings: 'Briefeinstellungen', lLayout: 'Layout', optB: 'DIN 5008 Form B (Standard)', optA: 'DIN 5008 Form A (kleiner Briefkopf)', lFold: 'Falz- und Lochmarken', lStrip: 'Referenzleiste am Rand',
+      secOrg: 'Briefkopf', lOrgName: 'Name der Organisation', lTagline: 'Slogan', lLogo: 'Logo', upload: 'Bild hochladen', remove: 'Entfernen', lLogoUrl: 'Oder Bild-Link', lReturn: 'R\u00fccksendeangabe (Fensterumschlag)', returnPh: 'Wird aus Name und Fu\u00dfzeilen-Spalte 1 gebildet',
+      lPhone: 'Telefon', lFax: 'Telefax', lEmail: 'E-Mail', lWeb: 'Website', lContact: 'Ansprechpartner', lRoom: 'Zimmer / Abteilung', lRemember: 'Briefkopf auf diesem Ger\u00e4t merken',
+      secRec: 'Empf\u00e4nger', lCo: 'Firma / Organisation', lTitle: 'Anrede', optNone: 'Keine', optMr: 'Herr', optMs: 'Frau', optMrs: 'Frau', lAcad: 'Akademischer Titel', lFirst: 'Vorname', lLast: 'Nachname', lDept: 'Abteilung / z. Hd.',
+      lStreet: 'Stra\u00dfe und Hausnummer / Postfach', lZip: 'PLZ', lCity: 'Ort', lCountry: 'Land (nur bei Auslandsbriefen)', addrWarn: 'Die Anschrift hat mehr als 6 Zeilen und passt eventuell nicht ins Sichtfenster.',
+      secLetter: 'Brief', lYourRef: 'Ihr Zeichen', lOurRef: 'Unser Zeichen', lDate: 'Datum', lSubject: 'Betreff', lGreeting: 'Anrede im Brief', autoHint: 'Anrede und Gru\u00dfformel leer lassen, um die passende Formulierung f\u00fcr Empf\u00e4nger und Sprache zu verwenden.',
+      lBody: 'Brieftext', bodyHint: 'Zwischen Abs\u00e4tzen eine Leerzeile lassen.', lClosing: 'Gru\u00dfformel', lEncl: 'Anlagen (eine pro Zeile)', lCc: 'Verteiler (eine pro Zeile)',
+      secSig: 'Unterschrift', lSigName: 'Name', lSigTitle: 'Position', lPlace: 'Ort (optional)', placeHint: 'Wenn ein Ort angegeben ist, steht \u201eOrt, Datum\u201c \u00fcber der Unterschrift.', lSigImg: 'Unterschrift als Bild (optional)',
+      secFooter: 'Fu\u00dfzeilen-Spalten', addCol: 'Spalte hinzuf\u00fcgen', maxCols: 'Bis zu 4 Spalten.', colN: 'Spalte', colHead: '\u00dcberschrift', colLines: 'Zeilen',
+      secQR: 'Zahlungs-QR-Code (GiroCode)', lQR: 'GiroCode in der Fu\u00dfzeile zeigen', qrHint: 'F\u00fcr SEPA-\u00dcberweisungen in Euro: Der Zahler scannt ihn mit seiner Banking-App.', lBic: 'BIC (optional)', ibanWarn: 'Diese IBAN ist ung\u00fcltig. Bitte pr\u00fcfen.', lAmt: 'Betrag in EUR (optional)', lQrRef: 'Verwendungszweck',
+      preview: 'Live-Vorschau', page1: '1 Seite', pagesN: '{n} Seiten', making: 'PDF wird erstellt\u2026', pageProgress: 'Seite {x} von {y}\u2026', ready: 'PDF fertig', savedTo: '{f} wurde auf Ihrem Ger\u00e4t gespeichert.', failed: 'PDF konnte nicht erstellt werden',
+      failedText: 'Bitte erneut versuchen. Ein per Link eingef\u00fcgtes Logo kann das PDF verhindern: Laden Sie es stattdessen hoch, oder drucken Sie und w\u00e4hlen \u201eAls PDF speichern\u201c.', noLibs: 'Die PDF-Werkzeuge wurden nicht geladen. Pr\u00fcfen Sie die Internetverbindung, oder drucken Sie und w\u00e4hlen \u201eAls PDF speichern\u201c.',
+      close: 'Schlie\u00dfen', done: 'Fertig', share: 'PDF teilen', nameIt: 'Name f\u00fcr diesen Brief:', saved: 'Gespeichert: ', noSaved: 'Noch keine gespeicherten Briefe.', del: 'L\u00f6schen', confirmDel: 'Diesen Brief l\u00f6schen?', confirmNew: 'Neuen Brief beginnen? Empf\u00e4nger und Text werden geleert, der Briefkopf bleibt.', storageFull: 'Speichern auf diesem Ger\u00e4t nicht m\u00f6glich (Speicher voll oder gesperrt).'},
+    fr: {title: 'G\u00e9n\u00e9rateur de lettres', btnNew: 'Nouveau', btnSave: 'Enregistrer', btnLoad: 'Ouvrir', btnPrint: 'Imprimer', btnPdf: 'T\u00e9l\u00e9charger le PDF', savedHead: 'Enregistr\u00e9 sur cet appareil',
+      secSettings: 'Param\u00e8tres de la lettre', lLayout: 'Mise en page', optB: 'DIN 5008 forme B (standard)', optA: 'DIN 5008 forme A (en-t\u00eate court)', lFold: 'Rep\u00e8res de pliage et de perforation', lStrip: 'Bande de r\u00e9f\u00e9rence dans la marge',
+      secOrg: 'En-t\u00eate', lOrgName: 'Nom de l\'organisation', lTagline: 'Slogan', lLogo: 'Logo', upload: 'Choisir une image', remove: 'Supprimer', lLogoUrl: 'Ou lien de l\'image', lReturn: 'Adresse de retour (fen\u00eatre de l\'enveloppe)', returnPh: 'Cr\u00e9\u00e9e \u00e0 partir du nom et de la colonne 1 du pied de page',
+      lPhone: 'T\u00e9l\u00e9phone', lFax: 'Fax', lEmail: 'E-mail', lWeb: 'Site web', lContact: 'Personne de contact', lRoom: 'Bureau / Service', lRemember: 'M\u00e9moriser mon en-t\u00eate sur cet appareil',
+      secRec: 'Destinataire', lCo: 'Entreprise / Organisation', lTitle: 'Civilit\u00e9', optNone: 'Aucune', optMr: 'Monsieur', optMs: 'Madame', optMrs: 'Madame', lAcad: 'Titre acad\u00e9mique', lFirst: 'Pr\u00e9nom', lLast: 'Nom', lDept: 'Service / c/o',
+      lStreet: 'Rue et num\u00e9ro / Bo\u00eete postale', lZip: 'Code postal', lCity: 'Ville', lCountry: 'Pays (seulement pour l\'\u00e9tranger)', addrWarn: 'L\'adresse d\u00e9passe 6 lignes et risque de ne pas tenir dans la fen\u00eatre de l\'enveloppe.',
+      secLetter: 'Lettre', lYourRef: 'Votre r\u00e9f\u00e9rence', lOurRef: 'Notre r\u00e9f\u00e9rence', lDate: 'Date', lSubject: 'Objet', lGreeting: 'Formule d\'appel', autoHint: 'Laissez la formule d\'appel et la formule de politesse vides pour utiliser la formulation adapt\u00e9e au destinataire et \u00e0 la langue.',
+      lBody: 'Texte de la lettre', bodyHint: 'Laissez une ligne vide entre les paragraphes.', lClosing: 'Formule de politesse', lEncl: 'Pi\u00e8ces jointes (une par ligne)', lCc: 'Copie \u00e0 (une par ligne)',
+      secSig: 'Signature', lSigName: 'Nom', lSigTitle: 'Fonction', lPlace: 'Lieu (optionnel)', placeHint: 'Si vous indiquez un lieu, \u00ab Lieu, date \u00bb s\'imprime au-dessus de la signature.', lSigImg: 'Image de la signature (optionnel)',
+      secFooter: 'Colonnes du pied de page', addCol: 'Ajouter une colonne', maxCols: 'Jusqu\'\u00e0 4 colonnes.', colN: 'Colonne', colHead: 'Titre', colLines: 'Lignes',
+      secQR: 'QR code de paiement (GiroCode)', lQR: 'Afficher le GiroCode dans le pied de page', qrHint: 'Pour les virements SEPA en euros : le payeur le scanne avec son application bancaire.', lBic: 'BIC (optionnel)', ibanWarn: 'Cet IBAN n\'est pas valide. Veuillez le v\u00e9rifier.', lAmt: 'Montant en EUR (optionnel)', lQrRef: 'R\u00e9f\u00e9rence du paiement',
+      preview: 'Aper\u00e7u en direct', page1: '1 page', pagesN: '{n} pages', making: 'Cr\u00e9ation du PDF\u2026', pageProgress: 'Page {x} sur {y}\u2026', ready: 'PDF pr\u00eat', savedTo: '{f} a \u00e9t\u00e9 enregistr\u00e9 sur votre appareil.', failed: 'Impossible de cr\u00e9er le PDF',
+      failedText: 'Veuillez r\u00e9essayer. Un logo ajout\u00e9 par lien peut bloquer le PDF : t\u00e9l\u00e9versez-le plut\u00f4t, ou imprimez et choisissez \u00ab Enregistrer en PDF \u00bb.', noLibs: 'Les outils PDF ne se sont pas charg\u00e9s. V\u00e9rifiez votre connexion, ou imprimez et choisissez \u00ab Enregistrer en PDF \u00bb.',
+      close: 'Fermer', done: 'Termin\u00e9', share: 'Partager le PDF', nameIt: 'Nom de cette lettre :', saved: 'Enregistr\u00e9 : ', noSaved: 'Aucune lettre enregistr\u00e9e.', del: 'Supprimer', confirmDel: 'Supprimer cette lettre ?', confirmNew: 'Commencer une nouvelle lettre ? Le destinataire et le texte sont effac\u00e9s ; l\'en-t\u00eate reste.', storageFull: 'Enregistrement impossible sur cet appareil (stockage plein ou bloqu\u00e9).'},
+    sw: {title: 'Jenereta ya Barua', btnNew: 'Mpya', btnSave: 'Hifadhi', btnLoad: 'Fungua', btnPrint: 'Chapisha', btnPdf: 'Pakua PDF', savedHead: 'Zilizohifadhiwa kwenye kifaa hiki',
+      secSettings: 'Mipangilio ya Barua', lLayout: 'Mpangilio', optB: 'DIN 5008 Fomu B (kawaida)', optA: 'DIN 5008 Fomu A (kichwa kifupi)', lFold: 'Alama za kukunja na kutoboa', lStrip: 'Kumbukumbu pembeni mwa ukurasa',
+      secOrg: 'Kichwa cha Barua', lOrgName: 'Jina la Shirika', lTagline: 'Kauli mbiu', lLogo: 'Nembo', upload: 'Pakia picha', remove: 'Ondoa', lLogoUrl: 'Au kiungo cha picha', lReturn: 'Anwani ya Kurudisha (dirisha la bahasha)', returnPh: 'Hutengenezwa kutoka jina na safu ya 1 ya chini',
+      lPhone: 'Simu', lFax: 'Faksi', lEmail: 'Barua pepe', lWeb: 'Tovuti', lContact: 'Mtu wa Mawasiliano', lRoom: 'Chumba / Idara', lRemember: 'Kumbuka kichwa changu cha barua kwenye kifaa hiki',
+      secRec: 'Mpokeaji', lCo: 'Kampuni / Shirika', lTitle: 'Cheo', optNone: 'Hakuna', optMr: 'Bw.', optMs: 'Bi.', optMrs: 'Bi.', lAcad: 'Cheo cha Kitaaluma', lFirst: 'Jina la Kwanza', lLast: 'Jina la Mwisho', lDept: 'Idara / Kupitia',
+      lStreet: 'Mtaa na Namba / S.L.P.', lZip: 'Namba ya Posta', lCity: 'Mji', lCountry: 'Nchi (kwa barua za nje tu)', addrWarn: 'Anwani ina zaidi ya mistari 6 na huenda isitoshe kwenye dirisha la bahasha.',
+      secLetter: 'Barua', lYourRef: 'Kumbukumbu Yako', lOurRef: 'Kumbukumbu Yetu', lDate: 'Tarehe', lSubject: 'Kuhusu', lGreeting: 'Salamu', autoHint: 'Acha Salamu na Hitimisho wazi ili kutumia maneno yanayofaa kwa mpokeaji na lugha.',
+      lBody: 'Maandishi ya Barua', bodyHint: 'Acha mstari mtupu kati ya aya.', lClosing: 'Hitimisho', lEncl: 'Viambatisho (kimoja kwa mstari)', lCc: 'Nakala kwa (mmoja kwa mstari)',
+      secSig: 'Saini', lSigName: 'Jina', lSigTitle: 'Cheo', lPlace: 'Mahali (hiari)', placeHint: 'Ukijaza mahali, "Mahali, tarehe" huchapishwa juu ya saini.', lSigImg: 'Picha ya Saini (hiari)',
+      secFooter: 'Safu za Chini', addCol: 'Ongeza Safu', maxCols: 'Hadi safu 4.', colN: 'Safu', colHead: 'Kichwa', colLines: 'Mistari',
+      secQR: 'Msimbo wa QR wa Malipo (GiroCode)', lQR: 'Onyesha GiroCode chini ya ukurasa', qrHint: 'Kwa uhamisho wa SEPA kwa euro: mlipaji huiskani kwa programu ya benki.', lBic: 'BIC (hiari)', ibanWarn: 'IBAN hii si sahihi. Tafadhali ikague.', lAmt: 'Kiasi kwa EUR (hiari)', lQrRef: 'Kumbukumbu ya Malipo',
+      preview: 'Muonekano wa moja kwa moja', page1: 'Ukurasa 1', pagesN: 'Kurasa {n}', making: 'Inatengeneza PDF\u2026', pageProgress: 'Ukurasa {x} kati ya {y}\u2026', ready: 'PDF iko tayari', savedTo: '{f} imehifadhiwa kwenye kifaa chako.', failed: 'PDF haikuweza kutengenezwa',
+      failedText: 'Tafadhali jaribu tena. Nembo iliyoongezwa kwa kiungo inaweza kuzuia PDF: ipakie badala yake, au chapisha na uchague "Hifadhi kama PDF".', noLibs: 'Zana za PDF hazikupakia. Kagua mtandao wako, au chapisha na uchague "Hifadhi kama PDF".',
+      close: 'Funga', done: 'Imekamilika', share: 'Shiriki PDF', nameIt: 'Jina la barua hii:', saved: 'Imehifadhiwa: ', noSaved: 'Hakuna barua zilizohifadhiwa bado.', del: 'Futa', confirmDel: 'Futa barua hii?', confirmNew: 'Anza barua mpya? Mpokeaji na maandishi yatafutwa; kichwa cha barua kinabaki.', storageFull: 'Haiwezekani kuhifadhi kwenye kifaa hiki (hifadhi imejaa au imezuiwa).'},
+    zh: {title: '\u4fe1\u51fd\u751f\u6210\u5668', btnNew: '\u65b0\u5efa', btnSave: '\u4fdd\u5b58', btnLoad: '\u6253\u5f00', btnPrint: '\u6253\u5370', btnPdf: '\u4e0b\u8f7dPDF', savedHead: '\u5df2\u4fdd\u5b58\u5728\u6b64\u8bbe\u5907\u4e0a',
+      secSettings: '\u4fe1\u51fd\u8bbe\u7f6e', lLayout: '\u7248\u5f0f', optB: 'DIN 5008 B\u5f0f\uff08\u6807\u51c6\uff09', optA: 'DIN 5008 A\u5f0f\uff08\u77ed\u4fe1\u5934\uff09', lFold: '\u6298\u53e0\u548c\u6253\u5b54\u6807\u8bb0', lStrip: '\u9875\u8fb9\u53c2\u8003\u6761',
+      secOrg: '\u4fe1\u5934', lOrgName: '\u673a\u6784\u540d\u79f0', lTagline: '\u6807\u8bed', lLogo: '\u6807\u5fd7', upload: '\u4e0a\u4f20\u56fe\u7247', remove: '\u5220\u9664', lLogoUrl: '\u6216\u56fe\u7247\u94fe\u63a5', lReturn: '\u56de\u90ae\u5730\u5740\uff08\u4fe1\u5c01\u7a97\u53e3\uff09', returnPh: '\u7531\u540d\u79f0\u548c\u9875\u811a\u7b2c1\u680f\u81ea\u52a8\u751f\u6210',
+      lPhone: '\u7535\u8bdd', lFax: '\u4f20\u771f', lEmail: '\u7535\u5b50\u90ae\u4ef6', lWeb: '\u7f51\u7ad9', lContact: '\u8054\u7cfb\u4eba', lRoom: '\u623f\u95f4 / \u90e8\u95e8', lRemember: '\u5728\u6b64\u8bbe\u5907\u4e0a\u8bb0\u4f4f\u6211\u7684\u4fe1\u5934',
+      secRec: '\u6536\u4ef6\u4eba', lCo: '\u516c\u53f8 / \u673a\u6784', lTitle: '\u79f0\u8c13', optNone: '\u65e0', optMr: '\u5148\u751f', optMs: '\u5973\u58eb', optMrs: '\u592b\u4eba', lAcad: '\u5b66\u672f\u5934\u8854', lFirst: '\u540d', lLast: '\u59d3', lDept: '\u90e8\u95e8 / \u8f6c\u4ea4',
+      lStreet: '\u8857\u9053\u548c\u95e8\u724c\u53f7 / \u90ae\u653f\u4fe1\u7bb1', lZip: '\u90ae\u653f\u7f16\u7801', lCity: '\u57ce\u5e02', lCountry: '\u56fd\u5bb6\uff08\u4ec5\u9650\u5bc4\u5f80\u56fd\u5916\uff09', addrWarn: '\u5730\u5740\u8d85\u8fc76\u884c\uff0c\u53ef\u80fd\u65e0\u6cd5\u5b8c\u6574\u663e\u793a\u5728\u4fe1\u5c01\u7a97\u53e3\u4e2d\u3002',
+      secLetter: '\u4fe1\u51fd', lYourRef: '\u8d35\u65b9\u7f16\u53f7', lOurRef: '\u6211\u65b9\u7f16\u53f7', lDate: '\u65e5\u671f', lSubject: '\u4e3b\u9898', lGreeting: '\u79f0\u547c\u8bed', autoHint: '\u79f0\u547c\u8bed\u548c\u7ed3\u675f\u8bed\u7559\u7a7a\u65f6\uff0c\u5c06\u6839\u636e\u6536\u4ef6\u4eba\u548c\u8bed\u8a00\u81ea\u52a8\u751f\u6210\u3002',
+      lBody: '\u4fe1\u51fd\u6b63\u6587', bodyHint: '\u6bb5\u843d\u4e4b\u95f4\u8bf7\u7a7a\u4e00\u884c\u3002', lClosing: '\u7ed3\u675f\u8bed', lEncl: '\u9644\u4ef6\uff08\u6bcf\u884c\u4e00\u9879\uff09', lCc: '\u6284\u9001\uff08\u6bcf\u884c\u4e00\u9879\uff09',
+      secSig: '\u7b7e\u540d', lSigName: '\u59d3\u540d', lSigTitle: '\u804c\u4f4d', lPlace: '\u5730\u70b9\uff08\u53ef\u9009\uff09', placeHint: '\u586b\u5199\u5730\u70b9\u540e\uff0c\u7b7e\u540d\u4e0a\u65b9\u4f1a\u6253\u5370\u201c\u5730\u70b9\uff0c\u65e5\u671f\u201d\u3002', lSigImg: '\u7b7e\u540d\u56fe\u7247\uff08\u53ef\u9009\uff09',
+      secFooter: '\u9875\u811a\u680f\u76ee', addCol: '\u6dfb\u52a0\u680f\u76ee', maxCols: '\u6700\u591a4\u680f\u3002', colN: '\u680f\u76ee', colHead: '\u6807\u9898', colLines: '\u5185\u5bb9',
+      secQR: '\u4ed8\u6b3e\u4e8c\u7ef4\u7801\uff08GiroCode\uff09', lQR: '\u5728\u9875\u811a\u663e\u793aGiroCode', qrHint: '\u7528\u4e8e\u6b27\u5143SEPA\u8f6c\u8d26\uff1a\u4ed8\u6b3e\u4eba\u7528\u94f6\u884c\u5e94\u7528\u626b\u63cf\u3002', lBic: 'BIC\uff08\u53ef\u9009\uff09', ibanWarn: '\u6b64IBAN\u65e0\u6548\uff0c\u8bf7\u68c0\u67e5\u3002', lAmt: '\u91d1\u989d\uff08\u6b27\u5143\uff0c\u53ef\u9009\uff09', lQrRef: '\u4ed8\u6b3e\u5907\u6ce8',
+      preview: '\u5b9e\u65f6\u9884\u89c8', page1: '1\u9875', pagesN: '{n}\u9875', making: '\u6b63\u5728\u751f\u6210PDF\u2026', pageProgress: '\u7b2c{x}\u9875\uff0c\u5171{y}\u9875\u2026', ready: 'PDF\u5df2\u5c31\u7eea', savedTo: '{f} \u5df2\u4fdd\u5b58\u5230\u60a8\u7684\u8bbe\u5907\u3002', failed: '\u65e0\u6cd5\u751f\u6210PDF',
+      failedText: '\u8bf7\u91cd\u8bd5\u3002\u901a\u8fc7\u94fe\u63a5\u6dfb\u52a0\u7684\u6807\u5fd7\u53ef\u80fd\u5bfc\u81f4PDF\u5931\u8d25\uff1a\u8bf7\u6539\u4e3a\u4e0a\u4f20\uff0c\u6216\u6253\u5370\u5e76\u9009\u62e9\u201c\u53e6\u5b58\u4e3aPDF\u201d\u3002', noLibs: 'PDF\u5de5\u5177\u672a\u52a0\u8f7d\u3002\u8bf7\u68c0\u67e5\u7f51\u7edc\u8fde\u63a5\uff0c\u6216\u6253\u5370\u5e76\u9009\u62e9\u201c\u53e6\u5b58\u4e3aPDF\u201d\u3002',
+      close: '\u5173\u95ed', done: '\u5b8c\u6210', share: '\u5206\u4eabPDF', nameIt: '\u4e3a\u6b64\u4fe1\u51fd\u547d\u540d\uff1a', saved: '\u5df2\u4fdd\u5b58\uff1a', noSaved: '\u5c1a\u65e0\u5df2\u4fdd\u5b58\u7684\u4fe1\u51fd\u3002', del: '\u5220\u9664', confirmDel: '\u5220\u9664\u6b64\u4fe1\u51fd\uff1f', confirmNew: '\u5f00\u59cb\u65b0\u4fe1\u51fd\uff1f\u6536\u4ef6\u4eba\u548c\u6b63\u6587\u5c06\u88ab\u6e05\u7a7a\uff0c\u4fe1\u5934\u4fdd\u7559\u3002', storageFull: '\u65e0\u6cd5\u4fdd\u5b58\u5728\u6b64\u8bbe\u5907\u4e0a\uff08\u5b58\u50a8\u5df2\u6ee1\u6216\u88ab\u963b\u6b62\uff09\u3002'}
+  };
+
+  // -- Letter wording (what prints on the page) --
+  var W = {
+    en: {yourRef: 'Your ref.', ourRef: 'Our ref.', contact: 'Contact', room: 'Room', phone: 'Phone', fax: 'Fax', email: 'Email', web: 'Web', date: 'Date',
+      encl: 'Enclosures', cc: 'Copy to', pageOf: 'Page {x} of {y}', qr: 'Scan to pay', locale: 'en-GB',
+      subject: 'Invoice for services rendered in May 2026',
+      body: 'We hereby send you our invoice for the services rendered in May 2026.\n\nPlease transfer the outstanding amount to the bank account below within 14 days of receiving this letter.\n\nShould you have any questions, please do not hesitate to contact us.'},
+    de: {yourRef: 'Ihr Zeichen', ourRef: 'Unser Zeichen', contact: 'Ansprechpartner', room: 'Zimmer', phone: 'Telefon', fax: 'Telefax', email: 'E-Mail', web: 'Internet', date: 'Datum',
+      encl: 'Anlagen', cc: 'Verteiler', pageOf: 'Seite {x} von {y}', qr: 'Scannen und zahlen', locale: 'de-DE',
+      subject: 'Rechnung f\u00fcr die im Mai 2026 erbrachten Leistungen',
+      body: 'wir \u00fcbersenden Ihnen hiermit unsere Rechnung f\u00fcr die im Mai 2026 erbrachten Leistungen.\n\nBitte \u00fcberweisen Sie den ausstehenden Betrag innerhalb von 14 Tagen nach Erhalt dieses Schreibens auf das unten genannte Konto.\n\nF\u00fcr R\u00fcckfragen stehen wir Ihnen gerne zur Verf\u00fcgung.'},
+    fr: {yourRef: 'Votre r\u00e9f.', ourRef: 'Notre r\u00e9f.', contact: 'Contact', room: 'Bureau', phone: 'T\u00e9l.', fax: 'Fax', email: 'E-mail', web: 'Web', date: 'Date',
+      encl: 'Pi\u00e8ces jointes', cc: 'Copie \u00e0', pageOf: 'Page {x} sur {y}', qr: 'Scanner pour payer', locale: 'fr-FR',
+      subject: 'Facture pour les prestations de mai 2026',
+      body: 'Nous vous adressons ci-joint notre facture pour les prestations r\u00e9alis\u00e9es en mai 2026.\n\nNous vous prions de bien vouloir r\u00e9gler le montant d\u00fb sur le compte indiqu\u00e9 ci-dessous dans un d\u00e9lai de 14 jours \u00e0 r\u00e9ception de ce courrier.\n\nNous restons \u00e0 votre disposition pour toute question.'},
+    sw: {yourRef: 'Kumb. yako', ourRef: 'Kumb. yetu', contact: 'Mawasiliano', room: 'Chumba', phone: 'Simu', fax: 'Faksi', email: 'Barua pepe', web: 'Tovuti', date: 'Tarehe',
+      encl: 'Viambatisho', cc: 'Nakala kwa', pageOf: 'Ukurasa {x} kati ya {y}', qr: 'Skani ili ulipe', locale: 'sw-KE',
+      subject: 'Ankara ya huduma zilizotolewa Mei 2026',
+      body: 'Tunakutumia ankara yetu kwa huduma tulizotoa mwezi Mei 2026.\n\nTafadhali lipa kiasi kinachodaiwa kwenye akaunti ya benki iliyo hapa chini ndani ya siku 14 tangu kupokea barua hii.\n\nIwapo una maswali yoyote, tafadhali usisite kuwasiliana nasi.'},
+    zh: {yourRef: '\u8d35\u65b9\u7f16\u53f7', ourRef: '\u6211\u65b9\u7f16\u53f7', contact: '\u8054\u7cfb\u4eba', room: '\u623f\u95f4', phone: '\u7535\u8bdd', fax: '\u4f20\u771f', email: '\u7535\u90ae', web: '\u7f51\u5740', date: '\u65e5\u671f',
+      encl: '\u9644\u4ef6', cc: '\u6284\u9001', pageOf: '\u7b2c {x} \u9875\uff0c\u5171 {y} \u9875', qr: '\u626b\u7801\u4ed8\u6b3e', locale: 'zh-CN',
+      subject: '2026\u5e745\u6708\u670d\u52a1\u8d39\u53d1\u7968',
+      body: '\u968f\u51fd\u9644\u4e0a\u6211\u4eec2026\u5e745\u6708\u6240\u63d0\u4f9b\u670d\u52a1\u7684\u53d1\u7968\uff0c\u8bf7\u67e5\u6536\u3002\n\n\u8bf7\u5728\u6536\u5230\u672c\u51fd\u540e14\u5929\u5185\u5c06\u6b3e\u9879\u8f6c\u5165\u4e0b\u5217\u94f6\u884c\u8d26\u6237\u3002\n\n\u5982\u6709\u4efb\u4f55\u7591\u95ee\uff0c\u8bf7\u968f\u65f6\u4e0e\u6211\u4eec\u8054\u7cfb\u3002'}
+  };
+
+  // How each language addresses the recipient. t = mr | ms | mrs | '' ; acad e.g. "Dr."
+  var ADDRESS = {
+    en: function (t, acad, first, last) { var tt = acad || {mr: 'Mr', ms: 'Ms', mrs: 'Mrs'}[t] || ''; return [tt, first, last].filter(Boolean).join(' '); },
+    de: function (t, acad, first, last) { return [{mr: 'Herrn', ms: 'Frau', mrs: 'Frau'}[t] || '', acad, first, last].filter(Boolean).join(' '); },
+    fr: function (t, acad, first, last) { return [{mr: 'Monsieur', ms: 'Madame', mrs: 'Madame'}[t] || '', acad, first, last].filter(Boolean).join(' '); },
+    sw: function (t, acad, first, last) { return [{mr: 'Bw.', ms: 'Bi.', mrs: 'Bi.'}[t] || '', acad, first, last].filter(Boolean).join(' '); },
+    zh: function (t, acad, first, last) { return [last, first].filter(Boolean).join(' ') + ({mr: ' \u5148\u751f', ms: ' \u5973\u58eb', mrs: ' \u592b\u4eba'}[t] || ''); }
+  };
+  var GREETING = {
+    en: function (t, acad, first, last) {
+      if (last && (acad || t)) return 'Dear ' + (acad || {mr: 'Mr', ms: 'Ms', mrs: 'Mrs'}[t]) + ' ' + last + ',';
+      if (last) return 'Dear ' + [first, last].filter(Boolean).join(' ') + ',';
+      return 'Dear Sir or Madam,';
+    },
+    de: function (t, acad, first, last) {
+      if (last && t === 'mr') return 'Sehr geehrter Herr ' + [acad, last].filter(Boolean).join(' ') + ',';
+      if (last && t) return 'Sehr geehrte Frau ' + [acad, last].filter(Boolean).join(' ') + ',';
+      if (last) return 'Guten Tag ' + [acad, first, last].filter(Boolean).join(' ') + ',';
+      return 'Sehr geehrte Damen und Herren,';
+    },
+    fr: function (t) { return t === 'mr' ? 'Monsieur,' : t ? 'Madame,' : 'Madame, Monsieur,'; },
+    sw: function (t, acad, first, last) {
+      if (last && t) return 'Ndugu ' + ({mr: 'Bw.', ms: 'Bi.', mrs: 'Bi.'}[t]) + ' ' + last + ',';
+      if (last) return 'Ndugu ' + [first, last].filter(Boolean).join(' ') + ',';
+      return 'Ndugu,';
+    },
+    zh: function (t, acad, first, last) { return last ? '\u5c0a\u656c\u7684' + last + ({mr: '\u5148\u751f', ms: '\u5973\u58eb', mrs: '\u592b\u4eba'}[t] || '') + '\uff1a' : '\u5c0a\u656c\u7684\u5148\u751f/\u5973\u58eb\uff1a'; }
+  };
+  var CLOSING = {
+    en: function (named) { return named ? 'Yours sincerely' : 'Yours faithfully'; },   // British convention
+    de: function () { return 'Mit freundlichen Gr\u00fc\u00dfen'; },                             // DIN 5008: no comma
+    fr: function (named, greeting) { return 'Veuillez agr\u00e9er, ' + greeting.replace(/,\s*$/, '') + ', l\'expression de mes salutations distingu\u00e9es.'; },
+    sw: function () { return 'Wako mwaminifu,'; },
+    zh: function () { return '\u6b64\u81f4\n\u656c\u793c\uff01'; }
+  };
+
+  // DIN 5008 positions in mm from the top of the sheet
+  var FORM = {
+    B: {head: 45, addr: 45, info: 50, body: 98.46, folds: [105, 210]},
+    A: {head: 27, addr: 27, info: 32, body: 80.46, folds: [87, 192]}
+  };
+  var HOLE = 148.5, PX_PER_MM = 96 / 25.4, PDF_SCALE = 3.125; // 3.125 x 96 dpi = 300 dpi
+  var KEY_LETTERS = 'ldgLetters', KEY_HEAD = 'ldgLetterhead';
+
+  var HEAD_FIELDS = ['layout', 'fold', 'strip', 'orgName', 'tagline', 'logoUrl', 'returnAddr', 'orgPhone', 'orgFax', 'orgEmail', 'orgWeb', 'orgContact', 'orgRoom', 'remember',
+    'sigName', 'sigTitle', 'sigPlace', 'qrOn', 'qrIban', 'qrBic'];
+  var LETTER_FIELDS = ['recCompany', 'recTitle', 'recAcad', 'recFirst', 'recLast', 'recDept', 'recStreet', 'recZip', 'recCity', 'recCountry',
+    'yourRef', 'ourRef', 'docDate', 'subject', 'greeting', 'body', 'closing', 'encl', 'cc', 'qrAmt', 'qrRef'];
+
+  var lang = 'en', logo = '', sigImg = '', timer = null, qrCache = {key: '', url: ''}, pdfBlob = null;
+
+  function $(id) { return document.getElementById(id); }
+  function val(id) { var e = $(id); return e.type === 'checkbox' ? e.checked : e.value; }
+  function txt(id) { return String(val(id) || '').trim(); }
+  function setVal(id, v) { var e = $(id); if (!e) return; if (e.type === 'checkbox') e.checked = v === true || v === 'true'; else e.value = v == null ? '' : v; }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined && text !== null) e.textContent = text; return e; }
+  function u(k) { return (UI[lang] && UI[lang][k]) || UI.en[k] || k; }
+  function w(k) { return (W[lang] && W[lang][k]) || W.en[k] || k; }
+  function lines(s) { return String(s || '').split('\n').map(function (l) { return l.trim(); }).filter(Boolean); }
+  function fmtDate() {
+    var d = val('docDate') ? new Date(val('docDate') + 'T00:00:00') : new Date();
+    if (isNaN(d)) d = new Date();
+    try { return d.toLocaleDateString(w('locale'), {year: 'numeric', month: 'long', day: 'numeric'}); } catch (e) { return val('docDate'); }
+  }
+
+  // -- Interface language --
+  function applyUI() {
+    Array.prototype.forEach.call(document.querySelectorAll('#ldg-app [data-t]'), function (n) { n.textContent = u(n.getAttribute('data-t')); });
+    Array.prototype.forEach.call(document.querySelectorAll('#ldg-app [data-tp]'), function (n) { n.placeholder = u(n.getAttribute('data-tp')); });
+    Array.prototype.forEach.call(document.querySelectorAll('#fcols .fcol'), function (c, i) {
+      c.querySelector('.fcol-title').textContent = u('colN') + ' ' + (i + 1);
+      c.querySelector('.fcol-h').placeholder = u('colHead');
+      c.querySelector('.fcol-l').placeholder = u('colLines');
+    });
+  }
+  function isTemplate(id, key) {
+    var v = txt(id);
+    return !v || Object.keys(W).some(function (l) { return v === W[l][key]; });
+  }
+  function setLang(l, keepText) {
+    var swapBody = !keepText && isTemplate('body', 'body'), swapSubject = !keepText && isTemplate('subject', 'subject');
+    lang = UI[l] ? l : 'en';
+    $('lang').value = lang;
+    if (swapBody) setVal('body', W[lang].body);
+    if (swapSubject) setVal('subject', W[lang].subject);
+    applyUI();
+    try { document.getElementById('ldg-app').setAttribute('lang', lang); } catch (e) {}
+  }
+
+  // -- Sections --
+  window.ldgToggle = function (head) {
+    var open = head.getAttribute('aria-expanded') !== 'false';
+    head.setAttribute('aria-expanded', open ? 'false' : 'true');
+    head.nextElementSibling.hidden = open;
+  };
+
+  // -- Images (scaled down so saved letters stay small) --
+  function readImage(file, max, done) {
+    var r = new FileReader();
+    r.onload = function (ev) {
+      var img = new Image();
+      img.onload = function () {
+        var k = Math.min(1, max / Math.max(img.width, img.height, 1));
+        var c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k));
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        done(c.toDataURL('image/png'));
+      };
+      img.onerror = function () { done(ev.target.result); };
+      img.src = ev.target.result;
+    };
+    r.readAsDataURL(file);
+  }
+  function showThumb(kind) {
+    var data = kind === 'logo' ? logo : sigImg, th = $(kind + 'Thumb');
+    th.hidden = !data; $(kind + 'Clear').hidden = !data;
+    if (data) th.src = data; else th.removeAttribute('src');
+  }
+  $('logoFile').onchange = function (e) { var f = e.target.files[0]; if (f) readImage(f, 800, function (d) { logo = d; setVal('logoUrl', ''); showThumb('logo'); update(); }); };
+  $('sigFile').onchange = function (e) { var f = e.target.files[0]; if (f) readImage(f, 800, function (d) { sigImg = d; showThumb('sig'); update(); }); };
+  window.ldgClearImage = function (kind) {
+    if (kind === 'logo') { logo = ''; $('logoFile').value = ''; } else { sigImg = ''; $('sigFile').value = ''; }
+    showThumb(kind); update();
+  };
+
+  // -- Footer columns --
+  function colCount() { return document.querySelectorAll('#fcols .fcol').length; }
+  function addCol(head, body) {
+    if (colCount() >= 4) return;
+    var c = el('div', 'fcol');
+    var top = el('div', 'fcol-head'); top.appendChild(el('span', 'fcol-title'));
+    var x = el('button', 'ldg-x', '\u00d7'); x.type = 'button'; x.setAttribute('aria-label', u('remove'));
+    x.onclick = function () { c.remove(); applyUI(); refreshAddCol(); update(); };
+    top.appendChild(x); c.appendChild(top);
+    var h = el('input', 'fcol-h'); h.value = head || ''; c.appendChild(h);
+    var l = el('textarea', 'fcol-l'); l.value = body || ''; c.appendChild(l);
+    $('fcols').appendChild(c);
+    applyUI(); refreshAddCol();
+    return c;
+  }
+  function refreshAddCol() { $('addCol').disabled = colCount() >= 4; }
+  window.ldgAddCol = function () { var c = addCol(); if (c) c.querySelector('.fcol-h').focus(); update(); };
+  function getCols() {
+    return Array.prototype.map.call(document.querySelectorAll('#fcols .fcol'), function (c) {
+      return {h: c.querySelector('.fcol-h').value.trim(), lines: lines(c.querySelector('.fcol-l').value)};
+    });
+  }
+
+  // -- GiroCode (EPC069-12 SEPA credit transfer QR) --
+  function ibanOk(iban) {
+    var s = iban.replace(/\s+/g, '').toUpperCase();
+    if (!/^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/.test(s)) return false;
+    var r = (s.slice(4) + s.slice(0, 4)).replace(/[A-Z]/g, function (c) { return String(c.charCodeAt(0) - 55); });
+    var m = 0;
+    for (var i = 0; i < r.length; i += 7) m = parseInt(String(m) + r.slice(i, i + 7), 10) % 97;
+    return m === 1;
+  }
+  function epcPayload() {
+    var amt = parseFloat(String(val('qrAmt')).replace(/\s/g, '').replace(',', '.'));
+    var f = ['BCD', '002', '1', 'SCT',
+      txt('qrBic').replace(/\s+/g, '').toUpperCase(),
+      txt('orgName').slice(0, 70),
+      txt('qrIban').replace(/\s+/g, '').toUpperCase(),
+      amt >= 0.01 && amt <= 999999999.99 ? 'EUR' + amt.toFixed(2) : '',
+      '',                                   // purpose code
+      '',                                   // structured creditor reference (RF...) - not used
+      (txt('qrRef') || txt('ourRef')).slice(0, 140),  // unstructured remittance text
+      ''];
+    while (f.length && f[f.length - 1] === '') f.pop();     // no trailing separators
+    return f.join('\n');
+  }
+  function qrImage() {
+    if (!val('qrOn') || !ibanOk(txt('qrIban')) || !txt('orgName') || typeof qrcode === 'undefined') return '';
+    var payload = epcPayload();
+    if (qrCache.key === payload) return qrCache.url;
+    try {
+      qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+      var q = qrcode(0, 'M'); q.addData(payload, 'Byte'); q.make();
+      qrCache = {key: payload, url: q.createDataURL(8, 0)};
+    } catch (e) { qrCache = {key: payload, url: ''}; }
+    return qrCache.url;
+  }
+
+  // -- Letter content --
+  function recipient() { return {t: val('recTitle'), acad: txt('recAcad'), first: txt('recFirst'), last: txt('recLast')}; }
+  function addressLines() {
+    var r = recipient(), person = ADDRESS[lang](r.t, r.acad, r.first, r.last).trim();
+    var out = [txt('recCompany'), person, txt('recDept'), txt('recStreet'), [txt('recZip'), txt('recCity')].filter(Boolean).join(' ')].filter(Boolean);
+    if (txt('recCountry')) out.push({country: txt('recCountry')});
+    return out;
+  }
+  function greetingText() { var r = recipient(); return txt('greeting') || GREETING[lang](r.t, r.acad, r.first, r.last); }
+  function closingText() { var r = recipient(); return txt('closing') || CLOSING[lang](!!r.last, greetingText()); }
+  function returnText() {
+    if (txt('returnAddr')) return txt('returnAddr');
+    var c = getCols()[0], parts = [txt('orgName')];
+    if (c) c.lines.forEach(function (l) { if (l !== txt('orgName')) parts.push(l); });
+    return parts.filter(Boolean).join(' \u00b7 ');
+  }
+
+  // Paragraph text -> tokens (words and line breaks), so long paragraphs can continue on the next page.
+  function tokens(text) {
+    var out = [];
+    String(text).split('\n').forEach(function (line, i) {
+      if (i) out.push('\n');
+      line.split(/\s+/).forEach(function (wd) { if (wd) out.push(wd); });
+    });
+    while (out.length && out[0] === '\n') out.shift();
+    while (out.length && out[out.length - 1] === '\n') out.pop();
+    return out;
+  }
+  function paraFrom(tk) {
+    var p = el('p'), prevWord = false;
+    tk.forEach(function (t) {
+      if (t === '\n') { p.appendChild(el('br')); prevWord = false; }
+      else { p.appendChild(document.createTextNode((prevWord ? ' ' : '') + t)); prevWord = true; }
+    });
+    return p;
+  }
+
+  // -- Pages: DIN 5008 A4 sheets for the preview, Print and the PDF --
+  function mm(n) { return n + 'mm'; }
+  function render() {
+    var pages = $('ldgPages'), form = FORM[val('layout')] || FORM.B, sheets = [], flow = null, limit = 0;
+    var dateText = fmtDate(), ref = txt('ourRef'), qr = qrImage(), cols = getCols();
+    pages.innerHTML = '';
+
+    function footer(sh) {
+      var f = el('div', 'lt-footer');
+      f.appendChild(el('div', 'lt-pageno'));
+      if (cols.some(function (c) { return c.h || c.lines.length; }) || qr) {
+        var row = el('div', 'lt-cols');
+        cols.forEach(function (c) {
+          if (!c.h && !c.lines.length) return;
+          var col = el('div', 'lt-col');
+          if (c.h) col.appendChild(el('strong', '', c.h));
+          c.lines.forEach(function (l) { col.appendChild(el('div', '', l)); });
+          row.appendChild(col);
+        });
+        if (qr) {
+          var q = el('div', 'lt-qr'), im = el('img'); im.src = qr; im.alt = 'GiroCode';
+          q.appendChild(im); q.appendChild(el('span', '', w('qr'))); row.appendChild(q);
+        }
+        f.appendChild(row);
+      }
+      sh.appendChild(f);
+      return f;
+    }
+    function letterhead(sh) {
+      var head = el('div', 'lt-head'), h = form.head;
+      var logoSrc = logo || txt('logoUrl');
+      head.style.top = mm(form === FORM.A ? 6 : 10);
+      head.style.height = mm(h - (form === FORM.A ? 10 : 16));
+      var left = el('div', 'lt-logo');
+      if (logoSrc) { var im = el('img'); im.src = logoSrc; im.alt = txt('orgName'); im.style.maxHeight = mm(form === FORM.A ? 14 : 22); im.crossOrigin = 'anonymous'; left.appendChild(im); }
+      else left.appendChild(el('div', 'lt-orgname', txt('orgName')));
+      head.appendChild(left);
+      var right = el('div', 'lt-headright');
+      if (logoSrc && txt('orgName')) right.appendChild(el('div', 'lt-orgname', txt('orgName')));
+      if (txt('tagline')) right.appendChild(el('div', 'lt-tagline', txt('tagline')));
+      head.appendChild(right);
+      sh.appendChild(head);
+      var rule = el('div', 'lt-rule'); rule.style.top = mm(h - 4); sh.appendChild(rule);
+    }
+    function addressField(sh) {
+      var a = el('div', 'lt-address'); a.style.top = mm(form.addr);
+      var z = el('div', 'lt-zusatz'); z.appendChild(el('div', 'lt-return', returnText())); a.appendChild(z);
+      var an = el('div', 'lt-anschrift'), al = addressLines();
+      al.forEach(function (l) { an.appendChild(typeof l === 'string' ? el('div', '', l) : el('div', 'country', l.country)); });
+      a.appendChild(an); sh.appendChild(a);
+      $('addrWarn').hidden = al.length <= 6;
+    }
+    function infoBlock(sh) {
+      var box = el('div', 'lt-info'), tb = el('table'), body = el('tbody');
+      box.style.top = mm(form.info);
+      [['yourRef', txt('yourRef')], ['ourRef', ref], ['contact', txt('orgContact')], ['room', txt('orgRoom')], ['phone', txt('orgPhone')],
+        ['fax', txt('orgFax')], ['email', txt('orgEmail')], ['web', txt('orgWeb')], ['date', dateText]].forEach(function (r) {
+        if (!r[1]) return;
+        var tr = el('tr', r[0] === 'date' ? 'date' : ''); tr.appendChild(el('td', 'lbl', w(r[0]))); tr.appendChild(el('td', 'val', r[1])); body.appendChild(tr);
+      });
+      tb.appendChild(body); box.appendChild(tb); sh.appendChild(box);
+      return box;
+    }
+    function marks(sh) {
+      form.folds.concat([HOLE]).forEach(function (y, i) { var m = el('div', 'lt-mark' + (i === 2 ? ' hole' : '')); m.style.top = mm(y); sh.appendChild(m); });
+    }
+    function newSheet() {
+      var first = !sheets.length, sh = el('div', 'ldg-sheet'), bodyTop = form.body;
+      pages.appendChild(sh); sheets.push(sh);
+      sh.appendChild(el('div', 'lt-band'));
+      if (val('fold')) marks(sh);
+      if (first) {
+        letterhead(sh); addressField(sh);
+        var info = infoBlock(sh);
+        // If the info block is long, start the text below it (2 blank lines).
+        bodyTop = Math.max(form.body, (info.offsetTop + info.offsetHeight) / PX_PER_MM + 8.46);
+      } else {
+        var c = el('div', 'lt-cont'); c.appendChild(el('strong', '', txt('orgName')));
+        c.appendChild(el('span', '', [ref, dateText].filter(Boolean).join(' \u00b7 '))); sh.appendChild(c);
+        bodyTop = 25;
+      }
+      if (val('strip')) sh.appendChild(el('div', 'lt-strip', [ref, txt('orgName'), dateText].filter(Boolean).join('  \u00b7  ')));
+      var f = footer(sh);
+      flow = el('div', 'lt-flow'); flow.style.top = mm(bodyTop); sh.appendChild(flow);
+      limit = f.offsetTop - 5 * PX_PER_MM;
+    }
+    function fits() { return flow.offsetTop + flow.offsetHeight <= limit; }
+    function fresh() { return !flow.firstChild; }
+    function lineH(n) { return parseFloat(getComputedStyle(n).lineHeight) || 20; }
+    function block(n) {
+      flow.appendChild(n);
+      if (fits() || fresh() && flow.lastChild === n && flow.childNodes.length === 1) return;
+      flow.removeChild(n);
+      newSheet(); flow.appendChild(n);
+    }
+    function paragraph(text) {
+      var tk = tokens(text);
+      while (tk.length) {
+        var whole = paraFrom(tk); flow.appendChild(whole);
+        if (fits()) return;
+        flow.removeChild(whole);
+        // Largest number of words that still fits on this page.
+        var lo = 0, hi = tk.length - 1;
+        while (lo < hi) {
+          var mid = Math.ceil((lo + hi) / 2), t = paraFrom(tk.slice(0, mid)); t.className = 'cut';
+          flow.appendChild(t); var ok = fits(); flow.removeChild(t);
+          if (ok) lo = mid; else hi = mid - 1;
+        }
+        var k = lo;
+        // At least 2 lines on each side of the break (no orphans or widows).
+        if (k) {
+          var probe = paraFrom(tk.slice(k)); flow.appendChild(probe);
+          var lh = lineH(probe), guard = 0;
+          while (k > 0 && probe.offsetHeight < 2 * lh - 1 && guard++ < 60) { k--; flow.removeChild(probe); probe = paraFrom(tk.slice(k)); flow.appendChild(probe); }
+          flow.removeChild(probe);
+          var part = paraFrom(tk.slice(0, k)); part.className = 'cut'; flow.appendChild(part);
+          if (part.offsetHeight < 2 * lh - 1) { flow.removeChild(part); k = 0; }
+        }
+        if (!k) {
+          if (fresh()) { flow.appendChild(paraFrom(tk)); return; } // longer than a whole page: place it anyway
+          newSheet(); continue;
+        }
+        tk = tk.slice(k);
+        while (tk.length && tk[0] === '\n') tk.shift();
+        newSheet();
+      }
+    }
+
+    newSheet();
+    if (txt('subject')) block(el('div', 'lt-subject', txt('subject')));
+    block(el('p', '', greetingText()));
+    String(val('body') || '').replace(/\r/g, '').split(/\n[ \t]*\n/).forEach(function (pText) { if (pText.trim()) paragraph(pText); });
+
+    var so = el('div', 'lt-signoff');
+    so.appendChild(el('div', 'lt-closing', closingText()));
+    if (txt('sigPlace')) so.appendChild(el('div', 'lt-place', txt('sigPlace') + ', ' + dateText));
+    if (sigImg) { var si = el('div', 'lt-sigimg'), im = el('img'); im.src = sigImg; im.alt = ''; si.appendChild(im); so.appendChild(si); }
+    else so.appendChild(el('div', 'lt-sigspace'));
+    if (txt('sigName')) so.appendChild(el('div', 'lt-signame', txt('sigName')));
+    if (txt('sigTitle')) so.appendChild(el('div', 'lt-sigtitle', txt('sigTitle')));
+    block(so);
+    [['encl', 'encl'], ['cc', 'cc']].forEach(function (x) {
+      var ls = lines(val(x[0])); if (!ls.length) return;
+      var d = el('div', 'lt-extra'); d.appendChild(el('strong', '', w(x[1])));
+      ls.forEach(function (l) { d.appendChild(el('div', '', l)); }); block(d);
+    });
+
+    sheets.forEach(function (sh, i) {
+      if (sheets.length > 1) sh.querySelector('.lt-pageno').textContent = w('pageOf').replace('{x}', i + 1).replace('{y}', sheets.length);
+    });
+    $('ldgPageCount').textContent = sheets.length === 1 ? u('page1') : u('pagesN').replace('{n}', sheets.length);
+    $('ldgPrevRef').textContent = ref;
+    $('ibanWarn').hidden = !val('qrOn') || !txt('qrIban') || ibanOk(txt('qrIban'));
+    $('qrFields').hidden = !val('qrOn');
+    fitPreview();
+  }
+
+  function fitPreview() {
+    var wrap = $('ldgPagesWrap'), pages = $('ldgPages'), box = wrap.parentNode, cs = getComputedStyle(box);
+    var pageW = 210 * PX_PER_MM, avail = box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    var f = Math.min(1, avail / pageW);
+    pages.style.transform = f < 1 ? 'scale(' + f + ')' : '';
+    wrap.style.width = Math.floor(pageW * f) + 'px';
+    wrap.style.height = Math.ceil(pages.offsetHeight * f) + 'px';
+  }
+
+  // -- Save / load --
+  function store(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); return true; } catch (e) { return false; } }
+  function read(key, dflt) { try { var v = JSON.parse(localStorage.getItem(key)); return v == null ? dflt : v; } catch (e) { return dflt; } }
+  function collect(fields) { var d = {}; fields.forEach(function (f) { d[f] = val(f); }); return d; }
+  function letterhead() { var d = collect(HEAD_FIELDS); d.logo = logo; d.sigImg = sigImg; d.cols = getCols().map(function (c) { return {h: c.h, body: c.lines.join('\n')}; }); d.lang = lang; return d; }
+  function applyHead(d) {
+    HEAD_FIELDS.forEach(function (f) { if (d[f] !== undefined) setVal(f, d[f]); });
+    logo = d.logo || ''; sigImg = d.sigImg || ''; showThumb('logo'); showThumb('sig');
+    if (d.cols) { $('fcols').innerHTML = ''; d.cols.forEach(function (c) { addCol(c.h, c.body); }); refreshAddCol(); }
+  }
+  function saveHead() { if (val('remember')) store(KEY_HEAD, letterhead()); else { try { localStorage.removeItem(KEY_HEAD); } catch (e) {} } }
+  window.ldgSave = function () {
+    var name = prompt(u('nameIt'), [txt('recCompany') || txt('recLast'), txt('subject')].filter(Boolean).join(' \u2014 '));
+    if (!name) return;
+    var d = {name: name, savedAt: new Date().toISOString(), head: letterhead(), letter: collect(LETTER_FIELDS), lang: lang};
+    var list = read(KEY_LETTERS, []); list.push(d);
+    if (store(KEY_LETTERS, list)) { alert(u('saved') + name); renderSaved(); } else alert(u('storageFull'));
+  };
+  function renderSaved() {
+    var box = $('ldgSavedItems'), list = read(KEY_LETTERS, []);
+    box.innerHTML = '';
+    if (!list.length) { box.appendChild(el('p', 'ldg-empty', u('noSaved'))); return; }
+    list.forEach(function (d, i) {
+      var row = el('div', 'ldg-saved-item'), open = el('button', 'ldg-saved-open', d.name); open.type = 'button';
+      if (d.savedAt) open.appendChild(el('small', '', new Date(d.savedAt).toLocaleDateString()));
+      open.onclick = function () { load(i); };
+      var del = el('button', 'ldg-btn ldg-btn-outline ldg-btn-small', u('del')); del.type = 'button';
+      del.onclick = function () { if (!confirm(u('confirmDel'))) return; var l = read(KEY_LETTERS, []); l.splice(i, 1); store(KEY_LETTERS, l); renderSaved(); };
+      row.appendChild(open); row.appendChild(del); box.appendChild(row);
+    });
+  }
+  function load(i) {
+    var d = read(KEY_LETTERS, [])[i]; if (!d) return;
+    if (d.head) applyHead(d.head);
+    LETTER_FIELDS.forEach(function (f) { setVal(f, d.letter && d.letter[f] !== undefined ? d.letter[f] : ''); });
+    setLang(d.lang || lang, true);
+    $('ldgSaved').classList.remove('open'); $('ldgLoadBtn').setAttribute('aria-expanded', 'false');
+    update();
+  }
+  window.ldgToggleSaved = function () {
+    var open = $('ldgSaved').classList.toggle('open');
+    $('ldgLoadBtn').setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) renderSaved();
+  };
+  window.ldgNew = function () {
+    if (!confirm(u('confirmNew'))) return;
+    LETTER_FIELDS.forEach(function (f) { setVal(f, ''); });
+    setVal('docDate', today());
+    setVal('body', W[lang].body); setVal('subject', '');
+    update();
+  };
+
+  // -- Print: lift the tool out of the page so only the A4 sheets print --
+  var printHome = null;
+  function enterPrint() {
+    if (printHome) return;
+    clearTimeout(timer); render();
+    var app = $('ldg-app'); printHome = {parent: app.parentNode, next: app.nextSibling};
+    document.body.appendChild(app); document.documentElement.classList.add('ldg-printing');
+  }
+  function exitPrint() {
+    if (!printHome) return;
+    printHome.parent.insertBefore($('ldg-app'), printHome.next); printHome = null;
+    document.documentElement.classList.remove('ldg-printing'); fitPreview();
+  }
+  window.addEventListener('beforeprint', enterPrint);
+  window.addEventListener('afterprint', exitPrint);
+  window.ldgPrint = function () { enterPrint(); window.print(); };
+
+  // -- PDF: each A4 sheet at 300 dpi --
+  function modal(title, text, busy, buttons) {
+    $('ldgModalTitle').textContent = title; $('ldgModalText').textContent = text || '';
+    $('ldgSpinner').hidden = !busy; $('ldgTick').hidden = busy || !buttons || buttons.ok !== true;
+    var bx = $('ldgModalBtns'); bx.innerHTML = '';
+    (buttons && buttons.list || []).forEach(function (b) { var n = el('button', 'ldg-btn ' + b.cls, b.text); n.type = 'button'; n.onclick = b.on; bx.appendChild(n); });
+    $('ldgModal').classList.add('open');
+  }
+  function closeModal() { $('ldgModal').classList.remove('open'); }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('ldgModal').classList.contains('open')) closeModal(); });
+  function fileName() { return ((txt('ourRef') || 'letter') + (txt('recCompany') || txt('recLast') ? '-' + (txt('recCompany') || txt('recLast')) : '')).replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'letter'; }
+  window.ldgPdf = function () {
+    clearTimeout(timer); render();
+    if (!window.html2canvas || !window.jspdf) { modal(u('failed'), u('noLibs'), false, {list: [{cls: 'ldg-btn-navy', text: u('close'), on: closeModal}]}); return; }
+    var pages = $('ldgPages'), keep = pages.style.transform, sheets = pages.querySelectorAll('.ldg-sheet'), i = 0;
+    var pdf = new jspdf.jsPDF({orientation: 'p', unit: 'mm', format: 'a4', compress: true});
+    modal(u('making'), '', true);
+    pages.style.transform = 'none';
+    function next() {
+      if (i >= sheets.length) return Promise.resolve();
+      $('ldgModalText').textContent = u('pageProgress').replace('{x}', i + 1).replace('{y}', sheets.length);
+      return html2canvas(sheets[i], {scale: PDF_SCALE, useCORS: true, logging: false, backgroundColor: '#FFFFFF'}).then(function (canvas) {
+        if (i > 0) pdf.addPage();
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+        i++; return next();
+      });
+    }
+    var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    ready.then(next).then(function () {
+      pages.style.transform = keep;
+      var name = fileName() + '.pdf';
+      pdf.save(name); pdfBlob = pdf.output('blob');
+      var list = [];
+      var file = window.File ? new File([pdfBlob], name, {type: 'application/pdf'}) : null;
+      if (file && navigator.canShare && navigator.canShare({files: [file]})) list.push({cls: 'ldg-btn-navy', text: u('share'), on: function () { navigator.share({files: [file], title: name}).then(closeModal, function () {}); }});
+      list.push({cls: 'ldg-btn-outline', text: u('done'), on: closeModal});
+      modal(u('ready'), u('savedTo').replace('{f}', name), false, {ok: true, list: list});
+    }).catch(function () {
+      pages.style.transform = keep;
+      modal(u('failed'), u('failedText'), false, {list: [{cls: 'ldg-btn-navy', text: u('close'), on: closeModal}]});
+    });
+  };
+
+  // -- Live update --
+  function update() { clearTimeout(timer); render(); saveHead(); }
+  function schedule() { clearTimeout(timer); timer = setTimeout(update, 150); }
+  $('ldgPanel').addEventListener('input', schedule);
+  $('ldgPanel').addEventListener('change', schedule);
+  $('lang').addEventListener('change', function () { setLang(val('lang')); update(); });
+  function fitLayout() {
+    var bar = document.querySelector('#ldg-app .ldg-topbar'), h = bar ? bar.offsetHeight : 60, wide = window.innerWidth > 980;
+    ['.ldg-panel', '.ldg-preview'].forEach(function (s) {
+      var n = document.querySelector('#ldg-app ' + s);
+      n.style.top = wide ? h + 'px' : ''; n.style.height = wide ? 'calc(100vh - ' + h + 'px)' : '';
+    });
+  }
+  window.addEventListener('resize', function () { fitLayout(); fitPreview(); });
+  function today() { var d = new Date(), p = function (n) { return n < 10 ? '0' + n : n; }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+
+  // -- Start --
+  setVal('docDate', today());
+  var savedHead = read(KEY_HEAD, null);
+  if (savedHead) { applyHead(savedHead); setLang(savedHead.lang || 'en'); }
+  else {
+    addCol('EFIC Consultancy Ltd', 'Nairobi, Kenya');
+    addCol('Contact', 'askeficc@gmail.com\neficc.blogspot.com');
+    addCol('Bank', 'Your bank name\nIBAN / account number');
+    setLang('en');
+  }
+  if (!txt('body')) setVal('body', W[lang].body);
+  if (!txt('subject')) setVal('subject', W[lang].subject);
+  fitLayout();
+  update();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(update);
+  // Fallback for the QR library if the first CDN is blocked.
+  if (typeof qrcode === 'undefined') {
+    var s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
+    s.onload = function () { qrCache.key = ''; update(); }; document.body.appendChild(s);
+  }
+})();
+</script>

@@ -35,10 +35,15 @@ def css_escape(text):
 
 
 def fix(src):
-    src = re.sub(r'(<script\b[^>]*>)(.*?)(</script>)',
-                 lambda m: m.group(1) + js_escape(m.group(2)) + m.group(3), src, flags=re.S | re.I)
-    src = re.sub(r'(<style\b[^>]*>)(.*?)(</style>)',
-                 lambda m: m.group(1) + css_escape(m.group(2)) + m.group(3), src, flags=re.S | re.I)
+    # One pass so HTML comments are skipped: a "<script>" mentioned inside a
+    # comment must not start a JS block (it once swallowed the whole page).
+    def part(m):
+        if m.group('comment'):
+            return m.group('comment')
+        esc = js_escape if m.group('open').lower().startswith('<script') else css_escape
+        return m.group('open') + esc(m.group('body')) + m.group('close')
+    src = re.sub(r'(?P<comment><!--.*?-->)|(?P<open><(?P<tag>script|style)\b[^>]*>)(?P<body>.*?)(?P<close></(?P=tag)>)',
+                 part, src, flags=re.S | re.I)
     return ''.join(ch if ord(ch) < 128 else '&#%d;' % ord(ch) for ch in src)
 
 
