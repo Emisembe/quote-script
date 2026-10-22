@@ -48,7 +48,9 @@ The tool fills the whole page. On this page only, it hides the theme's menu, hea
 
 **Print and PDF:**
 - Print and Download PDF produce exactly the pages in the preview.
-- The PDF is 300 dpi. On phones you can share the PDF file itself.
+- **Print** sends the text to the printer as sharp outlines, so it prints at the printer's full resolution (600-1200 dpi). It's the best choice for paper. To keep a PDF with the same sharp, selectable text, choose **Print → Save as PDF**.
+- **Download PDF** is 300 dpi, the print-shop standard, and the easiest way to email a letter. On phones you can share the PDF file itself.
+- Uploaded images stay above 300 ppi on paper: the logo prints at 362 ppi or more, the signature at 376 ppi or more and the GiroCode at 379 ppi, with crisp edges.
 
 ## Placeholders to replace
 Before using it for real, replace these in the panel:

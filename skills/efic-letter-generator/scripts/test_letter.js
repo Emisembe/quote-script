@@ -178,6 +178,8 @@ const LONG = Array.from({length: 9}, (_, i) => `Paragraph ${i + 1}. ` + 'We are 
     const info = cp.execSync(`pdfinfo "${pp}"`).toString(), pages = +info.match(/Pages:\s+(\d+)/)[1], txt = cp.execSync(`pdftotext "${pp}" -`).toString();
     ok(pages === n && /Paragraph 9\./.test(txt) && !/Live preview/.test(txt) && !/EFIC header/.test(txt), `print: ${pages} pages (preview ${n}), searchable text, no panel or theme`);
     ok(await p.evaluate(() => document.getElementById('ldg-app').parentNode.classList.contains('post-body')), 'tool moved back into the page after printing');
+    if (has('pdffonts')) { const fonts = cp.execSync(`pdffonts "${pp}"`).toString().trim().split('\n').length - 2, imgs = has('pdfimages') ? cp.execSync(`pdfimages -list "${pp}"`).toString().split('\n').slice(2).filter(Boolean).filter(l => !/ smask /.test(l)).map(l => +l.trim().split(/\s+/)[12]) : [];
+      ok(fonts > 0 && imgs.every(x => x >= 300), `print is sharp: text as outlines (${fonts} embedded fonts), images ${imgs.length ? imgs.join('/') + ' ppi' : 'none'}`); }
   } else skip('print check (poppler-utils not installed)');
 
   // 12. PDF

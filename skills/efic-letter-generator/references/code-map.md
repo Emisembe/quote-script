@@ -42,7 +42,7 @@ Every label has `data-t="key"` (text) or `data-tp="key"` (placeholder), filled f
 | constants | `FORM.B`/`FORM.A` geometry in mm, `HOLE`, `PX_PER_MM`, `PDF_SCALE`, storage keys, `HEAD_FIELDS`, `LETTER_FIELDS`, state (`lang`, `logo`, `sigImg`, `timer`, `refStamp`, `qrCache`) |
 | helpers | `$`, `val`, `txt`, `setVal`, `el(tag, cls, text)` (safe text), `u(key)` (UI word), `w(key)` (letter word), `lines`, `fmtDate` |
 | `Interface language` | `applyUI()`, `setLang(l, keepText)`. Sample subject and body text follow the language unless the user has edited them (`isTemplate`). |
-| `Sections`, `Images`, `Footer columns` | Collapsing, `readImage` (downscaled to 800 px), `addCol`/`refreshAddCol`/`getCols` |
+| `Sections`, `Images`, `Footer columns` | Collapsing, `readImage` (logo downscaled to 1000 px, signature to 800 px: still 350+ ppi on paper), `addCol`/`refreshAddCol`/`getCols` |
 | `Our reference` | `stamp(date)`, `SKIP_WORDS`, `initials(name)`, `autoRef()`, `ourRef()` |
 | `GiroCode` | `ibanOk`, `epcPayload`, `qrImage` (cached) |
 | `Letter content` | `recipient`, `addressLines`, `greetingText`, `closingText`, `returnText`, `tokens`/`paraFrom` |
