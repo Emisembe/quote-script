@@ -67,7 +67,7 @@ Then open `preview/home.html` and `preview/post.html` (update their markup if yo
 
 Send `theme.xml` as a file attachment named like a Blogger backup (e.g. `theme-<blogname>.xml`), plus these steps:
 
-1. **Back up the current theme first.** Restoring can reset gadget content they've already edited.
+1. **Back up the current theme first.** Restoring can reset gadget content they've already edited. If any gadget's type or id changed since their last upload, warn them that Blogger may offer to keep the old gadget; they should choose delete, otherwise they'll see duplicates in Layout.
 2. **Theme → ▾ → Restore → Upload.** If it says only *"Could not restore theme"*, use **Theme → ▾ → Edit HTML**, paste the whole file and save. That screen names the exact error (gadget id or line).
 3. Legacy-engine themes only: **Theme → ▾ → Mobile settings → Desktop**, so phones get the responsive theme.
 4. Ask for a screenshot of any error message and fix exactly that. Error messages name the culprit precisely; don't guess.

@@ -57,6 +57,10 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 → Legacy-engine custom themes default to Blogger's mobile template.
 → Tell the user: **Theme → ▾ → Mobile settings → Desktop**. A v3 theme can declare `b:responsive='true'` instead, but only if the reference proves it.
 
+**Duplicate gadgets after an update (two menus, two social lists)**
+→ Changing a gadget's type between versions (e.g. HTML1 menu → LinkList1) gives it a new id. On restore, Blogger asks whether to keep or delete gadgets the new theme doesn't contain; "keep" leaves the old one alongside the new one.
+→ Avoid changing gadget ids/types once a theme is live. When you must, warn the user before they upload: choose **delete** in that dialog (after backing up), or delete the old copy in Layout afterwards. In Layout, a Link List opens "Configure Link List"; an HTML gadget opens a content box. Also tell them to check for a kept **Attribution** gadget ("Powered by Blogger").
+
 **Re-uploading resets gadget content**
 → Restoring a theme can overwrite gadget text and links the user already edited.
 → Always say: back up first, and note any edits.
