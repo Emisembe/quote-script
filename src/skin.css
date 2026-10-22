@@ -230,6 +230,22 @@ a.badge:hover { background: var(--rm-primary); color: var(--rm-accent); }
 .site-header.nav-open .nav-toggle .icon-menu { display: none; }
 .site-header.nav-open .nav-toggle .icon-close { display: block; }
 
+/* Dimmed page behind the open phone menu (tap to close) */
+.nav-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 90;
+  background: rgba(5, 12, 22, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+}
+.nav-backdrop.is-visible { opacity: 1; visibility: visible; }
+@media (min-width: 1024px) { .nav-backdrop { display: none; } }
+
 /* Mobile drawer */
 .nav-drawer { display: none; }
 .site-header.nav-open .nav-drawer {

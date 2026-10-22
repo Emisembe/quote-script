@@ -232,6 +232,22 @@ a.badge:hover { background: $(primary.color); color: $(accent.color); }
 .site-header.nav-open .nav-toggle .icon-menu { display: none; }
 .site-header.nav-open .nav-toggle .icon-close { display: block; }
 
+/* Dimmed page behind the open phone menu (tap to close) */
+.nav-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 90;
+  background: rgba(5, 12, 22, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+}
+.nav-backdrop.is-visible { opacity: 1; visibility: visible; }
+@media (min-width: 1024px) { .nav-backdrop { display: none; } }
+
 /* Mobile drawer */
 .nav-drawer { display: none; }
 .site-header.nav-open .nav-drawer {
@@ -1301,10 +1317,18 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
                 </b:loop>
               </div>
             <b:else/>
-              <div class='empty-state'>
-                <p>No posts found here yet.</p>
-                <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
-              </div>
+              <b:if cond='data:blog.url == data:blog.homepageUrl'>
+                <div class='empty-state'><p>New episodes are coming soon.</p></div>
+              <b:else/>
+              <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+                <div class='empty-state'><p>New episodes are coming soon.</p></div>
+              <b:else/>
+                <div class='empty-state'>
+                  <p>No posts found here yet.</p>
+                  <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+                </div>
+              </b:if>
+              </b:if>
             </b:if>
             <b:if cond='data:newerPageUrl'>
               <b:include name='rmListPager'/>
@@ -2412,14 +2436,26 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
   var drawer = doc.getElementById('site-nav');
   var desktop = window.matchMedia ? window.matchMedia('(min-width: 1024px)') : null;
 
+  // Dimmed backdrop behind the open menu; tapping it closes the menu
+  var backdrop = null;
+  if (header) {
+    backdrop = doc.createElement('div');
+    backdrop.className = 'nav-backdrop';
+    backdrop.setAttribute('aria-hidden', 'true');
+    doc.body.appendChild(backdrop);
+    backdrop.addEventListener('click', function () { setMenu(false); });
+  }
+
   function setMenu(open) {
     if (!header || !toggle) return;
     if (open) {
       header.classList.add('nav-open');
       root.classList.add('nav-locked');
+      if (backdrop) backdrop.classList.add('is-visible');
     } else {
       header.classList.remove('nav-open');
       root.classList.remove('nav-locked');
+      if (backdrop) backdrop.classList.remove('is-visible');
     }
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
@@ -2443,6 +2479,7 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
         toggle.focus();
       }
     });
+    window.addEventListener('pageshow', function () { setMenu(false); });
     if (desktop) {
       var onChange = function () { if (desktop.matches) setMenu(false); };
       if (desktop.addEventListener) desktop.addEventListener('change', onChange);

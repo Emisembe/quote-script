@@ -84,6 +84,7 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 
 ## 5. JavaScript and images
 
+- **Mobile menu feels "frozen"**: locking page scroll while a half-height menu is open leaves the lower half of the page visible but dead; only the X closes it. Always add a dimmed backdrop under the header (tap to close), unlock on link tap, Escape and resize, and reset on `pageshow` (back/forward cache). Test with real touch emulation (Playwright `devices['iPhone 13']`, `tap()`), not just clicks.
 - **Video in a card or hero**: let the user paste a plain YouTube link into an HTML gadget. JS extracts the 11-character id (watch, youtu.be, shorts, live, embed), removes the link text, and shows a thumbnail (`i.ytimg.com/vi/ID/hqdefault.jpg`) with a play button. Only on click insert `youtube-nocookie.com/embed/ID?autoplay=1`. This keeps the page fast and never needs an Image gadget.
 - **"Powered by Blogger"** is the Attribution gadget. Blogger doesn't require it, so removing the gadget is fine. Keep your own copyright line.
 - **Flex on a menu `ul`** also hits nested sub-menus. Use `.widget-content > ul` for the top row.

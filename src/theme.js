@@ -162,14 +162,26 @@
   var drawer = doc.getElementById('site-nav');
   var desktop = window.matchMedia ? window.matchMedia('(min-width: 1024px)') : null;
 
+  // Dimmed backdrop behind the open menu; tapping it closes the menu
+  var backdrop = null;
+  if (header) {
+    backdrop = doc.createElement('div');
+    backdrop.className = 'nav-backdrop';
+    backdrop.setAttribute('aria-hidden', 'true');
+    doc.body.appendChild(backdrop);
+    backdrop.addEventListener('click', function () { setMenu(false); });
+  }
+
   function setMenu(open) {
     if (!header || !toggle) return;
     if (open) {
       header.classList.add('nav-open');
       root.classList.add('nav-locked');
+      if (backdrop) backdrop.classList.add('is-visible');
     } else {
       header.classList.remove('nav-open');
       root.classList.remove('nav-locked');
+      if (backdrop) backdrop.classList.remove('is-visible');
     }
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
@@ -193,6 +205,7 @@
         toggle.focus();
       }
     });
+    window.addEventListener('pageshow', function () { setMenu(false); });
     if (desktop) {
       var onChange = function () { if (desktop.matches) setMenu(false); };
       if (desktop.addEventListener) desktop.addEventListener('change', onChange);

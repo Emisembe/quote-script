@@ -231,10 +231,18 @@ Page not found - <data:blog.title/>
                 </b:loop>
               </div>
             <b:else/>
-              <div class='empty-state'>
-                <p>No posts found here yet.</p>
-                <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
-              </div>
+              <b:if cond='data:blog.url == data:blog.homepageUrl'>
+                <div class='empty-state'><p>New episodes are coming soon.</p></div>
+              <b:else/>
+              <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+                <div class='empty-state'><p>New episodes are coming soon.</p></div>
+              <b:else/>
+                <div class='empty-state'>
+                  <p>No posts found here yet.</p>
+                  <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+                </div>
+              </b:if>
+              </b:if>
             </b:if>
             <b:if cond='data:newerPageUrl'>
               <b:include name='rmListPager'/>
