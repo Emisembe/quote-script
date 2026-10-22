@@ -92,6 +92,8 @@
         'The Moon goes from New Moon to Full Moon and back in about 29.5 days (the synodic month), so each half takes roughly 14.75 days. It completes a full circuit of the zodiac in about 27.3 days, spending around 2.5 days in each sign. The word "month" comes from "moon".',
         'Tradition reads the cycle like a growing plant: begin at the New Moon, build while it waxes, see results and gain clarity at the Full Moon, then share, release and rest while it wanes. Starting a project near a New Moon is a classic way to "let it grow with the Moon".',
         'The Full Moon is traditionally a high-emotion, high-visibility time when the subconscious is closest to the surface. That is why it is used for reflection, affirmations and releasing, and why the tradition warns against forming habits you do not want at that time.',
+        'In practice: start projects, routines and agreements between the New Moon and the First Quarter; use the Full Moon for affirmations, meditation and reflection, and avoid forming habits you do not want then; use the waning Moon to finish, clear out and break habits; and rest and plan in the last few days before the next New Moon. The best-days planner on this page applies these rules to real dates.',
+        'Words reflect the old belief that the Moon rules the mind: "lunatic" comes from luna, the Moon, and "mood" was long linked with the Moon\'s changes.',
         'The Moon really does move the ocean tides through gravity, together with the Sun. The tradition extends this to the body\'s fluids and moods. The menstrual cycle (averaging about 28–29 days) is often linked symbolically with the lunar month, but large studies have not found that cycles follow the Moon\'s phases. Treat that link as symbolism, not biology.'
       ]
     },
@@ -141,7 +143,7 @@
     {
       id: 'signs-within', title: 'All twelve signs live in you',
       body: [
-        'When people say "I am a Virgo" they mean the Sun\'s sign: the main focus of the personality. But every sign is somewhere in every chart, because the twelve signs are spread across the twelve houses. Each sign is an energy you can draw on, in the area of life where it falls.',
+        'When people say "I am a Virgo" they mean the Sun\'s sign: the main focus of the personality, often described as the mission or theme a person came to develop in this life. But every sign is somewhere in every chart, because the twelve signs are spread across the twelve houses. Each sign is an energy you can draw on, in the area of life where it falls.',
         'In brief: Aries is initiative, Taurus values, Gemini understanding, Cancer family and nurturing, Leo creativity and leadership, Virgo healing and refinement, Libra partnership and justice, Scorpio bonding and transformation, Sagittarius wisdom and belief, Capricorn structure and achievement, Aquarius community and innovation, and Pisces compassion and spirituality.',
         'The table on this page shows where each sign falls in your chart, so you can see where each of these energies is most active in your life.'
       ]
@@ -156,5 +158,37 @@
     }
   ];
 
-  root.ChartRhythms = { PHASES, phaseOf, MOON_DAY, SEASONS, SEVEN, DAYS, CREATION, NOTES };
+  // Activities for the best-days planner ("electional" timing). Phase ranges are Sun–Moon
+  // elongation in degrees: 0 = New Moon, 90 = First Quarter, 180 = Full Moon, 270 = Last Quarter.
+  const ACTIVITIES = [
+    { key: 'start', name: 'Start a project, business or new chapter', best: [0, 75], ok: [75, 135], avoid: [190, 360],
+      signs: ['ari', 'tau', 'leo', 'cap'], days: ['sun', 'jupiter'], lead: 'jupiter', mercuryRx: true,
+      why: 'Start in the waxing half, ideally soon after the New Moon, so the project grows as the Moon grows.' },
+    { key: 'launch', name: 'Launch, publish or go public', best: [90, 170], ok: [40, 90], avoid: [200, 360],
+      signs: ['leo', 'gem', 'sag', 'lib', 'ari'], days: ['sun', 'jupiter', 'mercury'], lead: 'sun', mercuryRx: true,
+      why: 'Go public as the Moon builds towards full, when visibility is rising.' },
+    { key: 'contract', name: 'Sign a contract or make an agreement', best: [20, 120], ok: [120, 170], avoid: [200, 360],
+      signs: ['tau', 'lib', 'cap', 'vir', 'gem'], days: ['mercury', 'jupiter', 'venus'], lead: 'mercury', mercuryRx: true,
+      why: 'Sign while the Moon waxes, in a stable or fair-minded sign, and avoid Mercury retrograde.' },
+    { key: 'money', name: 'Money: invest, buy, ask for a raise', best: [20, 150], ok: [0, 20], avoid: [200, 360],
+      signs: ['tau', 'cap', 'vir', 'can'], days: ['jupiter', 'venus'], lead: 'jupiter', mercuryRx: true,
+      why: 'Grow money while the Moon grows, in a practical earth sign or on a Jupiter or Venus day.' },
+    { key: 'love', name: 'Romance: a date, proposal or reconciliation', best: [60, 180], ok: [20, 60], avoid: [225, 340],
+      signs: ['tau', 'lib', 'leo', 'can', 'pis'], days: ['venus', 'moon'], lead: 'venus', mercuryRx: false,
+      why: 'Venus days and Venus-ruled signs (Taurus, Libra) under a growing or full Moon favour love.' },
+    { key: 'affirm', name: 'Affirmations, ritual or meditation', best: [168, 192], ok: [150, 210], avoid: [300, 360],
+      signs: ['pis', 'can', 'sco'], days: ['moon', 'venus'], lead: 'moon', mercuryRx: false,
+      why: 'The Full Moon is when the subconscious is most open, so affirmations sink in. Avoid any habit you do not want to keep on these days.' },
+    { key: 'release', name: 'End a habit, declutter or let go', best: [200, 320], ok: [180, 200], avoid: [0, 150],
+      signs: ['sco', 'vir', 'cap'], days: ['saturn', 'mars'], lead: 'saturn', mercuryRx: false,
+      why: 'The waning Moon takes things away. Use it to cut, clear and close.' },
+    { key: 'plan', name: 'Rest, reflect and plan', best: [300, 360], ok: [270, 300], avoid: [90, 200],
+      signs: ['pis', 'cap', 'can', 'vir'], days: ['saturn', 'moon'], lead: 'saturn', mercuryRx: false,
+      why: 'The dark Moon before the New Moon is the natural winter of the month: rest and plan what to start next.' },
+    { key: 'health', name: 'Start a health or fitness routine', best: [0, 90], ok: [90, 150], avoid: [200, 360],
+      signs: ['vir', 'ari', 'cap'], days: ['mars', 'sun'], lead: 'mars', mercuryRx: false,
+      why: 'Begin a routine with the waxing Moon in a disciplined or energetic sign, on a Mars or Sun day.' }
+  ];
+
+  root.ChartRhythms = { PHASES, phaseOf, MOON_DAY, SEASONS, SEVEN, DAYS, CREATION, NOTES, ACTIVITIES };
 })(typeof window !== 'undefined' ? window : globalThis);

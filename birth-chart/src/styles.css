@@ -525,6 +525,19 @@ tr.static { cursor: default; }
   .season-bar span { font-size: 12px; padding: 6px 2px; }
 }
 
+/* best days planner + checklist */
+.plan-controls { display: flex; flex-wrap: wrap; gap: 10px 16px; }
+.plan-controls .field { flex: 1 1 240px; }
+.pick-list { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 12px; }
+.pick-list li { display: grid; gap: 4px; }
+.pick-list .chips { margin-top: 2px; }
+.mchart .pbar { fill: var(--chart-a); opacity: .55; }
+.mchart .pbar.pick { fill: var(--chart-b); opacity: 1; }
+.check-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 8px; }
+.check-item { display: grid; grid-template-columns: 22px 1fr; gap: 8px; align-items: start; padding: 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); cursor: pointer; font-size: 14px; }
+.check-item input { margin-top: 3px; width: 18px; height: 18px; }
+.good-msg { color: var(--flow); }
+
 /* ---------- life guidance ---------- */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .ask { display: flex; gap: 8px; }
