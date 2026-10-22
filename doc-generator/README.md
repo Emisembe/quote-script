@@ -1,0 +1,28 @@
+# EFIC Document Generator
+
+A Blogger **page** that creates invoices, receipts, quotations and 13 other financial documents, then exports them as a PDF. It is a separate project from the Blogger theme in `../blogger-theme`.
+
+## Install
+In Blogger, go to **Pages**, open the page and click **Edit**. Switch to **HTML view**, replace everything with `efic-document-generator.html`, then click **Update**.
+
+The page hides the theme's menu, header, sidebar, title, share bar, comments and footer, but only on this page.
+
+## What changed from the first version
+**Brand (EFIC Brand Colour Guide v1.0)**
+- Navy `#14213D` and Gold `#E7B165` replace sky blue and the eight different button colours.
+- Montserrat for headings and labels, Calibri/Arial for text.
+- Alert Red is no longer used. The guide reserves it for LIVE broadcasts.
+- Gold is never used for text on white, and white text never sits on gold.
+- The document has a navy top band with a gold rule, gold underlines on its section titles, and a navy total bar with the amount in gold. Without an uploaded logo, it shows a navy badge with the company initials.
+
+**Fixes**
+- **Safe text:** typed text, addresses and saved names are no longer inserted as HTML. `<` and `&` display correctly and nothing typed can run as code.
+- **Live preview:** the document updates as you type, so there is no Update button.
+- **Stable document number:** it stays the same while you edit, and saving or loading keeps it.
+- **New Download PDF button.** On phones that support it, a **Share PDF** button sends the file itself.
+- **Smaller PDFs:** saved as JPEG, about 0.2 MB a page instead of about 12 MB.
+- **Translations:** dates and amounts follow the chosen language (`22 Oct 2026` / `£1,870.00`, `22. Okt. 2026` / `£1.870,00`). Bank, currency, payment method, phone and email labels are translated, and units read Hours/Days instead of hrs/days.
+- **Fits the panel:** fields no longer overflow it, and the layout has no sideways scrolling from 320px to 1440px.
+- **Clean print:** prints the document only, without the theme's print heading.
+- **Keyboard:** panels open with the keyboard, and Escape closes the dialog.
+- **Saved documents:** they still load (same storage key and format).
