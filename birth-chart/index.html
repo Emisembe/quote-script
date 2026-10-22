@@ -548,6 +548,28 @@ tr.static { cursor: default; }
 .check-item input { margin-top: 3px; width: 18px; height: 18px; }
 .good-msg { color: var(--flow); }
 
+/* business compatibility */
+.mode-seg { margin: 4px 0; }
+.mode-seg button { padding: 8px 16px; font-size: 14px; }
+.advice { border-left: 3px solid var(--chart-a); padding-left: 10px; }
+.duo-chart { display: grid; gap: 10px; }
+.duo-row { display: grid; grid-template-columns: 120px 1fr 130px; gap: 10px; align-items: center; }
+.duo-label { display: grid; line-height: 1.2; font-size: 14px; }
+.duo-label small { color: var(--ink-3); font-size: 12px; }
+.duo-bars { display: grid; gap: 3px; }
+.duo { height: 14px; border-radius: 0 4px 4px 0; min-width: 2px; position: relative; }
+.duo.a { background: var(--chart-a); }
+.duo.b { background: var(--chart-b); }
+.duo span { position: absolute; left: calc(100% + 6px); top: -2px; font: 11px var(--mono); color: var(--ink-2); white-space: nowrap; }
+.duo-lead { font-size: 13px; font-weight: 650; color: var(--ink-2); line-height: 1.25; overflow-wrap: anywhere; }
+.duo-bars { padding-right: 40px; }
+.agree-list { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+@media (max-width: 600px) {
+  .duo-row { grid-template-columns: 1fr; gap: 4px; }
+  .duo-lead { font-size: 12px; }
+  .duo-lead::before { content: 'Leads: '; color: var(--ink-3); font-weight: 500; }
+}
+
 /* ---------- life guidance ---------- */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .ask { display: flex; gap: 8px; }
@@ -580,6 +602,8 @@ tr.static { cursor: default; }
   body.print-compat .masthead { display: none !important; }
   .guide-grid { grid-template-columns: 1fr 1fr; }
   .note-page { break-inside: avoid; }
+  .duo-row { break-inside: avoid; }
+  .mode-seg { display: none !important; }
   .chart-scroll { overflow: visible; }
   .chart-layout { grid-template-columns: 1fr; }
   .detail { position: static; box-shadow: none; }
@@ -3594,6 +3618,58 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     }
   ];
 
+  // Business and work: who you can build something with, and on which topics.
+  const BUSINESS_AREAS = [
+    { key: 'vision', name: 'Shared vision and goals',
+      about: 'Whether you want the same things and believe in the same direction. Sun, Jupiter and Midheaven contacts matter most.',
+      pairs: [['sun', 'sun', 2.5], ['sun', 'jupiter', 2], ['jupiter', 'jupiter', 1.5], ['sun', 'mc', 2], ['jupiter', 'mc', 1.5], ['nnode', 'sun', 1], ['saturn', 'jupiter', 1]],
+      elements: ['sun'],
+      high: 'You naturally pull in the same direction. Write the shared goal down and build on it.',
+      low: 'Your goals may differ. Before investing, agree in writing on the vision, the target customers, the time horizon and the exit plan.' },
+    { key: 'bcomm', name: 'Communication and decisions',
+      about: 'How easily you exchange information, plan and decide. Mercury contacts matter most.',
+      pairs: [['mercury', 'mercury', 3], ['mercury', 'sun', 2], ['mercury', 'saturn', 1.5], ['mercury', 'jupiter', 1.5], ['mercury', 'mars', 1.5], ['mercury', 'uranus', 1], ['mercury', 'neptune', 1]],
+      elements: ['mercury'],
+      high: 'Ideas flow easily between you, which makes planning and selling together natural.',
+      low: 'Misunderstandings are likely. Agree on a weekly written update, one channel for decisions, and a written summary after every important call.' },
+    { key: 'trust', name: 'Trust and reliability',
+      about: 'Whether you can rely on each other to deliver and to be straight. Saturn contacts build it; Neptune pressure on Mercury or the Sun can erode it.',
+      pairs: [['saturn', 'sun', 2.5], ['saturn', 'moon', 2], ['saturn', 'mercury', 2], ['saturn', 'venus', 1.5], ['neptune', 'mercury', 2], ['neptune', 'sun', 1.5], ['moon', 'moon', 1], ['sun', 'moon', 1.5]],
+      elements: ['moon'],
+      high: 'There is a natural sense of reliability. Still put the essentials in a contract, because good intentions are not a legal structure.',
+      low: 'Trust needs to be built step by step. Put roles, money, ownership and exit terms in a contract, check references, and start with a small trial project.' },
+    { key: 'money', name: 'Money and resources',
+      about: 'How you handle money, value and shared resources together. Venus, Jupiter and Saturn contacts matter most.',
+      pairs: [['venus', 'jupiter', 2], ['venus', 'saturn', 2], ['jupiter', 'saturn', 2], ['venus', 'venus', 1.5], ['venus', 'pluto', 1.5], ['jupiter', 'jupiter', 1], ['sun', 'venus', 1]],
+      elements: ['venus'],
+      high: 'You value similar things and can grow resources together.',
+      low: 'Money is a likely friction point. Keep a shared, transparent ledger, agree spending limits and the profit split before you start, and keep personal and business money separate.' },
+    { key: 'drive', name: 'Drive and execution',
+      about: 'Whether your energy, pace and work ethic fit together. Mars contacts matter most.',
+      pairs: [['mars', 'mars', 2.5], ['mars', 'sun', 2], ['mars', 'saturn', 2], ['mars', 'jupiter', 1.5], ['sun', 'saturn', 1], ['mars', 'mercury', 1]],
+      elements: ['mars'],
+      high: 'You energise each other and get things done.',
+      low: 'Your pace and working style differ. Define deadlines, who owns which deliverable, and how you measure progress.' },
+    { key: 'power', name: 'Leadership and power balance',
+      about: 'Whether you can share authority without power struggles. Sun, Mars, Saturn and Pluto contacts matter most.',
+      pairs: [['sun', 'sun', 1.5], ['sun', 'mars', 2], ['sun', 'pluto', 2], ['mars', 'pluto', 2], ['sun', 'saturn', 1.5], ['mars', 'mars', 1]],
+      elements: ['sun', 'mars'],
+      high: 'Authority can be shared comfortably. Divide leadership by area so each of you leads where you are strongest.',
+      low: 'Power struggles are possible. Decide in writing who has the final say in which area. Equal 50/50 decision rights with no tie-breaker invite deadlock.' },
+    { key: 'innovate', name: 'Innovation and growth',
+      about: 'How you handle new ideas, change and expansion together. Uranus and Jupiter contacts matter most.',
+      pairs: [['uranus', 'sun', 1.5], ['uranus', 'mercury', 1.5], ['jupiter', 'uranus', 1], ['jupiter', 'mercury', 1.5], ['jupiter', 'sun', 1.5], ['jupiter', 'mars', 1]],
+      elements: [],
+      high: 'Together you spot opportunities and adapt quickly.',
+      low: 'One of you may resist change or push it too fast. Agree a budget and a time limit for testing new ideas.' },
+    { key: 'pressure', name: 'Handling pressure and conflict',
+      about: 'How you behave together when things go wrong. Mars, Saturn and Pluto contacts matter most. A high score means conflict is easier to manage.',
+      pairs: [['mars', 'saturn', 2], ['mars', 'pluto', 2], ['mars', 'mars', 1.5], ['saturn', 'moon', 1.5], ['mars', 'moon', 1.5], ['saturn', 'sun', 1], ['moon', 'moon', 1]],
+      elements: ['moon', 'mars'],
+      high: 'You stay workable under pressure.',
+      low: 'Agree a conflict process now, while things are calm: a cooling-off period, a neutral mediator, and fair terms for leaving the partnership.' }
+  ];
+
   const HEAVY = new Set(['saturn', 'pluto', 'mars']);
 
   // Value of one cross aspect for one area: positive supports, negative strains.
@@ -3604,11 +3680,13 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       case 'trine': return 1;
       case 'sextile': return 0.8;
       case 'conjunction':
-        if (area === 'harmony' && heavy) return -0.4;
-        if ((a === 'saturn' || b === 'saturn') && area !== 'commitment') return 0.2;
+        if ((area === 'harmony' || area === 'pressure' || area === 'power') && heavy) return -0.4;
+        if ((a === 'neptune' || b === 'neptune') && area === 'trust') return -0.8;
+        if ((a === 'saturn' || b === 'saturn') && area !== 'commitment' && area !== 'trust') return 0.2;
         return heavy && !attraction ? 0.5 : 1;
       case 'square':
         if (attraction) return 0.3;
+        if ((a === 'neptune' || b === 'neptune') && area === 'trust') return -1.2;
         if (a === 'saturn' || b === 'saturn') return -1;
         return -0.8;
       case 'opposition':
@@ -3715,10 +3793,11 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     });
   }
 
-  function compare(A, B) {
+  function compare(A, B, mode = 'love') {
     const aspects = crossAspects(A, B);
-    const areas = AREAS.map(area => scoreArea(area, aspects, A, B));
-    const weights = { emotional: 1.3, romance: 1.1, communication: 1.1, values: 1, commitment: 1.2, growth: 0.8, harmony: 1 };
+    const areas = (mode === 'work' ? BUSINESS_AREAS : AREAS).map(area => scoreArea(area, aspects, A, B));
+    const weights = { emotional: 1.3, romance: 1.1, communication: 1.1, values: 1, commitment: 1.2, growth: 0.8, harmony: 1,
+      vision: 1.1, bcomm: 1.1, trust: 1.3, money: 1.2, drive: 1, power: 1, innovate: 0.7, pressure: 1 };
     const overall = Math.round(areas.reduce((s, a) => s + a.score * weights[a.key], 0) / areas.reduce((s, a) => s + weights[a.key], 0));
     return {
       aspects, areas, overall,
@@ -3751,7 +3830,140 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     'touches the private, hidden or spiritual side. It can be deeply intimate or confusing.'
   ];
 
-  root.ChartCompat = { compare, label, AREAS, OVERLAY_TEXT };
+  // What one person's planets do when they fall in a partner's houses, read for work.
+  const WORK_OVERLAY = [
+    'shapes how the other presents professionally. They become part of each other\'s public identity.',
+    'affects income and resources: a direct influence on what the other earns and values.',
+    'shows up in daily communication, paperwork, sales and local contacts.',
+    'touches the base of operations: premises, family business or behind-the-scenes support.',
+    'brings creativity, risk-taking and enjoyment into the work.',
+    'falls in daily work and routines: a practical, hands-on working relationship, at its best as colleagues.',
+    'lands in the house of contracts and partnership: a strong indicator of formal business partnership.',
+    'involves shared money, investment, debt and trust. Powerful, but needs clear agreements.',
+    'expands horizons through education, publishing, law, travel or international work.',
+    'directly affects career and reputation: one can boost or shape the other\'s public standing.',
+    'brings networks, clients, teams and shared long-term goals.',
+    'works behind the scenes: research, private advice or hidden support. Keep roles clear.'
+  ];
+
+  root.ChartCompat = { compare, label, AREAS, BUSINESS_AREAS, OVERLAY_TEXT, WORK_OVERLAY };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* content-conflict.js */
+/*
+ * Conflict resolution for the Compatibility reports (love and work).
+ * Built from each person's Mars (how they fight), Moon (what calms them) and
+ * Mercury (how to talk to them), plus the specific tense contacts between the charts.
+ */
+(function (root) {
+  'use strict';
+
+  // By element of Mars: how the person fights.
+  const FIGHT = {
+    fire: 'Flares up fast and says it straight, then moves on quickly. Holding a grudge is rare, but so is patience in the moment.',
+    earth: 'Slow to anger and stubborn once there. Digs in, goes quiet or argues on facts and fairness. Pushing harder makes them more immovable.',
+    air: 'Argues with words and logic, debates, sometimes goes cool and detached. Can talk around feelings instead of naming them.',
+    water: 'Takes it personally and may withdraw, sulk or hit where it hurts. Remembers hurts for a long time.'
+  };
+  // By element of the Moon: what de-escalates them.
+  const CALM = {
+    fire: 'a short break to move or blow off steam, then a direct, honest conversation and quick action',
+    earth: 'time, a calm tone, practical solutions and seeing a concrete change in behaviour',
+    air: 'a reasoned conversation, being heard out fully, and space to think before deciding',
+    water: 'reassurance first, feeling understood before any solutions, and a gentle, private setting'
+  };
+  // By element of Mercury: how to talk to them.
+  const TALK = {
+    fire: 'Be brief and direct, get to the point and focus on what to do next.',
+    earth: 'Be specific and factual, give examples and a clear plan.',
+    air: 'Explain your reasoning, ask questions, and let them respond.',
+    water: 'Start with how you feel and how they might feel; tone matters more than words.'
+  };
+
+  // Bridging two temperaments.
+  const BRIDGE = {
+    'fire|fire': 'Both of you ignite quickly. Agree that either person can call a ten-minute pause, and use it.',
+    'earth|earth': 'Both of you dig in. Break deadlocks with a time limit and an outside opinion, or by testing both options on a small scale.',
+    'air|air': 'Both of you can argue in circles. Write the options down, pick criteria, and decide.',
+    'water|water': 'Both of you feel deeply and may avoid the issue. Name the hurt early instead of waiting for it to build.',
+    'fire|air': 'Air fans fire: discussions escalate fast but resolve fast. Keep humour, and avoid saying things just to win.',
+    'earth|water': 'A naturally steadying pair. Earth offers practical help; water needs to feel it is cared about, not just fixed.',
+    'fire|earth': 'Fire wants action now; earth wants to be sure first. Agree a deadline that gives earth time and fire a date to move.',
+    'fire|water': 'Fire says it bluntly; water feels it deeply. Fire: soften the delivery. Water: say what hurt instead of withdrawing.',
+    'air|earth': 'Air explores ideas; earth wants the practical outcome. Air: bring it down to a concrete next step. Earth: allow some brainstorming first.',
+    'air|water': 'Air reasons; water feels. Air: acknowledge feelings before logic. Water: put the need into clear words.'
+  };
+  const bridge = (a, b) => BRIDGE[`${a}|${b}`] || BRIDGE[`${b}|${a}`];
+
+  const MODE_BRIDGE = {
+    'cardinal|cardinal': 'Both of you want to lead and start. Split leadership by area so you are not steering the same thing.',
+    'fixed|fixed': 'Both of you hold your ground. Look for the shared goal behind the positions, and agree when you will revisit a decision.',
+    'mutable|mutable': 'Both of you adapt so much that decisions drift. Write down what was agreed and who will do it.',
+    'cardinal|fixed': 'One pushes for change, the other protects what exists. Change in stages, keeping what already works.',
+    'cardinal|mutable': 'One decides fast, the other keeps options open. Agree a decision date and stick to it.',
+    'fixed|mutable': 'One holds firm, the other keeps shifting. Fix the essentials; stay flexible on the details.'
+  };
+  const modeBridge = (a, b) => MODE_BRIDGE[`${a}|${b}`] || MODE_BRIDGE[`${b}|${a}`];
+
+  // Resolution tips for tense contacts, by the planets involved (most specific first).
+  const PAIR_FIX = [
+    { has: ['mars', 'mars'], fix: 'Two strong wills. Take turns leading, compete against a shared target instead of each other, and use physical activity to let off steam.' },
+    { has: ['mars', 'saturn'], fix: 'One pushes, the other blocks. Agree in advance on rules, timelines and limits, so neither feels controlled or held back.' },
+    { has: ['mars', 'pluto'], fix: 'Power struggles can escalate. Never negotiate while angry, avoid ultimatums, and keep everything transparent.' },
+    { has: ['mars', 'moon'], fix: 'Directness hurts feelings. Lead with care, choose timing, and say "I feel" rather than "you always".' },
+    { has: ['mars', 'mercury'], fix: 'Words turn into arguments. Slow down, let each person finish, and repeat back what you heard before replying.' },
+    { has: ['mars', 'sun'], fix: 'Egos clash. Give credit openly, separate responsibilities, and challenge ideas rather than the person.' },
+    { has: ['mars', 'venus'], fix: 'Desire and values pull apart. Talk about expectations openly and make time for enjoyment, not only problems.' },
+    { has: ['saturn', 'moon'], fix: 'One can feel criticised or emotionally cold. Express appreciation regularly and pair any criticism with warmth.' },
+    { has: ['saturn', 'sun'], fix: 'One may feel judged or held back. Recognise each other\'s contribution and agree on standards together.' },
+    { has: ['saturn', 'venus'], fix: 'Affection or money can feel rationed. Agree on what "enough" looks like, and show appreciation in concrete ways.' },
+    { has: ['saturn', 'mercury'], fix: 'Ideas get shot down. Separate brainstorming from evaluating, and give feedback in writing with suggestions.' },
+    { has: ['pluto'], fix: 'Control and jealousy can creep in. Keep things transparent, respect privacy, and never use secrets as leverage.' },
+    { has: ['uranus'], fix: 'One needs freedom, the other stability. Build in independence and agree in advance how changes will be announced.' },
+    { has: ['neptune'], fix: 'Confusion or unclear expectations. Confirm agreements in writing, check facts, and do not assume.' },
+    { has: ['mercury'], fix: 'Different thinking styles. Summarise decisions in writing and ask "What did you hear me say?".' },
+    { has: ['moon'], fix: 'Different emotional needs. Acknowledge feelings first, then problem-solve.' },
+    { has: ['jupiter'], fix: 'Over-promising or different beliefs. Set realistic limits and respect each other\'s views.' },
+    { has: ['venus'], fix: 'Different values or tastes. Name what each of you values most and look for the option that honours both.' },
+    { has: ['sun'], fix: 'Different directions. Find the shared goal and give each person an area to lead.' }
+  ];
+  function fixFor(a, b) {
+    for (const r of PAIR_FIX) {
+      if (r.has.length === 2 && ((r.has[0] === a && r.has[1] === b) || (r.has[0] === b && r.has[1] === a))) return r.fix;
+    }
+    for (const r of PAIR_FIX) if (r.has.length === 1 && (a === r.has[0] || b === r.has[0])) return r.fix;
+    return 'Talk it through calmly and look for the shared goal behind the disagreement.';
+  }
+
+  const STEPS = {
+    love: [
+      'Pause. If either of you is flooded, take a 20-minute break and agree when you will come back to it.',
+      'Speak from your side: "I felt … when … because I need …", not "You always …".',
+      'Listen and repeat back what you heard until the other person says "Yes, that is it".',
+      'Name the shared goal: what you both want from the relationship.',
+      'Agree one small, specific change each, and when you will check in.',
+      'Repair: a gesture of affection or appreciation after the talk, in the other person\'s love language.'
+    ],
+    work: [
+      'Separate the issue from the person. Write down the disagreement in one or two neutral sentences.',
+      'Each partner states their position and, more importantly, the interest behind it (what they need to protect or achieve).',
+      'Return to the shared goal and the written agreement: what does it say, and what serves the business?',
+      'Generate at least three options, including a small test or a time-limited trial.',
+      'Decide using the agreed decision rights. If still stuck, bring in a neutral mentor or mediator.',
+      'Record the decision, the owner and a review date. If disagreements become constant, use the exit terms fairly.'
+    ]
+  };
+
+  const TIMING = [
+    'Choose a calm moment. Traditionally, avoid starting hard conversations on Full Moon days, when emotions run high.',
+    'The waning Moon (after the Full Moon, especially the Last Quarter) is the traditional time to clear the air, forgive and close old issues.',
+    'During Mercury retrograde, misunderstandings are more likely. Double-check what was agreed, and use it to revisit old disagreements rather than to sign new terms.',
+    'A Venus day (Friday) or Venus hour suits reconciliation; a Mercury hour suits a clear, practical discussion.'
+  ];
+
+  root.ChartConflict = { FIGHT, CALM, TALK, bridge, modeBridge, fixFor, STEPS, TIMING };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -5096,9 +5308,10 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
   const SIGN_ENERGY = ['initiative', 'values', 'understanding', 'family and nurturing', 'creativity and leadership', 'healing and refinement', 'partnership and justice', 'bonding and transformation', 'wisdom and belief', 'structure and achievement', 'community and innovation', 'compassion and spirituality'];
 
   // How easily each classical planet expresses its force in this chart (0–10).
-  function sevenScores() {
+  function sevenScores() { return sevenScoresFor(state.chart, state.aspects); }
+  function sevenScoresFor(chart, aspects) {
     return Object.keys(RH.SEVEN).map(k => {
-      const p = pt(k);
+      const p = chart.points.find(x => x.key === k);
       const why = [];
       let sc = 5;
       const d = dignity(k, E.signOf(p.lon).sign.key);
@@ -5108,7 +5321,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       if (p.house && [1, 4, 7, 10].includes(p.house)) { sc += 1.5; why.push('angular house'); }
       if (p.house && [3, 6, 9, 12].includes(p.house)) { sc -= 0.5; why.push('cadent house'); }
       if (p.retrograde) { sc -= 1; why.push('retrograde'); }
-      const asp = state.aspects.filter(a => a.aspect.major && (a.a === k || a.b === k));
+      const asp = aspects.filter(a => a.aspect.major && (a.a === k || a.b === k));
       const flow = asp.filter(a => ['trine', 'sextile'].includes(a.aspect.key)).length;
       const hard = asp.filter(a => ['square', 'opposition'].includes(a.aspect.key)).length;
       if (flow) { sc += 0.6 * flow; why.push(`${flow} easy aspect${flow > 1 ? 's' : ''}`); }
@@ -5425,6 +5638,22 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     return Object.keys(score).sort((a, b) => score[b] - score[a]).slice(0, 9).map(f => ({ field: f, why: [...why[f]] }));
   }
 
+  // Career themes for any chart (used to find work topics two people share).
+  function careerFieldsFor(chart) {
+    const score = {};
+    const add = (list, w) => list.forEach(f => { score[f] = (score[f] || 0) + w; });
+    const at = k => chart.points.find(p => p.key === k);
+    if (!chart.noHouses) {
+      add(T.CAREER_BY_SIGN[E.signOf(at('mc').lon).index], 3);
+      const ruler = E.signOf(chart.houses.cusps[9]).sign.ruler;
+      if (T.CAREER_BY_PLANET[ruler]) add(T.CAREER_BY_PLANET[ruler].fields, 2);
+      chart.points.filter(p => p.house === 10 && T.CAREER_BY_PLANET[p.key]).forEach(p => add(T.CAREER_BY_PLANET[p.key].fields, 2));
+      chart.points.filter(p => p.house === 6 && T.CAREER_BY_PLANET[p.key]).forEach(p => add(T.CAREER_BY_PLANET[p.key].fields, 1));
+    }
+    add(T.CAREER_BY_SIGN[E.signOf(at('sun').lon).index], 1.5);
+    return Object.keys(score).sort((a, b) => score[b] - score[a]).slice(0, 8);
+  }
+
   function independenceLean() {
     let ind = 0, str = 0;
     const b = balance();
@@ -5602,7 +5831,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     name: 'Example partner', date: '1998-06-21', time: '18:30', timeUnknown: false,
     place: 'Paris, France', lat: 48.8566, lon: 2.3522, tz: 'Europe/Paris', utcOffset: 2, example: true
   };
-  state.compat = { A: null, B: store.get('compatB', PARTNER_EXAMPLE), result: null };
+  state.compat = { A: null, B: store.get('compatB', PARTNER_EXAMPLE), result: null, mode: store.get('compatMode', 'love') };
 
   function personForm(id, who, i) {
     const saved = store.get('saved', []);
@@ -5671,7 +5900,13 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     panel.innerHTML = `
       <div class="section no-print">
         <div><span class="eyebrow">Compatibility</span><h2>Compare two birth charts</h2></div>
-        <p class="muted">Enter two people's birth data to see how their charts connect across seven areas of life, and how similar they are. It works for partners, friends, family or colleagues.</p>
+        <div class="seg mode-seg" role="group" aria-label="Type of relationship">
+          <button type="button" data-mode="love" aria-pressed="${state.compat.mode === 'love'}">Love &amp; relationships</button>
+          <button type="button" data-mode="work" aria-pressed="${state.compat.mode === 'work'}">Business &amp; work</button>
+        </div>
+        <p class="muted">${state.compat.mode === 'work'
+          ? 'Enter two people\'s birth data to see how well you can work together: vision, communication, trust, money, drive, leadership, innovation and conflict. It also shows who brings which strengths, which roles suit each of you, and what to agree in writing.'
+          : 'Enter two people\'s birth data to see how their charts connect across seven areas of life, and how similar they are. It works for partners, friends and family.'}</p>
         <div class="grid-2">${personForm('pa', 'Person A', A)}${personForm('pb', 'Person B', B)}</div>
         <p class="form-error" id="compat-error" hidden></p>
         <div class="actions">
@@ -5695,9 +5930,10 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     try { CA = chartFor(A); CB = chartFor(B); } catch (err) {
       const el = $('#compat-error'); el.textContent = 'One of the charts could not be calculated. Check the dates and coordinates.'; el.hidden = false; return;
     }
-    const r = window.ChartCompat.compare(CA, CB);
+    const r = window.ChartCompat.compare(CA, CB, state.compat.mode);
     state.compat.result = r;
     const nA = A.name || 'Person A', nB = B.name || 'Person B';
+    if (state.compat.mode === 'work') { renderWorkReport(A, B, CA, CB, r, nA, nB); return; }
     const ownerA = k => `${esc(nA)}'s ${P(k).name}`;
     const ownerB = k => `${esc(nB)}'s ${P(k).name}`;
     const L2 = window.ChartCompat.label;
@@ -5771,6 +6007,8 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
 
         ${compositeSection(CA, CB, nA, nB)}
 
+        ${conflictSection(CA, CB, nA, nB, r, 'love')}
+
         <h3>Every connection between the charts</h3>
         <div class="table-wrap"><table><thead><tr><th>${esc(nA)}</th><th>Aspect</th><th>${esc(nB)}</th><th>Orb</th></tr></thead><tbody>
           ${r.aspects.map(x => `<tr class="static"><td><span class="glyph">${esc(glyphOf(x.a))}</span>${esc(P(x.a).name)}</td><td><span class="asp-g ${['trine', 'sextile'].includes(x.aspect.key) ? 'flow' : ['square', 'opposition'].includes(x.aspect.key) ? 'tension' : 'blend'}">${x.aspect.glyph}${VS}</span> ${x.aspect.name}</td><td><span class="glyph">${esc(glyphOf(x.b))}</span>${esc(P(x.b).name)}</td><td class="num">${x.orb.toFixed(1)}°</td></tr>`).join('')}
@@ -5779,6 +6017,190 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       </div>`;
   }
   const COMPATIBLE_EL = { fire: 'air', air: 'fire', earth: 'water', water: 'earth' };
+
+  // Resolving conflict and differences, shared by the love and work reports.
+  function conflictSection(CA, CB, nA, nB, r, mode) {
+    const K = window.ChartConflict;
+    const el = (c, k) => E.signOf(c.points.find(p => p.key === k).lon).sign.element;
+    const sim = r.similarity;
+    const person = (c, n) => `<div class="card">
+      <div class="eyebrow">${esc(n)}</div>
+      <p style="margin-top:6px"><b>In a conflict</b> (Mars in ${E.signOf(c.points.find(p => p.key === 'mars').lon).sign.name}): ${esc(K.FIGHT[el(c, 'mars')])}</p>
+      <p style="margin-top:6px"><b>To calm down, needs</b> (Moon in ${E.signOf(c.points.find(p => p.key === 'moon').lon).sign.name}): ${esc(K.CALM[el(c, 'moon')])}.</p>
+      <p style="margin-top:6px"><b>How to talk to ${esc(n)}</b> (Mercury in ${E.signOf(c.points.find(p => p.key === 'mercury').lon).sign.name}): ${esc(K.TALK[el(c, 'mercury')])}</p>
+    </div>`;
+    const tense = r.aspects.filter(x => ['square', 'opposition'].includes(x.aspect.key) && !(['uranus', 'neptune', 'pluto'].includes(x.a) && ['uranus', 'neptune', 'pluto'].includes(x.b))).slice(0, 5);
+    const quarters = E.moonQuarters(new Date(), 45);
+    const nextClear = quarters.find(q => q.quarter === 3);
+    const nextFull = quarters.find(q => q.quarter === 2);
+    return `
+      <h3>Resolving conflict and differences</h3>
+      <p class="muted">Every pairing has friction somewhere. Here is how each of you tends to react, where the friction between your charts sits, and practical ways through it.</p>
+      <div class="grid-2">${person(CA, nA)}${person(CB, nB)}</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="eyebrow">Friction points and how to handle them</div>
+          ${tense.length ? `<ul class="syn-list" style="margin-top:6px">${tense.map(x => `<li><b>${esc(nA)}'s ${P(x.a).name} ${x.aspect.name.toLowerCase()} ${esc(nB)}'s ${P(x.b).name}</b> <span class="faint">(orb ${x.orb.toFixed(1)}°)</span><br><span class="muted">${esc(K.fixFor(x.a, x.b))}</span></li>`).join('')}</ul>` : '<p class="muted" style="margin-top:6px">No tense contacts between the personal planets. Disagreements are more likely to come from circumstances than from clashing temperaments.</p>'}
+        </div>
+        <div class="card">
+          <div class="eyebrow">Bridging your differences</div>
+          <p style="margin-top:6px"><b>Temperament</b> (${sim.topA[0]} and ${sim.topB[0]}): ${esc(K.bridge(sim.topA[0], sim.topB[0]))}</p>
+          <p style="margin-top:6px"><b>Pace</b> (${sim.topA[1]} and ${sim.topB[1]}): ${esc(K.modeBridge(sim.topA[1], sim.topB[1]))}</p>
+          <p style="margin-top:6px"><b>Emotional needs</b> (Moons in ${el(CA, 'moon')} and ${el(CB, 'moon')}): ${esc(K.bridge(el(CA, 'moon'), el(CB, 'moon')))}</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="eyebrow">${mode === 'work' ? 'Resolving a business disagreement' : 'Resolving a disagreement'}, step by step</div>
+          <ol class="agree-list" style="margin-top:8px">${K.STEPS[mode === 'work' ? 'work' : 'love'].map(t => `<li>${esc(t)}</li>`).join('')}</ol>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Timing a difficult conversation</div>
+          <ul class="syn-list" style="margin-top:6px">${K.TIMING.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+          <p style="margin-top:8px">${nextClear ? `Next good time to clear the air: <b>${fmtDate(nextClear.date)}</b> (Last Quarter Moon).` : ''} ${nextFull ? `Avoid starting a big confrontation around <b>${fmtDate(nextFull.date)}</b> (Full Moon).` : ''}</p>
+        </div>
+      </div>
+      <p class="faint">These are reflection tools. If a conflict involves abuse, threats or safety concerns, step away and contact local support services${mode === 'work' ? ', and for serious business disputes take legal advice' : ''}.</p>`;
+  }
+
+  const ROLE_BY_MODE = {
+    cardinal: { role: 'Initiator', text: 'opens doors, starts projects, pitches and sells the idea' },
+    fixed: { role: 'Sustainer', text: 'builds systems, protects quality and sees things through' },
+    mutable: { role: 'Adapter', text: 'handles change, communicates, connects people and fixes problems' }
+  };
+  const WORK_TOPICS = {
+    vision: 'strategy, direction and long-term planning', bcomm: 'sales, marketing, negotiation and presenting',
+    trust: 'long-term contracts and managing other people\'s money', money: 'finance, pricing and investment',
+    drive: 'operations, delivery and hitting deadlines', power: 'leading teams and representing the business together',
+    innovate: 'product development and new ventures', pressure: 'crisis handling and tough negotiations'
+  };
+
+  function renderWorkReport(A, B, CA, CB, r, nA, nB) {
+    const L2 = window.ChartCompat.label;
+    const tone = k => ['trine', 'sextile'].includes(k) ? 'flow' : ['square', 'opposition'].includes(k) ? 'tension' : 'blend';
+    const aspLine = x => `<li><span class="asp-g ${x.weight >= 0 ? 'flow' : 'tension'}">${x.aspect.glyph}${VS}</span> <b>${esc(nA)}'s ${P(x.a).name} ${x.aspect.name.toLowerCase()} ${esc(nB)}'s ${P(x.b).name}</b> <span class="faint">(orb ${x.orb.toFixed(1)}°)</span><br><span class="muted">${esc(AT.readAspect(x.a, x.b, x.aspect.key, tone(x.aspect.key), [nA + "'s " + P(x.a).name, nB + "'s " + P(x.b).name]))}</span></li>`;
+    const areaCard = a => {
+      const lb = L2(a.score);
+      const top = a.support.slice(0, 2), low = a.strain.slice(0, 2);
+      return `<article class="card area-card">
+        <div class="section-head"><h3>${esc(a.name)}</h3><span class="pill ${lb.cls}">${lb.text}</span></div>
+        <div class="bar score-bar"><span class="num">${a.score}</span><div class="track"><div class="fill" style="width:${a.score}%"></div></div><span></span></div>
+        <p class="faint">${esc(a.about)}</p>
+        <p class="advice"><b>${a.score >= 55 ? 'In practice' : 'Agree on this'}:</b> ${esc(a.score >= 55 ? a.high : a.low)}</p>
+        ${a.elements.length ? `<p class="muted">${a.elements.map(e => esc(e.note) + '.').join('<br>')}</p>` : ''}
+        ${top.length ? `<div class="eyebrow good-eyebrow">What helps</div><ul class="syn-list">${top.map(aspLine).join('')}</ul>` : ''}
+        ${low.length ? `<div class="eyebrow bad-eyebrow">What needs care</div><ul class="syn-list">${low.map(aspLine).join('')}</ul>` : ''}
+        ${!top.length && !low.length ? '<p class="muted">No close planet contacts for this area: neutral, neither a strong pull nor a friction point.</p>' : ''}
+      </article>`;
+    };
+    const sorted = r.areas.slice().sort((x, y) => y.score - x.score);
+    const ol = L2(r.overall);
+    // Who brings which of the seven forces.
+    const aspA = E.findAspects(CA.points.filter(p => ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'].includes(p.key)));
+    const aspB = E.findAspects(CB.points.filter(p => ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'].includes(p.key)));
+    const sA = sevenScoresFor(CA, aspA), sB = sevenScoresFor(CB, aspB);
+    const order = ['saturn', 'jupiter', 'mars', 'sun', 'venus', 'mercury', 'moon'];
+    const val = (list, k) => list.find(x => x.key === k).score;
+    const forceRows = order.map(k => {
+      const a = val(sA, k), b = val(sB, k);
+      const lead = Math.abs(a - b) < 1 ? 'Shared' : a > b ? nA : nB;
+      return `<div class="duo-row"><span class="duo-label"><b>${esc(RH.SEVEN[k].force)}</b><small>${P(k).name}</small></span>
+        <div class="duo-bars"><div class="duo a" style="width:${a * 10}%" title="${esc(nA)}: ${a.toFixed(1)}"><span>${a.toFixed(1)}</span></div><div class="duo b" style="width:${b * 10}%" title="${esc(nB)}: ${b.toFixed(1)}"><span>${b.toFixed(1)}</span></div></div>
+        <span class="duo-lead">${esc(lead)}</span></div>`;
+    }).join('');
+    // Work styles and roles.
+    const sim = r.similarity;
+    const styleCard = (name, top) => `<div class="card"><div class="eyebrow">${esc(name)}</div><h3 style="margin:6px 0">${ROLE_BY_MODE[top[1]].role}</h3>
+      <p>${esc(name)} ${ROLE_BY_MODE[top[1]].text}.</p><p class="muted" style="margin-top:6px">${esc(T.WORK_STYLE[top[0]])} ${esc(T.WORK_STYLE[top[1]])}</p></div>`;
+    const sameMode = sim.topA[1] === sim.topB[1];
+    // Shared career topics.
+    const fA = careerFieldsFor(CA), fB = careerFieldsFor(CB);
+    const shared = fA.filter(x => fB.includes(x));
+    // Work-relevant house overlays.
+    const workHouses = [2, 6, 7, 8, 10, 11];
+    const ovl = (list, guest, host) => list.filter(o => workHouses.includes(o.house)).map(o => `<li><b>${esc(guest)}'s ${P(o.key).name}</b> in ${esc(host)}'s ${ordinal(o.house)} house: ${esc(window.ChartCompat.WORK_OVERLAY[o.house - 1])}</li>`).join('');
+    // The venture as a composite chart.
+    const CC = E.compositeChart(CA, CB);
+    const cp = k => CC.points.find(p => p.key === k);
+    const venture = [['sun', 'Purpose of the venture'], ['mc', 'Public image and reputation'], ['saturn', 'What makes it last'], ['jupiter', 'Where it grows'], ['mercury', 'How it communicates'], ['mars', 'How it competes']]
+      .filter(([k]) => cp(k)).map(([k, title]) => {
+        const p = cp(k); const sg = E.signOf(p.lon).sign;
+        return `<li><b>${title}:</b> composite ${P(k).name} in ${sg.name}${p.house ? `, house ${p.house}` : ''}. <span class="muted">${esc(C.SIGN_STYLE[sg.key].replace(/^In \w+ it /, 'It '))}${p.house && !['mc'].includes(k) ? ' Focus: ' + esc(C.HOUSES[p.house - 1].area) + '.' : ''}</span></li>`;
+      }).join('');
+    // Agreements to make.
+    const weak = r.areas.filter(a => a.score < 55);
+    const agreements = ['A written partnership agreement covering roles, ownership, money, decision rights and how either of you can leave.']
+      .concat(weak.map(a => a.low))
+      .concat(['Pick a signing date with Cosmic rhythms → Best days to begin → "Sign a contract".']);
+    const dateTxt = i => `${new Date(i.date + 'T12:00:00Z').toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}${i.timeUnknown ? ', time unknown' : ', ' + i.time}${i.place ? ', ' + i.place : ''}`;
+    const sign = (c, k) => E.signOf(c.points.find(p => p.key === k).lon).sign.name;
+
+    $('#compat-report').innerHTML = `
+      <div class="section report">
+        <div class="print-only"><span class="eyebrow">Business compatibility report</span></div>
+        <div class="card report-head">
+          <div class="pair">
+            <div><span class="eyebrow">Partner A</span><h3>${esc(nA)}</h3><p class="faint">${esc(dateTxt(A))}</p><p class="muted">Sun ${sign(CA, 'sun')} · Mercury ${sign(CA, 'mercury')} · Saturn ${sign(CA, 'saturn')}</p></div>
+            <div class="amp">&amp;</div>
+            <div><span class="eyebrow">Partner B</span><h3>${esc(nB)}</h3><p class="faint">${esc(dateTxt(B))}</p><p class="muted">Sun ${sign(CB, 'sun')} · Mercury ${sign(CB, 'mercury')} · Saturn ${sign(CB, 'saturn')}</p></div>
+          </div>
+          <div class="stat-row">
+            <div class="stat"><b>${r.overall}<small>/100</small></b><span>Working compatibility · <span class="pill ${ol.cls}">${ol.text}</span></span></div>
+            <div class="stat"><b>${sorted[0].score}</b><span>Strongest: ${esc(sorted[0].name.toLowerCase())}</span></div>
+            <div class="stat"><b>${sorted[sorted.length - 1].score}</b><span>Needs most care: ${esc(sorted[sorted.length - 1].name.toLowerCase())}</span></div>
+          </div>
+          <p><b>Work well together on:</b> ${sorted.slice(0, 3).map(a => WORK_TOPICS[a.key]).join('; ')}.</p>
+          <p><b>Define clearly or keep separate:</b> ${sorted.slice(-2).map(a => WORK_TOPICS[a.key]).join('; ')}.</p>
+          ${A.timeUnknown || B.timeUnknown ? '<p class="note">At least one birth time is unknown, so house overlays, the Midheaven and the venture chart\'s houses are left out.</p>' : ''}
+        </div>
+
+        <h3>Working compatibility by area</h3>
+        <div class="area-summary card">${r.areas.map(a => `<div class="bar"><span>${esc(a.name)}</span><div class="track"><div class="fill" style="width:${a.score}%"></div></div><span class="num">${a.score}</span></div>`).join('')}</div>
+        <div class="grid-2 areas">${r.areas.map(areaCard).join('')}</div>
+
+        <h3>Who brings what</h3>
+        <div class="card">
+          <p class="muted">How easily each person expresses the seven forces every venture needs (0–10). Divide responsibilities so each force is led by the person who has it more naturally.</p>
+          <div class="legend" style="justify-content:flex-start;margin:10px 0"><span><i class="lg-a"></i>${esc(nA)}</span><span><i class="lg-b"></i>${esc(nB)}</span></div>
+          <div class="duo-chart" role="img" aria-label="Seven forces compared">${forceRows}</div>
+          <p class="faint" style="margin-top:8px">The last column shows who naturally leads that force; "Shared" means you are within a point of each other.</p>
+        </div>
+
+        <h3>Work styles and roles</h3>
+        <div class="grid-2">${styleCard(nA, sim.topA)}${styleCard(nB, sim.topB)}</div>
+        <p class="muted">${sameMode ? `You are both ${ROLE_BY_MODE[sim.topA[1]].role.toLowerCase()}s, so you will compete for the same part of the work. Agree who covers the roles neither of you naturally plays.` : `Your roles complement each other: ${esc(nA)} as ${ROLE_BY_MODE[sim.topA[1]].role.toLowerCase()} and ${esc(nB)} as ${ROLE_BY_MODE[sim.topB[1]].role.toLowerCase()}.`}</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">Topics to work on together</div>
+            ${shared.length ? `<p style="margin-top:6px">Both charts point to: <b>${shared.map(esc).join(', ')}</b>.</p>` : '<p class="muted" style="margin-top:6px">Your career themes do not overlap, which can work well when each of you covers a different side of the business.</p>'}
+            <p class="muted" style="margin-top:8px">${esc(nA)}: ${fA.slice(0, 4).map(esc).join(', ')}.</p>
+            <p class="muted">${esc(nB)}: ${fB.slice(0, 4).map(esc).join(', ')}.</p>
+          </div>
+          <div class="card">
+            <div class="eyebrow">The partnership as its own chart</div>
+            <ul class="syn-list" style="margin-top:6px">${venture}</ul>
+          </div>
+        </div>
+
+        ${(ovl(r.overlaysBinA, nB, nA) || ovl(r.overlaysAinB, nA, nB)) ? `<h3>How you affect each other's work life</h3>
+        <div class="grid-2">
+          ${ovl(r.overlaysBinA, nB, nA) ? `<div class="card"><div class="eyebrow">${esc(nB)} in ${esc(nA)}'s chart</div><ul class="syn-list">${ovl(r.overlaysBinA, nB, nA)}</ul></div>` : ''}
+          ${ovl(r.overlaysAinB, nA, nB) ? `<div class="card"><div class="eyebrow">${esc(nA)} in ${esc(nB)}'s chart</div><ul class="syn-list">${ovl(r.overlaysAinB, nA, nB)}</ul></div>` : ''}
+        </div>` : ''}
+
+        <h3>Agreements to make before you start</h3>
+        <div class="card"><ol class="agree-list">${agreements.map(t => `<li>${esc(t)}</li>`).join('')}</ol></div>
+
+        ${conflictSection(CA, CB, nA, nB, r, 'work')}
+
+        <h3>Every connection between the charts</h3>
+        <div class="table-wrap"><table><thead><tr><th>${esc(nA)}</th><th>Aspect</th><th>${esc(nB)}</th><th>Orb</th></tr></thead><tbody>
+          ${r.aspects.map(x => `<tr class="static"><td><span class="glyph">${esc(glyphOf(x.a))}</span>${esc(P(x.a).name)}</td><td><span class="asp-g ${tone(x.aspect.key)}">${x.aspect.glyph}${VS}</span> ${x.aspect.name}</td><td><span class="glyph">${esc(glyphOf(x.b))}</span>${esc(P(x.b).name)}</td><td class="num">${x.orb.toFixed(1)}°</td></tr>`).join('')}
+        </tbody></table></div>
+        <p class="faint">Astrology shows tendencies in how two people work together. Use it alongside normal due diligence: references, track record, a written contract and, for significant money, legal and financial advice.</p>
+      </div>`;
+  }
 
   // The composite chart: the relationship itself, read as one chart.
   function compositeSection(CA, CB, nA, nB) {
@@ -5862,6 +6284,15 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
         if (a.value && b.value) { fillPerson('pa', b.value); fillPerson('pb', a.value); }
       }
       if (e.target.id === 'compat-print') printPanel();
+      const mb = e.target.closest('[data-mode]');
+      if (mb) {
+        // Keep whatever was typed into the forms when switching mode.
+        const a = readPerson('pa', 'Person A'), b = readPerson('pb', 'Person B');
+        if (a.value) state.compat.A = a.value;
+        if (b.value) state.compat.B = b.value;
+        state.compat.mode = mb.dataset.mode; store.set('compatMode', mb.dataset.mode);
+        renderCompat();
+      }
     });
   }
 

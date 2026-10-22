@@ -64,6 +64,58 @@
     }
   ];
 
+  // Business and work: who you can build something with, and on which topics.
+  const BUSINESS_AREAS = [
+    { key: 'vision', name: 'Shared vision and goals',
+      about: 'Whether you want the same things and believe in the same direction. Sun, Jupiter and Midheaven contacts matter most.',
+      pairs: [['sun', 'sun', 2.5], ['sun', 'jupiter', 2], ['jupiter', 'jupiter', 1.5], ['sun', 'mc', 2], ['jupiter', 'mc', 1.5], ['nnode', 'sun', 1], ['saturn', 'jupiter', 1]],
+      elements: ['sun'],
+      high: 'You naturally pull in the same direction. Write the shared goal down and build on it.',
+      low: 'Your goals may differ. Before investing, agree in writing on the vision, the target customers, the time horizon and the exit plan.' },
+    { key: 'bcomm', name: 'Communication and decisions',
+      about: 'How easily you exchange information, plan and decide. Mercury contacts matter most.',
+      pairs: [['mercury', 'mercury', 3], ['mercury', 'sun', 2], ['mercury', 'saturn', 1.5], ['mercury', 'jupiter', 1.5], ['mercury', 'mars', 1.5], ['mercury', 'uranus', 1], ['mercury', 'neptune', 1]],
+      elements: ['mercury'],
+      high: 'Ideas flow easily between you, which makes planning and selling together natural.',
+      low: 'Misunderstandings are likely. Agree on a weekly written update, one channel for decisions, and a written summary after every important call.' },
+    { key: 'trust', name: 'Trust and reliability',
+      about: 'Whether you can rely on each other to deliver and to be straight. Saturn contacts build it; Neptune pressure on Mercury or the Sun can erode it.',
+      pairs: [['saturn', 'sun', 2.5], ['saturn', 'moon', 2], ['saturn', 'mercury', 2], ['saturn', 'venus', 1.5], ['neptune', 'mercury', 2], ['neptune', 'sun', 1.5], ['moon', 'moon', 1], ['sun', 'moon', 1.5]],
+      elements: ['moon'],
+      high: 'There is a natural sense of reliability. Still put the essentials in a contract, because good intentions are not a legal structure.',
+      low: 'Trust needs to be built step by step. Put roles, money, ownership and exit terms in a contract, check references, and start with a small trial project.' },
+    { key: 'money', name: 'Money and resources',
+      about: 'How you handle money, value and shared resources together. Venus, Jupiter and Saturn contacts matter most.',
+      pairs: [['venus', 'jupiter', 2], ['venus', 'saturn', 2], ['jupiter', 'saturn', 2], ['venus', 'venus', 1.5], ['venus', 'pluto', 1.5], ['jupiter', 'jupiter', 1], ['sun', 'venus', 1]],
+      elements: ['venus'],
+      high: 'You value similar things and can grow resources together.',
+      low: 'Money is a likely friction point. Keep a shared, transparent ledger, agree spending limits and the profit split before you start, and keep personal and business money separate.' },
+    { key: 'drive', name: 'Drive and execution',
+      about: 'Whether your energy, pace and work ethic fit together. Mars contacts matter most.',
+      pairs: [['mars', 'mars', 2.5], ['mars', 'sun', 2], ['mars', 'saturn', 2], ['mars', 'jupiter', 1.5], ['sun', 'saturn', 1], ['mars', 'mercury', 1]],
+      elements: ['mars'],
+      high: 'You energise each other and get things done.',
+      low: 'Your pace and working style differ. Define deadlines, who owns which deliverable, and how you measure progress.' },
+    { key: 'power', name: 'Leadership and power balance',
+      about: 'Whether you can share authority without power struggles. Sun, Mars, Saturn and Pluto contacts matter most.',
+      pairs: [['sun', 'sun', 1.5], ['sun', 'mars', 2], ['sun', 'pluto', 2], ['mars', 'pluto', 2], ['sun', 'saturn', 1.5], ['mars', 'mars', 1]],
+      elements: ['sun', 'mars'],
+      high: 'Authority can be shared comfortably. Divide leadership by area so each of you leads where you are strongest.',
+      low: 'Power struggles are possible. Decide in writing who has the final say in which area. Equal 50/50 decision rights with no tie-breaker invite deadlock.' },
+    { key: 'innovate', name: 'Innovation and growth',
+      about: 'How you handle new ideas, change and expansion together. Uranus and Jupiter contacts matter most.',
+      pairs: [['uranus', 'sun', 1.5], ['uranus', 'mercury', 1.5], ['jupiter', 'uranus', 1], ['jupiter', 'mercury', 1.5], ['jupiter', 'sun', 1.5], ['jupiter', 'mars', 1]],
+      elements: [],
+      high: 'Together you spot opportunities and adapt quickly.',
+      low: 'One of you may resist change or push it too fast. Agree a budget and a time limit for testing new ideas.' },
+    { key: 'pressure', name: 'Handling pressure and conflict',
+      about: 'How you behave together when things go wrong. Mars, Saturn and Pluto contacts matter most. A high score means conflict is easier to manage.',
+      pairs: [['mars', 'saturn', 2], ['mars', 'pluto', 2], ['mars', 'mars', 1.5], ['saturn', 'moon', 1.5], ['mars', 'moon', 1.5], ['saturn', 'sun', 1], ['moon', 'moon', 1]],
+      elements: ['moon', 'mars'],
+      high: 'You stay workable under pressure.',
+      low: 'Agree a conflict process now, while things are calm: a cooling-off period, a neutral mediator, and fair terms for leaving the partnership.' }
+  ];
+
   const HEAVY = new Set(['saturn', 'pluto', 'mars']);
 
   // Value of one cross aspect for one area: positive supports, negative strains.
@@ -74,11 +126,13 @@
       case 'trine': return 1;
       case 'sextile': return 0.8;
       case 'conjunction':
-        if (area === 'harmony' && heavy) return -0.4;
-        if ((a === 'saturn' || b === 'saturn') && area !== 'commitment') return 0.2;
+        if ((area === 'harmony' || area === 'pressure' || area === 'power') && heavy) return -0.4;
+        if ((a === 'neptune' || b === 'neptune') && area === 'trust') return -0.8;
+        if ((a === 'saturn' || b === 'saturn') && area !== 'commitment' && area !== 'trust') return 0.2;
         return heavy && !attraction ? 0.5 : 1;
       case 'square':
         if (attraction) return 0.3;
+        if ((a === 'neptune' || b === 'neptune') && area === 'trust') return -1.2;
         if (a === 'saturn' || b === 'saturn') return -1;
         return -0.8;
       case 'opposition':
@@ -185,10 +239,11 @@
     });
   }
 
-  function compare(A, B) {
+  function compare(A, B, mode = 'love') {
     const aspects = crossAspects(A, B);
-    const areas = AREAS.map(area => scoreArea(area, aspects, A, B));
-    const weights = { emotional: 1.3, romance: 1.1, communication: 1.1, values: 1, commitment: 1.2, growth: 0.8, harmony: 1 };
+    const areas = (mode === 'work' ? BUSINESS_AREAS : AREAS).map(area => scoreArea(area, aspects, A, B));
+    const weights = { emotional: 1.3, romance: 1.1, communication: 1.1, values: 1, commitment: 1.2, growth: 0.8, harmony: 1,
+      vision: 1.1, bcomm: 1.1, trust: 1.3, money: 1.2, drive: 1, power: 1, innovate: 0.7, pressure: 1 };
     const overall = Math.round(areas.reduce((s, a) => s + a.score * weights[a.key], 0) / areas.reduce((s, a) => s + weights[a.key], 0));
     return {
       aspects, areas, overall,
@@ -221,5 +276,21 @@
     'touches the private, hidden or spiritual side. It can be deeply intimate or confusing.'
   ];
 
-  root.ChartCompat = { compare, label, AREAS, OVERLAY_TEXT };
+  // What one person's planets do when they fall in a partner's houses, read for work.
+  const WORK_OVERLAY = [
+    'shapes how the other presents professionally. They become part of each other\'s public identity.',
+    'affects income and resources: a direct influence on what the other earns and values.',
+    'shows up in daily communication, paperwork, sales and local contacts.',
+    'touches the base of operations: premises, family business or behind-the-scenes support.',
+    'brings creativity, risk-taking and enjoyment into the work.',
+    'falls in daily work and routines: a practical, hands-on working relationship, at its best as colleagues.',
+    'lands in the house of contracts and partnership: a strong indicator of formal business partnership.',
+    'involves shared money, investment, debt and trust. Powerful, but needs clear agreements.',
+    'expands horizons through education, publishing, law, travel or international work.',
+    'directly affects career and reputation: one can boost or shape the other\'s public standing.',
+    'brings networks, clients, teams and shared long-term goals.',
+    'works behind the scenes: research, private advice or hidden support. Keep roles clear.'
+  ];
+
+  root.ChartCompat = { compare, label, AREAS, BUSINESS_AREAS, OVERLAY_TEXT, WORK_OVERLAY };
 })(typeof window !== 'undefined' ? window : globalThis);

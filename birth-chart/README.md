@@ -42,6 +42,27 @@ The **Cosmic rhythms** tab turns the classic teachings on the Sun, the Moon, the
 
 Astronomical facts are kept accurate: the synodic month is 29.5 days, a circuit of the zodiac takes 27.3 days, and tides come from lunar and solar gravity. Symbolic links are labelled as tradition. The notes state plainly that astrology is for reflection and timing, not a replacement for medical or mental-health care.
 
+## Business & work compatibility
+
+The Compatibility tab has a **Love & relationships / Business & work** switch. The business report covers:
+
+- **Eight working areas, each scored from 0 to 100** with the planet contacts behind it and practical advice: shared vision, communication and decisions, trust and reliability (Neptune pressure on Mercury or the Sun lowers it), money and resources, drive and execution, leadership and power balance, innovation and growth, and handling pressure.
+- **Work well together on and keep separate:** topics drawn from the strongest and weakest areas.
+- **Who brings what:** each partner's seven forces side by side, and who should lead each one.
+- **Work styles and roles:** each partner as initiator, sustainer or adapter, from the dominant element and mode.
+- **Career topics** both charts share, the **partnership as its own (composite) chart**, and **work house overlays** (2nd, 6th, 7th, 8th, 10th and 11th).
+- **Agreements to make** before starting, generated from the weak areas.
+
+## Resolving conflict and differences
+
+Both compatibility reports end with a conflict section:
+
+- **For each person:** how they fight (Mars element), what calms them down (Moon element) and how to talk to them (Mercury element).
+- **The tense contacts between the two charts,** each with a specific fix.
+- **Bridges** for different temperaments, paces and emotional needs.
+- **A six-step process for resolving disagreements:** one version for relationships and one for business, the business version escalating to a mediator and the exit terms.
+- **Timing:** the next Last Quarter Moon to clear the air, the Full Moon to avoid, and Mercury retrograde.
+
 ## Life guidance
 
 The **Life guidance** tab answers practical questions such as "What career suits me?", "What kind of partner suits me?", "How do I handle money?" or "What is my purpose?". Type a question, and it is matched by keywords to one of nine topics: career, love, money, home and family, wellbeing, purpose, friends, learning, and strengths and challenges. You can also pick a topic directly. Each answer:
@@ -90,6 +111,7 @@ python3 build.py
 | `tools/make_cities.js` | Regenerates `cities-data.js` |
 | `tools/make_ephemeris.py` | Regenerates `ephem-data.js` from the Swiss Ephemeris |
 | `src/content-rhythms.js` | Moon phases, Moon-sign days, seasons, the seven forces, planetary days, creation cycle and the nine notes pages |
+| `src/content-conflict.js` | Conflict styles, friction fixes, bridges, resolution steps and timing |
 | `src/compat.js` | Compatibility scoring, similarity and house overlays |
 | `src/content-aspects-natal.js` | 213 paragraphs written for specific natal aspects: every planet pair plus key points, each as conjunction, flowing and challenging |
 | `src/content-sunmoon.js` | All 144 Sun–Moon sign combinations |

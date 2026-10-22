@@ -1216,9 +1216,10 @@
   const SIGN_ENERGY = ['initiative', 'values', 'understanding', 'family and nurturing', 'creativity and leadership', 'healing and refinement', 'partnership and justice', 'bonding and transformation', 'wisdom and belief', 'structure and achievement', 'community and innovation', 'compassion and spirituality'];
 
   // How easily each classical planet expresses its force in this chart (0–10).
-  function sevenScores() {
+  function sevenScores() { return sevenScoresFor(state.chart, state.aspects); }
+  function sevenScoresFor(chart, aspects) {
     return Object.keys(RH.SEVEN).map(k => {
-      const p = pt(k);
+      const p = chart.points.find(x => x.key === k);
       const why = [];
       let sc = 5;
       const d = dignity(k, E.signOf(p.lon).sign.key);
@@ -1228,7 +1229,7 @@
       if (p.house && [1, 4, 7, 10].includes(p.house)) { sc += 1.5; why.push('angular house'); }
       if (p.house && [3, 6, 9, 12].includes(p.house)) { sc -= 0.5; why.push('cadent house'); }
       if (p.retrograde) { sc -= 1; why.push('retrograde'); }
-      const asp = state.aspects.filter(a => a.aspect.major && (a.a === k || a.b === k));
+      const asp = aspects.filter(a => a.aspect.major && (a.a === k || a.b === k));
       const flow = asp.filter(a => ['trine', 'sextile'].includes(a.aspect.key)).length;
       const hard = asp.filter(a => ['square', 'opposition'].includes(a.aspect.key)).length;
       if (flow) { sc += 0.6 * flow; why.push(`${flow} easy aspect${flow > 1 ? 's' : ''}`); }
@@ -1545,6 +1546,22 @@
     return Object.keys(score).sort((a, b) => score[b] - score[a]).slice(0, 9).map(f => ({ field: f, why: [...why[f]] }));
   }
 
+  // Career themes for any chart (used to find work topics two people share).
+  function careerFieldsFor(chart) {
+    const score = {};
+    const add = (list, w) => list.forEach(f => { score[f] = (score[f] || 0) + w; });
+    const at = k => chart.points.find(p => p.key === k);
+    if (!chart.noHouses) {
+      add(T.CAREER_BY_SIGN[E.signOf(at('mc').lon).index], 3);
+      const ruler = E.signOf(chart.houses.cusps[9]).sign.ruler;
+      if (T.CAREER_BY_PLANET[ruler]) add(T.CAREER_BY_PLANET[ruler].fields, 2);
+      chart.points.filter(p => p.house === 10 && T.CAREER_BY_PLANET[p.key]).forEach(p => add(T.CAREER_BY_PLANET[p.key].fields, 2));
+      chart.points.filter(p => p.house === 6 && T.CAREER_BY_PLANET[p.key]).forEach(p => add(T.CAREER_BY_PLANET[p.key].fields, 1));
+    }
+    add(T.CAREER_BY_SIGN[E.signOf(at('sun').lon).index], 1.5);
+    return Object.keys(score).sort((a, b) => score[b] - score[a]).slice(0, 8);
+  }
+
   function independenceLean() {
     let ind = 0, str = 0;
     const b = balance();
@@ -1722,7 +1739,7 @@
     name: 'Example partner', date: '1998-06-21', time: '18:30', timeUnknown: false,
     place: 'Paris, France', lat: 48.8566, lon: 2.3522, tz: 'Europe/Paris', utcOffset: 2, example: true
   };
-  state.compat = { A: null, B: store.get('compatB', PARTNER_EXAMPLE), result: null };
+  state.compat = { A: null, B: store.get('compatB', PARTNER_EXAMPLE), result: null, mode: store.get('compatMode', 'love') };
 
   function personForm(id, who, i) {
     const saved = store.get('saved', []);
@@ -1791,7 +1808,13 @@
     panel.innerHTML = `
       <div class="section no-print">
         <div><span class="eyebrow">Compatibility</span><h2>Compare two birth charts</h2></div>
-        <p class="muted">Enter two people's birth data to see how their charts connect across seven areas of life, and how similar they are. It works for partners, friends, family or colleagues.</p>
+        <div class="seg mode-seg" role="group" aria-label="Type of relationship">
+          <button type="button" data-mode="love" aria-pressed="${state.compat.mode === 'love'}">Love &amp; relationships</button>
+          <button type="button" data-mode="work" aria-pressed="${state.compat.mode === 'work'}">Business &amp; work</button>
+        </div>
+        <p class="muted">${state.compat.mode === 'work'
+          ? 'Enter two people\'s birth data to see how well you can work together: vision, communication, trust, money, drive, leadership, innovation and conflict. It also shows who brings which strengths, which roles suit each of you, and what to agree in writing.'
+          : 'Enter two people\'s birth data to see how their charts connect across seven areas of life, and how similar they are. It works for partners, friends and family.'}</p>
         <div class="grid-2">${personForm('pa', 'Person A', A)}${personForm('pb', 'Person B', B)}</div>
         <p class="form-error" id="compat-error" hidden></p>
         <div class="actions">
@@ -1815,9 +1838,10 @@
     try { CA = chartFor(A); CB = chartFor(B); } catch (err) {
       const el = $('#compat-error'); el.textContent = 'One of the charts could not be calculated. Check the dates and coordinates.'; el.hidden = false; return;
     }
-    const r = window.ChartCompat.compare(CA, CB);
+    const r = window.ChartCompat.compare(CA, CB, state.compat.mode);
     state.compat.result = r;
     const nA = A.name || 'Person A', nB = B.name || 'Person B';
+    if (state.compat.mode === 'work') { renderWorkReport(A, B, CA, CB, r, nA, nB); return; }
     const ownerA = k => `${esc(nA)}'s ${P(k).name}`;
     const ownerB = k => `${esc(nB)}'s ${P(k).name}`;
     const L2 = window.ChartCompat.label;
@@ -1891,6 +1915,8 @@
 
         ${compositeSection(CA, CB, nA, nB)}
 
+        ${conflictSection(CA, CB, nA, nB, r, 'love')}
+
         <h3>Every connection between the charts</h3>
         <div class="table-wrap"><table><thead><tr><th>${esc(nA)}</th><th>Aspect</th><th>${esc(nB)}</th><th>Orb</th></tr></thead><tbody>
           ${r.aspects.map(x => `<tr class="static"><td><span class="glyph">${esc(glyphOf(x.a))}</span>${esc(P(x.a).name)}</td><td><span class="asp-g ${['trine', 'sextile'].includes(x.aspect.key) ? 'flow' : ['square', 'opposition'].includes(x.aspect.key) ? 'tension' : 'blend'}">${x.aspect.glyph}${VS}</span> ${x.aspect.name}</td><td><span class="glyph">${esc(glyphOf(x.b))}</span>${esc(P(x.b).name)}</td><td class="num">${x.orb.toFixed(1)}°</td></tr>`).join('')}
@@ -1899,6 +1925,190 @@
       </div>`;
   }
   const COMPATIBLE_EL = { fire: 'air', air: 'fire', earth: 'water', water: 'earth' };
+
+  // Resolving conflict and differences, shared by the love and work reports.
+  function conflictSection(CA, CB, nA, nB, r, mode) {
+    const K = window.ChartConflict;
+    const el = (c, k) => E.signOf(c.points.find(p => p.key === k).lon).sign.element;
+    const sim = r.similarity;
+    const person = (c, n) => `<div class="card">
+      <div class="eyebrow">${esc(n)}</div>
+      <p style="margin-top:6px"><b>In a conflict</b> (Mars in ${E.signOf(c.points.find(p => p.key === 'mars').lon).sign.name}): ${esc(K.FIGHT[el(c, 'mars')])}</p>
+      <p style="margin-top:6px"><b>To calm down, needs</b> (Moon in ${E.signOf(c.points.find(p => p.key === 'moon').lon).sign.name}): ${esc(K.CALM[el(c, 'moon')])}.</p>
+      <p style="margin-top:6px"><b>How to talk to ${esc(n)}</b> (Mercury in ${E.signOf(c.points.find(p => p.key === 'mercury').lon).sign.name}): ${esc(K.TALK[el(c, 'mercury')])}</p>
+    </div>`;
+    const tense = r.aspects.filter(x => ['square', 'opposition'].includes(x.aspect.key) && !(['uranus', 'neptune', 'pluto'].includes(x.a) && ['uranus', 'neptune', 'pluto'].includes(x.b))).slice(0, 5);
+    const quarters = E.moonQuarters(new Date(), 45);
+    const nextClear = quarters.find(q => q.quarter === 3);
+    const nextFull = quarters.find(q => q.quarter === 2);
+    return `
+      <h3>Resolving conflict and differences</h3>
+      <p class="muted">Every pairing has friction somewhere. Here is how each of you tends to react, where the friction between your charts sits, and practical ways through it.</p>
+      <div class="grid-2">${person(CA, nA)}${person(CB, nB)}</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="eyebrow">Friction points and how to handle them</div>
+          ${tense.length ? `<ul class="syn-list" style="margin-top:6px">${tense.map(x => `<li><b>${esc(nA)}'s ${P(x.a).name} ${x.aspect.name.toLowerCase()} ${esc(nB)}'s ${P(x.b).name}</b> <span class="faint">(orb ${x.orb.toFixed(1)}°)</span><br><span class="muted">${esc(K.fixFor(x.a, x.b))}</span></li>`).join('')}</ul>` : '<p class="muted" style="margin-top:6px">No tense contacts between the personal planets. Disagreements are more likely to come from circumstances than from clashing temperaments.</p>'}
+        </div>
+        <div class="card">
+          <div class="eyebrow">Bridging your differences</div>
+          <p style="margin-top:6px"><b>Temperament</b> (${sim.topA[0]} and ${sim.topB[0]}): ${esc(K.bridge(sim.topA[0], sim.topB[0]))}</p>
+          <p style="margin-top:6px"><b>Pace</b> (${sim.topA[1]} and ${sim.topB[1]}): ${esc(K.modeBridge(sim.topA[1], sim.topB[1]))}</p>
+          <p style="margin-top:6px"><b>Emotional needs</b> (Moons in ${el(CA, 'moon')} and ${el(CB, 'moon')}): ${esc(K.bridge(el(CA, 'moon'), el(CB, 'moon')))}</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="eyebrow">${mode === 'work' ? 'Resolving a business disagreement' : 'Resolving a disagreement'}, step by step</div>
+          <ol class="agree-list" style="margin-top:8px">${K.STEPS[mode === 'work' ? 'work' : 'love'].map(t => `<li>${esc(t)}</li>`).join('')}</ol>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Timing a difficult conversation</div>
+          <ul class="syn-list" style="margin-top:6px">${K.TIMING.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+          <p style="margin-top:8px">${nextClear ? `Next good time to clear the air: <b>${fmtDate(nextClear.date)}</b> (Last Quarter Moon).` : ''} ${nextFull ? `Avoid starting a big confrontation around <b>${fmtDate(nextFull.date)}</b> (Full Moon).` : ''}</p>
+        </div>
+      </div>
+      <p class="faint">These are reflection tools. If a conflict involves abuse, threats or safety concerns, step away and contact local support services${mode === 'work' ? ', and for serious business disputes take legal advice' : ''}.</p>`;
+  }
+
+  const ROLE_BY_MODE = {
+    cardinal: { role: 'Initiator', text: 'opens doors, starts projects, pitches and sells the idea' },
+    fixed: { role: 'Sustainer', text: 'builds systems, protects quality and sees things through' },
+    mutable: { role: 'Adapter', text: 'handles change, communicates, connects people and fixes problems' }
+  };
+  const WORK_TOPICS = {
+    vision: 'strategy, direction and long-term planning', bcomm: 'sales, marketing, negotiation and presenting',
+    trust: 'long-term contracts and managing other people\'s money', money: 'finance, pricing and investment',
+    drive: 'operations, delivery and hitting deadlines', power: 'leading teams and representing the business together',
+    innovate: 'product development and new ventures', pressure: 'crisis handling and tough negotiations'
+  };
+
+  function renderWorkReport(A, B, CA, CB, r, nA, nB) {
+    const L2 = window.ChartCompat.label;
+    const tone = k => ['trine', 'sextile'].includes(k) ? 'flow' : ['square', 'opposition'].includes(k) ? 'tension' : 'blend';
+    const aspLine = x => `<li><span class="asp-g ${x.weight >= 0 ? 'flow' : 'tension'}">${x.aspect.glyph}${VS}</span> <b>${esc(nA)}'s ${P(x.a).name} ${x.aspect.name.toLowerCase()} ${esc(nB)}'s ${P(x.b).name}</b> <span class="faint">(orb ${x.orb.toFixed(1)}°)</span><br><span class="muted">${esc(AT.readAspect(x.a, x.b, x.aspect.key, tone(x.aspect.key), [nA + "'s " + P(x.a).name, nB + "'s " + P(x.b).name]))}</span></li>`;
+    const areaCard = a => {
+      const lb = L2(a.score);
+      const top = a.support.slice(0, 2), low = a.strain.slice(0, 2);
+      return `<article class="card area-card">
+        <div class="section-head"><h3>${esc(a.name)}</h3><span class="pill ${lb.cls}">${lb.text}</span></div>
+        <div class="bar score-bar"><span class="num">${a.score}</span><div class="track"><div class="fill" style="width:${a.score}%"></div></div><span></span></div>
+        <p class="faint">${esc(a.about)}</p>
+        <p class="advice"><b>${a.score >= 55 ? 'In practice' : 'Agree on this'}:</b> ${esc(a.score >= 55 ? a.high : a.low)}</p>
+        ${a.elements.length ? `<p class="muted">${a.elements.map(e => esc(e.note) + '.').join('<br>')}</p>` : ''}
+        ${top.length ? `<div class="eyebrow good-eyebrow">What helps</div><ul class="syn-list">${top.map(aspLine).join('')}</ul>` : ''}
+        ${low.length ? `<div class="eyebrow bad-eyebrow">What needs care</div><ul class="syn-list">${low.map(aspLine).join('')}</ul>` : ''}
+        ${!top.length && !low.length ? '<p class="muted">No close planet contacts for this area: neutral, neither a strong pull nor a friction point.</p>' : ''}
+      </article>`;
+    };
+    const sorted = r.areas.slice().sort((x, y) => y.score - x.score);
+    const ol = L2(r.overall);
+    // Who brings which of the seven forces.
+    const aspA = E.findAspects(CA.points.filter(p => ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'].includes(p.key)));
+    const aspB = E.findAspects(CB.points.filter(p => ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'].includes(p.key)));
+    const sA = sevenScoresFor(CA, aspA), sB = sevenScoresFor(CB, aspB);
+    const order = ['saturn', 'jupiter', 'mars', 'sun', 'venus', 'mercury', 'moon'];
+    const val = (list, k) => list.find(x => x.key === k).score;
+    const forceRows = order.map(k => {
+      const a = val(sA, k), b = val(sB, k);
+      const lead = Math.abs(a - b) < 1 ? 'Shared' : a > b ? nA : nB;
+      return `<div class="duo-row"><span class="duo-label"><b>${esc(RH.SEVEN[k].force)}</b><small>${P(k).name}</small></span>
+        <div class="duo-bars"><div class="duo a" style="width:${a * 10}%" title="${esc(nA)}: ${a.toFixed(1)}"><span>${a.toFixed(1)}</span></div><div class="duo b" style="width:${b * 10}%" title="${esc(nB)}: ${b.toFixed(1)}"><span>${b.toFixed(1)}</span></div></div>
+        <span class="duo-lead">${esc(lead)}</span></div>`;
+    }).join('');
+    // Work styles and roles.
+    const sim = r.similarity;
+    const styleCard = (name, top) => `<div class="card"><div class="eyebrow">${esc(name)}</div><h3 style="margin:6px 0">${ROLE_BY_MODE[top[1]].role}</h3>
+      <p>${esc(name)} ${ROLE_BY_MODE[top[1]].text}.</p><p class="muted" style="margin-top:6px">${esc(T.WORK_STYLE[top[0]])} ${esc(T.WORK_STYLE[top[1]])}</p></div>`;
+    const sameMode = sim.topA[1] === sim.topB[1];
+    // Shared career topics.
+    const fA = careerFieldsFor(CA), fB = careerFieldsFor(CB);
+    const shared = fA.filter(x => fB.includes(x));
+    // Work-relevant house overlays.
+    const workHouses = [2, 6, 7, 8, 10, 11];
+    const ovl = (list, guest, host) => list.filter(o => workHouses.includes(o.house)).map(o => `<li><b>${esc(guest)}'s ${P(o.key).name}</b> in ${esc(host)}'s ${ordinal(o.house)} house: ${esc(window.ChartCompat.WORK_OVERLAY[o.house - 1])}</li>`).join('');
+    // The venture as a composite chart.
+    const CC = E.compositeChart(CA, CB);
+    const cp = k => CC.points.find(p => p.key === k);
+    const venture = [['sun', 'Purpose of the venture'], ['mc', 'Public image and reputation'], ['saturn', 'What makes it last'], ['jupiter', 'Where it grows'], ['mercury', 'How it communicates'], ['mars', 'How it competes']]
+      .filter(([k]) => cp(k)).map(([k, title]) => {
+        const p = cp(k); const sg = E.signOf(p.lon).sign;
+        return `<li><b>${title}:</b> composite ${P(k).name} in ${sg.name}${p.house ? `, house ${p.house}` : ''}. <span class="muted">${esc(C.SIGN_STYLE[sg.key].replace(/^In \w+ it /, 'It '))}${p.house && !['mc'].includes(k) ? ' Focus: ' + esc(C.HOUSES[p.house - 1].area) + '.' : ''}</span></li>`;
+      }).join('');
+    // Agreements to make.
+    const weak = r.areas.filter(a => a.score < 55);
+    const agreements = ['A written partnership agreement covering roles, ownership, money, decision rights and how either of you can leave.']
+      .concat(weak.map(a => a.low))
+      .concat(['Pick a signing date with Cosmic rhythms → Best days to begin → "Sign a contract".']);
+    const dateTxt = i => `${new Date(i.date + 'T12:00:00Z').toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}${i.timeUnknown ? ', time unknown' : ', ' + i.time}${i.place ? ', ' + i.place : ''}`;
+    const sign = (c, k) => E.signOf(c.points.find(p => p.key === k).lon).sign.name;
+
+    $('#compat-report').innerHTML = `
+      <div class="section report">
+        <div class="print-only"><span class="eyebrow">Business compatibility report</span></div>
+        <div class="card report-head">
+          <div class="pair">
+            <div><span class="eyebrow">Partner A</span><h3>${esc(nA)}</h3><p class="faint">${esc(dateTxt(A))}</p><p class="muted">Sun ${sign(CA, 'sun')} · Mercury ${sign(CA, 'mercury')} · Saturn ${sign(CA, 'saturn')}</p></div>
+            <div class="amp">&amp;</div>
+            <div><span class="eyebrow">Partner B</span><h3>${esc(nB)}</h3><p class="faint">${esc(dateTxt(B))}</p><p class="muted">Sun ${sign(CB, 'sun')} · Mercury ${sign(CB, 'mercury')} · Saturn ${sign(CB, 'saturn')}</p></div>
+          </div>
+          <div class="stat-row">
+            <div class="stat"><b>${r.overall}<small>/100</small></b><span>Working compatibility · <span class="pill ${ol.cls}">${ol.text}</span></span></div>
+            <div class="stat"><b>${sorted[0].score}</b><span>Strongest: ${esc(sorted[0].name.toLowerCase())}</span></div>
+            <div class="stat"><b>${sorted[sorted.length - 1].score}</b><span>Needs most care: ${esc(sorted[sorted.length - 1].name.toLowerCase())}</span></div>
+          </div>
+          <p><b>Work well together on:</b> ${sorted.slice(0, 3).map(a => WORK_TOPICS[a.key]).join('; ')}.</p>
+          <p><b>Define clearly or keep separate:</b> ${sorted.slice(-2).map(a => WORK_TOPICS[a.key]).join('; ')}.</p>
+          ${A.timeUnknown || B.timeUnknown ? '<p class="note">At least one birth time is unknown, so house overlays, the Midheaven and the venture chart\'s houses are left out.</p>' : ''}
+        </div>
+
+        <h3>Working compatibility by area</h3>
+        <div class="area-summary card">${r.areas.map(a => `<div class="bar"><span>${esc(a.name)}</span><div class="track"><div class="fill" style="width:${a.score}%"></div></div><span class="num">${a.score}</span></div>`).join('')}</div>
+        <div class="grid-2 areas">${r.areas.map(areaCard).join('')}</div>
+
+        <h3>Who brings what</h3>
+        <div class="card">
+          <p class="muted">How easily each person expresses the seven forces every venture needs (0–10). Divide responsibilities so each force is led by the person who has it more naturally.</p>
+          <div class="legend" style="justify-content:flex-start;margin:10px 0"><span><i class="lg-a"></i>${esc(nA)}</span><span><i class="lg-b"></i>${esc(nB)}</span></div>
+          <div class="duo-chart" role="img" aria-label="Seven forces compared">${forceRows}</div>
+          <p class="faint" style="margin-top:8px">The last column shows who naturally leads that force; "Shared" means you are within a point of each other.</p>
+        </div>
+
+        <h3>Work styles and roles</h3>
+        <div class="grid-2">${styleCard(nA, sim.topA)}${styleCard(nB, sim.topB)}</div>
+        <p class="muted">${sameMode ? `You are both ${ROLE_BY_MODE[sim.topA[1]].role.toLowerCase()}s, so you will compete for the same part of the work. Agree who covers the roles neither of you naturally plays.` : `Your roles complement each other: ${esc(nA)} as ${ROLE_BY_MODE[sim.topA[1]].role.toLowerCase()} and ${esc(nB)} as ${ROLE_BY_MODE[sim.topB[1]].role.toLowerCase()}.`}</p>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">Topics to work on together</div>
+            ${shared.length ? `<p style="margin-top:6px">Both charts point to: <b>${shared.map(esc).join(', ')}</b>.</p>` : '<p class="muted" style="margin-top:6px">Your career themes do not overlap, which can work well when each of you covers a different side of the business.</p>'}
+            <p class="muted" style="margin-top:8px">${esc(nA)}: ${fA.slice(0, 4).map(esc).join(', ')}.</p>
+            <p class="muted">${esc(nB)}: ${fB.slice(0, 4).map(esc).join(', ')}.</p>
+          </div>
+          <div class="card">
+            <div class="eyebrow">The partnership as its own chart</div>
+            <ul class="syn-list" style="margin-top:6px">${venture}</ul>
+          </div>
+        </div>
+
+        ${(ovl(r.overlaysBinA, nB, nA) || ovl(r.overlaysAinB, nA, nB)) ? `<h3>How you affect each other's work life</h3>
+        <div class="grid-2">
+          ${ovl(r.overlaysBinA, nB, nA) ? `<div class="card"><div class="eyebrow">${esc(nB)} in ${esc(nA)}'s chart</div><ul class="syn-list">${ovl(r.overlaysBinA, nB, nA)}</ul></div>` : ''}
+          ${ovl(r.overlaysAinB, nA, nB) ? `<div class="card"><div class="eyebrow">${esc(nA)} in ${esc(nB)}'s chart</div><ul class="syn-list">${ovl(r.overlaysAinB, nA, nB)}</ul></div>` : ''}
+        </div>` : ''}
+
+        <h3>Agreements to make before you start</h3>
+        <div class="card"><ol class="agree-list">${agreements.map(t => `<li>${esc(t)}</li>`).join('')}</ol></div>
+
+        ${conflictSection(CA, CB, nA, nB, r, 'work')}
+
+        <h3>Every connection between the charts</h3>
+        <div class="table-wrap"><table><thead><tr><th>${esc(nA)}</th><th>Aspect</th><th>${esc(nB)}</th><th>Orb</th></tr></thead><tbody>
+          ${r.aspects.map(x => `<tr class="static"><td><span class="glyph">${esc(glyphOf(x.a))}</span>${esc(P(x.a).name)}</td><td><span class="asp-g ${tone(x.aspect.key)}">${x.aspect.glyph}${VS}</span> ${x.aspect.name}</td><td><span class="glyph">${esc(glyphOf(x.b))}</span>${esc(P(x.b).name)}</td><td class="num">${x.orb.toFixed(1)}°</td></tr>`).join('')}
+        </tbody></table></div>
+        <p class="faint">Astrology shows tendencies in how two people work together. Use it alongside normal due diligence: references, track record, a written contract and, for significant money, legal and financial advice.</p>
+      </div>`;
+  }
 
   // The composite chart: the relationship itself, read as one chart.
   function compositeSection(CA, CB, nA, nB) {
@@ -1982,6 +2192,15 @@
         if (a.value && b.value) { fillPerson('pa', b.value); fillPerson('pb', a.value); }
       }
       if (e.target.id === 'compat-print') printPanel();
+      const mb = e.target.closest('[data-mode]');
+      if (mb) {
+        // Keep whatever was typed into the forms when switching mode.
+        const a = readPerson('pa', 'Person A'), b = readPerson('pb', 'Person B');
+        if (a.value) state.compat.A = a.value;
+        if (b.value) state.compat.B = b.value;
+        state.compat.mode = mb.dataset.mode; store.set('compatMode', mb.dataset.mode);
+        renderCompat();
+      }
     });
   }
 
