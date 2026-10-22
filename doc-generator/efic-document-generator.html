@@ -346,7 +346,25 @@
 #fdg-app .sig-box { text-align: center; }
 #fdg-app .sig-line { border-bottom: 1.5px solid #14213D; width: 190px; max-width: 100%; height: 40px; margin-bottom: 6px; }
 #fdg-app .sig-box span { font-size: 10px; color: #4A5568; font-weight: 600; }
-#fdg-app .doc-footer { margin-top: 28px; padding-top: 8px; border-top: 1px solid #E8E5DC; font-size: 8.5px; color: #4A5568; text-align: center; letter-spacing: .3px; }
+#fdg-app .tax-id { margin-top: 4px; }
+
+/* A4 pages. 794 x 1123 CSS px is exactly 210 x 297 mm at 96 dpi, so the preview,
+   the printout and the PDF all use the same page and break in the same places. */
+#fdg-app .fdg-doc-src { display: none; }
+#fdg-app .fdg-pages-wrap { margin: 0 auto; }
+#fdg-app .fdg-pages { width: 794px; transform-origin: 0 0; }
+#fdg-app .fdg-sheet { width: 794px; height: 1123px; max-width: none; margin: 0 0 24px; padding: 0 40px; }
+#fdg-app .fdg-sheet:last-child { margin-bottom: 0; }
+#fdg-app .sheet-footer {
+  position: absolute; left: 40px; right: 40px; bottom: 22px; z-index: 2;
+  display: flex; justify-content: space-between; gap: 16px;
+  padding-top: 8px; border-top: 1px solid #E8E5DC;
+  font-size: 8.5px; color: #4A5568; letter-spacing: .3px;
+}
+#fdg-app .sheet-footer .page-no { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-weight: 700; color: #14213D; white-space: nowrap; }
+#fdg-app .sheet-cont { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; border-bottom: 2px solid #14213D; padding-bottom: 10px; margin-bottom: 14px; }
+#fdg-app .sheet-cont-name { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 12.5px; font-weight: 700; color: #14213D; }
+#fdg-app .sheet-cont-doc { font-size: 10px; font-weight: 700; color: #4A5568; text-align: right; }
 
 /* \002500\002500 MODAL \002500\002500 */
 #fdg-app .fdg-modal { display: none; position: fixed; inset: 0; background: rgba(15, 26, 48, 0.8); z-index: 99999; align-items: center; justify-content: center; padding: 16px; }
@@ -364,12 +382,17 @@
 
 /* \002500\002500 PRINT: the document only \002500\002500 */
 @media print {
-  @page { margin: 12mm; }
+  @page { size: A4; margin: 0; }
+  html.fdg-printing, html.fdg-printing body { margin: 0 !important; padding: 0 !important; background: #FFFFFF !important; }
+  html.fdg-printing body > *:not(#fdg-app) { display: none !important; }
   #fdg-app .fdg-topbar, #fdg-app .fdg-panel, #fdg-app .fdg-saved-list, #fdg-app .fdg-preview-label, #fdg-app .fdg-modal { display: none !important; }
-  #fdg-app, #fdg-app .fdg-preview { background: #FFFFFF !important; }
-  #fdg-app .fdg-layout { display: block; }
-  #fdg-app .fdg-preview { height: auto; padding: 0; position: static; overflow: visible; }
-  #fdg-app .fdg-doc-wrap { box-shadow: none; max-width: 100%; margin: 0; }
+  #fdg-app, #fdg-app .fdg-preview { background: #FFFFFF !important; min-height: 0 !important; }
+  #fdg-app .fdg-layout { display: block !important; min-height: 0 !important; }
+  #fdg-app .fdg-preview { height: auto !important; padding: 0 !important; position: static !important; overflow: visible !important; }
+  #fdg-app .fdg-pages-wrap { width: auto !important; height: auto !important; }
+  #fdg-app .fdg-pages { transform: none !important; }
+  #fdg-app .fdg-sheet { box-shadow: none; margin: 0; break-after: page; page-break-after: always; }
+  #fdg-app .fdg-sheet:last-child { break-after: auto; page-break-after: auto; }
   #content-wrapper:before { content: none !important; display: none !important; }
   #fdg-app * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
@@ -389,13 +412,6 @@
   #fdg-app .fdg-divider { display: none; }
   #fdg-app .fdg-section-head, #fdg-app .fdg-section-body { padding-left: 16px; padding-right: 16px; }
   #fdg-app .fdg-row, #fdg-app .fdg-row.cols3 { grid-template-columns: 1fr; gap: 0; }
-  #fdg-app .fdg-doc-wrap { padding: 0 18px 24px; }
-  #fdg-app .doc-band { margin: 0 -18px 20px; }
-  #fdg-app .two-col, #fdg-app .info-grid { grid-template-columns: 1fr; gap: 12px; }
-  #fdg-app .doc-header { flex-direction: column; }
-  #fdg-app .doc-header-right { min-width: 0; width: 100%; }
-  #fdg-app .doc-table th, #fdg-app .doc-table td { padding: 6px 5px; }
-  #fdg-app .watermark { font-size: 54px; }
 }
 </style>
 
@@ -411,7 +427,7 @@
       <button type="button" class="fdg-btn fdg-btn-ghost" onclick="fdgShowModal('whatsapp')"><i class="fa fa-whatsapp" aria-hidden="true"></i> WhatsApp</button>
       <button type="button" class="fdg-btn fdg-btn-ghost" onclick="fdgShowModal('telegram')"><i class="fa fa-telegram" aria-hidden="true"></i> Telegram</button>
       <button type="button" class="fdg-btn fdg-btn-ghost" onclick="fdgShowModal('email')"><i class="fa fa-envelope-o" aria-hidden="true"></i> Email</button>
-      <button type="button" class="fdg-btn fdg-btn-ghost" onclick="window.print()"><i class="fa fa-print" aria-hidden="true"></i> Print</button>
+      <button type="button" class="fdg-btn fdg-btn-ghost" onclick="fdgPrint()"><i class="fa fa-print" aria-hidden="true"></i> Print</button>
       <button type="button" class="fdg-btn fdg-btn-gold" onclick="fdgShowModal('download')"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> Download PDF</button>
     </div>
   </div>
@@ -454,6 +470,9 @@
               <option value="bill_lading">Bill of Lading</option>
             </select></div>
             <div class="fg"><label for="status">Status</label><select id="status"><option value="">None</option><option value="paid">PAID</option><option value="unpaid">UNPAID</option><option value="draft">DRAFT</option><option value="approved">APPROVED</option><option value="pending">PENDING</option></select></div>
+          </div>
+          <div class="fdg-row cols1">
+            <div class="fg"><label for="docNumOverride">Document No.</label><input id="docNumOverride" placeholder="Automatic"></div>
           </div>
           <div class="fdg-row cols3">
             <div class="fg"><label for="docDate">Date</label><input type="date" id="docDate"></div>
@@ -498,6 +517,10 @@
           <div class="fdg-row">
             <div class="fg"><label for="companyName">Your Company Name</label><input id="companyName" value="EFIC Consultancy Ltd"></div>
             <div class="fg"><label for="clientName">Client Company Name</label><input id="clientName" value="Client Company Ltd"></div>
+          </div>
+          <div class="fdg-row">
+            <div class="fg"><label for="companyTaxId">Your VAT / Tax ID</label><input id="companyTaxId" placeholder="Optional"></div>
+            <div class="fg"><label for="clientTaxId">Client VAT / Tax ID</label><input id="clientTaxId" placeholder="Optional"></div>
           </div>
           <div class="fdg-row cols1">
             <div class="fg"><label for="clientEmail">Client Email</label><input type="email" id="clientEmail" value="client@example.com"></div>
@@ -556,13 +579,13 @@ Email: client@example.com</textarea></div>
 
     <!-- RIGHT: DOCUMENT PREVIEW -->
     <div class="fdg-preview">
-      <div class="fdg-preview-label"><span>Live preview</span><span id="fdgPreviewNum"></span></div>
-      <div class="fdg-doc-wrap" id="fdgDocWrap">
+      <div class="fdg-preview-label"><span>Live preview &#183; <span id="fdgPageCount">1 page</span></span><span id="fdgPreviewNum"></span></div>
+      <div class="fdg-doc-wrap fdg-doc-src" id="fdgDocWrap" aria-hidden="true">
         <div class="doc-band"></div>
         <div id="fdgWatermark" class="watermark" aria-hidden="true"></div>
         <div class="doc-content">
-          <div class="return-address" id="fdgReturnAddr"></div>
-          <div class="doc-header">
+          <div class="return-address" id="fdgReturnAddr" data-block="head"></div>
+          <div class="doc-header" data-block="head">
             <div class="doc-header-left">
               <div class="logo" id="fdgLogoBox"></div>
               <h1 id="fdgTitle">INVOICE</h1>
@@ -582,19 +605,21 @@ Email: client@example.com</textarea></div>
               </div>
             </div>
           </div>
-          <div class="two-col">
+          <div class="two-col" data-block="head">
             <div>
               <div class="section-title" id="fdgFromLabel">From:</div>
               <div class="company-name" id="fdgDispCompany"></div>
               <div class="company-details" id="fdgDispCompanyAddr"></div>
+              <div class="company-details tax-id" id="fdgDispCompanyTax"></div>
             </div>
             <div>
               <div class="section-title" id="fdgToLabel">Bill To:</div>
               <div class="company-name" id="fdgDispClient"></div>
               <div class="company-details" id="fdgDispClientAddr"></div>
+              <div class="company-details tax-id" id="fdgDispClientTax"></div>
             </div>
           </div>
-          <div class="info-grid">
+          <div class="info-grid" data-block="head">
             <div>
               <div class="info-item"><span class="info-label" id="fdgDateLabel">Date:</span><span id="fdgDate"></span></div>
               <div class="info-item"><span class="info-label" id="fdgDueLabel">Due:</span><span id="fdgDue"></span></div>
@@ -605,7 +630,7 @@ Email: client@example.com</textarea></div>
               <div class="info-item" id="fdgPayMethodRow" style="display:none"><span class="info-label" id="fdgPayMethodLabel">Payment Method:</span><span id="fdgDispPayMethod"></span></div>
             </div>
           </div>
-          <table class="doc-table">
+          <table class="doc-table" data-block="table">
             <thead>
               <tr>
                 <th id="fdgDescHead">Description</th>
@@ -618,30 +643,30 @@ Email: client@example.com</textarea></div>
             </thead>
             <tbody id="fdgTbody"></tbody>
           </table>
-          <div class="totals">
+          <div class="totals" data-block="totals">
             <div class="total-row"><span class="total-label" id="fdgSubLabel">Subtotal:</span><span id="fdgSub"></span></div>
             <div class="total-row" id="fdgDiscRow" style="display:none"><span class="total-label" id="fdgDiscLabel">Discount:</span><span id="fdgDiscAmt"></span></div>
             <div class="total-row"><span class="total-label" id="fdgTaxLabel">Tax:</span><span id="fdgTaxAmt"></span></div>
             <div class="total-row grand-total"><span class="total-label" id="fdgTotalLabel">Total:</span><span id="fdgTotal"></span></div>
           </div>
-          <div class="payment-terms" id="fdgPayTermsBox" style="display:none">
+          <div class="payment-terms" id="fdgPayTermsBox" style="display:none" data-block="tail">
             <strong id="fdgPayTermsTitle">Payment Terms:</strong><span id="fdgPayTermsText"></span>
           </div>
-          <div class="bank-section" id="fdgBankSection">
+          <div class="bank-section" id="fdgBankSection" data-block="tail">
             <h3 id="fdgBankTitle">Bank Details for Payment</h3>
             <div class="bank-details" id="fdgBankList"></div>
           </div>
-          <div class="notes">
+          <div class="notes" id="fdgNotesBox" data-block="tail">
             <h3 id="fdgNotesTitle">Notes:</h3>
             <p id="fdgDispNotes"></p>
           </div>
-          <div class="signatures">
+          <div class="signatures" data-block="tail">
             <div class="sig-box"><div class="sig-line"></div><span id="fdgSig1">Authorised Signature</span></div>
             <div class="sig-box"><div class="sig-line"></div><span id="fdgSig2">Date</span></div>
           </div>
-          <div class="doc-footer" id="fdgDocFooter"></div>
         </div>
       </div>
+      <div class="fdg-pages-wrap" id="fdgPagesWrap"><div class="fdg-pages" id="fdgPages"></div></div>
     </div>
 
   </div>
@@ -676,10 +701,19 @@ Email: client@example.com</textarea></div>
     sw: {bank: 'Benki:', account: 'Akaunti:', currencyL: 'Sarafu:', payMethodL: 'Njia ya malipo:', tel: 'Simu:', email: 'Barua pepe:', page: 'Imetengenezwa na EFIC Document Generator'},
     zh: {bank: '\u94f6\u884c\uff1a', account: '\u8d26\u53f7\uff1a', currencyL: '\u8d27\u5e01\uff1a', payMethodL: '\u4ed8\u6b3e\u65b9\u5f0f\uff1a', tel: '\u7535\u8bdd\uff1a', email: '\u90ae\u7bb1\uff1a', page: 'EFIC Document Generator \u751f\u6210'}
   };
-  Object.keys(EXTRA).forEach(function (l) { Object.keys(EXTRA[l]).forEach(function (k) { T[l][k] = EXTRA[l][k]; }); });
+  // Page numbers, continuation header and tax ID labels.
+  var EXTRA2 = {
+    en: {pageOf: 'Page {x} of {y}', continued: '(continued)', taxId: 'VAT / Tax ID:'},
+    de: {pageOf: 'Seite {x} von {y}', continued: '(Fortsetzung)', taxId: 'USt-IdNr.:'},
+    fr: {pageOf: 'Page {x} sur {y}', continued: '(suite)', taxId: 'N\u00b0 TVA :'},
+    sw: {pageOf: 'Ukurasa {x} kati ya {y}', continued: '(inaendelea)', taxId: 'Namba ya kodi:'},
+    zh: {pageOf: '\u7b2c {x} \u9875\uff0c\u5171 {y} \u9875', continued: '\uff08\u7eed\uff09', taxId: '\u7a0e\u53f7\uff1a'}
+  };
+  [EXTRA, EXTRA2].forEach(function (X) { Object.keys(X).forEach(function (l) { Object.keys(X[l]).forEach(function (k) { T[l][k] = X[l][k]; }); }); });
   var LOCALE = {en: 'en-GB', de: 'de-DE', fr: 'fr-FR', sw: 'sw-KE', zh: 'zh-CN'};
   var UNITS = [['hrs', 'Hours'], ['days', 'Days'], ['pcs', 'Pieces'], ['kg', 'Kg'], ['items', 'Items']];
-  var FIELDS = ['lang','initials','docType','docDate','terms','tax','status','symbol','currency','payMethod','discType','discValue','earlyDisc','earlyDays','contactPerson','contactPhone','contactEmail','customerNum','orderNum','companyName','companyAddr','clientName','clientEmail','clientAddr','bankName','accNum','useIban','iban','useSwift','swift','notes'];
+  var FIELDS = ['lang','initials','docType','docDate','terms','tax','status','symbol','currency','payMethod','discType','discValue','earlyDisc','earlyDays','contactPerson','contactPhone','contactEmail','customerNum','orderNum','companyName','companyAddr','clientName','clientEmail','clientAddr','bankName','accNum','useIban','iban','useSwift','swift','notes','docNumOverride','companyTaxId','clientTaxId'];
+  var NEW_FIELDS = ['docNumOverride', 'companyTaxId', 'clientTaxId']; // not in older saves
 
   function $(id) { return document.getElementById(id); }
   function val(id) { return $(id).value; }
@@ -744,7 +778,21 @@ Email: client@example.com</textarea></div>
 
   $('logo').onchange = function (e) {
     var f = e.target.files[0]; if (!f) return;
-    var r = new FileReader(); r.onload = function (ev) { logo = ev.target.result; fdgUpdate(); }; r.readAsDataURL(f);
+    var r = new FileReader();
+    r.onload = function (ev) {
+      // Logos are stored inside every saved document, so keep them small (max 600 px).
+      var img = new Image();
+      img.onload = function () {
+        var k = Math.min(1, 600 / Math.max(img.width, img.height, 1));
+        var c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(img.width * k)); c.height = Math.max(1, Math.round(img.height * k));
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        logo = c.toDataURL('image/png'); fdgUpdate();
+      };
+      img.onerror = function () { logo = ev.target.result; fdgUpdate(); };
+      img.src = ev.target.result;
+    };
+    r.readAsDataURL(f);
   };
 
   // \u2500\u2500 save / load (same storage key and format as before; old saves still load) \u2500\u2500
@@ -757,6 +805,7 @@ Email: client@example.com</textarea></div>
     return data;
   }
   function applyData(data) {
+    NEW_FIELDS.forEach(function (f) { $(f).value = ''; });
     FIELDS.forEach(function (f) { if (data[f] !== undefined && $(f)) $(f).value = data[f]; });
     logo = data.logo || '';
     docStamp = data.docStamp || newStamp();
@@ -833,7 +882,7 @@ Email: client@example.com</textarea></div>
     $('fdgSpinner').style.display = 'block';
     $('fdgSuccessIcon').style.display = 'none';
     setText('fdgModalTitle', 'Generating PDF\u2026');
-    setText('fdgModalText', type === 'download' ? 'Preparing ' + currentDocNum + '.pdf\u2026' : 'Preparing your document for ' + s.name + '\u2026');
+    setText('fdgModalText', type === 'download' ? 'Preparing ' + fileName() + '.pdf\u2026' : 'Preparing your document for ' + s.name + '\u2026');
     modalButtons([{cls: 'fdg-btn-outline', text: 'Cancel', onclick: fdgCloseModal}]);
     $('fdgModal').classList.add('open');
     setTimeout(fdgGenPDF, 300);
@@ -849,41 +898,53 @@ Email: client@example.com</textarea></div>
       modalButtons([{cls: 'fdg-btn-navy', text: 'Close', onclick: fdgCloseModal}]);
       return;
     }
+    clearTimeout(timer); fdgUpdate();
+    var pages = $('fdgPages'), keepTransform = pages.style.transform;
+    var sheets = pages.querySelectorAll('.fdg-sheet'), i = 0;
+    var pdf = new jspdf.jsPDF({orientation: 'p', unit: 'mm', format: 'a4', compress: true});
     var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-    ready.then(function () {
-      return html2canvas($('fdgDocWrap'), {scale: 2, useCORS: true, logging: false, backgroundColor: '#FFFFFF'});
-    }).then(function (canvas) {
-      // JPEG keeps the PDF small enough to send on WhatsApp or by email.
-      var img = canvas.toDataURL('image/jpeg', 0.92);
-      var pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-      var iw = 210, ph = 297, ih = canvas.height * iw / canvas.width, left = ih, pos = 0;
-      pdf.addImage(img, 'JPEG', 0, pos, iw, ih); left -= ph;
-      while (left > 0) { pos = left - ih; pdf.addPage(); pdf.addImage(img, 'JPEG', 0, pos, iw, ih); left -= ph; }
-      pdf.save(currentDocNum + '.pdf');
+    pages.style.transform = 'none';  // capture at full size, not the scaled preview
+    function nextPage() {
+      if (i >= sheets.length) return Promise.resolve();
+      setText('fdgModalText', 'Page ' + (i + 1) + ' of ' + sheets.length + '\u2026');
+      return html2canvas(sheets[i], {scale: PDF_SCALE, useCORS: true, logging: false, backgroundColor: '#FFFFFF', width: PAGE_W, height: PAGE_H})
+        .then(function (canvas) {
+          if (i > 0) pdf.addPage();
+          // About 300 dpi. JPEG at high quality keeps text sharp and the file small enough to share.
+          pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+          i++;
+          return nextPage();
+        });
+    }
+    ready.then(nextPage).then(function () {
+      pages.style.transform = keepTransform;
+      pdf.save(fileName() + '.pdf');
       pdfBlob = pdf.output('blob');
       fdgShowShare();
     }).catch(function () {
+      pages.style.transform = keepTransform;
       setText('fdgModalTitle', 'PDF generation failed');
       setText('fdgModalText', 'Please try again. If it keeps failing, use Print \u2192 Save as PDF.');
       $('fdgSpinner').style.display = 'none';
       modalButtons([{cls: 'fdg-btn-navy', text: 'Close', onclick: fdgCloseModal}]);
     });
   }
+  function fileName() { return (currentDocNum || 'document').replace(/[^A-Za-z0-9._-]+/g, '-'); }
   function fdgShowShare() {
     var s = SHARE[currentShareType];
     $('fdgSpinner').style.display = 'none';
     $('fdgSuccessIcon').style.display = 'block';
     setText('fdgModalTitle', 'PDF ready');
     if (currentShareType === 'download') {
-      setText('fdgModalText', currentDocNum + '.pdf has been saved to your device.');
+      setText('fdgModalText', fileName() + '.pdf has been saved to your device.');
       modalButtons([{cls: 'fdg-btn-navy', text: 'Done', onclick: fdgCloseModal}]);
       return;
     }
-    setText('fdgModalText', currentDocNum + '.pdf has been saved to your device. Open ' + s.name + ' and attach it to your message.');
+    setText('fdgModalText', fileName() + '.pdf has been saved to your device. Open ' + s.name + ' and attach it to your message.');
     var go = currentShareType === 'whatsapp' ? fdgShareWA : currentShareType === 'telegram' ? fdgShareTG : fdgShareEmail;
     var buttons = [{cls: 'fdg-btn-gold', icon: s.icon, text: 'Open ' + s.name, onclick: go}];
     // Phones that support sharing files can send the PDF itself.
-    var file = pdfBlob && window.File ? new File([pdfBlob], currentDocNum + '.pdf', {type: 'application/pdf'}) : null;
+    var file = pdfBlob && window.File ? new File([pdfBlob], fileName() + '.pdf', {type: 'application/pdf'}) : null;
     if (file && navigator.canShare && navigator.canShare({files: [file]})) {
       buttons.unshift({cls: 'fdg-btn-navy', icon: 'fa-share-alt', text: 'Share PDF', onclick: function () {
         navigator.share({files: [file], title: currentDocNum, text: shareMessage()}).then(fdgCloseModal, function () {});
@@ -911,13 +972,14 @@ Email: client@example.com</textarea></div>
     var init = (val('initials') || 'DOC').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'DOC';
     var dt = val('docType'), tt = t(dt);
     setText('fdgTitle', tt);
-    currentDocNum = init + '-' + dt.toUpperCase().replace(/_/g, '') + '-' + docDate.getFullYear() + pad(docDate.getMonth() + 1) + pad(docDate.getDate()) + '-' + docStamp;
+    var autoNum = init + '-' + dt.toUpperCase().replace(/_/g, '') + '-' + docDate.getFullYear() + pad(docDate.getMonth() + 1) + pad(docDate.getDate()) + '-' + docStamp;
+    $('docNumOverride').placeholder = autoNum;
+    currentDocNum = val('docNumOverride').trim() || autoNum;
     setText('fdgNumber', tt + ' #: ' + currentDocNum);
     setText('fdgPreviewNum', currentDocNum);
 
     var cname = val('companyName'), caddr = (val('companyAddr') || '').split('\n')[0];
     setText('fdgReturnAddr', cname + (caddr ? ' \u2014 ' + caddr : ''));
-    setText('fdgDocFooter', cname + ' \u00b7 ' + currentDocNum);
 
     var logoBox = $('fdgLogoBox'); logoBox.innerHTML = '';
     if (logo) { var img = el('img'); img.src = logo; img.alt = cname + ' logo'; logoBox.appendChild(img); }
@@ -954,6 +1016,8 @@ Email: client@example.com</textarea></div>
     setText('fdgDispCompanyAddr', val('companyAddr'));
     setText('fdgDispClient', val('clientName'));
     setText('fdgDispClientAddr', val('clientAddr'));
+    setText('fdgDispCompanyTax', val('companyTaxId') ? t('taxId') + ' ' + val('companyTaxId') : '');
+    setText('fdgDispClientTax', val('clientTaxId') ? t('taxId') + ' ' + val('clientTaxId') : '');
 
     setText('fdgDate', fmt(docDate));
     var days = parseInt(val('terms'), 10); if (isNaN(days)) days = 30;
@@ -965,6 +1029,9 @@ Email: client@example.com</textarea></div>
     setText('fdgDescHead', t('desc')); setText('fdgSkuHead', t('sku')); setText('fdgUnitHead', t('unit'));
     setText('fdgQtyHead', t('qty')); setText('fdgPriceHead', t('price')); setText('fdgAmtHead', t('amt'));
 
+    // Delivery notes, packing slips and bills of lading list goods, not prices.
+    var noMoney = ['delivery', 'packing', 'bill_lading'].indexOf(dt) >= 0;
+    $('fdgPriceHead').style.display = $('fdgAmtHead').style.display = noMoney ? 'none' : '';
     var sub = 0, tbody = $('fdgTbody');
     tbody.innerHTML = '';
     document.querySelectorAll('#fdgItems .fdg-item-row').forEach(function (row) {
@@ -973,7 +1040,7 @@ Email: client@example.com</textarea></div>
       if (!d || q <= 0) return;
       var a = q * p; sub += a;
       var tr = el('tr');
-      [[d, ''], [s || '\u2014', ''], [u.options[u.selectedIndex].text, ''], [String(q), 'num'], [curr(p), 'num'], [curr(a), 'num']].forEach(function (c) { tr.appendChild(el('td', c[1], c[0])); });
+      [[d, ''], [s || '\u2014', ''], [u.options[u.selectedIndex].text, ''], [String(q), 'num'], [curr(p), 'num'], [curr(a), 'num']].slice(0, noMoney ? 4 : 6).forEach(function (c) { tr.appendChild(el('td', c[1], c[0])); });
       tbody.appendChild(tr);
     });
 
@@ -1009,14 +1076,130 @@ Email: client@example.com</textarea></div>
     setText('fdgBankTitle', t('bankDetails'));
     setText('fdgNotesTitle', t('notes')); setText('fdgDispNotes', val('notes'));
     setText('fdgSig1', t('authSig')); setText('fdgSig2', t('date'));
+    document.querySelector('#fdgDocWrap .totals').style.display = noMoney ? 'none' : '';
+    if (noMoney) { $('fdgPayTermsBox').style.display = 'none'; $('fdgBankSection').style.display = 'none'; }
+    $('fdgNotesBox').style.display = val('notes').trim() ? '' : 'none';
     pdfBlob = null;
+    paginate();
+    fitPreview();
   };
+
+  // \u2500\u2500 A4 pages: one engine for the preview, Print and the PDF \u2500\u2500
+  // The hidden source document (#fdgDocWrap) is filled by fdgUpdate(); its blocks
+  // are copied onto A4 sheets. Item rows are never split, the table header repeats
+  // on every page, the totals never start a page on their own, and every page gets
+  // a footer with "Page X of Y".
+  var PAGE_W = 794, PAGE_H = 1123, FOOT_RESERVE = 64, PDF_SCALE = 3.125; // 3.125 x 96 dpi = 300 dpi
+  function copyOf(node) {
+    var c = node.cloneNode(true);
+    c.removeAttribute('id');
+    Array.prototype.forEach.call(c.querySelectorAll('[id]'), function (n) { n.removeAttribute('id'); });
+    return c;
+  }
+  function paginate() {
+    var src = $('fdgDocWrap'), pages = $('fdgPages'), srcTable = src.querySelector('table');
+    var blocks = Array.prototype.filter.call(src.querySelector('.doc-content').children, function (n) {
+      return n.getAttribute('data-block') && n.style.display !== 'none';
+    });
+    var limit = PAGE_H - FOOT_RESERVE, sheets = [], cur = null, table = null;
+    pages.innerHTML = '';
+    function fits() { return cur.offsetTop + cur.offsetHeight <= limit; }
+    function onlyTableOnPage() {
+      var first = cur.firstElementChild;
+      return first === table || (first && first.className === 'sheet-cont' && first.nextElementSibling === table);
+    }
+    function newSheet() {
+      var sh = el('div', 'fdg-doc-wrap fdg-sheet');
+      sh.appendChild(el('div', 'doc-band'));
+      sh.appendChild(copyOf(src.querySelector('.watermark')));
+      cur = el('div', 'doc-content'); sh.appendChild(cur);
+      sh.appendChild(el('div', 'sheet-footer'));
+      pages.appendChild(sh); sheets.push(sh); table = null;
+      if (sheets.length > 1) {
+        var ch = el('div', 'sheet-cont');
+        ch.appendChild(el('div', 'sheet-cont-name', val('companyName')));
+        ch.appendChild(el('div', 'sheet-cont-doc', $('fdgTitle').textContent + ' ' + currentDocNum + ' ' + t('continued')));
+        cur.appendChild(ch);
+      }
+    }
+    function newTable() {
+      table = copyOf(srcTable);
+      table.querySelector('tbody').innerHTML = '';
+      cur.appendChild(table);
+      return table.querySelector('tbody');
+    }
+    newSheet();
+    blocks.forEach(function (b) {
+      var kind = b.getAttribute('data-block');
+      if (kind === 'table') {
+        var tb = newTable();
+        if (!fits() && !onlyTableOnPage()) { cur.removeChild(table); newSheet(); tb = newTable(); }
+        Array.prototype.forEach.call(b.querySelectorAll('tbody tr'), function (r) {
+          var row = copyOf(r); tb.appendChild(row);
+          if (fits()) return;
+          if (tb.children.length > 1) { tb.removeChild(row); newSheet(); tb = newTable(); tb.appendChild(row); }
+          else if (!onlyTableOnPage()) { cur.removeChild(table); newSheet(); tb = newTable(); tb.appendChild(row); }
+        });
+        return;
+      }
+      var c = copyOf(b); cur.appendChild(c);
+      if (fits()) return;
+      cur.removeChild(c);
+      if (kind === 'totals' && table && table.querySelector('tbody').children.length > 1) {
+        // Keep the totals with at least one item row.
+        var last = table.querySelector('tbody').lastElementChild;
+        last.parentNode.removeChild(last);
+        newSheet(); newTable().appendChild(last);
+      } else {
+        newSheet();
+      }
+      cur.appendChild(c);
+    });
+    var left = val('companyName') + ' \u00b7 ' + currentDocNum;
+    sheets.forEach(function (sh, i) {
+      var foot = sh.querySelector('.sheet-footer');
+      foot.appendChild(el('span', '', left));
+      foot.appendChild(el('span', 'page-no', t('pageOf').replace('{x}', i + 1).replace('{y}', sheets.length)));
+    });
+    setText('fdgPageCount', sheets.length === 1 ? '1 page' : sheets.length + ' pages');
+  }
+  // Show the A4 pages at full size where they fit, scaled down on smaller screens.
+  function fitPreview() {
+    var wrap = $('fdgPagesWrap'), pages = $('fdgPages'), box = wrap.parentNode, cs = getComputedStyle(box);
+    var avail = box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    var f = Math.min(1, avail / PAGE_W);
+    pages.style.transform = f < 1 ? 'scale(' + f + ')' : '';
+    wrap.style.width = Math.floor(PAGE_W * f) + 'px';
+    wrap.style.height = Math.ceil(pages.offsetHeight * f) + 'px';
+  }
+
+  // Printing: lift the tool out of the blog layout so only the A4 pages print,
+  // one sheet per paper page, as crisp vector text.
+  var printHome = null;
+  function enterPrint() {
+    if (printHome) return;
+    clearTimeout(timer); fdgUpdate();
+    var app = $('fdg-app');
+    printHome = {parent: app.parentNode, next: app.nextSibling};
+    document.body.appendChild(app);
+    document.documentElement.classList.add('fdg-printing');
+  }
+  function exitPrint() {
+    if (!printHome) return;
+    printHome.parent.insertBefore($('fdg-app'), printHome.next);
+    printHome = null;
+    document.documentElement.classList.remove('fdg-printing');
+    fitPreview();
+  }
+  window.addEventListener('beforeprint', enterPrint);
+  window.addEventListener('afterprint', exitPrint);
+  window.fdgPrint = function () { enterPrint(); window.print(); };
 
   // Live preview: every change in the form updates the document.
   var timer = null;
   function scheduleUpdate(e) {
     if (e && (e.target.id === 'useIban' || e.target.id === 'useSwift')) toggleBankFields();
-    clearTimeout(timer); timer = setTimeout(fdgUpdate, 120);
+    clearTimeout(timer); timer = setTimeout(fdgUpdate, 150);
   }
   $('fdgPanel').addEventListener('input', scheduleUpdate);
   $('fdgPanel').addEventListener('change', scheduleUpdate);
@@ -1031,7 +1214,7 @@ Email: client@example.com</textarea></div>
       n.style.height = wide ? 'calc(100vh - ' + h + 'px)' : '';
     });
   }
-  window.addEventListener('resize', fitLayout);
+  window.addEventListener('resize', function () { fitLayout(); fitPreview(); });
 
   // Start
   var today = new Date();
@@ -1039,7 +1222,9 @@ Email: client@example.com</textarea></div>
   docStamp = newStamp();
   addRow({desc: 'Professional Consulting Services', sku: '', unit: 'hrs', qty: 8, price: '150.00'});
   addRow({desc: 'ISO Audit Support', sku: '', unit: 'days', qty: 2, price: '250.00'});
-  fdgUpdate();
   fitLayout();
+  fdgUpdate();
+  // Page breaks depend on the final fonts, so lay the pages out again once they load.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fdgUpdate(); });
 })();
 </script>

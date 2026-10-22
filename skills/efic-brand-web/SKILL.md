@@ -65,8 +65,17 @@ These rules come from real failures on eficc.blogspot.com.
 9. **Grid layouts**: use `minmax(0,1fr)` and `min-width:0` on grid children, or one wide input makes the whole column overflow on phones.
 10. **Share URLs**: build them with `encodeURIComponent` (titles with `&` or `#` were cut off). WhatsApp `https://api.whatsapp.com/send?text=`, Telegram `https://t.me/share/url?url=&text=`.
 11. **PDF export (html2canvas + jsPDF)**: use JPEG (`toDataURL('image/jpeg', .92)`), not PNG: about 0.2 MB a page instead of 12 MB. Await `document.fonts.ready` before capture. Offer `navigator.share({files})` where `navigator.canShare` allows, so phones can send the PDF itself.
-12. **Locale**: format dates and amounts with `toLocaleDateString`/`toLocaleString` for the chosen language, and translate every visible label.
-13. **Accessibility**: collapsible heads are `<button aria-expanded>`, icon-only buttons get `aria-label`, Escape closes dialogs, keep pinch-zoom (no `maximum-scale`).
+12. **Multi-page documents**: lay the document out on fixed A4 sheets (794 x 1123 CSS px = 210 x 297 mm at 96 dpi) and use the same sheets for the preview, Print and the PDF. Move whole blocks; never slice a long screenshot into pages. Rules:
+    - Item rows never split, and the table header repeats on every page.
+    - Pages 2+ get the navy band and a "(continued)" line with the document number.
+    - The totals keep at least one row with them.
+    - Every page has a footer reading "Page X of Y".
+    - **Print:** move the tool to `<body>` on `beforeprint` and back on `afterprint`, and use `@page { size: A4; margin: 0 }`. Inline heights set by JS (sticky panels) beat print CSS, so print rules need `!important`. Without them, printing silently stops after page 1.
+    - **PDF:** capture each sheet with html2canvas at `scale: 3.125` (300 dpi).
+    - **Test:** check the real print with Playwright `page.pdf()` and `pdftotext`.
+13. **Document types**: delivery notes, packing slips and bills of lading carry no prices, totals or bank details. Invoices need an editable document number and VAT/tax ID fields.
+14. **Locale**: format dates and amounts with `toLocaleDateString`/`toLocaleString` for the chosen language, and translate every visible label.
+15. **Accessibility**: collapsible heads are `<button aria-expanded>`, icon-only buttons get `aria-label`, Escape closes dialogs, keep pinch-zoom (no `maximum-scale`).
 
 ## 5. Theme-level lessons (eficc.blogspot.com)
 Keep these in mind when touching the theme itself (`blogger-theme/` in the `emisembe/quote-script` repo builds it with `scripts/build.py`, audit `scripts/check.py`):

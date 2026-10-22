@@ -21,6 +21,19 @@ python3 tools/blogger_sim.py efic-document-generator.html /tmp/saved.html && cmp
 
 No output means Blogger will leave the file unchanged.
 
+## Pages, print and PDF
+The preview, Print and the PDF all use the same A4 page layout, so what you see is what prints:
+- Item rows are never split across pages.
+- The table header repeats on every page.
+- Pages 2 onward start with the EFIC band and a "(continued)" line naming the document.
+- The totals never start a page alone; at least one item row moves with them.
+- Every page has a footer: company, document number and **Page X of Y**, translated.
+- **Print** gives real text at full printer resolution, and the text can be searched.
+- **Download PDF** captures each page at 300 dpi.
+- Delivery notes, packing slips and bills of lading leave out prices, totals and bank details.
+- **New fields:** an editable **Document No.** for your own sequence, and VAT / tax IDs for you and the client.
+- Uploaded logos are scaled to at most 600 px, so saved documents stay small.
+
 ## What changed from the first version
 **Brand (EFIC Brand Colour Guide v1.0)**
 - Navy `#14213D` and Gold `#E7B165` replace sky blue and the eight different button colours.
