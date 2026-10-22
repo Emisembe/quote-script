@@ -21,6 +21,19 @@ python3 tools/blogger_sim.py efic-document-generator.html /tmp/saved.html && cmp
 
 No output means Blogger will leave the file unchanged.
 
+## Payment options
+The **Payment Options** panel (it used to be called Bank Details) lists every way a client can pay. Tick the ones you accept and fill in their details. Each ticked method appears on the document as a card:
+- **Bank transfer:** bank, account, and optionally IBAN and SWIFT.
+- **M-Pesa:**
+  - Paybill: business number, with the document number as the account number
+  - Buy Goods (Till): till number
+  - Send Money: phone number
+- **PayPal:** email or link.
+- **Skrill:** email.
+- **Other:** any method by name, e.g. Wise or Airtel Money.
+
+Above the cards: "Please use [document number] as your payment reference". The document only shows the details; clients pay in their own app. Receipts can record M-Pesa, Skrill or Mobile Money as how they were paid. Older saved documents open with bank transfer ticked, as before.
+
 ## Pages, print and PDF
 The preview, Print and the PDF all use the same A4 page layout, so what you see is what prints:
 - Item rows are never split across pages.

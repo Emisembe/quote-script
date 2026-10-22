@@ -339,8 +339,19 @@
   font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #14213D; margin: 0 0 8px;
 }
 #fdg-app .bank-section h3:after, #fdg-app .notes h3:after { content: ''; display: block; width: 36px; height: 2px; background: #E7B165; margin-top: 5px; }
-#fdg-app .bank-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 6px 16px; font-size: 10.5px; }
-#fdg-app .bank-item strong { color: #14213D; }
+#fdg-app .pay-ref { font-size: 10.5px; margin: 0 0 8px; }
+#fdg-app .pay-ref strong { color: #14213D; }
+#fdg-app .pay-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px 12px; }
+#fdg-app .pay-card { background: #F7F6F2; border-left: 3px solid #E7B165; padding: 8px 12px; font-size: 10.5px; line-height: 1.6; white-space: pre-line; }
+#fdg-app .pay-card-title { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #14213D; margin-bottom: 2px; white-space: normal; }
+#fdg-app .pay-card strong { color: #14213D; }
+/* payment options in the form */
+#fdg-app .fdg-check { display: flex; align-items: center; gap: 10px; margin: 4px 0 10px; cursor: pointer; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #14213D; }
+#fdg-app .fdg-check input { width: 18px; height: 18px; margin: 0; accent-color: #14213D; cursor: pointer; }
+#fdg-app .fdg-check .fa { width: 16px; text-align: center; color: #14213D; }
+#fdg-app .pay-fields { margin: 0 0 14px 9px; padding: 2px 0 0 18px; border-left: 2px solid #E8E5DC; }
+#fdg-app .pay-fields[hidden] { display: none; }
+#fdg-app .pay-hint { font-size: 12px; color: #4A5568; margin: -4px 0 10px; }
 #fdg-app .notes p { font-size: 10.5px; line-height: 1.55; margin: 0; white-space: pre-line; }
 #fdg-app .signatures { display: flex; justify-content: space-around; gap: 24px; margin-top: 40px; }
 #fdg-app .sig-box { text-align: center; }
@@ -484,7 +495,7 @@
             <div class="fg"><label for="currency">Currency Name</label><input id="currency" value="GBP"></div>
           </div>
           <div class="fdg-row">
-            <div class="fg"><label for="payMethod">Payment Method</label><select id="payMethod"><option value="">Select&#8230;</option><option value="cash">Cash</option><option value="check">Cheque</option><option value="card">Credit/Debit Card</option><option value="bank">Bank Transfer</option><option value="paypal">PayPal</option><option value="other">Other</option></select></div>
+            <div class="fg"><label for="payMethod">Payment Method</label><select id="payMethod"><option value="">Select&#8230;</option><option value="cash">Cash</option><option value="check">Cheque</option><option value="card">Credit/Debit Card</option><option value="bank">Bank Transfer</option><option value="mpesa">M-Pesa</option><option value="paypal">PayPal</option><option value="skrill">Skrill</option><option value="mobile">Mobile Money</option><option value="other">Other</option></select></div>
             <div class="fg"><label for="logo">Logo</label><input type="file" id="logo" accept="image/*"></div>
           </div>
         </div>
@@ -539,19 +550,53 @@ Email: client@example.com</textarea></div>
       </div>
 
       <div class="fdg-section">
-        <button type="button" class="fdg-section-head" aria-expanded="true" onclick="fdgToggleSection(this)"><i class="fa fa-university" aria-hidden="true"></i> Bank Details <i class="fa fa-chevron-down arrow" aria-hidden="true"></i></button>
+        <button type="button" class="fdg-section-head" aria-expanded="true" onclick="fdgToggleSection(this)"><i class="fa fa-credit-card" aria-hidden="true"></i> Payment Options <i class="fa fa-chevron-down arrow" aria-hidden="true"></i></button>
         <div class="fdg-section-body">
-          <div class="fdg-row">
-            <div class="fg"><label for="bankName">Bank Name</label><input id="bankName" value="Barclays Bank"></div>
-            <div class="fg"><label for="accNum">Account Number</label><input id="accNum" value="12345678"></div>
+          <p class="pay-hint">Tick every way a client can pay you. Each one appears on the document, with the document number as the payment reference.</p>
+
+          <label class="fdg-check"><input type="checkbox" id="payBank" checked> <i class="fa fa-university" aria-hidden="true"></i> Bank Transfer</label>
+          <div class="pay-fields" data-for="payBank">
+            <div class="fdg-row">
+              <div class="fg"><label for="bankName">Bank Name</label><input id="bankName" value="Barclays Bank"></div>
+              <div class="fg"><label for="accNum">Account Number</label><input id="accNum" value="12345678"></div>
+            </div>
+            <div class="fdg-row">
+              <div class="fg"><label for="useIban">Include IBAN?</label><select id="useIban"><option value="no">No</option><option value="yes">Yes</option></select></div>
+              <div class="fg" id="ibanGroup" style="display:none"><label for="iban">IBAN</label><input id="iban" value="GB29 BARC 2021 1234 5678 90"></div>
+            </div>
+            <div class="fdg-row">
+              <div class="fg"><label for="useSwift">Include SWIFT/BIC?</label><select id="useSwift"><option value="no">No</option><option value="yes">Yes</option></select></div>
+              <div class="fg" id="swiftGroup" style="display:none"><label for="swift">SWIFT/BIC</label><input id="swift" value="BARCGB22"></div>
+            </div>
           </div>
-          <div class="fdg-row">
-            <div class="fg"><label for="useIban">Include IBAN?</label><select id="useIban"><option value="no">No</option><option value="yes">Yes</option></select></div>
-            <div class="fg" id="ibanGroup" style="display:none"><label for="iban">IBAN</label><input id="iban" value="GB29 BARC 2021 1234 5678 90"></div>
+
+          <label class="fdg-check"><input type="checkbox" id="payMpesa"> <i class="fa fa-mobile" aria-hidden="true"></i> M-Pesa</label>
+          <div class="pay-fields" data-for="payMpesa" hidden>
+            <div class="fdg-row">
+              <div class="fg"><label for="mpesaType">M-Pesa Type</label><select id="mpesaType"><option value="paybill">Paybill</option><option value="till">Buy Goods (Till)</option><option value="send">Send Money (phone)</option></select></div>
+              <div class="fg"><label for="mpesaNumber" id="mpesaNumberLabel">Business Number</label><input id="mpesaNumber" placeholder="e.g. 123456"></div>
+            </div>
+            <div class="fdg-row cols1">
+              <div class="fg"><label for="mpesaName">Registered Name (optional)</label><input id="mpesaName" placeholder="e.g. EFIC CONSULTANCY LTD"></div>
+            </div>
           </div>
-          <div class="fdg-row">
-            <div class="fg"><label for="useSwift">Include SWIFT/BIC?</label><select id="useSwift"><option value="no">No</option><option value="yes">Yes</option></select></div>
-            <div class="fg" id="swiftGroup" style="display:none"><label for="swift">SWIFT/BIC</label><input id="swift" value="BARCGB22"></div>
+
+          <label class="fdg-check"><input type="checkbox" id="payPaypal"> <i class="fa fa-paypal" aria-hidden="true"></i> PayPal</label>
+          <div class="pay-fields" data-for="payPaypal" hidden>
+            <div class="fg"><label for="paypalId">PayPal Email or Link</label><input id="paypalId" placeholder="e.g. paypal.me/efic or pay@example.com"></div>
+          </div>
+
+          <label class="fdg-check"><input type="checkbox" id="paySkrill"> <i class="fa fa-google-wallet" aria-hidden="true"></i> Skrill</label>
+          <div class="pay-fields" data-for="paySkrill" hidden>
+            <div class="fg"><label for="skrillEmail">Skrill Email</label><input id="skrillEmail" placeholder="e.g. pay@example.com"></div>
+          </div>
+
+          <label class="fdg-check"><input type="checkbox" id="payOther"> <i class="fa fa-plus-circle" aria-hidden="true"></i> Other</label>
+          <div class="pay-fields" data-for="payOther" hidden>
+            <div class="fdg-row">
+              <div class="fg"><label for="otherName">Method Name</label><input id="otherName" placeholder="e.g. Wise, Airtel Money"></div>
+              <div class="fg"><label for="otherDetails">Details</label><textarea id="otherDetails" placeholder="Account, phone or link" style="min-height:38px"></textarea></div>
+            </div>
           </div>
         </div>
       </div>
@@ -653,8 +698,9 @@ Email: client@example.com</textarea></div>
             <strong id="fdgPayTermsTitle">Payment Terms:</strong><span id="fdgPayTermsText"></span>
           </div>
           <div class="bank-section" id="fdgBankSection" data-block="tail">
-            <h3 id="fdgBankTitle">Bank Details for Payment</h3>
-            <div class="bank-details" id="fdgBankList"></div>
+            <h3 id="fdgBankTitle">Payment Options</h3>
+            <p class="pay-ref" id="fdgPayRef"></p>
+            <div class="pay-grid" id="fdgBankList"></div>
           </div>
           <div class="notes" id="fdgNotesBox" data-block="tail">
             <h3 id="fdgNotesTitle">Notes:</h3>
@@ -709,14 +755,25 @@ Email: client@example.com</textarea></div>
     sw: {pageOf: 'Ukurasa {x} kati ya {y}', continued: '(inaendelea)', taxId: 'Namba ya kodi:'},
     zh: {pageOf: '\u7b2c {x} \u9875\uff0c\u5171 {y} \u9875', continued: '\uff08\u7eed\uff09', taxId: '\u7a0e\u53f7\uff1a'}
   };
-  [EXTRA, EXTRA2].forEach(function (X) { Object.keys(X).forEach(function (l) { Object.keys(X[l]).forEach(function (k) { T[l][k] = X[l][k]; }); }); });
+  var EXTRA3 = {
+    en: {payOptions: 'Payment Options', payRef: 'Please use {ref} as your payment reference.', bankTransfer: 'Bank Transfer', mpesaPaybill: 'M-Pesa Paybill', mpesaTill: 'M-Pesa Buy Goods (Till)', mpesaSend: 'M-Pesa Send Money', businessNo: 'Business No.:', accountNo: 'Account No.:', tillNo: 'Till No.:', phoneNo: 'Phone:', nameL: 'Name:', otherL: 'Other'},
+    de: {payOptions: 'Zahlungsm\u00f6glichkeiten', payRef: 'Bitte geben Sie {ref} als Verwendungszweck an.', bankTransfer: 'Bank\u00fcberweisung', mpesaPaybill: 'M-Pesa Paybill', mpesaTill: 'M-Pesa Buy Goods (Till)', mpesaSend: 'M-Pesa Geld senden', businessNo: 'Gesch\u00e4ftsnummer:', accountNo: 'Kontonummer:', tillNo: 'Till-Nr.:', phoneNo: 'Telefon:', nameL: 'Name:', otherL: 'Sonstige'},
+    fr: {payOptions: 'Moyens de paiement', payRef: 'Merci d\'indiquer {ref} comme r\u00e9f\u00e9rence de paiement.', bankTransfer: 'Virement bancaire', mpesaPaybill: 'M-Pesa Paybill', mpesaTill: 'M-Pesa Buy Goods (Till)', mpesaSend: 'M-Pesa Envoi d\'argent', businessNo: 'N\u00b0 d\'entreprise :', accountNo: 'N\u00b0 de compte :', tillNo: 'N\u00b0 Till :', phoneNo: 'T\u00e9l\u00e9phone :', nameL: 'Nom :', otherL: 'Autre'},
+    sw: {payOptions: 'Njia za Malipo', payRef: 'Tafadhali tumia {ref} kama kumbukumbu ya malipo.', bankTransfer: 'Uhamisho wa Benki', mpesaPaybill: 'M-Pesa Lipa kwa Paybill', mpesaTill: 'M-Pesa Lipa kwa Till (Buy Goods)', mpesaSend: 'M-Pesa Tuma Pesa', businessNo: 'Namba ya Biashara:', accountNo: 'Namba ya Akaunti:', tillNo: 'Namba ya Till:', phoneNo: 'Simu:', nameL: 'Jina:', otherL: 'Nyingine'},
+    zh: {payOptions: '\u4ed8\u6b3e\u65b9\u5f0f', payRef: '\u8bf7\u4f7f\u7528 {ref} \u4f5c\u4e3a\u4ed8\u6b3e\u5907\u6ce8\u3002', bankTransfer: '\u94f6\u884c\u8f6c\u8d26', mpesaPaybill: 'M-Pesa Paybill', mpesaTill: 'M-Pesa \u5546\u6237\u4ed8\u6b3e (Till)', mpesaSend: 'M-Pesa \u8f6c\u8d26', businessNo: '\u5546\u6237\u53f7\uff1a', accountNo: '\u8d26\u6237\u53f7\uff1a', tillNo: 'Till \u53f7\uff1a', phoneNo: '\u7535\u8bdd\uff1a', nameL: '\u540d\u79f0\uff1a', otherL: '\u5176\u4ed6'}
+  };
+  [EXTRA, EXTRA2, EXTRA3].forEach(function (X) { Object.keys(X).forEach(function (l) { Object.keys(X[l]).forEach(function (k) { T[l][k] = X[l][k]; }); }); });
   var LOCALE = {en: 'en-GB', de: 'de-DE', fr: 'fr-FR', sw: 'sw-KE', zh: 'zh-CN'};
   var UNITS = [['hrs', 'Hours'], ['days', 'Days'], ['pcs', 'Pieces'], ['kg', 'Kg'], ['items', 'Items']];
-  var FIELDS = ['lang','initials','docType','docDate','terms','tax','status','symbol','currency','payMethod','discType','discValue','earlyDisc','earlyDays','contactPerson','contactPhone','contactEmail','customerNum','orderNum','companyName','companyAddr','clientName','clientEmail','clientAddr','bankName','accNum','useIban','iban','useSwift','swift','notes','docNumOverride','companyTaxId','clientTaxId'];
-  var NEW_FIELDS = ['docNumOverride', 'companyTaxId', 'clientTaxId']; // not in older saves
+  var FIELDS = ['lang','initials','docType','docDate','terms','tax','status','symbol','currency','payMethod','discType','discValue','earlyDisc','earlyDays','contactPerson','contactPhone','contactEmail','customerNum','orderNum','companyName','companyAddr','clientName','clientEmail','clientAddr','bankName','accNum','useIban','iban','useSwift','swift','notes','docNumOverride','companyTaxId','clientTaxId',
+    'payBank','payMpesa','mpesaType','mpesaNumber','mpesaName','payPaypal','paypalId','paySkrill','skrillEmail','payOther','otherName','otherDetails'];
+  // Fields that older saved documents don't have, with the value to use instead.
+  var NEW_FIELDS = {docNumOverride: '', companyTaxId: '', clientTaxId: '', payBank: true, payMpesa: false, mpesaType: 'paybill', mpesaNumber: '', mpesaName: '',
+    payPaypal: false, paypalId: '', paySkrill: false, skrillEmail: '', payOther: false, otherName: '', otherDetails: ''};
 
   function $(id) { return document.getElementById(id); }
-  function val(id) { return $(id).value; }
+  function val(id) { var e = $(id); return e.type === 'checkbox' ? e.checked : e.value; }
+  function setVal(id, v) { var e = $(id); if (e.type === 'checkbox') e.checked = v === true || v === 'true'; else e.value = v; }
   function setText(id, s) { $(id).textContent = s; }
   function t(k) { var l = val('lang'); return (T[l] && T[l][k]) || T.en[k] || k; }
   function pad(n) { return n < 10 ? '0' + n : String(n); }
@@ -753,6 +810,11 @@ Email: client@example.com</textarea></div>
   function toggleBankFields() {
     $('ibanGroup').style.display = val('useIban') === 'yes' ? 'flex' : 'none';
     $('swiftGroup').style.display = val('useSwift') === 'yes' ? 'flex' : 'none';
+    // Show each payment method's fields only when it is ticked.
+    Array.prototype.forEach.call(document.querySelectorAll('#fdg-app .pay-fields'), function (g) { g.hidden = !$(g.getAttribute('data-for')).checked; });
+    var type = val('mpesaType');
+    setText('mpesaNumberLabel', type === 'till' ? 'Till Number' : type === 'send' ? 'Phone Number' : 'Business Number');
+    $('mpesaNumber').placeholder = type === 'send' ? 'e.g. +254 712 345 678' : 'e.g. 123456';
   }
   window.fdgToggleIban = window.fdgToggleSwift = function () { toggleBankFields(); fdgUpdate(); };
 
@@ -805,8 +867,8 @@ Email: client@example.com</textarea></div>
     return data;
   }
   function applyData(data) {
-    NEW_FIELDS.forEach(function (f) { $(f).value = ''; });
-    FIELDS.forEach(function (f) { if (data[f] !== undefined && $(f)) $(f).value = data[f]; });
+    Object.keys(NEW_FIELDS).forEach(function (f) { setVal(f, NEW_FIELDS[f]); });
+    FIELDS.forEach(function (f) { if (data[f] !== undefined && $(f)) setVal(f, data[f]); });
     logo = data.logo || '';
     docStamp = data.docStamp || newStamp();
     toggleBankFields();
@@ -1067,13 +1129,38 @@ Email: client@example.com</textarea></div>
       setText('fdgPayTermsText', ' ' + t('within') + ' ' + edays + ' ' + t('days') + ' ' + t('withDiscount') + ' ' + ed + '% ' + t('or') + ' ' + days + ' ' + t('days') + ' ' + t('withoutDiscount') + '.');
     } else { $('fdgPayTermsBox').style.display = 'none'; }
 
-    var bank = $('fdgBankList'); bank.innerHTML = '';
-    [[t('bank'), val('bankName'), true], [t('account'), val('accNum'), true], ['IBAN:', val('iban'), val('useIban') === 'yes'], ['SWIFT/BIC:', val('swift'), val('useSwift') === 'yes']].forEach(function (b) {
-      if (!b[2] || !b[1]) return;
-      var item = el('div', 'bank-item'); item.appendChild(el('strong', '', b[0])); item.appendChild(document.createTextNode(' ' + b[1])); bank.appendChild(item);
-    });
-    $('fdgBankSection').style.display = bank.children.length ? 'block' : 'none';
-    setText('fdgBankTitle', t('bankDetails'));
+    // Payment options: one card per ticked method, with the document number as the reference.
+    var payList = $('fdgBankList'); payList.innerHTML = '';
+    function payCard(title, lines) {
+      lines = lines.filter(function (l) { return l[1]; });
+      if (!lines.length) return;
+      var card = el('div', 'pay-card'); card.appendChild(el('div', 'pay-card-title', title));
+      lines.forEach(function (l) {
+        var line = el('div');
+        if (l[0]) { line.appendChild(el('strong', '', l[0])); line.appendChild(document.createTextNode(' ')); }
+        line.appendChild(document.createTextNode(l[1])); card.appendChild(line);
+      });
+      payList.appendChild(card);
+    }
+    if (val('payBank')) payCard(t('bankTransfer'), [[t('bank'), val('bankName')], [t('account'), val('accNum')],
+      ['IBAN:', val('useIban') === 'yes' ? val('iban') : ''], ['SWIFT/BIC:', val('useSwift') === 'yes' ? val('swift') : '']]);
+    if (val('payMpesa') && val('mpesaNumber')) {
+      var mt = val('mpesaType');
+      payCard(t(mt === 'till' ? 'mpesaTill' : mt === 'send' ? 'mpesaSend' : 'mpesaPaybill'), [
+        [t(mt === 'till' ? 'tillNo' : mt === 'send' ? 'phoneNo' : 'businessNo'), val('mpesaNumber')],
+        [t('accountNo'), mt === 'paybill' ? currentDocNum : ''],
+        [t('nameL'), val('mpesaName')]]);
+    }
+    if (val('payPaypal')) payCard('PayPal', [['', val('paypalId')]]);
+    if (val('paySkrill')) payCard('Skrill', [['', val('skrillEmail')]]);
+    if (val('payOther')) payCard(val('otherName') || t('otherL'), [['', val('otherDetails')]]);
+    setText('fdgPayRef', '');
+    var refText = t('payRef').split('{ref}');
+    $('fdgPayRef').appendChild(document.createTextNode(refText[0]));
+    $('fdgPayRef').appendChild(el('strong', '', currentDocNum));
+    $('fdgPayRef').appendChild(document.createTextNode(refText[1] || ''));
+    $('fdgBankSection').style.display = payList.children.length ? 'block' : 'none';
+    setText('fdgBankTitle', t('payOptions'));
     setText('fdgNotesTitle', t('notes')); setText('fdgDispNotes', val('notes'));
     setText('fdgSig1', t('authSig')); setText('fdgSig2', t('date'));
     document.querySelector('#fdgDocWrap .totals').style.display = noMoney ? 'none' : '';
@@ -1198,7 +1285,7 @@ Email: client@example.com</textarea></div>
   // Live preview: every change in the form updates the document.
   var timer = null;
   function scheduleUpdate(e) {
-    if (e && (e.target.id === 'useIban' || e.target.id === 'useSwift')) toggleBankFields();
+    if (e && (e.target.type === 'checkbox' || ['useIban', 'useSwift', 'mpesaType'].indexOf(e.target.id) >= 0)) toggleBankFields();
     clearTimeout(timer); timer = setTimeout(fdgUpdate, 150);
   }
   $('fdgPanel').addEventListener('input', scheduleUpdate);
