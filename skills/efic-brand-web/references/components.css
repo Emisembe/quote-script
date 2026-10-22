@@ -1,0 +1,68 @@
+/* EFIC brand components for the web (EFIC Brand Colour Guide v1.0).
+   Replace #efic-app with your wrapper id; every rule stays scoped to it.
+   For Blogger pages: keep this file ASCII-only (see SKILL.md, rule 1). */
+
+/* ---- Base ---- */
+#efic-app { font-family: Calibri, Arial, 'Helvetica Neue', sans-serif; font-size: 15px; line-height: 1.5; color: #4A5568; }
+#efic-app *, #efic-app *:before, #efic-app *:after { box-sizing: border-box; }
+#efic-app h1, #efic-app h2, #efic-app h3 { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-weight: 700; color: #14213D; margin: 0 0 12px; text-transform: none; }
+#efic-app :focus-visible { outline: 2px solid #E7B165; outline-offset: 2px; }
+
+/* ---- Navy band with gold rule (top bars, page headers, document tops) ---- */
+#efic-app .efic-bar { background: #14213D; border-bottom: 3px solid #E7B165; color: #FFFFFF; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px; }
+#efic-app .efic-bar-title { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-weight: 800; font-size: 17px; letter-spacing: 1.5px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+#efic-app .efic-bar-title span { color: #E7B165; font-weight: 600; } /* gold on navy: approved */
+#efic-app .efic-bar-title:before { content: ''; width: 4px; height: 22px; background: linear-gradient(180deg, #F5D08A 0%, #E7B165 50%, #C9924A 100%); }
+
+/* ---- Section heading with gold short underline ---- */
+#efic-app .efic-heading { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-weight: 800; font-size: 32px; color: #14213D; text-align: center; }
+#efic-app .efic-heading:after { content: ''; display: block; width: 56px; height: 3px; margin: 14px auto 0; background: #E7B165; }
+#efic-app .efic-label { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #14213D; }
+
+/* ---- Buttons ---- */
+#efic-app .efic-btn { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; line-height: 1; padding: 12px 20px; border: 1px solid transparent; border-radius: 2px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: background .2s, color .2s, border-color .2s; }
+#efic-app .efic-btn-gold { background: #E7B165; color: #14213D; border-color: #E7B165; }            /* primary: navy text, never white */
+#efic-app .efic-btn-gold:hover { background: linear-gradient(135deg, #F5D08A 0%, #E7B165 55%, #C9924A 100%); }
+#efic-app .efic-btn-ghost { background: transparent; color: #FFFFFF; border-color: rgba(255, 255, 255, 0.35); } /* on navy */
+#efic-app .efic-btn-ghost:hover { color: #E7B165; border-color: #E7B165; }
+#efic-app .efic-btn-navy { background: #14213D; color: #FFFFFF; border-color: #14213D; }
+#efic-app .efic-btn-navy:hover { background: #0F1A30; }
+#efic-app .efic-btn-outline { background: #FFFFFF; color: #14213D; border-color: #14213D; }          /* on white */
+#efic-app .efic-btn-outline:hover { background: #14213D; color: #FFFFFF; }
+
+/* ---- Gold left edge (sidebar titles, info boxes, panel heads) ---- */
+#efic-app .efic-edge { background: #14213D; color: #FFFFFF; border-left: 4px solid #E7B165; padding: 10px 16px; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+#efic-app .efic-note { background: #F7F6F2; border-left: 4px solid #E7B165; padding: 10px 14px; }
+
+/* ---- Cards and icon discs ---- */
+#efic-app .efic-card { background: #FFFFFF; border: 1px solid #E8E5DC; border-top: 3px solid transparent; padding: 32px 24px 24px; transition: transform .25s, box-shadow .25s, border-color .25s; }
+#efic-app .efic-card:hover { border-top-color: #E7B165; transform: translateY(-4px); box-shadow: 0 14px 30px rgba(20, 33, 61, 0.10); }
+#efic-app .efic-icon { width: 64px; height: 64px; line-height: 64px; border-radius: 50%; background: #14213D; color: #E7B165; font-size: 26px; text-align: center; margin: 0 auto 18px; }
+
+/* ---- Forms ---- */
+#efic-app .efic-field { display: flex; flex-direction: column; margin-bottom: 12px; min-width: 0; }
+#efic-app .efic-field label { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 9.5px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #4A5568; margin-bottom: 5px; }
+#efic-app .efic-field input, #efic-app .efic-field select, #efic-app .efic-field textarea { width: 100%; min-height: 40px; padding: 9px 10px; border: 1px solid #D9D5CA; border-radius: 2px; font: 15px Calibri, Arial, 'Helvetica Neue', sans-serif; color: #14213D; background: #FFFFFF; }
+#efic-app .efic-field :focus { outline: none; border-color: #E7B165; box-shadow: 0 0 0 3px rgba(231, 177, 101, 0.3); }
+#efic-app .efic-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } /* minmax(0,..) stops phone overflow */
+
+/* ---- Business document (invoice, quote, receipt) ---- */
+#efic-app .efic-doc { background: #FFFFFF; max-width: 820px; margin: 0 auto; padding: 0 40px 36px; box-shadow: 0 6px 28px rgba(15, 26, 48, 0.14); font-size: 11px; position: relative; overflow: hidden; }
+#efic-app .efic-doc-band { height: 8px; margin: 0 -40px 26px; background: #14213D; border-bottom: 3px solid #E7B165; }
+#efic-app .efic-doc-title { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 26px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #14213D; }
+#efic-app .efic-badge { width: 56px; height: 56px; background: #14213D; border-bottom: 3px solid #E7B165; color: #E7B165; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-weight: 800; }
+#efic-app .efic-table { width: 100%; border-collapse: collapse; }
+#efic-app .efic-table th { background: #14213D; color: #FFFFFF; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 8.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 7px 9px; text-align: left; }
+#efic-app .efic-table td { padding: 7px 9px; border-bottom: 1px solid #E8E5DC; }
+#efic-app .efic-table tbody tr:nth-child(even) { background: #F7F6F2; }
+#efic-app .efic-table .num { text-align: right; white-space: nowrap; }
+#efic-app .efic-total { display: flex; justify-content: space-between; padding: 10px 12px; background: #14213D; border-bottom: 3px solid #E7B165; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-weight: 800; color: #FFFFFF; }
+#efic-app .efic-total span:last-child { color: #E7B165; }
+#efic-app .efic-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-38deg); font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 96px; font-weight: 800; color: #14213D; opacity: .07; pointer-events: none; }
+
+/* ---- Print: the content only ---- */
+@media print {
+  #efic-app .efic-bar, #efic-app .no-print { display: none !important; }
+  #content-wrapper:before { content: none !important; display: none !important; } /* EFIC theme print heading */
+  #efic-app * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
