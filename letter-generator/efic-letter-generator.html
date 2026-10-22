@@ -23,6 +23,7 @@
 #ldg-app { font-family: Calibri, Arial, 'Helvetica Neue', sans-serif; font-size: 14px; line-height: 1.4; background: #ECEAE4; min-height: 100vh; color: #14213D; text-align: left; }
 #ldg-app *, #ldg-app *:before, #ldg-app *:after { box-sizing: border-box; }
 #ldg-app [hidden] { display: none !important; }
+#ldg-app .ldg-btn-ghost.done { color: #E7B165; border-color: #E7B165; }
 #ldg-app h1, #ldg-app h2, #ldg-app h3, #ldg-app p { margin: 0; text-transform: none; }
 #ldg-app button { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; }
 #ldg-app :focus-visible { outline: 2px solid #E7B165; outline-offset: 2px; }
@@ -225,6 +226,7 @@
         <option value="zh">&#20013;&#25991;</option>
       </select>
       <span class="ldg-sep" aria-hidden="true"></span>
+      <button type="button" class="ldg-btn ldg-btn-ghost" id="ldgUpdateBtn" onclick="ldgUpdateNow()"><span class="ldg-ico" aria-hidden="true">&#8635;</span> <span data-t="btnUpdate">Update</span></button>
       <button type="button" class="ldg-btn ldg-btn-ghost" onclick="ldgNew()" data-t="btnNew">New</button>
       <button type="button" class="ldg-btn ldg-btn-ghost" onclick="ldgSave()" data-t="btnSave">Save</button>
       <button type="button" class="ldg-btn ldg-btn-ghost" onclick="ldgToggleSaved()" id="ldgLoadBtn" aria-controls="ldgSaved" aria-expanded="false" data-t="btnLoad">Load</button>
@@ -312,8 +314,9 @@
         <div class="ldg-body">
           <div class="ldg-row">
             <div class="fg"><label for="yourRef" data-t="lYourRef">Your Reference</label><input id="yourRef"></div>
-            <div class="fg"><label for="ourRef" data-t="lOurRef">Our Reference</label><input id="ourRef" value="2026-001"></div>
+            <div class="fg"><label for="ourRef" data-t="lOurRef">Our Reference</label><input id="ourRef"></div>
           </div>
+          <p class="ldg-hint" data-t="refHint">Leave Our Reference empty for an automatic one: the recipient's initials, then the date and time the letter was started.</p>
           <div class="fg"><label for="docDate" data-t="lDate">Date</label><input id="docDate" type="date"></div>
           <div class="fg"><label for="subject" data-t="lSubject">Subject</label><input id="subject"></div>
           <div class="fg"><label for="greeting" data-t="lGreeting">Greeting</label><input id="greeting"></div>
@@ -405,7 +408,7 @@
 
   // -- Interface text (the form and buttons) --
   var UI = {
-    en: {title: 'Letter Generator', btnNew: 'New', btnSave: 'Save', btnLoad: 'Load', btnPrint: 'Print', btnPdf: 'Download PDF', savedHead: 'Saved on this device',
+    en: {title: 'Letter Generator', btnUpdate: 'Update', updated: 'Updated', refHint: 'Leave Our Reference empty for an automatic one: the recipient\'s initials, then the date and time the letter was started.', btnNew: 'New', btnSave: 'Save', btnLoad: 'Load', btnPrint: 'Print', btnPdf: 'Download PDF', savedHead: 'Saved on this device',
       secSettings: 'Letter Settings', lLayout: 'Layout', optB: 'DIN 5008 Form B (standard)', optA: 'DIN 5008 Form A (short letterhead)', lFold: 'Fold and hole marks', lStrip: 'Reference strip in the margin',
       secOrg: 'Letterhead', lOrgName: 'Organisation Name', lTagline: 'Tagline', lLogo: 'Logo', upload: 'Upload image', remove: 'Remove', lLogoUrl: 'Or image link', lReturn: 'Return Address (envelope window)', returnPh: 'Built from your name and footer column 1',
       lPhone: 'Phone', lFax: 'Fax', lEmail: 'Email', lWeb: 'Website', lContact: 'Contact Person', lRoom: 'Room / Dept.', lRemember: 'Remember my letterhead on this device',
@@ -419,7 +422,7 @@
       preview: 'Live preview', page1: '1 page', pagesN: '{n} pages', making: 'Creating PDF\u2026', pageProgress: 'Page {x} of {y}\u2026', ready: 'PDF ready', savedTo: '{f} has been saved to your device.', failed: 'PDF could not be created',
       failedText: 'Please try again. A logo added by link may block the PDF: upload it instead, or use Print and choose "Save as PDF".', noLibs: 'The PDF tools did not load. Check your internet connection, or use Print and choose "Save as PDF".',
       close: 'Close', done: 'Done', share: 'Share PDF', nameIt: 'Name this letter:', saved: 'Saved: ', noSaved: 'No saved letters yet.', del: 'Delete', confirmDel: 'Delete this letter?', confirmNew: 'Start a new letter? The recipient and text are cleared; your letterhead stays.', storageFull: 'Could not save on this device (storage is full or blocked).'},
-    de: {title: 'Briefgenerator', btnNew: 'Neu', btnSave: 'Speichern', btnLoad: 'Laden', btnPrint: 'Drucken', btnPdf: 'PDF herunterladen', savedHead: 'Auf diesem Ger\u00e4t gespeichert',
+    de: {title: 'Briefgenerator', btnUpdate: 'Aktualisieren', updated: 'Aktualisiert', refHint: 'Unser Zeichen leer lassen f\u00fcr ein automatisches: Initialen des Empf\u00e4ngers, dann Datum und Uhrzeit, zu der der Brief begonnen wurde.', btnNew: 'Neu', btnSave: 'Speichern', btnLoad: 'Laden', btnPrint: 'Drucken', btnPdf: 'PDF herunterladen', savedHead: 'Auf diesem Ger\u00e4t gespeichert',
       secSettings: 'Briefeinstellungen', lLayout: 'Layout', optB: 'DIN 5008 Form B (Standard)', optA: 'DIN 5008 Form A (kleiner Briefkopf)', lFold: 'Falz- und Lochmarken', lStrip: 'Referenzleiste am Rand',
       secOrg: 'Briefkopf', lOrgName: 'Name der Organisation', lTagline: 'Slogan', lLogo: 'Logo', upload: 'Bild hochladen', remove: 'Entfernen', lLogoUrl: 'Oder Bild-Link', lReturn: 'R\u00fccksendeangabe (Fensterumschlag)', returnPh: 'Wird aus Name und Fu\u00dfzeilen-Spalte 1 gebildet',
       lPhone: 'Telefon', lFax: 'Telefax', lEmail: 'E-Mail', lWeb: 'Website', lContact: 'Ansprechpartner', lRoom: 'Zimmer / Abteilung', lRemember: 'Briefkopf auf diesem Ger\u00e4t merken',
@@ -433,7 +436,7 @@
       preview: 'Live-Vorschau', page1: '1 Seite', pagesN: '{n} Seiten', making: 'PDF wird erstellt\u2026', pageProgress: 'Seite {x} von {y}\u2026', ready: 'PDF fertig', savedTo: '{f} wurde auf Ihrem Ger\u00e4t gespeichert.', failed: 'PDF konnte nicht erstellt werden',
       failedText: 'Bitte erneut versuchen. Ein per Link eingef\u00fcgtes Logo kann das PDF verhindern: Laden Sie es stattdessen hoch, oder drucken Sie und w\u00e4hlen \u201eAls PDF speichern\u201c.', noLibs: 'Die PDF-Werkzeuge wurden nicht geladen. Pr\u00fcfen Sie die Internetverbindung, oder drucken Sie und w\u00e4hlen \u201eAls PDF speichern\u201c.',
       close: 'Schlie\u00dfen', done: 'Fertig', share: 'PDF teilen', nameIt: 'Name f\u00fcr diesen Brief:', saved: 'Gespeichert: ', noSaved: 'Noch keine gespeicherten Briefe.', del: 'L\u00f6schen', confirmDel: 'Diesen Brief l\u00f6schen?', confirmNew: 'Neuen Brief beginnen? Empf\u00e4nger und Text werden geleert, der Briefkopf bleibt.', storageFull: 'Speichern auf diesem Ger\u00e4t nicht m\u00f6glich (Speicher voll oder gesperrt).'},
-    fr: {title: 'G\u00e9n\u00e9rateur de lettres', btnNew: 'Nouveau', btnSave: 'Enregistrer', btnLoad: 'Ouvrir', btnPrint: 'Imprimer', btnPdf: 'T\u00e9l\u00e9charger le PDF', savedHead: 'Enregistr\u00e9 sur cet appareil',
+    fr: {title: 'G\u00e9n\u00e9rateur de lettres', btnUpdate: 'Actualiser', updated: 'Actualis\u00e9', refHint: 'Laissez Notre r\u00e9f\u00e9rence vide pour une r\u00e9f\u00e9rence automatique : les initiales du destinataire, puis la date et l\'heure de cr\u00e9ation de la lettre.', btnNew: 'Nouveau', btnSave: 'Enregistrer', btnLoad: 'Ouvrir', btnPrint: 'Imprimer', btnPdf: 'T\u00e9l\u00e9charger le PDF', savedHead: 'Enregistr\u00e9 sur cet appareil',
       secSettings: 'Param\u00e8tres de la lettre', lLayout: 'Mise en page', optB: 'DIN 5008 forme B (standard)', optA: 'DIN 5008 forme A (en-t\u00eate court)', lFold: 'Rep\u00e8res de pliage et de perforation', lStrip: 'Bande de r\u00e9f\u00e9rence dans la marge',
       secOrg: 'En-t\u00eate', lOrgName: 'Nom de l\'organisation', lTagline: 'Slogan', lLogo: 'Logo', upload: 'Choisir une image', remove: 'Supprimer', lLogoUrl: 'Ou lien de l\'image', lReturn: 'Adresse de retour (fen\u00eatre de l\'enveloppe)', returnPh: 'Cr\u00e9\u00e9e \u00e0 partir du nom et de la colonne 1 du pied de page',
       lPhone: 'T\u00e9l\u00e9phone', lFax: 'Fax', lEmail: 'E-mail', lWeb: 'Site web', lContact: 'Personne de contact', lRoom: 'Bureau / Service', lRemember: 'M\u00e9moriser mon en-t\u00eate sur cet appareil',
@@ -447,7 +450,7 @@
       preview: 'Aper\u00e7u en direct', page1: '1 page', pagesN: '{n} pages', making: 'Cr\u00e9ation du PDF\u2026', pageProgress: 'Page {x} sur {y}\u2026', ready: 'PDF pr\u00eat', savedTo: '{f} a \u00e9t\u00e9 enregistr\u00e9 sur votre appareil.', failed: 'Impossible de cr\u00e9er le PDF',
       failedText: 'Veuillez r\u00e9essayer. Un logo ajout\u00e9 par lien peut bloquer le PDF : t\u00e9l\u00e9versez-le plut\u00f4t, ou imprimez et choisissez \u00ab Enregistrer en PDF \u00bb.', noLibs: 'Les outils PDF ne se sont pas charg\u00e9s. V\u00e9rifiez votre connexion, ou imprimez et choisissez \u00ab Enregistrer en PDF \u00bb.',
       close: 'Fermer', done: 'Termin\u00e9', share: 'Partager le PDF', nameIt: 'Nom de cette lettre :', saved: 'Enregistr\u00e9 : ', noSaved: 'Aucune lettre enregistr\u00e9e.', del: 'Supprimer', confirmDel: 'Supprimer cette lettre ?', confirmNew: 'Commencer une nouvelle lettre ? Le destinataire et le texte sont effac\u00e9s ; l\'en-t\u00eate reste.', storageFull: 'Enregistrement impossible sur cet appareil (stockage plein ou bloqu\u00e9).'},
-    sw: {title: 'Jenereta ya Barua', btnNew: 'Mpya', btnSave: 'Hifadhi', btnLoad: 'Fungua', btnPrint: 'Chapisha', btnPdf: 'Pakua PDF', savedHead: 'Zilizohifadhiwa kwenye kifaa hiki',
+    sw: {title: 'Jenereta ya Barua', btnUpdate: 'Sasisha', updated: 'Imesasishwa', refHint: 'Acha Kumbukumbu Yetu wazi ili itengenezwe yenyewe: herufi za kwanza za mpokeaji, kisha tarehe na saa barua ilipoanzishwa.', btnNew: 'Mpya', btnSave: 'Hifadhi', btnLoad: 'Fungua', btnPrint: 'Chapisha', btnPdf: 'Pakua PDF', savedHead: 'Zilizohifadhiwa kwenye kifaa hiki',
       secSettings: 'Mipangilio ya Barua', lLayout: 'Mpangilio', optB: 'DIN 5008 Fomu B (kawaida)', optA: 'DIN 5008 Fomu A (kichwa kifupi)', lFold: 'Alama za kukunja na kutoboa', lStrip: 'Kumbukumbu pembeni mwa ukurasa',
       secOrg: 'Kichwa cha Barua', lOrgName: 'Jina la Shirika', lTagline: 'Kauli mbiu', lLogo: 'Nembo', upload: 'Pakia picha', remove: 'Ondoa', lLogoUrl: 'Au kiungo cha picha', lReturn: 'Anwani ya Kurudisha (dirisha la bahasha)', returnPh: 'Hutengenezwa kutoka jina na safu ya 1 ya chini',
       lPhone: 'Simu', lFax: 'Faksi', lEmail: 'Barua pepe', lWeb: 'Tovuti', lContact: 'Mtu wa Mawasiliano', lRoom: 'Chumba / Idara', lRemember: 'Kumbuka kichwa changu cha barua kwenye kifaa hiki',
@@ -461,7 +464,7 @@
       preview: 'Muonekano wa moja kwa moja', page1: 'Ukurasa 1', pagesN: 'Kurasa {n}', making: 'Inatengeneza PDF\u2026', pageProgress: 'Ukurasa {x} kati ya {y}\u2026', ready: 'PDF iko tayari', savedTo: '{f} imehifadhiwa kwenye kifaa chako.', failed: 'PDF haikuweza kutengenezwa',
       failedText: 'Tafadhali jaribu tena. Nembo iliyoongezwa kwa kiungo inaweza kuzuia PDF: ipakie badala yake, au chapisha na uchague "Hifadhi kama PDF".', noLibs: 'Zana za PDF hazikupakia. Kagua mtandao wako, au chapisha na uchague "Hifadhi kama PDF".',
       close: 'Funga', done: 'Imekamilika', share: 'Shiriki PDF', nameIt: 'Jina la barua hii:', saved: 'Imehifadhiwa: ', noSaved: 'Hakuna barua zilizohifadhiwa bado.', del: 'Futa', confirmDel: 'Futa barua hii?', confirmNew: 'Anza barua mpya? Mpokeaji na maandishi yatafutwa; kichwa cha barua kinabaki.', storageFull: 'Haiwezekani kuhifadhi kwenye kifaa hiki (hifadhi imejaa au imezuiwa).'},
-    zh: {title: '\u4fe1\u51fd\u751f\u6210\u5668', btnNew: '\u65b0\u5efa', btnSave: '\u4fdd\u5b58', btnLoad: '\u6253\u5f00', btnPrint: '\u6253\u5370', btnPdf: '\u4e0b\u8f7dPDF', savedHead: '\u5df2\u4fdd\u5b58\u5728\u6b64\u8bbe\u5907\u4e0a',
+    zh: {title: '\u4fe1\u51fd\u751f\u6210\u5668', btnUpdate: '\u66f4\u65b0', updated: '\u5df2\u66f4\u65b0', refHint: '\u6211\u65b9\u7f16\u53f7\u7559\u7a7a\u5373\u81ea\u52a8\u751f\u6210\uff1a\u6536\u4ef6\u4eba\u540d\u79f0\u7f29\u5199\uff0c\u52a0\u4e0a\u4fe1\u51fd\u521b\u5efa\u7684\u65e5\u671f\u548c\u65f6\u95f4\u3002', btnNew: '\u65b0\u5efa', btnSave: '\u4fdd\u5b58', btnLoad: '\u6253\u5f00', btnPrint: '\u6253\u5370', btnPdf: '\u4e0b\u8f7dPDF', savedHead: '\u5df2\u4fdd\u5b58\u5728\u6b64\u8bbe\u5907\u4e0a',
       secSettings: '\u4fe1\u51fd\u8bbe\u7f6e', lLayout: '\u7248\u5f0f', optB: 'DIN 5008 B\u5f0f\uff08\u6807\u51c6\uff09', optA: 'DIN 5008 A\u5f0f\uff08\u77ed\u4fe1\u5934\uff09', lFold: '\u6298\u53e0\u548c\u6253\u5b54\u6807\u8bb0', lStrip: '\u9875\u8fb9\u53c2\u8003\u6761',
       secOrg: '\u4fe1\u5934', lOrgName: '\u673a\u6784\u540d\u79f0', lTagline: '\u6807\u8bed', lLogo: '\u6807\u5fd7', upload: '\u4e0a\u4f20\u56fe\u7247', remove: '\u5220\u9664', lLogoUrl: '\u6216\u56fe\u7247\u94fe\u63a5', lReturn: '\u56de\u90ae\u5730\u5740\uff08\u4fe1\u5c01\u7a97\u53e3\uff09', returnPh: '\u7531\u540d\u79f0\u548c\u9875\u811a\u7b2c1\u680f\u81ea\u52a8\u751f\u6210',
       lPhone: '\u7535\u8bdd', lFax: '\u4f20\u771f', lEmail: '\u7535\u5b50\u90ae\u4ef6', lWeb: '\u7f51\u7ad9', lContact: '\u8054\u7cfb\u4eba', lRoom: '\u623f\u95f4 / \u90e8\u95e8', lRemember: '\u5728\u6b64\u8bbe\u5907\u4e0a\u8bb0\u4f4f\u6211\u7684\u4fe1\u5934',
@@ -550,7 +553,7 @@
   var LETTER_FIELDS = ['recCompany', 'recTitle', 'recAcad', 'recFirst', 'recLast', 'recDept', 'recStreet', 'recZip', 'recCity', 'recCountry',
     'yourRef', 'ourRef', 'docDate', 'subject', 'greeting', 'body', 'closing', 'encl', 'cc', 'qrAmt', 'qrRef'];
 
-  var lang = 'en', logo = '', sigImg = '', timer = null, qrCache = {key: '', url: ''}, pdfBlob = null;
+  var lang = 'en', logo = '', sigImg = '', timer = null, refStamp = stamp(new Date()), qrCache = {key: '', url: ''}, pdfBlob = null;
 
   function $(id) { return document.getElementById(id); }
   function val(id) { var e = $(id); return e.type === 'checkbox' ? e.checked : e.value; }
@@ -649,6 +652,23 @@
     });
   }
 
+  // -- Our reference: recipient initials + date and time the letter was started (e.g. KPLC-20261022-163239) --
+  function stamp(d) { var p = function (n) { return n < 10 ? '0' + n : '' + n; }; return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds()); }
+  var SKIP_WORDS = /^(ltd|limited|plc|inc|incorporated|llc|llp|lp|corp|co|gmbh|mbh|ag|kg|ohg|ug|ev|eg|se|sa|sarl|sas|srl|spa|bv|nv|ab|as|oy|pty|pvt|private|the|and|of|for|und|der|die|das|des|de|du|la|le|les|et|na|ya|wa|kwa|&)$/i;
+  function initials(name) {
+    var words = String(name || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\./g, '').replace(/[^A-Za-z0-9&]+/g, ' ').trim().split(' ').filter(Boolean);
+    var core = words.filter(function (x) { return !SKIP_WORDS.test(x); });
+    if (!core.length) core = words;
+    if (!core.length) return '';
+    if (core.length === 1) return (/^[A-Z0-9]{2,6}$/.test(core[0]) ? core[0] : core[0].slice(0, 3)).toUpperCase();
+    return core.map(function (x) { return x.charAt(0); }).join('').toUpperCase().slice(0, 5);
+  }
+  function autoRef() {
+    var who = initials(txt('recCompany')) || initials([txt('recFirst'), txt('recLast')].join(' ')) || 'LTR';
+    return who + '-' + refStamp;
+  }
+  function ourRef() { return txt('ourRef') || autoRef(); }
+
   // -- GiroCode (EPC069-12 SEPA credit transfer QR) --
   function ibanOk(iban) {
     var s = iban.replace(/\s+/g, '').toUpperCase();
@@ -667,7 +687,7 @@
       amt >= 0.01 && amt <= 999999999.99 ? 'EUR' + amt.toFixed(2) : '',
       '',                                   // purpose code
       '',                                   // structured creditor reference (RF...) - not used
-      (txt('qrRef') || txt('ourRef')).slice(0, 140),  // unstructured remittance text
+      (txt('qrRef') || ourRef()).slice(0, 140),  // unstructured remittance text
       ''];
     while (f.length && f[f.length - 1] === '') f.pop();     // no trailing separators
     return f.join('\n');
@@ -725,7 +745,8 @@
   function mm(n) { return n + 'mm'; }
   function render() {
     var pages = $('ldgPages'), form = FORM[val('layout')] || FORM.B, sheets = [], flow = null, limit = 0;
-    var dateText = fmtDate(), ref = txt('ourRef'), qr = qrImage(), cols = getCols();
+    var dateText = fmtDate(), ref = ourRef(), qr = qrImage(), cols = getCols();
+    $('ourRef').placeholder = autoRef();
     pages.innerHTML = '';
 
     function footer(sh) {
@@ -901,7 +922,7 @@
   window.ldgSave = function () {
     var name = prompt(u('nameIt'), [txt('recCompany') || txt('recLast'), txt('subject')].filter(Boolean).join(' \u2014 '));
     if (!name) return;
-    var d = {name: name, savedAt: new Date().toISOString(), head: letterhead(), letter: collect(LETTER_FIELDS), lang: lang};
+    var d = {name: name, savedAt: new Date().toISOString(), head: letterhead(), letter: collect(LETTER_FIELDS), refStamp: refStamp, lang: lang};
     var list = read(KEY_LETTERS, []); list.push(d);
     if (store(KEY_LETTERS, list)) { alert(u('saved') + name); renderSaved(); } else alert(u('storageFull'));
   };
@@ -921,6 +942,7 @@
   function load(i) {
     var d = read(KEY_LETTERS, [])[i]; if (!d) return;
     if (d.head) applyHead(d.head);
+    refStamp = d.refStamp || stamp(new Date(d.savedAt || Date.now()));
     LETTER_FIELDS.forEach(function (f) { setVal(f, d.letter && d.letter[f] !== undefined ? d.letter[f] : ''); });
     setLang(d.lang || lang, true);
     $('ldgSaved').classList.remove('open'); $('ldgLoadBtn').setAttribute('aria-expanded', 'false');
@@ -934,6 +956,7 @@
   window.ldgNew = function () {
     if (!confirm(u('confirmNew'))) return;
     LETTER_FIELDS.forEach(function (f) { setVal(f, ''); });
+    refStamp = stamp(new Date());
     setVal('docDate', today());
     setVal('body', W[lang].body); setVal('subject', '');
     update();
@@ -966,7 +989,7 @@
   }
   function closeModal() { $('ldgModal').classList.remove('open'); }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('ldgModal').classList.contains('open')) closeModal(); });
-  function fileName() { return ((txt('ourRef') || 'letter') + (txt('recCompany') || txt('recLast') ? '-' + (txt('recCompany') || txt('recLast')) : '')).replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'letter'; }
+  function fileName() { return ((ourRef() || 'letter') + (txt('recCompany') || txt('recLast') ? '-' + (txt('recCompany') || txt('recLast')) : '')).replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'letter'; }
   window.ldgPdf = function () {
     clearTimeout(timer); render();
     if (!window.html2canvas || !window.jspdf) { modal(u('failed'), u('noLibs'), false, {list: [{cls: 'ldg-btn-navy', text: u('close'), on: closeModal}]}); return; }
@@ -999,7 +1022,13 @@
     });
   };
 
-  // -- Live update --
+  // -- Live update (plus an Update button that redraws at once and confirms it) --
+  window.ldgUpdateNow = function () {
+    update();
+    var b = $('ldgUpdateBtn'), t = b.querySelector('[data-t]');
+    t.textContent = u('updated'); b.classList.add('done');
+    clearTimeout(b._t); b._t = setTimeout(function () { t.textContent = u('btnUpdate'); b.classList.remove('done'); }, 1500);
+  };
   function update() { clearTimeout(timer); render(); saveHead(); }
   function schedule() { clearTimeout(timer); timer = setTimeout(update, 150); }
   $('ldgPanel').addEventListener('input', schedule);

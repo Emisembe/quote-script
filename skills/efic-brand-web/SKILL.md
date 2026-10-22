@@ -7,7 +7,7 @@ description: "EFIC Consultancy Ltd brand system for the web: Blogger themes, Blo
 
 This captures how the EFIC Brand Colour Guide v1.0 was applied to the eficc.blogspot.com theme, the EFIC Document Generator page and the EFIC Letter Generator page, plus every bug found along the way. Apply it to new pages, gadgets, tools and documents so they look like one family and survive Blogger.
 
-For building or fixing a whole Blogger **theme** (XML), also use the `blogger-theme-builder` skill. This skill supplies the brand and the EFIC-specific lessons on top of it.
+For building or fixing a whole Blogger **theme** (XML), also use the `blogger-theme-builder` skill. This skill supplies the brand and the EFIC-specific lessons on top of it. For the EFIC Letter Generator page itself, use the `efic-letter-generator` skill: it bundles the tested page and its browser tests.
 
 ## 1. Brand tokens
 

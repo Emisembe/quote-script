@@ -94,7 +94,7 @@
 #fdg-app .fdg-btn-gold { background: #E7B165; color: #14213D; border-color: #E7B165; }
 #fdg-app .fdg-btn-gold:hover { background: linear-gradient(135deg, #F5D08A 0%, #E7B165 55%, #C9924A 100%); }
 #fdg-app .fdg-btn-ghost { background: transparent; color: #FFFFFF; border-color: rgba(255, 255, 255, 0.35); }
-#fdg-app .fdg-btn-ghost:hover { color: #E7B165; border-color: #E7B165; }
+#fdg-app .fdg-btn-ghost:hover, #fdg-app .fdg-btn-ghost.done { color: #E7B165; border-color: #E7B165; }
 #fdg-app .fdg-btn-navy { background: #14213D; color: #FFFFFF; border-color: #14213D; }
 #fdg-app .fdg-btn-navy:hover { background: #0F1A30; }
 #fdg-app .fdg-btn-outline { background: #FFFFFF; color: #14213D; border-color: #14213D; }
@@ -432,6 +432,7 @@
   <div class="fdg-topbar">
     <div class="fdg-topbar-title">EFIC <span>Document Generator</span></div>
     <div class="fdg-topbar-actions">
+      <button type="button" class="fdg-btn fdg-btn-ghost" id="fdgUpdateBtn" onclick="fdgUpdateNow()"><i class="fa fa-refresh" aria-hidden="true"></i> <span>Update</span></button>
       <button type="button" class="fdg-btn fdg-btn-ghost" onclick="fdgSaveDoc()"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
       <button type="button" class="fdg-btn fdg-btn-ghost" onclick="fdgToggleSaved()" aria-controls="fdgSavedList" aria-expanded="false" id="fdgLoadBtn"><i class="fa fa-folder-open-o" aria-hidden="true"></i> Load</button>
       <span class="fdg-divider" aria-hidden="true"></span>
@@ -1288,6 +1289,13 @@ Email: client@example.com</textarea></div>
     if (e && (e.target.type === 'checkbox' || ['useIban', 'useSwift', 'mpesaType'].indexOf(e.target.id) >= 0)) toggleBankFields();
     clearTimeout(timer); timer = setTimeout(fdgUpdate, 150);
   }
+  // Update button: redraw at once and confirm it.
+  window.fdgUpdateNow = function () {
+    clearTimeout(timer); toggleBankFields(); fdgUpdate();
+    var b = $('fdgUpdateBtn'), t = b.querySelector('span');
+    t.textContent = 'Updated'; b.classList.add('done');
+    clearTimeout(b._t); b._t = setTimeout(function () { t.textContent = 'Update'; b.classList.remove('done'); }, 1500);
+  };
   $('fdgPanel').addEventListener('input', scheduleUpdate);
   $('fdgPanel').addEventListener('change', scheduleUpdate);
 

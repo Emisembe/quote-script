@@ -30,6 +30,15 @@ The tool fills the whole page. On this page only, it hides the theme's menu, hea
 - Signature name, position, an optional place line, and an optional signature image.
 - With **Remember my letterhead** ticked, your letterhead stays filled in on this device.
 
+**Our reference (automatic):**
+- Leave **Our Reference** empty and it fills in by itself: the initials of the company you're writing to, then the date and time (to the second) you started the letter. For example, Kenya Power and Lighting Company PLC gives `KPLC-20261022-163239`.
+- Legal endings and small words are skipped (Ltd, PLC, GmbH, AG, S.A., "and", "of"). A one-word name uses its first 3 letters (Safaricom gives `SAF`), and a short all-capitals name stays whole (`KCB`, `UNICEF`).
+- With no company, it uses the person's initials (Erika Musterfrau gives `EM`). With no name at all, it starts with `LTR`.
+- The time part stays fixed while you edit, so the reference doesn't change while you type. **New** starts a new time, and a saved letter keeps its original reference.
+- Type your own reference in the field to replace the automatic one. The reference also names the PDF file.
+
+**Update button:** the preview already follows every change you type. **Update** redraws the pages at once and shows "Updated", so you can be sure what you see is current before you print or download.
+
 **Save and Load:** saves letters on this device, in the browser.
 
 **GiroCode (optional):**
@@ -67,5 +76,10 @@ These checks were run in Chromium, both inside a copy of the EFIC theme page and
 - Save and load, and the letterhead remembered after reloading.
 - Print, as a real print to PDF: 3 A4 pages with searchable text.
 - Download PDF: 3 pages at 300 dpi.
+- The automatic reference for 10 different company names (Kenyan, German, French, Chinese, none), typed references, New, and Save/Load.
+- The Update button, in all languages.
 
 Screenshots are in `preview/`.
+
+## Skill
+The `efic-letter-generator` skill (`../skills/efic-letter-generator`) bundles a copy of this file, a map of the code and the browser tests. After changing this file, copy it to `../skills/efic-letter-generator/assets/` so the skill stays current.

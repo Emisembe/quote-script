@@ -57,7 +57,7 @@ The preview, Print and the PDF all use the same A4 page layout, so what you see 
 
 **Fixes**
 - **Safe text:** typed text, addresses and saved names are no longer inserted as HTML. `<` and `&` display correctly and nothing typed can run as code.
-- **Live preview:** the document updates as you type, so there is no Update button.
+- **Live preview:** the document updates as you type. The **Update** button (first in the top bar) redraws it at once and shows "Updated", for peace of mind before printing or downloading.
 - **Stable document number:** it stays the same while you edit, and saving or loading keeps it.
 - **New Download PDF button.** On phones that support it, a **Share PDF** button sends the file itself.
 - **Smaller PDFs:** saved as JPEG, about 0.2 MB a page instead of about 12 MB.
