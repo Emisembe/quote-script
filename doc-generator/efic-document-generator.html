@@ -6,7 +6,7 @@
 -->
 
 <style>
-/* ── FULL PAGE: hide the theme around this tool (this page only) ── */
+/* \002500\002500 FULL PAGE: hide the theme around this tool (this page only) \002500\002500 */
 #header-wrapper, #jugas_footer, .tm-menu, .scroll-header, #sidebar-wrapper,
 .foot-bar-social, .Attribution, .feed-links, #blog-pager, .slicknav_menu,
 .post-header, .post-head, h1.post-title, .post-footer, .share-box, #related-posts,
@@ -21,7 +21,7 @@
 .post-body { padding: 0 !important; margin: 0 !important; }
 .item #header-wrapper, .static_page #header-wrapper { padding: 0 !important; }
 
-/* ── APP SHELL ── */
+/* \002500\002500 APP SHELL \002500\002500 */
 #fdg-app {
   font-family: Calibri, Arial, 'Helvetica Neue', sans-serif;
   font-size: 14px;
@@ -36,7 +36,7 @@
 #fdg-app button { font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; }
 #fdg-app :focus-visible { outline: 2px solid #E7B165; outline-offset: 2px; }
 
-/* ── TOP BAR ── */
+/* \002500\002500 TOP BAR \002500\002500 */
 #fdg-app .fdg-topbar {
   background: #14213D;
   border-bottom: 3px solid #E7B165;
@@ -73,7 +73,7 @@
 #fdg-app .fdg-topbar-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 #fdg-app .fdg-divider { width: 1px; height: 24px; background: rgba(255, 255, 255, 0.2); margin: 0 4px; }
 
-/* ── BUTTONS ── */
+/* \002500\002500 BUTTONS \002500\002500 */
 #fdg-app .fdg-btn {
   font-size: 11px;
   font-weight: 700;
@@ -102,7 +102,7 @@
 #fdg-app .fdg-btn-add { width: 100%; justify-content: center; margin-top: 10px; padding: 12px; border: 1px dashed #14213D; background: #F7F6F2; color: #14213D; }
 #fdg-app .fdg-btn-add:hover { background: #14213D; color: #FFFFFF; border-style: solid; }
 
-/* ── SAVED DOCUMENTS ── */
+/* \002500\002500 SAVED DOCUMENTS \002500\002500 */
 #fdg-app .fdg-saved-list {
   display: none;
   background: #FFFFFF;
@@ -129,7 +129,7 @@
 #fdg-app .fdg-del { font-size: 10px; padding: 6px 10px; }
 #fdg-app .fdg-empty { padding: 12px 24px 16px; color: #4A5568; font-size: 13px; margin: 0; }
 
-/* ── LAYOUT ── */
+/* \002500\002500 LAYOUT \002500\002500 */
 #fdg-app .fdg-layout { display: grid; grid-template-columns: 430px minmax(0, 1fr); min-height: calc(100vh - 60px); }
 #fdg-app .fdg-panel, #fdg-app .fdg-preview, #fdg-app .fg > *, #fdg-app .fdg-item-row > * { min-width: 0; }
 #fdg-app .fdg-panel {
@@ -155,7 +155,7 @@
   display: flex; justify-content: space-between;
 }
 
-/* ── PANEL SECTIONS ── */
+/* \002500\002500 PANEL SECTIONS \002500\002500 */
 #fdg-app .fdg-section { border-bottom: 1px solid #E8E5DC; }
 #fdg-app .fdg-section-head {
   width: 100%;
@@ -182,7 +182,7 @@
 #fdg-app .fdg-section-body { padding: 16px 20px 8px; }
 #fdg-app .fdg-section-body[hidden] { display: none; }
 
-/* ── FORM ELEMENTS ── */
+/* \002500\002500 FORM ELEMENTS \002500\002500 */
 #fdg-app .fdg-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 #fdg-app .fdg-row.cols3 { grid-template-columns: 1fr 1fr 1fr; }
 #fdg-app .fdg-row.cols1 { grid-template-columns: 1fr; }
@@ -218,15 +218,18 @@
 }
 #fdg-app .fg textarea { min-height: 84px; resize: vertical; line-height: 1.45; }
 
-/* ── LINE ITEMS ── */
+/* \002500\002500 LINE ITEMS \002500\002500 */
+/* Two lines per item: description across the top, then SKU / unit / qty / price */
 #fdg-app .fdg-items-header, #fdg-app .fdg-item-row {
   display: grid;
-  grid-template-columns: 2.4fr 1fr 0.9fr 0.8fr 1fr 32px;
+  grid-template-columns: minmax(0, 0.8fr) 88px 58px minmax(0, 1.1fr) 30px;
   gap: 6px;
   align-items: center;
 }
+#fdg-app .fdg-items-header > span:first-child, #fdg-app .fdg-item-row .desc { grid-column: 1 / -1; }
+#fdg-app .fdg-items-header > span { padding-left: 9px; }
 #fdg-app .fdg-items-header {
-  padding: 8px;
+  padding: 8px 0;
   background: #14213D;
   font-family: 'Montserrat', 'Arial Black', Arial, sans-serif;
   font-size: 9px;
@@ -237,7 +240,7 @@
   border-radius: 2px;
   margin-bottom: 4px;
 }
-#fdg-app .fdg-item-row { padding: 6px 0; border-bottom: 1px solid #F0EEE8; }
+#fdg-app .fdg-item-row { padding: 10px 0; border-bottom: 1px solid #F0EEE8; }
 #fdg-app .fdg-item-row input, #fdg-app .fdg-item-row select { padding: 7px 8px; font-size: 13px; min-height: 34px; }
 #fdg-app .fdg-rm-btn {
   width: 30px; height: 30px;
@@ -253,7 +256,7 @@
 }
 #fdg-app .fdg-rm-btn:hover { background: #14213D; border-color: #14213D; color: #FFFFFF; }
 
-/* ── DOCUMENT ── */
+/* \002500\002500 DOCUMENT \002500\002500 */
 #fdg-app .fdg-doc-wrap {
   background: #FFFFFF;
   box-shadow: 0 6px 28px rgba(15, 26, 48, 0.14);
@@ -345,7 +348,7 @@
 #fdg-app .sig-box span { font-size: 10px; color: #4A5568; font-weight: 600; }
 #fdg-app .doc-footer { margin-top: 28px; padding-top: 8px; border-top: 1px solid #E8E5DC; font-size: 8.5px; color: #4A5568; text-align: center; letter-spacing: .3px; }
 
-/* ── MODAL ── */
+/* \002500\002500 MODAL \002500\002500 */
 #fdg-app .fdg-modal { display: none; position: fixed; inset: 0; background: rgba(15, 26, 48, 0.8); z-index: 99999; align-items: center; justify-content: center; padding: 16px; }
 #fdg-app .fdg-modal.open { display: flex; }
 #fdg-app .fdg-modal-box { background: #FFFFFF; padding: 32px 28px 28px; border-top: 4px solid #E7B165; max-width: 460px; width: 100%; text-align: center; box-shadow: 0 12px 40px rgba(15, 26, 48, 0.4); }
@@ -359,7 +362,7 @@
 #fdg-app .fdg-spinner { width: 40px; height: 40px; margin: 0 auto 16px; border: 3px solid #E8E5DC; border-top-color: #E7B165; border-radius: 50%; animation: fdg-spin .8s linear infinite; }
 @keyframes fdg-spin { to { transform: rotate(360deg); } }
 
-/* ── PRINT: the document only ── */
+/* \002500\002500 PRINT: the document only \002500\002500 */
 @media print {
   @page { margin: 12mm; }
   #fdg-app .fdg-topbar, #fdg-app .fdg-panel, #fdg-app .fdg-saved-list, #fdg-app .fdg-preview-label, #fdg-app .fdg-modal { display: none !important; }
@@ -371,7 +374,7 @@
   #fdg-app * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
-/* ── RESPONSIVE ── */
+/* \002500\002500 RESPONSIVE \002500\002500 */
 @media (max-width: 980px) {
   #fdg-app .fdg-layout { grid-template-columns: minmax(0, 1fr); }
   #fdg-app .fdg-panel, #fdg-app .fdg-preview { height: auto; position: static; overflow: visible; }
@@ -386,9 +389,6 @@
   #fdg-app .fdg-divider { display: none; }
   #fdg-app .fdg-section-head, #fdg-app .fdg-section-body { padding-left: 16px; padding-right: 16px; }
   #fdg-app .fdg-row, #fdg-app .fdg-row.cols3 { grid-template-columns: 1fr; gap: 0; }
-  #fdg-app .fdg-items-header { display: none; }
-  #fdg-app .fdg-item-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 32px; row-gap: 6px; }
-  #fdg-app .fdg-item-row .desc { grid-column: 1 / -1; }
   #fdg-app .fdg-doc-wrap { padding: 0 18px 24px; }
   #fdg-app .doc-band { margin: 0 -18px 20px; }
   #fdg-app .two-col, #fdg-app .info-grid { grid-template-columns: 1fr; gap: 12px; }
@@ -431,7 +431,7 @@
         <button type="button" class="fdg-section-head" aria-expanded="true" onclick="fdgToggleSection(this)"><i class="fa fa-cog" aria-hidden="true"></i> Document Settings <i class="fa fa-chevron-down arrow" aria-hidden="true"></i></button>
         <div class="fdg-section-body">
           <div class="fdg-row">
-            <div class="fg"><label for="lang">Language</label><select id="lang"><option value="en">English</option><option value="de">Deutsch</option><option value="fr">Français</option><option value="sw">Kiswahili</option><option value="zh">中文</option></select></div>
+            <div class="fg"><label for="lang">Language</label><select id="lang"><option value="en">English</option><option value="de">Deutsch</option><option value="fr">Fran&#231;ais</option><option value="sw">Kiswahili</option><option value="zh">&#20013;&#25991;</option></select></div>
             <div class="fg"><label for="initials">Company Initials</label><input id="initials" value="EFIC" maxlength="8"></div>
           </div>
           <div class="fdg-row">
@@ -461,11 +461,11 @@
             <div class="fg"><label for="tax">Tax Rate (%)</label><input type="number" id="tax" value="10" step="0.1" min="0"></div>
           </div>
           <div class="fdg-row">
-            <div class="fg"><label for="symbol">Currency Symbol</label><input id="symbol" value="£"></div>
+            <div class="fg"><label for="symbol">Currency Symbol</label><input id="symbol" value="&#163;"></div>
             <div class="fg"><label for="currency">Currency Name</label><input id="currency" value="GBP"></div>
           </div>
           <div class="fdg-row">
-            <div class="fg"><label for="payMethod">Payment Method</label><select id="payMethod"><option value="">Select…</option><option value="cash">Cash</option><option value="check">Cheque</option><option value="card">Credit/Debit Card</option><option value="bank">Bank Transfer</option><option value="paypal">PayPal</option><option value="other">Other</option></select></div>
+            <div class="fg"><label for="payMethod">Payment Method</label><select id="payMethod"><option value="">Select&#8230;</option><option value="cash">Cash</option><option value="check">Cheque</option><option value="card">Credit/Debit Card</option><option value="bank">Bank Transfer</option><option value="paypal">PayPal</option><option value="other">Other</option></select></div>
             <div class="fg"><label for="logo">Logo</label><input type="file" id="logo" accept="image/*"></div>
           </div>
         </div>
@@ -651,8 +651,8 @@ Email: client@example.com</textarea></div>
     <div class="fdg-modal-box">
       <div class="fdg-spinner" id="fdgSpinner"></div>
       <div class="fdg-success-icon" id="fdgSuccessIcon"><i class="fa fa-check" aria-hidden="true"></i></div>
-      <h2 id="fdgModalTitle">Generating PDF…</h2>
-      <p id="fdgModalText">Please wait…</p>
+      <h2 id="fdgModalTitle">Generating PDF&#8230;</h2>
+      <p id="fdgModalText">Please wait&#8230;</p>
       <div class="fdg-modal-btns" id="fdgModalBtns"></div>
     </div>
   </div>
@@ -666,15 +666,15 @@ Email: client@example.com</textarea></div>
 (function () {
   'use strict';
 
-  var T = {en:{invoice:'INVOICE',receipt:'RECEIPT',credit:'CREDIT NOTE',po:'PURCHASE ORDER',proforma:'PROFORMA INVOICE',quotation:'QUOTATION',delivery:'DELIVERY NOTE',payment_receipt:'PAYMENT RECEIPT',debit:'DEBIT NOTE',packing:'PACKING SLIP',sales_order:'SALES ORDER',refund:'REFUND RECEIPT',expense:'EXPENSE REPORT',petty_cash:'PETTY CASH VOUCHER',payment_voucher:'PAYMENT VOUCHER',bill_lading:'BILL OF LADING',from:'From:',billTo:'Bill To:',receivedFrom:'Received From:',creditTo:'Credit To:',vendor:'Vendor:',buyerLabel:'Buyer:',shipTo:'Ship To:',claimant:'Claimant:',consignee:'Consignee:',invoiceDate:'Invoice Date:',receiptDate:'Receipt Date:',creditDate:'Credit Date:',poDate:'PO Date:',quotationDate:'Quotation Date:',deliveryDate:'Delivery Date:',expenseDate:'Expense Date:',voucherDate:'Voucher Date:',dueDate:'Due Date:',validUntil:'Valid Until:',desc:'Description',sku:'Article/SKU',unit:'Unit',qty:'Qty',price:'Price',amt:'Amount',subtotal:'Subtotal:',discount:'Discount',tax:'Tax',total:'Total:',totalReceived:'Total Received:',totalCredit:'Total Credit:',totalOrder:'Order Total:',quotationTotal:'Quotation Total:',totalRefund:'Total Refund:',totalExpense:'Total Expense:',totalAdvance:'Total Advance:',net:'Net',days:'days',paymentTerms:'Payment Terms:',within:'within',or:'or',withDiscount:'with',withoutDiscount:'without discount',customerNo:'Customer #:',orderNo:'Order #:',orderDate:'Order Date:',deliveryDateLabel:'Delivery Date:',contactPerson:'Contact Person',bankDetails:'Bank Details for Payment',notes:'Notes:',authSig:'Authorised Signature',date:'Date',terms:'Terms:'},de:{invoice:'RECHNUNG',receipt:'QUITTUNG',credit:'GUTSCHRIFT',po:'BESTELLUNG',proforma:'PROFORMA-RECHNUNG',quotation:'ANGEBOT',delivery:'LIEFERSCHEIN',payment_receipt:'ZAHLUNGSBELEG',debit:'LASTSCHRIFT',packing:'PACKZETTEL',sales_order:'VERKAUFSAUFTRAG',refund:'ERSTATTUNGSBELEG',expense:'SPESENABRECHNUNG',petty_cash:'PORTOKASSE-BELEG',payment_voucher:'ZAHLUNGSANWEISUNG',bill_lading:'FRACHTBRIEF',from:'Von:',billTo:'Rechnung an:',receivedFrom:'Erhalten von:',creditTo:'Gutschrift an:',vendor:'Lieferant:',buyerLabel:'Käufer:',shipTo:'Versand an:',claimant:'Antragsteller:',consignee:'Empfänger:',invoiceDate:'Rechnungsdatum:',receiptDate:'Eingangsdatum:',creditDate:'Gutschriftsdatum:',poDate:'Bestelldatum:',quotationDate:'Angebotsdatum:',deliveryDate:'Lieferdatum:',expenseDate:'Spesendatum:',voucherDate:'Belegdatum:',dueDate:'Fälligkeitsdatum:',validUntil:'Gültig bis:',desc:'Bezeichnung',sku:'Artikel-Nr.',unit:'Einheit',qty:'Anzahl',price:'Einzelpreis',amt:'Gesamtpreis',subtotal:'Summe:',discount:'Rabatt',tax:'Umsatzsteuer',total:'Brutto gesamt:',totalReceived:'Erhaltener Betrag:',totalCredit:'Gutschrift:',totalOrder:'Bestellsumme:',quotationTotal:'Angebotssumme:',totalRefund:'Erstattung:',totalExpense:'Spesengesamt:',totalAdvance:'Vorschuss:',net:'Netto',days:'Tage',paymentTerms:'Zahlungsbedingungen:',within:'innerhalb von',or:'oder',withDiscount:'mit',withoutDiscount:'ohne Abzug',customerNo:'Kunden-Nr.:',orderNo:'Bestell-Nr.:',orderDate:'Bestelldatum:',deliveryDateLabel:'Lieferdatum:',contactPerson:'Ansprechpartner',bankDetails:'Bankverbindung',notes:'Anmerkungen:',authSig:'Unterschrift',date:'Datum',terms:'Zahlungsziel:'},fr:{invoice:'FACTURE',receipt:'REÇU',credit:'NOTE DE CRÉDIT',po:'BON DE COMMANDE',proforma:'FACTURE PROFORMA',quotation:'DEVIS',delivery:'BON DE LIVRAISON',payment_receipt:'REÇU DE PAIEMENT',debit:'NOTE DE DÉBIT',packing:'BON DE COLISAGE',sales_order:'BON DE VENTE',refund:'REÇU DE REMBOURSEMENT',expense:'NOTE DE FRAIS',petty_cash:'BON DE CAISSE',payment_voucher:'BON DE PAIEMENT',bill_lading:'CONNAISSEMENT',from:'De:',billTo:'Facturer à:',receivedFrom:'Reçu de:',creditTo:'Crédit à:',vendor:'Fournisseur:',buyerLabel:'Acheteur:',shipTo:'Expédier à:',claimant:'Demandeur:',consignee:'Destinataire:',invoiceDate:'Date:',receiptDate:'Date de réception:',creditDate:'Date de crédit:',poDate:'Date commande:',quotationDate:'Date devis:',deliveryDate:'Livraison:',expenseDate:'Date frais:',voucherDate:'Date bon:',dueDate:'Échéance:',validUntil:'Valide jusqu\'au:',desc:'Description',sku:'Référence',unit:'Unité',qty:'Qté',price:'Prix',amt:'Montant',subtotal:'Sous-total:',discount:'Remise',tax:'TVA',total:'Total TTC:',totalReceived:'Total reçu:',totalCredit:'Total crédit:',totalOrder:'Total commande:',quotationTotal:'Total devis:',totalRefund:'Total remboursé:',totalExpense:'Total frais:',totalAdvance:'Avance totale:',net:'Net',days:'jours',paymentTerms:'Conditions:',within:'sous',or:'ou',withDiscount:'avec',withoutDiscount:'sans escompte',customerNo:'Client #:',orderNo:'Commande #:',orderDate:'Date commande:',deliveryDateLabel:'Livraison:',contactPerson:'Contact',bankDetails:'Coordonnées bancaires',notes:'Notes:',authSig:'Signature',date:'Date',terms:'Délai:'},sw:{invoice:'ANKARA',receipt:'RISITI',credit:'MKOPO',po:'AGIZO',proforma:'ANKARA YA PROFORMA',quotation:'BEI',delivery:'HATI YA UTOAJI',payment_receipt:'RISITI YA MALIPO',debit:'HATI YA MADENI',packing:'HATI YA KUFUNGA',sales_order:'AGIZO LA MAUZO',refund:'RISITI YA REJESHO',expense:'RIPOTI YA GHARAMA',petty_cash:'HATI YA PESA TASLIMU',payment_voucher:'HATI YA MALIPO',bill_lading:'HATI YA MIZIGO',from:'Kutoka:',billTo:'Kwa:',receivedFrom:'Imepokelewa kutoka:',creditTo:'Mkopo kwa:',vendor:'Muuzaji:',buyerLabel:'Mnunuzi:',shipTo:'Peleka kwa:',claimant:'Mdai:',consignee:'Mpokeaji:',invoiceDate:'Tarehe:',receiptDate:'Tarehe ya kupokea:',creditDate:'Tarehe ya mkopo:',poDate:'Tarehe ya agizo:',quotationDate:'Tarehe ya bei:',deliveryDate:'Tarehe ya utoaji:',expenseDate:'Tarehe ya gharama:',voucherDate:'Tarehe ya hati:',dueDate:'Kulipa:',validUntil:'Halali hadi:',desc:'Maelezo',sku:'Namba',unit:'Kipimo',qty:'Idadi',price:'Bei',amt:'Jumla',subtotal:'Jumla:',discount:'Punguzo',tax:'Kodi',total:'Jumla:',totalReceived:'Jumla iliyopokelewa:',totalCredit:'Jumla ya mkopo:',totalOrder:'Jumla ya agizo:',quotationTotal:'Jumla ya bei:',totalRefund:'Jumla ya rejesho:',totalExpense:'Jumla ya gharama:',totalAdvance:'Jumla ya mkopo:',net:'Halisi',days:'siku',paymentTerms:'Masharti:',within:'ndani ya',or:'au',withDiscount:'na',withoutDiscount:'bila punguzo',customerNo:'Mteja #:',orderNo:'Agizo #:',orderDate:'Tarehe agizo:',deliveryDateLabel:'Utoaji:',contactPerson:'Mawasiliano',bankDetails:'Taarifa za benki',notes:'Maelezo:',authSig:'Saini',date:'Tarehe',terms:'Masharti:'},zh:{invoice:'发票',receipt:'收据',credit:'贷项通知单',po:'采购订单',proforma:'形式发票',quotation:'报价单',delivery:'送货单',payment_receipt:'付款收据',debit:'借项通知单',packing:'装笱单',sales_order:'销售订单',refund:'退款收据',expense:'费用报告',petty_cash:'零用金凭证',payment_voucher:'付款凭证',bill_lading:'提货单',from:'来自：',billTo:'账单收件人：',receivedFrom:'收款人：',creditTo:'贷记至：',vendor:'供应商：',buyerLabel:'买方：',shipTo:'收货人：',claimant:'申请人：',consignee:'收货人：',invoiceDate:'发票日期：',receiptDate:'收据日期：',creditDate:'贷记日期：',poDate:'订单日期：',quotationDate:'报价日期：',deliveryDate:'交货日期：',expenseDate:'费用日期：',voucherDate:'凭证日期：',dueDate:'到期日期：',validUntil:'有效期至：',desc:'描述',sku:'货号',unit:'单位',qty:'数量',price:'单价',amt:'金额',subtotal:'小计：',discount:'折扣',tax:'税',total:'总计：',totalReceived:'收款总额：',totalCredit:'贷记总额：',totalOrder:'订单总额：',quotationTotal:'报价总额：',totalRefund:'退款总额：',totalExpense:'费用总额：',totalAdvance:'预付款总额：',net:'净额',days:'天',paymentTerms:'付款条款：',within:'在',or:'或',withDiscount:'享有',withoutDiscount:'无折扣',customerNo:'客户编号：',orderNo:'订单编号：',orderDate:'订单日期：',deliveryDateLabel:'交货日期：',contactPerson:'联系人',bankDetails:'付款銀行信息',notes:'备注：',authSig:'授权签名',date:'日期',terms:'付款条款：'}};
+  var T = {en:{invoice:'INVOICE',receipt:'RECEIPT',credit:'CREDIT NOTE',po:'PURCHASE ORDER',proforma:'PROFORMA INVOICE',quotation:'QUOTATION',delivery:'DELIVERY NOTE',payment_receipt:'PAYMENT RECEIPT',debit:'DEBIT NOTE',packing:'PACKING SLIP',sales_order:'SALES ORDER',refund:'REFUND RECEIPT',expense:'EXPENSE REPORT',petty_cash:'PETTY CASH VOUCHER',payment_voucher:'PAYMENT VOUCHER',bill_lading:'BILL OF LADING',from:'From:',billTo:'Bill To:',receivedFrom:'Received From:',creditTo:'Credit To:',vendor:'Vendor:',buyerLabel:'Buyer:',shipTo:'Ship To:',claimant:'Claimant:',consignee:'Consignee:',invoiceDate:'Invoice Date:',receiptDate:'Receipt Date:',creditDate:'Credit Date:',poDate:'PO Date:',quotationDate:'Quotation Date:',deliveryDate:'Delivery Date:',expenseDate:'Expense Date:',voucherDate:'Voucher Date:',dueDate:'Due Date:',validUntil:'Valid Until:',desc:'Description',sku:'Article/SKU',unit:'Unit',qty:'Qty',price:'Price',amt:'Amount',subtotal:'Subtotal:',discount:'Discount',tax:'Tax',total:'Total:',totalReceived:'Total Received:',totalCredit:'Total Credit:',totalOrder:'Order Total:',quotationTotal:'Quotation Total:',totalRefund:'Total Refund:',totalExpense:'Total Expense:',totalAdvance:'Total Advance:',net:'Net',days:'days',paymentTerms:'Payment Terms:',within:'within',or:'or',withDiscount:'with',withoutDiscount:'without discount',customerNo:'Customer #:',orderNo:'Order #:',orderDate:'Order Date:',deliveryDateLabel:'Delivery Date:',contactPerson:'Contact Person',bankDetails:'Bank Details for Payment',notes:'Notes:',authSig:'Authorised Signature',date:'Date',terms:'Terms:'},de:{invoice:'RECHNUNG',receipt:'QUITTUNG',credit:'GUTSCHRIFT',po:'BESTELLUNG',proforma:'PROFORMA-RECHNUNG',quotation:'ANGEBOT',delivery:'LIEFERSCHEIN',payment_receipt:'ZAHLUNGSBELEG',debit:'LASTSCHRIFT',packing:'PACKZETTEL',sales_order:'VERKAUFSAUFTRAG',refund:'ERSTATTUNGSBELEG',expense:'SPESENABRECHNUNG',petty_cash:'PORTOKASSE-BELEG',payment_voucher:'ZAHLUNGSANWEISUNG',bill_lading:'FRACHTBRIEF',from:'Von:',billTo:'Rechnung an:',receivedFrom:'Erhalten von:',creditTo:'Gutschrift an:',vendor:'Lieferant:',buyerLabel:'K\u00e4ufer:',shipTo:'Versand an:',claimant:'Antragsteller:',consignee:'Empf\u00e4nger:',invoiceDate:'Rechnungsdatum:',receiptDate:'Eingangsdatum:',creditDate:'Gutschriftsdatum:',poDate:'Bestelldatum:',quotationDate:'Angebotsdatum:',deliveryDate:'Lieferdatum:',expenseDate:'Spesendatum:',voucherDate:'Belegdatum:',dueDate:'F\u00e4lligkeitsdatum:',validUntil:'G\u00fcltig bis:',desc:'Bezeichnung',sku:'Artikel-Nr.',unit:'Einheit',qty:'Anzahl',price:'Einzelpreis',amt:'Gesamtpreis',subtotal:'Summe:',discount:'Rabatt',tax:'Umsatzsteuer',total:'Brutto gesamt:',totalReceived:'Erhaltener Betrag:',totalCredit:'Gutschrift:',totalOrder:'Bestellsumme:',quotationTotal:'Angebotssumme:',totalRefund:'Erstattung:',totalExpense:'Spesengesamt:',totalAdvance:'Vorschuss:',net:'Netto',days:'Tage',paymentTerms:'Zahlungsbedingungen:',within:'innerhalb von',or:'oder',withDiscount:'mit',withoutDiscount:'ohne Abzug',customerNo:'Kunden-Nr.:',orderNo:'Bestell-Nr.:',orderDate:'Bestelldatum:',deliveryDateLabel:'Lieferdatum:',contactPerson:'Ansprechpartner',bankDetails:'Bankverbindung',notes:'Anmerkungen:',authSig:'Unterschrift',date:'Datum',terms:'Zahlungsziel:'},fr:{invoice:'FACTURE',receipt:'RE\u00c7U',credit:'NOTE DE CR\u00c9DIT',po:'BON DE COMMANDE',proforma:'FACTURE PROFORMA',quotation:'DEVIS',delivery:'BON DE LIVRAISON',payment_receipt:'RE\u00c7U DE PAIEMENT',debit:'NOTE DE D\u00c9BIT',packing:'BON DE COLISAGE',sales_order:'BON DE VENTE',refund:'RE\u00c7U DE REMBOURSEMENT',expense:'NOTE DE FRAIS',petty_cash:'BON DE CAISSE',payment_voucher:'BON DE PAIEMENT',bill_lading:'CONNAISSEMENT',from:'De:',billTo:'Facturer \u00e0:',receivedFrom:'Re\u00e7u de:',creditTo:'Cr\u00e9dit \u00e0:',vendor:'Fournisseur:',buyerLabel:'Acheteur:',shipTo:'Exp\u00e9dier \u00e0:',claimant:'Demandeur:',consignee:'Destinataire:',invoiceDate:'Date:',receiptDate:'Date de r\u00e9ception:',creditDate:'Date de cr\u00e9dit:',poDate:'Date commande:',quotationDate:'Date devis:',deliveryDate:'Livraison:',expenseDate:'Date frais:',voucherDate:'Date bon:',dueDate:'\u00c9ch\u00e9ance:',validUntil:'Valide jusqu\'au:',desc:'Description',sku:'R\u00e9f\u00e9rence',unit:'Unit\u00e9',qty:'Qt\u00e9',price:'Prix',amt:'Montant',subtotal:'Sous-total:',discount:'Remise',tax:'TVA',total:'Total TTC:',totalReceived:'Total re\u00e7u:',totalCredit:'Total cr\u00e9dit:',totalOrder:'Total commande:',quotationTotal:'Total devis:',totalRefund:'Total rembours\u00e9:',totalExpense:'Total frais:',totalAdvance:'Avance totale:',net:'Net',days:'jours',paymentTerms:'Conditions:',within:'sous',or:'ou',withDiscount:'avec',withoutDiscount:'sans escompte',customerNo:'Client #:',orderNo:'Commande #:',orderDate:'Date commande:',deliveryDateLabel:'Livraison:',contactPerson:'Contact',bankDetails:'Coordonn\u00e9es bancaires',notes:'Notes:',authSig:'Signature',date:'Date',terms:'D\u00e9lai:'},sw:{invoice:'ANKARA',receipt:'RISITI',credit:'MKOPO',po:'AGIZO',proforma:'ANKARA YA PROFORMA',quotation:'BEI',delivery:'HATI YA UTOAJI',payment_receipt:'RISITI YA MALIPO',debit:'HATI YA MADENI',packing:'HATI YA KUFUNGA',sales_order:'AGIZO LA MAUZO',refund:'RISITI YA REJESHO',expense:'RIPOTI YA GHARAMA',petty_cash:'HATI YA PESA TASLIMU',payment_voucher:'HATI YA MALIPO',bill_lading:'HATI YA MIZIGO',from:'Kutoka:',billTo:'Kwa:',receivedFrom:'Imepokelewa kutoka:',creditTo:'Mkopo kwa:',vendor:'Muuzaji:',buyerLabel:'Mnunuzi:',shipTo:'Peleka kwa:',claimant:'Mdai:',consignee:'Mpokeaji:',invoiceDate:'Tarehe:',receiptDate:'Tarehe ya kupokea:',creditDate:'Tarehe ya mkopo:',poDate:'Tarehe ya agizo:',quotationDate:'Tarehe ya bei:',deliveryDate:'Tarehe ya utoaji:',expenseDate:'Tarehe ya gharama:',voucherDate:'Tarehe ya hati:',dueDate:'Kulipa:',validUntil:'Halali hadi:',desc:'Maelezo',sku:'Namba',unit:'Kipimo',qty:'Idadi',price:'Bei',amt:'Jumla',subtotal:'Jumla:',discount:'Punguzo',tax:'Kodi',total:'Jumla:',totalReceived:'Jumla iliyopokelewa:',totalCredit:'Jumla ya mkopo:',totalOrder:'Jumla ya agizo:',quotationTotal:'Jumla ya bei:',totalRefund:'Jumla ya rejesho:',totalExpense:'Jumla ya gharama:',totalAdvance:'Jumla ya mkopo:',net:'Halisi',days:'siku',paymentTerms:'Masharti:',within:'ndani ya',or:'au',withDiscount:'na',withoutDiscount:'bila punguzo',customerNo:'Mteja #:',orderNo:'Agizo #:',orderDate:'Tarehe agizo:',deliveryDateLabel:'Utoaji:',contactPerson:'Mawasiliano',bankDetails:'Taarifa za benki',notes:'Maelezo:',authSig:'Saini',date:'Tarehe',terms:'Masharti:'},zh:{invoice:'\u53d1\u7968',receipt:'\u6536\u636e',credit:'\u8d37\u9879\u901a\u77e5\u5355',po:'\u91c7\u8d2d\u8ba2\u5355',proforma:'\u5f62\u5f0f\u53d1\u7968',quotation:'\u62a5\u4ef7\u5355',delivery:'\u9001\u8d27\u5355',payment_receipt:'\u4ed8\u6b3e\u6536\u636e',debit:'\u501f\u9879\u901a\u77e5\u5355',packing:'\u88c5\u7b31\u5355',sales_order:'\u9500\u552e\u8ba2\u5355',refund:'\u9000\u6b3e\u6536\u636e',expense:'\u8d39\u7528\u62a5\u544a',petty_cash:'\u96f6\u7528\u91d1\u51ed\u8bc1',payment_voucher:'\u4ed8\u6b3e\u51ed\u8bc1',bill_lading:'\u63d0\u8d27\u5355',from:'\u6765\u81ea\uff1a',billTo:'\u8d26\u5355\u6536\u4ef6\u4eba\uff1a',receivedFrom:'\u6536\u6b3e\u4eba\uff1a',creditTo:'\u8d37\u8bb0\u81f3\uff1a',vendor:'\u4f9b\u5e94\u5546\uff1a',buyerLabel:'\u4e70\u65b9\uff1a',shipTo:'\u6536\u8d27\u4eba\uff1a',claimant:'\u7533\u8bf7\u4eba\uff1a',consignee:'\u6536\u8d27\u4eba\uff1a',invoiceDate:'\u53d1\u7968\u65e5\u671f\uff1a',receiptDate:'\u6536\u636e\u65e5\u671f\uff1a',creditDate:'\u8d37\u8bb0\u65e5\u671f\uff1a',poDate:'\u8ba2\u5355\u65e5\u671f\uff1a',quotationDate:'\u62a5\u4ef7\u65e5\u671f\uff1a',deliveryDate:'\u4ea4\u8d27\u65e5\u671f\uff1a',expenseDate:'\u8d39\u7528\u65e5\u671f\uff1a',voucherDate:'\u51ed\u8bc1\u65e5\u671f\uff1a',dueDate:'\u5230\u671f\u65e5\u671f\uff1a',validUntil:'\u6709\u6548\u671f\u81f3\uff1a',desc:'\u63cf\u8ff0',sku:'\u8d27\u53f7',unit:'\u5355\u4f4d',qty:'\u6570\u91cf',price:'\u5355\u4ef7',amt:'\u91d1\u989d',subtotal:'\u5c0f\u8ba1\uff1a',discount:'\u6298\u6263',tax:'\u7a0e',total:'\u603b\u8ba1\uff1a',totalReceived:'\u6536\u6b3e\u603b\u989d\uff1a',totalCredit:'\u8d37\u8bb0\u603b\u989d\uff1a',totalOrder:'\u8ba2\u5355\u603b\u989d\uff1a',quotationTotal:'\u62a5\u4ef7\u603b\u989d\uff1a',totalRefund:'\u9000\u6b3e\u603b\u989d\uff1a',totalExpense:'\u8d39\u7528\u603b\u989d\uff1a',totalAdvance:'\u9884\u4ed8\u6b3e\u603b\u989d\uff1a',net:'\u51c0\u989d',days:'\u5929',paymentTerms:'\u4ed8\u6b3e\u6761\u6b3e\uff1a',within:'\u5728',or:'\u6216',withDiscount:'\u4eab\u6709',withoutDiscount:'\u65e0\u6298\u6263',customerNo:'\u5ba2\u6237\u7f16\u53f7\uff1a',orderNo:'\u8ba2\u5355\u7f16\u53f7\uff1a',orderDate:'\u8ba2\u5355\u65e5\u671f\uff1a',deliveryDateLabel:'\u4ea4\u8d27\u65e5\u671f\uff1a',contactPerson:'\u8054\u7cfb\u4eba',bankDetails:'\u4ed8\u6b3e\u9280\u884c\u4fe1\u606f',notes:'\u5907\u6ce8\uff1a',authSig:'\u6388\u6743\u7b7e\u540d',date:'\u65e5\u671f',terms:'\u4ed8\u6b3e\u6761\u6b3e\uff1a'}};
 
   // Labels that were hard-coded in English before.
   var EXTRA = {
     en: {bank: 'Bank:', account: 'Account:', currencyL: 'Currency:', payMethodL: 'Payment Method:', tel: 'Tel:', email: 'Email:', page: 'Generated with the EFIC Document Generator'},
-    de: {bank: 'Bank:', account: 'Konto:', currencyL: 'Währung:', payMethodL: 'Zahlungsart:', tel: 'Tel.:', email: 'E-Mail:', page: 'Erstellt mit dem EFIC Document Generator'},
-    fr: {bank: 'Banque :', account: 'Compte :', currencyL: 'Devise :', payMethodL: 'Mode de paiement :', tel: 'Tél. :', email: 'E-mail :', page: 'Généré avec EFIC Document Generator'},
+    de: {bank: 'Bank:', account: 'Konto:', currencyL: 'W\u00e4hrung:', payMethodL: 'Zahlungsart:', tel: 'Tel.:', email: 'E-Mail:', page: 'Erstellt mit dem EFIC Document Generator'},
+    fr: {bank: 'Banque :', account: 'Compte :', currencyL: 'Devise :', payMethodL: 'Mode de paiement :', tel: 'T\u00e9l. :', email: 'E-mail :', page: 'G\u00e9n\u00e9r\u00e9 avec EFIC Document Generator'},
     sw: {bank: 'Benki:', account: 'Akaunti:', currencyL: 'Sarafu:', payMethodL: 'Njia ya malipo:', tel: 'Simu:', email: 'Barua pepe:', page: 'Imetengenezwa na EFIC Document Generator'},
-    zh: {bank: '银行：', account: '账号：', currencyL: '货币：', payMethodL: '付款方式：', tel: '电话：', email: '邮箱：', page: 'EFIC Document Generator 生成'}
+    zh: {bank: '\u94f6\u884c\uff1a', account: '\u8d26\u53f7\uff1a', currencyL: '\u8d27\u5e01\uff1a', payMethodL: '\u4ed8\u6b3e\u65b9\u5f0f\uff1a', tel: '\u7535\u8bdd\uff1a', email: '\u90ae\u7bb1\uff1a', page: 'EFIC Document Generator \u751f\u6210'}
   };
   Object.keys(EXTRA).forEach(function (l) { Object.keys(EXTRA[l]).forEach(function (k) { T[l][k] = EXTRA[l][k]; }); });
   var LOCALE = {en: 'en-GB', de: 'de-DE', fr: 'fr-FR', sw: 'sw-KE', zh: 'zh-CN'};
@@ -710,7 +710,7 @@ Email: client@example.com</textarea></div>
   var docStamp = '';
   function newStamp() { var n = new Date(); return pad(n.getHours()) + pad(n.getMinutes()) + pad(n.getSeconds()); }
 
-  // ── sections ──
+  // \u2500\u2500 sections \u2500\u2500
   window.fdgToggleSection = function (head) {
     var open = head.getAttribute('aria-expanded') !== 'false';
     head.setAttribute('aria-expanded', open ? 'false' : 'true');
@@ -722,7 +722,7 @@ Email: client@example.com</textarea></div>
   }
   window.fdgToggleIban = window.fdgToggleSwift = function () { toggleBankFields(); fdgUpdate(); };
 
-  // ── line items (built with DOM nodes, so typed text is never treated as HTML) ──
+  // \u2500\u2500 line items (built with DOM nodes, so typed text is never treated as HTML) \u2500\u2500
   function addRow(item) {
     item = item || {desc: '', sku: '', unit: 'hrs', qty: 1, price: 0};
     var row = el('div', 'fdg-item-row');
@@ -733,7 +733,7 @@ Email: client@example.com</textarea></div>
     unit.value = item.unit || 'hrs';
     var qty = el('input', 'qty'); qty.type = 'number'; qty.step = '0.01'; qty.min = '0'; qty.value = item.qty; qty.setAttribute('aria-label', 'Quantity');
     var price = el('input', 'price'); price.type = 'number'; price.step = '0.01'; price.min = '0'; price.value = item.price; price.setAttribute('aria-label', 'Price');
-    var rm = el('button', 'fdg-rm-btn', '×'); rm.type = 'button'; rm.title = 'Remove line'; rm.setAttribute('aria-label', 'Remove line');
+    var rm = el('button', 'fdg-rm-btn', '\u00d7'); rm.type = 'button'; rm.title = 'Remove line'; rm.setAttribute('aria-label', 'Remove line');
     rm.onclick = function () { row.remove(); fdgUpdate(); };
     [desc, sku, unit, qty, price, rm].forEach(function (n) { row.appendChild(n); });
     $('fdgItems').appendChild(row);
@@ -747,7 +747,7 @@ Email: client@example.com</textarea></div>
     var r = new FileReader(); r.onload = function (ev) { logo = ev.target.result; fdgUpdate(); }; r.readAsDataURL(f);
   };
 
-  // ── save / load (same storage key and format as before; old saves still load) ──
+  // \u2500\u2500 save / load (same storage key and format as before; old saves still load) \u2500\u2500
   function collectData() {
     var data = {logo: logo, docStamp: docStamp, items: []};
     FIELDS.forEach(function (f) { data[f] = val(f); });
@@ -774,7 +774,7 @@ Email: client@example.com</textarea></div>
   }
   window.fdgSaveDoc = function () {
     var data = collectData();
-    var name = prompt('Name this document:', data.clientName + ' — ' + t(data.docType) + ' ' + currentDocNum);
+    var name = prompt('Name this document:', data.clientName + ' \u2014 ' + t(data.docType) + ' ' + currentDocNum);
     if (!name) return;
     data.name = name; data.savedAt = new Date().toISOString();
     var saved = readSaved(); saved.push(data);
@@ -811,7 +811,7 @@ Email: client@example.com</textarea></div>
     if (writeSaved(saved)) fdgRenderSaved();
   };
 
-  // ── PDF and sharing ──
+  // \u2500\u2500 PDF and sharing \u2500\u2500
   var SHARE = {
     whatsapp: {name: 'WhatsApp', icon: 'fa-whatsapp'},
     telegram: {name: 'Telegram', icon: 'fa-telegram'},
@@ -832,8 +832,8 @@ Email: client@example.com</textarea></div>
     var s = SHARE[type];
     $('fdgSpinner').style.display = 'block';
     $('fdgSuccessIcon').style.display = 'none';
-    setText('fdgModalTitle', 'Generating PDF…');
-    setText('fdgModalText', type === 'download' ? 'Preparing ' + currentDocNum + '.pdf…' : 'Preparing your document for ' + s.name + '…');
+    setText('fdgModalTitle', 'Generating PDF\u2026');
+    setText('fdgModalText', type === 'download' ? 'Preparing ' + currentDocNum + '.pdf\u2026' : 'Preparing your document for ' + s.name + '\u2026');
     modalButtons([{cls: 'fdg-btn-outline', text: 'Cancel', onclick: fdgCloseModal}]);
     $('fdgModal').classList.add('open');
     setTimeout(fdgGenPDF, 300);
@@ -844,7 +844,7 @@ Email: client@example.com</textarea></div>
   function fdgGenPDF() {
     if (!window.html2canvas || !window.jspdf) {
       setText('fdgModalTitle', 'PDF tools not loaded');
-      setText('fdgModalText', 'Check your internet connection and reload the page. You can still use Print → Save as PDF.');
+      setText('fdgModalText', 'Check your internet connection and reload the page. You can still use Print \u2192 Save as PDF.');
       $('fdgSpinner').style.display = 'none';
       modalButtons([{cls: 'fdg-btn-navy', text: 'Close', onclick: fdgCloseModal}]);
       return;
@@ -864,7 +864,7 @@ Email: client@example.com</textarea></div>
       fdgShowShare();
     }).catch(function () {
       setText('fdgModalTitle', 'PDF generation failed');
-      setText('fdgModalText', 'Please try again. If it keeps failing, use Print → Save as PDF.');
+      setText('fdgModalText', 'Please try again. If it keeps failing, use Print \u2192 Save as PDF.');
       $('fdgSpinner').style.display = 'none';
       modalButtons([{cls: 'fdg-btn-navy', text: 'Close', onclick: fdgCloseModal}]);
     });
@@ -903,7 +903,7 @@ Email: client@example.com</textarea></div>
     setTimeout(fdgCloseModal, 800);
   };
 
-  // ── render the document ──
+  // \u2500\u2500 render the document \u2500\u2500
   window.fdgUpdate = function () {
     var dv = val('docDate');
     var docDate = dv ? new Date(dv + 'T00:00:00') : new Date();
@@ -916,8 +916,8 @@ Email: client@example.com</textarea></div>
     setText('fdgPreviewNum', currentDocNum);
 
     var cname = val('companyName'), caddr = (val('companyAddr') || '').split('\n')[0];
-    setText('fdgReturnAddr', cname + (caddr ? ' — ' + caddr : ''));
-    setText('fdgDocFooter', cname + ' · ' + currentDocNum);
+    setText('fdgReturnAddr', cname + (caddr ? ' \u2014 ' + caddr : ''));
+    setText('fdgDocFooter', cname + ' \u00b7 ' + currentDocNum);
 
     var logoBox = $('fdgLogoBox'); logoBox.innerHTML = '';
     if (logo) { var img = el('img'); img.src = logo; img.alt = cname + ' logo'; logoBox.appendChild(img); }
@@ -973,7 +973,7 @@ Email: client@example.com</textarea></div>
       if (!d || q <= 0) return;
       var a = q * p; sub += a;
       var tr = el('tr');
-      [[d, ''], [s || '—', ''], [u.options[u.selectedIndex].text, ''], [String(q), 'num'], [curr(p), 'num'], [curr(a), 'num']].forEach(function (c) { tr.appendChild(el('td', c[1], c[0])); });
+      [[d, ''], [s || '\u2014', ''], [u.options[u.selectedIndex].text, ''], [String(q), 'num'], [curr(p), 'num'], [curr(a), 'num']].forEach(function (c) { tr.appendChild(el('td', c[1], c[0])); });
       tbody.appendChild(tr);
     });
 
@@ -987,7 +987,7 @@ Email: client@example.com</textarea></div>
     if (discType !== 'none' && discAmt > 0) {
       $('fdgDiscRow').style.display = 'flex';
       setText('fdgDiscLabel', t('discount') + (discType === 'percent' ? ' (' + discVal + '%)' : '') + ':');
-      setText('fdgDiscAmt', '−' + curr(discAmt));
+      setText('fdgDiscAmt', '\u2212' + curr(discAmt));
     } else { $('fdgDiscRow').style.display = 'none'; }
     setText('fdgTaxLabel', t('tax') + ' (' + rate + '%):'); setText('fdgTaxAmt', curr(taxA));
     var totMap = {receipt:'totalReceived',payment_receipt:'totalReceived',credit:'totalCredit',po:'totalOrder',sales_order:'totalOrder',quotation:'quotationTotal',refund:'totalRefund',expense:'totalExpense',petty_cash:'totalAdvance',payment_voucher:'totalAdvance'};

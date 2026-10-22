@@ -7,6 +7,20 @@ In Blogger, go to **Pages**, open the page and click **Edit**. Switch to **HTML 
 
 The page hides the theme's menu, header, sidebar, title, share bar, comments and footer, but only on this page.
 
+## Blogger-safe characters
+Blogger's page editor turns every special character (`×`, `—`, `ä`, Chinese text) into a code like `&#215;` when you save. Inside `<script>` and `<style>` those codes are never turned back, so they show up as text. The file is therefore pure ASCII:
+- **JavaScript:** special characters are written as `\u00d7`.
+- **CSS:** they are written as `\0000d7`.
+- **Page text:** they are written as `&#215;`.
+
+Check any edit with:
+
+```bash
+python3 tools/blogger_sim.py efic-document-generator.html /tmp/saved.html && cmp efic-document-generator.html /tmp/saved.html
+```
+
+No output means Blogger will leave the file unchanged.
+
 ## What changed from the first version
 **Brand (EFIC Brand Colour Guide v1.0)**
 - Navy `#14213D` and Gold `#E7B165` replace sky blue and the eight different button colours.
@@ -23,6 +37,7 @@ The page hides the theme's menu, header, sidebar, title, share bar, comments and
 - **Smaller PDFs:** saved as JPEG, about 0.2 MB a page instead of about 12 MB.
 - **Translations:** dates and amounts follow the chosen language (`22 Oct 2026` / `£1,870.00`, `22. Okt. 2026` / `£1.870,00`). Bank, currency, payment method, phone and email labels are translated, and units read Hours/Days instead of hrs/days.
 - **Fits the panel:** fields no longer overflow it, and the layout has no sideways scrolling from 320px to 1440px.
+- **Line items:** each has two rows, the description across the top and SKU, unit, qty and price below, so nothing is cut off.
 - **Clean print:** prints the document only, without the theme's print heading.
 - **Keyboard:** panels open with the keyboard, and Escape closes the dialog.
 - **Saved documents:** they still load (same storage key and format).
