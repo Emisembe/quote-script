@@ -606,9 +606,91 @@
     return { points, houses, noHouses, composite: true };
   }
 
+  // ---------- cycles: Moon phases, lunar returns, planetary hours, seasons ----------
+  const QUARTER_NAMES = ['New Moon', 'First Quarter', 'Full Moon', 'Last Quarter'];
+
+  /** Moon phase right now: elongation (0 = new, 180 = full), illuminated fraction and waxing flag. */
+  function moonNow(date) {
+    const t = A.MakeTime(date);
+    const angle = A.MoonPhase(t);
+    const frac = A.Illumination(A.Body.Moon, t).phase_fraction;
+    return { angle, fraction: frac, waxing: angle < 180, lon: bodyLon('moon', t) };
+  }
+
+  /** New, first-quarter, full and last-quarter moments in a window, with the Moon's sign. */
+  function moonQuarters(from, days) {
+    const out = [];
+    const end = from.getTime() + days * 86400e3;
+    let mq = A.SearchMoonQuarter(A.MakeTime(from));
+    while (mq && mq.time.date.getTime() < end) {
+      out.push({ quarter: mq.quarter, name: QUARTER_NAMES[mq.quarter], date: mq.time.date, lon: bodyLon('moon', mq.time) });
+      mq = A.NextMoonQuarter(mq);
+    }
+    return out;
+  }
+
+  /** Next times the Moon returns to a natal longitude (about every 27.3 days). */
+  function lunarReturns(natalLon, from, count = 3) {
+    const out = [];
+    let start = from.getTime();
+    while (out.length < count) {
+      const hits = zeroCrossings(t => angDiff(lonAtMs('moon', t), natalLon), start, start + 30 * 86400e3, 0.5);
+      if (!hits.length) break;
+      out.push(hits[0]);
+      start = hits[0].getTime() + 86400e3;
+    }
+    return out;
+  }
+
+  // Chaldean order, slowest to fastest; each planetary hour steps one place along it.
+  const CHALDEAN = ['saturn', 'jupiter', 'mars', 'sun', 'venus', 'mercury', 'moon'];
+  const DAY_RULER = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']; // Sunday … Saturday
+
+  /**
+   * Planetary day and hours for a moment and place. Day hours split sunrise→sunset into 12,
+   * night hours split sunset→next sunrise into 12. Returns null where the Sun does not rise or set.
+   */
+  function planetaryHours(date, lat, lon) {
+    const obs = new A.Observer(lat, lon, 0);
+    const find = (dir, fromDate) => A.SearchRiseSet(A.Body.Sun, obs, dir, A.MakeTime(fromDate), 2);
+    // Latest sunrise at or before `date`.
+    let rise = find(+1, new Date(date.getTime() - 1.5 * 86400e3));
+    if (!rise) return null;
+    for (let i = 0; i < 4; i++) {
+      const next = find(+1, new Date(rise.date.getTime() + 60e3));
+      if (!next || next.date > date) break;
+      rise = next;
+    }
+    if (rise.date > date) return null;
+    const set = find(-1, new Date(rise.date.getTime() + 60e3));
+    const nextRise = set && find(+1, new Date(set.date.getTime() + 60e3));
+    if (!set || !nextRise) return null;
+    // The planetary day starts at sunrise; its weekday is taken in local solar time.
+    const weekday = new Date(rise.date.getTime() + lon / 15 * 3600e3).getUTCDay();
+    const ruler = DAY_RULER[weekday];
+    const start = CHALDEAN.indexOf(ruler);
+    const hours = [];
+    const dayLen = (set.date - rise.date) / 12, nightLen = (nextRise.date - set.date) / 12;
+    for (let k = 0; k < 24; k++) {
+      const isDay = k < 12;
+      const s = isDay ? rise.date.getTime() + k * dayLen : set.date.getTime() + (k - 12) * nightLen;
+      const e = s + (isDay ? dayLen : nightLen);
+      hours.push({ index: k, ruler: CHALDEAN[(start + k) % 7], start: new Date(s), end: new Date(e), isDay });
+    }
+    const current = hours.findIndex(h => date >= h.start && date < h.end);
+    return { dayRuler: ruler, sunrise: rise.date, sunset: set.date, nextSunrise: nextRise.date, hours, current };
+  }
+
+  /** Equinox and solstice moments for a year. */
+  function seasonsOf(year) {
+    const s = A.Seasons(year);
+    return { marEquinox: s.mar_equinox.date, junSolstice: s.jun_solstice.date, sepEquinox: s.sep_equinox.date, decSolstice: s.dec_solstice.date };
+  }
+
   root.ChartEngine = {
     SIGNS, ASPECTS, norm, angDiff, signOf, fmtDeg, computeChart, positionsAt,
-    findAspects, findPatterns, houseOf, compositeChart, hasTable, tableLon, transitsBetween, activeTransits, lifeCycles,
+    findAspects, findPatterns, houseOf, compositeChart, hasTable, tableLon,
+    moonNow, moonQuarters, lunarReturns, planetaryHours, seasonsOf, CHALDEAN, transitsBetween, activeTransits, lifeCycles,
     _internal: { placidus, ascFrom, mcFrom, meanNode, trueNode, meanLilith, chironLon, chironLonIntegrated, junoLon, makeTime }
   };
 })(typeof window !== 'undefined' ? window : globalThis);

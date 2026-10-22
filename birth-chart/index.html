@@ -26,6 +26,8 @@
   --tension: #B0463C;
   --blend: #8A6A2E;
   --adjust: #6D5FA0;
+  --chart-a: #A3478C;
+  --chart-b: #B8761F;
   --fire: #F2E0D6;
   --earth: #E8E5D5;
   --air: #E5E4EE;
@@ -58,6 +60,8 @@
     --tension: #E78B7E;
     --blend: #D5B679;
     --adjust: #A99BE0;
+    --chart-a: #B25A99;
+    --chart-b: #C0832A;
     --fire: #3A2626;
     --earth: #2E2C22;
     --air: #2A2A36;
@@ -84,6 +88,8 @@
   --tension: #E78B7E;
   --blend: #D5B679;
   --adjust: #A99BE0;
+  --chart-a: #B25A99;
+  --chart-b: #C0832A;
   --fire: #3A2626;
   --earth: #2E2C22;
   --air: #2A2A36;
@@ -478,6 +484,57 @@ tr.static { cursor: default; }
 .suggest li.status:hover { background: none; }
 .person .suggest ul { z-index: 6; }
 
+/* ---------- cosmic rhythms ---------- */
+.rh { scroll-margin-top: 90px; }
+.chart-fig { margin: 0; display: grid; gap: 6px; }
+.chart-scroll { overflow-x: auto; }
+.mchart, .hchart { width: 100%; min-width: 420px; height: auto; display: block; }
+.mchart .mbar { fill: var(--chart-a); }
+.mchart .mbar.today { fill: var(--chart-b); }
+.mchart .mbar:hover { opacity: .75; }
+.mchart .mgrid { stroke: var(--line); stroke-width: 1; }
+.mchart .maxis, .hchart .maxis { font: 11px var(--mono); fill: var(--ink-3); }
+.mchart .mq { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 3 3; }
+.mchart .mql { font: 600 11px var(--sans); fill: var(--ink-2); }
+.hchart .hseg rect { stroke: var(--surface); stroke-width: 2; }
+.hchart .hseg.day rect { fill: var(--plum-tint); }
+.hchart .hseg.night rect { fill: var(--surface-2); }
+.hchart .hseg.current rect { stroke: var(--chart-b); stroke-width: 3; }
+.hchart .hg { font: 15px var(--glyph); fill: var(--ink); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.hchart .hl { font: 700 11px var(--sans); fill: var(--ink-2); dominant-baseline: central; letter-spacing: .06em; text-transform: uppercase; }
+.season-bar { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 10px; padding-top: 10px; }
+.season-bar span { display: grid; gap: 1px; text-align: center; padding: 8px 4px; border-radius: 8px; background: var(--surface-2); font-size: 13px; font-weight: 650; color: var(--ink-2); }
+.season-bar span small { font-weight: 500; font-size: 11.5px; color: var(--ink-3); }
+.season-bar span.on { background: var(--chart-a); color: var(--on-plum); }
+.season-bar span.on small { color: var(--on-plum); opacity: .85; }
+.season-bar i { position: absolute; top: 0; width: 0; height: 0; border: 7px solid transparent; border-top-color: var(--chart-b); transform: translateX(-7px); }
+.bar.seven { grid-template-columns: 112px 1fr 40px; }
+.bar.seven .fill { background: var(--chart-a); }
+.polar { display: flex; height: 34px; border-radius: 8px; overflow: hidden; gap: 2px; margin-top: 10px; }
+.polar > div { display: flex; align-items: center; padding: 0 10px; min-width: 64px; font: 700 12.5px var(--sans); color: #fff; white-space: nowrap; }
+.polar .pa { background: var(--chart-a); }
+.polar .pb { background: var(--chart-b); justify-content: flex-end; }
+:root[data-theme="dark"] .polar > div { color: #160f15; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .polar > div { color: #160f15; } }
+.legend .lg-a, .legend .lg-b { display: inline-block; width: 12px; height: 12px; border: 0; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend .lg-a { background: var(--chart-a); }
+.legend .lg-b { background: var(--chart-b); }
+.pent { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.pent .pline { fill: none; stroke: var(--line-strong); stroke-width: 1.5; }
+.pent .pnode { fill: var(--chart-a); stroke: var(--surface); stroke-width: 2; }
+.pent .pnode.spirit { fill: var(--chart-b); }
+.pent .plabel { font: 600 17px var(--sans); fill: var(--ink); dominant-baseline: central; }
+.pent-list { justify-content: center; margin-top: 4px; }
+@media (max-width: 600px) { .pent .plabel { display: none; } }
+.rh-place { min-width: min(260px, 100%); }
+.notes { display: grid; gap: 14px; }
+.note-page { display: grid; gap: 10px; }
+.note-page p { color: var(--ink-2); max-width: 75ch; }
+@media (max-width: 600px) {
+  .bar.seven { grid-template-columns: 96px 1fr 34px; }
+  .season-bar span { font-size: 12px; padding: 6px 2px; }
+}
+
 /* ---------- life guidance ---------- */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .ask { display: flex; gap: 8px; }
@@ -499,7 +556,7 @@ tr.static { cursor: default; }
     color-scheme: light;
     --bg: #fff; --surface: #fff; --surface-2: #f3eef1; --ink: #1a1418; --ink-2: #3d333b; --ink-3: #6b5f69;
     --line: #d8ccd3; --line-strong: #b9a6b2; --plum: #5E2B50; --plum-2: #7E4A6F; --plum-tint: #f1e6ed; --on-plum: #fff;
-    --brass: #8a6326; --flow: #25685a; --tension: #a13d33; --blend: #7a5c22; --adjust: #5d4f93;
+    --brass: #8a6326; --flow: #25685a; --tension: #a13d33; --blend: #7a5c22; --adjust: #5d4f93; --chart-a: #A3478C; --chart-b: #B8761F;
     --fire: #f6e9e2; --earth: #efede2; --air: #eeedf4; --water: #e7eff1; --shadow: none;
   }
   @page { margin: 14mm; }
@@ -509,6 +566,8 @@ tr.static { cursor: default; }
   .print-only { display: block; }
   body.print-compat .masthead { display: none !important; }
   .guide-grid { grid-template-columns: 1fr 1fr; }
+  .note-page { break-inside: avoid; }
+  .chart-scroll { overflow: visible; }
   .chart-layout { grid-template-columns: 1fr; }
   .detail { position: static; box-shadow: none; }
   .card, .stat, .house-row, .area-card, .reading-item, .table-wrap { box-shadow: none; break-inside: avoid; }
@@ -549,6 +608,7 @@ tr.static { cursor: default; }
   <nav class="tabs" role="tablist" aria-label="Chart sections">
     <button class="tab" role="tab" id="tab-chart" aria-controls="panel-chart" data-tab="chart">Chart</button>
     <button class="tab" role="tab" id="tab-guide" aria-controls="panel-guide" data-tab="guide">Life guidance</button>
+    <button class="tab" role="tab" id="tab-rhythms" aria-controls="panel-rhythms" data-tab="rhythms">Cosmic rhythms</button>
     <button class="tab" role="tab" id="tab-compat" aria-controls="panel-compat" data-tab="compat">Compatibility</button>
     <button class="tab" role="tab" id="tab-reading" aria-controls="panel-reading" data-tab="reading">Full reading</button>
     <button class="tab" role="tab" id="tab-data" aria-controls="panel-data" data-tab="data">Chart data</button>
@@ -650,6 +710,7 @@ tr.static { cursor: default; }
     </section>
 
     <section class="panel" role="tabpanel" id="panel-guide" aria-labelledby="tab-guide" hidden></section>
+    <section class="panel" role="tabpanel" id="panel-rhythms" aria-labelledby="tab-rhythms" hidden></section>
     <section class="panel" role="tabpanel" id="panel-compat" aria-labelledby="tab-compat" hidden></section>
     <section class="panel" role="tabpanel" id="panel-reading" aria-labelledby="tab-reading" hidden></section>
     <section class="panel" role="tabpanel" id="panel-data" aria-labelledby="tab-data" hidden></section>
@@ -1617,9 +1678,91 @@ return new kd(this.curr.time,a,b)};$jscomp.global.Object.defineProperties(H.prot
     return { points, houses, noHouses, composite: true };
   }
 
+  // ---------- cycles: Moon phases, lunar returns, planetary hours, seasons ----------
+  const QUARTER_NAMES = ['New Moon', 'First Quarter', 'Full Moon', 'Last Quarter'];
+
+  /** Moon phase right now: elongation (0 = new, 180 = full), illuminated fraction and waxing flag. */
+  function moonNow(date) {
+    const t = A.MakeTime(date);
+    const angle = A.MoonPhase(t);
+    const frac = A.Illumination(A.Body.Moon, t).phase_fraction;
+    return { angle, fraction: frac, waxing: angle < 180, lon: bodyLon('moon', t) };
+  }
+
+  /** New, first-quarter, full and last-quarter moments in a window, with the Moon's sign. */
+  function moonQuarters(from, days) {
+    const out = [];
+    const end = from.getTime() + days * 86400e3;
+    let mq = A.SearchMoonQuarter(A.MakeTime(from));
+    while (mq && mq.time.date.getTime() < end) {
+      out.push({ quarter: mq.quarter, name: QUARTER_NAMES[mq.quarter], date: mq.time.date, lon: bodyLon('moon', mq.time) });
+      mq = A.NextMoonQuarter(mq);
+    }
+    return out;
+  }
+
+  /** Next times the Moon returns to a natal longitude (about every 27.3 days). */
+  function lunarReturns(natalLon, from, count = 3) {
+    const out = [];
+    let start = from.getTime();
+    while (out.length < count) {
+      const hits = zeroCrossings(t => angDiff(lonAtMs('moon', t), natalLon), start, start + 30 * 86400e3, 0.5);
+      if (!hits.length) break;
+      out.push(hits[0]);
+      start = hits[0].getTime() + 86400e3;
+    }
+    return out;
+  }
+
+  // Chaldean order, slowest to fastest; each planetary hour steps one place along it.
+  const CHALDEAN = ['saturn', 'jupiter', 'mars', 'sun', 'venus', 'mercury', 'moon'];
+  const DAY_RULER = ['sun', 'moon', 'mars', 'mercury', 'jupiter', 'venus', 'saturn']; // Sunday … Saturday
+
+  /**
+   * Planetary day and hours for a moment and place. Day hours split sunrise→sunset into 12,
+   * night hours split sunset→next sunrise into 12. Returns null where the Sun does not rise or set.
+   */
+  function planetaryHours(date, lat, lon) {
+    const obs = new A.Observer(lat, lon, 0);
+    const find = (dir, fromDate) => A.SearchRiseSet(A.Body.Sun, obs, dir, A.MakeTime(fromDate), 2);
+    // Latest sunrise at or before `date`.
+    let rise = find(+1, new Date(date.getTime() - 1.5 * 86400e3));
+    if (!rise) return null;
+    for (let i = 0; i < 4; i++) {
+      const next = find(+1, new Date(rise.date.getTime() + 60e3));
+      if (!next || next.date > date) break;
+      rise = next;
+    }
+    if (rise.date > date) return null;
+    const set = find(-1, new Date(rise.date.getTime() + 60e3));
+    const nextRise = set && find(+1, new Date(set.date.getTime() + 60e3));
+    if (!set || !nextRise) return null;
+    // The planetary day starts at sunrise; its weekday is taken in local solar time.
+    const weekday = new Date(rise.date.getTime() + lon / 15 * 3600e3).getUTCDay();
+    const ruler = DAY_RULER[weekday];
+    const start = CHALDEAN.indexOf(ruler);
+    const hours = [];
+    const dayLen = (set.date - rise.date) / 12, nightLen = (nextRise.date - set.date) / 12;
+    for (let k = 0; k < 24; k++) {
+      const isDay = k < 12;
+      const s = isDay ? rise.date.getTime() + k * dayLen : set.date.getTime() + (k - 12) * nightLen;
+      const e = s + (isDay ? dayLen : nightLen);
+      hours.push({ index: k, ruler: CHALDEAN[(start + k) % 7], start: new Date(s), end: new Date(e), isDay });
+    }
+    const current = hours.findIndex(h => date >= h.start && date < h.end);
+    return { dayRuler: ruler, sunrise: rise.date, sunset: set.date, nextSunrise: nextRise.date, hours, current };
+  }
+
+  /** Equinox and solstice moments for a year. */
+  function seasonsOf(year) {
+    const s = A.Seasons(year);
+    return { marEquinox: s.mar_equinox.date, junSolstice: s.jun_solstice.date, sepEquinox: s.sep_equinox.date, decSolstice: s.dec_solstice.date };
+  }
+
   root.ChartEngine = {
     SIGNS, ASPECTS, norm, angDiff, signOf, fmtDeg, computeChart, positionsAt,
-    findAspects, findPatterns, houseOf, compositeChart, hasTable, tableLon, transitsBetween, activeTransits, lifeCycles,
+    findAspects, findPatterns, houseOf, compositeChart, hasTable, tableLon,
+    moonNow, moonQuarters, lunarReturns, planetaryHours, seasonsOf, CHALDEAN, transitsBetween, activeTransits, lifeCycles,
     _internal: { placidus, ascFrom, mcFrom, meanNode, trueNode, meanLilith, chironLon, chironLonIntegrated, junoLon, makeTime }
   };
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -2955,6 +3098,170 @@ return new kd(this.curr.time,a,b)};$jscomp.global.Object.defineProperties(H.prot
       'The relationship has a private, spiritual or hidden side.'
     ]
   };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* content-rhythms.js */
+/*
+ * Cosmic rhythms: practical notes on the Sun–Moon polarity, the Moon cycle, the seasons,
+ * the seven classical planets as forces of creation, the elements, planetary days and hours.
+ * Symbolic tradition is presented as tradition; astronomical facts are kept accurate.
+ */
+(function (root) {
+  'use strict';
+
+  // Eight Moon phases: what the tradition uses each one for.
+  const PHASES = [
+    { name: 'New Moon', from: 0, to: 22.5, verb: 'Begin', use: 'Set intentions and start new projects, habits or chapters. What you plant now grows as the Moon grows.', avoid: 'Judging results. It is too early to see anything.', prompt: 'What do I want to grow over the next four weeks?' },
+    { name: 'Waxing Crescent', from: 22.5, to: 67.5, verb: 'Commit', use: 'Take the first concrete steps. Gather resources, make plans visible and tell someone your goal.', avoid: 'Giving up at the first obstacle.', prompt: 'What is the smallest next step I can take today?' },
+    { name: 'First Quarter', from: 67.5, to: 112.5, verb: 'Act', use: 'Push through resistance and make decisions. Problems that show up now show you what to fix.', avoid: 'Avoiding hard choices.', prompt: 'What decision have I been postponing?' },
+    { name: 'Waxing Gibbous', from: 112.5, to: 157.5, verb: 'Refine', use: 'Adjust, edit and improve. Work hard and prepare for the peak.', avoid: 'Starting something completely new.', prompt: 'What needs fine-tuning before it is finished?' },
+    { name: 'Full Moon', from: 157.5, to: 202.5, verb: 'See', use: 'Culmination and clarity. Celebrate results, notice what has come to light, and reflect, journal or meditate. Traditionally a time for affirmations and releasing.', avoid: 'Impulsive decisions and forming new habits you do not want. Emotions run high, so pause before reacting.', prompt: 'What has this cycle revealed to me?' },
+    { name: 'Waning Gibbous', from: 202.5, to: 247.5, verb: 'Share', use: 'Teach, share and give thanks. Pass on what you learned and distribute what you made.', avoid: 'Hoarding information or credit.', prompt: 'Who can benefit from what I learned?' },
+    { name: 'Last Quarter', from: 247.5, to: 292.5, verb: 'Release', use: 'Let go, declutter, forgive and close loops. Break habits that no longer serve you.', avoid: 'Clinging to what is finished.', prompt: 'What am I ready to let go of?' },
+    { name: 'Waning Crescent', from: 292.5, to: 337.5, verb: 'Rest', use: 'Rest, reflect and recharge. Dream and plan quietly before the next New Moon.', avoid: 'Overworking. Energy is lowest now.', prompt: 'What do I need in order to start fresh?' },
+    { name: 'New Moon', from: 337.5, to: 360, verb: 'Begin', use: 'Set intentions and start new projects, habits or chapters. What you plant now grows as the Moon grows.', avoid: 'Judging results. It is too early to see anything.', prompt: 'What do I want to grow over the next four weeks?' }
+  ];
+  const phaseOf = angle => PHASES.find(p => angle >= p.from && angle < p.to) || PHASES[0];
+
+  // The Moon moves through a sign in about 2.5 days; each sign colours the mood of those days.
+  const MOON_DAY = [
+    'Moon in Aries: energetic and impatient. Good for starting, sport and bold moves.',
+    'Moon in Taurus: calm and sensual. Good for finances, cooking, gardening and steady work.',
+    'Moon in Gemini: busy and talkative. Good for meetings, writing, errands and learning.',
+    'Moon in Cancer: tender and home-focused. Good for family, cooking, rest and nurturing.',
+    'Moon in Leo: warm and expressive. Good for creativity, celebrations and being visible.',
+    'Moon in Virgo: practical and tidy. Good for health routines, organising and detailed work.',
+    'Moon in Libra: social and harmonious. Good for partnerships, negotiation and beauty.',
+    'Moon in Scorpio: intense and private. Good for research, deep talks and letting go.',
+    'Moon in Sagittarius: optimistic and restless. Good for travel, study and big-picture plans.',
+    'Moon in Capricorn: serious and focused. Good for planning, structure and career moves.',
+    'Moon in Aquarius: inventive and detached. Good for groups, technology and new ideas.',
+    'Moon in Pisces: dreamy and sensitive. Good for art, meditation, rest and compassion.'
+  ];
+
+  // The four seasons of the year (and of any project).
+  const SEASONS = [
+    { key: 'spring', name: 'Spring', theme: 'Growth', text: 'Plant and grow. Start what you planned in winter, build momentum and learn by doing.', signs: 'Aries, Taurus, Gemini' },
+    { key: 'summer', name: 'Summer', theme: 'Action', text: 'Act, produce and be visible. This is the season of peak output, selling and expanding.', signs: 'Cancer, Leo, Virgo' },
+    { key: 'autumn', name: 'Autumn', theme: 'Reflection', text: 'Harvest and reflect. Review what worked, keep what is valuable, cut what is not.', signs: 'Libra, Scorpio, Sagittarius' },
+    { key: 'winter', name: 'Winter', theme: 'Planning', text: 'Rest, study and plan. Design next year, strengthen foundations and build skills.', signs: 'Capricorn, Aquarius, Pisces' }
+  ];
+
+  // The seven classical planets as the seven forces any creation needs.
+  const SEVEN = {
+    saturn: { force: 'Structure', role: 'Time, discipline and form', question: 'Do I give it time, a plan and consistency?', weak: 'Projects stay ideas, or collapse for lack of routine and patience.', practice: 'Set a fixed schedule and a deadline. Small daily repetition beats bursts.' },
+    jupiter: { force: 'Meaning', role: 'The why, faith and vision', question: 'Do I know why this matters?', weak: 'Motivation fades because the purpose is unclear.', practice: 'Write one sentence on why this matters and who it helps.' },
+    mars: { force: 'Protection', role: 'Courage, defence and drive', question: 'Will I defend it and push through resistance?', weak: 'Other people\'s doubts or the first obstacle stop the work.', practice: 'Decide in advance how you will respond to criticism and setbacks.' },
+    sun: { force: 'Will', role: 'Purpose, vitality and action', question: 'Am I putting my whole self and energy into it?', weak: 'You act half-heartedly or for other people\'s approval.', practice: 'Connect the work to who you are. Work in the morning when energy is highest.' },
+    venus: { force: 'Beauty', role: 'Form, value and attraction', question: 'Is it pleasing, valuable and attractive to others?', weak: 'The result works but nobody is drawn to it.', practice: 'Spend time on presentation, design and how it feels to receive.' },
+    mercury: { force: 'Intellect', role: 'Thought, skill and communication', question: 'Have I thought it through and can I explain it?', weak: 'Good ideas are poorly planned or poorly communicated.', practice: 'Write the plan down and explain it to someone in two minutes.' },
+    moon: { force: 'Care', role: 'Emotion, care and nurture', question: 'Do I genuinely care about it?', weak: 'Without emotional investment you will not keep going.', practice: 'Notice how it makes you feel. Build in rest so care does not burn out.' }
+  };
+
+  // Planetary days (the names of the week come from these rulers).
+  const DAYS = {
+    sun: { day: 'Sunday', use: 'Leadership, visibility, confidence, important beginnings, time with children.' },
+    moon: { day: 'Monday', use: 'Home, family, emotions, cooking, rest, intuition and care.' },
+    mars: { day: 'Tuesday', use: 'Hard work, exercise, courage, competition and tackling difficult tasks.' },
+    mercury: { day: 'Wednesday', use: 'Communication, writing, contracts, study, trade and short trips.' },
+    jupiter: { day: 'Thursday', use: 'Growth, teaching, law, generosity, planning big goals and asking for opportunities.' },
+    venus: { day: 'Friday', use: 'Love, beauty, art, socialising, pleasure, money and reconciliation.' },
+    saturn: { day: 'Saturday', use: 'Structure, discipline, cleaning up, long-term planning and finishing.' }
+  };
+
+  // Elements in the order of creation, as the pentagram is traditionally read.
+  const CREATION = [
+    { el: 'spirit', name: 'Spirit', step: 'Awareness', text: 'Awareness has a will: something wants to exist.' },
+    { el: 'air', name: 'Air', step: 'Thought', text: 'The will becomes a thought, an idea and a plan.' },
+    { el: 'water', name: 'Water', step: 'Desire', text: 'The thought becomes a desire, felt and cared about.' },
+    { el: 'fire', name: 'Fire', step: 'Will in action', text: 'Desire becomes energy and drive to act.' },
+    { el: 'earth', name: 'Earth', step: 'Form', text: 'Action takes physical form in the world.' }
+  ];
+
+  // Long-form notes pages.
+  const NOTES = [
+    {
+      id: 'sun-moon', title: 'The Sun and the Moon: conscious and subconscious',
+      body: [
+        'Astrology treats the Sun and Moon as the two lights of the chart and as the oldest pair of opposites: day and night, active and receptive, yang and yin. In the Hermetic tradition the Sun is called electric (it radiates outward and acts directly) and the Moon magnetic (it draws in, reflects and responds).',
+        'Psychologically the Sun describes the conscious self: what you choose, aim for and are aware of. The Moon describes the subconscious: habits, memories, moods and emotional reactions that run automatically. Much of daily behaviour comes from the Moon side, which is why understanding your Moon sign often explains more about everyday reactions than your Sun sign does.',
+        'A useful way to apply this: use the "Sun" part of the day for action and decisions, and the quieter "Moon" hours of the evening and night for imagination, reflection and ideas. Many people find their best ideas arrive when they stop pushing.',
+        'The Sun and Moon are also used as symbols of masculine and feminine principles. Every person has both. Reading them as qualities inside one person (directness and receptiveness, action and feeling) is more useful than reading them as rules for how men and women must behave.'
+      ]
+    },
+    {
+      id: 'moon-cycle', title: 'Working with the Moon cycle',
+      body: [
+        'The Moon goes from New Moon to Full Moon and back in about 29.5 days (the synodic month), so each half takes roughly 14.75 days. It completes a full circuit of the zodiac in about 27.3 days, spending around 2.5 days in each sign. The word "month" comes from "moon".',
+        'Tradition reads the cycle like a growing plant: begin at the New Moon, build while it waxes, see results and gain clarity at the Full Moon, then share, release and rest while it wanes. Starting a project near a New Moon is a classic way to "let it grow with the Moon".',
+        'The Full Moon is traditionally a high-emotion, high-visibility time when the subconscious is closest to the surface. That is why it is used for reflection, affirmations and releasing, and why the tradition warns against forming habits you do not want at that time.',
+        'The Moon really does move the ocean tides through gravity, together with the Sun. The tradition extends this to the body\'s fluids and moods. The menstrual cycle (averaging about 28–29 days) is often linked symbolically with the lunar month, but large studies have not found that cycles follow the Moon\'s phases. Treat that link as symbolism, not biology.'
+      ]
+    },
+    {
+      id: 'seasons', title: 'The seasons of the year and of any project',
+      body: [
+        'Spring is growth, summer is action, autumn is reflection and winter is planning. The cycle applies to a business year, a project or a life chapter as much as to the weather.',
+        'In astrology the seasons begin at the equinoxes and solstices: spring at 0° Aries, summer at 0° Cancer, autumn at 0° Libra and winter at 0° Capricorn (in the northern hemisphere). Near the equator, for example in Kenya, temperature seasons are weak and the rains define the year, so the zodiac seasons are best read symbolically.',
+        'You also have a personal year that starts on your birthday, when the Sun returns to its birth position. The first quarter after your birthday is your personal spring, the second your summer, the third your autumn and the last your winter. Planning in your personal winter and launching in your personal spring aligns effort with your own cycle.',
+        'Many people get stuck by skipping a season: always acting without reflecting, or always planning without acting. Moving through all four keeps growth sustainable.'
+      ]
+    },
+    {
+      id: 'seven', title: 'The seven planets: seven forces of creation',
+      body: [
+        'Classical astrology works with seven visible planets, which also gave the days of the week their names. Each can be read as a force that any creation needs: Saturn gives structure and time, Jupiter meaning, Mars protection and courage, the Sun will and vitality, Venus beauty and value, Mercury thought and communication, and the Moon care and emotional investment.',
+        'When a goal keeps failing, ask which force is missing. No plan or routine is Saturn. No clear reason is Jupiter. Giving up under pressure is Mars. Half-hearted effort is the Sun. Nobody wants the result: Venus. Muddled planning or explanation: Mercury. Not caring enough to continue: the Moon.',
+        'Your chart shows which forces come easily and which need deliberate work. A planet in its own sign or exaltation usually expresses its force naturally; one in detriment or fall, retrograde or under pressure from hard aspects often needs more conscious effort, and can become a real skill once developed.',
+        '"As above, so below" sums up the idea: the person is seen as a small model of the cosmos (the microcosm reflecting the macrocosm), so the same seven forces are found in the sky and in you.'
+      ]
+    },
+    {
+      id: 'elements', title: 'The elements and the cycle of creation',
+      body: [
+        'The four elements are a map of how anything comes into being. Air is thought, water is feeling and desire, fire is will and energy, and earth is physical action and form. The fifth point, spirit, is awareness itself.',
+        'The pentagram is traditionally read as this process: awareness has a will, the will becomes a thought, the thought becomes a desire, the desire turns into action, and the result returns to spirit as experience.',
+        'Your element balance shows where this process runs smoothly for you and where it stalls. Strong air but little earth often means many ideas and few finished results. Strong earth but little fire means steady work without enough drive or joy. Strong water but little air means deep feeling that is hard to put into a plan.',
+        'Strengthen a weak element deliberately. Weak air: write and talk ideas through. Weak water: reconnect with why you care. Weak fire: move your body and set bold goals. Weak earth: make routines and finish small tasks.'
+      ]
+    },
+    {
+      id: 'polarity', title: 'Electric and magnetic: the two polarities',
+      body: [
+        'Fire and air signs are called yang, active or electric: outgoing, direct and initiating. Earth and water signs are yin, receptive or magnetic: inward, steadying and responsive. Everybody has a mix.',
+        'A chart heavy in yang tends to act first and push outward; it benefits from patience and listening. A chart heavy in yin tends to absorb, wait and attract; it benefits from stating needs directly and taking initiative.',
+        'In relationships the same idea explains a lot of friction: one person speaks directly ("Let\'s get food") while another hints ("Are you hungry?"). Neither is wrong. Recognising the two styles, in yourself and in a partner, makes communication easier.'
+      ]
+    },
+    {
+      id: 'day-night', title: 'Day and night: action and imagination',
+      body: [
+        'Daytime belongs to the Sun: action, work, decisions and being seen. Night belongs to the Moon: rest, dreams, imagination and quiet thinking.',
+        'Planetary hours are an old timing system built on this. Each day is ruled by one planet (Sunday the Sun, Monday the Moon, Tuesday Mars, Wednesday Mercury, Thursday Jupiter, Friday Venus, Saturday Saturn), and the daylight and night are each divided into twelve "hours" ruled in turn by the seven planets. They are used to pick a moment that matches the task, such as a Mercury hour for an important email or a Venus hour for a date.',
+        'Planetary hours are not 60 minutes long: they are one twelfth of the actual daylight or night at your location, so they change with the season and the place.'
+      ]
+    },
+    {
+      id: 'signs-within', title: 'All twelve signs live in you',
+      body: [
+        'When people say "I am a Virgo" they mean the Sun\'s sign: the main focus of the personality. But every sign is somewhere in every chart, because the twelve signs are spread across the twelve houses. Each sign is an energy you can draw on, in the area of life where it falls.',
+        'In brief: Aries is initiative, Taurus values, Gemini understanding, Cancer family and nurturing, Leo creativity and leadership, Virgo healing and refinement, Libra partnership and justice, Scorpio bonding and transformation, Sagittarius wisdom and belief, Capricorn structure and achievement, Aquarius community and innovation, and Pisces compassion and spirituality.',
+        'The table on this page shows where each sign falls in your chart, so you can see where each of these energies is most active in your life.'
+      ]
+    },
+    {
+      id: 'use-wisely', title: 'Using these notes wisely',
+      body: [
+        'Astrology is a symbolic language for reflection, timing and self-understanding. It describes tendencies, not fixed fate, and it works best alongside practical effort and good judgement.',
+        'It is not a substitute for medical, psychological or financial advice. Thought, purpose and meaningful work do support wellbeing, but mental health conditions are real and treatable, and prescribed treatment should never be stopped because of an astrological idea. Use these notes together with professional care, not instead of it.',
+        'Where astronomy and tradition differ, this app keeps the astronomy accurate (planetary positions, Moon phases and sunrise times are calculated precisely) and labels symbolic ideas as tradition.'
+      ]
+    }
+  ];
+
+  root.ChartRhythms = { PHASES, phaseOf, MOON_DAY, SEASONS, SEVEN, DAYS, CREATION, NOTES };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -4612,6 +4919,275 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       </div>`;
   }
 
+  // ---------- Cosmic rhythms ----------
+  const RH = window.ChartRhythms;
+  state.rhythm = { place: null };
+  const SIGN_ENERGY = ['initiative', 'values', 'understanding', 'family and nurturing', 'creativity and leadership', 'healing and refinement', 'partnership and justice', 'bonding and transformation', 'wisdom and belief', 'structure and achievement', 'community and innovation', 'compassion and spirituality'];
+
+  // How easily each classical planet expresses its force in this chart (0–10).
+  function sevenScores() {
+    return Object.keys(RH.SEVEN).map(k => {
+      const p = pt(k);
+      const why = [];
+      let sc = 5;
+      const d = dignity(k, E.signOf(p.lon).sign.key);
+      if (d === 'Domicile') { sc += 3; why.push('in its own sign'); }
+      if (d === 'Exaltation') { sc += 2; why.push('exalted'); }
+      if (d === 'Detriment' || d === 'Fall') { sc -= 2; why.push(d.toLowerCase()); }
+      if (p.house && [1, 4, 7, 10].includes(p.house)) { sc += 1.5; why.push('angular house'); }
+      if (p.house && [3, 6, 9, 12].includes(p.house)) { sc -= 0.5; why.push('cadent house'); }
+      if (p.retrograde) { sc -= 1; why.push('retrograde'); }
+      const asp = state.aspects.filter(a => a.aspect.major && (a.a === k || a.b === k));
+      const flow = asp.filter(a => ['trine', 'sextile'].includes(a.aspect.key)).length;
+      const hard = asp.filter(a => ['square', 'opposition'].includes(a.aspect.key)).length;
+      if (flow) { sc += 0.6 * flow; why.push(`${flow} easy aspect${flow > 1 ? 's' : ''}`); }
+      if (hard) { sc -= 0.5 * hard; why.push(`${hard} hard aspect${hard > 1 ? 's' : ''}`); }
+      return { key: k, score: Math.max(0, Math.min(10, sc)), why };
+    }).sort((a, b) => b.score - a.score);
+  }
+
+  const fmtIn = (date, tz, opts) => {
+    try { return date.toLocaleString(undefined, Object.assign({ timeZone: tz || undefined }, opts)); }
+    catch (e) { return date.toLocaleString(undefined, opts); }
+  };
+
+  function moonChart(days) {
+    // Illuminated fraction for the next `days` days, one bar per day.
+    const W = 640, H = 150, pad = { l: 34, r: 8, t: 12, b: 26 };
+    const start = new Date(); start.setHours(12, 0, 0, 0);
+    const data = Array.from({ length: days }, (_, i) => {
+      const d = new Date(start.getTime() + i * 86400e3);
+      const m = E.moonNow(d);
+      return { d, f: m.fraction, waxing: m.waxing, sign: E.signOf(m.lon).sign.name };
+    });
+    const bw = (W - pad.l - pad.r) / days;
+    const y = f => pad.t + (1 - f) * (H - pad.t - pad.b);
+    const quarters = E.moonQuarters(start, days);
+    const bars = data.map((p, i) => {
+      const x = pad.l + i * bw + 1, h = (H - pad.b) - y(p.f);
+      return `<rect class="mbar${i === 0 ? ' today' : ''}" x="${f(x)}" y="${f(y(p.f))}" width="${f(bw - 2)}" height="${f(Math.max(h, 1))}" rx="2"><title>${fmtDate(p.d)}: ${Math.round(p.f * 100)}% lit, ${p.waxing ? 'waxing' : 'waning'}, Moon in ${p.sign}</title></rect>`;
+    }).join('');
+    const marks = quarters.filter(q => q.quarter === 0 || q.quarter === 2).map(q => {
+      const i = (q.date - start) / 86400e3;
+      const x = pad.l + i * bw;
+      return `<line class="mq" x1="${f(x)}" y1="${pad.t - 4}" x2="${f(x)}" y2="${H - pad.b}"/><text class="mql" x="${f(x)}" y="${H - 8}" text-anchor="middle">${q.quarter === 0 ? 'New' : 'Full'} ${q.date.getDate()}/${q.date.getMonth() + 1}</text>`;
+    }).join('');
+    const grid = [0, 0.5, 1].map(v => `<line class="mgrid" x1="${pad.l}" x2="${W - pad.r}" y1="${f(y(v))}" y2="${f(y(v))}"/><text class="maxis" x="${pad.l - 6}" y="${f(y(v)) + 4}" text-anchor="end">${v * 100}%</text>`).join('');
+    return `<figure class="chart-fig"><figcaption class="faint">Moon illumination, next ${days} days (hover a bar for details)</figcaption><div class="chart-scroll"><svg class="mchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Moon illumination for the next ${days} days">${grid}${bars}${marks}</svg></div></figure>`;
+  }
+
+  function hoursChart(ph, tz) {
+    const W = 640, rowH = 34, H = rowH * 2 + 34;
+    const seg = (h, row) => {
+      const len = (row === 0 ? (ph.sunset - ph.sunrise) : (ph.nextSunrise - ph.sunset));
+      const base = row === 0 ? ph.sunrise : ph.sunset;
+      const x = 70 + (h.start - base) / len * (W - 80);
+      const w = (h.end - h.start) / len * (W - 80);
+      const yy = 8 + row * (rowH + 8);
+      const cur = h.index === ph.current;
+      return `<g class="hseg ${h.isDay ? 'day' : 'night'}${cur ? ' current' : ''}"><rect x="${f(x + 1)}" y="${yy}" width="${f(w - 2)}" height="${rowH}" rx="4"><title>${P(h.ruler).name} hour, ${fmtIn(h.start, tz, { hour: '2-digit', minute: '2-digit' })}–${fmtIn(h.end, tz, { hour: '2-digit', minute: '2-digit' })}</title></rect><text x="${f(x + w / 2)}" y="${yy + rowH / 2}" class="hg">${esc(glyphOf(h.ruler))}</text></g>`;
+    };
+    return `<figure class="chart-fig"><figcaption class="faint">Today's 24 planetary hours. Top row: daylight from sunrise; bottom row: night from sunset. The outlined hour is now.</figcaption><div class="chart-scroll"><svg class="hchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Planetary hours timeline">
+      <text class="hl" x="0" y="${8 + rowH / 2}">Day</text><text class="hl" x="0" y="${16 + rowH * 1.5}">Night</text>
+      ${ph.hours.slice(0, 12).map(h => seg(h, 0)).join('')}${ph.hours.slice(12).map(h => seg(h, 1)).join('')}
+      <text class="maxis" x="70" y="${H - 4}">${fmtIn(ph.sunrise, tz, { hour: '2-digit', minute: '2-digit' })} sunrise</text>
+      <text class="maxis" x="${W - 10}" y="${H - 4}" text-anchor="end">${fmtIn(ph.sunset, tz, { hour: '2-digit', minute: '2-digit' })} sunset · ${fmtIn(ph.nextSunrise, tz, { hour: '2-digit', minute: '2-digit' })} next sunrise</text>
+    </svg></div></figure>`;
+  }
+
+  function pentagram(pcts) {
+    // Points in the traditional order: spirit at the top, then clockwise water, fire, earth, air.
+    const order = ['spirit', 'water', 'fire', 'earth', 'air'];
+    const S = 300, c = S / 2, r = 108;
+    const pos = order.map((k, i) => { const a = (-90 + i * 72) * Math.PI / 180; return [c + r * Math.cos(a), c + r * Math.sin(a)]; });
+    const star = [0, 2, 4, 1, 3, 0].map(i => pos[i].map(f).join(',')).join(' ');
+    const label = { spirit: 'Spirit', water: 'Water · desire', fire: 'Fire · will', earth: 'Earth · action', air: 'Air · thought' };
+    const nodes = order.map((k, i) => {
+      const [x, yv] = pos[i];
+      const pct = k === 'spirit' ? null : pcts[k];
+      const rr = k === 'spirit' ? 14 : 10 + (pct || 0) * 0.35;
+      return `<circle class="pnode ${k}" cx="${f(x)}" cy="${f(yv)}" r="${f(rr)}"><title>${label[k]}${pct != null ? ': ' + pct + '%' : ''}</title></circle>
+        <text class="plabel" x="${f(x)}" y="${f(yv + (i === 0 ? -24 : i < 3 ? 0 : 28))}" text-anchor="${i === 1 || i === 2 ? 'start' : i === 3 || i === 4 ? 'end' : 'middle'}" dx="${i === 1 || i === 2 ? 22 : i === 3 || i === 4 ? -22 : 0}">${label[k]}${pct != null ? ' ' + pct + '%' : ''}</text>`;
+    }).join('');
+    const list = ['air', 'water', 'fire', 'earth'].map(k => `<span class="chip">${label[k]} ${pcts[k]}%</span>`).join('');
+    return `<svg class="pent" viewBox="-150 -10 600 320" role="img" aria-label="Elements on the pentagram"><polyline class="pline" points="${star}"/>${nodes}</svg><div class="chips pent-list">${list}</div>`;
+  }
+
+  function renderRhythms() {
+    const ch = state.chart;
+    const now = new Date();
+    const place = state.rhythm.place || { name: state.input.place || 'birth place', lat: state.input.lat, lon: state.input.lon, tz: state.input.tz || '' };
+    const m = E.moonNow(now);
+    const phase = RH.phaseOf(m.angle);
+    const mSign = E.signOf(m.lon);
+    const quarters = E.moonQuarters(now, 60);
+    const returns = E.lunarReturns(pt('moon').lon, now, 2);
+    const moonHouse = ch.noHouses ? null : E.houseOf(m.lon, ch.houses.cusps);
+    // seasons
+    const sunNow = E.positionsAt(now).find(p => p.key === 'sun').lon;
+    const south = place.lat < 0;
+    const yearSeasonIdx = (Math.floor(sunNow / 90) + (south ? 2 : 0)) % 4;
+    const equatorial = Math.abs(place.lat) < 15;
+    const personalAngle = E.norm(sunNow - pt('sun').lon);
+    const personalIdx = Math.floor(personalAngle / 90);
+    const seasonBar = (idx, angle, label) => `<div class="season-bar" role="img" aria-label="${label}: ${RH.SEASONS[idx].name}">
+        ${RH.SEASONS.map((x, i) => `<span class="${i === idx ? 'on' : ''}">${x.name}<small>${x.theme}</small></span>`).join('')}
+        <i style="left:${(angle / 360 * 100).toFixed(1)}%"></i></div>`;
+    const yr = now.getFullYear();
+    const se = E.seasonsOf(yr), seNext = E.seasonsOf(yr + 1);
+    const marks = [se.marEquinox, se.junSolstice, se.sepEquinox, se.decSolstice, seNext.marEquinox].filter(d => d > now);
+    // seven forces
+    const seven = sevenScores();
+    const weakest = seven[seven.length - 1];
+    // polarity and elements
+    const b = balance();
+    const pct = k => Math.round(b.el[k] / b.tot * 100);
+    const yang = pct('fire') + pct('air'), yin = 100 - yang;
+    const elems = ['fire', 'earth', 'air', 'water'];
+    const weakEl = elems.slice().sort((x, y) => b.el[x] - b.el[y])[0];
+    const elAdvice = { air: 'Weak air: write and talk your ideas through before acting.', water: 'Weak water: reconnect with why you care before you start.', fire: 'Weak fire: set bold goals and move your body to build drive.', earth: 'Weak earth: build routines and finish small tasks to make ideas real.' };
+    // planetary hours
+    let ph = null;
+    try { ph = E.planetaryHours(now, place.lat, place.lon); } catch (e) { ph = null; }
+    const curHour = ph && ph.current >= 0 ? ph.hours[ph.current] : null;
+    const nextHours = ph ? ph.hours.filter(h => h.start > now).slice(0, 4) : [];
+    // signs within
+    const within = ch.noHouses ? [] : E.SIGNS.map((sg, i) => ({ sg, i, house: E.houseOf(i * 30 + 15, ch.houses.cusps) }));
+    const nav = [['rh-moon', 'Moon now'], ['rh-hours', 'Planetary hours'], ['rh-seasons', 'Seasons'], ['rh-seven', 'Seven forces'], ['rh-polarity', 'Polarity & elements'], ['rh-bms', 'Body, mind, soul'], ['rh-signs', 'Twelve signs in you'], ['rh-notes', 'Notes']];
+
+    $('#panel-rhythms').innerHTML = `
+      <div class="section">
+        <div class="section-head"><div><span class="eyebrow">Cosmic rhythms</span><h2>Living with the cycles of the sky</h2></div><button class="btn small no-print" type="button" id="rhythms-print">Print these notes</button></div>
+        <p class="muted">How the Sun, Moon, seasons and the seven classical planets work as rhythms in daily life, applied to ${esc(state.input.name || 'this chart')}. Positions and times are calculated live. The meanings are traditional symbolism, for reflection and timing.</p>
+        <div class="chips no-print">${nav.map(([id, t]) => `<a class="chip" href="#${id}" data-scroll="${id}">${t}</a>`).join('')}</div>
+      </div>
+
+      <div class="section rh" id="rh-moon">
+        <h3>The Moon now</h3>
+        <div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">${fmtDate(now)} · ${Math.round(m.fraction * 100)}% lit · ${m.waxing ? 'waxing' : 'waning'}</div>
+            <h3 style="margin:6px 0">${phase.name}: ${phase.verb}</h3>
+            <p>${esc(phase.use)}</p>
+            <p class="faint" style="margin-top:6px">Avoid: ${esc(phase.avoid)}</p>
+            <p style="margin-top:8px"><b>${esc(RH.MOON_DAY[mSign.index])}</b></p>
+            ${moonHouse ? `<p class="muted" style="margin-top:6px">Today the Moon is moving through your ${ordinal(moonHouse)} house, so feelings about ${esc(C.HOUSES[moonHouse - 1].area)} are close to the surface.</p>` : ''}
+            <p class="note" style="margin-top:10px">Journal prompt: ${esc(phase.prompt)}</p>
+          </div>
+          <div class="card">
+            <div class="eyebrow">Coming up</div>
+            <ul class="syn-list">${quarters.slice(0, 6).map(q => `<li><b>${q.name}</b> · ${fmtDate(q.date)} in ${E.signOf(q.lon).sign.name}. <span class="muted">${['Start something new here.', 'Push through and decide.', 'See results, reflect and release.', 'Let go and tidy up.'][q.quarter]}</span></li>`).join('')}</ul>
+            <div class="eyebrow" style="margin-top:12px">Your lunar return</div>
+            <p class="muted">The Moon returns to its position in this birth chart (${posText(pt('moon').lon)}) every 27.3 days, an emotional "reset" day. Next: <b>${returns.map(fmtDate).join('</b>, then <b>')}</b>.</p>
+          </div>
+        </div>
+        <div class="card">${moonChart(30)}</div>
+      </div>
+
+      <div class="section rh" id="rh-hours">
+        <div class="section-head"><h3>Planetary day and hours</h3>
+          <div class="field suggest no-print rh-place"><label for="rh-place">Place</label><input type="text" id="rh-place" value="${esc(place.name)}" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="rh-places" placeholder="Type a city"><ul id="rh-places" role="listbox" hidden></ul></div>
+        </div>
+        ${ph ? `<div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">${esc(RH.DAYS[ph.dayRuler].day)} · day of ${P(ph.dayRuler).name}</div>
+            <p style="margin-top:6px">${esc(RH.DAYS[ph.dayRuler].use)}</p>
+            ${curHour ? `<p style="margin-top:10px"><b>Now: ${P(curHour.ruler).name} hour</b> until ${fmtIn(curHour.end, place.tz, { hour: '2-digit', minute: '2-digit' })}. <span class="muted">${esc(RH.DAYS[curHour.ruler].use)}</span></p>` : ''}
+            <ul class="syn-list" style="margin-top:8px">${nextHours.map(h => `<li>${fmtIn(h.start, place.tz, { hour: '2-digit', minute: '2-digit' })} · ${P(h.ruler).name} hour</li>`).join('')}</ul>
+          </div>
+          <div class="card"><p class="muted">Times are for ${esc(place.name)}${place.tz ? ` (${esc(place.tz.replace(/_/g, ' '))})` : ''}. Planetary hours are one twelfth of the real daylight or night there, so they are rarely 60 minutes long.</p><p class="faint" style="margin-top:8px">Choose a Mercury hour for an important message, Venus for a date or a purchase, Jupiter for asking for an opportunity, Saturn for finishing and planning, Mars for hard work, the Sun for being seen, the Moon for family and rest.</p></div>
+        </div>
+        <div class="card">${hoursChart(ph, place.tz)}</div>` : '<p class="note">The Sun does not rise or set at this place today, so planetary hours cannot be calculated. Choose another place.</p>'}
+      </div>
+
+      <div class="section rh" id="rh-seasons">
+        <h3>Seasons: growth, action, reflection, planning</h3>
+        <div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">Season of the year · ${south ? 'southern' : 'northern'} hemisphere</div>
+            ${seasonBar(yearSeasonIdx, (E.norm(sunNow + (south ? 180 : 0))), 'Season of the year')}
+            <p style="margin-top:10px"><b>${RH.SEASONS[yearSeasonIdx].name}: ${RH.SEASONS[yearSeasonIdx].theme}.</b> ${esc(RH.SEASONS[yearSeasonIdx].text)}</p>
+            ${equatorial ? '<p class="faint" style="margin-top:6px">Near the equator the weather seasons are weak, so read this as the symbolic season of the zodiac.</p>' : ''}
+            ${marks.length ? `<p class="faint" style="margin-top:6px">Next turning point: ${fmtDate(marks[0])}.</p>` : ''}
+          </div>
+          <div class="card">
+            <div class="eyebrow">Personal year · starts each birthday</div>
+            ${seasonBar(personalIdx, personalAngle, 'Personal season')}
+            <p style="margin-top:10px"><b>Personal ${RH.SEASONS[personalIdx].name.toLowerCase()}: ${RH.SEASONS[personalIdx].theme}.</b> ${esc(RH.SEASONS[personalIdx].text)}</p>
+            <p class="faint" style="margin-top:6px">The Sun is ${Math.round(personalAngle)}° past its birth position. Each quarter of the personal year lasts about three months.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section rh" id="rh-seven">
+        <h3>The seven forces of creation</h3>
+        <div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">Ease of expression in this chart (0–10)</div>
+            <div class="bars" style="margin-top:10px">${seven.map(x => `<div class="bar seven"><span><span class="glyph">${esc(glyphOf(x.key))}</span> ${esc(RH.SEVEN[x.key].force)}</span><div class="track" title="${esc(P(x.key).name + ': ' + (x.why.join(', ') || 'neutral'))}"><div class="fill" style="width:${x.score * 10}%"></div></div><span class="num">${x.score.toFixed(1)}</span></div>`).join('')}</div>
+            <p class="faint" style="margin-top:10px">Score starts at 5, then adds for own sign, exaltation, angular houses and easy aspects, and subtracts for detriment, fall, retrograde motion and hard aspects. A low score means the force needs more conscious effort, not that it is missing.</p>
+          </div>
+          <div class="card">
+            <div class="eyebrow">Force to develop</div>
+            <h3 style="margin:6px 0">${esc(RH.SEVEN[weakest.key].force)} · ${P(weakest.key).name} in ${E.signOf(pt(weakest.key).lon).sign.name}</h3>
+            <p>${esc(RH.SEVEN[weakest.key].role)}. ${esc(RH.SEVEN[weakest.key].question)}</p>
+            <p class="muted" style="margin-top:6px">When this force is weak: ${esc(RH.SEVEN[weakest.key].weak)}</p>
+            <p class="note" style="margin-top:10px">Practice: ${esc(RH.SEVEN[weakest.key].practice)}</p>
+            ${weakest.why.length ? `<p class="faint" style="margin-top:6px">Why: ${esc(weakest.why.join(', '))}.</p>` : ''}
+          </div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Planet</th><th>Force</th><th>Placement</th><th class="wide-only">Ask yourself</th></tr></thead><tbody>
+          ${['saturn', 'jupiter', 'mars', 'sun', 'venus', 'mercury', 'moon'].map(k => `<tr data-goto="${k}"><td><span class="glyph">${esc(glyphOf(k))}</span>${P(k).name}</td><td>${esc(RH.SEVEN[k].force)}</td><td>${E.signOf(pt(k).lon).sign.name}${pt(k).house ? ', house ' + pt(k).house : ''}</td><td class="wide-only">${esc(RH.SEVEN[k].question)}</td></tr>`).join('')}
+        </tbody></table></div>
+      </div>
+
+      <div class="section rh" id="rh-polarity">
+        <h3>Polarity and the elements of creation</h3>
+        <div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">Electric (yang) and magnetic (yin)</div>
+            <div class="polar" role="img" aria-label="Yang ${yang} percent, yin ${yin} percent">
+              <div class="pa" style="width:${yang}%"><span>Yang ${yang}%</span></div><div class="pb" style="width:${yin}%"><span>Yin ${yin}%</span></div>
+            </div>
+            <div class="legend" style="justify-content:flex-start"><span><i class="lg-a"></i>Fire and air: active, direct</span><span><i class="lg-b"></i>Earth and water: receptive, magnetic</span></div>
+            <p style="margin-top:8px">${yang >= 60 ? 'This chart leans active and direct. Strength: initiative and momentum. Growth: patience, listening and letting things come to you.' : yin >= 60 ? 'This chart leans receptive and magnetic. Strength: depth, steadiness and attraction. Growth: stating needs directly and taking the first step.' : 'This chart balances active and receptive energy. You can switch between pushing forward and drawing in.'}</p>
+            <p class="muted" style="margin-top:6px">Sun in ${E.signOf(pt('sun').lon).sign.name} (conscious will) · Moon in ${E.signOf(pt('moon').lon).sign.name} (subconscious) · ${ch.isDay ? 'born by day, so the solar side leads' : 'born by night, so the lunar side leads'}.</p>
+          </div>
+          <div class="card">
+            <div class="eyebrow">The pentagram: thought → desire → will → form</div>
+            ${pentagram({ fire: pct('fire'), earth: pct('earth'), air: pct('air'), water: pct('water') })}
+            <p style="margin-top:4px">Weakest link: <b>${C.ELEMENTS[weakEl].name}</b>. ${esc(elAdvice[weakEl])}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section rh" id="rh-bms">
+        <h3>Body, mind and soul</h3>
+        <div class="grid-3">
+          ${!ch.noHouses ? `<div class="card"><div class="eyebrow">Body · Earth · Ascendant</div><h3 style="margin:6px 0">${E.signOf(pt('asc').lon).sign.name} rising</h3><p class="muted">${esc(signReading('asc', pt('asc').lon))}</p></div>` : '<div class="card"><div class="eyebrow">Body · Earth</div><p class="muted">Add a birth time to see the Ascendant, which describes the body and how you meet the world.</p></div>'}
+          <div class="card"><div class="eyebrow">Mind · Moon</div><h3 style="margin:6px 0">Moon in ${E.signOf(pt('moon').lon).sign.name}</h3><p class="muted">${esc(signReading('moon', pt('moon').lon))}</p></div>
+          <div class="card"><div class="eyebrow">Soul · Sun</div><h3 style="margin:6px 0">Sun in ${E.signOf(pt('sun').lon).sign.name}</h3><p class="muted">${esc(signReading('sun', pt('sun').lon))}</p></div>
+        </div>
+      </div>
+
+      <div class="section rh" id="rh-signs">
+        <h3>All twelve signs live in you</h3>
+        ${within.length ? `<div class="table-wrap"><table><thead><tr><th>Sign</th><th>Energy</th><th>Works in house</th><th class="wide-only">Area of life</th></tr></thead><tbody>
+          ${within.map(w => `<tr data-house="${w.house}"><td><span class="glyph">${signGlyph(w.sg)}</span>${w.sg.name}</td><td>${SIGN_ENERGY[w.i]}</td><td class="num">${w.house}</td><td class="wide-only">${esc(C.HOUSES[w.house - 1].area)}</td></tr>`).join('')}
+        </tbody></table></div>` : '<p class="muted">Add a birth time to see which house each sign works through.</p>'}
+      </div>
+
+      <div class="section rh" id="rh-notes">
+        <h3>Notes</h3>
+        <div class="notes">${RH.NOTES.map((n, i) => `<article class="card note-page" id="note-${n.id}"><div class="eyebrow">Note ${i + 1} of ${RH.NOTES.length}</div><h3>${esc(n.title)}</h3>${n.body.map(t => `<p>${esc(t)}</p>`).join('')}</article>`).join('')}</div>
+      </div>`;
+
+    attachPlaceSearch($('#rh-place'), $('#rh-places'), c => {
+      state.rhythm.place = { name: `${c.name}, ${c.country}`, lat: c.lat, lon: c.lon, tz: c.tz };
+      renderRhythms();
+    });
+  }
+
   // ---------- Life guidance ----------
   const T = window.ChartTopics;
   state.guide = { topic: store.get('guideTopic', 'career'), question: '' };
@@ -5119,7 +5695,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
   }
 
   // ---------- tabs ----------
-  const RENDER = { guide: renderGuide, compat: renderCompat, reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
+  const RENDER = { rhythms: renderRhythms, guide: renderGuide, compat: renderCompat, reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
 
   function showTab(tab) {
     state.tab = tab;
@@ -5129,6 +5705,9 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       b.tabIndex = on ? 0 : -1;
     });
     document.querySelectorAll('.panel').forEach(p => { p.hidden = p.id !== 'panel-' + tab; });
+    // Keep the selected tab visible in the scrolling tab bar on small screens.
+    const activeTab = document.querySelector(`.tab[data-tab="${tab}"]`);
+    if (activeTab) { const bar = activeTab.parentElement; bar.scrollTo({ left: activeTab.offsetLeft - (bar.clientWidth - activeTab.offsetWidth) / 2, behavior: 'smooth' }); }
     if (RENDER[tab]) RENDER[tab]();
     store.set('tab', tab);
   }
@@ -5429,7 +6008,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       return;
     }
     bindWheel(); bindTabs(); bindCustomize(); bindDialog(); bindCompat(); bindGuide();
-    $('main').addEventListener('click', e => { if (e.target.id === 'reading-print') printPanel(); });
+    $('main').addEventListener('click', e => { if (e.target.id === 'reading-print' || e.target.id === 'rhythms-print') printPanel(); });
     if (!window.matchMedia('(hover: hover)').matches) {
       $('#wheel-hint').textContent = 'Tap any symbol, sign or house number to read about it. Tap the centre to close.';
     }

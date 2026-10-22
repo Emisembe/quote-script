@@ -16,6 +16,8 @@
   --tension: #B0463C;
   --blend: #8A6A2E;
   --adjust: #6D5FA0;
+  --chart-a: #A3478C;
+  --chart-b: #B8761F;
   --fire: #F2E0D6;
   --earth: #E8E5D5;
   --air: #E5E4EE;
@@ -48,6 +50,8 @@
     --tension: #E78B7E;
     --blend: #D5B679;
     --adjust: #A99BE0;
+    --chart-a: #B25A99;
+    --chart-b: #C0832A;
     --fire: #3A2626;
     --earth: #2E2C22;
     --air: #2A2A36;
@@ -74,6 +78,8 @@
   --tension: #E78B7E;
   --blend: #D5B679;
   --adjust: #A99BE0;
+  --chart-a: #B25A99;
+  --chart-b: #C0832A;
   --fire: #3A2626;
   --earth: #2E2C22;
   --air: #2A2A36;
@@ -468,6 +474,57 @@ tr.static { cursor: default; }
 .suggest li.status:hover { background: none; }
 .person .suggest ul { z-index: 6; }
 
+/* ---------- cosmic rhythms ---------- */
+.rh { scroll-margin-top: 90px; }
+.chart-fig { margin: 0; display: grid; gap: 6px; }
+.chart-scroll { overflow-x: auto; }
+.mchart, .hchart { width: 100%; min-width: 420px; height: auto; display: block; }
+.mchart .mbar { fill: var(--chart-a); }
+.mchart .mbar.today { fill: var(--chart-b); }
+.mchart .mbar:hover { opacity: .75; }
+.mchart .mgrid { stroke: var(--line); stroke-width: 1; }
+.mchart .maxis, .hchart .maxis { font: 11px var(--mono); fill: var(--ink-3); }
+.mchart .mq { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 3 3; }
+.mchart .mql { font: 600 11px var(--sans); fill: var(--ink-2); }
+.hchart .hseg rect { stroke: var(--surface); stroke-width: 2; }
+.hchart .hseg.day rect { fill: var(--plum-tint); }
+.hchart .hseg.night rect { fill: var(--surface-2); }
+.hchart .hseg.current rect { stroke: var(--chart-b); stroke-width: 3; }
+.hchart .hg { font: 15px var(--glyph); fill: var(--ink); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.hchart .hl { font: 700 11px var(--sans); fill: var(--ink-2); dominant-baseline: central; letter-spacing: .06em; text-transform: uppercase; }
+.season-bar { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 10px; padding-top: 10px; }
+.season-bar span { display: grid; gap: 1px; text-align: center; padding: 8px 4px; border-radius: 8px; background: var(--surface-2); font-size: 13px; font-weight: 650; color: var(--ink-2); }
+.season-bar span small { font-weight: 500; font-size: 11.5px; color: var(--ink-3); }
+.season-bar span.on { background: var(--chart-a); color: var(--on-plum); }
+.season-bar span.on small { color: var(--on-plum); opacity: .85; }
+.season-bar i { position: absolute; top: 0; width: 0; height: 0; border: 7px solid transparent; border-top-color: var(--chart-b); transform: translateX(-7px); }
+.bar.seven { grid-template-columns: 112px 1fr 40px; }
+.bar.seven .fill { background: var(--chart-a); }
+.polar { display: flex; height: 34px; border-radius: 8px; overflow: hidden; gap: 2px; margin-top: 10px; }
+.polar > div { display: flex; align-items: center; padding: 0 10px; min-width: 64px; font: 700 12.5px var(--sans); color: #fff; white-space: nowrap; }
+.polar .pa { background: var(--chart-a); }
+.polar .pb { background: var(--chart-b); justify-content: flex-end; }
+:root[data-theme="dark"] .polar > div { color: #160f15; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .polar > div { color: #160f15; } }
+.legend .lg-a, .legend .lg-b { display: inline-block; width: 12px; height: 12px; border: 0; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend .lg-a { background: var(--chart-a); }
+.legend .lg-b { background: var(--chart-b); }
+.pent { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.pent .pline { fill: none; stroke: var(--line-strong); stroke-width: 1.5; }
+.pent .pnode { fill: var(--chart-a); stroke: var(--surface); stroke-width: 2; }
+.pent .pnode.spirit { fill: var(--chart-b); }
+.pent .plabel { font: 600 17px var(--sans); fill: var(--ink); dominant-baseline: central; }
+.pent-list { justify-content: center; margin-top: 4px; }
+@media (max-width: 600px) { .pent .plabel { display: none; } }
+.rh-place { min-width: min(260px, 100%); }
+.notes { display: grid; gap: 14px; }
+.note-page { display: grid; gap: 10px; }
+.note-page p { color: var(--ink-2); max-width: 75ch; }
+@media (max-width: 600px) {
+  .bar.seven { grid-template-columns: 96px 1fr 34px; }
+  .season-bar span { font-size: 12px; padding: 6px 2px; }
+}
+
 /* ---------- life guidance ---------- */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .ask { display: flex; gap: 8px; }
@@ -489,7 +546,7 @@ tr.static { cursor: default; }
     color-scheme: light;
     --bg: #fff; --surface: #fff; --surface-2: #f3eef1; --ink: #1a1418; --ink-2: #3d333b; --ink-3: #6b5f69;
     --line: #d8ccd3; --line-strong: #b9a6b2; --plum: #5E2B50; --plum-2: #7E4A6F; --plum-tint: #f1e6ed; --on-plum: #fff;
-    --brass: #8a6326; --flow: #25685a; --tension: #a13d33; --blend: #7a5c22; --adjust: #5d4f93;
+    --brass: #8a6326; --flow: #25685a; --tension: #a13d33; --blend: #7a5c22; --adjust: #5d4f93; --chart-a: #A3478C; --chart-b: #B8761F;
     --fire: #f6e9e2; --earth: #efede2; --air: #eeedf4; --water: #e7eff1; --shadow: none;
   }
   @page { margin: 14mm; }
@@ -499,6 +556,8 @@ tr.static { cursor: default; }
   .print-only { display: block; }
   body.print-compat .masthead { display: none !important; }
   .guide-grid { grid-template-columns: 1fr 1fr; }
+  .note-page { break-inside: avoid; }
+  .chart-scroll { overflow: visible; }
   .chart-layout { grid-template-columns: 1fr; }
   .detail { position: static; box-shadow: none; }
   .card, .stat, .house-row, .area-card, .reading-item, .table-wrap { box-shadow: none; break-inside: avoid; }

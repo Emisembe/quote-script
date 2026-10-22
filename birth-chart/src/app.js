@@ -1086,6 +1086,275 @@
       </div>`;
   }
 
+  // ---------- Cosmic rhythms ----------
+  const RH = window.ChartRhythms;
+  state.rhythm = { place: null };
+  const SIGN_ENERGY = ['initiative', 'values', 'understanding', 'family and nurturing', 'creativity and leadership', 'healing and refinement', 'partnership and justice', 'bonding and transformation', 'wisdom and belief', 'structure and achievement', 'community and innovation', 'compassion and spirituality'];
+
+  // How easily each classical planet expresses its force in this chart (0–10).
+  function sevenScores() {
+    return Object.keys(RH.SEVEN).map(k => {
+      const p = pt(k);
+      const why = [];
+      let sc = 5;
+      const d = dignity(k, E.signOf(p.lon).sign.key);
+      if (d === 'Domicile') { sc += 3; why.push('in its own sign'); }
+      if (d === 'Exaltation') { sc += 2; why.push('exalted'); }
+      if (d === 'Detriment' || d === 'Fall') { sc -= 2; why.push(d.toLowerCase()); }
+      if (p.house && [1, 4, 7, 10].includes(p.house)) { sc += 1.5; why.push('angular house'); }
+      if (p.house && [3, 6, 9, 12].includes(p.house)) { sc -= 0.5; why.push('cadent house'); }
+      if (p.retrograde) { sc -= 1; why.push('retrograde'); }
+      const asp = state.aspects.filter(a => a.aspect.major && (a.a === k || a.b === k));
+      const flow = asp.filter(a => ['trine', 'sextile'].includes(a.aspect.key)).length;
+      const hard = asp.filter(a => ['square', 'opposition'].includes(a.aspect.key)).length;
+      if (flow) { sc += 0.6 * flow; why.push(`${flow} easy aspect${flow > 1 ? 's' : ''}`); }
+      if (hard) { sc -= 0.5 * hard; why.push(`${hard} hard aspect${hard > 1 ? 's' : ''}`); }
+      return { key: k, score: Math.max(0, Math.min(10, sc)), why };
+    }).sort((a, b) => b.score - a.score);
+  }
+
+  const fmtIn = (date, tz, opts) => {
+    try { return date.toLocaleString(undefined, Object.assign({ timeZone: tz || undefined }, opts)); }
+    catch (e) { return date.toLocaleString(undefined, opts); }
+  };
+
+  function moonChart(days) {
+    // Illuminated fraction for the next `days` days, one bar per day.
+    const W = 640, H = 150, pad = { l: 34, r: 8, t: 12, b: 26 };
+    const start = new Date(); start.setHours(12, 0, 0, 0);
+    const data = Array.from({ length: days }, (_, i) => {
+      const d = new Date(start.getTime() + i * 86400e3);
+      const m = E.moonNow(d);
+      return { d, f: m.fraction, waxing: m.waxing, sign: E.signOf(m.lon).sign.name };
+    });
+    const bw = (W - pad.l - pad.r) / days;
+    const y = f => pad.t + (1 - f) * (H - pad.t - pad.b);
+    const quarters = E.moonQuarters(start, days);
+    const bars = data.map((p, i) => {
+      const x = pad.l + i * bw + 1, h = (H - pad.b) - y(p.f);
+      return `<rect class="mbar${i === 0 ? ' today' : ''}" x="${f(x)}" y="${f(y(p.f))}" width="${f(bw - 2)}" height="${f(Math.max(h, 1))}" rx="2"><title>${fmtDate(p.d)}: ${Math.round(p.f * 100)}% lit, ${p.waxing ? 'waxing' : 'waning'}, Moon in ${p.sign}</title></rect>`;
+    }).join('');
+    const marks = quarters.filter(q => q.quarter === 0 || q.quarter === 2).map(q => {
+      const i = (q.date - start) / 86400e3;
+      const x = pad.l + i * bw;
+      return `<line class="mq" x1="${f(x)}" y1="${pad.t - 4}" x2="${f(x)}" y2="${H - pad.b}"/><text class="mql" x="${f(x)}" y="${H - 8}" text-anchor="middle">${q.quarter === 0 ? 'New' : 'Full'} ${q.date.getDate()}/${q.date.getMonth() + 1}</text>`;
+    }).join('');
+    const grid = [0, 0.5, 1].map(v => `<line class="mgrid" x1="${pad.l}" x2="${W - pad.r}" y1="${f(y(v))}" y2="${f(y(v))}"/><text class="maxis" x="${pad.l - 6}" y="${f(y(v)) + 4}" text-anchor="end">${v * 100}%</text>`).join('');
+    return `<figure class="chart-fig"><figcaption class="faint">Moon illumination, next ${days} days (hover a bar for details)</figcaption><div class="chart-scroll"><svg class="mchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Moon illumination for the next ${days} days">${grid}${bars}${marks}</svg></div></figure>`;
+  }
+
+  function hoursChart(ph, tz) {
+    const W = 640, rowH = 34, H = rowH * 2 + 34;
+    const seg = (h, row) => {
+      const len = (row === 0 ? (ph.sunset - ph.sunrise) : (ph.nextSunrise - ph.sunset));
+      const base = row === 0 ? ph.sunrise : ph.sunset;
+      const x = 70 + (h.start - base) / len * (W - 80);
+      const w = (h.end - h.start) / len * (W - 80);
+      const yy = 8 + row * (rowH + 8);
+      const cur = h.index === ph.current;
+      return `<g class="hseg ${h.isDay ? 'day' : 'night'}${cur ? ' current' : ''}"><rect x="${f(x + 1)}" y="${yy}" width="${f(w - 2)}" height="${rowH}" rx="4"><title>${P(h.ruler).name} hour, ${fmtIn(h.start, tz, { hour: '2-digit', minute: '2-digit' })}–${fmtIn(h.end, tz, { hour: '2-digit', minute: '2-digit' })}</title></rect><text x="${f(x + w / 2)}" y="${yy + rowH / 2}" class="hg">${esc(glyphOf(h.ruler))}</text></g>`;
+    };
+    return `<figure class="chart-fig"><figcaption class="faint">Today's 24 planetary hours. Top row: daylight from sunrise; bottom row: night from sunset. The outlined hour is now.</figcaption><div class="chart-scroll"><svg class="hchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Planetary hours timeline">
+      <text class="hl" x="0" y="${8 + rowH / 2}">Day</text><text class="hl" x="0" y="${16 + rowH * 1.5}">Night</text>
+      ${ph.hours.slice(0, 12).map(h => seg(h, 0)).join('')}${ph.hours.slice(12).map(h => seg(h, 1)).join('')}
+      <text class="maxis" x="70" y="${H - 4}">${fmtIn(ph.sunrise, tz, { hour: '2-digit', minute: '2-digit' })} sunrise</text>
+      <text class="maxis" x="${W - 10}" y="${H - 4}" text-anchor="end">${fmtIn(ph.sunset, tz, { hour: '2-digit', minute: '2-digit' })} sunset · ${fmtIn(ph.nextSunrise, tz, { hour: '2-digit', minute: '2-digit' })} next sunrise</text>
+    </svg></div></figure>`;
+  }
+
+  function pentagram(pcts) {
+    // Points in the traditional order: spirit at the top, then clockwise water, fire, earth, air.
+    const order = ['spirit', 'water', 'fire', 'earth', 'air'];
+    const S = 300, c = S / 2, r = 108;
+    const pos = order.map((k, i) => { const a = (-90 + i * 72) * Math.PI / 180; return [c + r * Math.cos(a), c + r * Math.sin(a)]; });
+    const star = [0, 2, 4, 1, 3, 0].map(i => pos[i].map(f).join(',')).join(' ');
+    const label = { spirit: 'Spirit', water: 'Water · desire', fire: 'Fire · will', earth: 'Earth · action', air: 'Air · thought' };
+    const nodes = order.map((k, i) => {
+      const [x, yv] = pos[i];
+      const pct = k === 'spirit' ? null : pcts[k];
+      const rr = k === 'spirit' ? 14 : 10 + (pct || 0) * 0.35;
+      return `<circle class="pnode ${k}" cx="${f(x)}" cy="${f(yv)}" r="${f(rr)}"><title>${label[k]}${pct != null ? ': ' + pct + '%' : ''}</title></circle>
+        <text class="plabel" x="${f(x)}" y="${f(yv + (i === 0 ? -24 : i < 3 ? 0 : 28))}" text-anchor="${i === 1 || i === 2 ? 'start' : i === 3 || i === 4 ? 'end' : 'middle'}" dx="${i === 1 || i === 2 ? 22 : i === 3 || i === 4 ? -22 : 0}">${label[k]}${pct != null ? ' ' + pct + '%' : ''}</text>`;
+    }).join('');
+    const list = ['air', 'water', 'fire', 'earth'].map(k => `<span class="chip">${label[k]} ${pcts[k]}%</span>`).join('');
+    return `<svg class="pent" viewBox="-150 -10 600 320" role="img" aria-label="Elements on the pentagram"><polyline class="pline" points="${star}"/>${nodes}</svg><div class="chips pent-list">${list}</div>`;
+  }
+
+  function renderRhythms() {
+    const ch = state.chart;
+    const now = new Date();
+    const place = state.rhythm.place || { name: state.input.place || 'birth place', lat: state.input.lat, lon: state.input.lon, tz: state.input.tz || '' };
+    const m = E.moonNow(now);
+    const phase = RH.phaseOf(m.angle);
+    const mSign = E.signOf(m.lon);
+    const quarters = E.moonQuarters(now, 60);
+    const returns = E.lunarReturns(pt('moon').lon, now, 2);
+    const moonHouse = ch.noHouses ? null : E.houseOf(m.lon, ch.houses.cusps);
+    // seasons
+    const sunNow = E.positionsAt(now).find(p => p.key === 'sun').lon;
+    const south = place.lat < 0;
+    const yearSeasonIdx = (Math.floor(sunNow / 90) + (south ? 2 : 0)) % 4;
+    const equatorial = Math.abs(place.lat) < 15;
+    const personalAngle = E.norm(sunNow - pt('sun').lon);
+    const personalIdx = Math.floor(personalAngle / 90);
+    const seasonBar = (idx, angle, label) => `<div class="season-bar" role="img" aria-label="${label}: ${RH.SEASONS[idx].name}">
+        ${RH.SEASONS.map((x, i) => `<span class="${i === idx ? 'on' : ''}">${x.name}<small>${x.theme}</small></span>`).join('')}
+        <i style="left:${(angle / 360 * 100).toFixed(1)}%"></i></div>`;
+    const yr = now.getFullYear();
+    const se = E.seasonsOf(yr), seNext = E.seasonsOf(yr + 1);
+    const marks = [se.marEquinox, se.junSolstice, se.sepEquinox, se.decSolstice, seNext.marEquinox].filter(d => d > now);
+    // seven forces
+    const seven = sevenScores();
+    const weakest = seven[seven.length - 1];
+    // polarity and elements
+    const b = balance();
+    const pct = k => Math.round(b.el[k] / b.tot * 100);
+    const yang = pct('fire') + pct('air'), yin = 100 - yang;
+    const elems = ['fire', 'earth', 'air', 'water'];
+    const weakEl = elems.slice().sort((x, y) => b.el[x] - b.el[y])[0];
+    const elAdvice = { air: 'Weak air: write and talk your ideas through before acting.', water: 'Weak water: reconnect with why you care before you start.', fire: 'Weak fire: set bold goals and move your body to build drive.', earth: 'Weak earth: build routines and finish small tasks to make ideas real.' };
+    // planetary hours
+    let ph = null;
+    try { ph = E.planetaryHours(now, place.lat, place.lon); } catch (e) { ph = null; }
+    const curHour = ph && ph.current >= 0 ? ph.hours[ph.current] : null;
+    const nextHours = ph ? ph.hours.filter(h => h.start > now).slice(0, 4) : [];
+    // signs within
+    const within = ch.noHouses ? [] : E.SIGNS.map((sg, i) => ({ sg, i, house: E.houseOf(i * 30 + 15, ch.houses.cusps) }));
+    const nav = [['rh-moon', 'Moon now'], ['rh-hours', 'Planetary hours'], ['rh-seasons', 'Seasons'], ['rh-seven', 'Seven forces'], ['rh-polarity', 'Polarity & elements'], ['rh-bms', 'Body, mind, soul'], ['rh-signs', 'Twelve signs in you'], ['rh-notes', 'Notes']];
+
+    $('#panel-rhythms').innerHTML = `
+      <div class="section">
+        <div class="section-head"><div><span class="eyebrow">Cosmic rhythms</span><h2>Living with the cycles of the sky</h2></div><button class="btn small no-print" type="button" id="rhythms-print">Print these notes</button></div>
+        <p class="muted">How the Sun, Moon, seasons and the seven classical planets work as rhythms in daily life, applied to ${esc(state.input.name || 'this chart')}. Positions and times are calculated live. The meanings are traditional symbolism, for reflection and timing.</p>
+        <div class="chips no-print">${nav.map(([id, t]) => `<a class="chip" href="#${id}" data-scroll="${id}">${t}</a>`).join('')}</div>
+      </div>
+
+      <div class="section rh" id="rh-moon">
+        <h3>The Moon now</h3>
+        <div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">${fmtDate(now)} · ${Math.round(m.fraction * 100)}% lit · ${m.waxing ? 'waxing' : 'waning'}</div>
+            <h3 style="margin:6px 0">${phase.name}: ${phase.verb}</h3>
+            <p>${esc(phase.use)}</p>
+            <p class="faint" style="margin-top:6px">Avoid: ${esc(phase.avoid)}</p>
+            <p style="margin-top:8px"><b>${esc(RH.MOON_DAY[mSign.index])}</b></p>
+            ${moonHouse ? `<p class="muted" style="margin-top:6px">Today the Moon is moving through your ${ordinal(moonHouse)} house, so feelings about ${esc(C.HOUSES[moonHouse - 1].area)} are close to the surface.</p>` : ''}
+            <p class="note" style="margin-top:10px">Journal prompt: ${esc(phase.prompt)}</p>
+          </div>
+          <div class="card">
+            <div class="eyebrow">Coming up</div>
+            <ul class="syn-list">${quarters.slice(0, 6).map(q => `<li><b>${q.name}</b> · ${fmtDate(q.date)} in ${E.signOf(q.lon).sign.name}. <span class="muted">${['Start something new here.', 'Push through and decide.', 'See results, reflect and release.', 'Let go and tidy up.'][q.quarter]}</span></li>`).join('')}</ul>
+            <div class="eyebrow" style="margin-top:12px">Your lunar return</div>
+            <p class="muted">The Moon returns to its position in this birth chart (${posText(pt('moon').lon)}) every 27.3 days, an emotional "reset" day. Next: <b>${returns.map(fmtDate).join('</b>, then <b>')}</b>.</p>
+          </div>
+        </div>
+        <div class="card">${moonChart(30)}</div>
+      </div>
+
+      <div class="section rh" id="rh-hours">
+        <div class="section-head"><h3>Planetary day and hours</h3>
+          <div class="field suggest no-print rh-place"><label for="rh-place">Place</label><input type="text" id="rh-place" value="${esc(place.name)}" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="rh-places" placeholder="Type a city"><ul id="rh-places" role="listbox" hidden></ul></div>
+        </div>
+        ${ph ? `<div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">${esc(RH.DAYS[ph.dayRuler].day)} · day of ${P(ph.dayRuler).name}</div>
+            <p style="margin-top:6px">${esc(RH.DAYS[ph.dayRuler].use)}</p>
+            ${curHour ? `<p style="margin-top:10px"><b>Now: ${P(curHour.ruler).name} hour</b> until ${fmtIn(curHour.end, place.tz, { hour: '2-digit', minute: '2-digit' })}. <span class="muted">${esc(RH.DAYS[curHour.ruler].use)}</span></p>` : ''}
+            <ul class="syn-list" style="margin-top:8px">${nextHours.map(h => `<li>${fmtIn(h.start, place.tz, { hour: '2-digit', minute: '2-digit' })} · ${P(h.ruler).name} hour</li>`).join('')}</ul>
+          </div>
+          <div class="card"><p class="muted">Times are for ${esc(place.name)}${place.tz ? ` (${esc(place.tz.replace(/_/g, ' '))})` : ''}. Planetary hours are one twelfth of the real daylight or night there, so they are rarely 60 minutes long.</p><p class="faint" style="margin-top:8px">Choose a Mercury hour for an important message, Venus for a date or a purchase, Jupiter for asking for an opportunity, Saturn for finishing and planning, Mars for hard work, the Sun for being seen, the Moon for family and rest.</p></div>
+        </div>
+        <div class="card">${hoursChart(ph, place.tz)}</div>` : '<p class="note">The Sun does not rise or set at this place today, so planetary hours cannot be calculated. Choose another place.</p>'}
+      </div>
+
+      <div class="section rh" id="rh-seasons">
+        <h3>Seasons: growth, action, reflection, planning</h3>
+        <div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">Season of the year · ${south ? 'southern' : 'northern'} hemisphere</div>
+            ${seasonBar(yearSeasonIdx, (E.norm(sunNow + (south ? 180 : 0))), 'Season of the year')}
+            <p style="margin-top:10px"><b>${RH.SEASONS[yearSeasonIdx].name}: ${RH.SEASONS[yearSeasonIdx].theme}.</b> ${esc(RH.SEASONS[yearSeasonIdx].text)}</p>
+            ${equatorial ? '<p class="faint" style="margin-top:6px">Near the equator the weather seasons are weak, so read this as the symbolic season of the zodiac.</p>' : ''}
+            ${marks.length ? `<p class="faint" style="margin-top:6px">Next turning point: ${fmtDate(marks[0])}.</p>` : ''}
+          </div>
+          <div class="card">
+            <div class="eyebrow">Personal year · starts each birthday</div>
+            ${seasonBar(personalIdx, personalAngle, 'Personal season')}
+            <p style="margin-top:10px"><b>Personal ${RH.SEASONS[personalIdx].name.toLowerCase()}: ${RH.SEASONS[personalIdx].theme}.</b> ${esc(RH.SEASONS[personalIdx].text)}</p>
+            <p class="faint" style="margin-top:6px">The Sun is ${Math.round(personalAngle)}° past its birth position. Each quarter of the personal year lasts about three months.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section rh" id="rh-seven">
+        <h3>The seven forces of creation</h3>
+        <div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">Ease of expression in this chart (0–10)</div>
+            <div class="bars" style="margin-top:10px">${seven.map(x => `<div class="bar seven"><span><span class="glyph">${esc(glyphOf(x.key))}</span> ${esc(RH.SEVEN[x.key].force)}</span><div class="track" title="${esc(P(x.key).name + ': ' + (x.why.join(', ') || 'neutral'))}"><div class="fill" style="width:${x.score * 10}%"></div></div><span class="num">${x.score.toFixed(1)}</span></div>`).join('')}</div>
+            <p class="faint" style="margin-top:10px">Score starts at 5, then adds for own sign, exaltation, angular houses and easy aspects, and subtracts for detriment, fall, retrograde motion and hard aspects. A low score means the force needs more conscious effort, not that it is missing.</p>
+          </div>
+          <div class="card">
+            <div class="eyebrow">Force to develop</div>
+            <h3 style="margin:6px 0">${esc(RH.SEVEN[weakest.key].force)} · ${P(weakest.key).name} in ${E.signOf(pt(weakest.key).lon).sign.name}</h3>
+            <p>${esc(RH.SEVEN[weakest.key].role)}. ${esc(RH.SEVEN[weakest.key].question)}</p>
+            <p class="muted" style="margin-top:6px">When this force is weak: ${esc(RH.SEVEN[weakest.key].weak)}</p>
+            <p class="note" style="margin-top:10px">Practice: ${esc(RH.SEVEN[weakest.key].practice)}</p>
+            ${weakest.why.length ? `<p class="faint" style="margin-top:6px">Why: ${esc(weakest.why.join(', '))}.</p>` : ''}
+          </div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Planet</th><th>Force</th><th>Placement</th><th class="wide-only">Ask yourself</th></tr></thead><tbody>
+          ${['saturn', 'jupiter', 'mars', 'sun', 'venus', 'mercury', 'moon'].map(k => `<tr data-goto="${k}"><td><span class="glyph">${esc(glyphOf(k))}</span>${P(k).name}</td><td>${esc(RH.SEVEN[k].force)}</td><td>${E.signOf(pt(k).lon).sign.name}${pt(k).house ? ', house ' + pt(k).house : ''}</td><td class="wide-only">${esc(RH.SEVEN[k].question)}</td></tr>`).join('')}
+        </tbody></table></div>
+      </div>
+
+      <div class="section rh" id="rh-polarity">
+        <h3>Polarity and the elements of creation</h3>
+        <div class="grid-2">
+          <div class="card">
+            <div class="eyebrow">Electric (yang) and magnetic (yin)</div>
+            <div class="polar" role="img" aria-label="Yang ${yang} percent, yin ${yin} percent">
+              <div class="pa" style="width:${yang}%"><span>Yang ${yang}%</span></div><div class="pb" style="width:${yin}%"><span>Yin ${yin}%</span></div>
+            </div>
+            <div class="legend" style="justify-content:flex-start"><span><i class="lg-a"></i>Fire and air: active, direct</span><span><i class="lg-b"></i>Earth and water: receptive, magnetic</span></div>
+            <p style="margin-top:8px">${yang >= 60 ? 'This chart leans active and direct. Strength: initiative and momentum. Growth: patience, listening and letting things come to you.' : yin >= 60 ? 'This chart leans receptive and magnetic. Strength: depth, steadiness and attraction. Growth: stating needs directly and taking the first step.' : 'This chart balances active and receptive energy. You can switch between pushing forward and drawing in.'}</p>
+            <p class="muted" style="margin-top:6px">Sun in ${E.signOf(pt('sun').lon).sign.name} (conscious will) · Moon in ${E.signOf(pt('moon').lon).sign.name} (subconscious) · ${ch.isDay ? 'born by day, so the solar side leads' : 'born by night, so the lunar side leads'}.</p>
+          </div>
+          <div class="card">
+            <div class="eyebrow">The pentagram: thought → desire → will → form</div>
+            ${pentagram({ fire: pct('fire'), earth: pct('earth'), air: pct('air'), water: pct('water') })}
+            <p style="margin-top:4px">Weakest link: <b>${C.ELEMENTS[weakEl].name}</b>. ${esc(elAdvice[weakEl])}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section rh" id="rh-bms">
+        <h3>Body, mind and soul</h3>
+        <div class="grid-3">
+          ${!ch.noHouses ? `<div class="card"><div class="eyebrow">Body · Earth · Ascendant</div><h3 style="margin:6px 0">${E.signOf(pt('asc').lon).sign.name} rising</h3><p class="muted">${esc(signReading('asc', pt('asc').lon))}</p></div>` : '<div class="card"><div class="eyebrow">Body · Earth</div><p class="muted">Add a birth time to see the Ascendant, which describes the body and how you meet the world.</p></div>'}
+          <div class="card"><div class="eyebrow">Mind · Moon</div><h3 style="margin:6px 0">Moon in ${E.signOf(pt('moon').lon).sign.name}</h3><p class="muted">${esc(signReading('moon', pt('moon').lon))}</p></div>
+          <div class="card"><div class="eyebrow">Soul · Sun</div><h3 style="margin:6px 0">Sun in ${E.signOf(pt('sun').lon).sign.name}</h3><p class="muted">${esc(signReading('sun', pt('sun').lon))}</p></div>
+        </div>
+      </div>
+
+      <div class="section rh" id="rh-signs">
+        <h3>All twelve signs live in you</h3>
+        ${within.length ? `<div class="table-wrap"><table><thead><tr><th>Sign</th><th>Energy</th><th>Works in house</th><th class="wide-only">Area of life</th></tr></thead><tbody>
+          ${within.map(w => `<tr data-house="${w.house}"><td><span class="glyph">${signGlyph(w.sg)}</span>${w.sg.name}</td><td>${SIGN_ENERGY[w.i]}</td><td class="num">${w.house}</td><td class="wide-only">${esc(C.HOUSES[w.house - 1].area)}</td></tr>`).join('')}
+        </tbody></table></div>` : '<p class="muted">Add a birth time to see which house each sign works through.</p>'}
+      </div>
+
+      <div class="section rh" id="rh-notes">
+        <h3>Notes</h3>
+        <div class="notes">${RH.NOTES.map((n, i) => `<article class="card note-page" id="note-${n.id}"><div class="eyebrow">Note ${i + 1} of ${RH.NOTES.length}</div><h3>${esc(n.title)}</h3>${n.body.map(t => `<p>${esc(t)}</p>`).join('')}</article>`).join('')}</div>
+      </div>`;
+
+    attachPlaceSearch($('#rh-place'), $('#rh-places'), c => {
+      state.rhythm.place = { name: `${c.name}, ${c.country}`, lat: c.lat, lon: c.lon, tz: c.tz };
+      renderRhythms();
+    });
+  }
+
   // ---------- Life guidance ----------
   const T = window.ChartTopics;
   state.guide = { topic: store.get('guideTopic', 'career'), question: '' };
@@ -1593,7 +1862,7 @@
   }
 
   // ---------- tabs ----------
-  const RENDER = { guide: renderGuide, compat: renderCompat, reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
+  const RENDER = { rhythms: renderRhythms, guide: renderGuide, compat: renderCompat, reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
 
   function showTab(tab) {
     state.tab = tab;
@@ -1603,6 +1872,9 @@
       b.tabIndex = on ? 0 : -1;
     });
     document.querySelectorAll('.panel').forEach(p => { p.hidden = p.id !== 'panel-' + tab; });
+    // Keep the selected tab visible in the scrolling tab bar on small screens.
+    const activeTab = document.querySelector(`.tab[data-tab="${tab}"]`);
+    if (activeTab) { const bar = activeTab.parentElement; bar.scrollTo({ left: activeTab.offsetLeft - (bar.clientWidth - activeTab.offsetWidth) / 2, behavior: 'smooth' }); }
     if (RENDER[tab]) RENDER[tab]();
     store.set('tab', tab);
   }
@@ -1903,7 +2175,7 @@
       return;
     }
     bindWheel(); bindTabs(); bindCustomize(); bindDialog(); bindCompat(); bindGuide();
-    $('main').addEventListener('click', e => { if (e.target.id === 'reading-print') printPanel(); });
+    $('main').addEventListener('click', e => { if (e.target.id === 'reading-print' || e.target.id === 'rhythms-print') printPanel(); });
     if (!window.matchMedia('(hover: hover)').matches) {
       $('#wheel-hint').textContent = 'Tap any symbol, sign or house number to read about it. Tap the centre to close.';
     }
