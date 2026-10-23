@@ -570,6 +570,45 @@ tr.static { cursor: default; }
   .duo-lead::before { content: 'Leads: '; color: var(--ink-3); font-weight: 500; }
 }
 
+/* health scale + improvement plan */
+.score-scale { display: grid; gap: 10px; }
+.scale-wrap { position: relative; padding: 26px 0 30px; }
+.scale { display: flex; gap: 2px; border-radius: 8px; overflow: hidden; }
+.scale-seg { display: grid; gap: 1px; padding: 6px 6px 6px 9px; font-size: 11.5px; line-height: 1.2; min-width: 0; }
+.scale-seg b { font-family: var(--mono); font-size: 11px; }
+.scale-seg span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scale-seg.bad { background: color-mix(in srgb, var(--tension) 18%, var(--surface)); color: var(--ink); }
+.scale-seg.warn { background: color-mix(in srgb, var(--brass) 16%, var(--surface)); color: var(--ink); }
+.scale-seg.ok { background: color-mix(in srgb, var(--flow) 18%, var(--surface)); color: var(--ink); }
+.scale-healthy, .scale-you { position: absolute; top: 20px; bottom: 24px; width: 0; border-left: 2px dashed var(--ink); }
+.scale-healthy span, .scale-you span { position: absolute; transform: translateX(-50%); white-space: nowrap; font-size: 11.5px; font-weight: 700; color: var(--ink-2); }
+.scale-healthy span { top: -20px; }
+.scale-you { border-left: 3px solid var(--chart-a); }
+.scale-you span { bottom: -22px; color: var(--chart-a); }
+.bar.health { grid-template-columns: minmax(120px, 190px) 1fr 40px 96px; }
+.bar.health .pill { justify-self: start; }
+.track { position: relative; }
+.healthy-line { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); box-shadow: 0 0 0 1px var(--surface); border-radius: 1px; }
+.duo-bars { position: relative; }
+.duo-line { left: calc((100% - 40px) * .5); }
+.plan-list { display: grid; gap: 10px; }
+.plan-row { display: grid; gap: 6px; padding: 14px 16px; border: 1px solid var(--line); border-left-width: 4px; border-radius: 10px; background: var(--surface); }
+.plan-row.bad { border-left-color: var(--tension); }
+.plan-row.warn { border-left-color: var(--brass); }
+.plan-row.ok { border-left-color: var(--flow); }
+.plan-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.plan-head h4 { margin: 0; font-family: var(--serif); font-size: 19px; font-weight: 600; }
+.plan-score { margin-left: auto; font-weight: 600; }
+.plan-actions { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 14px; color: var(--ink-2); }
+.review { font-size: 12px; color: var(--ink-3); border-top: 1px dashed var(--line-strong); padding-top: 6px; margin-top: 4px; }
+@media (max-width: 600px) {
+  .bar.health { grid-template-columns: 1fr 40px; row-gap: 4px; }
+  .bar.health > span:first-child { grid-column: 1 / -1; }
+  .bar.health .pill { grid-column: 1 / -1; }
+  .scale-seg span { display: none; }
+  .scale-seg { padding: 6px 2px; text-align: center; }
+}
+
 /* ---------- life guidance ---------- */
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .ask { display: flex; gap: 8px; }
@@ -603,6 +642,8 @@ tr.static { cursor: default; }
   .guide-grid { grid-template-columns: 1fr 1fr; }
   .note-page { break-inside: avoid; }
   .duo-row { break-inside: avoid; }
+  .plan-row, .score-scale { break-inside: avoid; }
+  .print-only.review { display: block; }
   .mode-seg { display: none !important; }
   .chart-scroll { overflow: visible; }
   .chart-layout { grid-template-columns: 1fr; }
@@ -3846,7 +3887,38 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     'works behind the scenes: research, private advice or hidden support. Keep roles clear.'
   ];
 
-  root.ChartCompat = { compare, label, AREAS, BUSINESS_AREAS, OVERLAY_TEXT, WORK_OVERLAY };
+  // Practical actions that raise how well an area works in real life. The chart score is a
+  // fixed starting point; these are what people with low scores in an area do to make it work.
+  const IMPROVE = {
+    emotional: ['Hold a short weekly check-in: "How are you really, and what do you need this week?"', 'Learn what calms each other down (see the conflict section) and do it before trying to solve anything.', 'Create small comfort rituals together: a shared meal, a walk, a regular call.'],
+    romance: ['Keep a regular date, at least every two weeks, with no logistics talk.', 'Say one specific thing you appreciate every day.', 'Bring novelty: try something new together once a month.'],
+    communication: ['When it matters, repeat back what you heard before answering.', 'Hold a weekly planning talk for practical matters, so they do not leak into every conversation.', 'Put important agreements in writing, even a text message.'],
+    values: ['Each write your top five values and compare them openly.', 'Agree a shared budget and two or three shared goals for the year.', 'Name one difference you choose to respect rather than change.'],
+    commitment: ['Talk explicitly about the future: where you want to be in one, three and five years.', 'Keep small promises reliably. Trust is built in small deposits.', 'Make one long-term plan together and review it every six months.'],
+    growth: ['Learn something new together.', 'Ask about and actively support each other\'s personal goals.', 'Celebrate each other\'s wins out loud.'],
+    harmony: ['Agree a conflict process now, while calm (see Resolving conflict below).', 'Use a cooling-off rule: either person can pause a heated discussion for 20 minutes.', 'Criticise behaviour, never character, and end difficult talks with appreciation.'],
+    vision: ['Write a one-page plan: mission, customers, three-year goal and exit options.', 'Review goals together every quarter.', 'Agree the time horizon and how much each of you will invest.'],
+    bcomm: ['Hold a weekly meeting with written notes and owners for each action.', 'Use one channel for decisions so nothing gets lost.', 'Agree who speaks for the business on which topics.'],
+    trust: ['Put roles, ownership, money and exit terms in a signed agreement.', 'Start with a small, low-risk trial project before a big commitment.', 'Share numbers openly: a monthly report both partners can see.'],
+    money: ['Keep a shared, transparent ledger and separate business from personal money.', 'Agree spending limits that need both signatures.', 'Agree the profit split and reinvestment rule before the first sale.'],
+    drive: ['Give every task one owner and a deadline.', 'Review progress weekly against simple targets.', 'Match tasks to pace: fast starters on launches, steady finishers on delivery.'],
+    power: ['Write a decision-rights list: who decides what, and who can veto.', 'Set a tie-breaker rule (an adviser, a vote, or a rotating final say).', 'Divide leadership by area so each partner leads where they are strongest.'],
+    innovate: ['Set a small budget and time limit for testing new ideas.', 'Keep an ideas list and review it monthly instead of acting on every idea.', 'Agree what must stay stable while you experiment.'],
+    pressure: ['Agree a conflict and escalation process before you need it.', 'Name a neutral mediator or mentor in advance.', 'Never make big decisions in the heat of an argument: sleep on it.']
+  };
+
+  // Health bands for 0–100 compatibility scores. 50 and above is healthy.
+  const BANDS = [
+    { min: 80, max: 100, name: 'Very strong', cls: 'ok', plan: 'Strength to use' },
+    { min: 65, max: 79, name: 'Strong', cls: 'ok', plan: 'Strength to use' },
+    { min: 50, max: 64, name: 'Balanced (healthy)', cls: 'warn', plan: 'Maintain' },
+    { min: 35, max: 49, name: 'Takes work', cls: 'warn', plan: 'Priority' },
+    { min: 0, max: 34, name: 'Challenging', cls: 'bad', plan: 'Top priority' }
+  ];
+  const HEALTHY = 50, STRONG = 65;
+  const bandOf = score => BANDS.find(b => score >= b.min) || BANDS[BANDS.length - 1];
+
+  root.ChartCompat = { compare, label, AREAS, BUSINESS_AREAS, OVERLAY_TEXT, WORK_OVERLAY, IMPROVE, BANDS, HEALTHY, STRONG, bandOf };
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -5510,8 +5582,8 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
         <div class="grid-2">
           <div class="card">
             <div class="eyebrow">Ease of expression in this chart (0–10)</div>
-            <div class="bars" style="margin-top:10px">${seven.map(x => `<div class="bar seven"><span><span class="glyph">${esc(glyphOf(x.key))}</span> ${esc(RH.SEVEN[x.key].force)}</span><div class="track" title="${esc(P(x.key).name + ': ' + (x.why.join(', ') || 'neutral'))}"><div class="fill" style="width:${x.score * 10}%"></div></div><span class="num">${x.score.toFixed(1)}</span></div>`).join('')}</div>
-            <p class="faint" style="margin-top:10px">Score starts at 5, then adds for own sign, exaltation, angular houses and easy aspects, and subtracts for detriment, fall, retrograde motion and hard aspects. A low score means the force needs more conscious effort, not that it is missing.</p>
+            <div class="bars" style="margin-top:10px">${seven.map(x => `<div class="bar seven"><span><span class="glyph">${esc(glyphOf(x.key))}</span> ${esc(RH.SEVEN[x.key].force)}</span><div class="track" title="${esc(P(x.key).name + ': ' + (x.why.join(', ') || 'neutral'))}"><div class="fill" style="width:${x.score * 10}%"></div><i class="healthy-line" style="left:50%"></i></div><span class="num">${x.score.toFixed(1)}</span></div>`).join('')}</div>
+            <p class="faint" style="margin-top:10px">The thin line marks 5, the midpoint: above it the force comes naturally; below it, it needs practice. Score starts at 5, then adds for own sign, exaltation, angular houses and easy aspects, and subtracts for detriment, fall, retrograde motion and hard aspects. A low score means the force needs more conscious effort, not that it is missing.</p>
           </div>
           <div class="card">
             <div class="eyebrow">Force to develop</div>
@@ -5978,9 +6050,11 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
           ${A.timeUnknown || B.timeUnknown ? '<p class="note">At least one birth time is unknown, so rising signs and house overlays are left out and Moon contacts use tighter orbs.</p>' : ''}
         </div>
 
+        ${scoreScale(r.overall)}
         <h3>Compatibility by area of life</h3>
-        <div class="area-summary card">${r.areas.map(a => `<div class="bar"><span>${esc(a.name)}</span><div class="track"><div class="fill" style="width:${a.score}%"></div></div><span class="num">${a.score}</span></div>`).join('')}</div>
+        ${areaSummary(r.areas)}
         <div class="grid-2 areas">${r.areas.map(areaCard).join('')}</div>
+        ${improvementPlan(r.areas, 'love')}
 
         <h3>Similarity</h3>
         <div class="grid-2">
@@ -6017,6 +6091,47 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       </div>`;
   }
   const COMPATIBLE_EL = { fire: 'air', air: 'fire', earth: 'water', water: 'earth' };
+
+  // Health scale and improvement plan, shared by the love and work reports.
+  function scoreScale(overall) {
+    const CP = window.ChartCompat;
+    const segs = CP.BANDS.slice().reverse().map(b => `<div class="scale-seg ${b.cls}" style="flex:${b.max - b.min + 1}"><b>${b.min}–${b.max}</b><span>${esc(b.name)}</span></div>`).join('');
+    return `<div class="card score-scale">
+      <div class="eyebrow">How to read the scores</div>
+      <div class="scale-wrap">
+        <div class="scale">${segs}</div>
+        <div class="scale-healthy" style="left:${CP.HEALTHY}%"><span>Healthy from ${CP.HEALTHY}</span></div>
+        ${overall != null ? `<div class="scale-you" style="left:${overall}%"><span>Overall ${overall}</span></div>` : ''}
+      </div>
+      <p class="muted">Scores run from 0 to 100. <b>${CP.HEALTHY} or above is healthy</b>, and ${CP.STRONG} or above is a real strength. Below ${CP.HEALTHY} does not mean "incompatible": it marks an area that needs conscious attention. The scores come from the two birth charts and do not change, but how well an area works in practice does. The improvement plan shows how.</p>
+    </div>`;
+  }
+  // Area summary bars with the healthy line and a status label.
+  function areaSummary(areas) {
+    const CP = window.ChartCompat;
+    return `<div class="area-summary card">${areas.map(a => { const b = CP.bandOf(a.score); return `<div class="bar health"><span>${esc(a.name)}</span><div class="track"><div class="fill" style="width:${a.score}%"></div><i class="healthy-line" style="left:${CP.HEALTHY}%"></i></div><span class="num">${a.score}</span><span class="pill ${b.cls}">${esc(b.name.replace(' (healthy)', ''))}</span></div>`; }).join('')}
+      <p class="faint">The thin line marks the healthy level (${CP.HEALTHY}).</p></div>`;
+  }
+  function improvementPlan(areas, mode) {
+    const CP = window.ChartCompat;
+    const rows = areas.slice().sort((a, b) => a.score - b.score).map(a => {
+      const b = CP.bandOf(a.score);
+      const gap = Math.max(0, CP.HEALTHY - a.score);
+      const actions = (CP.IMPROVE[a.key] || []);
+      const target = a.score < CP.HEALTHY ? `Bring into the healthy range (${CP.HEALTHY}+): ${gap} point${gap === 1 ? '' : 's'} below.` : a.score < CP.STRONG ? `Healthy. Keep it there, and aim for ${CP.STRONG}+ as a strength.` : 'A strength: lean on it when other areas are under strain.';
+      return `<article class="plan-row ${b.cls}">
+        <div class="plan-head"><h4>${esc(a.name)}</h4><span class="pill ${b.cls}">${esc(b.plan)}</span><span class="num plan-score">${a.score}/100</span></div>
+        <p class="faint">${esc(target)}</p>
+        ${a.score < CP.STRONG ? `<ol class="plan-actions">${actions.map(t => `<li>${esc(t)}</li>`).join('')}</ol>` : `<p class="muted">${esc(actions[0] || '')}</p>`}
+        <div class="review print-only">Review in 3 months: practice rating 1 2 3 4 5 &nbsp;·&nbsp; Notes: ______________________________</div>
+      </article>`;
+    }).join('');
+    const pri = areas.filter(a => a.score < CP.HEALTHY);
+    return `
+      <h3>Improvement plan</h3>
+      <p class="muted">${pri.length ? `Start with the ${pri.length === 1 ? 'area' : pri.length + ' areas'} below the healthy line. ` : 'Every area is in the healthy range. '}Pick one or two actions at a time, practise them for a month, then review. ${mode === 'work' ? 'Write the agreed actions into your partnership notes.' : 'Agree the actions together rather than assigning them to one person.'}</p>
+      <div class="plan-list">${rows}</div>`;
+  }
 
   // Resolving conflict and differences, shared by the love and work reports.
   function conflictSection(CA, CB, nA, nB, r, mode) {
@@ -6105,7 +6220,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       const a = val(sA, k), b = val(sB, k);
       const lead = Math.abs(a - b) < 1 ? 'Shared' : a > b ? nA : nB;
       return `<div class="duo-row"><span class="duo-label"><b>${esc(RH.SEVEN[k].force)}</b><small>${P(k).name}</small></span>
-        <div class="duo-bars"><div class="duo a" style="width:${a * 10}%" title="${esc(nA)}: ${a.toFixed(1)}"><span>${a.toFixed(1)}</span></div><div class="duo b" style="width:${b * 10}%" title="${esc(nB)}: ${b.toFixed(1)}"><span>${b.toFixed(1)}</span></div></div>
+        <div class="duo-bars"><i class="healthy-line duo-line"></i><div class="duo a" style="width:${a * 10}%" title="${esc(nA)}: ${a.toFixed(1)}"><span>${a.toFixed(1)}</span></div><div class="duo b" style="width:${b * 10}%" title="${esc(nB)}: ${b.toFixed(1)}"><span>${b.toFixed(1)}</span></div></div>
         <span class="duo-lead">${esc(lead)}</span></div>`;
     }).join('');
     // Work styles and roles.
@@ -6154,16 +6269,19 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
           ${A.timeUnknown || B.timeUnknown ? '<p class="note">At least one birth time is unknown, so house overlays, the Midheaven and the venture chart\'s houses are left out.</p>' : ''}
         </div>
 
+        ${scoreScale(r.overall)}
         <h3>Working compatibility by area</h3>
-        <div class="area-summary card">${r.areas.map(a => `<div class="bar"><span>${esc(a.name)}</span><div class="track"><div class="fill" style="width:${a.score}%"></div></div><span class="num">${a.score}</span></div>`).join('')}</div>
+        ${areaSummary(r.areas)}
         <div class="grid-2 areas">${r.areas.map(areaCard).join('')}</div>
+        ${improvementPlan(r.areas, 'work')}
 
         <h3>Who brings what</h3>
         <div class="card">
           <p class="muted">How easily each person expresses the seven forces every venture needs (0–10). Divide responsibilities so each force is led by the person who has it more naturally.</p>
           <div class="legend" style="justify-content:flex-start;margin:10px 0"><span><i class="lg-a"></i>${esc(nA)}</span><span><i class="lg-b"></i>${esc(nB)}</span></div>
           <div class="duo-chart" role="img" aria-label="Seven forces compared">${forceRows}</div>
-          <p class="faint" style="margin-top:8px">The last column shows who naturally leads that force; "Shared" means you are within a point of each other.</p>
+          <p class="faint" style="margin-top:8px">The last column shows who naturally leads that force; "Shared" means you are within a point of each other. The thin line marks 5, the midpoint: a force where both of you are below it is one to strengthen deliberately or hire in.</p>
+          ${(() => { const both = order.filter(k => val(sA, k) < 5 && val(sB, k) < 5); return both.length ? `<p class="note" style="margin-top:8px">Neither of you leads <b>${both.map(k => RH.SEVEN[k].force.toLowerCase()).join(', ')}</b>. ${both.map(k => esc(RH.SEVEN[k].practice)).join(' ')} Consider an adviser or team member who brings it.</p>` : ''; })()}
         </div>
 
         <h3>Work styles and roles</h3>

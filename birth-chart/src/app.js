@@ -1418,8 +1418,8 @@
         <div class="grid-2">
           <div class="card">
             <div class="eyebrow">Ease of expression in this chart (0–10)</div>
-            <div class="bars" style="margin-top:10px">${seven.map(x => `<div class="bar seven"><span><span class="glyph">${esc(glyphOf(x.key))}</span> ${esc(RH.SEVEN[x.key].force)}</span><div class="track" title="${esc(P(x.key).name + ': ' + (x.why.join(', ') || 'neutral'))}"><div class="fill" style="width:${x.score * 10}%"></div></div><span class="num">${x.score.toFixed(1)}</span></div>`).join('')}</div>
-            <p class="faint" style="margin-top:10px">Score starts at 5, then adds for own sign, exaltation, angular houses and easy aspects, and subtracts for detriment, fall, retrograde motion and hard aspects. A low score means the force needs more conscious effort, not that it is missing.</p>
+            <div class="bars" style="margin-top:10px">${seven.map(x => `<div class="bar seven"><span><span class="glyph">${esc(glyphOf(x.key))}</span> ${esc(RH.SEVEN[x.key].force)}</span><div class="track" title="${esc(P(x.key).name + ': ' + (x.why.join(', ') || 'neutral'))}"><div class="fill" style="width:${x.score * 10}%"></div><i class="healthy-line" style="left:50%"></i></div><span class="num">${x.score.toFixed(1)}</span></div>`).join('')}</div>
+            <p class="faint" style="margin-top:10px">The thin line marks 5, the midpoint: above it the force comes naturally; below it, it needs practice. Score starts at 5, then adds for own sign, exaltation, angular houses and easy aspects, and subtracts for detriment, fall, retrograde motion and hard aspects. A low score means the force needs more conscious effort, not that it is missing.</p>
           </div>
           <div class="card">
             <div class="eyebrow">Force to develop</div>
@@ -1886,9 +1886,11 @@
           ${A.timeUnknown || B.timeUnknown ? '<p class="note">At least one birth time is unknown, so rising signs and house overlays are left out and Moon contacts use tighter orbs.</p>' : ''}
         </div>
 
+        ${scoreScale(r.overall)}
         <h3>Compatibility by area of life</h3>
-        <div class="area-summary card">${r.areas.map(a => `<div class="bar"><span>${esc(a.name)}</span><div class="track"><div class="fill" style="width:${a.score}%"></div></div><span class="num">${a.score}</span></div>`).join('')}</div>
+        ${areaSummary(r.areas)}
         <div class="grid-2 areas">${r.areas.map(areaCard).join('')}</div>
+        ${improvementPlan(r.areas, 'love')}
 
         <h3>Similarity</h3>
         <div class="grid-2">
@@ -1925,6 +1927,47 @@
       </div>`;
   }
   const COMPATIBLE_EL = { fire: 'air', air: 'fire', earth: 'water', water: 'earth' };
+
+  // Health scale and improvement plan, shared by the love and work reports.
+  function scoreScale(overall) {
+    const CP = window.ChartCompat;
+    const segs = CP.BANDS.slice().reverse().map(b => `<div class="scale-seg ${b.cls}" style="flex:${b.max - b.min + 1}"><b>${b.min}–${b.max}</b><span>${esc(b.name)}</span></div>`).join('');
+    return `<div class="card score-scale">
+      <div class="eyebrow">How to read the scores</div>
+      <div class="scale-wrap">
+        <div class="scale">${segs}</div>
+        <div class="scale-healthy" style="left:${CP.HEALTHY}%"><span>Healthy from ${CP.HEALTHY}</span></div>
+        ${overall != null ? `<div class="scale-you" style="left:${overall}%"><span>Overall ${overall}</span></div>` : ''}
+      </div>
+      <p class="muted">Scores run from 0 to 100. <b>${CP.HEALTHY} or above is healthy</b>, and ${CP.STRONG} or above is a real strength. Below ${CP.HEALTHY} does not mean "incompatible": it marks an area that needs conscious attention. The scores come from the two birth charts and do not change, but how well an area works in practice does. The improvement plan shows how.</p>
+    </div>`;
+  }
+  // Area summary bars with the healthy line and a status label.
+  function areaSummary(areas) {
+    const CP = window.ChartCompat;
+    return `<div class="area-summary card">${areas.map(a => { const b = CP.bandOf(a.score); return `<div class="bar health"><span>${esc(a.name)}</span><div class="track"><div class="fill" style="width:${a.score}%"></div><i class="healthy-line" style="left:${CP.HEALTHY}%"></i></div><span class="num">${a.score}</span><span class="pill ${b.cls}">${esc(b.name.replace(' (healthy)', ''))}</span></div>`; }).join('')}
+      <p class="faint">The thin line marks the healthy level (${CP.HEALTHY}).</p></div>`;
+  }
+  function improvementPlan(areas, mode) {
+    const CP = window.ChartCompat;
+    const rows = areas.slice().sort((a, b) => a.score - b.score).map(a => {
+      const b = CP.bandOf(a.score);
+      const gap = Math.max(0, CP.HEALTHY - a.score);
+      const actions = (CP.IMPROVE[a.key] || []);
+      const target = a.score < CP.HEALTHY ? `Bring into the healthy range (${CP.HEALTHY}+): ${gap} point${gap === 1 ? '' : 's'} below.` : a.score < CP.STRONG ? `Healthy. Keep it there, and aim for ${CP.STRONG}+ as a strength.` : 'A strength: lean on it when other areas are under strain.';
+      return `<article class="plan-row ${b.cls}">
+        <div class="plan-head"><h4>${esc(a.name)}</h4><span class="pill ${b.cls}">${esc(b.plan)}</span><span class="num plan-score">${a.score}/100</span></div>
+        <p class="faint">${esc(target)}</p>
+        ${a.score < CP.STRONG ? `<ol class="plan-actions">${actions.map(t => `<li>${esc(t)}</li>`).join('')}</ol>` : `<p class="muted">${esc(actions[0] || '')}</p>`}
+        <div class="review print-only">Review in 3 months: practice rating 1 2 3 4 5 &nbsp;·&nbsp; Notes: ______________________________</div>
+      </article>`;
+    }).join('');
+    const pri = areas.filter(a => a.score < CP.HEALTHY);
+    return `
+      <h3>Improvement plan</h3>
+      <p class="muted">${pri.length ? `Start with the ${pri.length === 1 ? 'area' : pri.length + ' areas'} below the healthy line. ` : 'Every area is in the healthy range. '}Pick one or two actions at a time, practise them for a month, then review. ${mode === 'work' ? 'Write the agreed actions into your partnership notes.' : 'Agree the actions together rather than assigning them to one person.'}</p>
+      <div class="plan-list">${rows}</div>`;
+  }
 
   // Resolving conflict and differences, shared by the love and work reports.
   function conflictSection(CA, CB, nA, nB, r, mode) {
@@ -2013,7 +2056,7 @@
       const a = val(sA, k), b = val(sB, k);
       const lead = Math.abs(a - b) < 1 ? 'Shared' : a > b ? nA : nB;
       return `<div class="duo-row"><span class="duo-label"><b>${esc(RH.SEVEN[k].force)}</b><small>${P(k).name}</small></span>
-        <div class="duo-bars"><div class="duo a" style="width:${a * 10}%" title="${esc(nA)}: ${a.toFixed(1)}"><span>${a.toFixed(1)}</span></div><div class="duo b" style="width:${b * 10}%" title="${esc(nB)}: ${b.toFixed(1)}"><span>${b.toFixed(1)}</span></div></div>
+        <div class="duo-bars"><i class="healthy-line duo-line"></i><div class="duo a" style="width:${a * 10}%" title="${esc(nA)}: ${a.toFixed(1)}"><span>${a.toFixed(1)}</span></div><div class="duo b" style="width:${b * 10}%" title="${esc(nB)}: ${b.toFixed(1)}"><span>${b.toFixed(1)}</span></div></div>
         <span class="duo-lead">${esc(lead)}</span></div>`;
     }).join('');
     // Work styles and roles.
@@ -2062,16 +2105,19 @@
           ${A.timeUnknown || B.timeUnknown ? '<p class="note">At least one birth time is unknown, so house overlays, the Midheaven and the venture chart\'s houses are left out.</p>' : ''}
         </div>
 
+        ${scoreScale(r.overall)}
         <h3>Working compatibility by area</h3>
-        <div class="area-summary card">${r.areas.map(a => `<div class="bar"><span>${esc(a.name)}</span><div class="track"><div class="fill" style="width:${a.score}%"></div></div><span class="num">${a.score}</span></div>`).join('')}</div>
+        ${areaSummary(r.areas)}
         <div class="grid-2 areas">${r.areas.map(areaCard).join('')}</div>
+        ${improvementPlan(r.areas, 'work')}
 
         <h3>Who brings what</h3>
         <div class="card">
           <p class="muted">How easily each person expresses the seven forces every venture needs (0–10). Divide responsibilities so each force is led by the person who has it more naturally.</p>
           <div class="legend" style="justify-content:flex-start;margin:10px 0"><span><i class="lg-a"></i>${esc(nA)}</span><span><i class="lg-b"></i>${esc(nB)}</span></div>
           <div class="duo-chart" role="img" aria-label="Seven forces compared">${forceRows}</div>
-          <p class="faint" style="margin-top:8px">The last column shows who naturally leads that force; "Shared" means you are within a point of each other.</p>
+          <p class="faint" style="margin-top:8px">The last column shows who naturally leads that force; "Shared" means you are within a point of each other. The thin line marks 5, the midpoint: a force where both of you are below it is one to strengthen deliberately or hire in.</p>
+          ${(() => { const both = order.filter(k => val(sA, k) < 5 && val(sB, k) < 5); return both.length ? `<p class="note" style="margin-top:8px">Neither of you leads <b>${both.map(k => RH.SEVEN[k].force.toLowerCase()).join(', ')}</b>. ${both.map(k => esc(RH.SEVEN[k].practice)).join(' ')} Consider an adviser or team member who brings it.</p>` : ''; })()}
         </div>
 
         <h3>Work styles and roles</h3>

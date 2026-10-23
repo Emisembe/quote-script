@@ -292,5 +292,36 @@
     'works behind the scenes: research, private advice or hidden support. Keep roles clear.'
   ];
 
-  root.ChartCompat = { compare, label, AREAS, BUSINESS_AREAS, OVERLAY_TEXT, WORK_OVERLAY };
+  // Practical actions that raise how well an area works in real life. The chart score is a
+  // fixed starting point; these are what people with low scores in an area do to make it work.
+  const IMPROVE = {
+    emotional: ['Hold a short weekly check-in: "How are you really, and what do you need this week?"', 'Learn what calms each other down (see the conflict section) and do it before trying to solve anything.', 'Create small comfort rituals together: a shared meal, a walk, a regular call.'],
+    romance: ['Keep a regular date, at least every two weeks, with no logistics talk.', 'Say one specific thing you appreciate every day.', 'Bring novelty: try something new together once a month.'],
+    communication: ['When it matters, repeat back what you heard before answering.', 'Hold a weekly planning talk for practical matters, so they do not leak into every conversation.', 'Put important agreements in writing, even a text message.'],
+    values: ['Each write your top five values and compare them openly.', 'Agree a shared budget and two or three shared goals for the year.', 'Name one difference you choose to respect rather than change.'],
+    commitment: ['Talk explicitly about the future: where you want to be in one, three and five years.', 'Keep small promises reliably. Trust is built in small deposits.', 'Make one long-term plan together and review it every six months.'],
+    growth: ['Learn something new together.', 'Ask about and actively support each other\'s personal goals.', 'Celebrate each other\'s wins out loud.'],
+    harmony: ['Agree a conflict process now, while calm (see Resolving conflict below).', 'Use a cooling-off rule: either person can pause a heated discussion for 20 minutes.', 'Criticise behaviour, never character, and end difficult talks with appreciation.'],
+    vision: ['Write a one-page plan: mission, customers, three-year goal and exit options.', 'Review goals together every quarter.', 'Agree the time horizon and how much each of you will invest.'],
+    bcomm: ['Hold a weekly meeting with written notes and owners for each action.', 'Use one channel for decisions so nothing gets lost.', 'Agree who speaks for the business on which topics.'],
+    trust: ['Put roles, ownership, money and exit terms in a signed agreement.', 'Start with a small, low-risk trial project before a big commitment.', 'Share numbers openly: a monthly report both partners can see.'],
+    money: ['Keep a shared, transparent ledger and separate business from personal money.', 'Agree spending limits that need both signatures.', 'Agree the profit split and reinvestment rule before the first sale.'],
+    drive: ['Give every task one owner and a deadline.', 'Review progress weekly against simple targets.', 'Match tasks to pace: fast starters on launches, steady finishers on delivery.'],
+    power: ['Write a decision-rights list: who decides what, and who can veto.', 'Set a tie-breaker rule (an adviser, a vote, or a rotating final say).', 'Divide leadership by area so each partner leads where they are strongest.'],
+    innovate: ['Set a small budget and time limit for testing new ideas.', 'Keep an ideas list and review it monthly instead of acting on every idea.', 'Agree what must stay stable while you experiment.'],
+    pressure: ['Agree a conflict and escalation process before you need it.', 'Name a neutral mediator or mentor in advance.', 'Never make big decisions in the heat of an argument: sleep on it.']
+  };
+
+  // Health bands for 0–100 compatibility scores. 50 and above is healthy.
+  const BANDS = [
+    { min: 80, max: 100, name: 'Very strong', cls: 'ok', plan: 'Strength to use' },
+    { min: 65, max: 79, name: 'Strong', cls: 'ok', plan: 'Strength to use' },
+    { min: 50, max: 64, name: 'Balanced (healthy)', cls: 'warn', plan: 'Maintain' },
+    { min: 35, max: 49, name: 'Takes work', cls: 'warn', plan: 'Priority' },
+    { min: 0, max: 34, name: 'Challenging', cls: 'bad', plan: 'Top priority' }
+  ];
+  const HEALTHY = 50, STRONG = 65;
+  const bandOf = score => BANDS.find(b => score >= b.min) || BANDS[BANDS.length - 1];
+
+  root.ChartCompat = { compare, label, AREAS, BUSINESS_AREAS, OVERLAY_TEXT, WORK_OVERLAY, IMPROVE, BANDS, HEALTHY, STRONG, bandOf };
 })(typeof window !== 'undefined' ? window : globalThis);

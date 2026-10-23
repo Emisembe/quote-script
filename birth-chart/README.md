@@ -53,6 +53,12 @@ The Compatibility tab has a **Love & relationships / Business & work** switch. T
 - **Career topics** both charts share, the **partnership as its own (composite) chart**, and **work house overlays** (2nd, 6th, 7th, 8th, 10th and 11th).
 - **Agreements to make** before starting, generated from the weak areas.
 
+## Healthy ranges and improvement plan
+
+Both compatibility reports show how to read the scores, with a 0–100 scale: 0–34 challenging, 35–49 takes work, **50–64 balanced (healthy)**, 65–79 strong and 80–100 very strong. Fifty or above is healthy. Every area bar has a marker at 50 and a status label, and the overall score is shown on the scale.
+
+The **improvement plan** lists the areas from lowest to highest. Each is marked *Top priority*, *Priority*, *Maintain* or *Strength to use*, with the gap to the healthy line and three concrete actions. The chart scores themselves are fixed by birth data; the actions improve how the area works in practice. The printed report adds a "Review in 3 months" line, with a 1–5 rating and notes, under each area. The seven-forces charts also mark the midpoint (5/10), and the business report flags forces that neither partner brings.
+
 ## Resolving conflict and differences
 
 Both compatibility reports end with a conflict section:
