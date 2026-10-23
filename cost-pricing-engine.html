@@ -341,6 +341,44 @@ table.data .sw { display: inline-block; width: 9px; height: 9px; border-radius: 
 .footer-note { max-width: 1560px; margin: 0 auto; padding: 0 16px 30px; font-size: 11.5px; color: var(--ink-3);
   display: flex; align-items: center; gap: 6px; }
 
+/* Decision panel (screen + print) */
+.dec { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1.3fr); gap: 18px; border-left: 5px solid var(--line-2); padding-left: 14px; }
+@media (max-width: 1150px) { .dec { grid-template-columns: minmax(0, 1fr); } }
+.dec.dec-go { border-left-color: var(--good); } .dec.dec-cond { border-left-color: var(--warn); } .dec.dec-no { border-left-color: var(--crit); }
+.dec-verdict { display: flex; gap: 12px; align-items: flex-start; }
+.dec-ic { flex: none; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--surface-2); }
+.dec-go .dec-ic, .dec-go .dec-v { color: var(--good-ink); } .dec-cond .dec-ic, .dec-cond .dec-v { color: var(--warn-ink); } .dec-no .dec-ic, .dec-no .dec-v { color: var(--crit-ink); }
+.dec-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); margin-bottom: 3px; }
+.dec-v { font-size: 22px; font-weight: 800; letter-spacing: -.01em; line-height: 1.15; }
+.dec p { margin: 6px 0 0; font-size: 12.5px; color: var(--ink-2); }
+.dec-price { font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+.dec-price small { font-size: 12px; font-weight: 600; color: var(--ink-3); letter-spacing: 0; }
+.dec-band { position: relative; height: 10px; border-radius: 5px; background: var(--surface-3); margin: 12px 4px 12px; }
+.dec-zone { position: absolute; top: 0; bottom: 0; background: color-mix(in srgb, var(--good) 28%, transparent); border-radius: 5px; }
+.dec-mk { position: absolute; top: -4px; width: 4px; height: 18px; margin-left: -2px; border-radius: 2px; background: var(--ink-3); }
+.dec-mk.t { background: var(--s2); } .dec-mk.c { background: var(--s3); } .dec-mk.f { background: var(--crit); }
+.dec-mk.p { top: -6px; width: 14px; height: 22px; margin-left: -7px; border-radius: 4px; background: var(--ink); border: 3px solid var(--surface); }
+.dec-dl { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 10px; font-size: 12px; }
+.dec-dl dt { color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
+.dec-dl dd { margin: 0; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.dec-dl i { width: 4px; height: 12px; border-radius: 2px; display: inline-block; }
+.dec-dl i.f { background: var(--crit); } .dec-dl i.t { background: var(--s2); } .dec-dl i.c { background: var(--s3); }
+.dec-side ul { margin: 0 0 10px; padding-left: 18px; font-size: 12.5px; }
+.dec-side li { margin: 0 0 4px; }
+.dec-diff { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2);
+  background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; }
+.dec-diff .btn { margin-left: auto; height: 32px; }
+#report .dec { grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+#report .dec-side { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+#report .dec-side ul { font-size: 9.5pt; }
+#report .dec-v { font-size: 16pt; } #report .dec-price { font-size: 18pt; }
+#report .dec p { font-size: 9.5pt; color: #3d3c39; }
+#report .rp-sign .rp-boxes { display: flex; gap: 28px; margin: 6px 0 18px; font-size: 10pt; }
+#report .rp-sign .rp-boxes i { display: inline-block; width: 13px; height: 13px; border: 1.5px solid #0b0b0b; margin-right: 7px; vertical-align: -2px; }
+#report .rp-sign .rp-lines { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 28px; font-size: 8.5pt; color: #6b6a65; }
+#report .rp-sign .rp-lines span { display: block; border-bottom: 1px solid #0b0b0b; height: 22px; margin-bottom: 3px; }
+#report section { margin: 0; }
+
 /* Report is only visible when printing */
 #report { display: none; }
 
@@ -368,7 +406,7 @@ table.data .sw { display: inline-block; width: 9px; height: 9px; border-radius: 
 #report .rp-head { display: flex; align-items: center; gap: 12px; border-bottom: 2px solid #1c5cab; padding-bottom: 10px; margin-bottom: 14px; }
 #report .rp-head svg { width: 34px; height: 34px; stroke: #1c5cab; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 #report h1 { font-size: 18pt; margin: 0; letter-spacing: -.01em; }
-#report h2 { font-size: 12.5pt; margin: 18px 0 8px; color: #1c5cab; border-bottom: 1px solid #d9d8d0; padding-bottom: 4px; display: flex; align-items: center; gap: 7px; }
+#report h2 { break-after: avoid; page-break-after: avoid; font-size: 12.5pt; margin: 18px 0 8px; color: #1c5cab; border-bottom: 1px solid #d9d8d0; padding-bottom: 4px; display: flex; align-items: center; gap: 7px; }
 #report h2 svg { width: 16px; height: 16px; stroke: #1c5cab; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 #report .rp-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 18px; font-size: 9.5pt; color: #3d3c39; margin-bottom: 8px; }
 #report .rp-meta b { color: #0b0b0b; }
@@ -474,6 +512,8 @@ table.data .sw { display: inline-block; width: 9px; height: 9px; border-radius: 
     <!-- RIGHT: live results -->
     <section class="col-results" aria-live="polite">
       <div class="kpis" id="kpis"></div>
+
+      <div class="card" id="decisionCard"><div class="card-b" id="decision"></div></div>
 
       <div class="card">
         <div class="card-h"><span class="ico-badge" data-icon="sliders"></span><h2 data-i18n="sensTitle"></h2>
@@ -782,6 +822,44 @@ const T = {
   p_year: ['per year', 'pro Jahr', 'par an', 'al año'],
   p_launch: ['per launch cycle', 'pro Launch-Zyklus', 'par cycle de lancement', 'por ciclo de lanzamiento'],
   months: ['months', 'Monate', 'mois', 'meses'],
+
+  /* Decision engine */
+  decTitle: ['Pricing decision', 'Preisentscheidung', 'Décision de prix', 'Decisión de precio'],
+  v_go: ['Go', 'Go', 'Feu vert', 'Adelante'],
+  v_cond: ['Go with conditions', 'Go mit Auflagen', 'Feu vert sous conditions', 'Adelante con condiciones'],
+  v_no: ['Rethink before launch', 'Vor dem Start überdenken', 'À revoir avant le lancement', 'Replantear antes de lanzar'],
+  v_go_d: ['The recommended price covers full cost, meets your {t} target margin and keeps a {s} safety buffer above break-even.', 'Der empfohlene Preis deckt die Vollkosten, erreicht die Zielmarge von {t} und hält {s} Sicherheitsabstand zum Break-even.', 'Le prix recommandé couvre le coût complet, atteint la marge cible de {t} et garde une marge de sécurité de {s}.', 'El precio recomendado cubre el coste total, alcanza el margen objetivo del {t} y mantiene un colchón del {s} sobre el equilibrio.'],
+  v_cond_d: ['The recommended price is profitable, but {why}. Proceed only once the actions below are addressed.', 'Der empfohlene Preis ist profitabel, aber {why}. Erst nach Umsetzung der Maßnahmen unten fortfahren.', 'Le prix recommandé est rentable, mais {why}. Ne poursuivez qu\u2019après avoir traité les actions ci-dessous.', 'El precio recomendado es rentable, pero {why}. Continúe solo tras resolver las acciones indicadas.'],
+  v_no_d: ['No pricing model is both profitable and within what the market will pay ({c} per {u}). Reduce cost, raise perceived value or grow volume before committing.', 'Kein Preismodell ist zugleich profitabel und innerhalb der Zahlungsbereitschaft ({c} pro {u}). Erst Kosten senken, Wert steigern oder Menge erhöhen.', 'Aucun modèle n\u2019est à la fois rentable et accepté par le marché ({c} par {u}). Réduisez les coûts, augmentez la valeur perçue ou le volume.', 'Ningún modelo es rentable y aceptable para el mercado a la vez ({c} por {u}). Reduzca costes, aumente el valor percibido o el volumen.'],
+  why_margin: ['its net margin of {m} is below your {t} target', 'die Nettomarge von {m} liegt unter dem Ziel von {t}', 'sa marge nette de {m} est inférieure à la cible de {t}', 'su margen neto del {m} está por debajo del objetivo del {t}'],
+  why_safety: ['volume can only fall {s} before the period makes a loss', 'die Menge darf nur um {s} sinken, bevor Verluste entstehen', 'le volume ne peut baisser que de {s} avant la perte', 'el volumen solo puede caer un {s} antes de entrar en pérdidas'],
+  why_and: [' and ', ' und ', ' et ', ' y '],
+  recModel: ['Recommended model', 'Empfohlenes Modell', 'Modèle recommandé', 'Modelo recomendado'],
+  recPrice: ['Recommended price', 'Empfohlener Preis', 'Prix recommandé', 'Precio recomendado'],
+  bandFloor: ['Break-even floor', 'Break-even-Untergrenze', 'Plancher de rentabilité', 'Suelo de equilibrio'],
+  bandTarget: ['Full-recovery target', 'Vollkosten-Ziel', 'Cible de récupération', 'Objetivo de recuperación'],
+  bandCeil: ['Market ceiling', 'Marktobergrenze', 'Plafond du marché', 'Techo de mercado'],
+  notSet: ['not set', 'nicht gesetzt', 'non défini', 'no definido'],
+  decWhy: ['Why', 'Begründung', 'Pourquoi', 'Por qué'],
+  decActions: ['Actions before you commit', 'Maßnahmen vor der Freigabe', 'Actions avant de vous engager', 'Acciones antes de comprometerse'],
+  noActions: ['No blocking issues detected.', 'Keine kritischen Punkte erkannt.', 'Aucun point bloquant détecté.', 'No se detectan problemas bloqueantes.'],
+  r_val: ['The market pays {c} per {u}, at or above your full-recovery price of {r}, so value-based pricing earns the most without leaving money on the table.', 'Der Markt zahlt {c} pro {u}, mindestens den Vollkostenpreis von {r}; wertbasierte Preise holen das meiste heraus.', 'Le marché paie {c} par {u}, au moins le prix de récupération de {r} : la tarification par la valeur rapporte le plus.', 'El mercado paga {c} por {u}, igual o más que su precio de recuperación de {r}: el precio basado en valor rinde más.'],
+  r_valBelow: ['Value-based at {p} is the highest price the market accepts. It sits {d} below your full-recovery price of {r}, so the margin is thinner than planned.', 'Wertbasiert mit {p} ist der höchste Preis, den der Markt akzeptiert. Er liegt {d} unter dem Vollkostenpreis von {r}; die Marge fällt geringer aus als geplant.', 'La valeur à {p} est le prix le plus élevé accepté par le marché. Il est inférieur de {d} au prix de récupération de {r} : la marge sera plus faible que prévu.', 'El precio de valor de {p} es el máximo que acepta el mercado. Está {d} por debajo de su precio de recuperación de {r}, así que el margen será menor de lo previsto.'],
+  reqPrice: ['Price required for target margin', 'Nötiger Preis für Zielmarge', 'Prix requis pour la marge cible', 'Precio necesario para el margen objetivo'],
+  r_rec: ['Full recovery at {p} covers every cost plus your target margin and stays within the market ceiling of {c}.', 'Vollkostendeckung mit {p} deckt alle Kosten plus Zielmarge und bleibt unter der Marktobergrenze von {c}.', 'La récupération totale à {p} couvre tous les coûts et la marge cible, sous le plafond du marché de {c}.', 'La recuperación total a {p} cubre todos los costes y el margen objetivo, dentro del techo de mercado de {c}.'],
+  r_cp: ['Cost-plus at {p} is the most profitable option that stays within the market ceiling of {c}.', 'Cost-Plus mit {p} ist die profitabelste Option innerhalb der Marktobergrenze von {c}.', 'Le coût majoré à {p} est l\u2019option la plus rentable sous le plafond du marché de {c}.', 'Coste más margen a {p} es la opción más rentable dentro del techo de mercado de {c}.'],
+  r_none: ['You need {r} per {u} to reach your target margin, but the market ceiling is {c}.', 'Für die Zielmarge sind {r} pro {u} nötig, die Marktobergrenze liegt aber bei {c}.', 'Il faut {r} par {u} pour atteindre la marge cible, mais le plafond du marché est de {c}.', 'Necesita {r} por {u} para su margen objetivo, pero el techo de mercado es {c}.'],
+  r_profit: ['Projected profit {pr} {per}; break-even at {be} {us} against {v} planned.', 'Erwarteter Gewinn {pr} {per}; Break-even bei {be} {us} gegenüber {v} geplant.', 'Bénéfice prévu {pr} {per} ; point mort à {be} {us} pour {v} prévus.', 'Beneficio previsto {pr} {per}; equilibrio en {be} {us} frente a {v} previstos.'],
+  differs: ['You are currently analysing {a}; the engine recommends {b}.', 'Sie analysieren derzeit {a}; empfohlen wird {b}.', 'Vous analysez actuellement {a} ; le moteur recommande {b}.', 'Está analizando {a}; el motor recomienda {b}.'],
+  applyRec: ['Apply recommendation', 'Empfehlung übernehmen', 'Appliquer la recommandation', 'Aplicar recomendación'],
+  signoff: ['Decision sign-off', 'Freigabe der Entscheidung', 'Validation de la décision', 'Aprobación de la decisión'],
+  approve: ['Approve', 'Freigeben', 'Approuver', 'Aprobar'],
+  revise: ['Revise', 'Überarbeiten', 'Réviser', 'Revisar'],
+  reject: ['Reject', 'Ablehnen', 'Rejeter', 'Rechazar'],
+  agreedPrice: ['Agreed price', 'Vereinbarter Preis', 'Prix retenu', 'Precio acordado'],
+  signName: ['Name / role', 'Name / Funktion', 'Nom / fonction', 'Nombre / cargo'],
+  signature: ['Signature', 'Unterschrift', 'Signature', 'Firma'],
+  signDate: ['Date', 'Datum', 'Date', 'Fecha'],
   hrs: ['h', 'Std.', 'h', 'h']
 };
 
@@ -2086,6 +2164,65 @@ function groupTotals(R) {
   return GROUPS.map(g => ({ g, v: R.cats.filter(c => c.g === g).reduce((a, c) => a + c.pu, 0) })).filter(x => x.v > 0.0000001);
 }
 
+/* ============================================================================
+   DECISION ENGINE
+   Market ceiling = willingness to pay x demographic / risk multiplier.
+   Recommended model = the most profitable model whose price the market will
+   accept (price <= ceiling) and that makes a profit at the planned volume.
+   Verdict: Go (target margin met, >= 20% safety buffer), Go with conditions
+   (profitable but thin), Rethink (no profitable price within the ceiling).
+   ============================================================================ */
+function decide(R) {
+  const mod = R.mod, u = unitS(mod), us = unitsS(mod), per = periodS(mod);
+  const ceil = R.rawVal > 0 ? R.rawVal : Infinity;
+  const floor = R.unit / R.k;                      // zero-profit price at planned volume
+  const all = MODEL_KEYS.map(k => ({ k, P: R.prices[k], prof: R.profitAt(R.prices[k], R.V) }));
+  const cands = all.filter(c => c.P <= ceil * 1.0005 && c.prof > 0).sort((a, b) => b.prof - a.prof);
+  const pick = cands[0] || all.find(c => c.k === 'rec');
+  const nv = R.net(pick.P) * R.V, margin = nv > 0 ? pick.prof / nv : NaN;
+  const be = R.beAt(pick.P), safety = isFinite(be) ? 1 - be / R.V : -1;
+  let verdict = 'no', desc;
+  const why = [], ceilTxt = isFinite(ceil) ? money(ceil) : t('notSet');
+  if (cands.length) {
+    const reasons = [];
+    if (margin < R.margin - 0.005) reasons.push(t('why_margin', { m: pct(margin), t: pct(R.margin) }));
+    if (safety < 0.2) reasons.push(t('why_safety', { s: pct(Math.max(safety, 0)) }));
+    verdict = reasons.length ? 'cond' : 'go';
+    desc = verdict === 'go' ? t('v_go_d', { t: pct(R.margin), s: pct(safety) }) : t('v_cond_d', { why: reasons.join(t('why_and')) });
+    if (pick.k !== 'val') why.push(t('r_' + pick.k, { p: money(pick.P), c: ceilTxt }));
+    else if (pick.P >= R.prices.rec) why.push(t('r_val', { c: ceilTxt, u, r: money(R.prices.rec) }));
+    else why.push(t('r_valBelow', { p: money(pick.P), d: money(R.prices.rec - pick.P), r: money(R.prices.rec) }));
+  } else {
+    desc = t('v_no_d', { c: ceilTxt, u });
+    why.push(t('r_none', { r: money(R.prices.rec), u, c: ceilTxt }));
+  }
+  why.push(t('r_profit', { pr: money(pick.prof), per, be: isFinite(be) ? volFmt(mod, Math.ceil(be)) : t('notReached'), us, v: volFmt(mod, R.V) }));
+  // Actions: the most severe advisories for the recommended price
+  const Rp = Object.assign({}, R, { P: pick.P, sel: pick.k, be, profit: pick.prof });
+  const actions = insightsFor(Rp).filter(x => (x.lv === 'alert' || x.lv === 'warn')).slice(0, 4).map(x => x.s);
+  return { verdict, desc, k: pick.k, P: pick.P, prof: pick.prof, margin, be, safety, floor, target: R.prices.rec, ceil, why, actions };
+}
+const VERDICT_ICON = { go: 'check', cond: 'alert', no: 'octagon' };
+function decisionHTML(R, D, forPrint) {
+  const mod = R.mod, u = unitS(mod);
+  const pts = [D.floor, D.target, D.P].concat(isFinite(D.ceil) ? [D.ceil] : []).filter(isFinite);
+  const lo = Math.min(...pts) * 0.85, hi = Math.max(...pts) * 1.08, pos = v => Math.min(Math.max((v - lo) / (hi - lo) * 100, 0), 100).toFixed(1);
+  const mk = (v, cls, l) => isFinite(v) ? '<span class="dec-mk ' + cls + '" style="left:' + pos(v) + '%" title="' + esc(l) + ': ' + esc(money(v)) + '"></span>' : '';
+  const band = '<div class="dec-band" aria-hidden="true"><span class="dec-zone" style="left:' + pos(D.floor) + '%;right:' + (100 - pos(isFinite(D.ceil) ? Math.max(D.ceil, D.floor) : hi)) + '%"></span>' +
+    mk(D.floor, 'f', t('bandFloor')) + mk(D.target, 't', t('bandTarget')) + (isFinite(D.ceil) ? mk(D.ceil, 'c', t('bandCeil')) : '') + mk(D.P, 'p', t('recPrice')) + '</div>';
+  const li = a => a.map(x => '<li>' + esc(x) + '</li>').join('');
+  const differs = !forPrint && D.k !== R.sel
+    ? '<div class="dec-diff">' + svg('info', 'sm') + '<span>' + esc(t('differs', { a: t('m_' + R.sel + '_s'), b: t('m_' + D.k + '_s') })) + '</span><button class="btn primary" type="button" data-apply="' + D.k + '">' + svg('check', 'sm') + esc(t('applyRec')) + '</button></div>'
+    : (forPrint && D.k !== R.sel ? '<div class="dec-diff">' + esc(t('differs', { a: t('m_' + R.sel + '_s'), b: t('m_' + D.k + '_s') })) + '</div>' : '');
+  return '<div class="dec dec-' + D.verdict + '">' +
+    '<div class="dec-verdict"><span class="dec-ic">' + svg(VERDICT_ICON[D.verdict], 'lg') + '</span><div><div class="dec-label">' + esc(t('decTitle')) + '</div><div class="dec-v">' + esc(t('v_' + D.verdict)) + '</div><p>' + esc(D.desc) + '</p></div></div>' +
+    '<div class="dec-main"><div class="dec-label">' + esc(t(D.verdict === 'no' ? 'reqPrice' : 'recPrice')) + ' | ' + esc(t('m_' + D.k)) + '</div>' +
+      '<div class="dec-price">' + money(D.P) + ' <small>' + esc(t('per', { u })) + '</small></div>' + band +
+      '<dl class="dec-dl"><dt><i class="f"></i>' + esc(t('bandFloor')) + '</dt><dd>' + money(D.floor) + '</dd><dt><i class="t"></i>' + esc(t('bandTarget')) + '</dt><dd>' + money(D.target) + '</dd><dt><i class="c"></i>' + esc(t('bandCeil')) + '</dt><dd>' + (isFinite(D.ceil) ? money(D.ceil) : esc(t('notSet'))) + '</dd></dl></div>' +
+    '<div class="dec-side"><div><div class="dec-label">' + esc(t('decWhy')) + '</div><ul>' + li(D.why) + '</ul></div><div><div class="dec-label">' + esc(t('decActions')) + '</div><ul>' + (D.actions.length ? li(D.actions) : '<li>' + esc(t('noActions')) + '</li>') + '</ul></div></div>' +
+    differs + '</div>';
+}
+
 function renderResults() {
   const mod = MOD[S.module], d = S.data[mod.id];
   const R = evaluate(mod, d, S.sliders, S.sel);
@@ -2102,6 +2239,10 @@ function renderResults() {
     kpi('target', t('kpiBE'), isFinite(R.be) ? volFmt(mod, Math.ceil(R.be)) + ' <small style="font-size:12px;color:var(--ink-3)">' + esc(us) + '</small>' : t('notReached'),
       isFinite(R.be) ? t('safety', { p: pct(1 - R.be / R.V) }) : '-', !isFinite(R.be) || R.be > R.V ? 'neg' : '') +
     kpi('coins', t('kpiCM'), money(cm), pct(R.P > 0 ? cm / R.P : 0), cm < 0 ? 'neg' : '');
+
+  // Decision panel
+  const D = decide(R);
+  $('decision').innerHTML = decisionHTML(R, D, false);
 
   // Pricing model cards
   $('models').innerHTML = MODEL_KEYS.map(k => {
@@ -2421,9 +2562,9 @@ function buildReport() {
   let bom = '';
   if (mod.table && d.rows.length) {
     const useL = mod.table.useL ? t(mod.table.useL) : t('colUse');
-    bom = '<h2>' + icon('box') + esc(t(mod.sections.find(s => s.table).l)) + '</h2><table class="rp-avoid"><thead><tr><th>' + t('colItem') + '</th><th>' + t('colUnit') + '</th><th class="n">' + t('colPackQty') + '</th><th class="n">' + t('colPackCost') + '</th><th class="n">' + esc(useL) + '</th><th class="n">' + t('colWaste') + '</th><th class="n">' + t('colLineCost') + '</th></tr></thead><tbody>' +
+    bom = '<section class="rp-avoid"><h2>' + icon('box') + esc(t(mod.sections.find(s => s.table).l)) + '</h2><table class="rp-avoid"><thead><tr><th>' + t('colItem') + '</th><th>' + t('colUnit') + '</th><th class="n">' + t('colPackQty') + '</th><th class="n">' + t('colPackCost') + '</th><th class="n">' + esc(useL) + '</th><th class="n">' + t('colWaste') + '</th><th class="n">' + t('colLineCost') + '</th></tr></thead><tbody>' +
       d.rows.map(r => '<tr><td>' + esc(r.item) + '</td><td>' + esc(r.unit) + '</td><td class="n">' + num(+r.qty, 2) + '</td><td class="n">' + money(+r.cost) + '</td><td class="n">' + num(+r.use, 2) + '</td><td class="n">' + num(+r.waste, 1) + '%</td><td class="n">' + money(rowCost(r)) + '</td></tr>').join('') +
-      '<tr class="hl"><td colspan="6">' + t('subtotal') + '</td><td class="n">' + money(bomTotal(d.rows)) + '</td></tr></tbody></table>';
+      '<tr class="hl"><td colspan="6">' + t('subtotal') + '</td><td class="n">' + money(bomTotal(d.rows)) + '</td></tr></tbody></table></section>';
   }
   const sl = S.sliders;
   const whatIf = '<table class="rp-avoid"><thead><tr><th>' + esc(t('rpParam')) + '</th><th class="n">' + esc(t('rpValue')) + '</th></tr></thead><tbody>' +
@@ -2439,20 +2580,23 @@ function buildReport() {
       '<div>' + esc(t('rpLanguage')) + ': <b>' + esc(langName) + '</b></div>' +
       '<div>' + esc(t('rpPeriod')) + ': <b>' + esc(per) + '</b></div>' +
     '</div>' +
+    '<section class="rp-avoid"><h2>' + icon('target') + esc(t('decTitle')) + '</h2>' + decisionHTML(R, decide(R), true) + '</section>' +
     '<h2>' + icon('star') + esc(t('rpSummary')) + '</h2><div class="rp-summary">' + summary + '</div>' +
     '<div class="rp-kpis">' + kp(t('kpiUnitCost'), money(R.unit)) + kp(t('kpiPrice'), money(R.P)) + kp(t('kpiProfit'), money(R.profit)) +
       kp(t('kpiBE'), isFinite(R.be) ? volFmt(mod, Math.ceil(R.be)) : '-') + kp(t('rpVolume'), volFmt(mod, R.V)) + '</div>' +
-    '<h2>' + icon('tag') + esc(t('rpModels')) + '</h2><table class="rp-avoid"><thead><tr><th>' + esc(t('rpModel')) + '</th><th class="n">' + esc(t('per', { u })) + '</th><th class="n">' + esc(t('netToYou')) + '</th><th class="n">' + esc(t('kpiUnitCost')) +
-      '</th><th class="n">' + esc(t('profitPeriod', { p: per })) + '</th><th class="n">' + esc(t('netMargin')) + '</th><th class="n">' + esc(t('breakEven')) + '</th></tr></thead><tbody>' + modelRows + '</tbody></table>' +
-    '<h2>' + icon('pie') + esc(t('rpCharts')) + '</h2><div class="rp-charts rp-avoid"><div>' + pieImg + '</div><div>' + lineImg + '</div></div>' +
-    '<h2>' + icon('table') + esc(t('matrixTitle')) + ' (' + esc(t('m_' + R.sel + '_s')) + ')</h2><div class="rp-avoid">' + matrixHTML(R).replace(/<svg[\s\S]*?<\/svg>/g, '') + '</div>' +
+    '<section class="rp-avoid"><h2>' + icon('tag') + esc(t('rpModels')) + '</h2><table><thead><tr><th>' + esc(t('rpModel')) + '</th><th class="n">' + esc(t('per', { u })) + '</th><th class="n">' + esc(t('netToYou')) + '</th><th class="n">' + esc(t('kpiUnitCost')) +
+      '</th><th class="n">' + esc(t('profitPeriod', { p: per })) + '</th><th class="n">' + esc(t('netMargin')) + '</th><th class="n">' + esc(t('breakEven')) + '</th></tr></thead><tbody>' + modelRows + '</tbody></table></section>' +
+    '<section class="rp-avoid"><h2>' + icon('pie') + esc(t('rpCharts')) + '</h2><div class="rp-charts"><div>' + pieImg + '</div><div>' + lineImg + '</div></div></section>' +
+    '<section class="rp-avoid"><h2>' + icon('table') + esc(t('matrixTitle')) + ' (' + esc(t('m_' + R.sel + '_s')) + ')</h2>' + matrixHTML(R).replace(/<svg[\s\S]*?<\/svg>/g, '') + '</section>' +
     '<h2>' + icon('bulb') + esc(t('insightsTitle')) + '</h2>' + ins +
-    '<div class="rp-page-break"></div>' +
-    '<h2>' + icon('gauge') + esc(t('metricsTitle')) + '</h2><table class="rp-avoid"><tbody>' + exRows + '</tbody></table>' + xt +
+    '<section class="rp-avoid"><h2>' + icon('gauge') + esc(t('metricsTitle')) + '</h2><table><tbody>' + exRows + '</tbody></table></section>' + xt +
     '<h2>' + icon('layers') + esc(t('breakdownTitle')) + '</h2><div>' + ledgerHTML(R).replace(/<span class="sw"[^>]*><\/span>/g, '') + '</div>' +
     bom +
     '<h2>' + icon('file') + esc(t('rpAssumptions')) + '</h2><div class="rp-cols">' + assumptions + '</div>' +
-    '<h2>' + icon('sliders') + esc(t('rpWhatIf')) + '</h2>' + whatIf +
+    '<section class="rp-avoid"><h2>' + icon('sliders') + esc(t('rpWhatIf')) + '</h2>' + whatIf + '</section>' +
+    '<section class="rp-avoid rp-sign"><h2>' + icon('check') + esc(t('signoff')) + '</h2>' +
+      '<div class="rp-boxes">' + ['approve', 'revise', 'reject'].map(k => '<span><i></i>' + esc(t(k)) + '</span>').join('') + '</div>' +
+      '<div class="rp-lines">' + ['agreedPrice', 'signName', 'signature', 'signDate'].map(k => '<div><span></span>' + esc(t(k)) + '</div>').join('') + '</div></section>' +
     '<div class="rp-foot">' + esc(t('rpDisclaimer')) + ' ' + esc(t('fxNote')) + '</div>';
 }
 function setPaper() { $('pageStyle').textContent = '@page { size: ' + (S.paper === 'letter' ? 'letter' : 'A4') + '; margin: 14mm 12mm; }'; }
@@ -2569,6 +2713,10 @@ function wire() {
   $('sensReset').addEventListener('click', () => { S.sliders = Object.assign({}, SLIDERS0); renderSliders(); renderResults(); });
 
   // Pricing model selection
+  $('decision').addEventListener('click', e => {
+    const b = e.target.closest('[data-apply]'); if (!b) return;
+    S.sel = b.dataset.apply; renderResults();
+  });
   $('models').addEventListener('click', e => {
     const b = e.target.closest('[data-model]'); if (!b) return;
     S.sel = b.dataset.model; renderResults();
