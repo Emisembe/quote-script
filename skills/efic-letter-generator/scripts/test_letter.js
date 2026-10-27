@@ -40,7 +40,7 @@ const LONG = Array.from({length: 9}, (_, i) => `Paragraph ${i + 1}. ` + 'We are 
     const c = await b.newContext({viewport: {width: w, height: h}, acceptDownloads: true});
     const p = await c.newPage(), errs = [];
     p.on('pageerror', e => errs.push(e.message));
-    p.on('dialog', d => d.type() === 'prompt' ? d.accept('Test save') : d.accept());
+    p.on('dialog', d => { p.dialogs = (p.dialogs || 0) + 1; if (d.type() === 'prompt') return d.accept('Test save'); if (p.dismissNext) { p.dismissNext = false; return d.dismiss(); } return d.accept(); });
     await p.route(/^https?:\/\//, r => r.fulfill({body: '', contentType: 'text/plain'}));
     await p.route(/html2canvas\.min\.js/, r => r.fulfill({path: path.join(NM, 'html2canvas/dist/html2canvas.min.js'), contentType: 'application/javascript'}));
     await p.route(/jspdf\.umd\.min\.js/, r => r.fulfill({path: path.join(NM, 'jspdf/dist/jspdf.umd.min.js'), contentType: 'application/javascript'}));
@@ -192,7 +192,100 @@ const LONG = Array.from({length: 9}, (_, i) => `Paragraph ${i + 1}. ` + 'We are 
   } else skip('PDF dpi check (poppler-utils not installed)');
   await p.keyboard.press('Escape');
   ok(!errs.length, 'no JS errors during the run: ' + (errs.join('; ') || 'none'));
-  await c.close(); await b.close();
+  await c.close();
+
+  // 13. Templates and contracts
+  {
+    const {c, p, errs} = await open('harness-bare.html', 1440);
+    const q = (fn, arg) => p.evaluate(fn, arg);
+    const flowText = () => q(() => document.querySelector('#ldgPages .ldg-sheet .lt-flow').innerText);
+    const opts = () => q(() => [...document.querySelectorAll('#tpl option')].map(o => o.value));
+    const vis = sel => q(s => { const e = document.querySelector(s); return !!e && !e.closest('[hidden]') && e.getClientRects().length > 0; }, sel);
+    ok((await opts()).length === 10 && await vis('#recCompany') && !(await vis('#cClauses')), 'letter mode: 10 letter templates; recipient fields shown, contract fields hidden');
+    // Letter templates fill subject and body; {org} and {company} are filled in.
+    await p.fill('#recCompany', 'Safaricom PLC');
+    await p.selectOption('#tpl', 'intro'); await settle(p);
+    let flow = (await flowText());
+    ok(/Introduction of our services/.test(flow) && /EFIC Consultancy Ltd supports organisations/.test(flow) && /our services to Safaricom PLC\./.test(flow), 'letter template: subject and text, with the organisation and recipient filled in');
+    await p.selectOption('#tpl', 'reminder'); await settle(p);
+    flow = (await flowText());
+    const lb = await q(() => document.getElementById('blankWarn').textContent);
+    ok(/Payment reminder: invoice \[number\]/.test(flow) && /^4 blank\(s\) still to fill in: \[number\], \[invoice date\], \[amount\], \[7\]$/.test(lb), 'payment reminder: blanks highlighted and listed once each: ' + lb);
+    // Contract mode
+    await p.selectOption('#docMode', 'contract'); await settle(p);
+    ok((await opts()).join() === 'consultancy,nda,employment,supply,partnership,mou,blankContract' && !(await vis('#recCompany')) && await vis('#cClauses') && !(await vis('#fold')), 'contract mode: 7 contract templates; contract fields shown, letter-only fields hidden');
+    await p.fill('#c2Name', 'Kenya Power and Lighting Company PLC'); await p.fill('#sigName', 'Efic Musembe'); await p.fill('#sigTitle', 'Director'); await settle(p);
+    const ct = await q(() => {
+      const all = [...document.querySelectorAll('#ldgPages .ldg-sheet')];
+      const items = [...document.querySelectorAll('#ldgPages .ct-h, #ldgPages p.ct-cl, #ldgPages p.ct-li')];
+      return {n: all.length, title: document.querySelector('.ct-title').textContent, party1: document.querySelector('p.ct-party strong').textContent, between: document.querySelector('.ct-label').textContent,
+        first: [...document.querySelectorAll('.ct-h .no, p.ct-cl .no')].slice(0, 3).map(e => e.textContent).join(' '),
+        law: document.getElementById('ldgPages').innerText.includes('This Agreement is governed by the laws of Kenya.'),
+        pageno: all.map(sh => sh.querySelector('.lt-pageno').textContent), init: all.every(sh => sh.querySelectorAll('.ct-init i').length === 2),
+        cont: all.slice(1).every(sh => /CONSULTANCY AGREEMENT|Consultancy Agreement/.test(sh.querySelector('.lt-cont').textContent)),
+        sched: all.some(sh => { const f = sh.querySelector('.lt-flow'); return f && f.firstElementChild && f.firstElementChild.classList.contains('ct-sched') && /Schedule 1: Services and Fees/.test(f.firstElementChild.textContent); }),
+        signs: [...document.querySelectorAll('.ct-signbox .ct-party-name')].map(e => e.textContent), signer: document.querySelector('.ct-field .line').textContent,
+        headingLast: all.some(sh => { const f = sh.querySelector('.lt-flow'); return f && f.lastElementChild && f.lastElementChild.classList.contains('ct-h'); }),
+        overflow: all.some(sh => { const f = sh.querySelector('.lt-flow'), ft = sh.querySelector('.lt-footer'); return f.offsetTop + f.offsetHeight > ft.offsetTop; }),
+        ref: document.querySelector('.ct-meta').textContent, noMarks: !document.querySelector('#ldgPages .lt-mark'), noAddress: !document.querySelector('#ldgPages .lt-address')};
+    });
+    ok(ct.title === 'Consultancy Agreement' && ct.party1 === 'EFIC Consultancy Ltd' && ct.between === 'BETWEEN' && ct.first === '1. 1.1 1.2' && ct.law, 'consultancy agreement: title, parties (you = your organisation), clauses numbered 1. / 1.1 / 1.2, governing law filled in');
+    ok(ct.n >= 3 && ct.pageno.every((t, i) => t === `Page ${i + 1} of ${ct.n}`) && ct.init && ct.cont, `contract pages: "Page X of ${ct.n}" on every page, initials boxes on every page, continuation header with the title`);
+    ok(ct.sched, 'Schedule 1 starts on its own page');
+    ok(ct.signs.join(' | ') === 'EFIC Consultancy Ltd | Kenya Power and Lighting Company PLC' && ct.signer === 'Efic Musembe', 'signature blocks for both parties, your signatory filled in');
+    ok(!ct.headingLast && !ct.overflow, 'no clause heading left alone at the bottom of a page, nothing runs into the footer');
+    ok(/^Ref\. KPLC-\d{8}-\d{6}/.test(ct.ref) && ct.noMarks && ct.noAddress, 'reference from party 2 (KPLC-...); no envelope window or fold marks on contracts');
+    const blanks = await q(() => [...document.querySelectorAll('#ldgPages .lt-fill')].map(e => e.textContent));
+    ok(blanks.includes('[monthly / on completion of each milestone]') && blanks.every(t => /^\[[^\]]*\]$|^\[.*\]$/.test(t)), 'blanks are highlighted without the punctuation around them');
+    await p.fill('#cLaw', 'the laws of England and Wales'); await p.fill('#cCourts', 'England'); await settle(p);
+    const t2 = await q(() => document.getElementById('ldgPages').innerText);
+    ok(t2.includes('governed by the laws of England and Wales') && t2.includes('the courts of England'), 'governing law and courts are editable');
+    // Template switch asks before replacing edited text
+    await p.fill('#cClauses', (await p.inputValue('#cClauses')) + '\n# Extra\nMy own clause.'); await settle(p);
+    p.dialogs = 0; p.dismissNext = true;
+    await p.selectOption('#tpl', 'nda'); await settle(p);
+    ok(p.dialogs === 1 && await p.inputValue('#tpl') === 'consultancy' && (await p.inputValue('#cClauses')).includes('My own clause.'), 'changing template after editing asks first; Cancel keeps your text');
+    await p.selectOption('#tpl', 'nda'); await settle(p);
+    const nda = await q(() => ({title: document.querySelector('.ct-title').textContent, li: [...document.querySelectorAll('p.ct-li .no')].map(e => e.textContent).join(''), roles: [...document.querySelectorAll('p.ct-party')].map(e => e.textContent.match(/\(the "([^"]+)"\)/)[1]).join('/')}));
+    ok(nda.title === 'Mutual Non-Disclosure Agreement' && nda.li === '(a)(b)(c)(d)' && nda.roles === 'First Party/Second Party', 'OK replaces it: NDA with (a)-(d) list items ' + JSON.stringify(nda));
+    // Every contract template renders cleanly
+    for (const id of ['consultancy', 'nda', 'employment', 'supply', 'partnership', 'mou', 'blankContract']) {
+      await p.selectOption('#tpl', id); await settle(p);
+      const r = await q(() => { const all = [...document.querySelectorAll('#ldgPages .ldg-sheet')]; return {n: all.length, w: document.querySelectorAll('.ct-witness').length,
+        over: all.some(sh => { const f = sh.querySelector('.lt-flow'), ft = sh.querySelector('.lt-footer'); return f.offsetTop + f.offsetHeight > ft.offsetTop; }), law: /governed by/.test(document.getElementById('ldgPages').innerText), exec: !!document.querySelector('.ct-exec')}; });
+      ok(r.n >= 1 && !r.over && r.law && r.exec && (['employment', 'partnership'].includes(id) ? r.w === 2 : r.w === 0), `${id}: ${r.n} page(s), governing law, signature blocks${r.w ? ', witness lines' : ''}, nothing behind the footer`);
+    }
+    await p.selectOption('#tpl', 'employment'); await settle(p);
+    await p.screenshot({path: path.join(SHOTS, 'contract-employment.png')});
+    // DRAFT, German wording, save/load, New, letter text kept when switching back
+    await p.check('#draft'); await settle(p);
+    ok(await q(() => [...document.querySelectorAll('#ldgPages .ldg-sheet')].every(sh => (sh.querySelector('.lt-draft') || {}).textContent === 'DRAFT')), 'Mark as DRAFT: watermark on every page');
+    await p.selectOption('#lang', 'de'); await settle(p);
+    const de = await q(() => ({between: document.querySelector('.ct-label').textContent, opt: document.querySelector('#tpl option[value="employment"]').textContent, draft: document.querySelector('.lt-draft').textContent}));
+    ok(de.between === 'ZWISCHEN' && de.opt === 'Arbeitsvertrag' && de.draft === 'ENTWURF', 'German: contract words and template names translated ' + JSON.stringify(de));
+    await p.selectOption('#lang', 'en'); await p.uncheck('#draft'); await settle(p);
+    await p.click('button[onclick="ldgSave()"]'); await settle(p);
+    await p.click('button[onclick="ldgNew()"]'); await settle(p);
+    ok(await p.inputValue('#c2Name') === '' && await p.inputValue('#cLaw') === 'the laws of England and Wales' && /# Appointment/.test(await p.inputValue('#cClauses')), 'New: clears party 2, keeps your governing law, starts a fresh copy of the template');
+    await p.click('#ldgLoadBtn'); await p.locator('.ldg-saved-open').last().click(); await settle(p);
+    ok(await p.inputValue('#docMode') === 'contract' && await p.inputValue('#tpl') === 'employment' && await p.inputValue('#c2Name') === 'Kenya Power and Lighting Company PLC', 'Load brings back the contract, its template and party 2');
+    await p.selectOption('#docMode', 'letter'); await settle(p);
+    ok(await p.inputValue('#subject') === 'Payment reminder: invoice [number]' && await vis('#recCompany'), 'switching back to Letter keeps the letter you were writing');
+    // Print a contract
+    if (has('pdftotext')) {
+      await p.selectOption('#docMode', 'contract'); await settle(p);
+      const nC = await p.locator('#ldgPages .ldg-sheet').count();
+      await p.evaluate(() => window.dispatchEvent(new Event('beforeprint'))); await p.emulateMedia({media: 'print'});
+      const pp = path.join(W, 'contract.pdf'); await p.pdf({path: pp, preferCSSPageSize: true, printBackground: true});
+      await p.emulateMedia({media: 'screen'}); await p.evaluate(() => window.dispatchEvent(new Event('afterprint')));
+      const pages = +cp.execSync(`pdfinfo "${pp}"`).toString().match(/Pages:\s+(\d+)/)[1], txt = cp.execSync(`pdftotext "${pp}" -`).toString();
+      ok(pages === nC && /IN WITNESS WHEREOF/.test(txt) && /EMPLOYMENT CONTRACT|Employment Contract/i.test(txt), `contract prints: ${pages} pages, searchable text`);
+      if (has('pdftoppm')) cp.execSync(`pdftoppm -r 50 -png "${pp}" "${path.join(SHOTS, 'contract-print')}"`);
+    } else skip('contract print check (poppler-utils not installed)');
+    ok(!errs.length, 'templates and contracts: no JS errors ' + (errs.join('; ') || 'none'));
+    await c.close();
+  }
+  await b.close();
   console.log(R.join('\n'));
   const fails = R.filter(r => r.startsWith('FAIL')).length;
   console.log(`${R.filter(r => r.startsWith('PASS')).length} passed, ${fails} failed, ${R.filter(r => r.startsWith('SKIP')).length} skipped. Screenshots: ${SHOTS}`);

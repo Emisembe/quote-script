@@ -1,6 +1,6 @@
 ---
 name: efic-letter-generator
-description: "Generate, customise, fix or extend the EFIC Letter Generator: a single-file Blogger page (eficc.blogspot.com) that writes business letters on EFIC letterhead in DIN 5008 layout on real A4 pages, with live preview, Update button, automatic 'Our reference' (recipient initials + date + time), five languages (EN/DE/FR/SW/ZH), multi-page letters with page numbers, print, 300 dpi PDF, save/load, remembered letterhead, footer columns and a SEPA GiroCode. Use this skill whenever the user wants the letter generator file again, a changed version of it (new defaults, bank details, logo, another language, different reference format, new field, a memo/offer/cover-letter variant), a bug fixed in it, or a new Blogger letter/correspondence tool for EFIC, even if they just say 'my letter page', 'the letter tool', 'letter generator' or paste its HTML."
+description: "Generate, customise, fix or extend the EFIC Letter Generator: a single-file Blogger page (eficc.blogspot.com) that writes business letters (DIN 5008) and contracts (numbered clauses, parties, signature blocks, editable governing law) on EFIC letterhead on real A4 pages. It has 10 letter and 7 contract templates (consultancy, NDA, employment, supply, partnership, MoU), highlighted [blanks], an automatic reference, an Update button, 5 languages, print, 300 dpi PDF, save/load and a SEPA GiroCode. Use it whenever the user wants the letter tool again, a changed version (defaults, bank details, a new template or clause, another language, a new field), a bug fixed, or a new EFIC letter or contract tool, even if they just say 'my letter page', 'the letter tool', 'contract templates' or paste its HTML."
 ---
 
 # EFIC Letter Generator
@@ -33,6 +33,11 @@ If the user pastes a version of the page, compare it with the bundled one first 
 - **Saved data:** add new letter fields to `LETTER_FIELDS` and letterhead fields to `HEAD_FIELDS`, or Save/Load and "remember my letterhead" will silently drop them.
 - **Brand:** Navy `#14213D`, Gold `#E7B165`, Deep Navy `#0F1A30`, Off-White `#F7F6F2`, Grey `#4A5568`. Never put gold text on white, white text on gold, or Alert Red anywhere. Montserrat for headings and UI, Calibri/Arial for the letter. For anything wider than this page, use the `efic-brand-web` skill.
 - **Don't invent EFIC's real details** (bank account, phone, address). Leave the placeholders and ask for them.
+- **Templates and contracts:**
+  - Templates live in `TPL` (English text, `mode: 'letter' | 'contract'`) and are listed per mode in `TPL_ORDER`. Their names are UI keys `t_<id>` in all five languages.
+  - Use `[square brackets]` for anything the user must fill in: `tokens()` marks them, they are highlighted, and the panel counts the open blanks. Use `{org}`, `{company}`, `{party1}`, `{party2}`, `{role1}`, `{role2}`, `{law}`, `{courts}` or `{date}` for values the tool knows (`fill()`). Never hard-code EFIC's name in template text; use `{org}`.
+  - `applyTemplate()` asks before replacing text the user edited (`edited()`). Keep that.
+- **Contract text is not legal advice.** Keep templates plain-English and standard, keep the governing law editable (default *the laws of Kenya* / *Kenya*), and tell the user to have a lawyer review a template once before relying on it.
 
 Letter conventions (DIN 5008 measurements, greetings and closings, GiroCode, the reference format) are in `references/letter-rules.md`. Read it before changing anything that prints on the letter.
 

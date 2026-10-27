@@ -60,3 +60,22 @@ Drop trailing empty fields. Validate the IBAN with mod-97 before drawing the cod
 
 ## Dates
 `fmtDate()` uses `toLocaleDateString(W[lang].locale, {day:'numeric', month:'long', year:'numeric'})`, for example "22 October 2026" or "22. Oktober 2026". Both are valid DIN 5008 forms.
+
+## Contracts
+- **Page 1:**
+  1. The letterhead.
+  2. The title (Montserrat 15pt, uppercase) with a 28 mm gold rule.
+  3. `Ref. <reference> · <date>`, then the opening line.
+  4. `BETWEEN`, party 1 `(1) Name, details (the "Role");`, `AND`, party 2 `(2) Name, details (the "Role").`, then `(each a "Party" and together the "Parties").`
+- **No envelope window on contracts:** no address field, info block or fold marks. Body text starts 4 mm below the letterhead rule.
+- **Clauses:** headings numbered `1.` with sub-clauses `1.1` indented 10 mm, and list items `(a)` indented 18 mm. A heading always has at least 12 mm of room after it, otherwise it moves to the next page. Long clauses split between words with at least two lines on each side, and the number appears only on the first part.
+- **Signature blocks (`.ct-exec`, kept together):**
+  - "IN WITNESS WHEREOF ..." followed by two columns.
+  - Each column has "Signed for and on behalf of", the party's name, a 16 mm signature line, and Name, Position and Date lines.
+  - Optional witness lines (Signature, Name, Date) go under each column.
+- **Every page:** initials boxes (two 11 x 5.5 mm boxes, bottom left) and `Page X of Y`. From page 2, a header with organisation, title, reference and date.
+- **Schedules** start on a new page with a centred title and gold rule.
+- **Reference** `<party 2 initials>-YYYYMMDD-HHMMSS` (`CTR-…` when party 2 has no name yet).
+- **Governing law:** `{law}` defaults to *the laws of Kenya* and `{courts}` to *Kenya*. Templates assume Kenyan defaults where numbers matter: employment has 21 working days' annual leave, one month's notice after probation and a [3]-month probation. Change them with the law.
+- **Blanks** `[like this]` print with an off-white background and a dark-gold dashed underline, so an unfinished contract is obvious on paper. The panel lists the open ones.
+- **DRAFT** watermark: dark gold `#C9924A` at 12% opacity, rotated -32 degrees, in the letter's language (ENTWURF, PROJET, RASIMU, 草稿).

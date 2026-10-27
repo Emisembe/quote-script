@@ -165,6 +165,41 @@
 #ldg-app .lt-qr { flex: 0 0 22mm; text-align: center; }
 #ldg-app .lt-qr img { width: 20mm; height: 20mm; display: block; margin: 0 auto; image-rendering: pixelated; }
 #ldg-app .lt-qr span { display: block; font-size: 6pt; color: #4A5568; margin-top: .5mm; }
+#ldg-app .lt-fill { background: #F7F6F2; border-bottom: 0.35mm dashed #C9924A; }
+#ldg-app .lt-draft { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(-32deg); font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-weight: 800; font-size: 96pt; letter-spacing: 6mm; color: #C9924A; opacity: 0.12; white-space: nowrap; pointer-events: none; }
+
+/* contracts */
+#ldg-app .ct-title { margin: 0 0 3mm; text-align: center; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 15pt; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #14213D; line-height: 1.25; }
+#ldg-app .ct-title:after, #ldg-app .ct-sched:after { content: ''; display: block; width: 28mm; height: 0.8mm; margin: 3mm auto 0; background: #E7B165; }
+#ldg-app .ct-meta { margin: 0 0 7mm; text-align: center; font-size: 9pt; color: #4A5568; }
+#ldg-app .ct-label { margin: 3mm 0 2.5mm; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 9.5pt; font-weight: 700; letter-spacing: 1.5px; color: #14213D; }
+#ldg-app .lt-flow .no { position: absolute; left: 0; top: 0; }
+#ldg-app .lt-flow p.ct-party { position: relative; padding-left: 10mm; margin: 0 0 2mm; }
+#ldg-app .lt-flow p.ct-party .no { font-weight: 700; }
+#ldg-app .ct-h { position: relative; padding-left: 10mm; margin: 5mm 0 2.5mm; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 10pt; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: #14213D; }
+#ldg-app .ct-h.unnumbered { padding-left: 0; }
+#ldg-app .lt-flow p.ct-cl { position: relative; padding-left: 10mm; margin: 0 0 2.2mm; }
+#ldg-app .lt-flow p.ct-cl .no { font-weight: 600; }
+#ldg-app .lt-flow p.ct-li { position: relative; padding-left: 18mm; margin: 0 0 1.6mm; }
+#ldg-app .lt-flow p.ct-li .no { left: 10mm; }
+#ldg-app .lt-flow p.ct-plain { margin: 0 0 2.5mm; }
+#ldg-app .ct-sched { margin: 0 0 7mm; text-align: center; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 12pt; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #14213D; }
+#ldg-app .ct-exec { padding-top: 6mm; }
+#ldg-app .lt-flow .ct-exec > p { margin: 0 0 7mm; }
+#ldg-app .ct-sign { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12mm; }
+#ldg-app .ct-for { font-size: 8.5pt; color: #4A5568; }
+#ldg-app .ct-party-name { min-height: 5mm; margin-bottom: 1mm; font-weight: 700; color: #14213D; word-break: break-word; }
+#ldg-app .ct-sigline { display: flex; align-items: flex-end; height: 16mm; border-bottom: 0.5pt solid #14213D; }
+#ldg-app .ct-sigline img { max-height: 14mm; max-width: 55mm; object-fit: contain; }
+#ldg-app .ct-siglbl { margin: 1mm 0 1mm; font-size: 7.5pt; color: #4A5568; }
+#ldg-app .ct-field { display: flex; align-items: flex-end; gap: 2mm; margin-top: 2.2mm; font-size: 9.5pt; }
+#ldg-app .ct-field .lbl { flex: 0 0 17mm; color: #4A5568; }
+#ldg-app .ct-field .line { flex: 1 1 auto; min-height: 4.5mm; border-bottom: 0.5pt dotted #4A5568; word-break: break-word; }
+#ldg-app .ct-witness { margin-top: 5mm; padding-top: 2.5mm; border-top: 0.5pt dashed #D9D5CA; }
+#ldg-app .ct-init { position: absolute; left: 0; top: 0; display: flex; align-items: center; gap: 2mm; font-size: 7pt; color: #4A5568; }
+#ldg-app .ct-init i { display: inline-block; width: 11mm; height: 5.5mm; border: 0.5pt solid #4A5568; }
+#ldg-app .lt-footer.has-init .lt-pageno { min-height: 6.5mm; padding-top: 1.5mm; }
+#ldg-app .ldg-subh { margin: 6px 0 10px; padding-top: 12px; border-top: 1px solid #E8E5DC; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #14213D; }
 
 /* modal */
 #ldg-app .ldg-modal { display: none; position: fixed; inset: 0; background: rgba(15, 26, 48, 0.8); z-index: 99999; align-items: center; justify-content: center; padding: 16px; }
@@ -245,11 +280,25 @@
     <div class="ldg-panel" id="ldgPanel">
 
       <div class="ldg-section">
+        <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secDoc">Document</button>
+        <div class="ldg-body">
+          <div class="ldg-row">
+            <div class="fg"><label for="docMode" data-t="lMode">Document Type</label>
+              <select id="docMode"><option value="letter" data-t="optLetter">Letter</option><option value="contract" data-t="optContract">Contract / Agreement</option></select></div>
+            <div class="fg"><label for="tpl" data-t="lTpl">Template</label><select id="tpl"></select></div>
+          </div>
+          <p class="ldg-hint" data-t="tplHint">Templates are written in English and are a starting point, not legal advice. Words in [square brackets] are blanks to fill in.</p>
+          <label class="ldg-check"><input type="checkbox" id="draft"> <span data-t="lDraft">Mark as DRAFT</span></label>
+          <p class="ldg-warn" id="blankWarn" hidden></p>
+        </div>
+      </div>
+
+      <div class="ldg-section">
         <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secSettings">Letter Settings</button>
         <div class="ldg-body">
           <div class="fg"><label for="layout" data-t="lLayout">Layout</label>
             <select id="layout"><option value="B" data-t="optB">DIN 5008 Form B (standard)</option><option value="A" data-t="optA">DIN 5008 Form A (short letterhead)</option></select></div>
-          <label class="ldg-check"><input type="checkbox" id="fold" checked> <span data-t="lFold">Fold and hole marks</span></label>
+          <label class="ldg-check" data-mode="letter"><input type="checkbox" id="fold" checked> <span data-t="lFold">Fold and hole marks</span></label>
           <label class="ldg-check"><input type="checkbox" id="strip" checked> <span data-t="lStrip">Reference strip in the margin</span></label>
         </div>
       </div>
@@ -285,7 +334,7 @@
         </div>
       </div>
 
-      <div class="ldg-section">
+      <div class="ldg-section" data-mode="letter">
         <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secRec">Recipient</button>
         <div class="ldg-body">
           <div class="fg"><label for="recCompany" data-t="lCo">Company / Organisation</label><input id="recCompany" value="Musterfirma AG"></div>
@@ -309,7 +358,7 @@
         </div>
       </div>
 
-      <div class="ldg-section">
+      <div class="ldg-section" data-mode="letter">
         <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secLetter">Letter</button>
         <div class="ldg-body">
           <div class="ldg-row">
@@ -328,6 +377,40 @@
             <div class="fg"><label for="encl" data-t="lEncl">Enclosures (one per line)</label><textarea id="encl" rows="2"></textarea></div>
             <div class="fg"><label for="cc" data-t="lCc">Copy to (one per line)</label><textarea id="cc" rows="2"></textarea></div>
           </div>
+        </div>
+      </div>
+
+      <div class="ldg-section" data-mode="contract" hidden>
+        <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secContract">Contract</button>
+        <div class="ldg-body">
+          <div class="fg"><label for="cTitle" data-t="lCTitle">Title</label><input id="cTitle"></div>
+          <div class="fg"><label for="cIntro" data-t="lCIntro">Opening line</label><input id="cIntro"></div>
+          <div class="ldg-subh" data-t="lParty1">Party 1 (you)</div>
+          <div class="ldg-row">
+            <div class="fg"><label for="c1Name" data-t="lPName">Name</label><input id="c1Name"></div>
+            <div class="fg"><label for="c1Role" data-t="lPRole">Called in the contract</label><input id="c1Role"></div>
+          </div>
+          <div class="fg"><label for="c1Details" data-t="lPDetails">Details (registration, address)</label><textarea id="c1Details" rows="2" data-tp="detailsPh"></textarea></div>
+          <div class="ldg-subh" data-t="lParty2">Party 2</div>
+          <div class="ldg-row">
+            <div class="fg"><label for="c2Name" data-t="lPName">Name</label><input id="c2Name"></div>
+            <div class="fg"><label for="c2Role" data-t="lPRole">Called in the contract</label><input id="c2Role"></div>
+          </div>
+          <div class="fg"><label for="c2Details" data-t="lPDetails">Details (registration, address)</label><textarea id="c2Details" rows="2" data-tp="detailsPh"></textarea></div>
+          <div class="ldg-row">
+            <div class="fg"><label for="c2SigName" data-t="lSig2Name">Party 2 signs by (name)</label><input id="c2SigName"></div>
+            <div class="fg"><label for="c2SigTitle" data-t="lSig2Title">Position</label><input id="c2SigTitle"></div>
+          </div>
+          <div class="ldg-subh" data-t="lTerms">Terms</div>
+          <div class="ldg-row">
+            <div class="fg"><label for="cLaw" data-t="lLaw">Governing law</label><input id="cLaw" value="the laws of Kenya"></div>
+            <div class="fg"><label for="cCourts" data-t="lCourts">Courts of</label><input id="cCourts" value="Kenya"></div>
+          </div>
+          <p class="ldg-hint" data-t="lawHint">Check statutory minimums (leave, notice, probation) if you change the governing law.</p>
+          <div class="fg"><label for="cClauses" data-t="lClauses">Clauses</label><textarea id="cClauses" rows="16"></textarea></div>
+          <p class="ldg-hint" data-t="clauseHint">Start a clause with # Heading.</p>
+          <label class="ldg-check"><input type="checkbox" id="cWitness"> <span data-t="lWitness">Witness lines under each signature</span></label>
+          <label class="ldg-check"><input type="checkbox" id="cInitials" checked> <span data-t="lInitials">Initials boxes on every page</span></label>
         </div>
       </div>
 
@@ -360,7 +443,7 @@
         </div>
       </div>
 
-      <div class="ldg-section">
+      <div class="ldg-section" data-mode="letter">
         <button type="button" class="ldg-head" aria-expanded="true" onclick="ldgToggle(this)" data-t="secQR">Payment QR Code (GiroCode)</button>
         <div class="ldg-body">
           <label class="ldg-check"><input type="checkbox" id="qrOn"> <span data-t="lQR">Show GiroCode in the footer</span></label>
@@ -504,6 +587,15 @@
       body: '\u968f\u51fd\u9644\u4e0a\u6211\u4eec2026\u5e745\u6708\u6240\u63d0\u4f9b\u670d\u52a1\u7684\u53d1\u7968\uff0c\u8bf7\u67e5\u6536\u3002\n\n\u8bf7\u5728\u6536\u5230\u672c\u51fd\u540e14\u5929\u5185\u5c06\u6b3e\u9879\u8f6c\u5165\u4e0b\u5217\u94f6\u884c\u8d26\u6237\u3002\n\n\u5982\u6709\u4efb\u4f55\u7591\u95ee\uff0c\u8bf7\u968f\u65f6\u4e0e\u6211\u4eec\u8054\u7cfb\u3002'}
   };
 
+  // -- Templates and contract wording (UI words and printed contract words in five languages) --
+  var UI_ADD = {"en": {"secDoc": "Document", "lMode": "Document Type", "optLetter": "Letter", "optContract": "Contract / Agreement", "lTpl": "Template", "tplHint": "Templates are written in English and are a starting point, not legal advice. Words in [square brackets] are blanks to fill in.", "lDraft": "Mark as DRAFT", "blanks": "{n} blank(s) still to fill in:", "confirmTpl": "Replace the current text with this template?", "secContract": "Contract", "lCTitle": "Title", "lCIntro": "Opening line", "lParty1": "Party 1 (you)", "lParty2": "Party 2", "lTerms": "Terms", "lPName": "Name", "lPRole": "Called in the contract", "lPDetails": "Details (registration, address)", "detailsPh": "e.g. a company registered in Kenya, of P.O. Box ...", "lSig2Name": "Party 2 signs by (name)", "lSig2Title": "Position", "lLaw": "Governing law", "lCourts": "Courts of", "lClauses": "Clauses", "clauseHint": "Start a clause with # Heading. Each line under it becomes 1.1, 1.2 ... A line starting with - becomes (a), (b). ## Schedule ... starts a schedule on a new page. {party1}, {party2}, {role1}, {role2}, {law}, {courts} and {date} are filled in for you.", "lWitness": "Witness lines under each signature", "lInitials": "Initials boxes on every page", "lawHint": "Check statutory minimums (leave, notice, probation) if you change the governing law.", "t_invoice": "Invoice cover letter", "t_intro": "Introduction of services", "t_quote": "Quotation cover letter", "t_engagement": "Engagement letter", "t_reminder": "Payment reminder", "t_final": "Final payment notice", "t_appointment": "Job offer / appointment", "t_termination": "Contract termination notice", "t_reference": "Reference letter", "t_blankLetter": "Blank letter", "t_consultancy": "Consultancy / service agreement", "t_nda": "Non-disclosure agreement (NDA)", "t_employment": "Employment contract", "t_supply": "Supply agreement", "t_partnership": "Partnership agreement", "t_mou": "Memorandum of understanding (MoU)", "t_blankContract": "Blank agreement"}, "de": {"secDoc": "Dokument", "lMode": "Dokumentart", "optLetter": "Brief", "optContract": "Vertrag / Vereinbarung", "lTpl": "Vorlage", "tplHint": "Die Vorlagen sind auf Englisch und ein Ausgangspunkt, keine Rechtsberatung. W\u00f6rter in [eckigen Klammern] sind auszuf\u00fcllende L\u00fccken.", "lDraft": "Als ENTWURF kennzeichnen", "blanks": "Noch {n} L\u00fccke(n) auszuf\u00fcllen:", "confirmTpl": "Den aktuellen Text durch diese Vorlage ersetzen?", "secContract": "Vertrag", "lCTitle": "Titel", "lCIntro": "Einleitungssatz", "lParty1": "Partei 1 (Sie)", "lParty2": "Partei 2", "lTerms": "Bedingungen", "lPName": "Name", "lPRole": "Bezeichnung im Vertrag", "lPDetails": "Angaben (Register, Anschrift)", "detailsPh": "z. B. eine in Kenia eingetragene Gesellschaft, Postfach ...", "lSig2Name": "Partei 2 unterschreibt durch (Name)", "lSig2Title": "Funktion", "lLaw": "Anwendbares Recht", "lCourts": "Gerichte von", "lClauses": "Klauseln", "clauseHint": "Eine Klausel mit # \u00dcberschrift beginnen. Jede Zeile darunter wird zu 1.1, 1.2 ... Zeilen mit - werden zu (a), (b). ## Anlage ... beginnt eine Anlage auf einer neuen Seite. {party1}, {party2}, {role1}, {role2}, {law}, {courts} und {date} werden automatisch eingesetzt.", "lWitness": "Zeugenzeilen unter jeder Unterschrift", "lInitials": "Paraphenfelder auf jeder Seite", "lawHint": "Bei anderem anwendbarem Recht die gesetzlichen Mindeststandards (Urlaub, K\u00fcndigungsfrist, Probezeit) pr\u00fcfen.", "t_invoice": "Rechnungsanschreiben", "t_intro": "Vorstellung der Leistungen", "t_quote": "Angebotsanschreiben", "t_engagement": "Auftragsbest\u00e4tigung", "t_reminder": "Zahlungserinnerung", "t_final": "Letzte Mahnung", "t_appointment": "Stellenangebot / Einstellung", "t_termination": "Vertragsk\u00fcndigung", "t_reference": "Referenzschreiben", "t_blankLetter": "Leerer Brief", "t_consultancy": "Beratungs- / Dienstleistungsvertrag", "t_nda": "Geheimhaltungsvereinbarung (NDA)", "t_employment": "Arbeitsvertrag", "t_supply": "Liefervertrag", "t_partnership": "Partnerschaftsvertrag", "t_mou": "Absichtserkl\u00e4rung (MoU)", "t_blankContract": "Leere Vereinbarung"}, "fr": {"secDoc": "Document", "lMode": "Type de document", "optLetter": "Lettre", "optContract": "Contrat / Accord", "lTpl": "Mod\u00e8le", "tplHint": "Les mod\u00e8les sont en anglais et constituent une base, pas un avis juridique. Les mots entre [crochets] sont \u00e0 compl\u00e9ter.", "lDraft": "Marquer comme PROJET", "blanks": "{n} champ(s) encore \u00e0 compl\u00e9ter :", "confirmTpl": "Remplacer le texte actuel par ce mod\u00e8le ?", "secContract": "Contrat", "lCTitle": "Titre", "lCIntro": "Phrase d'introduction", "lParty1": "Partie 1 (vous)", "lParty2": "Partie 2", "lTerms": "Conditions", "lPName": "Nom", "lPRole": "D\u00e9signation dans le contrat", "lPDetails": "Pr\u00e9cisions (immatriculation, adresse)", "detailsPh": "p. ex. une soci\u00e9t\u00e9 immatricul\u00e9e au Kenya, B.P. ...", "lSig2Name": "Signataire pour la partie 2 (nom)", "lSig2Title": "Fonction", "lLaw": "Droit applicable", "lCourts": "Tribunaux de", "lClauses": "Clauses", "clauseHint": "Commencez une clause par # Titre. Chaque ligne en dessous devient 1.1, 1.2 ... Une ligne commen\u00e7ant par - devient (a), (b). ## Annexe ... commence une annexe sur une nouvelle page. {party1}, {party2}, {role1}, {role2}, {law}, {courts} et {date} sont remplis automatiquement.", "lWitness": "Lignes de t\u00e9moin sous chaque signature", "lInitials": "Cases de paraphe sur chaque page", "lawHint": "Si vous changez le droit applicable, v\u00e9rifiez les minimums l\u00e9gaux (cong\u00e9s, pr\u00e9avis, p\u00e9riode d'essai).", "t_invoice": "Lettre d'accompagnement de facture", "t_intro": "Pr\u00e9sentation des services", "t_quote": "Lettre d'accompagnement de devis", "t_engagement": "Lettre de mission", "t_reminder": "Rappel de paiement", "t_final": "Dernier avis de paiement", "t_appointment": "Offre d'emploi", "t_termination": "R\u00e9siliation de contrat", "t_reference": "Lettre de r\u00e9f\u00e9rence", "t_blankLetter": "Lettre vierge", "t_consultancy": "Contrat de conseil / de services", "t_nda": "Accord de confidentialit\u00e9 (NDA)", "t_employment": "Contrat de travail", "t_supply": "Contrat de fourniture", "t_partnership": "Contrat d'association", "t_mou": "Protocole d'accord (MoU)", "t_blankContract": "Accord vierge"}, "sw": {"secDoc": "Hati", "lMode": "Aina ya Hati", "optLetter": "Barua", "optContract": "Mkataba / Makubaliano", "lTpl": "Kiolezo", "tplHint": "Violezo vimeandikwa kwa Kiingereza na ni mwanzo tu, si ushauri wa kisheria. Maneno ndani ya [mabano] ni nafasi za kujaza.", "lDraft": "Weka alama ya RASIMU", "blanks": "Nafasi {n} bado za kujaza:", "confirmTpl": "Badilisha maandishi ya sasa kwa kiolezo hiki?", "secContract": "Mkataba", "lCTitle": "Kichwa", "lCIntro": "Mstari wa mwanzo", "lParty1": "Mhusika 1 (wewe)", "lParty2": "Mhusika 2", "lTerms": "Masharti", "lPName": "Jina", "lPRole": "Anavyoitwa kwenye mkataba", "lPDetails": "Maelezo (usajili, anwani)", "detailsPh": "mf. kampuni iliyosajiliwa Kenya, S.L.P. ...", "lSig2Name": "Anayesaini kwa Mhusika 2 (jina)", "lSig2Title": "Cheo", "lLaw": "Sheria inayotumika", "lCourts": "Mahakama za", "lClauses": "Vifungu", "clauseHint": "Anza kifungu kwa # Kichwa. Kila mstari chini yake unakuwa 1.1, 1.2 ... Mstari unaoanza na - unakuwa (a), (b). ## Jedwali ... huanza jedwali kwenye ukurasa mpya. {party1}, {party2}, {role1}, {role2}, {law}, {courts} na {date} hujazwa kiotomatiki.", "lWitness": "Mistari ya shahidi chini ya kila saini", "lInitials": "Visanduku vya herufi za kwanza kila ukurasa", "lawHint": "Ukibadilisha sheria inayotumika, kagua viwango vya chini vya kisheria (likizo, notisi, kipindi cha majaribio).", "t_invoice": "Barua ya kuambatisha ankara", "t_intro": "Utambulisho wa huduma", "t_quote": "Barua ya kuambatisha nukuu", "t_engagement": "Barua ya makubaliano ya kazi", "t_reminder": "Ukumbusho wa malipo", "t_final": "Notisi ya mwisho ya malipo", "t_appointment": "Barua ya ajira", "t_termination": "Notisi ya kusitisha mkataba", "t_reference": "Barua ya utambulisho", "t_blankLetter": "Barua tupu", "t_consultancy": "Mkataba wa ushauri / huduma", "t_nda": "Makubaliano ya usiri (NDA)", "t_employment": "Mkataba wa ajira", "t_supply": "Mkataba wa ugavi", "t_partnership": "Mkataba wa ubia", "t_mou": "Hati ya makubaliano (MoU)", "t_blankContract": "Makubaliano tupu"}, "zh": {"secDoc": "\u6587\u4ef6", "lMode": "\u6587\u4ef6\u7c7b\u578b", "optLetter": "\u4fe1\u51fd", "optContract": "\u5408\u540c / \u534f\u8bae", "lTpl": "\u6a21\u677f", "tplHint": "\u6a21\u677f\u4ee5\u82f1\u6587\u64b0\u5199\uff0c\u4ec5\u4f5c\u8d77\u70b9\uff0c\u4e0d\u6784\u6210\u6cd5\u5f8b\u610f\u89c1\u3002[\u65b9\u62ec\u53f7]\u5185\u7684\u6587\u5b57\u4e3a\u5f85\u586b\u5199\u5185\u5bb9\u3002", "lDraft": "\u6807\u8bb0\u4e3a\u8349\u7a3f", "blanks": "\u8fd8\u6709 {n} \u5904\u5f85\u586b\u5199\uff1a", "confirmTpl": "\u7528\u6b64\u6a21\u677f\u66ff\u6362\u5f53\u524d\u6587\u672c\uff1f", "secContract": "\u5408\u540c", "lCTitle": "\u6807\u9898", "lCIntro": "\u5f00\u5934\u8bed", "lParty1": "\u7b2c\u4e00\u65b9\uff08\u60a8\uff09", "lParty2": "\u7b2c\u4e8c\u65b9", "lTerms": "\u6761\u4ef6", "lPName": "\u540d\u79f0", "lPRole": "\u5408\u540c\u4e2d\u7684\u79f0\u8c13", "lPDetails": "\u8be6\u7ec6\u4fe1\u606f\uff08\u6ce8\u518c\u53f7\u3001\u5730\u5740\uff09", "detailsPh": "\u4f8b\u5982\uff1a\u5728\u80af\u5c3c\u4e9a\u6ce8\u518c\u7684\u516c\u53f8\uff0c\u90ae\u653f\u4fe1\u7bb1\u2026\u2026", "lSig2Name": "\u7b2c\u4e8c\u65b9\u7b7e\u7f72\u4eba\uff08\u59d3\u540d\uff09", "lSig2Title": "\u804c\u4f4d", "lLaw": "\u9002\u7528\u6cd5\u5f8b", "lCourts": "\u7ba1\u8f96\u6cd5\u9662\u6240\u5728\u5730", "lClauses": "\u6761\u6b3e", "clauseHint": "\u4ee5 # \u6807\u9898 \u5f00\u59cb\u4e00\u4e2a\u6761\u6b3e\uff0c\u5176\u4e0b\u6bcf\u884c\u4f9d\u6b21\u7f16\u53f7\u4e3a 1.1\u30011.2\u2026\u2026\u4ee5 - \u5f00\u5934\u7684\u884c\u7f16\u53f7\u4e3a (a)\u3001(b)\u3002## \u9644\u4ef6\u2026\u2026 \u5c06\u5728\u65b0\u9875\u5f00\u59cb\u9644\u4ef6\u3002{party1}\u3001{party2}\u3001{role1}\u3001{role2}\u3001{law}\u3001{courts} \u548c {date} \u4f1a\u81ea\u52a8\u586b\u5199\u3002", "lWitness": "\u6bcf\u4e2a\u7b7e\u540d\u4e0b\u65b9\u7684\u89c1\u8bc1\u4eba\u680f", "lInitials": "\u6bcf\u9875\u7684\u5c0f\u7b7e\u6846", "lawHint": "\u5982\u66f4\u6539\u9002\u7528\u6cd5\u5f8b\uff0c\u8bf7\u6838\u5bf9\u6cd5\u5b9a\u6700\u4f4e\u6807\u51c6\uff08\u5047\u671f\u3001\u901a\u77e5\u671f\u3001\u8bd5\u7528\u671f\uff09\u3002", "t_invoice": "\u53d1\u7968\u968f\u9644\u51fd", "t_intro": "\u670d\u52a1\u4ecb\u7ecd\u51fd", "t_quote": "\u62a5\u4ef7\u968f\u9644\u51fd", "t_engagement": "\u59d4\u6258\u786e\u8ba4\u51fd", "t_reminder": "\u4ed8\u6b3e\u63d0\u9192", "t_final": "\u6700\u540e\u4ed8\u6b3e\u901a\u77e5", "t_appointment": "\u5f55\u7528\u901a\u77e5", "t_termination": "\u5408\u540c\u7ec8\u6b62\u901a\u77e5", "t_reference": "\u63a8\u8350\u4fe1", "t_blankLetter": "\u7a7a\u767d\u4fe1\u51fd", "t_consultancy": "\u54a8\u8be2 / \u670d\u52a1\u534f\u8bae", "t_nda": "\u4fdd\u5bc6\u534f\u8bae\uff08NDA\uff09", "t_employment": "\u52b3\u52a8\u5408\u540c", "t_supply": "\u4f9b\u8d27\u534f\u8bae", "t_partnership": "\u5408\u4f19\u534f\u8bae", "t_mou": "\u8c05\u89e3\u5907\u5fd8\u5f55\uff08MoU\uff09", "t_blankContract": "\u7a7a\u767d\u534f\u8bae"}};
+  var W_ADD = {"en": {"between": "BETWEEN", "and": "AND", "parties": "(each a \"Party\" and together the \"Parties\").", "witnessIntro": "IN WITNESS WHEREOF the Parties have signed this document on the dates set out below.", "signedFor": "Signed for and on behalf of", "sigLbl": "Signature", "nameLbl": "Name", "posLbl": "Position", "dateLbl": "Date", "witness": "In the presence of (witness)", "initials": "Initials", "refLbl": "Ref.", "draft": "DRAFT", "roleFmt": "(the \"{r}\")", "agreement": "Agreement"}, "de": {"between": "ZWISCHEN", "and": "UND", "parties": "(einzeln \u201ePartei\u201c, gemeinsam \u201eParteien\u201c).", "witnessIntro": "Zum Zeichen ihres Einverst\u00e4ndnisses haben die Parteien dieses Dokument zu den unten angegebenen Daten unterzeichnet.", "signedFor": "Unterzeichnet f\u00fcr und im Namen von", "sigLbl": "Unterschrift", "nameLbl": "Name", "posLbl": "Funktion", "dateLbl": "Datum", "witness": "In Anwesenheit von (Zeuge)", "initials": "Paraphe", "refLbl": "Az.", "draft": "ENTWURF", "roleFmt": "(nachfolgend \u201e{r}\u201c)", "agreement": "Vereinbarung"}, "fr": {"between": "ENTRE", "and": "ET", "parties": "(chacune une \u00ab Partie \u00bb et ensemble les \u00ab Parties \u00bb).", "witnessIntro": "EN FOI DE QUOI, les Parties ont sign\u00e9 le pr\u00e9sent document aux dates indiqu\u00e9es ci-dessous.", "signedFor": "Sign\u00e9 pour et au nom de", "sigLbl": "Signature", "nameLbl": "Nom", "posLbl": "Fonction", "dateLbl": "Date", "witness": "En pr\u00e9sence de (t\u00e9moin)", "initials": "Paraphes", "refLbl": "R\u00e9f.", "draft": "PROJET", "roleFmt": "(ci-apr\u00e8s le \u00ab {r} \u00bb)", "agreement": "Accord"}, "sw": {"between": "KATI YA", "and": "NA", "parties": "(kila mmoja \"Mhusika\" na kwa pamoja \"Wahusika\").", "witnessIntro": "KWA USHAHIDI WA HAYA Wahusika wametia saini hati hii katika tarehe zilizoonyeshwa hapa chini.", "signedFor": "Imetiwa saini kwa niaba ya", "sigLbl": "Saini", "nameLbl": "Jina", "posLbl": "Cheo", "dateLbl": "Tarehe", "witness": "Mbele ya (shahidi)", "initials": "Herufi za kwanza", "refLbl": "Kumb.", "draft": "RASIMU", "roleFmt": "(\"{r}\")", "agreement": "Makubaliano"}, "zh": {"between": "\u8ba2\u7acb\u65b9\uff1a", "and": "\u4e0e", "parties": "\uff08\u5404\u79f0\u201c\u4e00\u65b9\u201d\uff0c\u5408\u79f0\u201c\u53cc\u65b9\u201d\uff09\u3002", "witnessIntro": "\u53cc\u65b9\u4e8e\u4e0b\u5217\u65e5\u671f\u7b7e\u7f72\u672c\u6587\u4ef6\uff0c\u4ee5\u8d44\u8bc1\u660e\u3002", "signedFor": "\u4ee3\u8868\u4ee5\u4e0b\u4e00\u65b9\u7b7e\u7f72", "sigLbl": "\u7b7e\u540d", "nameLbl": "\u59d3\u540d", "posLbl": "\u804c\u4f4d", "dateLbl": "\u65e5\u671f", "witness": "\u89c1\u8bc1\u4eba", "initials": "\u5c0f\u7b7e", "refLbl": "\u7f16\u53f7", "draft": "\u8349\u7a3f", "roleFmt": "\uff08\u4ee5\u4e0b\u7b80\u79f0\u201c{r}\u201d\uff09", "agreement": "\u534f\u8bae"}};
+  Object.keys(UI_ADD).forEach(function (l) { Object.keys(UI_ADD[l]).forEach(function (k) { UI[l][k] = UI_ADD[l][k]; }); });
+  Object.keys(W_ADD).forEach(function (l) { Object.keys(W_ADD[l]).forEach(function (k) { W[l][k] = W_ADD[l][k]; }); });
+  // Templates are English. "invoice" is the built-in sample that follows the interface language.
+  var TPL = {"invoice": {"mode": "letter"}, "intro": {"subject": "Introduction of our services", "body": "{org} supports organisations in improving quality, compliance, logistics and business processes. We would welcome the opportunity to introduce our services to {company}.\n\nOur work includes ISO management system readiness, compliance reviews, supplier audits, process mapping and supply-chain optimisation, including sourcing quality industrial equipment from Germany.\n\nWe would be glad to arrange a short meeting at your convenience to understand your priorities and explore how we can help. Please let us know a suitable date and time.", "mode": "letter"}, "quote": {"subject": "Quotation [number] for [service]", "body": "Thank you for your enquiry of [date]. We are pleased to enclose our quotation [number] for [service].\n\nThe quotation sets out the scope of work, timeline and fees. It is valid for [30] days from the date of this letter.\n\nIf you have any questions or would like to adjust the scope, please contact us. We look forward to working with you.", "encl": "Quotation [number]", "mode": "letter"}, "engagement": {"subject": "Engagement letter: [project name]", "body": "Thank you for choosing {org}. This letter confirms the terms of our engagement.\n\nScope: [describe the services, deliverables and any exclusions].\n\nTimeline: the work will start on [start date] and is expected to be completed by [end date].\n\nFees: [amount and currency], payable [payment terms]. Expenses such as travel are charged at cost with your prior approval.\n\nResponsibilities: you will give us timely access to the information, people and premises needed for the work. We will keep your information confidential.\n\nPlease sign and return a copy of this letter to confirm your agreement.", "mode": "letter"}, "reminder": {"subject": "Payment reminder: invoice [number]", "body": "Our records show that invoice [number] dated [invoice date] for [amount] is now overdue. It is possible that this has been overlooked.\n\nWe kindly ask you to settle the outstanding amount within [7] days. If you have already made the payment, please disregard this letter and accept our thanks.\n\nIf there is any issue with the invoice, please contact us so that we can resolve it promptly.", "mode": "letter"}, "final": {"subject": "Final notice: invoice [number]", "body": "Despite our reminder of [reminder date], invoice [number] dated [invoice date] for [amount] remains unpaid.\n\nWe ask you to pay the full outstanding amount by [deadline]. If payment is not received by that date, we will have to consider further steps to recover the debt, which may involve additional costs.\n\nIf you are experiencing difficulties, please contact us before the deadline so that we can discuss a payment arrangement.", "mode": "letter"}, "appointment": {"subject": "Offer of employment: [position]", "body": "We are pleased to offer you the position of [position] at {org}, starting on [start date].\n\nYou will report to [manager] and work at [location]. Your gross salary will be [amount] per month, paid monthly in arrears. The first [3] months will be a probation period.\n\nThe full terms of your employment will be set out in your employment contract. This offer is subject to [satisfactory references and documents].\n\nPlease confirm your acceptance by signing and returning a copy of this letter by [date]. We look forward to welcoming you to the team.", "mode": "letter"}, "termination": {"subject": "Termination of [agreement name]", "body": "We hereby give notice to terminate the [agreement name] between {org} and {company} dated [agreement date], in accordance with clause [number] of that agreement.\n\nThe termination will take effect on [effective date], at the end of the notice period of [period].\n\nUntil that date we will continue to meet our obligations under the agreement. We would appreciate your cooperation in arranging the return of any property and documents and the settlement of outstanding invoices.\n\nThank you for our cooperation to date.", "mode": "letter"}, "reference": {"subject": "Reference for [full name]", "body": "[Full name] worked with {org} as [position] from [start date] to [end date].\n\nDuring this time, [he/she/they] [describe the main responsibilities and achievements].\n\n[First name] proved to be [reliable, professional and committed]. We recommend [him/her/them] without reservation.\n\nPlease feel free to contact us if you need any further information.", "mode": "letter"}, "blankLetter": {"subject": "", "body": "", "mode": "letter"}, "consultancy": {"title": "Consultancy Agreement", "intro": "This Agreement is made on {date}", "role1": "Consultant", "role2": "Client", "clauses": "# Services\nThe {role1} shall provide the consultancy services described in Schedule 1 (the \"Services\").\nThe {role1} shall perform the Services with reasonable skill, care and diligence and in line with good industry practice.\nThe {role2} shall provide the information, access and cooperation reasonably required for the Services.\n# Term\nThis Agreement starts on [start date] and continues until [end date] or until the Services are completed, unless terminated earlier under this Agreement.\n# Fees and Payment\nThe {role2} shall pay the fees set out in Schedule 1.\nThe {role1} shall invoice [monthly / on completion of each milestone]. Invoices are payable within [30] days of receipt.\nFees are exclusive of VAT and other applicable taxes, which are added where required.\nExpenses approved in advance, such as travel, are reimbursed at cost against receipts.\n# Confidentiality\nEach Party shall keep confidential all information received from the other Party and use it only for the purposes of this Agreement.\nThis obligation does not apply to information that is public, already lawfully known to the receiving Party, or required to be disclosed by law.\nThis clause continues for [3] years after this Agreement ends.\n# Intellectual Property\nDeliverables created specifically for the {role2} become the property of the {role2} on full payment of the fees.\nThe {role1} keeps ownership of its existing methods, tools and know-how and grants the {role2} a licence to use them as part of the deliverables.\n# Data Protection\nEach Party shall comply with applicable data protection law when processing personal data under this Agreement.\n# Liability\nThe {role1}'s total liability under this Agreement is limited to the fees paid in the [12] months before the claim.\nNeither Party is liable for indirect or consequential loss, including loss of profit.\n# Termination\nEither Party may terminate this Agreement by giving [30] days' written notice.\nEither Party may terminate immediately by written notice if the other Party materially breaches this Agreement and does not remedy the breach within [14] days of being asked to do so.\nOn termination, the {role2} shall pay for the Services performed up to the termination date.\n# Independent Contractor\nThe {role1} acts as an independent contractor. Nothing in this Agreement creates an employment, partnership or agency relationship.\n# Governing Law and Disputes\nThis Agreement is governed by {law}.\nThe Parties shall first try to resolve any dispute through good-faith negotiation between senior representatives within [30] days.\nIf the dispute is not resolved, either Party may refer it to the courts of {courts}, which shall have exclusive jurisdiction.\n# General\nThis Agreement is the entire agreement between the Parties about its subject and replaces all earlier discussions and arrangements.\nAny change to this Agreement is valid only if made in writing and signed by both Parties.\nIf any provision is found invalid, the rest of this Agreement remains in effect.\nNeither Party may assign this Agreement without the prior written consent of the other Party.\nNeither Party is liable for delay or failure caused by events beyond its reasonable control (force majeure), provided it notifies the other Party promptly.\nNotices must be in writing and delivered by hand, courier or email to the addresses set out above.\n## Schedule 1: Services and Fees\nServices: [describe the services and deliverables]\nTimeline: [key dates and milestones]\nFees: [amount, currency and basis, e.g. fixed fee or daily rate]\nContact persons: [names for each Party]", "mode": "contract"}, "nda": {"title": "Mutual Non-Disclosure Agreement", "intro": "This Agreement is made on {date}", "role1": "First Party", "role2": "Second Party", "clauses": "# Purpose\nThe Parties wish to share confidential information to evaluate and discuss [describe the purpose, e.g. a possible business relationship] (the \"Purpose\").\n# Confidential Information\n\"Confidential Information\" means all information disclosed by one Party (the \"Discloser\") to the other (the \"Recipient\") in any form that is marked as confidential or would reasonably be understood to be confidential, including business plans, prices, customer data, processes and know-how.\nConfidential Information does not include information that:\n- is or becomes public other than through a breach of this Agreement;\n- was lawfully known to the Recipient before disclosure;\n- is received lawfully from a third party without a duty of confidentiality; or\n- is developed independently by the Recipient.\n# Obligations\nThe Recipient shall use Confidential Information only for the Purpose and protect it with at least reasonable care.\nThe Recipient may share Confidential Information only with its employees and advisers who need to know it for the Purpose and are bound by equivalent duties of confidentiality.\nThe Recipient may disclose Confidential Information if required by law or by a court, after notifying the Discloser where legally permitted.\n# Return of Information\nOn request, the Recipient shall promptly return or destroy the Confidential Information and confirm this in writing.\n# No Licence or Obligation\nNo rights in the Confidential Information are granted except as stated in this Agreement. Neither Party is obliged to enter into any further agreement.\n# Duration\nThis Agreement covers information disclosed within [2] years of its date. The confidentiality obligations last for [3] years after each disclosure.\n# Remedies\nThe Parties agree that damages alone may not be an adequate remedy for a breach, and the Discloser may seek an injunction or other equitable relief.\n# Governing Law and Disputes\nThis Agreement is governed by {law}.\nThe Parties shall first try to resolve any dispute through good-faith negotiation between senior representatives within [30] days.\nIf the dispute is not resolved, either Party may refer it to the courts of {courts}, which shall have exclusive jurisdiction.\n# General\nThis Agreement is the entire agreement between the Parties about its subject and replaces all earlier discussions and arrangements.\nAny change to this Agreement is valid only if made in writing and signed by both Parties.\nIf any provision is found invalid, the rest of this Agreement remains in effect.\nNeither Party may assign this Agreement without the prior written consent of the other Party.\nNeither Party is liable for delay or failure caused by events beyond its reasonable control (force majeure), provided it notifies the other Party promptly.\nNotices must be in writing and delivered by hand, courier or email to the addresses set out above.", "mode": "contract"}, "employment": {"title": "Employment Contract", "intro": "This Contract of Employment is made on {date}", "role1": "Employer", "role2": "Employee", "witness": true, "clauses": "# Appointment\nThe {role1} employs the {role2} as [job title], and the {role2} accepts this employment on the terms of this Contract.\nEmployment starts on [start date] and is [permanent / for a fixed term ending on [end date]].\nThe {role2}'s normal place of work is [location]. The {role1} may require reasonable travel.\n# Probation\nThe first [3] months are a probation period. During probation, either Party may end the employment by giving [7] days' written notice.\n# Duties\nThe {role2} shall perform the duties set out in Schedule 1 and any other reasonable duties assigned by the {role1}, and shall follow the {role1}'s lawful policies and instructions.\n# Working Hours\nNormal working hours are [40] hours per week, [Monday to Friday, 8:00 to 17:00], with a lunch break of [1] hour.\n# Remuneration\nThe {role2} shall receive a gross salary of [amount] per month, paid by bank transfer by the [last working day] of each month.\nThe {role1} shall deduct income tax and statutory contributions as required by law.\n[Allowances and benefits, if any.]\n# Leave\nThe {role2} is entitled to [21] working days of paid annual leave per year, in addition to public holidays.\nSick leave, maternity leave and paternity leave are granted as provided by law, on presentation of a medical certificate where required.\n# Confidentiality\nDuring and after the employment, the {role2} shall keep confidential all business information of the {role1} and its clients.\n# Termination\nAfter probation, either Party may end the employment by giving [one month's] written notice or payment in lieu of notice.\nThe {role1} may dismiss the {role2} summarily for gross misconduct, in accordance with the law.\nWhen the employment ends, the {role2} shall return all property and documents of the {role1}.\n# Disciplinary and Grievance Procedures\nThe {role1}'s disciplinary and grievance procedures apply. The {role2} may raise any grievance with [name or position].\n# Governing Law and Disputes\nThis Contract is governed by {law}.\nThe Parties shall first try to resolve any dispute through good-faith negotiation between senior representatives within [30] days.\nIf the dispute is not resolved, either Party may refer it to the courts of {courts}, which shall have exclusive jurisdiction.\n# General\nThis Contract is the entire agreement between the Parties about its subject and replaces all earlier discussions and arrangements.\nAny change to this Contract is valid only if made in writing and signed by both Parties.\nIf any provision is found invalid, the rest of this Contract remains in effect.\nNeither Party may assign this Contract without the prior written consent of the other Party.\nNeither Party is liable for delay or failure caused by events beyond its reasonable control (force majeure), provided it notifies the other Party promptly.\nNotices must be in writing and delivered by hand, courier or email to the addresses set out above.\n## Schedule 1: Job Description\nJob title: [job title]\nReports to: [manager]\nMain duties: [list the main duties]", "mode": "contract"}, "supply": {"title": "Supply Agreement", "intro": "This Agreement is made on {date}", "role1": "Supplier", "role2": "Buyer", "clauses": "# Supply of Goods\nThe {role1} shall supply the goods described in Schedule 1 (the \"Goods\") in the quantities ordered by the {role2} from time to time.\nEach order becomes binding when the {role1} confirms it in writing.\n# Price and Payment\nPrices are set out in Schedule 1 and are [exclusive / inclusive] of VAT and other taxes.\nThe {role2} shall pay each invoice within [30] days of the invoice date in [currency].\n# Delivery\nThe {role1} shall deliver the Goods to [delivery address] on the agreed dates, under [Incoterm, e.g. DAP Nairobi, Incoterms 2020].\nRisk passes to the {role2} on delivery. Ownership passes on full payment.\nIf delivery is more than [14] days late, the {role2} may cancel the affected order.\n# Quality and Inspection\nThe Goods shall match their specification, be of satisfactory quality and comply with applicable standards [e.g. KEBS or ISO].\nThe {role2} shall inspect the Goods within [7] days of delivery and notify the {role1} in writing of any defects.\n# Warranty\nThe {role1} warrants the Goods against defects in materials and workmanship for [12] months from delivery.\nThe {role1} shall repair or replace defective Goods, or refund their price, at its option.\n# Liability\nNeither Party is liable for indirect or consequential loss. Each Party's total liability is limited to the value of the orders placed in the [12] months before the claim.\n# Term and Termination\nThis Agreement starts on [start date] and runs for [2] years. It then renews for further one-year periods unless either Party gives [3] months' written notice.\nEither Party may terminate immediately if the other Party materially breaches this Agreement and does not remedy the breach within [30] days of notice, or becomes insolvent.\n# Governing Law and Disputes\nThis Agreement is governed by {law}.\nThe Parties shall first try to resolve any dispute through good-faith negotiation between senior representatives within [30] days.\nIf the dispute is not resolved, either Party may refer it to the courts of {courts}, which shall have exclusive jurisdiction.\n# General\nThis Agreement is the entire agreement between the Parties about its subject and replaces all earlier discussions and arrangements.\nAny change to this Agreement is valid only if made in writing and signed by both Parties.\nIf any provision is found invalid, the rest of this Agreement remains in effect.\nNeither Party may assign this Agreement without the prior written consent of the other Party.\nNeither Party is liable for delay or failure caused by events beyond its reasonable control (force majeure), provided it notifies the other Party promptly.\nNotices must be in writing and delivered by hand, courier or email to the addresses set out above.\n## Schedule 1: Goods and Prices\nGoods: [description, specifications and model numbers]\nPrices: [unit prices and currency]\nMinimum order: [quantity]\nLead time: [weeks]", "mode": "contract"}, "partnership": {"title": "Partnership Agreement", "intro": "This Partnership Agreement is made on {date}", "role1": "First Partner", "role2": "Second Partner", "witness": true, "clauses": "# The Partnership\nThe Partners agree to carry on business in partnership under the name [partnership name] (the \"Partnership\").\nThe business of the Partnership is [describe the business], carried on from [principal place of business].\nThe Partnership starts on [start date] and continues until it is ended under this Agreement.\n# Capital\nThe Partners contribute capital as follows: {party1}: [amount]; {party2}: [amount].\nNo interest is paid on capital unless the Partners agree otherwise in writing.\n# Profits and Losses\nNet profits and losses are shared [equally / in proportion to capital].\nEach Partner may draw [amount] per month on account of profits.\n# Management\nEach Partner shall devote [full time / the agreed time] to the business and act in good faith towards the other Partner.\nDecisions in the ordinary course of business are taken by [both Partners / either Partner]. Borrowing above [amount], admitting a new partner or selling the business requires the written consent of both Partners.\n# Accounts and Banking\nThe Partnership shall keep proper books of account at its place of business, open to inspection by each Partner.\nAll money of the Partnership shall be paid into a bank account in the name of the Partnership. Payments above [amount] require [two] signatures.\nAccounts shall be prepared every year up to [date].\n# Restrictions\nNo Partner may, without the written consent of the other, carry on a competing business, give guarantees on behalf of the Partnership or transfer their share.\n# Retirement and Dissolution\nA Partner may retire by giving [6] months' written notice. The other Partner may buy the retiring Partner's share at a value set by [an independent accountant].\nOn dissolution, the assets are used first to pay debts, then to repay capital, and the balance is shared in the profit-sharing ratio.\n# Governing Law and Disputes\nThis Agreement is governed by {law}.\nThe Parties shall first try to resolve any dispute through good-faith negotiation between senior representatives within [30] days.\nIf the dispute is not resolved, either Party may refer it to the courts of {courts}, which shall have exclusive jurisdiction.\n# General\nThis Agreement is the entire agreement between the Parties about its subject and replaces all earlier discussions and arrangements.\nAny change to this Agreement is valid only if made in writing and signed by both Parties.\nIf any provision is found invalid, the rest of this Agreement remains in effect.\nNeither Party may assign this Agreement without the prior written consent of the other Party.\nNeither Party is liable for delay or failure caused by events beyond its reasonable control (force majeure), provided it notifies the other Party promptly.\nNotices must be in writing and delivered by hand, courier or email to the addresses set out above.", "mode": "contract"}, "mou": {"title": "Memorandum of Understanding", "intro": "This Memorandum of Understanding is made on {date}", "role1": "First Party", "role2": "Second Party", "clauses": "# Background\nThe Parties wish to cooperate in [area of cooperation] and record their shared understanding in this Memorandum (the \"MoU\").\n# Objectives\nThe objectives of the cooperation are:\n- [objective 1];\n- [objective 2]; and\n- [objective 3].\n# Roles and Responsibilities\nThe {role1} will [describe responsibilities].\nThe {role2} will [describe responsibilities].\n# Coordination\nEach Party appoints a contact person: [name, position] for {party1} and [name, position] for {party2}. They will meet [every quarter] to review progress.\n# Costs\nEach Party bears its own costs unless the Parties agree otherwise in writing.\n# Confidentiality\nEach Party shall keep confidential any information marked as confidential that it receives from the other Party under this MoU.\n# Legal Status\nThis MoU records the Parties' intentions and is not legally binding, except for the clauses on Costs, Confidentiality and Governing Law, which are binding.\nAny binding commitments will be set out in separate written agreements.\n# Duration and Termination\nThis MoU takes effect on signature and remains in force for [2] years. Either Party may end it by giving [30] days' written notice.\n# Governing Law and Disputes\nThis MoU is governed by {law}.\nThe Parties shall first try to resolve any dispute through good-faith negotiation between senior representatives within [30] days.\nIf the dispute is not resolved, either Party may refer it to the courts of {courts}, which shall have exclusive jurisdiction.", "mode": "contract"}, "blankContract": {"title": "Agreement", "intro": "This Agreement is made on {date}", "role1": "First Party", "role2": "Second Party", "clauses": "# [Clause heading]\n[Clause text]\n# Governing Law and Disputes\nThis Agreement is governed by {law}.\nThe Parties shall first try to resolve any dispute through good-faith negotiation between senior representatives within [30] days.\nIf the dispute is not resolved, either Party may refer it to the courts of {courts}, which shall have exclusive jurisdiction.\n# General\nThis Agreement is the entire agreement between the Parties about its subject and replaces all earlier discussions and arrangements.\nAny change to this Agreement is valid only if made in writing and signed by both Parties.\nIf any provision is found invalid, the rest of this Agreement remains in effect.\nNeither Party may assign this Agreement without the prior written consent of the other Party.\nNeither Party is liable for delay or failure caused by events beyond its reasonable control (force majeure), provided it notifies the other Party promptly.\nNotices must be in writing and delivered by hand, courier or email to the addresses set out above.", "mode": "contract"}};
+  var TPL_ORDER = {"letter": ["invoice", "intro", "quote", "engagement", "reminder", "final", "appointment", "termination", "reference", "blankLetter"], "contract": ["consultancy", "nda", "employment", "supply", "partnership", "mou", "blankContract"]};
+
   // How each language addresses the recipient. t = mr | ms | mrs | '' ; acad e.g. "Dr."
   var ADDRESS = {
     en: function (t, acad, first, last) { var tt = acad || {mr: 'Mr', ms: 'Ms', mrs: 'Mrs'}[t] || ''; return [tt, first, last].filter(Boolean).join(' '); },
@@ -551,7 +643,11 @@
   var HEAD_FIELDS = ['layout', 'fold', 'strip', 'orgName', 'tagline', 'logoUrl', 'returnAddr', 'orgPhone', 'orgFax', 'orgEmail', 'orgWeb', 'orgContact', 'orgRoom', 'remember',
     'sigName', 'sigTitle', 'sigPlace', 'qrOn', 'qrIban', 'qrBic'];
   var LETTER_FIELDS = ['recCompany', 'recTitle', 'recAcad', 'recFirst', 'recLast', 'recDept', 'recStreet', 'recZip', 'recCity', 'recCountry',
-    'yourRef', 'ourRef', 'docDate', 'subject', 'greeting', 'body', 'closing', 'encl', 'cc', 'qrAmt', 'qrRef'];
+    'yourRef', 'ourRef', 'docDate', 'subject', 'greeting', 'body', 'closing', 'encl', 'cc', 'qrAmt', 'qrRef',
+    'docMode', 'tpl', 'draft', 'cTitle', 'cIntro', 'c1Name', 'c1Role', 'c1Details', 'c2Name', 'c2Role', 'c2Details', 'c2SigName', 'c2SigTitle',
+    'cLaw', 'cCourts', 'cClauses', 'cWitness', 'cInitials'];
+  // Fields a template fills in, per document type.
+  var TPL_FIELDS = {letter: ['subject', 'body', 'encl'], contract: ['cTitle', 'cIntro', 'c1Role', 'c2Role', 'cClauses']};
 
   var lang = 'en', logo = '', sigImg = '', timer = null, refStamp = stamp(new Date()), qrCache = {key: '', url: ''}, pdfBlob = null;
 
@@ -589,7 +685,7 @@
     $('lang').value = lang;
     if (swapBody) setVal('body', W[lang].body);
     if (swapSubject) setVal('subject', W[lang].subject);
-    applyUI();
+    applyUI(); fillTplOptions();
     try { document.getElementById('ldg-app').setAttribute('lang', lang); } catch (e) {}
   }
 
@@ -664,7 +760,8 @@
     return core.map(function (x) { return x.charAt(0); }).join('').toUpperCase().slice(0, 5);
   }
   function autoRef() {
-    var who = initials(txt('recCompany')) || initials([txt('recFirst'), txt('recLast')].join(' ')) || 'LTR';
+    var who = mode() === 'contract' ? initials(txt('c2Name')) || 'CTR'
+      : initials(txt('recCompany')) || initials([txt('recFirst'), txt('recLast')].join(' ')) || 'LTR';
     return who + '-' + refStamp;
   }
   function ourRef() { return txt('ourRef') || autoRef(); }
@@ -721,37 +818,138 @@
     return parts.filter(Boolean).join(' \u00b7 ');
   }
 
+  // -- Document type and templates --
+  function mode() { return val('docMode') === 'contract' ? 'contract' : 'letter'; }
+  var tplBy = {letter: 'invoice', contract: 'consultancy'}, appliedBy = {};
+  function fillTplOptions(pick) {
+    var sel = $('tpl'), m = mode(), want = pick || sel.value || tplBy[m];
+    sel.innerHTML = '';
+    TPL_ORDER[m].forEach(function (id) { var o = el('option', '', u('t_' + id)); o.value = id; sel.appendChild(o); });
+    sel.value = TPL_ORDER[m].indexOf(want) >= 0 ? want : tplBy[m];
+    tplBy[m] = sel.value;
+  }
+  function syncSections() {
+    var m = mode();
+    Array.prototype.forEach.call(document.querySelectorAll('#ldg-app [data-mode]'), function (n) { n.hidden = n.getAttribute('data-mode') !== m; });
+  }
+  function tplValues(id) {
+    var t = TPL[id] || {}, v = {};
+    if (t.mode === 'contract') { v.cTitle = t.title; v.cIntro = t.intro; v.c1Role = t.role1; v.c2Role = t.role2; v.cClauses = t.clauses; }
+    else { v.subject = id === 'invoice' ? W[lang].subject : t.subject || ''; v.body = id === 'invoice' ? W[lang].body : t.body || ''; v.encl = t.encl || ''; }
+    return v;
+  }
+  // Has the user changed the text a template filled in? (Then ask before replacing it.)
+  function edited(m) {
+    var base = appliedBy[m];
+    return TPL_FIELDS[m].some(function (f) {
+      var cur = txt(f);
+      if (!cur) return false;
+      if (!base) return true;
+      if ((f === 'body' || f === 'subject') && isTemplate(f, f)) return false;
+      return cur !== String(base[f] || '').trim();
+    });
+  }
+  function applyTemplate(id, ask) {
+    var m = mode();
+    if (ask && edited(m) && !confirm(u('confirmTpl'))) { $('tpl').value = tplBy[m]; return; }
+    var v = tplValues(id);
+    Object.keys(v).forEach(function (f) { setVal(f, v[f]); });
+    if (TPL[id] && TPL[id].mode === 'contract') setVal('cWitness', !!TPL[id].witness);
+    tplBy[m] = id; $('tpl').value = id; appliedBy[m] = v;
+  }
+  function setMode(m) {
+    setVal('docMode', m); syncSections(); fillTplOptions();
+    if (!TPL_FIELDS[m].some(function (f) { return txt(f); })) applyTemplate(tplBy[m], false);
+  }
+  $('docMode').addEventListener('change', function () { setMode(mode()); update(); });
+  $('tpl').addEventListener('change', function () { applyTemplate(val('tpl'), true); update(); });
+
+  // {tokens} in templates and typed text; empty ones become [blanks].
+  function party1() { return txt('c1Name') || txt('orgName'); }
+  function fill(s) {
+    var c = mode() === 'contract';
+    var map = {party1: party1(), party2: txt('c2Name'), role1: txt('c1Role'), role2: txt('c2Role'), law: txt('cLaw'), courts: txt('cCourts'),
+      date: fmtDate(), ref: ourRef(), org: txt('orgName'), company: c ? txt('c2Name') : txt('recCompany')};
+    var empty = {party1: '[Party 1 name]', party2: '[Party 2 name]', role1: '[role]', role2: '[role]', law: '[governing law]', courts: '[country]',
+      org: '[your organisation]', company: '[company name]'};
+    return String(s || '').replace(/\{(party1|party2|role1|role2|law|courts|date|ref|org|company)\}/g, function (all, k) { return map[k] || empty[k] || all; });
+  }
+
   // Paragraph text -> tokens (words and line breaks), so long paragraphs can continue on the next page.
+  // Words inside [square brackets] are blanks to fill in: marked with \u0001 and highlighted.
   function tokens(text) {
-    var out = [];
+    var out = [], open = false;
     String(text).split('\n').forEach(function (line, i) {
       if (i) out.push('\n');
-      line.split(/\s+/).forEach(function (wd) { if (wd) out.push(wd); });
+      line.split(/\s+/).forEach(function (wd) {
+        if (!wd) return;
+        if (wd.indexOf('[') >= 0) open = true;
+        out.push(open ? '\u0001' + wd : wd);
+        if (wd.indexOf(']') >= 0) open = false;
+      });
     });
     while (out.length && out[0] === '\n') out.shift();
     while (out.length && out[out.length - 1] === '\n') out.pop();
     return out;
   }
-  function paraFrom(tk) {
-    var p = el('p'), prevWord = false;
+  function paraFrom(tk, cls, no) {
+    var p = el('p', cls || ''), prevWord = false, prevBlank = false;
+    if (no) p.appendChild(el('span', 'no', no));
     tk.forEach(function (t) {
-      if (t === '\n') { p.appendChild(el('br')); prevWord = false; }
-      else { p.appendChild(document.createTextNode((prevWord ? ' ' : '') + t)); prevWord = true; }
+      if (t === '\n') { p.appendChild(el('br')); prevWord = prevBlank = false; return; }
+      var blank = t.charAt(0) === '\u0001', word = blank ? t.slice(1) : t;
+      if (!blank) { p.appendChild(document.createTextNode((prevWord ? ' ' : '') + word)); prevWord = true; prevBlank = false; return; }
+      // Punctuation outside the brackets ("(the", "date].") stays plain text.
+      var a = word.indexOf('['), z = word.lastIndexOf(']');
+      var pre = a > 0 ? word.slice(0, a) : '', post = z >= 0 ? word.slice(z + 1) : '', mid = word.slice(pre.length, z >= 0 ? z + 1 : word.length);
+      if (prevBlank && !pre) p.lastChild.textContent += ' ' + mid;
+      else { p.appendChild(document.createTextNode((prevWord ? ' ' : '') + pre)); p.appendChild(el('span', 'lt-fill', mid)); }
+      if (post) p.appendChild(document.createTextNode(post));
+      prevWord = true; prevBlank = !post;
     });
     return p;
+  }
+  // Short text (subject, titles, party lines) with blanks highlighted, in any element.
+  function rich(tag, cls, text, no) {
+    var n = el(tag, cls), p = paraFrom(tokens(text), '', no);
+    while (p.firstChild) n.appendChild(p.firstChild);
+    return n;
+  }
+  // Clause text: "# Heading" = numbered clause, other lines = 1.1, 1.2 ..., "- item" = (a), (b) ...,
+  // "## Schedule ..." = schedule on a new page (unnumbered).
+  function parseClauses(text) {
+    var out = {main: [], schedules: []}, cur = out.main, n = 0, sub = 0, li = 0, sched = false;
+    String(text || '').replace(/\r/g, '').split('\n').forEach(function (raw) {
+      var l = raw.trim(), m;
+      if (!l) return;
+      if ((m = l.match(/^##\s*(.+)$/))) { sched = true; var sc = {title: m[1], items: []}; out.schedules.push(sc); cur = sc.items; li = 0; return; }
+      if ((m = l.match(/^#\s*(.+)$/))) { li = 0; if (sched) { cur.push({type: 'h', text: m[1], no: ''}); return; } n++; sub = 0; cur.push({type: 'h', text: m[1], no: n + '.'}); return; }
+      if ((m = l.match(/^[-*\u2022]\s+(.+)$/))) { cur.push({type: 'li', text: m[1], no: '(' + String.fromCharCode(97 + (li++ % 26)) + ')'}); return; }
+      li = 0;
+      if (sched || !n) cur.push({type: 'plain', text: l, no: ''});
+      else { sub++; cur.push({type: 'cl', text: l, no: n + '.' + sub}); }
+    });
+    return out;
   }
 
   // -- Pages: DIN 5008 A4 sheets for the preview, Print and the PDF --
   function mm(n) { return n + 'mm'; }
   function render() {
     var pages = $('ldgPages'), form = FORM[val('layout')] || FORM.B, sheets = [], flow = null, limit = 0;
-    var dateText = fmtDate(), ref = ourRef(), qr = qrImage(), cols = getCols();
+    var isC = mode() === 'contract', dateText = fmtDate(), ref = ourRef(), qr = isC ? '' : qrImage(), cols = getCols();
+    var title = isC ? (fill(txt('cTitle')) || w('agreement')) : '';
+    $('addrWarn').hidden = true;
     $('ourRef').placeholder = autoRef();
+    $('c1Name').placeholder = txt('orgName');
     pages.innerHTML = '';
 
     function footer(sh) {
       var f = el('div', 'lt-footer');
       f.appendChild(el('div', 'lt-pageno'));
+      if (isC && val('cInitials')) {
+        var ini = el('div', 'ct-init'); ini.appendChild(el('span', '', w('initials'))); ini.appendChild(el('i')); ini.appendChild(el('i'));
+        f.appendChild(ini); f.className += ' has-init';
+      }
       if (cols.some(function (c) { return c.h || c.lines.length; }) || qr) {
         var row = el('div', 'lt-cols');
         cols.forEach(function (c) {
@@ -812,15 +1010,19 @@
       var first = !sheets.length, sh = el('div', 'ldg-sheet'), bodyTop = form.body;
       pages.appendChild(sh); sheets.push(sh);
       sh.appendChild(el('div', 'lt-band'));
-      if (val('fold')) marks(sh);
-      if (first) {
+      if (val('fold') && !isC) marks(sh);
+      if (val('draft')) sh.appendChild(el('div', 'lt-draft', w('draft')));
+      if (first && isC) {
+        letterhead(sh);
+        bodyTop = form.head + 4;
+      } else if (first) {
         letterhead(sh); addressField(sh);
         var info = infoBlock(sh);
         // If the info block is long, start the text below it (2 blank lines).
         bodyTop = Math.max(form.body, (info.offsetTop + info.offsetHeight) / PX_PER_MM + 8.46);
       } else {
         var c = el('div', 'lt-cont'); c.appendChild(el('strong', '', txt('orgName')));
-        c.appendChild(el('span', '', [ref, dateText].filter(Boolean).join(' \u00b7 '))); sh.appendChild(c);
+        c.appendChild(el('span', '', [title, ref, dateText].filter(Boolean).join(' \u00b7 '))); sh.appendChild(c);
         bodyTop = 25;
       }
       if (val('strip')) sh.appendChild(el('div', 'lt-strip', [ref, txt('orgName'), dateText].filter(Boolean).join('  \u00b7  ')));
@@ -837,43 +1039,103 @@
       flow.removeChild(n);
       newSheet(); flow.appendChild(n);
     }
-    function paragraph(text) {
-      var tk = tokens(text);
+    // A heading must not be the last thing on a page: keep room for at least two lines after it.
+    function heading(n) {
+      flow.appendChild(n);
+      if (fits() && limit - (flow.offsetTop + flow.offsetHeight) >= 12 * PX_PER_MM) return;
+      if (flow.childNodes.length === 1) return;
+      flow.removeChild(n); newSheet(); flow.appendChild(n);
+    }
+    function paragraph(text, cls, no) {
+      var tk = tokens(text), first = true;
+      var mk = function (t, cut) { return paraFrom(t, (cls || '') + (cut ? ' cut' : ''), first ? no : ''); };
       while (tk.length) {
-        var whole = paraFrom(tk); flow.appendChild(whole);
+        var whole = mk(tk); flow.appendChild(whole);
         if (fits()) return;
         flow.removeChild(whole);
         // Largest number of words that still fits on this page.
         var lo = 0, hi = tk.length - 1;
         while (lo < hi) {
-          var mid = Math.ceil((lo + hi) / 2), t = paraFrom(tk.slice(0, mid)); t.className = 'cut';
+          var mid = Math.ceil((lo + hi) / 2), t = mk(tk.slice(0, mid), true);
           flow.appendChild(t); var ok = fits(); flow.removeChild(t);
           if (ok) lo = mid; else hi = mid - 1;
         }
         var k = lo;
         // At least 2 lines on each side of the break (no orphans or widows).
         if (k) {
-          var probe = paraFrom(tk.slice(k)); flow.appendChild(probe);
+          var probe = paraFrom(tk.slice(k), cls); flow.appendChild(probe);
           var lh = lineH(probe), guard = 0;
-          while (k > 0 && probe.offsetHeight < 2 * lh - 1 && guard++ < 60) { k--; flow.removeChild(probe); probe = paraFrom(tk.slice(k)); flow.appendChild(probe); }
+          while (k > 0 && probe.offsetHeight < 2 * lh - 1 && guard++ < 60) { k--; flow.removeChild(probe); probe = paraFrom(tk.slice(k), cls); flow.appendChild(probe); }
           flow.removeChild(probe);
-          var part = paraFrom(tk.slice(0, k)); part.className = 'cut'; flow.appendChild(part);
+          var part = mk(tk.slice(0, k), true); flow.appendChild(part);
           if (part.offsetHeight < 2 * lh - 1) { flow.removeChild(part); k = 0; }
         }
         if (!k) {
-          if (fresh()) { flow.appendChild(paraFrom(tk)); return; } // longer than a whole page: place it anyway
+          if (fresh()) { flow.appendChild(mk(tk)); return; } // longer than a whole page: place it anyway
           newSheet(); continue;
         }
         tk = tk.slice(k);
         while (tk.length && tk[0] === '\n') tk.shift();
+        first = false;
         newSheet();
       }
     }
+    function partyLine(n, name, details, role, last) {
+      var p = el('p', 'ct-party');
+      p.appendChild(el('span', 'no', '(' + n + ')'));
+      p.appendChild(name ? el('strong', '', name) : rich('span', '', '[Party ' + n + ' name]'));
+      var rest = rich('span', '', ', ' + (details || '[registration number and address]').replace(/\s*\n\s*/g, ', ') + ' ' + w('roleFmt').replace('{r}', role || '[role]') + (last ? '.' : ';'));
+      while (rest.firstChild) p.appendChild(rest.firstChild);
+      return p;
+    }
+    function signBox(name, signer, position, img) {
+      var b = el('div', 'ct-signbox');
+      b.appendChild(el('div', 'ct-for', w('signedFor')));
+      b.appendChild(name ? el('div', 'ct-party-name', name) : rich('div', 'ct-party-name', '[Party 2 name]'));
+      var line = el('div', 'ct-sigline');
+      if (img) { var im = el('img'); im.src = img; im.alt = ''; line.appendChild(im); }
+      b.appendChild(line); b.appendChild(el('div', 'ct-siglbl', w('sigLbl')));
+      [[w('nameLbl'), signer], [w('posLbl'), position], [w('dateLbl'), '']].forEach(function (f) {
+        var r = el('div', 'ct-field'); r.appendChild(el('span', 'lbl', f[0])); r.appendChild(el('span', 'line', f[1])); b.appendChild(r);
+      });
+      if (val('cWitness')) {
+        var wb = el('div', 'ct-witness'); wb.appendChild(el('div', 'ct-for', w('witness')));
+        [w('sigLbl'), w('nameLbl'), w('dateLbl')].forEach(function (lbl) { var r = el('div', 'ct-field'); r.appendChild(el('span', 'lbl', lbl)); r.appendChild(el('span', 'line', '')); wb.appendChild(r); });
+        b.appendChild(wb);
+      }
+      return b;
+    }
+    function put(it) {
+      if (it.type === 'h') heading(rich('div', 'ct-h' + (it.no ? '' : ' unnumbered'), it.text, it.no));
+      else paragraph(it.text, 'ct-' + it.type, it.no);
+    }
 
     newSheet();
-    if (txt('subject')) block(el('div', 'lt-subject', txt('subject')));
+    if (isC) {
+      block(rich('div', 'ct-title', title));
+      block(el('div', 'ct-meta', [w('refLbl') + ' ' + ref, dateText].join('  \u00b7  ')));
+      if (txt('cIntro')) paragraph(fill(txt('cIntro')), 'ct-plain');
+      block(el('div', 'ct-label', w('between')));
+      block(partyLine(1, party1(), txt('c1Details'), txt('c1Role')));
+      block(el('div', 'ct-label', w('and')));
+      block(partyLine(2, txt('c2Name'), txt('c2Details'), txt('c2Role'), true));
+      paragraph(w('parties'), 'ct-plain');
+      var parsed = parseClauses(fill(val('cClauses')));
+      parsed.main.forEach(put);
+      var ex = el('div', 'ct-exec'), grid = el('div', 'ct-sign');
+      ex.appendChild(el('p', '', w('witnessIntro')));
+      grid.appendChild(signBox(party1(), txt('sigName'), txt('sigTitle'), sigImg));
+      grid.appendChild(signBox(txt('c2Name'), txt('c2SigName'), txt('c2SigTitle'), ''));
+      ex.appendChild(grid); block(ex);
+      parsed.schedules.forEach(function (sc) {
+        if (!fresh()) newSheet();
+        block(rich('div', 'ct-sched', sc.title));
+        sc.items.forEach(put);
+      });
+    } else {
+    if (txt('subject')) block(rich('div', 'lt-subject', fill(txt('subject'))));
     block(el('p', '', greetingText()));
-    String(val('body') || '').replace(/\r/g, '').split(/\n[ \t]*\n/).forEach(function (pText) { if (pText.trim()) paragraph(pText); });
+    String(fill(val('body')) || '').replace(/\r/g, '').split(/\n[ \t]*\n/).forEach(function (pText) { if (pText.trim()) paragraph(pText); });
 
     var so = el('div', 'lt-signoff');
     so.appendChild(el('div', 'lt-closing', closingText()));
@@ -886,16 +1148,22 @@
     [['encl', 'encl'], ['cc', 'cc']].forEach(function (x) {
       var ls = lines(val(x[0])); if (!ls.length) return;
       var d = el('div', 'lt-extra'); d.appendChild(el('strong', '', w(x[1])));
-      ls.forEach(function (l) { d.appendChild(el('div', '', l)); }); block(d);
+      ls.forEach(function (l) { d.appendChild(rich('div', '', fill(l))); }); block(d);
     });
+    }
 
     sheets.forEach(function (sh, i) {
-      if (sheets.length > 1) sh.querySelector('.lt-pageno').textContent = w('pageOf').replace('{x}', i + 1).replace('{y}', sheets.length);
+      if (sheets.length > 1 || isC) sh.querySelector('.lt-pageno').textContent = w('pageOf').replace('{x}', i + 1).replace('{y}', sheets.length);
     });
     $('ldgPageCount').textContent = sheets.length === 1 ? u('page1') : u('pagesN').replace('{n}', sheets.length);
     $('ldgPrevRef').textContent = ref;
     $('ibanWarn').hidden = !val('qrOn') || !txt('qrIban') || ibanOk(txt('qrIban'));
     $('qrFields').hidden = !val('qrOn');
+    // Blanks still to fill in, listed once each.
+    var seen = {}, blanks = [];
+    Array.prototype.forEach.call(pages.querySelectorAll('.lt-fill'), function (n) { var t = n.textContent.trim(); if (!seen[t]) { seen[t] = 1; blanks.push(t); } });
+    $('blankWarn').hidden = !blanks.length;
+    $('blankWarn').textContent = blanks.length ? u('blanks').replace('{n}', blanks.length) + ' ' + blanks.slice(0, 6).join(', ') + (blanks.length > 6 ? ' \u2026' : '') : '';
     fitPreview();
   }
 
@@ -920,7 +1188,7 @@
   }
   function saveHead() { if (val('remember')) store(KEY_HEAD, letterhead()); else { try { localStorage.removeItem(KEY_HEAD); } catch (e) {} } }
   window.ldgSave = function () {
-    var name = prompt(u('nameIt'), [txt('recCompany') || txt('recLast'), txt('subject')].filter(Boolean).join(' \u2014 '));
+    var name = prompt(u('nameIt'), (mode() === 'contract' ? [txt('c2Name'), txt('cTitle')] : [txt('recCompany') || txt('recLast'), txt('subject')]).filter(Boolean).join(' \u2014 '));
     if (!name) return;
     var d = {name: name, savedAt: new Date().toISOString(), head: letterhead(), letter: collect(LETTER_FIELDS), refStamp: refStamp, lang: lang};
     var list = read(KEY_LETTERS, []); list.push(d);
@@ -944,6 +1212,11 @@
     if (d.head) applyHead(d.head);
     refStamp = d.refStamp || stamp(new Date(d.savedAt || Date.now()));
     LETTER_FIELDS.forEach(function (f) { setVal(f, d.letter && d.letter[f] !== undefined ? d.letter[f] : ''); });
+    appliedBy = {};
+    if (!val('docMode')) setVal('docMode', 'letter');
+    if (d.letter && d.letter.cInitials === undefined) setVal('cInitials', true);
+    if (!txt('cLaw') && d.letter && d.letter.cLaw === undefined) { setVal('cLaw', 'the laws of Kenya'); setVal('cCourts', 'Kenya'); }
+    syncSections(); fillTplOptions(d.letter && d.letter.tpl);
     setLang(d.lang || lang, true);
     $('ldgSaved').classList.remove('open'); $('ldgLoadBtn').setAttribute('aria-expanded', 'false');
     update();
@@ -955,10 +1228,12 @@
   };
   window.ldgNew = function () {
     if (!confirm(u('confirmNew'))) return;
-    LETTER_FIELDS.forEach(function (f) { setVal(f, ''); });
+    var keep = {docMode: 1, tpl: 1, c1Name: 1, c1Details: 1, cLaw: 1, cCourts: 1, cWitness: 1, cInitials: 1};
+    LETTER_FIELDS.forEach(function (f) { if (!keep[f]) setVal(f, ''); });
     refStamp = stamp(new Date());
     setVal('docDate', today());
-    setVal('body', W[lang].body); setVal('subject', '');
+    applyTemplate(val('tpl') || tplBy[mode()], false);
+    if (mode() === 'letter' && val('tpl') === 'invoice') setVal('subject', '');
     update();
   };
 
@@ -989,7 +1264,7 @@
   }
   function closeModal() { $('ldgModal').classList.remove('open'); }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('ldgModal').classList.contains('open')) closeModal(); });
-  function fileName() { return ((ourRef() || 'letter') + (txt('recCompany') || txt('recLast') ? '-' + (txt('recCompany') || txt('recLast')) : '')).replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'letter'; }
+  function fileName() { var who = mode() === 'contract' ? txt('c2Name') : txt('recCompany') || txt('recLast'); return ((ourRef() || 'letter') + (who ? '-' + who : '')).replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'letter'; }
   window.ldgPdf = function () {
     clearTimeout(timer); render();
     if (!window.html2canvas || !window.jspdf) { modal(u('failed'), u('noLibs'), false, {list: [{cls: 'ldg-btn-navy', text: u('close'), on: closeModal}]}); return; }
@@ -1054,8 +1329,10 @@
     addCol('Bank', 'Your bank name\nIBAN / account number');
     setLang('en');
   }
+  setVal('docMode', 'letter'); syncSections(); fillTplOptions('invoice');
   if (!txt('body')) setVal('body', W[lang].body);
   if (!txt('subject')) setVal('subject', W[lang].subject);
+  appliedBy.letter = tplValues('invoice');
   fitLayout();
   update();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(update);

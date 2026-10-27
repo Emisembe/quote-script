@@ -1,6 +1,6 @@
 # EFIC Letter Generator
 
-A Blogger **page** for writing business letters on EFIC letterhead. It follows the German DIN 5008 layout, so the address shows through a window envelope, and exports the letter as a PDF. It is a separate project from the theme (`../blogger-theme`) and the Document Generator (`../doc-generator`).
+A Blogger **page** for writing business letters and contracts on EFIC letterhead. Letters follow the German DIN 5008 layout, so the address shows through a window envelope. Contracts get their own layout with numbered clauses and signature blocks. Both export as a PDF. It is a separate project from the theme (`../blogger-theme`) and the Document Generator (`../doc-generator`).
 
 ## Install
 In Blogger, go to **Pages**, open the page and click **Edit**. Switch to **HTML view**, replace everything with `efic-letter-generator.html`, then click **Update**.
@@ -24,6 +24,33 @@ The tool fills the whole page. On this page only, it hides the theme's menu, hea
 - Greetings and closings match the recipient. In English: "Dear Ms Musterfrau," and "Yours sincerely" when you know the name, otherwise "Dear Sir or Madam," and "Yours faithfully".
 - In German the address reads "Herrn" and the closing "Mit freundlichen Grüßen" has no comma.
 - To use your own wording, type it in the Greeting and Closing fields.
+
+**Templates (Document section, at the top of the panel):**
+- Choose **Letter** or **Contract / Agreement**, then a template. The template fills in the text, and you edit every word.
+- **Letters:** invoice cover letter (the original sample, in all five languages), introduction of services, quotation cover letter, engagement letter, payment reminder, final payment notice, job offer, contract termination notice, reference letter, blank letter.
+- **Contracts:** consultancy / service agreement, non-disclosure agreement (mutual NDA), employment contract, supply agreement, partnership agreement, memorandum of understanding (MoU), blank agreement.
+- **Blanks:** words in `[square brackets]` are blanks to fill in, for example `[start date]` or `[amount]`. They are highlighted on the page, and the panel lists the ones still open ("4 blank(s) still to fill in: …"). Print only when the list is gone.
+- **Filled in automatically:** `{org}` (your organisation), `{company}` (the recipient or party 2), `{party1}`, `{party2}`, `{role1}`, `{role2}`, `{law}`, `{courts}` and `{date}`. They work in your own text too.
+- **Choosing another template after you have edited the text asks first**, so you can't lose your work by accident. Switching between Letter and Contract keeps each one's text.
+- **Mark as DRAFT** puts a faint DRAFT watermark on every page (in the letter's language).
+- **Language:** templates are written in English. The panel, template names and the contract's fixed words (BETWEEN, Signature, Page 1 of 3 …) follow the language you choose.
+
+**Contracts:**
+- **Layout:** your letterhead, then the title with a gold rule, the reference and date, the opening line, and the parties ("BETWEEN (1) … AND (2) …").
+- **Party 1 is you:** the name defaults to your organisation name. Party 2 is the other side. Each party has a name, details (registration number, address) and what it is called in the contract (Consultant, Client, Employer, Employee …).
+- **Governing law and courts** are editable fields. They default to *the laws of Kenya* and *Kenya*, and the governing-law clause uses them. If you change them, check legal minimums such as leave, notice and probation.
+- **Clauses are numbered for you,** so you can add, delete or move clauses without renumbering:
+  ```
+  # Fees and Payment            -> 3.  FEES AND PAYMENT
+  The Client shall pay ...      -> 3.1 The Client shall pay ...
+  Invoices are payable ...      -> 3.2 Invoices are payable ...
+  - is public;                  -> (a) is public;
+  ## Schedule 1: Services       -> starts a schedule on a new page
+  ```
+- **Signatures:** a block for each party. Yours uses the Signature section (name, position, signature image). Party 2's signatory name and position have their own fields. Tick **Witness lines** to add a witness under each signature (on by default for employment and partnership).
+- **Every page** has initials boxes (can be switched off), "Page X of Y", and from page 2 a short header with the contract title.
+- **Reference and PDF name:** built from party 2's initials, e.g. `KPLC-20261027-194133`.
+- **Templates are a starting point, not legal advice.** They are plain-English standard clauses. Have a lawyer review a template once before you rely on it, especially employment and partnership agreements.
 
 **Letterhead and signature:**
 - Logo upload or image link, tagline, contact details, and up to 4 footer columns.
@@ -80,6 +107,14 @@ These checks were run in Chromium, both inside a copy of the EFIC theme page and
 - Download PDF: 3 pages at 300 dpi.
 - The automatic reference for 10 different company names (Kenyan, German, French, Chinese, none), typed references, New, and Save/Load.
 - The Update button, in all languages.
+- Templates and contracts (28 checks):
+  - Every letter and contract template renders with nothing behind the footer.
+  - Clause numbering (1., 1.1, (a)) and blanks highlighted without the punctuation around them, listed once each.
+  - Party names and governing law filled in, and changes to the law and courts carried through.
+  - Signature blocks for both parties, witness lines, initials boxes and "Page X of Y" on every page, and the schedule on its own page.
+  - No clause heading left alone at the foot of a page.
+  - The "replace your text?" question (Cancel keeps your text), DRAFT watermark, German wording, Save/Load/New for contracts.
+  - Switching back to a letter keeps it, and a printed contract has the right number of pages and searchable text.
 
 Screenshots are in `preview/`.
 
