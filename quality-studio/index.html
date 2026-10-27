@@ -136,6 +136,11 @@
     font-size: .8125rem; border: 1px dashed var(--line-2); border-radius: .625rem; background: #f8fafc; padding: 1.5rem 1rem; }
   .empty .ico { width: 1.5rem; height: 1.5rem; color: #94a3b8; }
   .svg-box { width: 100%; overflow-x: auto; }
+  .fig-tools { display: flex; justify-content: flex-end; gap: .35rem; margin: -.25rem 0 .5rem; }
+  .settings { border: 1px dashed var(--line-2); border-radius: .625rem; padding: .6rem .8rem; background: #f8fafc; }
+  .settings > summary { cursor: pointer; font-size: .78rem; font-weight: 700; color: var(--ink-2); display: flex; align-items: center; gap: .4rem; list-style: none; }
+  .settings > summary::-webkit-details-marker { display: none; }
+  .r-fig-title { font-size: 18px; font-weight: 800; margin: 4px 0 8px; }
   .svg-box svg { display: block; width: 100%; height: auto; min-width: 640px; }
 
   /* Check sheet */
@@ -284,6 +289,8 @@
         </select>
       </div>
       <button class="btn btn-dark btn-icon" style="width:2.25rem" data-action="resetScenario" title="Reload the selected scenario preset" aria-label="Reload scenario preset"><span data-icon="rotate-ccw"></span></button>
+      <button class="btn btn-dark" data-action="saveCustom" title="Save the current workspace as your own reusable scenario in this browser"><span data-icon="bookmark"></span><span class="hidden sm:inline">Save as scenario</span></button>
+      <button class="btn btn-dark btn-icon" style="width:2.25rem;display:none" id="delCustom" data-action="deleteCustom" title="Delete this saved scenario" aria-label="Delete saved scenario"><span data-icon="trash"></span></button>
       <button class="btn btn-dark" data-action="importState" title="Restore a saved JSON configuration"><span data-icon="upload"></span><span class="hidden sm:inline">Import JSON</span></button>
       <button class="btn btn-dark" data-action="exportState" title="Export all tool inputs and settings as JSON"><span data-icon="download"></span><span class="hidden sm:inline">Export JSON</span></button>
       <button class="btn btn-primary" data-action="openReport" title="Compile a printer-friendly executive summary"><span data-icon="file-text"></span>Generate Report</button>
@@ -322,7 +329,9 @@
   <div class="report-bar no-print">
     <span data-icon="file-text"></span>
     <strong class="text-sm">Executive Report Preview</strong>
-    <span class="text-xs text-slate-400 hidden md:inline">Use Print and choose "Save as PDF" as the destination to export a PDF.</span>
+    <label for="reportMode" class="text-xs text-slate-400 ml-2">Contents</label>
+    <select id="reportMode" class="inp inp-sm inp-dark" style="width:auto;max-width:260px" data-onchange="mode" aria-label="Report contents"></select>
+    <span class="text-xs text-slate-400 hidden xl:inline">Choose "Save as PDF" in the print dialog to export a PDF.</span>
     <div class="ml-auto flex gap-2">
       <button class="btn btn-primary btn-sm" data-action="print"><span data-icon="printer"></span>Print / Save PDF</button>
       <button class="btn btn-dark btn-sm" data-action="close"><span data-icon="x"></span>Close</button>
@@ -472,6 +481,9 @@ const ICONS = {
   'filter': '<path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>',
   'chart': '<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
   'folder': '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+  'bookmark': '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>',
+  'image': '<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>',
+  'settings': '<path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>',
   'list': '<path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/>'
 };
 const icon = (n, c = 'ico') => `<svg class="${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
@@ -547,6 +559,16 @@ if (hasChart()) {
     }
   });
 
+  /* Solid background so exported and printed chart images are not transparent */
+  Chart.register({
+    id: 'canvasBg',
+    beforeDraw(chart, _a, opts) {
+      if (!opts || !opts.color) return;
+      const { ctx, width, height } = chart;
+      ctx.save(); ctx.globalCompositeOperation = 'destination-over'; ctx.fillStyle = opts.color; ctx.fillRect(0, 0, width, height); ctx.restore();
+    }
+  });
+
   /* Callouts: labelled markers attached to specific data points */
   Chart.register({
     id: 'callouts',
@@ -579,8 +601,11 @@ if (hasChart()) {
   });
 }
 
+function figTools(key) {
+  return `<div class="fig-tools no-print"><button class="btn btn-xs" data-fig="${key}" data-fig-act="png" title="Download this figure as a PNG image">${icon('image', 'ico-sm')}PNG</button><button class="btn btn-xs" data-fig="${key}" data-fig-act="print" title="Print this figure on its own page">${icon('printer', 'ico-sm')}Print</button></div>`;
+}
 function chartBox(key, h = 320) {
-  return `<div class="chart-box" style="height:${h}px"><canvas data-chart="${key}" role="img" aria-label="${esc(key)} chart"></canvas><div class="chart-empty"></div></div>`;
+  return figTools(key) + `<div class="chart-box" style="height:${h}px"><canvas data-chart="${key}" role="img" aria-label="${esc(key)} chart"></canvas><div class="chart-empty"></div></div>`;
 }
 function drawChart(root, key, cfg, emptyMsg) {
   const canvas = root.querySelector(`canvas[data-chart="${key}"]`);
@@ -650,9 +675,26 @@ const FISH_CATS = [
   { key: 'measurement', label: 'Measurement', hint: 'Gauges, metrics, inspection' },
   { key: 'milieu', label: 'Milieu (Environment)', hint: 'Conditions, surroundings, external factors' }
 ];
+const FISH_TEMPLATES = {
+  '6m': { name: '6M: Manufacturing', cats: FISH_CATS.map(c => [c.label, c.hint]) },
+  '8p': { name: '8P: Service and marketing', cats: [['Product', 'Features, design, quality'], ['Price', 'Pricing, cost, value'], ['Place', 'Channels, location, access'], ['Promotion', 'Communication, expectations'],
+    ['People', 'Staff, customers, skills'], ['Process', 'Steps, procedures, flow'], ['Physical evidence', 'Facilities, documents, tools'], ['Productivity', 'Efficiency, quality of output']] },
+  '4s': { name: '4S: Service operations', cats: [['Surroundings', 'Environment, layout, conditions'], ['Suppliers', 'Vendors, inputs, partners'], ['Systems', 'Processes, IT, policies'], ['Skills', 'Training, knowledge, staffing']] },
+  'it': { name: 'IT and software', cats: [['People', 'Teams, on-call, skills'], ['Process', 'Change, release, incident handling'], ['Technology', 'Infrastructure, code, platforms'],
+    ['Data', 'Inputs, quality, volume'], ['Dependencies', 'Vendors, third-party services'], ['Environment', 'Load, regions, external events']] },
+  'health': { name: 'Healthcare', cats: [['Patients', 'Acuity, volume, needs'], ['Staff', 'Staffing, roles, skills'], ['Equipment', 'Devices, beds, IT systems'],
+    ['Procedures', 'Clinical and admin processes'], ['Policies', 'Rules, approvals, standards'], ['Environment', 'Layout, capacity, surges']] }
+};
 const TREE_LEVELS = ['Goal', 'Objective', 'Strategy', 'Action', 'Task'];
 const MATRIX_SYMBOLS = { 9: 'Strong', 3: 'Moderate', 1: 'Weak' };
-const DIMENSIONS = { machine: 'Machine / Unit', shift: 'Shift', operator: 'Operator' };
+const DIM_KEYS = ['machine', 'shift', 'operator'];
+const CS_LABELS = { item: 'Defect category', unit: 'Machine / Unit', shift: 'Shift', person: 'Operator' };
+const fishCats = () => state.fishbone.cats;
+const csL = () => { const l = state.checkSheet.labels || {}, o = {}; Object.keys(CS_LABELS).forEach(k => { o[k] = String(l[k] || '').trim() || CS_LABELS[k]; }); return o; };
+const dimLabel = d => csL()[{ machine: 'unit', shift: 'shift', operator: 'person' }[d]];
+const lvlName = d => String((state.tree.levels || [])[Math.min(d, 4)] || '').trim() || TREE_LEVELS[Math.min(d, 4)];
+const mval = code => { const v = state.matrix.values || {}; const n = toNum(code === 9 ? v.strong : code === 3 ? v.moderate : code === 1 ? v.weak : 0); return code ? (n === null ? code : n) : 0; };
+const defaultFishCats = () => FISH_CATS.map(c => ({ key: c.key, label: c.label, hint: c.hint }));
 
 /* =====================================================================
    5. STATE: BLANK MODEL, SCENARIO PRESETS, NORMALIZATION
@@ -660,9 +702,9 @@ const DIMENSIONS = { machine: 'Machine / Unit', shift: 'Shift', operator: 'Opera
 function blankState() {
   return {
     meta: { scenario: 'blank', title: 'Untitled Quality Initiative', problem: '', owner: '', focus: 'Custom Focus', period: '' },
-    fishbone: { effect: '', causes: { manpower: [], machine: [], material: [], method: [], measurement: [], milieu: [] } },
+    fishbone: { effect: '', template: '6m', cats: defaultFishCats(), causes: { manpower: [], machine: [], material: [], method: [], measurement: [], milieu: [] } },
     checkSheet: { period: '', categories: [], shifts: [{ id: uid(), name: 'Shift 1' }, { id: uid(), name: 'Shift 2' }, { id: uid(), name: 'Shift 3' }],
-      machines: [{ id: uid(), name: 'Machine 1' }], operators: {}, counts: {}, view: 'all' },
+      machines: [{ id: uid(), name: 'Machine 1' }], operators: {}, counts: {}, view: 'all', labels: Object.assign({}, CS_LABELS) },
     controlChart: { title: '', unit: '', method: 'mr', sigma: 3, target: null, lclZero: false, points: [] },
     histogram: { title: '', unit: '', mode: 'raw', raw: '', bins: 0, lsl: null, usl: null, target: null, freq: [] },
     pareto: { title: '', unit: 'Occurrences', threshold: 80, items: [] },
@@ -670,8 +712,8 @@ function blankState() {
     stratification: { source: 'check', dimension: 'machine', filter: '__all' },
     affinity: { topic: '', groups: [], unsorted: [] },
     digraph: { issue: '', factors: [], links: [] },
-    tree: { root: { id: uid(), text: '', children: [] } },
-    matrix: { title: '', rowLabel: 'Requirements', colLabel: 'Solutions', rows: [], cols: [], cells: {} },
+    tree: { levels: [...TREE_LEVELS], root: { id: uid(), text: '', children: [] } },
+    matrix: { title: '', rowLabel: 'Requirements', colLabel: 'Solutions', rows: [], cols: [], cells: {}, values: { strong: 9, moderate: 3, weak: 1 } },
     prioritization: { criteria: [], options: [], scaleMax: 10 },
     pdpc: { objective: '', phases: [] },
     arrow: { mode: 'cpm', unit: 'days', target: null, tasks: [] }
@@ -684,16 +726,16 @@ function mkFish(effect, c, keys = []) {
   const causes = {};
   FISH_CATS.forEach(cat => { causes[cat.key] = L(c[cat.key] || []); });
   keys.forEach(([cat, i]) => { if (causes[cat][i]) causes[cat][i].key = true; });
-  return { effect, causes };
+  return { effect, template: '6m', cats: defaultFishCats(), causes };
 }
-function mkCheck({ period, cats, shifts, machines, ops, data }) {
+function mkCheck({ period, cats, shifts, machines, ops, data, labels }) {
   const Cc = cats.map(n => ({ id: uid(), name: n })), S = shifts.map(n => ({ id: uid(), name: n })), M = machines.map(n => ({ id: uid(), name: n }));
   const counts = {}, operators = {};
   M.forEach((m, mi) => S.forEach((s, si) => {
     operators[`${m.id}|${s.id}`] = ops[mi][si];
     Cc.forEach((c, ci) => { counts[`${m.id}|${c.id}|${s.id}`] = data[mi][ci][si]; });
   }));
-  return { period, categories: Cc, shifts: S, machines: M, operators, counts, view: 'all' };
+  return { period, categories: Cc, shifts: S, machines: M, operators, counts, view: 'all', labels: Object.assign({}, CS_LABELS, labels || {}) };
 }
 function mkPoints(values, machines, shifts, ops, labelFn) {
   return values.map((v, i) => {
@@ -730,7 +772,7 @@ function mkMatrix(title, rowLabel, colLabel, rows, cols, grid) {
   const R = rows.map(([name, weight]) => ({ id: uid(), name, weight })), Cc = cols.map(name => ({ id: uid(), name }));
   const cells = {};
   R.forEach((r, i) => Cc.forEach((c, j) => { if (grid[i][j]) cells[`${r.id}|${c.id}`] = grid[i][j]; }));
-  return { title, rowLabel, colLabel, rows: R, cols: Cc, cells };
+  return { title, rowLabel, colLabel, rows: R, cols: Cc, cells, values: { strong: 9, moderate: 3, weak: 1 } };
 }
 function mkPrio(criteria, options) {
   const Cr = criteria.map(([name, weight]) => ({ id: uid(), name, weight }));
@@ -766,7 +808,7 @@ function scenarioA() {
       milieu: ['Shop temperature swings of 8 C across shifts', 'Poor lighting at Station 4 inspection', 'Vibration from adjacent stamping press']
     }, [['machine', 0], ['machine', 1], ['method', 0]]),
     checkSheet: mkCheck({
-      period: 'Week 41', machines, shifts, ops,
+      period: 'Week 41', machines, shifts, ops, labels: { unit: 'Station' },
       cats: ['Torque out of specification', 'Misaligned housing', 'Missing fastener', 'Gasket leak', 'Surface scratch', 'Wrong part or label'],
       data: [
         [[6, 8, 14], [3, 4, 7], [2, 1, 4], [1, 2, 3], [2, 1, 2], [1, 0, 2]],
@@ -789,7 +831,7 @@ function scenarioA() {
     digraph: mkDigraph('Drivers of the final assembly defect rate',
       ['Calibration program gaps', 'Insufficient operator training', 'Supplier bore variation', 'No torque sequence standard', 'Fixture wear', 'Misalignment at assembly', 'Final defect rate'],
       [[0, 4], [0, 5], [0, 6], [3, 1], [1, 6], [3, 6], [4, 5], [2, 5], [5, 6]]),
-    tree: { root: T('Reduce final assembly defect rate from 4.6% to below 1.5%', [
+    tree: { levels: [...TREE_LEVELS], root: T('Reduce final assembly defect rate from 4.6% to below 1.5%', [
       T('Eliminate torque-related defects', [TA('Standardize the tightening process', ['Define M8 bolt torque sequence', 'Install torque-angle monitoring']), TA('Control tool capability', ['Weekly torque driver calibration', 'Replace torque driver #2'])]),
       T('Improve housing fit and alignment', [TA('Restore fixture precision', ['Replace locating pins on Station 4', 'Add pin wear gauge to PM checklist']), TA('Tighten supplier controls', ['Re-run PPAP with Supplier B', 'Introduce bore SPC at incoming inspection'])]),
       T('Strengthen detection and response', [TA('Upgrade final inspection', ['Pilot automated vision check', 'Clarify defect codes on the check sheet'])])
@@ -835,7 +877,7 @@ function scenarioB() {
       milieu: ['Peak traffic from marketing campaigns', 'Noisy neighbours on shared cluster', 'Cloud region maintenance window overlap']
     }, [['machine', 0], ['method', 0], ['measurement', 0]]),
     checkSheet: mkCheck({
-      period: 'Incident window, weeks 1-6', machines, shifts, ops,
+      period: 'Incident window, weeks 1-6', machines, shifts, ops, labels: { item: 'Alert type', unit: 'Cluster', shift: 'On-call rotation', person: 'Engineer' },
       cats: ['HTTP 5xx error bursts', 'Timeouts above 2 s', 'Database connection errors', 'Auth token failures', 'Payment gateway rejects'],
       data: [
         [[4, 9, 6], [6, 14, 10], [3, 11, 8], [2, 3, 2], [1, 4, 6]],
@@ -858,7 +900,7 @@ function scenarioB() {
     digraph: mkDigraph('Interrelated causes of checkout downtime',
       ['No canary deployments', 'Weak observability (p99 blind spots)', 'Fixed DB connection pool', 'Alert fatigue', 'Unforecast traffic spikes', 'Slow incident detection', 'Checkout downtime'],
       [[0, 6], [1, 5], [1, 3], [1, 0], [3, 5], [2, 6], [4, 2], [4, 6], [5, 6]]),
-    tree: { root: T('Restore 99.95% monthly checkout availability', [
+    tree: { levels: [...TREE_LEVELS], root: T('Restore 99.95% monthly checkout availability', [
       T('Prevent change-induced failures', [TA('Adopt progressive delivery', ['Canary releases at 5% of traffic', 'Automated rollback on SLO breach']), TA('Harden database changes', ['Mandatory rollback script review', 'Online schema migration tooling'])]),
       T('Detect incidents within 5 minutes', [TA('Implement SLO-based alerting', ['Define SLOs for checkout endpoints', 'Configure multi-window burn-rate alerts']), TA('Improve telemetry', ['Distributed tracing on the payment path', 'p99 latency dashboards'])]),
       T('Absorb demand peaks', [TA('Scale the data tier', ['Deploy a connection pooler', 'Load test at 3x peak traffic']), TA('Plan capacity with marketing', ['Share campaign calendar with SRE'])])
@@ -903,7 +945,7 @@ function scenarioC() {
       milieu: ['Waiting room layout blocks sight lines', 'Seasonal influenza surges', 'Inpatient boarders occupy ED beds']
     }, [['method', 0], ['milieu', 2], ['machine', 2]]),
     checkSheet: mkCheck({
-      period: 'Week 43', machines, shifts, ops,
+      period: 'Week 43', machines, shifts, ops, labels: { item: 'Delay reason', unit: 'Care area', person: 'Charge nurse' },
       cats: ['Waiting for triage', 'Waiting for bed', 'Waiting for physician', 'Waiting for lab results', 'Waiting for imaging', 'Waiting for discharge'],
       data: [
         [[8, 12, 6], [14, 18, 11], [6, 9, 7], [4, 6, 3], [3, 4, 2], [2, 5, 1]],
@@ -927,7 +969,7 @@ function scenarioC() {
     digraph: mkDigraph('Interrelated drivers of ED door-to-provider time',
       ['Inpatient boarding', 'Triage staffing gaps', 'Registration-first intake', 'Manual bed tracking', 'Lab turnaround time', 'Door-to-provider time', 'Left-without-being-seen rate'],
       [[3, 0], [4, 0], [0, 5], [0, 1], [1, 5], [2, 5], [2, 1], [3, 5], [3, 1], [5, 6]]),
-    tree: { root: T('Median door-to-provider time under 30 minutes', [
+    tree: { levels: [...TREE_LEVELS], root: T('Median door-to-provider time under 30 minutes', [
       T('Accelerate front-end intake', [TA('Quick registration', ['Two-field quick registration at arrival', 'Bedside full registration later']), TA('Provider in triage', ['Assign a provider to triage 10:00 to 22:00', 'Standing orders for common labs'])]),
       T('Create capacity for new arrivals', [TA('Reduce inpatient boarding', ['Daily bed huddle at 08:00', 'Discharge-before-noon target']), TA('Split-flow model', ['Vertical care chairs for ESI 3', 'Fast track for ESI 4 and 5'])]),
       T('Make patient flow visible', [TA('Real-time tracking', ['Electronic bed board', 'Wait time display in lobby'])])
@@ -974,7 +1016,17 @@ function normalizeState(raw) {
     });
   });
   const objArr = a => Array.isArray(a) ? a.filter(x => x && typeof x === 'object') : [];
-  FISH_CATS.forEach(c => { base.fishbone.causes[c.key] = objArr(base.fishbone.causes[c.key]); });
+  const fb = base.fishbone;
+  if (!fb.causes || typeof fb.causes !== 'object') fb.causes = {};
+  const seen = new Set();
+  fb.cats = objArr(fb.cats).filter(c => typeof c.key === 'string' && c.key && !seen.has(c.key) && seen.add(c.key)).slice(0, 8)
+    .map(c => ({ key: c.key, label: String(c.label ?? ''), hint: String(c.hint ?? '') }));
+  if (fb.cats.length < 2) fb.cats = defaultFishCats();
+  fb.cats.forEach(c => { fb.causes[c.key] = objArr(fb.causes[c.key]); });
+  if (!base.checkSheet.labels || typeof base.checkSheet.labels !== 'object') base.checkSheet.labels = Object.assign({}, CS_LABELS);
+  if (!Array.isArray(base.tree.levels)) base.tree.levels = [...TREE_LEVELS];
+  base.tree.levels = TREE_LEVELS.map((d, i) => String(base.tree.levels[i] ?? d));
+  if (!base.matrix.values || typeof base.matrix.values !== 'object') base.matrix.values = { strong: 9, moderate: 3, weak: 1 };
   const cs = base.checkSheet;
   ['categories', 'shifts', 'machines'].forEach(f => { cs[f] = objArr(cs[f]); });
   if (!cs.operators || typeof cs.operators !== 'object') cs.operators = {};
@@ -997,11 +1049,11 @@ function normalizeState(raw) {
   if (!base.checkSheet.machines.length) base.checkSheet.machines.push({ id: uid(), name: 'Machine 1' });
   if (base.checkSheet.view !== 'all' && !base.checkSheet.machines.some(m => m.id === base.checkSheet.view)) base.checkSheet.view = 'all';
   if (!['check', 'control'].includes(base.stratification.source)) base.stratification.source = 'check';
-  if (!DIMENSIONS[base.stratification.dimension]) base.stratification.dimension = 'machine';
+  if (!DIM_KEYS.includes(base.stratification.dimension)) base.stratification.dimension = 'machine';
   if (!['cpm', 'pert'].includes(base.arrow.mode)) base.arrow.mode = 'cpm';
   if (!['raw', 'freq'].includes(base.histogram.mode)) base.histogram.mode = 'raw';
   if (!['mr', 'sd'].includes(base.controlChart.method)) base.controlChart.method = 'mr';
-  if (!SCENARIOS[base.meta.scenario]) base.meta.scenario = 'blank';
+  if (!SCENARIOS[base.meta.scenario] && !String(base.meta.scenario).startsWith('custom:')) base.meta.scenario = 'blank';
   return base;
 }
 
@@ -1014,9 +1066,9 @@ let undoState = null;
    ===================================================================== */
 function fishStats() {
   const fb = state.fishbone;
-  const per = FISH_CATS.map(c => ({ ...c, n: fb.causes[c.key].filter(x => String(x.text || '').trim()).length }));
+  const per = fishCats().map(c => ({ ...c, label: String(c.label || '').trim() || 'Unnamed category', n: (fb.causes[c.key] || []).filter(x => String(x.text || '').trim()).length }));
   const total = sum(per.map(p => p.n));
-  const keys = FISH_CATS.flatMap(c => fb.causes[c.key].filter(x => x.key && String(x.text || '').trim()).map(x => ({ cat: c.label, text: x.text })));
+  const keys = fishCats().flatMap(c => (fb.causes[c.key] || []).filter(x => x.key && String(x.text || '').trim()).map(x => ({ cat: c.label, text: x.text })));
   const top = [...per].sort((a, b) => b.n - a.n)[0];
   return { per, total, keys, top };
 }
@@ -1246,7 +1298,8 @@ function treeStats() {
 
 function matrixStats() {
   const m = state.matrix;
-  const val = (r, c) => toNum(m.cells[`${r}|${c}`]) || 0;
+  const code = (r, c) => toNum(m.cells[`${r}|${c}`]) || 0;
+  const val = (r, c) => mval(code(r, c));
   const cols = m.cols.map(c => {
     const raw = sum(m.rows.map(r => val(r.id, c.id)));
     const weighted = sum(m.rows.map(r => val(r.id, c.id) * (toNum(r.weight) || 0)));
@@ -1257,8 +1310,8 @@ function matrixStats() {
   const ranked = [...cols].sort((a, b) => b.weighted - a.weighted);
   ranked.forEach((c, i) => { c.rank = (i > 0 && c.weighted === ranked[i - 1].weighted) ? ranked[i - 1].rank : i + 1; });
   const rows = m.rows.map(r => {
-    const vals = m.cols.map(c => val(r.id, c.id));
-    return { id: r.id, name: String(r.name || '').trim() || 'Unnamed', weight: toNum(r.weight) || 0, total: sum(vals), strong: vals.filter(v => v === 9).length };
+    const vals = m.cols.map(c => val(r.id, c.id)), codes = m.cols.map(c => code(r.id, c.id));
+    return { id: r.id, name: String(r.name || '').trim() || 'Unnamed', weight: toNum(r.weight) || 0, total: sum(vals), strong: codes.filter(v => v === 9).length };
   });
   const gaps = rows.filter(r => r.strong === 0);
   return { cols, rows, ranked, gaps, totalW, empty: !m.rows.length || !m.cols.length };
@@ -1382,8 +1435,9 @@ const SVG_FONT = 'font-family="Inter, ui-sans-serif, system-ui, -apple-system, S
 
 function fishboneSVG() {
   const fb = state.fishbone;
-  const W = 1140, H = 540, spineY = 270, headX = 880;
-  const anchors = [330, 590, 850];
+  const W = 1140, H = 556, spineY = 270, headX = 880;
+  const cats = fishCats(), N = cats.length, nTop = Math.ceil(N / 2), nBot = N - nTop;
+  const anchorsFor = k => k === 1 ? [590] : Array.from({ length: k }, (_, i) => 330 + i * 520 / (k - 1));
   let s = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" ${SVG_FONT} role="img" aria-label="Fishbone diagram">`;
   s += `<rect width="${W}" height="${H}" fill="#ffffff"/>`;
   s += `<defs><marker id="fbArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#334155"/></marker></defs>`;
@@ -1392,21 +1446,22 @@ function fishboneSVG() {
   s += `<rect x="${headX}" y="${spineY - 64}" width="${W - headX - 14}" height="128" rx="12" fill="#4f46e5"/>`;
   s += `<text x="${headX + 16}" y="${spineY - 40}" fill="#c7d2fe" font-size="10" font-weight="700" letter-spacing="1">EFFECT</text>`;
   s += svgText(wrapText(effect, 26, 4), headX + 16, spineY - 18, 17, `fill="#ffffff" font-size="14" font-weight="700"`);
-  FISH_CATS.forEach((cat, i) => {
-    const top = i < 3, ax = anchors[i % 3], y1 = top ? 62 : H - 62, bx = ax - 175;
-    const causes = fb.causes[cat.key].filter(c => String(c.text || '').trim());
+  cats.forEach((cat, i) => {
+    const top = i < nTop, k = top ? nTop : nBot, ax = anchorsFor(k)[top ? i : i - nTop], y1 = top ? 62 : 478, bx = ax - 175;
+    const len = Math.min(150, (k > 1 ? 520 / (k - 1) : 520) - 26), chars = Math.max(12, Math.floor(len / 5.3));
+    const causes = (fb.causes[cat.key] || []).filter(c => String(c.text || '').trim());
     s += `<line x1="${bx}" y1="${y1}" x2="${ax}" y2="${spineY}" stroke="#64748b" stroke-width="2.5"/>`;
     const ly = top ? y1 - 34 : y1 + 8;
     s += `<rect x="${bx - 82}" y="${ly}" width="164" height="26" rx="6" fill="#eef2ff" stroke="#a5b4fc"/>`;
-    s += `<text x="${bx}" y="${ly + 17}" text-anchor="middle" fill="#3730a3" font-size="12" font-weight="700">${esc(cat.label)} (${causes.length})</text>`;
+    s += `<text x="${bx}" y="${ly + 17}" text-anchor="middle" fill="#3730a3" font-size="12" font-weight="700">${esc(trunc(String(cat.label || '').trim() || 'Unnamed', 20))} (${causes.length})</text>`;
     const shown = causes.slice(0, 8), n = shown.length;
     shown.forEach((c, j) => {
       const t = (j + 1) / (n + 1);
       const py = y1 + (spineY - y1) * t, px = bx + (ax - bx) * t;
       const col = c.key ? '#dc2626' : '#94a3b8', tc = c.key ? '#b91c1c' : '#334155';
-      s += `<line x1="${px - 150}" y1="${py}" x2="${px}" y2="${py}" stroke="${col}" stroke-width="${c.key ? 1.8 : 1.2}"/>`;
+      s += `<line x1="${px - len}" y1="${py}" x2="${px}" y2="${py}" stroke="${col}" stroke-width="${c.key ? 1.8 : 1.2}"/>`;
       s += `<circle cx="${px}" cy="${py}" r="2.5" fill="${col}"/>`;
-      s += `<text x="${px - 6}" y="${py - 4}" text-anchor="end" fill="${tc}" font-size="10.5" font-weight="${c.key ? 700 : 500}">${esc(trunc(c.text, 28))}</text>`;
+      s += `<text x="${px - 6}" y="${py - 4}" text-anchor="end" fill="${tc}" font-size="10.5" font-weight="${c.key ? 700 : 500}">${esc(trunc(c.text, chars))}</text>`;
     });
     if (causes.length > 8) {
       s += `<text x="${ax - 20}" y="${top ? spineY - 10 : spineY + 20}" text-anchor="end" fill="#64748b" font-size="10" font-style="italic">+${causes.length - 8} more</text>`;
@@ -1476,7 +1531,7 @@ function treeSVG() {
   nodes.forEach(nd => {
     const f = fills[Math.min(nd.d, 4)], x = X(nd.d), y = Y(nd.y);
     s += `<rect x="${x}" y="${y}" width="${BW}" height="${BH}" rx="8" fill="${f[0]}" stroke="${f[2]}"/>`;
-    s += `<text x="${x + 10}" y="${y + 13}" fill="${nd.d === 0 ? '#c7d2fe' : '#64748b'}" font-size="8.5" font-weight="800" letter-spacing=".8">${esc(TREE_LEVELS[Math.min(nd.d, 4)].toUpperCase())}</text>`;
+    s += `<text x="${x + 10}" y="${y + 13}" fill="${nd.d === 0 ? '#c7d2fe' : '#64748b'}" font-size="8.5" font-weight="800" letter-spacing=".8">${esc(trunc(lvlName(nd.d), 30).toUpperCase())}</text>`;
     s += svgText(wrapText(String(nd.n.text || '').trim() || 'Untitled', 30, 2), x + 10, y + 28, 13, `fill="${f[1]}" font-size="11" font-weight="600"`);
   });
   return s + '</svg>';
@@ -1663,14 +1718,14 @@ function cfgScatter(ss) {
 function cfgStrat(s) {
   s = s || stratStats();
   if (s.empty || !s.groups.length) return null;
-  const dimLabel = DIMENSIONS[state.stratification.dimension];
+  const dimL = dimLabel(state.stratification.dimension);
   if (s.kind === 'check') {
     if (s.filter === '__all') {
       return { type: 'bar',
         data: { labels: s.groups.map(g => trunc(g.name, 24)),
           datasets: s.cats.map((c, i) => ({ label: trunc(c.name || 'Unnamed', 28), data: s.groups.map(g => g.byCat[c.id] || 0), backgroundColor: PALETTE[i % PALETTE.length], borderRadius: 2 })) },
         options: { responsive: true, maintainAspectRatio: false, animation: { duration: 250 }, plugins: { legend: { position: 'bottom' } },
-          scales: { x: { stacked: true, grid: { display: false }, title: axisTitle(dimLabel) }, y: { stacked: true, beginAtZero: true, title: axisTitle('Occurrences'), grid: { color: C.grid }, ticks: { precision: 0 } } } } };
+          scales: { x: { stacked: true, grid: { display: false }, title: axisTitle(dimL) }, y: { stacked: true, beginAtZero: true, title: axisTitle('Occurrences'), grid: { color: C.grid }, ticks: { precision: 0 } } } } };
     }
     const g = s.groups.find(x => x.name === s.filter);
     return { type: 'bar',
@@ -1745,7 +1800,7 @@ function panelHead(key, extra = '') {
         <p class="text-sm text-slate-600 max-w-3xl mt-1">${esc(m.desc)}</p>
       </div>
     </div>
-    <div class="flex flex-wrap gap-2">${extra}</div>
+    <div class="flex flex-wrap gap-2 no-print">${extra}<button class="btn btn-sm" data-print-tool="${key}" title="Print this tool with its charts and results">${icon('printer', 'ico-sm')}Print tool</button></div>
   </div>`;
 }
 const kpi = (label, value, sub = '', tone = '') => `<div class="kpi ${tone ? 't-' + tone : ''}"><div class="k-l" title="${esc(label)}">${esc(label)}</div><div class="k-v">${value}</div>${sub ? `<div class="k-s">${sub}</div>` : ''}</div>`;
@@ -1769,9 +1824,12 @@ const Tools = {};
 Tools.fishbone = {
   render() {
     const fb = state.fishbone;
-    const cats = FISH_CATS.map(c => `
+    const all = fishCats();
+    const cats = all.map((c, ci) => `
       <div class="card">
-        <div class="card-h"><div class="min-w-0"><div class="card-t">${esc(c.label)}</div><div class="hint">${esc(c.hint)}</div></div><span class="badge b-indigo" data-out="fbn-${c.key}">0</span></div>
+        <div class="card-h"><div class="min-w-0 flex-1"><input class="inp inp-sm inp-bare font-bold text-slate-900" data-bind="fishbone.cats.${ci}.label" value="${esc(c.label)}" placeholder="Category name" aria-label="Category name">
+          <input class="inp inp-sm inp-bare hint" style="height:1.5rem" data-bind="fishbone.cats.${ci}.hint" value="${esc(c.hint)}" placeholder="Short description (optional)" aria-label="Category description"></div>
+          <span class="badge b-indigo" data-out="fbn-${c.key}">0</span>${all.length > 2 ? btnDel('removeCat', `data-cat="${c.key}"`, 'Remove category and its causes') : ''}</div>
         <div class="card-b space-y-1.5">
           ${fb.causes[c.key].map((x, i) => `
             <div class="flex items-center gap-1.5">
@@ -1780,14 +1838,21 @@ Tools.fishbone = {
               ${btnDel('removeCause', `data-cat="${c.key}" data-id="${x.id}"`, 'Remove cause')}
             </div>`).join('') || `<div class="hint py-1">No causes recorded yet.</div>`}
           <div class="flex gap-1.5 pt-1.5">
-            <input class="inp inp-sm" id="fbnew-${c.key}" placeholder="Add a ${esc(c.label.toLowerCase())} cause" data-enter="addCause" data-cat="${c.key}" aria-label="New ${esc(c.label)} cause">
+            <input class="inp inp-sm" id="fbnew-${c.key}" placeholder="Add a cause" data-enter="addCause" data-cat="${c.key}" aria-label="New ${esc(c.label)} cause">
             <button class="btn btn-sm" data-action="addCause" data-cat="${c.key}">${icon('plus', 'ico-sm')}Add</button>
           </div>
         </div>
       </div>`).join('');
     return panelHead('fishbone') + `
+      <div class="card mb-4"><div class="card-b flex flex-wrap items-end gap-3">
+        <div><label class="lbl" for="fbTpl">Category framework</label><select id="fbTpl" class="inp inp-sm" style="width:auto" data-onchange="template">
+          ${Object.entries(FISH_TEMPLATES).map(([k, t]) => `<option value="${k}" ${fb.template === k ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}
+          <option value="custom" ${!FISH_TEMPLATES[fb.template] ? 'selected' : ''}>Custom categories</option></select></div>
+        <button class="btn btn-sm" data-action="addCat" ${all.length >= 8 ? 'disabled' : ''}>${icon('plus', 'ico-sm')}Add category</button>
+        <p class="hint flex-1 min-w-[240px]">Pick a framework that fits your situation, then rename, add (up to 8) or remove categories freely. Switching frameworks keeps your causes in the same positions.</p>
+      </div></div>
       <div class="grid grid-cols-1 xl:grid-cols-4 gap-4 mb-4">
-        <div class="card xl:col-span-3"><div class="card-h"><div class="card-t">${icon('fishbone')}Diagram</div><span class="hint">Flagged causes are shown in red</span></div><div class="card-b"><div class="svg-box" data-out="diagram"></div></div></div>
+        <div class="card xl:col-span-3"><div class="card-h"><div class="card-t">${icon('fishbone')}Diagram</div><span class="hint">Flagged causes are shown in red</span></div><div class="card-b">${figTools('fishbone')}<div class="svg-box" data-out="diagram"></div></div></div>
         <div class="space-y-4">
           ${card('Problem statement (effect)', 'target', `<label class="lbl" for="fbEffect">Effect</label><textarea id="fbEffect" class="inp" rows="3" data-bind="fishbone.effect" placeholder="Describe the problem being analysed">${esc(fb.effect)}</textarea>`)}
           <div class="grid grid-cols-2 gap-3" data-out="kpis"></div>
@@ -1812,27 +1877,55 @@ Tools.fishbone = {
       commit('fishbone', true, '#fbnew-' + ds.cat);
     },
     removeCause(ds) { state.fishbone.causes[ds.cat] = state.fishbone.causes[ds.cat].filter(x => x.id !== ds.id); commit('fishbone', true); },
-    toggleKey(ds) { const x = state.fishbone.causes[ds.cat].find(c => c.id === ds.id); if (x) x.key = !x.key; commit('fishbone', true); }
+    toggleKey(ds) { const x = state.fishbone.causes[ds.cat].find(c => c.id === ds.id); if (x) x.key = !x.key; commit('fishbone', true); },
+    addCat() {
+      const fb = state.fishbone;
+      if (fb.cats.length >= 8) return;
+      const key = 'c' + uid();
+      fb.cats.push({ key, label: `Category ${fb.cats.length + 1}`, hint: '' }); fb.causes[key] = []; fb.template = 'custom';
+      commit('fishbone', true, `input[data-bind="fishbone.cats.${fb.cats.length - 1}.label"]`);
+    },
+    removeCat(ds) {
+      const fb = state.fishbone;
+      if (fb.cats.length <= 2) return;
+      undoState = clone(state);
+      const n = (fb.causes[ds.cat] || []).length;
+      fb.cats = fb.cats.filter(c => c.key !== ds.cat); delete fb.causes[ds.cat]; fb.template = 'custom';
+      commit('fishbone', true);
+      toast(`Category removed${n ? ` with ${plural(n, 'cause')}` : ''}.`, 'ok', true);
+    },
+    template(ds, el) {
+      const t = FISH_TEMPLATES[el.value], fb = state.fishbone;
+      if (!t) { fb.template = 'custom'; save(); return; }
+      undoState = clone(state);
+      const old = fb.cats, next = t.cats.map(([label, hint], i) => ({ key: old[i] ? old[i].key : 'c' + uid(), label, hint }));
+      old.slice(next.length).forEach(c => { next[next.length - 1] && (fb.causes[next[next.length - 1].key] = (fb.causes[next[next.length - 1].key] || []).concat(fb.causes[c.key] || [])); delete fb.causes[c.key]; });
+      next.forEach(c => { if (!fb.causes[c.key]) fb.causes[c.key] = []; });
+      const moved = old.length > next.length;
+      fb.cats = next; fb.template = el.value;
+      commit('fishbone', true);
+      toast(`Switched to the ${t.name} framework.${moved ? ` Causes from removed categories were moved into "${next[next.length - 1].label}".` : ''}`, 'ok', true);
+    }
   },
   summary() {
     const s = fishStats();
     if (!s.total) return { empty: true };
     return { metrics: [['Causes identified', s.total], ['Largest category', `${s.top.label} (${s.top.n})`], ['Root-cause candidates', s.keys.length]],
-      insight: `${s.total} potential causes mapped across six categories for "${esc(state.fishbone.effect || 'the problem')}". ${s.keys.length ? `Flagged candidates: ${s.keys.map(k => esc(k.text)).join('; ')}.` : 'No causes flagged yet.'}` };
+      insight: `${s.total} potential causes mapped across ${fishCats().length} categories for "${esc(state.fishbone.effect || 'the problem')}". ${s.keys.length ? `Flagged candidates: ${s.keys.map(k => esc(k.text)).join('; ')}.` : 'No causes flagged yet.'}` };
   },
-  report() { return { visual: `<div class="r-fig">${fishboneSVG()}</div>` }; }
+  report() { return { diagrams: `<div class="r-fig">${fishboneSVG()}</div>` }; }
 };
 
 /* ---------- 1.2 Check Sheet ---------- */
 Tools.checkSheet = {
   render() {
-    const cs = state.checkSheet, vm = cs.machines.find(m => m.id === cs.view), mi = cs.machines.indexOf(vm);
+    const cs = state.checkSheet, vm = cs.machines.find(m => m.id === cs.view), mi = cs.machines.indexOf(vm), L = csL();
     const tabs = `<div class="seg" role="tablist">
-        <button class="${!vm ? 'on' : ''}" data-action="view" data-id="all">All units (aggregate)</button>
+        <button class="${!vm ? 'on' : ''}" data-action="view" data-id="all">All (aggregate)</button>
         ${cs.machines.map(m => `<button class="${vm && vm.id === m.id ? 'on' : ''}" data-action="view" data-id="${m.id}" data-out="mtab-${m.id}">${esc(m.name || 'Unnamed unit')}</button>`).join('')}
       </div>`;
     const head = cs.shifts.map((s, i) => `<th class="cs-cell"><div class="flex items-center gap-1"><input class="inp inp-sm inp-bare font-semibold" data-bind="checkSheet.shifts.${i}.name" value="${esc(s.name)}" aria-label="Shift name">${btnDel('removeShift', `data-id="${s.id}"`, 'Remove shift')}</div></th>`).join('');
-    const opRow = vm ? `<tr class="bg-indigo-50/40"><td class="text-[11px] font-bold uppercase tracking-wide text-slate-500">Operator</td>${cs.shifts.map(s => `<td><input class="inp inp-sm" data-bind="checkSheet.operators.${vm.id}|${s.id}" value="${esc(cs.operators[`${vm.id}|${s.id}`] || '')}" placeholder="Operator name" aria-label="Operator for ${esc(s.name)}"></td>`).join('')}<td></td><td></td></tr>` : '';
+    const opRow = vm ? `<tr class="bg-indigo-50/40"><td class="text-[11px] font-bold uppercase tracking-wide text-slate-500">${esc(L.person)}</td>${cs.shifts.map(s => `<td><input class="inp inp-sm" data-bind="checkSheet.operators.${vm.id}|${s.id}" value="${esc(cs.operators[`${vm.id}|${s.id}`] || '')}" placeholder="${esc(L.person)} name" aria-label="${esc(L.person)} for ${esc(s.name)}"></td>`).join('')}<td></td><td></td></tr>` : '';
     const body = cs.categories.map((c, ci) => `<tr>
         <td><div class="flex items-center gap-1 min-w-[190px]"><input class="inp inp-sm" data-bind="checkSheet.categories.${ci}.name" value="${esc(c.name)}" aria-label="Category name">${btnDel('removeCat', `data-id="${c.id}"`, 'Remove category')}</div></td>
         ${cs.shifts.map(s => {
@@ -1850,27 +1943,31 @@ Tools.checkSheet = {
         <td class="min-w-[110px]" data-out="rp-${c.id}"></td>
       </tr>`).join('');
     const table = cs.categories.length ? `<div class="tbl-wrap"><table class="tbl">
-        <thead><tr><th>Defect category</th>${head}<th class="r">Total</th><th>Share</th></tr></thead>
+        <thead><tr><th>${esc(L.item)}</th>${head}<th class="r">Total</th><th>Share</th></tr></thead>
         <tbody>${opRow}${body}</tbody>
         <tfoot><tr><td>Total</td>${cs.shifts.map(s => `<td class="c" data-out="ct-${s.id}"></td>`).join('')}<td class="r" data-out="grand"></td><td>100%</td></tr></tfoot>
       </table></div>` : emptyBox('No defect categories yet. Add a category to start logging.');
-    return panelHead('checkSheet', `<button class="btn btn-sm" data-action="addMachine">${icon('plus', 'ico-sm')}Add unit</button>`) + `
+    return panelHead('checkSheet', `<button class="btn btn-sm" data-action="addMachine">${icon('plus', 'ico-sm')}Add ${esc(L.unit.toLowerCase())}</button>`) + `
       <div class="card mb-4"><div class="card-h">${tabs}
         <div class="flex items-center gap-2"><label class="lbl mb-0" for="csPeriod">Period</label><input id="csPeriod" class="inp inp-sm w-40" data-bind="checkSheet.period" value="${esc(cs.period)}" placeholder="e.g. Week 42"></div></div>
         <div class="card-b space-y-3">
-          ${vm ? `<div class="flex flex-wrap items-end gap-2"><div class="w-64"><label class="lbl" for="csUnitName">Unit name</label><input id="csUnitName" class="inp inp-sm" data-bind="checkSheet.machines.${mi}.name" value="${esc(vm.name)}"></div>
-            <button class="btn btn-sm btn-del" data-action="removeMachine" data-id="${vm.id}" ${cs.machines.length < 2 ? 'disabled' : ''}>${icon('trash', 'ico-sm')}Remove unit</button>
+          <details class="settings"><summary>${icon('settings', 'ico-sm')}Customize labels for your situation (for example: Error type, Cluster, Rotation, Engineer)</summary>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+              ${[['item', 'What is counted'], ['unit', 'Unit / location'], ['shift', 'Time period'], ['person', 'Person responsible']].map(([k, l]) => `<div><label class="lbl" for="csl-${k}">${l}</label><input id="csl-${k}" class="inp inp-sm" data-bind="checkSheet.labels.${k}" data-relabel="1" value="${esc((cs.labels || {})[k] || '')}" placeholder="${esc(CS_LABELS[k])}"></div>`).join('')}
+            </div><p class="hint mt-2">Labels apply to the check sheet, control chart and stratification views.</p></details>
+          ${vm ? `<div class="flex flex-wrap items-end gap-2"><div class="w-64"><label class="lbl" for="csUnitName">${esc(L.unit)} name</label><input id="csUnitName" class="inp inp-sm" data-bind="checkSheet.machines.${mi}.name" value="${esc(vm.name)}"></div>
+            <button class="btn btn-sm btn-del" data-action="removeMachine" data-id="${vm.id}" ${cs.machines.length < 2 ? 'disabled' : ''}>${icon('trash', 'ico-sm')}Remove ${esc(L.unit.toLowerCase())}</button>
             <span class="hint ml-auto">Use the plus and minus buttons to tally events as they occur, or type counts directly.</span></div>`
-            : callout('indigo', 'info', 'Aggregate view sums every machine or unit. Select a unit tab to log counts and assign operators per shift.')}
+            : callout('indigo', 'info', `Aggregate view sums every ${esc(L.unit.toLowerCase())}. Select a ${esc(L.unit.toLowerCase())} tab to log counts and assign each ${esc(L.person.toLowerCase())} per ${esc(L.shift.toLowerCase())}.`)}
           ${table}
           <div class="flex flex-wrap gap-2">
-            <button class="btn btn-sm" data-action="addCat">${icon('plus', 'ico-sm')}Add category</button>
-            <button class="btn btn-sm" data-action="addShift">${icon('plus', 'ico-sm')}Add shift</button>
+            <button class="btn btn-sm" data-action="addCat">${icon('plus', 'ico-sm')}Add ${esc(L.item.toLowerCase())}</button>
+            <button class="btn btn-sm" data-action="addShift">${icon('plus', 'ico-sm')}Add ${esc(L.shift.toLowerCase())}</button>
             <button class="btn btn-sm" data-action="toPareto" title="Copy category totals into the Pareto chart">${icon('pareto', 'ico-sm')}Send totals to Pareto</button>
           </div>
         </div></div>
       <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <div class="card xl:col-span-2"><div class="card-h"><div class="card-t">${icon('chart')}Occurrences by category and shift</div></div><div class="card-b">${chartBox('check', 300)}</div></div>
+        <div class="card xl:col-span-2"><div class="card-h"><div class="card-t">${icon('chart')}Occurrences by ${esc(L.item.toLowerCase())} and ${esc(L.shift.toLowerCase())}</div></div><div class="card-b">${chartBox('check', 300)}</div></div>
         <div class="space-y-3"><div class="grid grid-cols-2 gap-3" data-out="kpis"></div><div data-out="insight"></div></div>
       </div>`;
   },
@@ -1937,7 +2034,7 @@ Tools.checkSheet = {
   },
   report() {
     const cs = state.checkSheet, t = checkAllTotals();
-    return { visual: `<div class="r-fig"><table class="r-tbl"><thead><tr><th>Category</th>${cs.shifts.map(s => `<th class="r">${esc(s.name)}</th>`).join('')}<th class="r">Total</th><th class="r">Share</th></tr></thead><tbody>
+    return { tables: `<div class="r-fig"><table class="r-tbl"><thead><tr><th>${esc(csL().item)}</th>${cs.shifts.map(s => `<th class="r">${esc(s.name)}</th>`).join('')}<th class="r">Total</th><th class="r">Share</th></tr></thead><tbody>
       ${cs.categories.map(c => `<tr><td>${esc(c.name)}</td>${cs.shifts.map(s => `<td class="r">${t.cell[`${c.id}|${s.id}`]}</td>`).join('')}<td class="r"><strong>${t.rowT[c.id]}</strong></td><td class="r">${pct(t.grand ? t.rowT[c.id] / t.grand * 100 : 0)}</td></tr>`).join('')}
       <tr><td><strong>Total</strong></td>${cs.shifts.map(s => `<td class="r"><strong>${t.colT[s.id] || 0}</strong></td>`).join('')}<td class="r"><strong>${t.grand}</strong></td><td class="r">100%</td></tr></tbody></table></div>`,
       charts: [{ cfg: cfgCheck(), h: 300 }] };
@@ -1987,7 +2084,7 @@ Tools.controlChart = {
           <div class="card"><div class="card-h"><div class="card-t">${icon('list')}Data points</div>
             <div class="flex gap-2"><button class="btn btn-sm" data-action="addPoint">${icon('plus', 'ico-sm')}Add point</button><button class="btn btn-sm btn-del" data-action="clearPoints" ${cc.points.length ? '' : 'disabled'}>${icon('trash', 'ico-sm')}Clear</button></div></div>
             <div class="card-b space-y-3">
-              ${cc.points.length ? `<div class="tbl-wrap tbl-scroll"><table class="tbl"><thead><tr><th>#</th><th>Label</th><th class="r">Value</th><th>Machine / Unit</th><th>Shift</th><th>Operator</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : emptyBox('No data points yet. Add points individually or paste a series below.')}
+              ${cc.points.length ? `<div class="tbl-wrap tbl-scroll"><table class="tbl"><thead><tr><th>#</th><th>Label</th><th class="r">Value</th><th>${esc(csL().unit)}</th><th>${esc(csL().shift)}</th><th>${esc(csL().person)}</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : emptyBox('No data points yet. Add points individually or paste a series below.')}
               <details class="rounded-lg border border-slate-200 p-3"><summary class="cursor-pointer text-sm font-semibold text-slate-700">Bulk append values</summary>
                 <div class="mt-2 space-y-2"><textarea id="ccBulk" class="inp" rows="3" placeholder="Paste numbers separated by commas, spaces or new lines"></textarea>
                 <button class="btn btn-sm" data-action="bulkAdd">${icon('import', 'ico-sm')}Append values</button></div></details>
@@ -2047,7 +2144,7 @@ Tools.controlChart = {
   report() {
     const st = controlStats();
     return { charts: [{ cfg: cfgControl(st), h: 330 }],
-      visual: st && st.signals.length ? `<div class="r-fig"><table class="r-tbl"><thead><tr><th>Point</th><th class="r">Value</th><th>Signal</th><th>Machine / Shift / Operator</th></tr></thead><tbody>${st.signals.slice(0, 12).map(x => `<tr><td>${esc(x.p.label)}</td><td class="r">${fmt(x.p.value, st.dec)}</td><td>${esc(x.f)}</td><td>${esc(x.p.machine)} / ${esc(x.p.shift)} / ${esc(x.p.operator)}</td></tr>`).join('')}</tbody></table></div>` : '' };
+      tables: st && st.signals.length ? `<div class="r-fig"><table class="r-tbl"><thead><tr><th>Point</th><th class="r">Value</th><th>Signal</th><th>${esc(csL().unit)} / ${esc(csL().shift)} / ${esc(csL().person)}</th></tr></thead><tbody>${st.signals.slice(0, 12).map(x => `<tr><td>${esc(x.p.label)}</td><td class="r">${fmt(x.p.value, st.dec)}</td><td>${esc(x.f)}</td><td>${esc(x.p.machine)} / ${esc(x.p.shift)} / ${esc(x.p.operator)}</td></tr>`).join('')}</tbody></table></div>` : '' };
   }
 };
 
@@ -2290,10 +2387,10 @@ Tools.stratification = {
         <div><label class="lbl" for="stSrc">Data source</label><select id="stSrc" class="inp" data-bind="stratification.source" data-rerender="1">
           <option value="check" ${st.source === 'check' ? 'selected' : ''}>Check sheet (defect counts)</option><option value="control" ${st.source === 'control' ? 'selected' : ''}>Control chart (measurements)</option></select></div>
         <div><label class="lbl" for="stDim">Stratify by</label><select id="stDim" class="inp" data-bind="stratification.dimension" data-rerender="1">
-          ${Object.entries(DIMENSIONS).map(([k, v]) => `<option value="${k}" ${st.dimension === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+          ${DIM_KEYS.map(k => [k, esc(dimLabel(k))]).map(([k, v]) => `<option value="${k}" ${st.dimension === k ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
         <div><label class="lbl" for="stFilter">Filter stratum</label><select id="stFilter" class="inp" data-bind="stratification.filter" data-rerender="1">
           <option value="__all">All strata (compare)</option>${s.groups.map(g => `<option value="${esc(g.name)}" ${s.filter === g.name ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}</select></div>
-        <div class="hint pb-2">${st.source === 'check' ? 'Operators are taken from the per-shift assignments on each check sheet unit.' : 'Machine, shift and operator come from each control chart data point.'}</div>
+        <div class="hint pb-2">${st.source === 'check' ? `Each ${esc(csL().person.toLowerCase())} is taken from the per-${esc(csL().shift.toLowerCase())} assignments on the check sheet.` : 'Strata come from the context columns of each control chart data point.'}</div>
       </div></div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4" data-out="kpis"></div>
       <div class="grid grid-cols-1 xl:grid-cols-5 gap-4">
@@ -2302,7 +2399,7 @@ Tools.stratification = {
       </div>`;
   },
   refresh(root) {
-    const s = stratStats(), dimL = DIMENSIONS[state.stratification.dimension];
+    const s = stratStats(), dimL = dimLabel(state.stratification.dimension);
     if (s.empty) {
       out(root, 'kpis', ''); out(root, 'insight', emptyBox(s.kind === 'check' ? 'The check sheet has no logged occurrences to stratify.' : 'The control chart needs at least two values to stratify.'));
       out(root, 'table', ''); out(root, 'ctitle', 'Stratified view');
@@ -2344,7 +2441,7 @@ Tools.stratification = {
   },
   actions: {},
   summary() {
-    const s = stratStats(), dimL = DIMENSIONS[state.stratification.dimension];
+    const s = stratStats(), dimL = dimLabel(state.stratification.dimension);
     if (s.empty || !s.groups.length) return { empty: true };
     if (s.kind === 'check') {
       const top = [...s.groups].sort((a, b) => b.total - a.total)[0];
@@ -2425,7 +2522,7 @@ Tools.affinity = {
   },
   report() {
     const a = state.affinity;
-    return { visual: `<div class="r-fig r-cols">${a.groups.map(g => `<div class="r-box"><h4>${esc(g.title || 'Untitled group')} (${g.notes.length})</h4><ul>${g.notes.map(n => `<li>${esc(n.text)}</li>`).join('')}</ul></div>`).join('')}
+    return { diagrams: `<div class="r-fig r-cols">${a.groups.map(g => `<div class="r-box"><h4>${esc(g.title || 'Untitled group')} (${g.notes.length})</h4><ul>${g.notes.map(n => `<li>${esc(n.text)}</li>`).join('')}</ul></div>`).join('')}
       ${a.unsorted.length ? `<div class="r-box"><h4>Unsorted (${a.unsorted.length})</h4><ul>${a.unsorted.map(n => `<li>${esc(n.text)}</li>`).join('')}</ul></div>` : ''}</div>` };
   }
 };
@@ -2456,7 +2553,7 @@ Tools.digraph = {
       </div>
       <div class="grid grid-cols-1 xl:grid-cols-5 gap-4">
         <div class="card xl:col-span-3"><div class="card-h"><div class="card-t">${icon('network')}Digraph</div>
-          <div class="flex flex-wrap gap-2"><span class="badge b-indigo">Key driver</span><span class="badge b-amber">Key outcome</span></div></div><div class="card-b"><div class="svg-box" data-out="svg"></div></div></div>
+          <div class="flex flex-wrap gap-2"><span class="badge b-indigo">Key driver</span><span class="badge b-amber">Key outcome</span></div></div><div class="card-b">${figTools('digraph')}<div class="svg-box" data-out="svg"></div></div></div>
         <div class="xl:col-span-2 space-y-4"><div data-out="insight"></div><div class="card"><div class="card-h"><div class="card-t">${icon('list')}Arrow tally</div></div><div class="card-b" data-out="table"></div></div></div>
       </div>`;
   },
@@ -2498,16 +2595,16 @@ Tools.digraph = {
   },
   report() {
     const ds = digraphStats();
-    return { visual: `<div class="r-fig">${digraphSVG(ds)}</div><div class="r-fig"><table class="r-tbl"><thead><tr><th>Factor</th><th class="r">Out</th><th class="r">In</th><th>Role</th></tr></thead><tbody>${[...ds.rows].sort((a, b) => (b.out - b.in) - (a.out - a.in)).map(r => `<tr><td>${esc(r.name)}</td><td class="r">${r.out}</td><td class="r">${r.in}</td><td>${r.role}</td></tr>`).join('')}</tbody></table></div>` };
+    return { diagrams: `<div class="r-fig">${digraphSVG(ds)}</div>`, tables: `<div class="r-fig"><table class="r-tbl"><thead><tr><th>Factor</th><th class="r">Out</th><th class="r">In</th><th>Role</th></tr></thead><tbody>${[...ds.rows].sort((a, b) => (b.out - b.in) - (a.out - a.in)).map(r => `<tr><td>${esc(r.name)}</td><td class="r">${r.out}</td><td class="r">${r.in}</td><td>${r.role}</td></tr>`).join('')}</tbody></table></div>` };
   }
 };
 
 /* ---------- 2.3 Tree Diagram ---------- */
 function treeEditor(node, path, depth) {
   return `<div><div class="tree-row">
-      <span class="lvl lvl-${Math.min(depth, 4)}">${TREE_LEVELS[Math.min(depth, 4)]}</span>
-      <input class="inp inp-sm ${depth === 0 ? 'font-semibold' : ''}" data-bind="${path}.text" value="${esc(node.text)}" placeholder="${depth === 0 ? 'State the strategic goal' : 'Describe this ' + TREE_LEVELS[Math.min(depth, 4)].toLowerCase()}" aria-label="${TREE_LEVELS[Math.min(depth, 4)]}">
-      ${depth < 4 ? `<button class="btn btn-ghost btn-icon btn-xs" data-action="addChild" data-path="${path}" title="Add ${TREE_LEVELS[depth + 1].toLowerCase()}" aria-label="Add child">${icon('plus', 'ico-sm')}</button>` : '<span class="w-6"></span>'}
+      <span class="lvl lvl-${Math.min(depth, 4)}" title="${esc(lvlName(depth))}">${esc(trunc(lvlName(depth), 14))}</span>
+      <input class="inp inp-sm ${depth === 0 ? 'font-semibold' : ''}" data-bind="${path}.text" value="${esc(node.text)}" placeholder="Describe this ${esc(lvlName(depth).toLowerCase())}" aria-label="${esc(lvlName(depth))}">
+      ${depth < 4 ? `<button class="btn btn-ghost btn-icon btn-xs" data-action="addChild" data-path="${path}" title="Add ${esc(lvlName(depth + 1).toLowerCase())}" aria-label="Add child">${icon('plus', 'ico-sm')}</button>` : '<span class="w-6"></span>'}
       ${depth > 0 ? btnDel('remove', `data-path="${path}"`, 'Remove branch') : '<span class="w-6"></span>'}
     </div>
     ${node.children.length ? `<div class="tree-kids">${node.children.map((c, i) => treeEditor(c, `${path}.children.${i}`, depth + 1)).join('')}</div>` : ''}</div>`;
@@ -2517,11 +2614,14 @@ Tools.tree = {
     return panelHead('tree') + `
       <div class="grid grid-cols-1 2xl:grid-cols-5 gap-4">
         <div class="2xl:col-span-2 space-y-4">
-          <div class="card"><div class="card-h"><div class="card-t">${icon('tree')}Breakdown editor</div><span class="hint">Goal, objective, strategy, action, task</span></div>
-            <div class="card-b">${treeEditor(state.tree.root, 'tree.root', 0)}</div></div>
+          <div class="card"><div class="card-h"><div class="card-t">${icon('tree')}Breakdown editor</div><span class="hint">${[0, 1, 2, 3, 4].map(d => esc(lvlName(d))).join(', ')}</span></div>
+            <div class="card-b space-y-3">
+              <details class="settings"><summary>${icon('settings', 'ico-sm')}Rename levels (for example: Vision, Pillar, Initiative, Project, Step)</summary>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mt-3">${TREE_LEVELS.map((d, i) => `<div><label class="lbl" for="tl-${i}">Level ${i + 1}</label><input id="tl-${i}" class="inp inp-sm" data-bind="tree.levels.${i}" data-relabel="1" value="${esc((state.tree.levels || [])[i] || '')}" placeholder="${d}"></div>`).join('')}</div></details>
+              ${treeEditor(state.tree.root, 'tree.root', 0)}</div></div>
           <div class="grid grid-cols-3 gap-3" data-out="kpis"></div>
         </div>
-        <div class="card 2xl:col-span-3"><div class="card-h"><div class="card-t">${icon('tree')}Tree diagram</div></div><div class="card-b"><div class="svg-box" data-out="svg"></div></div></div>
+        <div class="card 2xl:col-span-3"><div class="card-h"><div class="card-t">${icon('tree')}Tree diagram</div></div><div class="card-b">${figTools('tree')}<div class="svg-box" data-out="svg"></div></div></div>
       </div>`;
   },
   refresh(root) {
@@ -2548,7 +2648,7 @@ Tools.tree = {
     return { metrics: [['Goal', esc(trunc(s.rootText || 'Untitled', 50))], ['Branches', state.tree.root.children.length], ['Action items', s.leaves], ['Levels', s.depth + 1]],
       insight: `The goal "${esc(s.rootText || 'Untitled')}" is broken down into ${plural(state.tree.root.children.length, 'objective')} and ${plural(s.leaves, 'actionable item')} across ${s.depth + 1} levels.` };
   },
-  report() { return { visual: `<div class="r-fig">${treeSVG()}</div>` }; }
+  report() { return { diagrams: `<div class="r-fig">${treeSVG()}</div>` }; }
 };
 
 /* ---------- 2.4 Matrix Diagram ---------- */
@@ -2559,14 +2659,16 @@ Tools.matrix = {
     const body = m.rows.map((r, i) => `<tr>
       <td><div class="flex items-center gap-1 min-w-[200px]"><input class="inp inp-sm" data-bind="matrix.rows.${i}.name" value="${esc(r.name)}" aria-label="Row ${i + 1}">${btnDel('removeRow', `data-id="${r.id}"`, 'Remove row')}</div></td>
       <td class="w-20"><input type="number" min="0" step="1" class="inp inp-sm num" data-bind="matrix.rows.${i}.weight" data-type="num" value="${numAttr(r.weight)}" aria-label="Weight"></td>
-      ${m.cols.map(c => { const v = toNum(m.cells[`${r.id}|${c.id}`]) || 0; return `<td class="c"><button class="cell-btn ${v ? 'on' : ''}" data-action="cycle" data-key="${r.id}|${c.id}" title="${v ? MATRIX_SYMBOLS[v] + ' (' + v + '). Click to change.' : 'No relationship. Click to set.'}" aria-label="${v ? MATRIX_SYMBOLS[v] : 'None'}">${matrixSymbol(v)}</button></td>`; }).join('')}
+      ${m.cols.map(c => { const v = toNum(m.cells[`${r.id}|${c.id}`]) || 0; return `<td class="c"><button class="cell-btn ${v ? 'on' : ''}" data-action="cycle" data-key="${r.id}|${c.id}" title="${v ? MATRIX_SYMBOLS[v] + ' (' + mval(v) + '). Click to change.' : 'No relationship. Click to set.'}" aria-label="${v ? MATRIX_SYMBOLS[v] : 'None'}">${matrixSymbol(v)}</button></td>`; }).join('')}
       <td class="r font-semibold" data-out="rt-${r.id}"></td></tr>`).join('');
-    const legend = [9, 3, 1].map(v => `<span class="inline-flex items-center gap-1.5 text-xs text-slate-600">${matrixSymbol(v, 18)}${MATRIX_SYMBOLS[v]} = ${v}</span>`).join('');
+    const legend = [9, 3, 1].map(v => `<span class="inline-flex items-center gap-1.5 text-xs text-slate-600">${matrixSymbol(v, 18)}${MATRIX_SYMBOLS[v]} = ${fmt(mval(v), 0)}</span>`).join('');
     return panelHead('matrix', `<button class="btn btn-sm" data-action="addRow">${icon('plus', 'ico-sm')}Add row</button><button class="btn btn-sm" data-action="addCol">${icon('plus', 'ico-sm')}Add column</button>`) + `
-      <div class="card mb-4"><div class="card-b grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div><label class="lbl" for="mxT">Matrix title</label><input id="mxT" class="inp inp-sm" data-bind="matrix.title" value="${esc(m.title)}"></div>
+      <div class="card mb-4"><div class="card-b grid grid-cols-1 md:grid-cols-6 gap-3">
+        <div class="md:col-span-2"><label class="lbl" for="mxT">Matrix title</label><input id="mxT" class="inp inp-sm" data-bind="matrix.title" value="${esc(m.title)}"></div>
         <div><label class="lbl" for="mxR">Row set (left)</label><input id="mxR" class="inp inp-sm" data-bind="matrix.rowLabel" value="${esc(m.rowLabel)}"></div>
         <div><label class="lbl" for="mxC">Column set (top)</label><input id="mxC" class="inp inp-sm" data-bind="matrix.colLabel" value="${esc(m.colLabel)}"></div>
+        <div class="md:col-span-2"><span class="lbl">Relationship scores (Strong / Moderate / Weak)</span><div class="grid grid-cols-3 gap-2">
+          ${['strong', 'moderate', 'weak'].map(k => `<input type="number" step="any" min="0" class="inp inp-sm num" data-bind="matrix.values.${k}" data-type="num" data-relabel="1" value="${numAttr((m.values || {})[k])}" aria-label="${k} score">`).join('')}</div></div>
       </div></div>
       <div class="card mb-4"><div class="card-h"><div class="card-t">${icon('grid')}Relationship matrix</div><div class="flex flex-wrap gap-4 items-center">${legend}<span class="hint">Click a cell to cycle Strong, Moderate, Weak, None</span></div></div>
         <div class="card-b">${m.rows.length && m.cols.length ? `<div class="tbl-wrap"><table class="tbl">
@@ -2610,10 +2712,10 @@ Tools.matrix = {
   },
   report() {
     const m = state.matrix, ms = matrixStats();
-    return { visual: `<div class="r-fig"><table class="r-tbl"><thead><tr><th>${esc(m.rowLabel)}</th><th class="r">Wt</th>${m.cols.map(c => `<th class="c">${esc(c.name)}</th>`).join('')}</tr></thead><tbody>
+    return { diagrams: `<div class="r-fig"><table class="r-tbl"><thead><tr><th>${esc(m.rowLabel)}</th><th class="r">Wt</th>${m.cols.map(c => `<th class="c">${esc(c.name)}</th>`).join('')}</tr></thead><tbody>
       ${m.rows.map(r => `<tr><td>${esc(r.name)}</td><td class="r">${esc(r.weight)}</td>${m.cols.map(c => { const v = toNum(m.cells[`${r.id}|${c.id}`]) || 0; return `<td class="c">${v ? matrixSymbol(v, 14) : ''}</td>`; }).join('')}</tr>`).join('')}
       <tr><td><strong>Weighted total</strong></td><td></td>${ms.cols.map(c => `<td class="c"><strong>${fmt(c.weighted, 0)}</strong><br><span style="color:#64748b">#${c.rank}</span></td>`).join('')}</tr></tbody></table>
-      <p style="color:#64748b;margin:4px 0 0">Strong = 9, Moderate = 3, Weak = 1. Weighted total = sum of row weight multiplied by relationship strength.</p></div>`,
+      <p style="color:#64748b;margin:4px 0 0">Strong = ${fmt(mval(9), 0)}, Moderate = ${fmt(mval(3), 0)}, Weak = ${fmt(mval(1), 0)}. Weighted total = sum of row weight multiplied by relationship strength.</p></div>`,
       charts: [{ cfg: cfgMatrix(ms), h: 240 }] };
   }
 };
@@ -2685,7 +2787,7 @@ Tools.prioritization = {
   },
   report() {
     const ps = prioStats(), p = state.prioritization;
-    return { visual: `<div class="r-fig"><table class="r-tbl"><thead><tr><th>Rank</th><th>Alternative</th>${ps.crit.map(c => `<th class="r">${esc(trunc(c.name, 18))}<br>${pct(c.nw * 100, 0)}</th>`).join('')}<th class="r">Weighted</th></tr></thead><tbody>
+    return { tables: `<div class="r-fig"><table class="r-tbl"><thead><tr><th>Rank</th><th>Alternative</th>${ps.crit.map(c => `<th class="r">${esc(trunc(c.name, 18))}<br>${pct(c.nw * 100, 0)}</th>`).join('')}<th class="r">Weighted</th></tr></thead><tbody>
       ${ps.ranked.map(o => { const src = p.options.find(x => x.id === o.id); return `<tr><td>#${o.rank}</td><td>${esc(o.name)}</td>${ps.crit.map(c => `<td class="r">${fmt(toNum(src.scores[c.id]), 0)}</td>`).join('')}<td class="r"><strong>${fmt(o.score, 2)}</strong></td></tr>`; }).join('')}</tbody></table></div>`,
       charts: [{ cfg: cfgPrio(ps), h: 240 }] };
   }
@@ -2751,7 +2853,7 @@ Tools.pdpc = {
   },
   report() {
     const p = state.pdpc;
-    return { visual: `<div class="r-fig r-cols">${p.phases.map((ph, i) => `<div class="r-box"><h4>Phase ${i + 1}: ${esc(ph.name)}</h4>${ph.risks.map(r => `<div style="margin:4px 0 6px"><div style="font-weight:700;color:#92400e">What if: ${esc(r.text)}</div><ul>${r.measures.map(m => `<li><span class="r-tag ${m.feasible ? 'g' : 'x'}">${m.feasible ? 'Feasible' : 'Impractical'}</span> ${esc(m.text)}</li>`).join('') || '<li style="color:#b91c1c">No countermeasure</li>'}</ul></div>`).join('')}</div>`).join('')}</div>` };
+    return { diagrams: `<div class="r-fig r-cols">${p.phases.map((ph, i) => `<div class="r-box"><h4>Phase ${i + 1}: ${esc(ph.name)}</h4>${ph.risks.map(r => `<div style="margin:4px 0 6px"><div style="font-weight:700;color:#92400e">What if: ${esc(r.text)}</div><ul>${r.measures.map(m => `<li><span class="r-tag ${m.feasible ? 'g' : 'x'}">${m.feasible ? 'Feasible' : 'Impractical'}</span> ${esc(m.text)}</li>`).join('') || '<li style="color:#b91c1c">No countermeasure</li>'}</ul></div>`).join('')}</div>`).join('')}</div>` };
   }
 };
 
@@ -2782,7 +2884,7 @@ Tools.arrow = {
         <div class="card-b">${A.tasks.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Code</th><th>Task</th>${pert ? '<th class="r">Opt.</th><th class="r">Likely</th><th class="r">Pess.</th><th class="r">Te</th>' : '<th class="r">Duration</th>'}<th>Predecessors</th><th class="r">ES</th><th class="r">EF</th><th class="r">LS</th><th class="r">LF</th><th class="r">Float</th><th>Path</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
           : emptyBox('No tasks yet. Add tasks with durations and predecessors to compute the critical path.')}</div></div>
       <div class="grid grid-cols-1 2xl:grid-cols-2 gap-4">
-        <div class="card"><div class="card-h"><div class="card-t">${icon('workflow')}Activity network (critical path in red)</div></div><div class="card-b"><div class="svg-box" data-out="net"></div></div></div>
+        <div class="card"><div class="card-h"><div class="card-t">${icon('workflow')}Activity network (critical path in red)</div></div><div class="card-b">${figTools('network')}<div class="svg-box" data-out="net"></div></div></div>
         <div class="card"><div class="card-h"><div class="card-t">${icon('chart')}Schedule (Gantt view)</div></div><div class="card-b">${chartBox('gantt', Math.max(260, A.tasks.length * 30 + 90))}</div></div>
       </div>`;
   },
@@ -2837,7 +2939,7 @@ Tools.arrow = {
   report() {
     const cp = cpmStats(), d1 = v => fmt(v, Number.isInteger(v) ? 0 : 1);
     if (!cp.ok) return {};
-    return { visual: `<div class="r-fig">${networkSVG(cp)}</div><div class="r-fig"><table class="r-tbl"><thead><tr><th>Code</th><th>Task</th><th class="r">Duration</th><th>Predecessors</th><th class="r">ES</th><th class="r">EF</th><th class="r">LS</th><th class="r">LF</th><th class="r">Float</th></tr></thead><tbody>
+    return { diagrams: `<div class="r-fig">${networkSVG(cp)}</div>`, tables: `<div class="r-fig"><table class="r-tbl"><thead><tr><th>Code</th><th>Task</th><th class="r">Duration</th><th>Predecessors</th><th class="r">ES</th><th class="r">EF</th><th class="r">LS</th><th class="r">LF</th><th class="r">Float</th></tr></thead><tbody>
       ${[...cp.tasks].sort((a, b) => a.es - b.es).map(t => `<tr${t.crit ? ' style="background:#fef2f2"' : ''}><td><strong>${esc(t.code)}</strong></td><td>${esc(t.name)}</td><td class="r">${fmt(t.d, 1)}</td><td>${esc(t.deps.join(', '))}</td><td class="r">${d1(t.es)}</td><td class="r">${d1(t.ef)}</td><td class="r">${d1(t.ls)}</td><td class="r">${d1(t.lf)}</td><td class="r">${d1(t.slack)}</td></tr>`).join('')}</tbody></table></div>`,
       charts: [{ cfg: cfgGantt(cp), h: Math.max(200, cp.tasks.length * 24 + 70) }] };
   }
@@ -2891,20 +2993,20 @@ function renderOverview() {
 Tools.overview = {
   actions: {
     open(ds, el) { const t = TOOL[el.dataset.toolKey]; ui.module = t.mod; ui['tool' + t.mod] = t.key; renderShell(); },
-    report() { openReport(); }
+    report() { openReport('full'); }
   }
 };
 
 /* =====================================================================
    12. EXECUTIVE REPORT
    ===================================================================== */
-function chartImage(cfg, h) {
+function chartDataURL(cfg, h, w = 960) {
   if (!cfg || !hasChart()) return '';
   const host = $('#offscreen'), canvas = document.createElement('canvas');
-  const W = 960;
-  canvas.width = W; canvas.height = h; canvas.style.width = W + 'px'; canvas.style.height = h + 'px';
+  canvas.width = w; canvas.height = h; canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
   host.appendChild(canvas);
-  cfg.options = Object.assign({}, cfg.options, { responsive: false, maintainAspectRatio: false, animation: false, devicePixelRatio: 2 });
+  cfg.options = Object.assign({}, cfg.options, { responsive: false, maintainAspectRatio: false, animation: false, devicePixelRatio: 2,
+    plugins: Object.assign({}, cfg.options.plugins, { canvasBg: { color: '#ffffff' } }) });
   let url = '';
   try {
     const ch = new Chart(canvas, cfg);
@@ -2912,32 +3014,142 @@ function chartImage(cfg, h) {
     ch.destroy();
   } catch (e) { console.error(e); }
   host.removeChild(canvas);
+  return url;
+}
+function chartImage(cfg, h) {
+  const url = chartDataURL(cfg, h);
   return url ? `<div class="r-fig"><img src="${url}" alt="Chart"></div>` : '';
 }
-function buildReport() {
+
+/* Every printable / exportable figure in the workspace */
+const FIGURES = {
+  check: { tool: 'checkSheet', title: () => `Check sheet: ${csL().item} by ${csL().shift}`, chart: () => cfgCheck(), h: 440 },
+  control: { tool: 'controlChart', title: () => `Control chart: ${state.controlChart.title || 'Individuals'}`, chart: () => cfgControl(), h: 470 },
+  hist: { tool: 'histogram', title: () => `Histogram: ${state.histogram.title || 'Distribution'}`, chart: () => cfgHistogram(), h: 460 },
+  pareto: { tool: 'pareto', title: () => `Pareto chart: ${state.pareto.title || state.pareto.unit || ''}`, chart: () => cfgPareto(), h: 460 },
+  scatter: { tool: 'scatter', title: () => `Scatter diagram: ${state.scatter.yLabel} versus ${state.scatter.xLabel}`, chart: () => cfgScatter(), h: 480 },
+  strat: { tool: 'stratification', title: () => `Stratification by ${dimLabel(state.stratification.dimension)}`, chart: () => cfgStrat(), h: 460 },
+  matrix: { tool: 'matrix', title: () => `Matrix diagram: ${state.matrix.title || 'weighted ranking'}`, chart: () => cfgMatrix(), h: 400 },
+  prio: { tool: 'prioritization', title: () => 'Prioritization matrix: weighted ranking', chart: () => cfgPrio(), h: 400 },
+  gantt: { tool: 'arrow', title: () => 'Project schedule (Gantt view)', chart: () => cfgGantt(), h: () => Math.max(320, state.arrow.tasks.length * 34 + 110) },
+  fishbone: { tool: 'fishbone', title: () => `Cause-and-effect diagram: ${state.fishbone.effect || 'Effect'}`, svg: () => fishboneSVG() },
+  digraph: { tool: 'digraph', title: () => `Interrelationship digraph: ${state.digraph.issue || 'Factors'}`, svg: () => { const d = digraphStats(); return d.links.length ? digraphSVG(d) : ''; } },
+  tree: { tool: 'tree', title: () => `Tree diagram: ${state.tree.root.text || 'Goal breakdown'}`, svg: () => treeStats().empty ? '' : treeSVG() },
+  network: { tool: 'arrow', title: () => 'Activity network diagram (critical path in red)', svg: () => networkSVG(cpmStats()) }
+};
+const fileSlug = t => String(t || 'figure').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'figure';
+function downloadURL(url, name) {
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function svgToPng(svg, scale = 2) {
+  return new Promise((resolve, reject) => {
+    const m = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
+    if (!m) { reject(new Error('Unsupported diagram')); return; }
+    const w = +m[1], h = +m[2];
+    const src = svg.replace(/ style="min-width:[^"]*"/, '').replace('<svg ', `<svg width="${w}" height="${h}" `);
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = w * scale; c.height = h * scale;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      resolve(c.toDataURL('image/png'));
+    };
+    img.onerror = () => reject(new Error('The diagram could not be rendered'));
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(src);
+  });
+}
+const metricsHtml = s => s.metrics.map(([l, v]) => `<div><span>${esc(l)}</span><strong>${v}</strong></div>`).join('');
+function docHeader(title) {
+  const m = state.meta;
+  return `<div style="display:flex;justify-content:space-between;gap:12px;font-size:10px;color:#64748b;border-bottom:2px solid #4f46e5;padding-bottom:6px;margin-bottom:8px">
+    <span><strong style="color:#0f172a">${esc(m.title || 'Untitled initiative')}</strong>${m.owner ? ' &middot; ' + esc(m.owner) : ''}</span>
+    <span>${esc(m.period || '')}${m.period ? ' &middot; ' : ''}${esc(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }))}</span></div>
+    <div class="r-fig-title">${esc(title)}</div>`;
+}
+const docFoot = () => `<div class="r-foot"><span>Enterprise Quality Management and Planning Studio</span><span>Generated ${esc(new Date().toLocaleString('en-US'))}</span></div>`;
+
+async function figAction(key, act) {
+  const f = FIGURES[key];
+  if (!f) return;
+  const title = f.title();
+  let content = '';
+  if (f.chart) {
+    if (!hasChart()) { toast('The charting library is unavailable, so this chart cannot be exported.', 'err'); return; }
+    const cfg = f.chart();
+    if (!cfg) { toast('There is no data to show in this chart yet.', 'err'); return; }
+    const h = typeof f.h === 'function' ? f.h() : f.h;
+    if (act === 'png') { downloadURL(chartDataURL(cfg, h, 1400), fileSlug(title) + '.png'); toast('Chart image downloaded.'); return; }
+    content = `<div class="r-fig"><img src="${chartDataURL(cfg, h, 1300)}" alt="${esc(title)}"></div>`;
+  } else {
+    const svg = f.svg();
+    if (!svg) { toast('There is nothing to show in this diagram yet.', 'err'); return; }
+    if (act === 'png') {
+      try { downloadURL(await svgToPng(svg), fileSlug(title) + '.png'); toast('Diagram image downloaded.'); }
+      catch (e) { toast(e.message, 'err'); }
+      return;
+    }
+    content = `<div class="r-fig">${svg}</div>`;
+  }
+  const s = safeSummary(f.tool);
+  showReport(docHeader(title) + content + (s.empty ? '' : `<p class="r-insight" style="margin-top:10px">${s.insight}</p><div class="r-metrics">${metricsHtml(s)}</div>`) + docFoot(), 'Single figure', true);
+  setTimeout(() => window.print(), 350);
+}
+
+function setOrientation(landscape) {
+  let st = $('#pageOrient');
+  if (!st) { st = document.createElement('style'); st.id = 'pageOrient'; document.head.appendChild(st); }
+  st.textContent = landscape ? '@media print { @page { size: A4 landscape; margin: 10mm; } }' : '';
+}
+let reportMode = 'full';
+function renderModeSelect(extraLabel) {
+  const opts = [['full', 'Full executive report'], ['charts', 'Charts and diagrams only'], ['mod1', 'Module 1: QC tools only'], ['mod2', 'Module 2: Management and planning only'],
+    ...TOOLS.map(t => ['tool:' + t.key, 'Only: ' + t.full])];
+  $('#reportMode').innerHTML = (extraLabel ? `<option value="" selected>${esc(extraLabel)}</option>` : '')
+    + opts.map(([v, l]) => `<option value="${v}" ${!extraLabel && v === reportMode ? 'selected' : ''}>${esc(l)}</option>`).join('');
+}
+function showReport(html, extraLabel, landscape) {
+  setOrientation(!!landscape);
+  $('#reportDoc').innerHTML = html;
+  renderModeSelect(extraLabel);
+  document.body.classList.add('report-open');
+  $('#report').scrollTop = 0;
+  $('#report [data-action="print"]').focus();
+}
+
+function buildReport(mode = 'full') {
   const m = state.meta, now = new Date();
   const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const toolKey = mode.startsWith('tool:') ? mode.slice(5) : null;
+  const chartsOnly = mode === 'charts';
+  const include = t => toolKey ? t.key === toolKey : mode === 'mod1' ? t.mod === 1 : mode === 'mod2' ? t.mod === 2 : true;
   const sections = [], findings = [];
-  TOOLS.forEach(t => {
+  TOOLS.filter(include).forEach(t => {
+    const head = `<div class="r-sec-h"><span class="r-num">${t.mod}.${t.n}</span><h3>${esc(t.full)}</h3></div>`;
     const s = safeSummary(t.key);
-    if (s.empty) return;
+    if (s.empty) { if (toolKey) sections.push(`<section class="r-sec">${head}<p class="r-insight">No data has been entered for this tool yet.</p></section>`); return; }
     findings.push({ t, s });
     let r = {};
     try { r = Tools[t.key].report() || {}; } catch (e) { console.error(e); }
     const charts = (r.charts || []).map(c => chartImage(c.cfg, c.h)).join('');
-    sections.push(`<section class="r-sec">
-      <div class="r-sec-h"><span class="r-num">${t.mod}.${t.n}</span><h3>${esc(t.full)}</h3></div>
+    if (chartsOnly) {
+      if (charts || r.diagrams) sections.push(`<section class="r-sec">${head}${charts}${r.diagrams || ''}</section>`);
+      return;
+    }
+    sections.push(`<section class="r-sec">${head}
       <p class="r-insight">${s.insight}</p>
-      <div class="r-metrics">${s.metrics.map(([l, v]) => `<div><span>${esc(l)}</span><strong>${v}</strong></div>`).join('')}</div>
-      ${charts}${r.visual || ''}
+      <div class="r-metrics">${metricsHtml(s)}</div>
+      ${charts}${r.diagrams || ''}${r.tables || ''}
     </section>`);
   });
-  const mod1 = findings.filter(f => f.t.mod === 1), mod2 = findings.filter(f => f.t.mod === 2);
-  const list = arr => arr.length ? `<ol class="r-findings">${arr.map(f => `<li><strong>${esc(f.t.name)}:</strong> ${f.s.insight}</li>`).join('')}</ol>` : '<p style="color:#64748b">No active tools in this module.</p>';
-  return `
+  const eyebrow = chartsOnly ? 'Charts and Diagrams' : toolKey ? TOOL[toolKey].full : mode === 'mod1' ? 'Module 1: Seven Basic QC Tools' : mode === 'mod2' ? 'Module 2: Management and Planning Tools' : 'Executive Quality Summary';
+  const cover = `
     <div class="r-cover">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
-        <div><div style="font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#4f46e5">Executive Quality Summary</div>
+        <div><div style="font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#4f46e5">${esc(eyebrow)}</div>
           <h1>${esc(m.title || 'Untitled initiative')}</h1></div>
         <div style="text-align:right;font-size:10px;color:#64748b;white-space:nowrap">Enterprise Quality Management<br>and Planning Studio</div>
       </div>
@@ -2948,46 +3160,74 @@ function buildReport() {
         <div><span>Owner</span><strong>${esc(m.owner || DASH)}</strong></div>
         <div><span>Period / generated</span><strong>${esc(m.period || DASH)} / ${esc(dateStr)}</strong></div>
       </div>
-    </div>
+    </div>`;
+  const foot = `<div class="r-foot"><span>${esc(m.title || '')}</span><span>Generated ${esc(now.toLocaleString('en-US'))}</span></div>`;
+  const empty = '<p style="color:#64748b">No tools in this selection contain data yet.</p>';
+  if (chartsOnly || toolKey) return cover + (sections.join('') || empty) + foot;
+  const list = arr => arr.length ? `<ol class="r-findings">${arr.map(f => `<li><strong>${esc(f.t.name)}:</strong> ${f.s.insight}</li>`).join('')}</ol>` : '<p style="color:#64748b">No active tools in this module.</p>';
+  const mods = [1, 2].filter(n => mode === 'full' || mode === 'mod' + n);
+  return cover + `
     <h2>Headline metrics</h2>
-    <div class="r-kpis">${headline().map(([l, v, s]) => `<div class="r-kpi"><span>${esc(l)}</span><strong>${v}</strong><em>${s}</em></div>`).join('')}</div>
+    <div class="r-kpis">${headline().map(([l, v, sub]) => `<div class="r-kpi"><span>${esc(l)}</span><strong>${v}</strong><em>${sub}</em></div>`).join('')}</div>
     <h2 style="margin-top:14px">Key findings</h2>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-      <div><h3 style="font-size:11.5px;margin-bottom:2px">Module 1: Seven Basic QC Tools</h3>${list(mod1)}</div>
-      <div><h3 style="font-size:11.5px;margin-bottom:2px">Module 2: Management and Planning Tools</h3>${list(mod2)}</div>
+    <div style="display:grid;grid-template-columns:${mods.length === 2 ? '1fr 1fr' : '1fr'};gap:14px">
+      ${mods.map(n => `<div><h3 style="font-size:11.5px;margin-bottom:2px">${n === 1 ? 'Module 1: Seven Basic QC Tools' : 'Module 2: Management and Planning Tools'}</h3>${list(findings.filter(f => f.t.mod === n))}</div>`).join('')}
     </div>
     <div class="r-page-break"></div>
     <h2 style="margin-top:16px">Tool detail</h2>
-    ${sections.join('') || '<p style="color:#64748b">No tools contain data yet.</p>'}
-    <div class="r-foot"><span>${esc(m.title || '')}</span><span>Generated ${esc(now.toLocaleString('en-US'))}</span></div>`;
+    ${sections.join('') || empty}` + foot;
 }
-function openReport() {
+function openReport(mode = 'full', autoPrint = false) {
   try {
-    $('#reportDoc').innerHTML = buildReport();
-    document.body.classList.add('report-open');
-    $('#report').scrollTop = 0;
-    $('#report [data-action="print"]').focus();
+    reportMode = mode;
+    showReport(buildReport(mode));
+    if (autoPrint) setTimeout(() => window.print(), 350);
   } catch (e) { console.error(e); toast('The report could not be generated: ' + e.message, 'err'); }
 }
-function closeReport() { document.body.classList.remove('report-open'); $('#reportDoc').innerHTML = ''; }
-Tools.report = { actions: { print() { window.print(); }, close() { closeReport(); } } };
+function closeReport() { document.body.classList.remove('report-open'); $('#reportDoc').innerHTML = ''; setOrientation(false); }
+Tools.report = { actions: {
+  print() { window.print(); },
+  close() { closeReport(); },
+  mode(ds, el) { if (el.value) openReport(el.value); }
+} };
 
 /* =====================================================================
    13. APPLICATION SHELL: NAVIGATION, EVENTS, PERSISTENCE
    ===================================================================== */
 const STORE_KEY = 'eqmps.workspace.v1';
-const scenarioName = k => ({ A: 'A: Manufacturing Assembly Defect Analysis', B: 'B: SaaS Platform Outage and RCA', C: 'C: Healthcare ER Wait Time Optimization', blank: 'Blank workspace' })[k] || 'Custom';
+const CUSTOM_KEY = 'eqmps.custom.v1';
+const PRESET_NAMES = { A: 'A: Manufacturing Assembly Defect Analysis', B: 'B: SaaS Platform Outage and RCA', C: 'C: Healthcare ER Wait Time Optimization', blank: 'Blank workspace' };
+function customList() {
+  try { const a = JSON.parse(localStorage.getItem(CUSTOM_KEY) || '[]'); return Array.isArray(a) ? a.filter(x => x && x.id && x.name && x.state) : []; }
+  catch (e) { return []; }
+}
+const scenarioName = k => PRESET_NAMES[k] || ((customList().find(x => 'custom:' + x.id === k) || {}).name) || 'Custom workspace';
+function renderScenarioSelect() {
+  const list = customList(), sel = $('#scenario'), cur = state.meta.scenario;
+  sel.innerHTML = `<optgroup label="Preset scenarios">
+      <option value="A">Scenario A: Manufacturing Assembly Defect Analysis</option>
+      <option value="B">Scenario B: SaaS Platform Outage and Root Cause Analysis</option>
+      <option value="C">Scenario C: Healthcare ER Wait Time Optimization</option></optgroup>
+    ${list.length ? `<optgroup label="My saved scenarios">${list.map(x => `<option value="custom:${esc(x.id)}">${esc(x.name)}</option>`).join('')}</optgroup>` : ''}
+    <optgroup label="Start fresh"><option value="blank">Blank workspace</option></optgroup>
+    <option value="" hidden>Custom or imported workspace</option>`;
+  sel.value = Array.from(sel.options).some(o => o.value === cur) ? cur : '';
+  $('#delCustom').style.display = sel.value.startsWith('custom:') ? '' : 'none';
+}
 let saveTimer = null;
 
+function flushSave() {
+  clearTimeout(saveTimer); saveTimer = null;
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({ state, ui }));
+    $('#saveState').textContent = 'Saved locally at ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  } catch (e) { $('#saveState').textContent = 'Local autosave unavailable in this browser; use Export JSON.'; }
+}
 function save() {
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    try {
-      localStorage.setItem(STORE_KEY, JSON.stringify({ state, ui }));
-      $('#saveState').textContent = 'Saved locally at ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    } catch (e) { $('#saveState').textContent = 'Local autosave unavailable in this browser; use Export JSON.'; }
-  }, 350);
+  saveTimer = setTimeout(flushSave, 350);
 }
+window.addEventListener('pagehide', () => { if (saveTimer) flushSave(); });
 function restore() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
@@ -3013,7 +3253,7 @@ function toast(msg, kind = 'ok', withUndo = false) {
 function undo() {
   if (!undoState) return;
   state = undoState; undoState = null;
-  $('#scenario').value = state.meta.scenario;
+  renderScenarioSelect();
   renderShell(); save();
   toast('Change undone.');
 }
@@ -3021,10 +3261,11 @@ function undo() {
 function renderMeta() {
   const m = state.meta;
   $('#metaBar').innerHTML = `
-    <div class="md:col-span-4"><label class="lbl" for="mTitle">Initiative</label><input id="mTitle" class="inp font-semibold" data-bind="meta.title" value="${esc(m.title)}"></div>
-    <div class="md:col-span-5"><label class="lbl" for="mProblem">Problem statement</label><input id="mProblem" class="inp" data-bind="meta.problem" value="${esc(m.problem)}" placeholder="What is wrong, where, how big, and since when?"></div>
+    <div class="md:col-span-3"><label class="lbl" for="mTitle">Initiative</label><input id="mTitle" class="inp font-semibold" data-bind="meta.title" value="${esc(m.title)}"></div>
+    <div class="md:col-span-4"><label class="lbl" for="mProblem">Problem statement</label><input id="mProblem" class="inp" data-bind="meta.problem" value="${esc(m.problem)}" placeholder="What is wrong, where, how big, and since when?"></div>
     <div class="md:col-span-2"><label class="lbl" for="mOwner">Owner</label><input id="mOwner" class="inp" data-bind="meta.owner" value="${esc(m.owner)}"></div>
-    <div class="md:col-span-1"><span class="lbl">Focus</span><div class="h-9 flex items-center"><span class="badge b-indigo">${esc(m.focus || 'Custom')}</span></div></div>`;
+    <div class="md:col-span-1"><label class="lbl" for="mFocus">Focus</label><input id="mFocus" class="inp" data-bind="meta.focus" value="${esc(m.focus)}" placeholder="e.g. 7 QC"></div>
+    <div class="md:col-span-2"><label class="lbl" for="mPeriod">Period</label><input id="mPeriod" class="inp" data-bind="meta.period" value="${esc(m.period)}" placeholder="e.g. Q3 2026"></div>`;
 }
 function renderNav() {
   const mods = [['overview', 'Overview', 'layout', ''], [1, 'Module 1: Seven Basic QC Tools', 'chart', '7'], [2, 'Module 2: Seven Management and Planning Tools', 'network', '7']];
@@ -3052,7 +3293,7 @@ function renderActive(focusSel) {
     ws.innerHTML = callout('red', 'alert', `This view could not be rendered (${esc(e.message)}). Try reloading the scenario or importing a valid file.`);
   }
   window.scrollTo(0, scrollY);
-  if (focusSel) { const el = ws.querySelector(focusSel); if (el) { el.focus(); if (el.select && el.value === '') el.select(); } }
+  if (focusSel) { const el = ws.querySelector(focusSel); if (el) { el.focus(); if (el.select) el.select(); } }
 }
 function renderShell() { renderMeta(); renderNav(); renderActive(); }
 
@@ -3087,7 +3328,29 @@ const AppActions = {
   module(ds) { ui.module = ds.mod === 'overview' ? 'overview' : Number(ds.mod); renderNav(); renderActive(); save(); window.scrollTo(0, 0); },
   tool(ds) { ui['tool' + ui.module] = ds.key; renderNav(); renderActive(); save(); },
   loadScenario(ds, el) { loadScenario(el.value); },
-  resetScenario() { loadScenario($('#scenario').value, true); },
+  resetScenario() { if ($('#scenario').value) loadScenario($('#scenario').value, true); else toast('This workspace was imported or edited from a deleted scenario, so there is no saved version to reload.', 'err'); },
+  saveCustom() {
+    const name = (window.prompt('Name this scenario so you can reload it later from the scenario list:', state.meta.title || 'My scenario') || '').trim().slice(0, 80);
+    if (!name) return;
+    const list = customList();
+    let e = list.find(x => x.name.toLowerCase() === name.toLowerCase());
+    if (e && !window.confirm(`A saved scenario called "${e.name}" already exists. Replace it with the current workspace?`)) return;
+    if (!e) { e = { id: uid() }; list.push(e); }
+    e.name = name; e.savedAt = new Date().toISOString();
+    state.meta.scenario = 'custom:' + e.id;
+    e.state = clone(state);
+    try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(list)); }
+    catch (err) { toast('This browser blocked local storage. Use Export JSON to keep the scenario instead.', 'err'); return; }
+    renderScenarioSelect(); save();
+    toast(`Saved "${name}" to this browser. Use Export JSON to share it with others.`);
+  },
+  deleteCustom() {
+    const key = $('#scenario').value, list = customList(), e = list.find(x => 'custom:' + x.id === key);
+    if (!e || !window.confirm(`Delete the saved scenario "${e.name}" from this browser? The workspace you have open stays as it is.`)) return;
+    try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(list.filter(x => x !== e))); } catch (err) { /* storage unavailable */ }
+    renderScenarioSelect();
+    toast(`Deleted "${e.name}".`);
+  },
   exportState() {
     const payload = { app: 'Enterprise Quality Management and Planning Studio', format: 'eqmps', version: 1, exportedAt: new Date().toISOString(), ui, state };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -3100,17 +3363,25 @@ const AppActions = {
     toast('Workspace exported as JSON.');
   },
   importState() { $('#importFile').value = ''; $('#importFile').click(); },
-  openReport() { openReport(); }
+  openReport() { openReport('full'); }
 };
 
 function loadScenario(key, isReset) {
-  if (!SCENARIOS[key]) return;
+  let next = null;
+  if (String(key).startsWith('custom:')) {
+    const e = customList().find(x => 'custom:' + x.id === key);
+    if (!e) { toast('That saved scenario no longer exists in this browser.', 'err'); renderScenarioSelect(); return; }
+    try { next = normalizeState(clone(e.state)); } catch (err) { toast('That saved scenario is damaged: ' + err.message, 'err'); renderScenarioSelect(); return; }
+    next.meta.scenario = key;
+  } else if (SCENARIOS[key]) next = normalizeState(SCENARIOS[key]());
+  else { renderScenarioSelect(); return; }
   undoState = clone(state);
-  state = SCENARIOS[key]();
+  state = next;
   ui.module = 'overview';
-  $('#scenario').value = key;
+  renderScenarioSelect();
   renderShell(); save();
-  toast(isReset ? `Scenario ${scenarioName(key)} reloaded.` : `Loaded ${key === 'blank' ? 'a blank workspace' : 'Scenario ' + scenarioName(key)}.`, 'ok', true);
+  const name = scenarioName(key);
+  toast(isReset ? `"${name}" reloaded.` : key === 'blank' ? 'Loaded a blank workspace.' : PRESET_NAMES[key] ? `Loaded Scenario ${name}.` : `Loaded your saved scenario "${name}".`, 'ok', true);
 }
 
 function importFile(file) {
@@ -3128,7 +3399,7 @@ function importFile(file) {
       catch (e) { state = prev; renderShell(); throw e; }
       undoState = prev;
       if (obj.ui && typeof obj.ui === 'object' && ['overview', 1, 2].includes(obj.ui.module)) { ui = Object.assign(ui, obj.ui); renderShell(); }
-      $('#scenario').value = state.meta.scenario;
+      renderScenarioSelect();
       save();
       toast(`Workspace "${trunc(state.meta.title || 'Untitled', 40)}" imported.`, 'ok', true);
     } catch (e) {
@@ -3141,6 +3412,10 @@ function importFile(file) {
 
 /* Global event delegation */
 document.addEventListener('click', e => {
+  const fig = e.target.closest('[data-fig]');
+  if (fig) { figAction(fig.dataset.fig, fig.dataset.figAct); return; }
+  const pt = e.target.closest('[data-print-tool]');
+  if (pt) { openReport('tool:' + pt.dataset.printTool, true); return; }
   const el = e.target.closest('[data-action]');
   if (!el || el.disabled) return;
   dispatch(el.dataset.action, el, e);
@@ -3177,14 +3452,18 @@ document.addEventListener('drop', e => {
   if (id) moveNote(id, z.dataset.dropzone);
 });
 $('#importFile').addEventListener('change', e => importFile(e.target.files[0]));
-window.addEventListener('afterprint', () => { /* keep the report open so the user can print again */ });
+/* Label fields re-render the whole view once editing finishes, so headings and buttons pick up the new wording */
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset && el.dataset.relabel && el.dataset.bind) commit(el.dataset.bind.split('.')[0], true);
+});
 
 /* Boot */
 (function init() {
   hydrateIcons();
   const restored = restore();
-  if (!restored) state = scenarioA();
-  $('#scenario').value = state.meta.scenario;
+  if (!restored) state = normalizeState(scenarioA());
+  renderScenarioSelect();
   renderShell();
   if (restored) $('#saveState').textContent = 'Restored your last session from this device.';
   if (!hasChart()) toast('Charting library unavailable (offline). All calculations still work; charts are hidden.', 'err');
