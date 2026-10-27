@@ -31,6 +31,9 @@ LOGO_SVG = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
             "%3Crect x='2' y='2' width='60' height='60' fill='none' stroke='%23E7B165' stroke-width='3'/%3E"
             "%3Ctext x='32' y='42' font-family='Arial' font-weight='900' font-size='26' fill='%23E7B165' text-anchor='middle'%3EE%3C/text%3E"
             "%3Ctext x='76' y='42' font-family='Arial' font-weight='900' font-size='26' fill='white'%3EEFIC%3C/text%3E%3C/svg%3E")
+SLIDE_SVG = ('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%271600%27 height=%27900%27%3E'
+             '%3Crect width=%271600%27 height=%27900%27 fill=%27%232B3753%27/%3E%3Ccircle cx=%271180%27 cy=%27300%27 r=%27380%27 fill=%27%23E7B165%27 opacity=%270.22%27/%3E'
+             '%3Crect x=%27120%27 y=%27180%27 width=%27520%27 height=%2730%27 fill=%27white%27 opacity=%270.15%27/%3E%3C/svg%3E')
 MENU = ['Quality Management', '_ISO Compliance', '_Certification', 'Logistics', '_Supplier Audits',
         '_Risk Management', '_Supply Chain Optimization', '_Trade Facilitation', 'Business Process Optimization',
         '_Project Management', '_Process Mapping', 'contact', 'Our Services', '_Client Interest Form', 'News']
@@ -169,6 +172,20 @@ def render(page):
         name = re.search(r"name='([^']*)'", attrs)
         widgets = re.findall(r"(<b:widget id='([^']+)'[^>]*?title='([^']*)'[^>]*?type='([^']+)'.*?</b:widget>)", inner, re.S)
         out = ''.join(widget_html(wid, html.unescape(t), wt, src) for src, wid, t, wt in widgets)
+        if sid == 'slideshow' and page != 'layout':
+            # Preview only: slides added the way an owner would (Image, HTML and Text gadgets).
+            out += ("<div class='widget Image' id='Image1'><h2>ISO 9001 Readiness Workshops</h2><div class='widget-content'>"
+                    "<a href='#section-2'><img id='Image1_img' alt='Workshop' width='1600' height='900' src=\"" + SLIDE_SVG + "\"/></a>"
+                    "<br/><span class='caption'>Practical certification support for growing businesses</span></div></div>"
+                    "<div class='widget HTML' id='HTML10'><h2 class='title'>EFIC in 90 seconds</h2><div class='widget-content'>"
+                    "https://www.youtube.com/watch?v=2bjBiOVQrUs</div></div>"
+                    "<div class='widget Text' id='Text2'><h2 class='title'>Now serving Mombasa</h2><div class='widget-content'>"
+                    "Our new branch opens on 1 November (sample slide)</div></div>")
+        if sid == 'office-contacts' and page != 'layout':
+            # Preview only: a branch added the way an owner would, as a Text gadget.
+            out += ("<div class='widget Text' id='Text1'><h2 class='title'>Mombasa Branch (sample)</h2>"
+                    "<div class='widget-content'>Moi Avenue, Mombasa, Kenya<br>mombasa@example.com<br>"
+                    "Tel: +254 700 000 000<br>Mon-Fri 8:00-17:00</div></div>")
         if page == 'layout':
             out = f"<h4>{html.escape(html.unescape(name.group(1)) if name else sid)}</h4>" + out + "<div class='add_widget'><a href='#'>Add a Gadget</a></div>"
         return f"<div class='section {cls}' id='{sid}' data-section-name='{html.escape(name.group(1) if name else sid)}'>{out}</div>"

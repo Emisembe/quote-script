@@ -445,6 +445,386 @@ sub("""      <div style='clear:both'/>
 # Leftover non-HTML <whatsapp> tag from the template (the real button is wat-art)
 resub(r"<whatsapp expr:href='data:post.url' expr:src='data:post.firstImageUrl' expr:text='data:post.title'/>\n", '')
 
+# Office contacts: the hard-coded address/email/WhatsApp list becomes a Layout
+# section of gadgets, one per office. The owner types plain lines (address,
+# email, phone, hours); the footer script turns them into cards with icons,
+# click-to-call/mail/WhatsApp links and a "Get directions" link.
+GADGET_MAIN = """<b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>"""
+resub(r"<div class='contact_list_wrapper'>\s*<ul class='contact-list-info'>.*?</ul>\s*</div>",
+      f"""<div class='office-contacts-wrap'>
+<b:section class='office-contacts' id='office-contacts' name='Office Contacts' showaddelement='yes'>
+  <b:widget id='HTML9' locked='false' title='Head Office' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[Tubman St. 100475-00101, Kenya<br/>
+askeficc@gmail.com<br/>
+WhatsApp: \U0001F1E9\U0001F1EA +49 123 3547892]]></b:widget-setting>
+    </b:widget-settings>
+    {GADGET_MAIN}
+  </b:widget>
+</b:section>
+</div>""")
+sub("body#layout .insta-wrap .contact-title, body#layout .insta-wrap .contact_list_wrapper, body#layout .map-me {",
+    "body#layout .office-contacts-wrap {\ndisplay: block !important;\n}\n"
+    "body#layout #office-contacts {\ndisplay: block !important;\n}\n"
+    "body#layout .insta-wrap .contact-title, body#layout .insta-wrap .contact_list_wrapper, body#layout .map-me {")
+
+# Language switcher in the menu bar: English, Kiswahili, Deutsch, Francais, Arabic.
+sub("\t<div class='menu-mobile'/>", """\t<div class='lang-switch notranslate' translate='no'>
+          <i aria-hidden='true' class='fa fa-globe'/>
+          <select aria-label='Language' class='lang-select' id='lang-select'>
+            <option value='en'>English</option>
+            <option value='sw'>Kiswahili</option>
+            <option value='de'>Deutsch</option>
+            <option value='fr'>Fran&#231;ais</option>
+            <option lang='ar' value='ar'>&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;</option>
+          </select>
+        </div>
+        <div id='google_translate_element'/>
+\t<div class='menu-mobile'/>""")
+
+sub("</body>", """<script type='text/javascript'>
+//<![CDATA[
+// Office contact cards (Layout > Office Contacts). Each gadget: title = office
+// name, one plain line per detail. Gadgets with images, maps or tables are left as typed.
+(function () {
+  if (document.body.id === 'layout') { return; }
+  var EMAIL = /[^\\s@<>(),;:]+@[^\\s@<>(),;:]+\\.[a-z]{2,}/i;
+  var WEB = /^(https?:\\/\\/|www\\.)\\S+$/i;
+  var PHONE = /\\+?\\d[\\d\\s().\\/-]{5,}\\d/g;
+  var LABEL = /^(tel|telephone|phone|mobile|mob|cell|whatsapp|wa|office|fax|simu|landline|call|or|and)*$/;
+  var HOURS = /\\b(mon|tue|wed|thu|fri|sat|sun|daily|open|hours|closed)\\b|\\d{1,2}[:.]\\d{2}/i;
+  function lines(node) {
+    var html = node.innerHTML.replace(/<br\\s*\\/?>/gi, '\\n').replace(/<\\/(p|div|li|h[1-6])>/gi, '\\n');
+    var doc = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html');
+    return doc.body.textContent.split('\\n').map(function (l) { return l.replace(/\\s+/g, ' ').trim(); }).filter(Boolean);
+  }
+  function kind(l) {
+    if (EMAIL.test(l)) { return 'email'; }
+    if (WEB.test(l)) { return 'web'; }
+    var phones = l.match(PHONE);
+    if (phones) {
+      var rest = l.replace(PHONE, '').replace(/[^a-z]/gi, '').toLowerCase();
+      if (LABEL.test(rest)) { return /whats\\s*app/i.test(l) ? 'whatsapp' : 'phone'; }
+    }
+    return HOURS.test(l) ? 'hours' : 'address';
+  }
+  function row(icon, cls, keep) {
+    var r = document.createElement('div'), i = document.createElement('i'), v = document.createElement('div');
+    r.className = 'office-row office-' + cls + (keep ? ' notranslate' : '');
+    if (keep) { r.setAttribute('translate', 'no'); }
+    i.className = 'fa ' + icon; i.setAttribute('aria-hidden', 'true');
+    v.className = 'office-val';
+    r.appendChild(i); r.appendChild(v);
+    return {row: r, val: v};
+  }
+  function link(href, label, external) {
+    var a = document.createElement('a');
+    a.href = href; a.textContent = label;
+    if (external) { a.target = '_blank'; a.rel = 'noopener'; }
+    return a;
+  }
+  // Text with every phone number turned into a tel: (or WhatsApp) link.
+  function phoneText(target, l, wa) {
+    var last = 0, m;
+    PHONE.lastIndex = 0;
+    while ((m = PHONE.exec(l))) {
+      if (m.index > last) { target.appendChild(document.createTextNode(l.slice(last, m.index))); }
+      var digits = m[0].replace(/[^\\d+]/g, '');
+      var href = wa && digits.charAt(0) === '+' ? 'https://wa.me/' + digits.slice(1) : 'tel:' + digits;
+      target.appendChild(link(href, m[0], href.indexOf('https') === 0));
+      last = m.index + m[0].length;
+    }
+    if (last < l.length) { target.appendChild(document.createTextNode(l.slice(last))); }
+  }
+  var cards = document.querySelectorAll('#office-contacts .widget');
+  for (var c = 0; c < cards.length; c++) {
+    var box = cards[c].querySelector('.widget-content');
+    cards[c].className += ' office-card';
+    if (!box || box.querySelector('iframe, img, table, script')) { continue; }
+    var ls = lines(box), out = document.createDocumentFragment(), addr = [], r;
+    var flush = function () {
+      if (!addr.length) { return; }
+      var a = row('fa-map-marker', 'address', false);
+      var place = document.createElement('span');
+      place.className = 'notranslate'; place.setAttribute('translate', 'no');
+      place.textContent = addr.join('\\n');
+      var dir = link('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addr.join(', ')), 'Get directions', true);
+      dir.className = 'office-dir';
+      a.val.appendChild(place); a.val.appendChild(document.createElement('br')); a.val.appendChild(dir);
+      out.appendChild(a.row); addr = [];
+    };
+    for (var i = 0; i < ls.length; i++) {
+      var l = ls[i], k = kind(l);
+      if (k === 'address') { addr.push(l); continue; }
+      flush();
+      if (k === 'email') {
+        r = row('fa-envelope', 'email', true);
+        var em = l.match(EMAIL)[0];
+        r.val.appendChild(document.createTextNode(l.slice(0, l.indexOf(em))));
+        r.val.appendChild(link('mailto:' + em, em));
+        r.val.appendChild(document.createTextNode(l.slice(l.indexOf(em) + em.length)));
+      } else if (k === 'web') {
+        r = row('fa-globe', 'web', true);
+        r.val.appendChild(link(/^https?:/i.test(l) ? l : 'https://' + l, l.replace(/^https?:\\/\\//i, ''), true));
+      } else if (k === 'whatsapp' || k === 'phone') {
+        r = row(k === 'whatsapp' ? 'fa-whatsapp' : 'fa-phone', k, true);
+        phoneText(r.val, l, k === 'whatsapp');
+      } else {
+        r = row('fa-clock-o', 'hours', false);
+        r.val.textContent = l;
+      }
+      out.appendChild(r.row);
+    }
+    flush();
+    box.innerHTML = '';
+    box.appendChild(out);
+  }
+})();
+
+// Desktop menu: if the Layout menu needs more than one row, use the hamburger instead.
+(function () {
+  var root = document.documentElement, timer = null;
+  function fit() {
+    if (window.innerWidth <= 1180) { root.className = root.className.replace(/\\s*menu-overflow/g, ''); return; }
+    root.className = root.className.replace(/\\s*menu-overflow/g, '');
+    var items = document.querySelectorAll('#nav1 > li'), tops = {}, rows = 0;
+    for (var i = 0; i < items.length; i++) {
+      if (!items[i].offsetHeight) { continue; }
+      var t = Math.round(items[i].getBoundingClientRect().top);
+      if (!tops[t]) { tops[t] = true; rows++; }
+    }
+    if (rows > 1) { root.className += ' menu-overflow'; }
+  }
+  window.addEventListener('load', fit);
+  window.addEventListener('resize', function () { clearTimeout(timer); timer = setTimeout(fit, 120); });
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fit); }
+})();
+
+// Language switcher (menu bar). The page is written in English; other languages
+// come from Google's website translation, loaded only when a visitor picks one.
+// If that script cannot load, the same page opens through translate.goog instead.
+(function () {
+  var sel = document.getElementById('lang-select');
+  if (!sel || document.body.id === 'layout') { return; }
+  var LANGS = ['en', 'sw', 'de', 'fr', 'ar'], RTL = {ar: true};
+  var root = document.documentElement, host = location.hostname;
+  var proxied = /\\.translate\\.goog$/.test(host);
+  function cookieLang() { var m = document.cookie.match(/(?:^|;\\s*)googtrans=\\/[a-z-]*\\/([a-z-]+)/i); return m ? m[1] : ''; }
+  function proxyLang() { var m = location.search.match(/[?&]_x_tr_tl=([a-z-]+)/i); return m ? m[1] : ''; }
+  function writeCookie(lang) {
+    var value = lang ? '/en/' + lang : '', end = lang ? '' : '; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    var domains = ['', '; domain=' + host, '; domain=.' + host];
+    for (var d = 0; d < domains.length; d++) { document.cookie = 'googtrans=' + value + '; path=/' + domains[d] + end; }
+  }
+  function cleanSearch() {
+    var p = location.search.replace(/^\\?/, '').split('&').filter(function (x) { return x && !/^_x_tr_/.test(x); });
+    return p.length ? '?' + p.join('&') : '';
+  }
+  function siteHost() {
+    if (!proxied) { return host; }
+    return host.replace(/\\.translate\\.goog$/, '').split('--').map(function (part) { return part.replace(/-/g, '.'); }).join('-');
+  }
+  function proxyUrl(lang) {
+    var q = cleanSearch();
+    q += (q ? '&' : '?') + '_x_tr_sl=en&_x_tr_tl=' + lang + '&_x_tr_hl=' + lang;
+    return 'https://' + siteHost().replace(/-/g, '--').replace(/\\./g, '-') + '.translate.goog' + location.pathname + q + location.hash;
+  }
+  function useProxy() { try { return sessionStorage.getItem('eficTrProxy') === '1'; } catch (e) { return false; } }
+  var cur = (proxied ? proxyLang() : cookieLang()) || 'en';
+  if (LANGS.indexOf(cur) < 0) { cur = 'en'; }
+  sel.value = cur;
+  // Names, addresses and contact details stay exactly as written.
+  var keep = document.querySelectorAll('#header h1, .footer-copy [itemprop=name], #menu-logo, .foot-logo');
+  for (var k = 0; k < keep.length; k++) { keep[k].className += ' notranslate'; keep[k].setAttribute('translate', 'no'); }
+  if (RTL[cur]) {
+    root.className += ' efic-rtl';
+    var font = document.createElement('link');
+    font.rel = 'stylesheet';
+    font.href = 'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap';
+    document.head.appendChild(font);
+  }
+  sel.addEventListener('change', function () {
+    var lang = sel.value;
+    if (proxied) { location.href = lang === 'en' ? 'https://' + siteHost() + location.pathname + cleanSearch() + location.hash : proxyUrl(lang); return; }
+    writeCookie(lang === 'en' ? '' : lang);
+    if (lang !== 'en' && useProxy()) { writeCookie(''); location.href = proxyUrl(lang); return; }
+    location.reload();
+  });
+  if (proxied || cur === 'en') { return; }
+  var failed = false;
+  var fail = function () {
+    if (failed) { return; }
+    failed = true;
+    try { sessionStorage.setItem('eficTrProxy', '1'); } catch (e) {}
+    writeCookie('');
+    location.href = proxyUrl(cur);
+  };
+  window.googleTranslateElementInit = function () {
+    try {
+      new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: LANGS.join(','), autoDisplay: false}, 'google_translate_element');
+    } catch (e) { fail(); }
+  };
+  var s = document.createElement('script');
+  s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+  s.async = true;
+  s.onerror = fail;
+  document.body.appendChild(s);
+  setTimeout(function () { if (!(window.google && google.translate && google.translate.TranslateElement)) { fail(); } }, 15000);
+})();
+//]]>
+</script>
+</body>""")
+
+# Slideshow below the menu bar (homepage). Layout > Slideshow: one gadget per slide.
+# Image gadget = photo slide (title, caption, link); HTML/JavaScript or Text gadget
+# with a YouTube link = video slide; gadget order = slide order. Empty = no slideshow.
+sub("<div id='header-wrapper'>", """<div class='efic-slider-wrap'>
+<b:section class='efic-slides' id='slideshow' name='Slideshow (homepage, below the menu)' showaddelement='yes'>
+</b:section>
+</div>
+<div id='header-wrapper'>""")
+sub("body#layout .office-contacts-wrap {", "body#layout .efic-slider-wrap {\ndisplay: block !important;\npadding: 0 !important;\nbackground: #fff !important;\n}\nbody#layout .office-contacts-wrap {")
+sub("""// Desktop menu: if the Layout menu needs more than one row""", """// Slideshow (Layout > Slideshow): photos from Image gadgets, YouTube links from
+// HTML/JavaScript or Text gadgets, text-only slides from anything else.
+(function () {
+  var sec = document.getElementById('slideshow');
+  if (!sec || document.body.id === 'layout') { return; }
+  var wrap = sec.parentNode, outer = document.getElementById('outer-wrapper');
+  var YT = /(?:youtube(?:-nocookie)?\\.com\\/(?:watch\\?(?:[^#\\s"']*&(?:amp;)?)?v=|embed\\/|shorts\\/|live\\/)|youtu\\.be\\/)([A-Za-z0-9_-]{11})/;
+  var IMG_URL = /^https?:\\/\\/\\S+\\.(?:jpe?g|png|webp|gif)(?:\\?\\S*)?$|^https:\\/\\/(?:blogger\\.googleusercontent\\.com|[1-4]\\.bp\\.blogspot\\.com)\\/\\S+$/i;
+  // Blogger image links carry a size; ask for a sharp 1920 px version.
+  function sharp(src) {
+    if (!/googleusercontent\\.com|bp\\.blogspot\\.com/.test(src)) { return src; }
+    return src.replace(/\\/(?:s\\d+|w\\d+-h\\d+)(?:-[a-z0-9-]*)?\\//i, '/s1920/').replace(/=(?:s\\d+|w\\d+-h\\d+)(?:-[a-z0-9-]*)?$/i, '=s1920');
+  }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) { e.className = cls; } if (text) { e.textContent = text; } return e; }
+  var slides = [], ws = sec.querySelectorAll('.widget');
+  for (var i = 0; i < ws.length; i++) {
+    var w = ws[i], box = w.querySelector('.widget-content') || w, h = w.querySelector('h2');
+    var title = h ? h.textContent.trim() : '', text = box.textContent.replace(/\\s+/g, ' ').trim();
+    var frame = box.querySelector('iframe[src*="youtu"]'), a = box.querySelector('a[href]'), img = box.querySelector('img'), cap = box.querySelector('.caption');
+    var m = (frame && frame.src.match(YT)) || (a && a.href.match(YT)) || box.innerHTML.match(YT);
+    var s = {title: title, video: m ? m[1] : '', img: '', alt: '', link: '', caption: ''};
+    if (!s.video && img) { s.img = sharp(img.currentSrc || img.src); s.alt = img.alt || title; }
+    if (!s.video && !s.img && IMG_URL.test(text)) { s.img = sharp(text); s.alt = title; text = ''; }
+    if (a && !s.video && !/^javascript:/i.test(a.getAttribute('href'))) { s.link = a.href; }
+    s.caption = cap ? cap.textContent.trim() : text.replace(/https?:\\/\\/\\S+/g, '').replace(/\\s+/g, ' ').trim();
+    if (s.caption === title) { s.caption = ''; }
+    if (s.video || s.img || s.title || s.caption) { slides.push(s); }
+  }
+  if (!slides.length) { return; }
+
+  var root = el('div', 'efic-slider'), track = el('div', 'es-track'), items = [], dots = [], cur = 0, timer = null;
+  var paused = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, hover = false, playing = false;
+  root.setAttribute('role', 'region'); root.setAttribute('aria-roledescription', 'carousel'); root.setAttribute('aria-label', 'Highlights');
+  function stopVideo(item) {
+    var f = item.querySelector('iframe');
+    if (f) { f.parentNode.replaceChild(item.thumb, f); playing = false; root.className = root.className.replace(/\\s*is-playing/g, ''); }
+  }
+  function thumbFor(id, title) {
+    var b = el('button', 'es-media es-video'), t = el('img');
+    b.type = 'button'; b.setAttribute('aria-label', 'Play video' + (title ? ': ' + title : ''));
+    t.alt = ''; t.loading = 'lazy'; t.src = 'https://i.ytimg.com/vi/' + id + '/maxresdefault.jpg';
+    t.onload = function () { if (t.naturalWidth <= 120) { t.onload = null; t.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg'; } };
+    b.appendChild(t); b.appendChild(el('span', 'es-play'));
+    b.addEventListener('click', function () {
+      var f = el('iframe');
+      f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&playsinline=1';
+      f.title = title || 'Video'; f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen'); f.setAttribute('allowfullscreen', '');
+      f.className = 'es-media';
+      b.parentNode.replaceChild(f, b); playing = true; root.className += ' is-playing'; schedule();
+    });
+    return b;
+  }
+  slides.forEach(function (s, n) {
+    var item = el('div', 'es-slide' + (s.video ? ' is-video' : s.img ? '' : ' is-text'));
+    item.setAttribute('role', 'group'); item.setAttribute('aria-roledescription', 'slide');
+    item.setAttribute('aria-label', (n + 1) + ' / ' + slides.length + (s.title ? ': ' + s.title : ''));
+    if (s.video) { item.thumb = thumbFor(s.video, s.title); item.appendChild(item.thumb); }
+    else if (s.img) {
+      var im = el('img'); im.src = s.img; im.alt = s.alt; if (n) { im.loading = 'lazy'; }
+      if (s.link) { var ln = el('a', 'es-media'); ln.href = s.link; ln.appendChild(im); item.appendChild(ln); } else { im.className = 'es-media'; item.appendChild(im); }
+    }
+    if (s.title || s.caption) {
+      var c = el('div', 'es-caption');
+      if (s.title) { c.appendChild(el('h3', '', s.title)); }
+      if (s.caption) { c.appendChild(el('p', '', s.caption)); }
+      if (s.link && !s.img) { var more = el('a', 'efic-btn efic-btn-gold', 'Learn more'); more.href = s.link; c.appendChild(more); }
+      item.appendChild(c);
+    }
+    items.push(item); track.appendChild(item);
+  });
+  root.appendChild(track);
+  function show(n, focusDot) {
+    if (items[cur].thumb) { stopVideo(items[cur]); }
+    cur = (n + items.length) % items.length;
+    for (var k = 0; k < items.length; k++) {
+      var on = k === cur;
+      items[k].className = items[k].className.replace(/\\s*is-active/g, '') + (on ? ' is-active' : '');
+      items[k].setAttribute('aria-hidden', on ? 'false' : 'true');
+      var f = items[k].querySelectorAll('a, button');
+      for (var j = 0; j < f.length; j++) { f[j].tabIndex = on ? 0 : -1; }
+      if (dots[k]) { dots[k].setAttribute('aria-current', on ? 'true' : 'false'); }
+    }
+    if (focusDot && dots[cur]) { dots[cur].focus(); }
+    schedule();
+  }
+  function schedule() {
+    clearTimeout(timer);
+    if (items.length > 1 && !paused && !hover && !playing) { timer = setTimeout(function () { if (!document.hidden) { show(cur + 1); } else { schedule(); } }, 6000); }
+  }
+  if (items.length > 1) {
+    var prev = el('button', 'es-arrow es-prev'), next = el('button', 'es-arrow es-next'), nav = el('div', 'es-dots'), pause = el('button', 'es-pause');
+    prev.type = next.type = pause.type = 'button';
+    prev.setAttribute('aria-label', 'Previous slide'); next.setAttribute('aria-label', 'Next slide');
+    prev.innerHTML = '<i class="fa fa-chevron-left" aria-hidden="true"></i>'; next.innerHTML = '<i class="fa fa-chevron-right" aria-hidden="true"></i>';
+    prev.addEventListener('click', function () { show(cur - 1); });
+    next.addEventListener('click', function () { show(cur + 1); });
+    items.forEach(function (it, n) {
+      var d = el('button', 'es-dot'); d.type = 'button'; d.setAttribute('aria-label', 'Slide ' + (n + 1));
+      d.addEventListener('click', function () { show(n); }); dots.push(d); nav.appendChild(d);
+    });
+    var setPause = function () {
+      pause.setAttribute('aria-label', paused ? 'Play slideshow' : 'Pause slideshow');
+      pause.innerHTML = '<i class="fa fa-' + (paused ? 'play' : 'pause') + '" aria-hidden="true"></i>';
+    };
+    pause.addEventListener('click', function () { paused = !paused; setPause(); schedule(); });
+    setPause();
+    root.appendChild(prev); root.appendChild(next); root.appendChild(nav); root.appendChild(pause);
+    root.addEventListener('mouseenter', function () { hover = true; schedule(); });
+    root.addEventListener('mouseleave', function () { hover = false; schedule(); });
+    root.addEventListener('focusin', function () { hover = true; schedule(); });
+    root.addEventListener('focusout', function () { hover = false; schedule(); });
+    root.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') { show(cur - 1, true); } else if (e.key === 'ArrowRight') { show(cur + 1, true); }
+    });
+    var x0 = null, y0 = 0;
+    root.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, {passive: true});
+    root.addEventListener('touchend', function (e) {
+      if (x0 === null) { return; }
+      var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { show(cur + (dx < 0 ? 1 : -1)); }
+    }, {passive: true});
+  }
+  sec.style.display = 'none';
+  wrap.appendChild(root);
+  wrap.className += ' has-slides';
+  if (outer) { outer.className += ' has-slider'; }
+  show(0);
+})();
+
+// Desktop menu: if the Layout menu needs more than one row""")
+
 out = text
 if '--check' in sys.argv:
     if not OUT.exists() or OUT.read_text(encoding='utf-8') != out:

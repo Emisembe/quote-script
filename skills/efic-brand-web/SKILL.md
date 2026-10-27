@@ -95,6 +95,14 @@ Keep these in mind when touching the theme itself (`blogger-theme/` in the `emis
 - Every section must stay visible and clickable in **Layout** (`body#layout`): no fixed heights, no `display:none` from responsive rules, plain backgrounds so section names are readable.
 - Share bar on posts **and** pages (`data:blog.pageType in {"static_page","item"}`).
 - Homepage detection also checks `data:blog.canonicalUrl` (Facebook `?fbclid=` links).
+- **Languages:** the menu bar has a switcher for English, Kiswahili, Deutsch, Français and العربية. Google translation is loaded only on demand, with a `translate.goog` fallback. Arabic is right-to-left with the Cairo font. Company name, logo and contact details are `notranslate`. The switcher is a white-on-navy `<select>` with a gold globe and chevron. Recipe in `blogger-theme-builder` → `references/patterns.md`.
+- **Office Contacts** (Layout section in the homepage contact area): one gadget per office, plain lines. They render as white cards with a gold left edge, navy icon discs with gold icons, navy bold links and a gold-underlined *Get directions*. The Head Office gadget (`HTML9`) holds the details that used to be hard-coded.
+- **Slideshow (homepage, below the menu)**: Image gadgets give photo slides, YouTube links in HTML/Text gadgets give video slides. Brand treatment:
+  - Captions have a navy gradient, a white Montserrat headline and a short gold bar.
+  - The play button is a gold disc with a navy triangle. The active dot is gold. Arrows and pause are navy discs that turn gold with navy icons on hover.
+  - With slides, the homepage menu bar is solid navy, not see-through, and the hero becomes a compact band. Keep its content above the navy tint (`.fenix-head { position: relative; z-index: 1 }`).
+- **Menu bar** is solid `#14213D`. A semi-transparent bar let slide captions show through. The bar is up to 1400 px wide on big screens and switches itself to the hamburger whenever the Layout menu would wrap.
+- **Tests:** `blogger-theme/tests/`: `full.js` (menus, hamburger, share links), `langtest.js` (switcher placement at 320-1920 px, translation, fallback, office cards) and `slidetest.js` (slides, timing, video, swipe, reduced motion, empty section). Run them after `build.py` and `preview.py`; all must pass before a theme goes to the user.
 - The theme's audit checks run on every build; a passing preview is not proof Blogger accepts it, so always tell the user the upload is the real test.
 
 ## 6. Verification checklist
