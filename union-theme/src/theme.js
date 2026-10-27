@@ -160,8 +160,26 @@
     linkedin: 'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11.75H3V9.75zm6.5 0h3.8v1.6h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6.1v6.1h-4v-5.4c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.5h-4V9.75z',
     tiktok: 'M16.6 2h-3.4v13.4a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .8.1V9.1a6.4 6.4 0 1 0 5.5 6.3V8.6a8 8 0 0 0 4.6 1.5V6.7a4.7 4.7 0 0 1-4.6-4.7z',
     whatsapp: 'M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.1.3.7 1.1 1.5 1.8 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z',
-    email: 'M2 5h20v14H2V5zm2 2v.5l8 5 8-5V7H4zm16 2.8-8 5-8-5V17h16V9.8z'
+    email: 'M2 5h20v14H2V5zm2 2v.5l8 5 8-5V7H4zm16 2.8-8 5-8-5V17h16V9.8z',
+    telegram: 'M21.9 4.3l-3.3 15.5c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6 13.4l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.5 2.9c.9-.3 1.7.2 1.4 1.4z',
+    reddit: 'M22 12.1a2.2 2.2 0 0 0-3.7-1.6 10.8 10.8 0 0 0-5.8-1.8l1-4.6 3.2.7a1.6 1.6 0 1 0 .2-1l-3.6-.8a.5.5 0 0 0-.6.4l-1.1 5.3a10.8 10.8 0 0 0-5.9 1.8A2.2 2.2 0 1 0 3.3 14a4.3 4.3 0 0 0 0 .6c0 3.3 3.9 6 8.7 6s8.7-2.7 8.7-6a4.3 4.3 0 0 0 0-.6 2.2 2.2 0 0 0 1.3-1.9zM7.3 13.6a1.6 1.6 0 1 1 1.6 1.6 1.6 1.6 0 0 1-1.6-1.6zm8.8 4.1a5.6 5.6 0 0 1-4.1 1.3 5.6 5.6 0 0 1-4.1-1.3.4.4 0 0 1 .5-.5 4.8 4.8 0 0 0 3.6 1.1 4.8 4.8 0 0 0 3.6-1.1.4.4 0 1 1 .5.5zm-.3-2.5a1.6 1.6 0 1 1 1.6-1.6 1.6 1.6 0 0 1-1.6 1.6z',
+    pinterest: 'M12 2a10 10 0 0 0-3.6 19.3c-.1-.8-.2-2 0-2.9l1.2-5s-.3-.6-.3-1.5c0-1.4.8-2.4 1.8-2.4.9 0 1.3.6 1.3 1.4 0 .9-.5 2.2-.8 3.4-.2 1 .5 1.8 1.5 1.8 1.8 0 3.2-1.9 3.2-4.6 0-2.4-1.7-4.1-4.2-4.1-2.9 0-4.5 2.1-4.5 4.4 0 .9.3 1.8.8 2.3.1.1.1.2.1.3l-.3 1.2c0 .2-.2.2-.4.1-1.3-.6-2.1-2.5-2.1-4 0-3.3 2.4-6.3 6.9-6.3 3.6 0 6.4 2.6 6.4 6 0 3.6-2.3 6.5-5.4 6.5-1 0-2-.5-2.4-1.2l-.6 2.5c-.2.9-.9 2.1-1.3 2.8A10 10 0 1 0 12 2z',
+    share: 'M18 15.5a3 3 0 0 0-2.3 1.1l-6.8-3.4a3 3 0 0 0 0-2.4l6.8-3.4a3 3 0 1 0-.7-1.5L8.2 9.3a3 3 0 1 0 0 5.4l6.8 3.4A3 3 0 1 0 18 15.5z',
+    link: 'M10.6 13.4a1 1 0 0 1 0-1.4l3.5-3.5a1 1 0 1 1 1.4 1.4L12 13.4a1 1 0 0 1-1.4 0zM8.5 20.5a5 5 0 0 1-3.5-8.5l2.1-2.1a1 1 0 0 1 1.4 1.4l-2.1 2.1a3 3 0 0 0 4.2 4.2l2.1-2.1a1 1 0 0 1 1.4 1.4L12 19a5 5 0 0 1-3.5 1.5zm8.4-6.2a1 1 0 0 1-.7-1.7l2.1-2.1a3 3 0 0 0-4.2-4.2L12 8.4A1 1 0 0 1 10.6 7l2.1-2.1a5 5 0 0 1 7 7l-2.1 2.1a1 1 0 0 1-.7.3z',
+    print: 'M7 3h10v4H7zM5 8h14a3 3 0 0 1 3 3v6h-4v4H6v-4H2v-6a3 3 0 0 1 3-3zm3 7v4h8v-4z'
   };
+  function iconSvg(name) {
+    var ns = 'http://www.w3.org/2000/svg';
+    var icon = doc.createElementNS(ns, 'svg');
+    icon.setAttribute('viewBox', '0 0 24 24');
+    icon.setAttribute('class', 'social-icon');
+    icon.setAttribute('aria-hidden', 'true');
+    var path = doc.createElementNS(ns, 'path');
+    path.setAttribute('d', ICONS[name]);
+    path.setAttribute('fill-rule', 'evenodd');
+    icon.appendChild(path);
+    return icon;
+  }
   function networkOf(href) {
     var h = (href || '').toLowerCase();
     if (h.indexOf('mailto:') === 0) return 'email';
@@ -181,15 +199,7 @@
     if (!net) continue;
     var label = a.textContent.trim();
     a.textContent = '';
-    var ns = 'http://www.w3.org/2000/svg';
-    var icon = doc.createElementNS(ns, 'svg');
-    icon.setAttribute('viewBox', '0 0 24 24');
-    icon.setAttribute('class', 'social-icon');
-    icon.setAttribute('aria-hidden', 'true');
-    var path = doc.createElementNS(ns, 'path');
-    path.setAttribute('d', ICONS[net]);
-    icon.appendChild(path);
-    a.appendChild(icon);
+    a.appendChild(iconSvg(net));
     a.appendChild(el('span', { className: 'social-text', text: label }));
     a.classList.add('has-icon');
     a.setAttribute('title', label);
@@ -493,23 +503,136 @@
     }
   }
 
-  // Copy-link share button
-  var copyBtns = doc.querySelectorAll('[data-copy-url]');
-  for (var cb = 0; cb < copyBtns.length; cb++) {
-    copyBtns[cb].addEventListener('click', function () {
-      var btn = this;
-      var url = btn.getAttribute('data-copy-url');
-      var done = function () {
-        var text = btn.textContent;
-        btn.textContent = 'Copied';
-        setTimeout(function () { btn.textContent = text; }, 1600);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link:', url); });
-      } else {
-        window.prompt('Copy this link:', url);
+  // ---------------------------------------------------------------- share + print (every post and page)
+  function enc(v) { return encodeURIComponent(v || ''); }
+  var NETWORKS = [
+    ['whatsapp', 'WhatsApp', function (u, t) { return 'https://api.whatsapp.com/send?text=' + enc(t + ' ' + u); }],
+    ['facebook', 'Facebook', function (u) { return 'https://www.facebook.com/sharer/sharer.php?u=' + enc(u); }],
+    ['x', 'X (Twitter)', function (u, t) { return 'https://x.com/intent/tweet?url=' + enc(u) + '&text=' + enc(t); }],
+    ['linkedin', 'LinkedIn', function (u) { return 'https://www.linkedin.com/sharing/share-offsite/?url=' + enc(u); }],
+    ['telegram', 'Telegram', function (u, t) { return 'https://t.me/share/url?url=' + enc(u) + '&text=' + enc(t); }],
+    ['reddit', 'Reddit', function (u, t) { return 'https://www.reddit.com/submit?url=' + enc(u) + '&title=' + enc(t); }],
+    ['pinterest', 'Pinterest', function (u, t, img) {
+      return 'https://www.pinterest.com/pin/create/button/?url=' + enc(u) + (img ? '&media=' + enc(img) : '') + '&description=' + enc(t);
+    }],
+    ['email', 'Email', function (u, t) { return 'mailto:?subject=' + enc(t) + '&body=' + enc(t + '\n\n' + u); }]
+  ];
+  function shareButton(cls, label, icon, showText) {
+    var btn = el('button', { type: 'button', className: 'share-btn ' + cls, title: label, 'aria-label': label }, [iconSvg(icon)]);
+    btn.appendChild(el('span', { className: showText ? 'share-text' : 'share-text sr-only', text: label }));
+    return btn;
+  }
+  var shareBars = doc.querySelectorAll('.post-share');
+  for (var sb = 0; sb < shareBars.length; sb++) {
+    (function (bar) {
+      var holder = bar.querySelector('.share-buttons');
+      if (!holder) return;
+      // Clean address: no ?m=1 / tracking parameters / #anchors
+      var url = (bar.getAttribute('data-url') || window.location.href).split(/[?#]/)[0];
+      var title = (bar.getAttribute('data-title') || doc.title).trim();
+      var article = bar.parentNode;
+      var firstImg = article.querySelector('.post-body img');
+      var img = firstImg ? firstImg.src : '';
+      holder.textContent = '';
+      NETWORKS.forEach(function (n) {
+        var link = el('a', { className: 'share-btn share-' + n[0], href: n[2](url, title, img), title: 'Share on ' + n[1],
+          'aria-label': 'Share on ' + n[1], rel: 'nofollow noopener', target: n[0] === 'email' ? null : '_blank' }, [iconSvg(n[0])]);
+        link.appendChild(el('span', { className: 'share-text sr-only', text: n[1] }));
+        holder.appendChild(link);
+      });
+      // Phones: the system share sheet reaches every installed app (Instagram, Signal, SMS...)
+      if (navigator.share) {
+        var more = shareButton('share-native', 'More apps', 'share');
+        more.addEventListener('click', function () {
+          navigator.share({ title: title, url: url })['catch'](function () {});
+        });
+        holder.appendChild(more);
       }
+      var copyBtn = shareButton('share-copy', 'Copy link', 'link', true);
+      copyBtn.addEventListener('click', function () {
+        var text = copyBtn.querySelector('.share-text');
+        var done = function () {
+          text.textContent = 'Copied!';
+          setTimeout(function () { text.textContent = 'Copy link'; }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link:', url); });
+        } else {
+          window.prompt('Copy this link:', url);
+        }
+      });
+      holder.appendChild(copyBtn);
+      var printBtn = shareButton('share-print', 'Print', 'print', true);
+      printBtn.addEventListener('click', function () { window.print(); });
+      holder.appendChild(printBtn);
+    })(shareBars[sb]);
+  }
+  // Load every lazy image in the post before printing, so none print blank
+  window.addEventListener('beforeprint', function () {
+    var imgs = doc.querySelectorAll('.post-body img[loading]');
+    for (var k = 0; k < imgs.length; k++) imgs[k].removeAttribute('loading');
+  });
+
+  // ---------------------------------------------------------------- language (Google Translate)
+  var picker = doc.querySelector('.lang-picker');
+  var langLinks = picker ? picker.querySelectorAll('a[data-lang]') : [];
+  if (picker && langLinks.length) {
+    // The first language in the gadget is the language the blog is written in
+    var original = langLinks[0].getAttribute('data-lang');
+    var saved = doc.cookie.match(/(?:^|;\s*)googtrans=\/[^\/;]*\/([^;]+)/);
+    var active = saved ? decodeURIComponent(saved[1]) : original;
+    var current = picker.querySelector('.lang-current');
+    var langToggle = picker.querySelector('.lang-toggle');
+    for (var ll = 0; ll < langLinks.length; ll++) {
+      var code = langLinks[ll].getAttribute('data-lang');
+      langLinks[ll].setAttribute('hreflang', code);
+      if (code === active) {
+        langLinks[ll].setAttribute('aria-current', 'true');
+        current.textContent = langLinks[ll].textContent.trim();
+        current.setAttribute('data-short', code.split('-')[0].toUpperCase());
+      }
+    }
+    if (!current.getAttribute('data-short')) current.setAttribute('data-short', original.split('-')[0].toUpperCase());
+    var setOpen = function (open) {
+      picker.classList.toggle('is-open', open);
+      langToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    langToggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setOpen(!picker.classList.contains('is-open'));
     });
+    doc.addEventListener('click', function (e) { if (!picker.contains(e.target)) setOpen(false); });
+    doc.addEventListener('keydown', function (e) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && picker.classList.contains('is-open')) { setOpen(false); langToggle.focus(); }
+    });
+    var setLanguage = function (code) {
+      var host = window.location.hostname;
+      var domains = ['', host, '.' + host];
+      var parts = host.split('.');
+      if (parts.length > 2) domains.push('.' + parts.slice(-2).join('.'));
+      domains.forEach(function (d) {
+        doc.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + (d ? '; domain=' + d : '');
+      });
+      if (code !== original) doc.cookie = 'googtrans=/' + original + '/' + code + '; path=/';
+      window.location.reload();
+    };
+    picker.addEventListener('click', function (e) {
+      var t = e.target.closest ? e.target.closest('a[data-lang]') : null;
+      if (!t) return;
+      e.preventDefault();
+      var code = t.getAttribute('data-lang');
+      if (code === active) { setOpen(false); return; }
+      setLanguage(code);
+    });
+    // Google's translator reads the googtrans cookie when its script loads. The footer Translate
+    // gadget loads that script; if that gadget was removed, load it here when a language is chosen.
+    if (active !== original && !doc.getElementById('google_translate_element')) {
+      doc.body.appendChild(el('div', { id: 'union-translate', hidden: 'hidden' }));
+      window.__unionTranslateInit = function () {
+        new window.google.translate.TranslateElement({ pageLanguage: original, autoDisplay: false }, 'union-translate');
+      };
+      doc.body.appendChild(el('script', { src: 'https://translate.google.com/translate_a/element.js?cb=__unionTranslateInit' }));
+    }
   }
 
   // Footer year

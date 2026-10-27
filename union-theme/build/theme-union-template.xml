@@ -191,7 +191,59 @@ a.badge-soft:hover { background: $(accent.color); color: #fff; }
   gap: 12px;
   min-height: 44px;
 }
-.topbar-social h2 { display: none; }
+.topbar-social h2, .topbar-lang h2 { display: none; }
+.topbar-social { flex: 0 1 auto; min-width: 0; }
+body .topbar-lang { margin-left: auto; } /* "body": beats Blogger's injected .section margin */
+.lang-picker { position: relative; }
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.lang-toggle:hover, .lang-picker.is-open .lang-toggle { background: $(accent.color); border-color: $(accent.color); }
+.lang-toggle::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 2px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+.lang-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 150;
+  min-width: 190px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 6px 0;
+  background: #fff;
+  border-radius: 6px;
+  border-top: 3px solid $(accent.color);
+  box-shadow: 0 14px 34px rgba(15, 30, 55, 0.16);
+  display: none;
+}
+.lang-picker.is-open .lang-menu { display: block; }
+.lang-menu a { display: block; padding: 9px 16px; font-size: 14px; color: $(text.color); }
+.lang-menu a:hover { background: $(page.background.color); color: $(accent.color); }
+.lang-menu a[aria-current='true'] { font-weight: 700; color: $(accent.color); }
+.lang-menu a[aria-current='true']::after { content: ' \2713'; }
+/* Google Translate: hide its top banner, tooltips and highlight so the design stays intact */
+iframe.goog-te-banner-frame, .goog-te-banner-frame, iframe.VIpgJd-ZVi9od-ORHb-OEVmcd,
+#goog-gt-tt, .goog-te-balloon-frame, .VIpgJd-yAWNEb-L7lbkb { display: none !important; }
+body { top: 0 !important; }
+.goog-text-highlight { background: none !important; box-shadow: none !important; }
 .social-list,
 .topbar-social .widget-content ul {
   display: flex;
@@ -253,7 +305,7 @@ a.badge-soft:hover { background: $(accent.color); color: #fff; }
 }
 .search-form button:hover { background: $(accent.dark.color); }
 .topbar-search {
-  flex: 0 1 300px;
+  flex: 0 1 280px;
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.18);
 }
@@ -1052,26 +1104,48 @@ a.feed-thumb:hover img,
 .post-body .tr-caption { font-size: 13px; color: $(muted.color); }
 .post-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 30px; }
 .post-tags-label, .post-share-label { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase; color: $(muted.color); margin-right: 4px; }
-.post-share { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 20px; padding: 16px 0; border-top: 1px solid $(border.color); border-bottom: 1px solid $(border.color); }
-.post-share a, .post-share button {
+.post-share { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-top: 24px; padding: 16px 0; border-top: 1px solid $(border.color); border-bottom: 1px solid $(border.color); }
+.share-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.share-btn {
   display: inline-flex;
   align-items: center;
-  min-height: 38px;
-  padding: 8px 14px;
+  justify-content: center;
+  gap: 8px;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 11px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 999px;
   font-size: 14px;
   font-weight: 600;
+  line-height: 1;
   color: #fff;
   background: $(primary.color);
   cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s;
 }
-.post-share .share-wa { background: #1E8E4E; }
-.post-share .share-fb { background: #1877F2; }
-.post-share .share-x { background: #111; }
-.post-share .share-in { background: #0A66C2; }
-.post-share button { background: $(band.background.color); color: $(primary.color); }
-.post-share a:hover, .post-share button:hover { opacity: 0.88; }
+.share-btn .social-icon { width: 18px; height: 18px; }
+.share-btn:hover { transform: translateY(-2px); opacity: 0.9; color: #fff; }
+.share-whatsapp { background: #1E8E4E; }
+.share-facebook { background: #1877F2; }
+.share-x { background: #111111; }
+.share-linkedin { background: #0A66C2; }
+.share-telegram { background: #229ED9; }
+.share-reddit { background: #FF4500; }
+.share-pinterest { background: #E60023; }
+.share-email { background: #5B6778; }
+.share-native { background: $(primary.color); }
+.share-copy, .share-print { background: $(band.background.color); color: $(primary.color); padding: 0 16px; }
+.share-copy:hover, .share-print:hover { color: $(primary.color); }
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.print-source { display: none; }
 .join-box {
   display: flex;
   flex-direction: column;
@@ -1237,7 +1311,8 @@ a.feed-thumb:hover img,
 }
 .footer-bottom p { margin: 0; }
 .footer-social { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
-.footer-credit .widget-content { font-size: 12px; color: #9AA8BC; }
+/* "Powered by Blogger" is hidden; the gadget stays so Blogger doesn't re-add it */
+.footer-credit, .Attribution { display: none !important; }
 @media (min-width: 900px) {
   .footer-bottom { flex-direction: row; justify-content: space-between; text-align: left; }
 }
@@ -1271,7 +1346,9 @@ a.feed-thumb:hover img,
   .hero-actions ul { justify-content: center; }
 }
 @media (max-width: 639px) {
-  .topbar-search { flex: 1 1 auto; max-width: 52%; }
+  .topbar-search { flex: 1 1 auto; max-width: 46%; }
+  .lang-current { font-size: 0; }
+  .lang-current::before { content: attr(data-short); font-size: 13px; }
   .topbar-social .widget-content a { width: 30px; height: 30px; }
   .brand-logo img { max-height: 48px; }
   .hero-actions li { flex: 1 1 100%; }
@@ -1287,9 +1364,39 @@ a.feed-thumb:hover img,
   .logo-list-small { justify-content: center; }
 }
 
+@media (max-width: 479px) {
+  .topbar-inner { flex-wrap: wrap; gap: 6px 10px; padding-top: 5px; padding-bottom: 8px; }
+  .topbar-search { order: 3; flex: 1 1 100%; max-width: none; }
+  .share-copy, .share-print { flex: 1 1 calc(50% - 4px); }
+}
+
+/* ---------- Print: just the article ---------- */
+@media print {
+  @page { margin: 16mm 14mm; }
+  html, body { background: #fff !important; color: #000; font-size: 11.5pt; }
+  .topbar, .site-header, .ticker, .home-only, .sidebar, .site-footer, .to-top, .skip-link,
+  .post-share, .join-box, .related, .comments, #comments, .blog-pager-nav, .breadcrumb,
+  .item-control, .post-tags, .feed-block, .navbar, iframe.skiptranslate { display: none !important; }
+  .page-main { padding: 0; }
+  .container { max-width: none; padding: 0; }
+  .main-grid { display: block; }
+  .post-single { box-shadow: none; border-radius: 0; padding: 0; }
+  .post-title { font-size: 22pt; color: #000; }
+  .post-meta { color: #333; }
+  .post-body { font-size: 11.5pt; line-height: 1.55; }
+  .post-body a { color: #000; }
+  .post-body a[href^='http']::after { content: ' (' attr(href) ')'; font-size: 9pt; color: #555; word-break: break-all; }
+  .post-body .separator a::after, .post-body a[href$='.jpg']::after, .post-body a[href$='.png']::after { content: none; }
+  .post-body img { max-width: 100% !important; height: auto !important; page-break-inside: avoid; break-inside: avoid; }
+  .post-body h2, .post-body h3 { page-break-after: avoid; break-after: avoid; }
+  .post-body blockquote { background: none; border-left-color: #000; }
+  .print-source { display: block; margin-top: 18pt; padding-top: 8pt; border-top: 1px solid #999; font-size: 9pt; color: #444; }
+}
+
 /* ---------- Layout editor (Theme > Layout) ---------- */
 body#layout .home-only,
-body#layout .nav-drawer { display: block !important; }
+body#layout .nav-drawer,
+body#layout .footer-credit { display: block !important; }
 body#layout .site-header { position: static; }
 body#layout .topbar-search,
 body#layout .nav-toggle,
@@ -1337,6 +1444,34 @@ body#layout .header-inner { display: block; }
 
   <b:include name='quickedit'/>
 </b:includable>
+      </b:widget>
+    </b:section>
+    <b:section class='topbar-lang' id='topbar-lang' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML33' locked='false' title='Languages' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="#" data-lang="en" lang="en">English</a></li>
+<li><a href="#" data-lang="sw" lang="sw">Kiswahili</a></li>
+<li><a href="#" data-lang="fr" lang="fr">Français</a></li>
+<li><a href="#" data-lang="es" lang="es">Español</a></li>
+<li><a href="#" data-lang="pt" lang="pt">Português</a></li>
+<li><a href="#" data-lang="de" lang="de">Deutsch</a></li>
+<li><a href="#" data-lang="ar" lang="ar">العربية</a></li>
+<li><a href="#" data-lang="zh-CN" lang="zh-CN">中文</a></li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='lang-picker'>
+            <button aria-expanded='false' aria-haspopup='true' class='lang-toggle' type='button'>
+              <svg aria-hidden='true' fill='none' height='16' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='16'><circle cx='12' cy='12' r='10'/><line x1='2' x2='22' y1='12' y2='12'/><path d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'/></svg>
+              <span class='lang-current'>Language</span>
+            </button>
+            <div class='widget-content lang-menu notranslate'>
+              <data:content/>
+            </div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
       </b:widget>
     </b:section>
     <form action='/search' class='search-form topbar-search' method='get' role='search'>
@@ -1867,14 +2002,21 @@ body#layout .header-inner { display: block; }
                     </b:loop>
                   </div>
                 </b:if>
-                <div class='post-share'>
-                  <span class='post-share-label'>Share</span>
-                  <a class='share-wa' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
-                  <a class='share-fb' expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
-                  <a class='share-x' expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
-                  <a class='share-in' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
-                  <button expr:data-copy-url='data:post.url' type='button'>Copy link</button>
+              </b:if>
+              <!-- Share + print on every post and page. theme.js adds the other networks with properly encoded links -->
+              <div class='post-share' expr:data-title='data:post.title' expr:data-url='data:post.url'>
+                <span class='post-share-label'>Share</span>
+                <div class='share-buttons'>
+                  <a class='share-btn share-whatsapp' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+                  <a class='share-btn share-facebook' expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+                  <a class='share-btn share-x' expr:href='&quot;https://x.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
+                  <a class='share-btn share-linkedin' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
+                  <a class='share-btn share-telegram' expr:href='&quot;https://t.me/share/url?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Telegram</a>
+                  <a class='share-btn share-email' expr:href='&quot;mailto:?body=&quot; + data:post.url'>Email</a>
                 </div>
+              </div>
+              <p class='print-source'>Printed from <data:blog.title/>: <data:post.url/></p>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
                 <aside class='join-box'>
                   <div class='join-box-text'>
                     <p class='join-box-title'>Not a member yet?</p>
@@ -3066,8 +3208,26 @@ body#layout .header-inner { display: block; }
     linkedin: 'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11.75H3V9.75zm6.5 0h3.8v1.6h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6.1v6.1h-4v-5.4c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.5h-4V9.75z',
     tiktok: 'M16.6 2h-3.4v13.4a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .8.1V9.1a6.4 6.4 0 1 0 5.5 6.3V8.6a8 8 0 0 0 4.6 1.5V6.7a4.7 4.7 0 0 1-4.6-4.7z',
     whatsapp: 'M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.1.3.7 1.1 1.5 1.8 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z',
-    email: 'M2 5h20v14H2V5zm2 2v.5l8 5 8-5V7H4zm16 2.8-8 5-8-5V17h16V9.8z'
+    email: 'M2 5h20v14H2V5zm2 2v.5l8 5 8-5V7H4zm16 2.8-8 5-8-5V17h16V9.8z',
+    telegram: 'M21.9 4.3l-3.3 15.5c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6 13.4l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.5 2.9c.9-.3 1.7.2 1.4 1.4z',
+    reddit: 'M22 12.1a2.2 2.2 0 0 0-3.7-1.6 10.8 10.8 0 0 0-5.8-1.8l1-4.6 3.2.7a1.6 1.6 0 1 0 .2-1l-3.6-.8a.5.5 0 0 0-.6.4l-1.1 5.3a10.8 10.8 0 0 0-5.9 1.8A2.2 2.2 0 1 0 3.3 14a4.3 4.3 0 0 0 0 .6c0 3.3 3.9 6 8.7 6s8.7-2.7 8.7-6a4.3 4.3 0 0 0 0-.6 2.2 2.2 0 0 0 1.3-1.9zM7.3 13.6a1.6 1.6 0 1 1 1.6 1.6 1.6 1.6 0 0 1-1.6-1.6zm8.8 4.1a5.6 5.6 0 0 1-4.1 1.3 5.6 5.6 0 0 1-4.1-1.3.4.4 0 0 1 .5-.5 4.8 4.8 0 0 0 3.6 1.1 4.8 4.8 0 0 0 3.6-1.1.4.4 0 1 1 .5.5zm-.3-2.5a1.6 1.6 0 1 1 1.6-1.6 1.6 1.6 0 0 1-1.6 1.6z',
+    pinterest: 'M12 2a10 10 0 0 0-3.6 19.3c-.1-.8-.2-2 0-2.9l1.2-5s-.3-.6-.3-1.5c0-1.4.8-2.4 1.8-2.4.9 0 1.3.6 1.3 1.4 0 .9-.5 2.2-.8 3.4-.2 1 .5 1.8 1.5 1.8 1.8 0 3.2-1.9 3.2-4.6 0-2.4-1.7-4.1-4.2-4.1-2.9 0-4.5 2.1-4.5 4.4 0 .9.3 1.8.8 2.3.1.1.1.2.1.3l-.3 1.2c0 .2-.2.2-.4.1-1.3-.6-2.1-2.5-2.1-4 0-3.3 2.4-6.3 6.9-6.3 3.6 0 6.4 2.6 6.4 6 0 3.6-2.3 6.5-5.4 6.5-1 0-2-.5-2.4-1.2l-.6 2.5c-.2.9-.9 2.1-1.3 2.8A10 10 0 1 0 12 2z',
+    share: 'M18 15.5a3 3 0 0 0-2.3 1.1l-6.8-3.4a3 3 0 0 0 0-2.4l6.8-3.4a3 3 0 1 0-.7-1.5L8.2 9.3a3 3 0 1 0 0 5.4l6.8 3.4A3 3 0 1 0 18 15.5z',
+    link: 'M10.6 13.4a1 1 0 0 1 0-1.4l3.5-3.5a1 1 0 1 1 1.4 1.4L12 13.4a1 1 0 0 1-1.4 0zM8.5 20.5a5 5 0 0 1-3.5-8.5l2.1-2.1a1 1 0 0 1 1.4 1.4l-2.1 2.1a3 3 0 0 0 4.2 4.2l2.1-2.1a1 1 0 0 1 1.4 1.4L12 19a5 5 0 0 1-3.5 1.5zm8.4-6.2a1 1 0 0 1-.7-1.7l2.1-2.1a3 3 0 0 0-4.2-4.2L12 8.4A1 1 0 0 1 10.6 7l2.1-2.1a5 5 0 0 1 7 7l-2.1 2.1a1 1 0 0 1-.7.3z',
+    print: 'M7 3h10v4H7zM5 8h14a3 3 0 0 1 3 3v6h-4v4H6v-4H2v-6a3 3 0 0 1 3-3zm3 7v4h8v-4z'
   };
+  function iconSvg(name) {
+    var ns = 'http://www.w3.org/2000/svg';
+    var icon = doc.createElementNS(ns, 'svg');
+    icon.setAttribute('viewBox', '0 0 24 24');
+    icon.setAttribute('class', 'social-icon');
+    icon.setAttribute('aria-hidden', 'true');
+    var path = doc.createElementNS(ns, 'path');
+    path.setAttribute('d', ICONS[name]);
+    path.setAttribute('fill-rule', 'evenodd');
+    icon.appendChild(path);
+    return icon;
+  }
   function networkOf(href) {
     var h = (href || '').toLowerCase();
     if (h.indexOf('mailto:') === 0) return 'email';
@@ -3087,15 +3247,7 @@ body#layout .header-inner { display: block; }
     if (!net) continue;
     var label = a.textContent.trim();
     a.textContent = '';
-    var ns = 'http://www.w3.org/2000/svg';
-    var icon = doc.createElementNS(ns, 'svg');
-    icon.setAttribute('viewBox', '0 0 24 24');
-    icon.setAttribute('class', 'social-icon');
-    icon.setAttribute('aria-hidden', 'true');
-    var path = doc.createElementNS(ns, 'path');
-    path.setAttribute('d', ICONS[net]);
-    icon.appendChild(path);
-    a.appendChild(icon);
+    a.appendChild(iconSvg(net));
     a.appendChild(el('span', { className: 'social-text', text: label }));
     a.classList.add('has-icon');
     a.setAttribute('title', label);
@@ -3399,23 +3551,136 @@ body#layout .header-inner { display: block; }
     }
   }
 
-  // Copy-link share button
-  var copyBtns = doc.querySelectorAll('[data-copy-url]');
-  for (var cb = 0; cb < copyBtns.length; cb++) {
-    copyBtns[cb].addEventListener('click', function () {
-      var btn = this;
-      var url = btn.getAttribute('data-copy-url');
-      var done = function () {
-        var text = btn.textContent;
-        btn.textContent = 'Copied';
-        setTimeout(function () { btn.textContent = text; }, 1600);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link:', url); });
-      } else {
-        window.prompt('Copy this link:', url);
+  // ---------------------------------------------------------------- share + print (every post and page)
+  function enc(v) { return encodeURIComponent(v || ''); }
+  var NETWORKS = [
+    ['whatsapp', 'WhatsApp', function (u, t) { return 'https://api.whatsapp.com/send?text=' + enc(t + ' ' + u); }],
+    ['facebook', 'Facebook', function (u) { return 'https://www.facebook.com/sharer/sharer.php?u=' + enc(u); }],
+    ['x', 'X (Twitter)', function (u, t) { return 'https://x.com/intent/tweet?url=' + enc(u) + '&text=' + enc(t); }],
+    ['linkedin', 'LinkedIn', function (u) { return 'https://www.linkedin.com/sharing/share-offsite/?url=' + enc(u); }],
+    ['telegram', 'Telegram', function (u, t) { return 'https://t.me/share/url?url=' + enc(u) + '&text=' + enc(t); }],
+    ['reddit', 'Reddit', function (u, t) { return 'https://www.reddit.com/submit?url=' + enc(u) + '&title=' + enc(t); }],
+    ['pinterest', 'Pinterest', function (u, t, img) {
+      return 'https://www.pinterest.com/pin/create/button/?url=' + enc(u) + (img ? '&media=' + enc(img) : '') + '&description=' + enc(t);
+    }],
+    ['email', 'Email', function (u, t) { return 'mailto:?subject=' + enc(t) + '&body=' + enc(t + '\n\n' + u); }]
+  ];
+  function shareButton(cls, label, icon, showText) {
+    var btn = el('button', { type: 'button', className: 'share-btn ' + cls, title: label, 'aria-label': label }, [iconSvg(icon)]);
+    btn.appendChild(el('span', { className: showText ? 'share-text' : 'share-text sr-only', text: label }));
+    return btn;
+  }
+  var shareBars = doc.querySelectorAll('.post-share');
+  for (var sb = 0; sb < shareBars.length; sb++) {
+    (function (bar) {
+      var holder = bar.querySelector('.share-buttons');
+      if (!holder) return;
+      // Clean address: no ?m=1 / tracking parameters / #anchors
+      var url = (bar.getAttribute('data-url') || window.location.href).split(/[?#]/)[0];
+      var title = (bar.getAttribute('data-title') || doc.title).trim();
+      var article = bar.parentNode;
+      var firstImg = article.querySelector('.post-body img');
+      var img = firstImg ? firstImg.src : '';
+      holder.textContent = '';
+      NETWORKS.forEach(function (n) {
+        var link = el('a', { className: 'share-btn share-' + n[0], href: n[2](url, title, img), title: 'Share on ' + n[1],
+          'aria-label': 'Share on ' + n[1], rel: 'nofollow noopener', target: n[0] === 'email' ? null : '_blank' }, [iconSvg(n[0])]);
+        link.appendChild(el('span', { className: 'share-text sr-only', text: n[1] }));
+        holder.appendChild(link);
+      });
+      // Phones: the system share sheet reaches every installed app (Instagram, Signal, SMS...)
+      if (navigator.share) {
+        var more = shareButton('share-native', 'More apps', 'share');
+        more.addEventListener('click', function () {
+          navigator.share({ title: title, url: url })['catch'](function () {});
+        });
+        holder.appendChild(more);
       }
+      var copyBtn = shareButton('share-copy', 'Copy link', 'link', true);
+      copyBtn.addEventListener('click', function () {
+        var text = copyBtn.querySelector('.share-text');
+        var done = function () {
+          text.textContent = 'Copied!';
+          setTimeout(function () { text.textContent = 'Copy link'; }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link:', url); });
+        } else {
+          window.prompt('Copy this link:', url);
+        }
+      });
+      holder.appendChild(copyBtn);
+      var printBtn = shareButton('share-print', 'Print', 'print', true);
+      printBtn.addEventListener('click', function () { window.print(); });
+      holder.appendChild(printBtn);
+    })(shareBars[sb]);
+  }
+  // Load every lazy image in the post before printing, so none print blank
+  window.addEventListener('beforeprint', function () {
+    var imgs = doc.querySelectorAll('.post-body img[loading]');
+    for (var k = 0; k < imgs.length; k++) imgs[k].removeAttribute('loading');
+  });
+
+  // ---------------------------------------------------------------- language (Google Translate)
+  var picker = doc.querySelector('.lang-picker');
+  var langLinks = picker ? picker.querySelectorAll('a[data-lang]') : [];
+  if (picker && langLinks.length) {
+    // The first language in the gadget is the language the blog is written in
+    var original = langLinks[0].getAttribute('data-lang');
+    var saved = doc.cookie.match(/(?:^|;\s*)googtrans=\/[^\/;]*\/([^;]+)/);
+    var active = saved ? decodeURIComponent(saved[1]) : original;
+    var current = picker.querySelector('.lang-current');
+    var langToggle = picker.querySelector('.lang-toggle');
+    for (var ll = 0; ll < langLinks.length; ll++) {
+      var code = langLinks[ll].getAttribute('data-lang');
+      langLinks[ll].setAttribute('hreflang', code);
+      if (code === active) {
+        langLinks[ll].setAttribute('aria-current', 'true');
+        current.textContent = langLinks[ll].textContent.trim();
+        current.setAttribute('data-short', code.split('-')[0].toUpperCase());
+      }
+    }
+    if (!current.getAttribute('data-short')) current.setAttribute('data-short', original.split('-')[0].toUpperCase());
+    var setOpen = function (open) {
+      picker.classList.toggle('is-open', open);
+      langToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    langToggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setOpen(!picker.classList.contains('is-open'));
     });
+    doc.addEventListener('click', function (e) { if (!picker.contains(e.target)) setOpen(false); });
+    doc.addEventListener('keydown', function (e) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && picker.classList.contains('is-open')) { setOpen(false); langToggle.focus(); }
+    });
+    var setLanguage = function (code) {
+      var host = window.location.hostname;
+      var domains = ['', host, '.' + host];
+      var parts = host.split('.');
+      if (parts.length > 2) domains.push('.' + parts.slice(-2).join('.'));
+      domains.forEach(function (d) {
+        doc.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + (d ? '; domain=' + d : '');
+      });
+      if (code !== original) doc.cookie = 'googtrans=/' + original + '/' + code + '; path=/';
+      window.location.reload();
+    };
+    picker.addEventListener('click', function (e) {
+      var t = e.target.closest ? e.target.closest('a[data-lang]') : null;
+      if (!t) return;
+      e.preventDefault();
+      var code = t.getAttribute('data-lang');
+      if (code === active) { setOpen(false); return; }
+      setLanguage(code);
+    });
+    // Google's translator reads the googtrans cookie when its script loads. The footer Translate
+    // gadget loads that script; if that gadget was removed, load it here when a language is chosen.
+    if (active !== original && !doc.getElementById('google_translate_element')) {
+      doc.body.appendChild(el('div', { id: 'union-translate', hidden: 'hidden' }));
+      window.__unionTranslateInit = function () {
+        new window.google.translate.TranslateElement({ pageLanguage: original, autoDisplay: false }, 'union-translate');
+      };
+      doc.body.appendChild(el('script', { src: 'https://translate.google.com/translate_a/element.js?cb=__unionTranslateInit' }));
+    }
   }
 
   // Footer year

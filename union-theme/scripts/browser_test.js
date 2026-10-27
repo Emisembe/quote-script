@@ -63,8 +63,8 @@ function feedJson(label, count) {
   return { feed: { entry: entries } };
 }
 
-const PAGES = ['kpuwu-home', 'kpuwu-post', 'generic-home', 'generic-post'];
-const WIDTHS = [1440, 1024, 820, 390];
+const PAGES = ['kpuwu-home', 'kpuwu-post', 'kpuwu-page', 'generic-home', 'generic-post', 'generic-page'];
+const WIDTHS = [1440, 1024, 820, 390, 320];
 const failures = [];
 const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok  ' : 'FAIL'}  ${msg}`); };
 
@@ -123,11 +123,63 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
         note(m.loading === 0 && m.feeds > 10, `${name} @${width}: label feeds rendered (${m.feeds} items, ${m.loading} still loading)`);
         note(m.ticker > 0, `${name} @${width}: ticker filled (${m.ticker})`);
       } else {
-        note(m.related, `${name} @${width}: related posts shown`);
+        if (name.endsWith('post')) note(m.related, `${name} @${width}: related posts shown`);
+        const share = await page.evaluate(() => [...document.querySelectorAll('.post-share .share-btn')].map((b) => b.className.split(' ')[1]));
+        const want = ['share-whatsapp', 'share-facebook', 'share-x', 'share-linkedin', 'share-telegram', 'share-reddit', 'share-pinterest', 'share-email', 'share-copy', 'share-print'];
+        note(want.every((w) => share.includes(w)), `${name} @${width}: share bar has all networks + copy + print (${share.length})`);
       }
+      const credit = await page.evaluate(() => { const c = document.querySelector('.Attribution'); return !c || !c.offsetHeight; });
+      note(credit, `${name} @${width}: "Powered by Blogger" hidden`);
       await page.screenshot({ path: path.join(OUT, `${name}-${width}.png`), fullPage: true });
       await page.close();
     }
+  }
+
+  // Share links are encoded; Print calls window.print(); print layout shows only the article
+  for (const name of ['kpuwu-post', 'generic-page']) {
+    const { page } = await open(name, 1024);
+    const hrefs = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll('.post-share a.share-btn')].map((a) => [a.className.split(' ')[1], a.getAttribute('href')])));
+    note(/^https:\/\/api\.whatsapp\.com\/send\?text=[^ ]+%20https%3A%2F%2Fexample\.org/.test(hrefs['share-whatsapp']), `${name}: WhatsApp link carries encoded title + URL`);
+    note(/x\.com\/intent\/tweet\?url=https%3A%2F%2Fexample\.org%2F.+&text=/.test(hrefs['share-x']), `${name}: X link encoded`);
+    note(/pinterest\.com\/pin\/create\/button\/\?url=https%3A/.test(hrefs['share-pinterest']), `${name}: Pinterest link encoded`);
+    note(/^mailto:\?subject=.+&body=/.test(hrefs['share-email']), `${name}: email link has subject and body`);
+    await page.evaluate(() => { window.__printed = 0; window.print = () => { window.__printed++; }; });
+    await page.click('.share-print');
+    note((await page.evaluate(() => window.__printed)) === 1, `${name}: Print button opens the print dialog`);
+    await page.emulateMedia({ media: 'print' });
+    const vis = await page.evaluate(() => {
+      const shown = (s) => { const e = document.querySelector(s); return !!e && getComputedStyle(e).display !== 'none'; };
+      return { header: shown('.site-header'), sidebar: shown('.sidebar'), footer: shown('.site-footer'), share: shown('.post-share'), body: shown('.post-body'), source: shown('.print-source') };
+    });
+    note(!vis.header && !vis.sidebar && !vis.footer && !vis.share && vis.body && vis.source, `${name}: print layout shows only the article + source line ${JSON.stringify(vis)}`);
+    await page.pdf({ path: path.join(OUT, `${name}-print.pdf`), format: 'A4' });
+    await page.screenshot({ path: path.join(OUT, `${name}-print.png`), fullPage: true });
+    await page.close();
+  }
+
+  // Language picker: opens, marks English, choosing Kiswahili stores Google's googtrans cookie
+  for (const width of [1440, 390]) {
+    const { page } = await open('kpuwu-home', width);
+    if (width === 1440) {
+      const gap = await page.evaluate(() => document.querySelector('.topbar-search').getBoundingClientRect().left - document.querySelector('.lang-picker').getBoundingClientRect().right);
+      note(gap >= 0 && gap <= 30, `language @${width}: picker sits next to the search box (gap ${Math.round(gap)}px)`);
+    }
+    const label = await page.textContent('.lang-current');
+    note(/English/.test(label), `language @${width}: current language shown (${label.trim()})`);
+    await page.click('.lang-toggle');
+    note(await page.locator('.lang-menu').isVisible(), `language @${width}: menu opens`);
+    await page.screenshot({ path: path.join(OUT, `language-${width}.png`) });
+    await Promise.all([page.waitForNavigation(), page.click('.lang-menu a[data-lang="sw"]')]);
+    const cookies = await page.context().cookies();
+    const g = cookies.find((c) => c.name === 'googtrans');
+    note(g && g.value === '/en/sw', `language @${width}: choosing Kiswahili sets googtrans=/en/sw (${g && g.value})`);
+    const now = await page.textContent('.lang-current');
+    note(/Kiswahili/.test(now), `language @${width}: after reload the picker shows Kiswahili`);
+    await page.click('.lang-toggle');
+    await Promise.all([page.waitForNavigation(), page.click('.lang-menu a[data-lang="en"]')]);
+    const back = (await page.context().cookies()).find((c) => c.name === 'googtrans');
+    note(!back || !back.value, `language @${width}: choosing English clears the cookie`);
+    await page.close();
   }
 
   // Menu behaviour on a phone, and dropdowns on desktop

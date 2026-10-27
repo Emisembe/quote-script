@@ -41,6 +41,13 @@ A rebuild of the BCorporate v3 theme used on kpuwuke.blogspot.com. It has the sa
 
 Label names must match exactly (same spelling and capitals) the labels on your posts.
 
+## Sharing, printing, languages
+
+- **Share bar on every post and every page** (static pages too): WhatsApp, Facebook, X, LinkedIn, Telegram, Reddit, Pinterest, Email and Copy link. On phones a **More apps** button opens the phone's own share menu (Instagram, Signal, SMS…). Links always use the clean page address (no `?m=1` or tracking codes).
+- **Print button** next to the share buttons. The printout has only the article: title, date, text, images, and the source address at the bottom. No menus, sidebar, buttons or comments.
+- **Language switcher** in the top bar (globe button), powered by Google Translate. Edit the list in Layout → *Languages*: one link per language, `<li><a href="#" data-lang="sw">Kiswahili</a></li>`. **The first language must be the one the blog is written in.** Codes: `sw` Kiswahili, `fr` French, `es` Spanish, `pt` Portuguese, `de` German, `ar` Arabic, `zh-CN` Chinese, `am` Amharic, `so` Somali, `lg` Luganda… The footer *Translate* gadget still offers every language. Translation is automatic (machine translation) and happens in the visitor's browser.
+- **"Powered by Blogger" is hidden.** The Attribution gadget stays in Layout (Blogger expects it), but it never shows on the site.
+
 ## KPUWU version: what changed
 
 - **Kept:** logo, all menu links, the 12 slider images, philosophy, all label blocks, partners, donate button, map, Ministry of Labour and COTU links, YouTube video, Translate, live chat, AdSense sponsor gadget.

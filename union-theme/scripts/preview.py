@@ -99,6 +99,10 @@ def popular():
             f"<div class='widget-content popular-posts'><ul>{items}</ul></div></div>")
 
 
+SHARE_BAR = """<div class='post-share' data-title='{title}' data-url='https://example.org/{slug}.html'><span class='post-share-label'>Share</span><div class='share-buttons'><a class='share-btn share-whatsapp' href='#'>WhatsApp</a><a class='share-btn share-facebook' href='#'>Facebook</a></div></div>
+<p class='print-source'>Printed from {blog}: https://example.org/{slug}.html</p>"""
+
+
 def render(name, kind):
     profile, content = load(name)
     pg = Page(profile, content)
@@ -119,7 +123,17 @@ def render(name, kind):
     cta = (f"<div class='widget HTML' data-version='1' id='HTML29'><div class='cta-inner'><h2 class='cta-title'>{esc(pg.title('HTML29'))}</h2>"
            f"<div class='widget-content cta-body'>{content['HTML29']}</div></div></div>")
 
-    if home:
+    share = SHARE_BAR
+    if kind == 'page':
+        main = f"""<article class='post-single post'><a name='2'></a><header class='post-head'><h1 class='post-title entry-title'>Who can join?</h1></header>
+<div class='post-body entry-content' id='post-body-2'>
+<p>Membership is open to every worker employed by a member institution, whether permanent, on contract or casual.</p>
+<h2>How to join</h2>
+<ol><li>Download and fill in the membership form.</li><li>Hand it to your shop steward or branch secretary.</li><li>Your subscription is deducted from your salary every month.</li></ol>
+<p>Questions? <a href='https://example.org/p/faqs.html'>Read the FAQs</a>.</p>
+</div>
+""" + share.replace('{title}', 'Who can join?').replace('{slug}', 'p/who-can-join').replace('{blog}', blog_title) + "</article>"
+    elif home:
         main = ("<div class='section-head'><h2 class='section-title'>Latest news</h2></div><div class='post-grid'>"
                 + ''.join(card(t, l, d, i, n) for n, (t, l, d, i) in enumerate(SAMPLE_POSTS))
                 + "</div><nav aria-label='Pages' class='blog-pager-nav'><a class='btn btn-primary older' href='#'>Older posts &#8594;</a></nav>")
@@ -138,7 +152,8 @@ def render(name, kind):
 <table><tr><th>Grade</th><th>Old</th><th>New</th></tr><tr><td>A</td><td>100</td><td>108</td></tr><tr><td>B</td><td>120</td><td>130</td></tr></table>
 </div>
 <div class='post-tags'><span class='post-tags-label'>Filed under</span><a class='badge badge-soft' href='#'>Campaigns</a><a class='badge badge-soft' href='#'>News</a></div>
-<div class='post-share'><span class='post-share-label'>Share</span><a class='share-wa' href='#'>WhatsApp</a><a class='share-fb' href='#'>Facebook</a><a class='share-x' href='#'>X</a><a class='share-in' href='#'>LinkedIn</a><button data-copy-url='https://example.org/post.html' type='button'>Copy link</button></div>
+<div class='post-share' data-title='{esc(SAMPLE_POSTS[0][0])}' data-url='https://example.org/post.html'><span class='post-share-label'>Share</span><div class='share-buttons'><a class='share-btn share-whatsapp' href='#'>WhatsApp</a><a class='share-btn share-facebook' href='#'>Facebook</a></div></div>
+<p class='print-source'>Printed from {blog_title}: https://example.org/post.html</p>
 <aside class='join-box'><div class='join-box-text'><p class='join-box-title'>Not a member yet?</p><p>Workers are stronger together. Join the union and have a say in your pay, conditions and rights at work.</p></div><a class='btn btn-primary js-join-link' href='/search'>Join today</a></aside>
 <div class='related' hidden='hidden'><h2 class='related-title'>Related articles</h2><div class='related-grid'></div></div>
 <div class='comments' id='comments'><h4>2 comments:</h4><div class='comments-content'><div class='comment-thread'><ol>
@@ -160,10 +175,11 @@ def render(name, kind):
 <style>{BLOGGER_WIDGET_CSS}</style>
 {home_style}
 </head>
-<body class='union pt-{'index' if home else 'item'}'>
+<body class='union pt-{'index' if home else ('static_page' if kind == 'page' else 'item')}'>
 <a class='skip-link' href='#content'>Skip to content</a>
 <div class='topbar'><div class='container topbar-inner'>
 {section('topbar-social', 'topbar-social', pg.html_widget('HTML15'))}
+{section('topbar-lang', 'topbar-lang', f"<div class='widget HTML' data-version='1' id='HTML33'><div class='lang-picker'><button aria-expanded='false' aria-haspopup='true' class='lang-toggle' type='button'>&#127760; <span class='lang-current'>Language</span></button><div class='widget-content lang-menu notranslate'>{content['HTML33']}</div></div></div>")}
 <form action='/search' class='search-form topbar-search' method='get' role='search'><input aria-label='Search this site' name='q' placeholder='Search this site...' type='search'/><button aria-label='Search' type='submit'>&#9906;</button></form>
 </div></div>
 <header class='site-header' id='site-header'><div class='container header-inner'>
@@ -216,7 +232,7 @@ def render(name, kind):
 def main():
     OUT.mkdir(exist_ok=True)
     for name in ('kpuwu', 'generic'):
-        for kind in ('home', 'post'):
+        for kind in ('home', 'post', 'page'):
             (OUT / f'{name}-{kind}.html').write_text(render(name, kind), encoding='utf-8')
             print(f'wrote preview/{name}-{kind}.html')
 
