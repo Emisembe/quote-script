@@ -3,7 +3,7 @@
 Blogger Template Style
 Name:     Solidarity (union & association theme)
 Version:  1.0.0
-Based on: BCorporate v3 layout, rebuilt without jQuery
+Based on: BCorporate v3 layout, rebuilt dependency-free
 ----------------------------------------------- */
 
 /* Variable definitions (editable in Theme > Customise > Advanced)
@@ -334,7 +334,7 @@ a.badge-soft:hover { background: var(--u-accent); color: #fff; }
   position: fixed;
   left: 0;
   right: 0;
-  top: var(--u-nav-top, 120px);
+  top: 120px;
   bottom: 0;
   z-index: 99;
   background: #fff;
@@ -389,29 +389,25 @@ a.badge-soft:hover { background: var(--u-accent); color: #fff; }
 
 @media (min-width: 1100px) {
   .nav-toggle { display: none; }
-  .nav-drawer {
-    position: static;
-    display: flex !important;
-    align-items: center;
-    gap: 18px;
-    padding: 0;
-    overflow: visible;
-    background: transparent;
-    border: 0;
-  }
-  .site-nav .widget-content > ul { display: flex; align-items: center; }
+  .header-inner { flex-wrap: wrap; column-gap: 24px; row-gap: 0; }
+  /* The drawer's two sections become items of the header row: Join top right, menu on its own row */
+  .nav-drawer { display: contents !important; }
+  .header-cta { order: 2; }
+  .site-nav { order: 3; flex: 1 0 100%; border-top: 1px solid var(--u-border); }
+  .site-nav .widget-content > ul { display: flex; flex-wrap: wrap; align-items: center; margin-left: -14px; }
   .site-nav .widget-content > ul > li { border: 0; }
   .site-nav .widget-content > ul > li > a {
-    padding: 26px 11px;
+    padding: 15px 14px;
     font-size: 15px;
+    white-space: nowrap;
     position: relative;
   }
   .site-nav .widget-content > ul > li > a::after {
     content: '';
     position: absolute;
-    left: 11px;
-    right: 11px;
-    bottom: 16px;
+    left: 14px;
+    right: 14px;
+    bottom: 0;
     height: 3px;
     background: var(--u-accent);
     transform: scaleX(0);
@@ -419,13 +415,13 @@ a.badge-soft:hover { background: var(--u-accent); color: #fff; }
   }
   .site-nav .widget-content > ul > li:hover > a::after,
   .site-nav .widget-content > ul > li:focus-within > a::after { transform: scaleX(1); }
-  .site-nav .widget-content > ul > li.has-sub > a { padding-right: 24px; }
+  .site-nav .widget-content > ul > li.has-sub > a { padding-right: 28px; }
   .site-nav .widget-content > ul > li.has-sub > a::before {
     content: '';
     position: absolute;
-    right: 10px;
+    right: 12px;
     top: 50%;
-    margin-top: -5px;
+    margin-top: -6px;
     width: 6px;
     height: 6px;
     border-right: 2px solid currentColor;
@@ -769,8 +765,8 @@ a.badge-soft:hover { background: var(--u-accent); color: #fff; }
 @media (min-width: 768px) { .band-stats .widget-content ul { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
 /* ---------- Label feeds ---------- */
-.feed-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
-.feed-head h2.title { margin: 0; }
+.feed-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 0 12px; margin-bottom: 20px; }
+.feed-head h2.title { margin: 0; min-width: 0; overflow-wrap: break-word; }
 .feed-more {
   flex: 0 0 auto;
   font-family: var(--u-display);
@@ -784,6 +780,7 @@ a.badge-soft:hover { background: var(--u-accent); color: #fff; }
 .feed-more::after { content: ' \2192'; }
 .feed-more:hover { color: var(--u-primary); }
 .feed-status { color: var(--u-muted); font-size: 14px; }
+.feed-row .feed-head h2.title { font-size: clamp(22px, 2.4vw, 26px); }
 .feed-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; }
 @media (min-width: 768px) { .feed-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 1024px) { .feed-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; } }
@@ -818,7 +815,7 @@ a.feed-thumb:hover img,
 .feed-featured .feed-body { padding-top: 12px; }
 .feed-featured .feed-title { font-family: var(--u-display); font-weight: 600; font-size: 21px; line-height: 1.2; }
 .feed-featured .feed-excerpt { font-size: 14px; color: var(--u-muted); margin: 8px 0 0; }
-.feed-list > li { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--u-border); }
+.feed-block .feed-list > li { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-top: 1px solid var(--u-border); }
 .feed-list .feed-thumb { flex: 0 0 92px; width: 92px; aspect-ratio: 4 / 3; }
 .feed-list .feed-title { font-size: 15px; }
 

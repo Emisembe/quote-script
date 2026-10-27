@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Audit theme.xml before uploading it to Blogger.
 
-    python3 scripts/check.py [path/to/theme.xml]
+    python3 scripts/check.py [path/to/theme.xml] [--ban "Name One,Name Two"]
 
 Two kinds of checks:
   * General: well-formed XML, unique ids, balanced CSS, HTTPS-only, valid JS, ...
@@ -22,7 +22,14 @@ import tempfile
 import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-PATH = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'theme.xml'
+ARGS = [a for a in sys.argv[1:] if not a.startswith('--ban')]
+PATH = pathlib.Path(ARGS[0]) if ARGS else ROOT / 'theme.xml'
+EXTRA_BANNED = []
+for n, a in enumerate(sys.argv):
+    if a == '--ban' and n + 1 < len(sys.argv):
+        EXTRA_BANNED = [w.strip() for w in sys.argv[n + 1].split(',') if w.strip()]
+        ARGS = [x for x in ARGS if x != sys.argv[n + 1]]
+        PATH = pathlib.Path(ARGS[0]) if ARGS else ROOT / 'theme.xml'
 REF = json.loads((ROOT / 'reference' / 'proven.json').read_text(encoding='utf-8'))
 
 B = '{http://www.google.com/2005/gml/b}'
@@ -95,7 +102,7 @@ no_main = [w.get('id') for w in widgets if w.find(f"{B}includable[@id='main']") 
 check(not no_main, 'every widget has its own main includable', str(no_main))
 for w in widgets:
     defined = {i.get('id') for i in w.findall(f'{B}includable')}
-    missing = sorted({inc.get('name') for inc in w.iter(f'{B}include')} - defined - set(REF['builtin_includes']))
+    missing = sorted({inc.get('name') for inc in w.iter(f'{B}include')} - defined - (set(REF['builtin_includes']) | set(REF['extra'].get('builtin_includes', {}))))
     check(not missing, f'{w.get("id")}: every <b:include> resolves', f'undefined: {missing}')
 
 # ---------------------------------------------------------------- proven-only
@@ -171,7 +178,7 @@ check(not insecure, 'no insecure http:// resources (blocked on HTTPS blogs)', st
 check('document.write' not in text, 'no document.write')
 check('jquery' not in text.lower(), 'no jQuery dependency')
 check(not re.search(r'[a-z0-9-]+\.blogspot\.com', text), 'no hard-coded blogspot addresses')
-banned = REF.get('extra', {}).get('banned_strings', ['YOUR_', 'YOUR DESCRIPTION', 'soratemplates'])
+banned = REF.get('extra', {}).get('banned_strings', ['YOUR_', 'YOUR DESCRIPTION', 'soratemplates']) + EXTRA_BANNED
 leftovers = [w for w in banned if w.lower() in text.lower()]
 check(not leftovers, 'no leftover content from other blogs/templates', str(leftovers))
 check('maximum-scale' not in text and 'user-scalable' not in text, 'pinch-zoom is not disabled')

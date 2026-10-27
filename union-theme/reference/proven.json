@@ -268,10 +268,10 @@
           "By"
         ],
         "commentLabel": [
-          "\u03c3\u03c7\u03cc\u03bb\u03b9\u03b1"
+          "σχόλια"
         ],
         "postLabelsLabel": [
-          "\u0395\u03c4\u03b9\u03ba\u03ad\u03c4\u03b5\u03c2"
+          "Ετικέτες"
         ],
         "postsPerAd": [
           "1"
@@ -316,7 +316,7 @@
           "TextAndImage"
         ],
         "timestampLabel": [
-          "\u03c3\u03c4\u03b9\u03c2"
+          "στις"
         ]
       }
     },
@@ -451,7 +451,11 @@
     "quickedit"
   ],
   "extra": {
-    "data_tags": {},
+    "data_tags": {
+      "data:blog.canonicalUrl": "Not used by the KPUWU backup, but proven by the skill's starter theme, which Blogger accepted on a real legacy-engine (b:version 2, version-1 widget) blog. Needed so homepage checks survive ?fbclid=/?m=1.",
+      "data:blog.searchQuery": "Not used by the KPUWU backup, but proven by the skill's starter theme, which Blogger accepted on a real legacy-engine (b:version 2, version-1 widget) blog. Used for the search-results heading.",
+      "data:post.firstImageUrl": "Not used by the KPUWU backup, but proven by the skill's starter theme, which Blogger accepted on a real legacy-engine (b:version 2, version-1 widget) blog. Full-size image for news cards (thumbnailUrl is only 72px)."
+    },
     "setting_values": {
       "boolean settings may be true or false": [
         "true",
@@ -463,6 +467,9 @@
       "YOUR DESCRIPTION",
       "soratemplates"
     ],
-    "notes": "Anything allowed beyond the reference export goes here with a reason. Add names/addresses of other blogs found in the reference to banned_strings."
+    "notes": "Anything allowed beyond the reference export goes here with a reason. Add names/addresses of other blogs found in the reference to banned_strings. Skin <Variable> definitions are likewise proven by that starter theme (the KPUWU skin had none).",
+    "builtin_includes": {
+      "all-head-content": "Blogger's standard head include (meta description, canonical URL, feeds, favicon). The KPUWU backup omitted it; the skill's starter theme, accepted on a real legacy-engine blog, proves it."
+    }
   }
 }

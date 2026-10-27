@@ -41,7 +41,7 @@ Page not found - <data:blog.title/>
       </b:widget>
     </b:section>
     <form action='/search' class='search-form topbar-search' method='get' role='search'>
-      <input aria-label='Search this site' name='q' placeholder='Search news, campaigns, documents...' type='search'/>
+      <input aria-label='Search this site' name='q' placeholder='Search this site...' type='search'/>
       <button aria-label='Search' type='submit'>
         <svg aria-hidden='true' fill='none' height='18' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.2' viewBox='0 0 24 24' width='18'><circle cx='11' cy='11' r='8'/><line x1='21' x2='16.65' y1='21' y2='16.65'/></svg>
       </button>
@@ -632,12 +632,6 @@ Page not found - <data:blog.title/>
           </b:widget-settings>
           @@HTML_MAIN@@
         </b:widget>
-        <b:widget id='HTML31' locked='false' title='@@T:HTML31@@' type='HTML' version='1'>
-          <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[@@C:HTML31@@]]></b:widget-setting>
-          </b:widget-settings>
-          @@HTML_MAIN@@
-        </b:widget>
       </b:section>
       <b:section class='footer-col' id='f-widget-2' showaddelement='yes'>
         <b:widget id='Label3' locked='false' title='Quick links' type='Label' version='1'>
@@ -652,6 +646,12 @@ Page not found - <data:blog.title/>
         </b:widget>
       </b:section>
       <b:section class='footer-col' id='f-widget-3' showaddelement='yes'>
+        <b:widget id='HTML31' locked='false' title='@@T:HTML31@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML31@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
         <b:widget id='HTML21' locked='false' title='@@T:HTML21@@' type='HTML' version='1'>
           <b:widget-settings>
             <b:widget-setting name='content'><![CDATA[@@C:HTML21@@]]></b:widget-setting>

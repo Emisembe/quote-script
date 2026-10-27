@@ -1,0 +1,3428 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:version='2' class='v2' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<meta content='width=device-width, initial-scale=1' name='viewport'/>
+<b:include data='blog' name='all-head-content'/>
+<title>
+<b:if cond='data:blog.pageType == &quot;index&quot;'>
+<data:blog.pageTitle/>
+<b:else/>
+<b:if cond='data:blog.pageType != &quot;error_page&quot;'>
+<data:blog.pageName/> - <data:blog.title/>
+<b:else/>
+Page not found - <data:blog.title/>
+</b:if>
+</b:if>
+</title>
+<link href='https://fonts.googleapis.com' rel='preconnect'/>
+<link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
+<link href='https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;display=swap' rel='stylesheet'/>
+<b:skin><![CDATA[
+/*
+-----------------------------------------------
+Blogger Template Style
+Name:     Solidarity (union & association theme)
+Version:  1.0.0
+Based on: BCorporate v3 layout, rebuilt dependency-free
+----------------------------------------------- */
+
+/* Variable definitions (editable in Theme > Customise > Advanced)
+====================
+<Variable name="primary.color" description="Primary (top bar, hero, footer)" type="color" default="#13294B" value="#13294B"/>
+<Variable name="primary.dark.color" description="Primary, darker shade" type="color" default="#0B1A33" value="#0B1A33"/>
+<Variable name="accent.color" description="Accent (buttons, highlights)" type="color" default="#C8102E" value="#C8102E"/>
+<Variable name="accent.dark.color" description="Accent hover" type="color" default="#9E0C23" value="#9E0C23"/>
+<Variable name="highlight.color" description="Small highlights on dark backgrounds" type="color" default="#F2B705" value="#F2B705"/>
+<Variable name="page.background.color" description="Page background" type="color" default="#F4F6FA" value="#F4F6FA"/>
+<Variable name="band.background.color" description="Alternate section background" type="color" default="#EAEEF4" value="#EAEEF4"/>
+<Variable name="text.color" description="Body text" type="color" default="#1B2533" value="#1B2533"/>
+<Variable name="muted.color" description="Muted text" type="color" default="#5B6778" value="#5B6778"/>
+<Variable name="border.color" description="Borders and dividers" type="color" default="#DCE1EA" value="#DCE1EA"/>
+*/
+
+
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(76px + 12px);
+}
+body {
+  margin: 0;
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  color: $(text.color);
+  background: $(page.background.color);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+html.nav-locked, html.nav-locked body { overflow: hidden; }
+img, video, iframe, embed, object { max-width: 100%; }
+img { height: auto; border: 0; }
+a { color: inherit; text-decoration: none; }
+p { margin: 0 0 1em; }
+h1, h2, h3, h4, h5, h6 { margin: 0 0 0.5em; line-height: 1.2; color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+/* "body" prefix: Blogger injects its own widget stylesheet, sometimes after this skin */
+body .section, body .widget { margin: 0; padding: 0; }
+body .widget ul, body .widget ol { list-style: none; margin: 0; padding: 0; }
+body .widget li { margin: 0; padding: 0; }
+body .widget .post-body ul { list-style: disc; padding-left: 1.4em; margin: 0 0 1.2em; }
+body .widget .post-body ol { list-style: decimal; padding-left: 1.4em; margin: 0 0 1.2em; }
+body .widget .post-body li { padding: 0.15em 0; }
+.navbar, #navbar, #navbar-iframe { display: none !important; height: 0 !important; }
+:focus-visible { outline: 3px solid $(highlight.color); outline-offset: 3px; }
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+@media (min-width: 768px) { .container { padding: 0 28px; } }
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 12px;
+  z-index: 300;
+  background: #fff;
+  color: $(primary.color);
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 6px;
+}
+.skip-link:focus { left: 16px; }
+
+/* ---------- Buttons and badges ---------- */
+.btn,
+.header-cta .widget-content a,
+.hero-actions a,
+.cta-body li a,
+.join-card a,
+.sidebar .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 12px 24px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+}
+.btn-primary,
+.header-cta .widget-content a,
+.hero-actions li:first-child a,
+.cta-body li:first-child a,
+.join-card a,
+.sidebar .btn {
+  background: $(accent.color);
+  border-color: $(accent.color);
+  color: #fff;
+}
+.btn-primary:hover,
+.header-cta .widget-content a:hover,
+.hero-actions li:first-child a:hover,
+.cta-body li:first-child a:hover,
+.join-card a:hover,
+.sidebar .btn:hover {
+  background: $(accent.dark.color);
+  border-color: $(accent.dark.color);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.hero-actions li a,
+.cta-body li a {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+.hero-actions li a:hover,
+.cta-body li a:hover { border-color: #fff; background: rgba(255, 255, 255, 0.08); }
+.btn-outline {
+  background: #fff;
+  border-color: $(border.color);
+  color: $(primary.color);
+}
+.btn-outline:hover { border-color: $(primary.color); }
+
+.badge {
+  display: inline-block;
+  background: $(accent.color);
+  color: #fff;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  line-height: 1;
+  text-transform: uppercase;
+  padding: 5px 8px 6px;
+  border-radius: 3px;
+  transition: background 0.2s, color 0.2s;
+}
+a.badge:hover { background: $(primary.color); color: #fff; }
+.badge-soft { background: $(band.background.color); color: $(primary.color); }
+a.badge-soft:hover { background: $(accent.color); color: #fff; }
+
+/* ---------- Top bar ---------- */
+.topbar {
+  background: $(primary.dark.color);
+  color: #D5DDE8;
+  font-size: 13px;
+}
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+}
+.topbar-social h2 { display: none; }
+.social-list,
+.topbar-social .widget-content ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.topbar-social .widget-content a,
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #D5DDE8;
+  transition: background 0.2s, color 0.2s;
+}
+.topbar-social .widget-content a:hover,
+.footer-social a:hover { background: $(accent.color); color: #fff; }
+.social-icon { display: block; width: 16px; height: 16px; fill: currentColor; }
+.has-icon .social-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.search-form {
+  display: flex;
+  align-items: stretch;
+  max-width: 100%;
+  background: #fff;
+  border: 1px solid $(border.color);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.search-form input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 8px 14px;
+  color: $(text.color);
+  outline: none;
+}
+.search-form button {
+  flex: 0 0 auto;
+  border: 0;
+  background: $(accent.color);
+  color: #fff;
+  width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.search-form button:hover { background: $(accent.dark.color); }
+.topbar-search {
+  flex: 0 1 300px;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.topbar-search input { color: #fff; padding: 6px 14px; font-size: 13px; }
+.topbar-search input::placeholder { color: #9AA8BC; }
+.topbar-search button { width: 36px; }
+
+/* ---------- Header ---------- */
+.site-header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 4px solid $(accent.color);
+  transition: box-shadow 0.2s;
+}
+.site-header.is-scrolled { box-shadow: 0 6px 22px rgba(15, 30, 55, 0.14); }
+.header-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 76px;
+}
+.brand-section { flex: 1 1 auto; min-width: 0; }
+.brand { display: flex; align-items: center; gap: 12px; color: $(primary.color); padding: 8px 0; }
+.brand-mark {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: $(accent.color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  overflow: hidden;
+}
+.brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+.brand-logo img { display: block; max-height: 60px; width: auto; }
+.brand-text { display: flex; flex-direction: column; min-width: 0; }
+.brand-name {
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: $(primary.color);
+}
+.brand-tagline { font-size: 12px; color: $(muted.color); line-height: 1.3; }
+
+.nav-toggle {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 6px;
+  background: $(primary.color);
+  color: #fff;
+  cursor: pointer;
+}
+.nav-toggle .icon-close { display: none; }
+.nav-open .nav-toggle .icon-menu { display: none; }
+.nav-open .nav-toggle .icon-close { display: block; }
+
+/* Mobile drawer */
+.nav-drawer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 120px;
+  bottom: 0;
+  z-index: 99;
+  background: #fff;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 16px 32px;
+  display: none;
+  border-top: 1px solid $(border.color);
+}
+.nav-open .nav-drawer { display: block; }
+.site-nav .widget-content > ul > li { border-bottom: 1px solid $(border.color); position: relative; }
+.site-nav .widget-content a {
+  display: block;
+  padding: 14px 48px 14px 4px;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: $(primary.color);
+}
+.site-nav .widget-content a:hover { color: $(accent.color); }
+.site-nav .widget-content ul ul { display: none; padding: 0 0 10px 12px; border-left: 3px solid $(accent.color); margin-left: 4px; }
+.site-nav .widget-content li.sub-open > ul { display: block; }
+.site-nav .widget-content ul ul a {
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 9px 8px;
+  color: $(text.color);
+}
+.sub-toggle {
+  position: absolute;
+  top: 6px;
+  right: 0;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  background: transparent;
+  color: $(primary.color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sub-toggle svg { transition: transform 0.2s; }
+.sub-open > .sub-toggle svg { transform: rotate(180deg); }
+.header-cta { margin-top: 20px; }
+.header-cta .widget-content a { width: 100%; }
+
+@media (min-width: 1100px) {
+  .nav-toggle { display: none; }
+  .header-inner { flex-wrap: wrap; column-gap: 24px; row-gap: 0; }
+  /* The drawer's two sections become items of the header row: Join top right, menu on its own row */
+  .nav-drawer { display: contents !important; }
+  .header-cta { order: 2; }
+  .site-nav { order: 3; flex: 1 0 100%; border-top: 1px solid $(border.color); }
+  .site-nav .widget-content > ul { display: flex; flex-wrap: wrap; align-items: center; margin-left: -14px; }
+  .site-nav .widget-content > ul > li { border: 0; }
+  .site-nav .widget-content > ul > li > a {
+    padding: 15px 14px;
+    font-size: 15px;
+    white-space: nowrap;
+    position: relative;
+  }
+  .site-nav .widget-content > ul > li > a::after {
+    content: '';
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 0;
+    height: 3px;
+    background: $(accent.color);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+  }
+  .site-nav .widget-content > ul > li:hover > a::after,
+  .site-nav .widget-content > ul > li:focus-within > a::after { transform: scaleX(1); }
+  .site-nav .widget-content > ul > li.has-sub > a { padding-right: 28px; }
+  .site-nav .widget-content > ul > li.has-sub > a::before {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    margin-top: -6px;
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+  }
+  .sub-toggle { display: none; }
+  .site-nav .widget-content ul ul {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 250px;
+    max-height: 70vh;
+    overflow-y: auto;
+    margin: 0;
+    padding: 8px 0;
+    background: #fff;
+    border: 0;
+    border-top: 3px solid $(accent.color);
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 14px 34px rgba(15, 30, 55, 0.16);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+    z-index: 120;
+  }
+  .site-nav .widget-content li:hover > ul,
+  .site-nav .widget-content li:focus-within > ul {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .site-nav .widget-content ul ul a { padding: 9px 18px; font-size: 14px; }
+  .site-nav .widget-content ul ul a:hover { background: $(page.background.color); color: $(accent.color); }
+  .header-cta { margin: 0; }
+  .header-cta .widget-content a { width: auto; min-height: 42px; padding: 10px 18px; font-size: 15px; }
+}
+
+/* ---------- Homepage-only sections ---------- */
+.home-only { display: none; }
+
+/* ---------- Ticker ---------- */
+.ticker { background: #fff; border-bottom: 1px solid $(border.color); }
+.ticker-inner { display: flex; align-items: stretch; gap: 14px; min-height: 46px; }
+.ticker-label {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  background: $(accent.color);
+  color: #fff;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0 14px;
+}
+.ticker-track {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+.ticker-list {
+  display: flex;
+  gap: 36px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  white-space: nowrap;
+  animation: ticker 60s linear infinite;
+}
+.ticker-track:hover .ticker-list,
+.ticker-track:focus-within .ticker-list { animation-play-state: paused; }
+.ticker-list li { flex: 0 0 auto; }
+.ticker-list a { font-size: 14px; font-weight: 600; color: $(primary.color); }
+.ticker-list a:hover { color: $(accent.color); }
+.ticker-list a::before { content: '\25A0'; color: $(accent.color); font-size: 9px; margin-right: 10px; vertical-align: 2px; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .ticker-list { animation: none; }
+  .ticker-track { overflow-x: auto; }
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  background-color: $(primary.color);
+  background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0, rgba(255, 255, 255, 0.035) 2px, transparent 2px, transparent 22px);
+  color: #fff;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 6px;
+  background: $(accent.color);
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  padding-top: 44px;
+  padding-bottom: 56px;
+  align-items: center;
+}
+.hero-copy { position: relative; }
+.hero-eyebrow {
+  display: inline-block;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: $(highlight.color);
+  margin-bottom: 14px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 28px;
+  height: 3px;
+  background: $(accent.color);
+  vertical-align: middle;
+  margin: -3px 10px 0 0;
+}
+.hero-title {
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 700;
+  font-size: clamp(32px, 6.2vw, 58px);
+  line-height: 1.05;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin: 0 0 18px;
+  color: #fff;
+}
+.hero-title .accent { color: $(highlight.color); }
+.hero-text { font-size: 18px; line-height: 1.6; color: #D5DDE8; max-width: 560px; }
+.hero-text p:last-child { margin-bottom: 0; }
+.hero-actions { margin-top: 26px; }
+.hero-actions ul { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-media {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: $(primary.dark.color);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  aspect-ratio: 16 / 9;
+}
+.hero-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hero-media img:first-child,
+.hero-media img.is-active { opacity: 1; }
+.hero-media.is-slideshow img:first-child:not(.is-active) { opacity: 0; }
+.slide-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 52px;
+  z-index: 2;
+}
+.slide-dots button {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+.slide-dots button[aria-current='true'] { background: $(accent.color); transform: scale(1.25); }
+.slide-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(11, 26, 51, 0.6);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.slide-btn:hover { background: $(accent.color); }
+.slide-prev { left: 10px; }
+.slide-next { right: 10px; }
+.hero-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.12), transparent 60%), $(accent.color);
+}
+.hero-placeholder strong {
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: clamp(28px, 4vw, 44px);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.hero-placeholder span { max-width: 380px; font-size: 14px; color: rgba(255, 255, 255, 0.85); }
+@media (min-width: 960px) {
+  .hero-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px; padding-top: 64px; padding-bottom: 76px; }
+}
+
+/* ---------- Bands and section headings ---------- */
+.band { padding: 48px 0; }
+@media (min-width: 768px) { .band { padding: 64px 0; } }
+.band h2.title,
+.feed-head h2.title,
+.section-title,
+.related-title {
+  position: relative;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 600;
+  font-size: clamp(24px, 3.4vw, 32px);
+  line-height: 1.15;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: $(primary.color);
+  margin: 0 0 24px;
+  padding-bottom: 12px;
+}
+.band h2.title::after,
+.feed-head h2.title::after,
+.section-title::after,
+.related-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 56px;
+  height: 4px;
+  background: $(accent.color);
+}
+.band-services h2.title,
+.band-stats h2.title,
+.band-partners h2.title,
+.band-about .feed-head h2.title { text-align: center; }
+.band-services h2.title::after,
+.band-stats h2.title::after,
+.band-partners h2.title::after,
+.band-about .feed-head h2.title::after { left: 50%; margin-left: -28px; }
+
+/* What we do */
+.band-services { background: #fff; }
+.band-services .widget-content > p { max-width: 720px; margin: 0 auto 28px; text-align: center; color: $(muted.color); }
+.band-services .widget-content ul {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  counter-reset: service;
+}
+.band-services .widget-content li {
+  position: relative;
+  background: $(page.background.color);
+  border-radius: 10px;
+  padding: 26px 22px 24px;
+  border-top: 4px solid $(primary.color);
+  color: $(muted.color);
+  font-size: 15px;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.band-services .widget-content li:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(15, 30, 55, 0.16); border-top-color: $(accent.color); }
+.band-services .widget-content li::before {
+  counter-increment: service;
+  content: counter(service, decimal-leading-zero);
+  display: block;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  color: $(accent.color);
+  margin-bottom: 12px;
+}
+.band-services .widget-content li strong {
+  display: block;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: $(primary.color);
+  margin-bottom: 6px;
+}
+@media (min-width: 640px) { .band-services .widget-content ul { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .band-services .widget-content ul { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* Numbers */
+.band-stats {
+  background: $(accent.color);
+  color: #fff;
+  padding: 40px 0;
+}
+.band-stats h2.title { color: #fff; }
+.band-stats h2.title::after { background: #fff; }
+.band-stats .widget-content ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  text-align: center;
+}
+.band-stats .widget-content li { font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255, 255, 255, 0.85); }
+.band-stats .widget-content li strong {
+  display: block;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: clamp(34px, 5vw, 50px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0;
+  color: #fff;
+}
+@media (min-width: 768px) { .band-stats .widget-content ul { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* ---------- Label feeds ---------- */
+.feed-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 0 12px; margin-bottom: 20px; }
+.feed-head h2.title { margin: 0; min-width: 0; overflow-wrap: break-word; }
+.feed-more {
+  flex: 0 0 auto;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: $(accent.color);
+  padding-bottom: 14px;
+}
+.feed-more::after { content: ' \2192'; }
+.feed-more:hover { color: $(primary.color); }
+.feed-status { color: $(muted.color); font-size: 14px; }
+.feed-row .feed-head h2.title { font-size: clamp(22px, 2.4vw, 26px); }
+.feed-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; }
+@media (min-width: 768px) { .feed-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .feed-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; } }
+
+.feed-thumb {
+  display: block;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: $(band.background.color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.feed-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+a.feed-thumb:hover img,
+.feed-featured:hover .feed-thumb img { transform: scale(1.04); }
+.feed-thumb-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $(primary.color);
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: 28px;
+  text-transform: uppercase;
+}
+.feed-date { display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: $(accent.color); }
+.feed-title { font-family: 'Open Sans', Arial, Helvetica, sans-serif; font-weight: 700; font-size: 16px; line-height: 1.35; color: $(primary.color); margin: 4px 0 0; }
+.feed-title a:hover { color: $(accent.color); }
+
+/* kind: news (first post large, then a list) */
+.feed-featured { margin-bottom: 14px; }
+.feed-featured .feed-body { padding-top: 12px; }
+.feed-featured .feed-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-weight: 600; font-size: 21px; line-height: 1.2; }
+.feed-featured .feed-excerpt { font-size: 14px; color: $(muted.color); margin: 8px 0 0; }
+.feed-block .feed-list > li { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-top: 1px solid $(border.color); }
+.feed-list .feed-thumb { flex: 0 0 92px; width: 92px; aspect-ratio: 4 / 3; }
+.feed-list .feed-title { font-size: 15px; }
+
+/* kind: message (leader's message) */
+.band-leader { background: $(band.background.color); }
+.leader-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 44px; }
+@media (min-width: 1024px) { .leader-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; } }
+.feed-message {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 14px rgba(15, 30, 55, 0.08);
+  overflow: hidden;
+}
+.feed-message .feed-thumb { border-radius: 0; aspect-ratio: 4 / 3; }
+.feed-message .feed-thumb img { object-fit: cover; object-position: top center; }
+.feed-message .feed-body { position: relative; padding: 24px 24px 26px; }
+.feed-message .feed-body::before {
+  content: '\201C';
+  position: absolute;
+  top: -38px;
+  right: 18px;
+  font-family: Georgia, serif;
+  font-size: 110px;
+  line-height: 1;
+  color: $(accent.color);
+}
+.feed-message .feed-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-size: 22px; font-weight: 600; line-height: 1.2; }
+.feed-message .feed-excerpt { font-size: 15px; color: $(muted.color); font-style: italic; margin: 10px 0 16px; }
+.feed-readmore { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-weight: 500; letter-spacing: 0.6px; text-transform: uppercase; font-size: 14px; color: $(accent.color); }
+.feed-readmore::after { content: ' \2192'; }
+
+/* kind: tiles (events) */
+.feed-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (min-width: 640px) { .feed-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.feed-tile { position: relative; display: block; border-radius: 6px; overflow: hidden; background: $(primary.color); aspect-ratio: 1 / 1; }
+.feed-tile .feed-thumb { position: absolute; inset: 0; aspect-ratio: auto; border-radius: 0; }
+.feed-tile-text {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 36px 12px 12px;
+  background: linear-gradient(to top, rgba(8, 18, 36, 0.92), rgba(8, 18, 36, 0));
+  color: #fff;
+}
+.feed-tile .feed-date { color: $(highlight.color); font-size: 11px; }
+.feed-tile .feed-title { color: #fff; font-size: 14px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.feed-tile:hover img { transform: scale(1.06); }
+
+/* kind: list (about) */
+.band-about { background: #fff; }
+.band-about .feed-head { flex-direction: column; align-items: center; }
+.band-about .feed-more { padding-bottom: 0; }
+.feed-cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+@media (min-width: 640px) { .feed-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .feed-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.feed-card { background: $(page.background.color); border-radius: 10px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
+.feed-card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(15, 30, 55, 0.16); }
+.feed-card .feed-thumb { border-radius: 0; }
+.feed-card .feed-body { padding: 14px 16px 18px; }
+
+/* kind: strip (member institutions / branches) */
+.band-members { background: $(band.background.color); }
+.strip-wrap { position: relative; }
+.feed-strip {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 10px;
+  scrollbar-width: thin;
+}
+.feed-strip > li { flex: 0 0 72%; scroll-snap-align: start; }
+@media (min-width: 640px) { .feed-strip > li { flex-basis: 40%; } }
+@media (min-width: 1024px) { .feed-strip > li { flex-basis: calc((100% - 56px) / 5); } }
+.feed-strip .feed-card { background: #fff; height: 100%; }
+.feed-strip .feed-title { font-size: 14px; }
+.strip-btn {
+  position: absolute;
+  top: 34%;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: $(primary.color);
+  color: #fff;
+  box-shadow: 0 2px 14px rgba(15, 30, 55, 0.08);
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.strip-btn:hover { background: $(accent.color); }
+.strip-prev { left: -12px; }
+.strip-next { right: -12px; }
+@media (min-width: 768px) { .strip-btn { display: flex; } }
+
+/* ---------- Join call-to-action ---------- */
+.band-cta {
+  background-color: $(primary.color);
+  background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0, rgba(255, 255, 255, 0.035) 2px, transparent 2px, transparent 22px);
+  color: #fff;
+  text-align: center;
+}
+.cta-inner { max-width: 760px; margin: 0 auto; }
+.cta-title {
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 700;
+  font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fff;
+  margin: 0 0 14px;
+}
+.cta-title::after { content: ''; display: block; width: 64px; height: 4px; margin: 16px auto 0; background: $(accent.color); }
+.cta-body p { font-size: 18px; color: #D5DDE8; }
+.cta-body ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 22px; }
+
+/* ---------- Partners ---------- */
+.band-partners { background: #fff; padding: 44px 0; }
+.logo-list { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 36px; }
+.logo-list li { display: flex; align-items: center; justify-content: center; }
+.logo-list img {
+  display: block;
+  max-height: 64px;
+  max-width: 150px;
+  width: auto;
+  filter: grayscale(1);
+  opacity: 0.75;
+  transition: filter 0.2s, opacity 0.2s;
+}
+.logo-list li:hover img { filter: none; opacity: 1; }
+.logo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 140px;
+  height: 60px;
+  border: 2px dashed $(border.color);
+  border-radius: 6px;
+  font-size: 12px;
+  color: $(muted.color);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ---------- Posts area ---------- */
+.page-main { padding: 44px 0 60px; }
+.main-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 44px; }
+@media (min-width: 1024px) { .main-grid { grid-template-columns: minmax(0, 1fr) 320px; gap: 44px; } }
+.section-head { margin-bottom: 4px; }
+.post-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+@media (min-width: 640px) { .post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.post-card {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 14px rgba(15, 30, 55, 0.08);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.post-card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(15, 30, 55, 0.16); }
+.post-card-media { display: block; position: relative; aspect-ratio: 16 / 9; background: $(band.background.color); overflow: hidden; }
+.post-card-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.post-card:hover .post-card-media img { transform: scale(1.04); }
+.post-card-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: $(muted.color); background: $(band.background.color); }
+.post-card-body { display: flex; flex-direction: column; gap: 8px; padding: 16px 18px 18px; flex: 1 1 auto; }
+.post-card-labels a:not(:first-child) { display: none; }
+.post-card-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-weight: 600; font-size: 21px; line-height: 1.25; margin: 0; color: $(primary.color); }
+.post-card-title a:hover { color: $(accent.color); }
+.post-card-meta { margin-top: auto; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: $(muted.color); }
+.empty-state { background: #fff; border-radius: 10px; padding: 32px 24px; text-align: center; box-shadow: 0 2px 14px rgba(15, 30, 55, 0.08); }
+.blog-pager-nav { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 32px; }
+.blog-pager-nav .older { margin-left: auto; }
+
+/* ---------- Single post / page ---------- */
+.post-single {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 14px rgba(15, 30, 55, 0.08);
+  padding: 22px 18px 28px;
+}
+@media (min-width: 768px) { .post-single { padding: 36px 44px 40px; } }
+.breadcrumb { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 13px; color: $(muted.color); margin-bottom: 14px; }
+.breadcrumb a { color: $(accent.color); font-weight: 600; }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb a + a::before { content: '\203A'; color: $(muted.color); margin-right: 8px; font-weight: 400; }
+.breadcrumb .crumb-label ~ .crumb-label { display: none; }
+.post-title {
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 600;
+  font-size: clamp(28px, 4.4vw, 42px);
+  line-height: 1.15;
+  color: $(primary.color);
+  margin: 0 0 14px;
+}
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  font-size: 14px;
+  color: $(muted.color);
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid $(border.color);
+}
+.post-author { font-weight: 700; color: $(primary.color); }
+.post-meta .sep { width: 4px; height: 4px; border-radius: 50%; background: $(accent.color); }
+.post-meta .item-control { margin-left: auto; }
+.post-body { font-size: 17px; line-height: 1.75; overflow-wrap: break-word; }
+.post-body a { color: $(accent.color); text-decoration: underline; text-underline-offset: 2px; }
+.post-body h2, .post-body h3, .post-body h4 { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-weight: 600; color: $(primary.color); margin: 1.4em 0 0.5em; }
+.post-body h2 { font-size: 28px; }
+.post-body h3 { font-size: 23px; }
+.post-body img { border-radius: 6px; }
+.post-body blockquote {
+  margin: 1.4em 0;
+  padding: 16px 20px;
+  border-left: 5px solid $(accent.color);
+  background: $(page.background.color);
+  font-size: 18px;
+  font-style: italic;
+  color: $(primary.color);
+}
+.post-body table { width: 100%; border-collapse: collapse; margin: 1.2em 0; display: block; overflow-x: auto; }
+.post-body th, .post-body td { border: 1px solid $(border.color); padding: 8px 10px; text-align: left; }
+.post-body th { background: $(band.background.color); }
+.post-body iframe { display: block; margin: 1em auto; }
+.post-body .tr-caption-container { max-width: 100%; }
+.post-body .tr-caption { font-size: 13px; color: $(muted.color); }
+.post-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 30px; }
+.post-tags-label, .post-share-label { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase; color: $(muted.color); margin-right: 4px; }
+.post-share { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 20px; padding: 16px 0; border-top: 1px solid $(border.color); border-bottom: 1px solid $(border.color); }
+.post-share a, .post-share button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: $(primary.color);
+  cursor: pointer;
+}
+.post-share .share-wa { background: #1E8E4E; }
+.post-share .share-fb { background: #1877F2; }
+.post-share .share-x { background: #111; }
+.post-share .share-in { background: #0A66C2; }
+.post-share button { background: $(band.background.color); color: $(primary.color); }
+.post-share a:hover, .post-share button:hover { opacity: 0.88; }
+.join-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 28px;
+  padding: 22px;
+  border-radius: 10px;
+  background: $(primary.color);
+  color: #D5DDE8;
+  border-left: 6px solid $(accent.color);
+}
+.join-box p { margin: 0; }
+.join-box-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-size: 22px; font-weight: 600; text-transform: uppercase; color: #fff; margin-bottom: 4px !important; }
+@media (min-width: 640px) { .join-box { flex-direction: row; align-items: center; justify-content: space-between; } .join-box .btn { flex: 0 0 auto; } }
+.related { margin-top: 36px; }
+.related-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 640px) { .related-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.related-grid .feed-card .feed-title { font-size: 15px; }
+
+/* Blogger's comment markup */
+.comments { margin-top: 40px; }
+.comments h4, #comments h4 {
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  text-transform: uppercase;
+  color: $(primary.color);
+  margin: 0 0 16px;
+}
+.comments .comments-content .comment-thread ol { list-style: none; margin: 0; padding: 0; }
+.comments .comment-block { margin-left: 52px; }
+.comments .avatar-image-container { float: left; width: 40px; height: 40px; max-height: 40px; border-radius: 50%; overflow: hidden; }
+.comments .avatar-image-container img { width: 40px; height: 40px; max-width: 40px; }
+.comments .comments-content .comment { margin: 0 0 16px; padding: 0; }
+.comments .comments-content .comment-content { background: $(page.background.color); padding: 12px 14px; border-radius: 6px; margin: 6px 0; line-height: 1.6; }
+.comments .comments-content .user { font-weight: 700; color: $(primary.color); }
+.comments .comments-content .datetime { font-size: 12px; color: $(muted.color); margin-left: 8px; }
+.comments .comment-actions a, .comments .continue a, .comment-footer a { font-size: 13px; font-weight: 700; color: $(accent.color); margin-right: 10px; }
+.comments .comments-content .comment-replies { margin-left: 52px; }
+.comments .comments-content .icon.blog-author { display: inline-block; width: 14px; height: 14px; margin-left: 4px; border-radius: 50%; background: $(accent.color); vertical-align: -2px; }
+#comment-editor, .comment-form iframe { width: 100% !important; }
+.comment-form { max-width: 100%; }
+
+/* 404 */
+.not-found { background: #fff; border-radius: 10px; box-shadow: 0 2px 14px rgba(15, 30, 55, 0.08); padding: 44px 22px; text-align: center; }
+.not-found-code { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-weight: 700; font-size: 96px; line-height: 1; color: $(accent.color); margin: 0 0 8px; }
+.not-found h1 { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-size: 32px; text-transform: uppercase; color: $(primary.color); }
+.not-found p { color: $(muted.color); max-width: 460px; margin: 0 auto 20px; }
+.not-found .search-form { max-width: 420px; margin: 0 auto 20px; }
+.not-found .search-form input { padding: 10px 16px; }
+
+/* ---------- Sidebar ---------- */
+.sidebar .widget {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 14px rgba(15, 30, 55, 0.08);
+  padding: 20px 20px 22px;
+  margin-bottom: 24px;
+}
+.sidebar .widget > h2,
+.sidebar .widget h2.title {
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: $(primary.color);
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid $(border.color);
+  position: relative;
+}
+.sidebar .widget > h2::after,
+.sidebar .widget h2.title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 40px;
+  height: 2px;
+  background: $(accent.color);
+}
+.sidebar .widget-content { font-size: 15px; }
+.sidebar .widget:empty { display: none; }
+.join-card { text-align: left; }
+.join-card p { color: $(muted.color); }
+.join-card a { width: 100%; }
+.sidebar .HTML form { text-align: center; }
+.sidebar .HTML input[type='image'] { max-width: 100%; height: auto; }
+.video-embed, .map-embed { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; background: $(band.background.color); }
+.map-embed { aspect-ratio: 4 / 3; }
+.video-embed iframe, .map-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.fb-page-embed { display: flex; justify-content: center; }
+.fb-page-embed iframe { width: 100%; max-width: 340px; }
+.popular-posts ul li { padding: 10px 0 !important; border-top: 1px solid $(border.color); }
+.popular-posts ul li:first-child { border-top: 0; padding-top: 0 !important; }
+.popular-posts .item-content, .popular-posts .item-thumbnail-only { display: flex; gap: 12px; align-items: flex-start; }
+.popular-posts .item-thumbnail { flex: 0 0 64px; float: none; margin: 0; }
+.popular-posts .item-thumbnail img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; padding: 0; }
+.popular-posts .item-title { font-weight: 700; font-size: 14px; line-height: 1.35; color: $(primary.color); padding: 0; }
+.popular-posts .item-title a:hover { color: $(accent.color); }
+.popular-posts .item-snippet { font-size: 13px; color: $(muted.color); }
+.popular-posts div[style] { display: none; }
+.sidebar .list-label-widget-content ul { display: flex; flex-wrap: wrap; gap: 8px; }
+.sidebar .list-label-widget-content li a,
+.sidebar .list-label-widget-content li span {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: $(page.background.color);
+  border: 1px solid $(border.color);
+  font-size: 13px;
+  font-weight: 600;
+  color: $(primary.color);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.sidebar .list-label-widget-content li a:hover { background: $(accent.color); border-color: $(accent.color); color: #fff; }
+.sidebar .list-label-widget-content li span[dir] { background: $(primary.color); color: #fff; }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  position: relative;
+  background: $(primary.dark.color);
+  color: #9AA8BC;
+  font-size: 15px;
+  border-top: 6px solid $(accent.color);
+}
+.footer-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 34px; padding: 52px 0 36px; }
+@media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .footer-grid { grid-template-columns: 1.3fr 1fr 1.2fr 1fr; gap: 40px; } }
+.site-footer .widget { margin-bottom: 26px; }
+.site-footer .widget:last-child { margin-bottom: 0; }
+.site-footer .widget > h2,
+.site-footer h2.title {
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0 0 16px;
+}
+.site-footer .widget > h2::after,
+.site-footer h2.title::after { content: ''; display: block; width: 32px; height: 3px; background: $(accent.color); margin-top: 8px; }
+.site-footer a { color: #D5DDE8; }
+.site-footer a:hover { color: #fff; }
+.site-footer strong { color: #fff; }
+.site-footer .widget-content ul li { padding: 5px 0; }
+.site-footer .list-label-widget-content li a::before { content: '\203A'; color: $(accent.color); margin-right: 8px; font-weight: 700; }
+.contact-list li { padding: 4px 0 !important; }
+.logo-list-small { justify-content: flex-start; gap: 14px; }
+.site-footer .logo-list img { filter: none; opacity: 1; max-height: 70px; background: #fff; padding: 6px; border-radius: 6px; }
+#google_translate_element select { max-width: 100%; padding: 6px; border-radius: 6px; border: 0; color: $(text.color); }
+.footer-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 0 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  text-align: center;
+}
+.footer-bottom p { margin: 0; }
+.footer-social { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.footer-credit .widget-content { font-size: 12px; color: #9AA8BC; }
+@media (min-width: 900px) {
+  .footer-bottom { flex-direction: row; justify-content: space-between; text-align: left; }
+}
+.to-top {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 90;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: $(accent.color);
+  color: #fff !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 34px rgba(15, 30, 55, 0.16);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+}
+.to-top.is-visible { opacity: 1; visibility: visible; transform: translateY(0); }
+.to-top:hover { background: $(accent.dark.color); }
+
+/* ---------- Phones: centre short content ---------- */
+@media (max-width: 959px) {
+  .hero-copy { text-align: center; }
+  .hero-text { margin: 0 auto; }
+  .hero-eyebrow::before { display: none; }
+  .hero-actions ul { justify-content: center; }
+}
+@media (max-width: 639px) {
+  .topbar-search { flex: 1 1 auto; max-width: 52%; }
+  .topbar-social .widget-content a { width: 30px; height: 30px; }
+  .brand-logo img { max-height: 48px; }
+  .hero-actions li { flex: 1 1 100%; }
+  .hero-actions li a { width: 100%; }
+  .cta-body li { flex: 1 1 100%; }
+  .cta-body li a { width: 100%; }
+  .band-services .widget-content li { text-align: center; }
+  .feed-head { flex-wrap: wrap; }
+  .blog-pager-nav .btn { flex: 1 1 100%; }
+  .post-body .separator a { float: none !important; margin-left: 0 !important; margin-right: 0 !important; }
+  .site-footer { text-align: center; }
+  .site-footer .widget > h2::after, .site-footer h2.title::after { margin-left: auto; margin-right: auto; }
+  .logo-list-small { justify-content: center; }
+}
+
+/* ---------- Layout editor (Theme > Layout) ---------- */
+body#layout .home-only,
+body#layout .nav-drawer { display: block !important; }
+body#layout .site-header { position: static; }
+body#layout .topbar-search,
+body#layout .nav-toggle,
+body#layout .ticker,
+body#layout .to-top { display: none !important; }
+body#layout .hero-grid,
+body#layout .feed-row,
+body#layout .leader-grid,
+body#layout .main-grid,
+body#layout .footer-grid { display: block; }
+body#layout .header-inner { display: block; }
+]]></b:skin>
+<b:if cond='data:blog.url == data:blog.homepageUrl'>
+<style type='text/css'>.home-only { display: block; }</style>
+</b:if>
+<b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+<style type='text/css'>.home-only { display: block; }</style>
+</b:if>
+</head>
+<body expr:class='&quot;union pt-&quot; + data:blog.pageType'>
+<a class='skip-link' href='#content'>Skip to content</a>
+
+<!-- ================= Top bar: social links + search ================= -->
+<div class='topbar'>
+  <div class='container topbar-inner'>
+    <b:section class='topbar-social' id='topbar-social' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML15' locked='false' title='Follow us' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="https://www.facebook.com/">Facebook</a></li>
+<li><a href="https://x.com/">X (Twitter)</a></li>
+<li><a href="https://www.youtube.com/">YouTube</a></li>
+<li><a href="https://www.instagram.com/">Instagram</a></li>
+<li><a href="https://www.linkedin.com/">LinkedIn</a></li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+      </b:widget>
+    </b:section>
+    <form action='/search' class='search-form topbar-search' method='get' role='search'>
+      <input aria-label='Search this site' name='q' placeholder='Search this site...' type='search'/>
+      <button aria-label='Search' type='submit'>
+        <svg aria-hidden='true' fill='none' height='18' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.2' viewBox='0 0 24 24' width='18'><circle cx='11' cy='11' r='8'/><line x1='21' x2='16.65' y1='21' y2='16.65'/></svg>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= Header: logo, menu, Join button ================= -->
+<header class='site-header' id='site-header'>
+  <div class='container header-inner'>
+    <b:section class='brand-section' id='header' maxwidgets='1' showaddelement='no'>
+      <b:widget id='Header1' locked='true' title='Union name (Header)' type='Header' version='1'>
+        <b:includable id='main'>
+          <a class='brand' expr:href='data:blog.homepageUrl'>
+            <b:if cond='data:useImage'>
+              <b:if cond='data:imagePlacement == &quot;REPLACE&quot;'>
+                <span class='brand-logo'><img expr:alt='data:title' expr:src='data:sourceUrl'/></span>
+              <b:else/>
+                <span aria-hidden='true' class='brand-mark'><img alt='' expr:src='data:sourceUrl'/></span>
+                <span class='brand-text'>
+                  <span class='brand-name'><data:title/></span>
+                  <b:if cond='data:description != &quot;&quot;'>
+                    <span class='brand-tagline'><data:description/></span>
+                  </b:if>
+                </span>
+              </b:if>
+            <b:else/>
+              <span aria-hidden='true' class='brand-mark'/>
+              <span class='brand-text'>
+                <span class='brand-name'><data:title/></span>
+                <b:if cond='data:description != &quot;&quot;'>
+                  <span class='brand-tagline'><data:description/></span>
+                </b:if>
+              </span>
+            </b:if>
+          </a>
+        </b:includable>
+      </b:widget>
+    </b:section>
+
+    <button aria-controls='site-nav' aria-expanded='false' aria-label='Open menu' class='nav-toggle' id='nav-toggle' type='button'>
+      <svg aria-hidden='true' class='icon-menu' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='3' x2='21' y1='6' y2='6'/><line x1='3' x2='21' y1='12' y2='12'/><line x1='3' x2='21' y1='18' y2='18'/></svg>
+      <svg aria-hidden='true' class='icon-close' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='18' x2='6' y1='6' y2='18'/><line x1='6' x2='18' y1='6' y2='18'/></svg>
+    </button>
+
+    <nav aria-label='Main' class='nav-drawer' id='site-nav'>
+      <b:section class='site-nav' id='menu' maxwidgets='1' showaddelement='no'>
+        <b:widget id='HTML16' locked='false' title='Main menu' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/">Home</a></li>
+<li><a href="#">About us</a>
+  <ul>
+  <li><a href="/p/about.html">Who we are</a></li>
+  <li><a href="/search/label/Leadership">Leadership</a></li>
+  <li><a href="/p/constitution.html">Constitution</a></li>
+  <li><a href="/search/label/Branches">Branches</a></li>
+  </ul>
+</li>
+<li><a href="/search/label/News">News</a></li>
+<li><a href="/search/label/Campaigns">Campaigns</a></li>
+<li><a href="#">Your rights</a>
+  <ul>
+  <li><a href="/p/know-your-rights.html">Know your rights</a></li>
+  <li><a href="/search/label/Agreements">Collective agreements</a></li>
+  <li><a href="/search/label/Publications">Publications</a></li>
+  <li><a href="/p/report-a-problem.html">Report a problem at work</a></li>
+  </ul>
+</li>
+<li><a href="#">Membership</a>
+  <ul>
+  <li><a href="/p/join.html">How to join</a></li>
+  <li><a href="/p/benefits.html">Member benefits</a></li>
+  <li><a href="/p/faqs.html">FAQs</a></li>
+  </ul>
+</li>
+<li><a href="/p/contact.html">Contact</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+            <div class='widget-content'>
+              <data:content/>
+            </div>
+            <b:include name='quickedit'/>
+          </b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='header-cta' id='header-cta' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML3' locked='false' title='Join button' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<a href="/p/join.html">Join the union</a>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+            <div class='widget-content'>
+              <data:content/>
+            </div>
+            <b:include name='quickedit'/>
+          </b:includable>
+        </b:widget>
+      </b:section>
+    </nav>
+  </div>
+</header>
+
+<main id='content'>
+
+<!-- ================= Latest-updates ticker (homepage) ================= -->
+<div class='home-only ticker' id='ticker'>
+  <div class='container ticker-inner'>
+    <span class='ticker-label'>Latest</span>
+    <div class='ticker-track'>
+      <ul class='ticker-list'/>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Hero (homepage) ================= -->
+<section class='home-only hero'>
+  <div class='container hero-grid'>
+    <b:section class='hero-main' id='hero-main' showaddelement='yes'>
+      <b:widget id='HTML12' locked='false' title='Workers united' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<p>We are workers standing together for fair pay, safe workplaces and respect on the job. When we organise, we win.</p>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='hero-copy'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <p class='hero-eyebrow'><data:title/></p>
+            </b:if>
+            <b:if cond='data:blog.url == data:blog.homepageUrl'>
+              <h1 class='hero-title'><data:blog.title/></h1>
+            <b:else/>
+              <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+                <h1 class='hero-title'><data:blog.title/></h1>
+              <b:else/>
+                <p class='hero-title'><data:blog.title/></p>
+              </b:if>
+            </b:if>
+            <div class='hero-text'><data:content/></div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+      <b:widget id='HTML26' locked='false' title='Hero buttons' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/p/join.html">Join the union</a></li>
+<li><a href="/p/know-your-rights.html">Know your rights</a></li>
+<li><a href="/p/contact.html">Get help</a></li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='widget-content hero-actions'>
+            <data:content/>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+    <b:section class='hero-side' id='hero-side' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML7' locked='false' title='Hero slideshow' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div class="hero-placeholder">
+<strong>Stronger together</strong>
+<span>Replace this panel with photos of your members: Layout &#8594; Hero slideshow &#8594; Edit, and paste one or more &lt;img&gt; tags.</span>
+</div>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='hero-media'>
+            <data:content/>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= What we do + numbers (homepage) ================= -->
+<section class='home-only band band-services'>
+  <div class='container'>
+    <b:section class='services' id='services' showaddelement='yes'>
+      <b:widget id='HTML27' locked='false' title='How we support members' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<ul>
+<li><strong>Collective bargaining</strong> We negotiate fair pay, allowances and working conditions with employers.</li>
+<li><strong>Representation</strong> We stand with members in disciplinary hearings, grievances and disputes.</li>
+<li><strong>Health, safety &amp; welfare</strong> We campaign for safe workplaces, decent pensions and social protection.</li>
+<li><strong>Training &amp; education</strong> We train workplace representatives and members on their rights.</li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<section class='home-only band band-stats js-hide-empty'>
+  <div class='container'>
+    <b:section class='stats' id='stats' showaddelement='yes'>
+      <b:widget id='HTML28' locked='false' title='Our union in numbers' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<ul>
+<li><strong>10,000+</strong> members</li>
+<li><strong>40</strong> workplaces</li>
+<li><strong>25</strong> agreements signed</li>
+<li><strong>1990</strong> founded</li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Label-driven news blocks (homepage) ================= -->
+<section class='home-only band band-feeds'>
+  <div class='container'>
+    <div class='feed-row'>
+      <b:section class='feed-col' id='box3' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML6' locked='false' title='Campaigns' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[Campaigns]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <div class='feed-block' data-count='4' data-kind='news'>
+    <div class='feed-head'>
+      <b:if cond='data:title != &quot;&quot;'>
+        <h2 class='title'><data:title/></h2>
+      </b:if>
+      <a class='feed-more' href='/search'>View all</a>
+    </div>
+    <div class='feed-label' hidden='hidden'><data:content/></div>
+    <div class='feed-items'>
+      <p class='feed-status'>Loading&#8230;</p>
+    </div>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='feed-col' id='box' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML8' locked='false' title='News' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[News]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <div class='feed-block' data-count='4' data-kind='news'>
+    <div class='feed-head'>
+      <b:if cond='data:title != &quot;&quot;'>
+        <h2 class='title'><data:title/></h2>
+      </b:if>
+      <a class='feed-more' href='/search'>View all</a>
+    </div>
+    <div class='feed-label' hidden='hidden'><data:content/></div>
+    <div class='feed-items'>
+      <p class='feed-status'>Loading&#8230;</p>
+    </div>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='feed-col' id='box1' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML9' locked='false' title='Publications' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[Publications]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <div class='feed-block' data-count='4' data-kind='news'>
+    <div class='feed-head'>
+      <b:if cond='data:title != &quot;&quot;'>
+        <h2 class='title'><data:title/></h2>
+      </b:if>
+      <a class='feed-more' href='/search'>View all</a>
+    </div>
+    <div class='feed-label' hidden='hidden'><data:content/></div>
+    <div class='feed-items'>
+      <p class='feed-status'>Loading&#8230;</p>
+    </div>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+  </div>
+</section>
+
+<section class='home-only band band-leader'>
+  <div class='container leader-grid'>
+    <b:section class='leader-col' id='box4' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML14' locked='false' title='Message from the General Secretary' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[Leadership]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <div class='feed-block' data-count='1' data-kind='message'>
+    <div class='feed-head'>
+      <b:if cond='data:title != &quot;&quot;'>
+        <h2 class='title'><data:title/></h2>
+      </b:if>
+      <a class='feed-more' href='/search'>View all</a>
+    </div>
+    <div class='feed-label' hidden='hidden'><data:content/></div>
+    <div class='feed-items'>
+      <p class='feed-status'>Loading&#8230;</p>
+    </div>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>
+      </b:widget>
+    </b:section>
+    <b:section class='events-col' id='box6' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML10' locked='false' title='Events' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[Events]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <div class='feed-block' data-count='6' data-kind='tiles'>
+    <div class='feed-head'>
+      <b:if cond='data:title != &quot;&quot;'>
+        <h2 class='title'><data:title/></h2>
+      </b:if>
+      <a class='feed-more' href='/search'>View all</a>
+    </div>
+    <div class='feed-label' hidden='hidden'><data:content/></div>
+    <div class='feed-items'>
+      <p class='feed-status'>Loading&#8230;</p>
+    </div>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Posts + sidebar (every page) ================= -->
+<div class='page-main' id='news'>
+  <div class='container main-grid'>
+    <div class='main-col'>
+      <b:section class='main' id='main' showaddelement='no'>
+        <b:widget id='Blog1' locked='true' title='Latest news' type='Blog' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='showDateHeader'>false</b:widget-setting>
+            <b:widget-setting name='showShareButtons'>false</b:widget-setting>
+            <b:widget-setting name='authorLabel'>By</b:widget-setting>
+            <b:widget-setting name='showCommentLink'>true</b:widget-setting>
+            <b:widget-setting name='showAuthor'>true</b:widget-setting>
+            <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
+            <b:widget-setting name='reactionsLabel'/>
+            <b:widget-setting name='showAuthorProfile'>false</b:widget-setting>
+            <b:widget-setting name='style.layout'>1x1</b:widget-setting>
+            <b:widget-setting name='showLabels'>true</b:widget-setting>
+            <b:widget-setting name='showLocation'>false</b:widget-setting>
+            <b:widget-setting name='showTimestamp'>true</b:widget-setting>
+            <b:widget-setting name='postsPerAd'>1</b:widget-setting>
+            <b:widget-setting name='showBacklinks'>false</b:widget-setting>
+            <b:widget-setting name='showInlineAds'>false</b:widget-setting>
+            <b:widget-setting name='showReactions'>false</b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main' var='top'>
+            <b:if cond='data:blog.pageType == &quot;error_page&quot;'>
+              <b:include name='uNotFound'/>
+            <b:else/>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='uSingle'/>
+                </b:loop>
+                <b:include name='uItemPager'/>
+              <b:else/>
+                <b:if cond='data:blog.pageType == &quot;static_page&quot;'>
+                  <b:loop values='data:posts' var='post'>
+                    <b:include data='post' name='uSingle'/>
+                  </b:loop>
+                <b:else/>
+                  <b:include name='uList'/>
+                </b:if>
+              </b:if>
+            </b:if>
+          </b:includable>
+
+          <b:includable id='uList'>
+            <div class='section-head'>
+              <b:if cond='data:blog.url == data:blog.homepageUrl'>
+                <h2 class='section-title'><data:title/></h2>
+              <b:else/>
+              <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+                <h2 class='section-title'><data:title/></h2>
+              <b:else/>
+                <h1 class='section-title'>
+                  <b:if cond='data:blog.searchQuery'>
+                    Search: <data:blog.searchQuery/>
+                  <b:else/>
+                    <b:if cond='data:blog.pageName != &quot;&quot;'>
+                      <data:blog.pageName/>
+                    <b:else/>
+                      <data:title/>
+                    </b:if>
+                  </b:if>
+                </h1>
+              </b:if>
+              </b:if>
+            </div>
+            <b:if cond='data:numPosts != 0'>
+              <div class='post-grid'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='uCard'/>
+                </b:loop>
+              </div>
+            <b:else/>
+              <div class='empty-state'>
+                <p>Nothing has been published here yet.</p>
+                <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+              </div>
+            </b:if>
+            <b:if cond='data:newerPageUrl'>
+              <b:include name='uListPager'/>
+            <b:else/>
+              <b:if cond='data:olderPageUrl'>
+                <b:include name='uListPager'/>
+              </b:if>
+            </b:if>
+          </b:includable>
+
+          <b:includable id='uCard' var='post'>
+            <article class='post-card'>
+              <a aria-hidden='true' class='post-card-media' expr:href='data:post.url' tabindex='-1'>
+                <b:if cond='data:post.firstImageUrl'>
+                  <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
+                <b:else/>
+                  <b:if cond='data:post.thumbnailUrl'>
+                    <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
+                  <b:else/>
+                    <span class='post-card-placeholder'>
+                      <svg aria-hidden='true' fill='none' height='40' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.6' viewBox='0 0 24 24' width='40'><path d='M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2'/><line x1='10' x2='18' y1='7' y2='7'/><line x1='10' x2='18' y1='11' y2='11'/><line x1='10' x2='15' y1='15' y2='15'/></svg>
+                    </span>
+                  </b:if>
+                </b:if>
+              </a>
+              <div class='post-card-body'>
+                <b:if cond='data:post.labels'>
+                  <div class='post-card-labels'>
+                    <b:loop values='data:post.labels' var='label'>
+                      <a class='badge' expr:href='data:label.url'><data:label.name/></a>
+                    </b:loop>
+                  </div>
+                </b:if>
+                <h3 class='post-card-title'>
+                  <a expr:href='data:post.url'><b:if cond='data:post.title'><data:post.title/><b:else/>Untitled post</b:if></a>
+                </h3>
+                <div class='post-card-meta'>
+                  <time class='js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time>
+                  <b:if cond='data:post.allowComments'>
+                    <b:if cond='data:post.numComments != 0'>
+                      <span class='post-card-comments'><data:post.numComments/> <b:if cond='data:post.numComments == 1'>comment<b:else/>comments</b:if></span>
+                    </b:if>
+                  </b:if>
+                </div>
+              </div>
+            </article>
+          </b:includable>
+
+          <b:includable id='uSingle' var='post'>
+            <article class='post-single post'>
+              <a expr:name='data:post.id'/>
+              <header class='post-head'>
+                <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                  <nav aria-label='Breadcrumb' class='breadcrumb'>
+                    <a expr:href='data:blog.homepageUrl'>Home</a>
+                    <b:if cond='data:post.labels'>
+                      <b:loop values='data:post.labels' var='label'>
+                        <a class='crumb-label' expr:href='data:label.url'><data:label.name/></a>
+                      </b:loop>
+                    </b:if>
+                  </nav>
+                </b:if>
+                <b:if cond='data:post.title'>
+                  <h1 class='post-title entry-title'><data:post.title/></h1>
+                </b:if>
+                <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                  <div class='post-meta'>
+                    <b:if cond='data:post.authorProfileUrl'>
+                      <a class='post-author' expr:href='data:post.authorProfileUrl' rel='author'><data:post.author/></a>
+                    <b:else/>
+                      <span class='post-author'><data:post.author/></span>
+                    </b:if>
+                    <span aria-hidden='true' class='sep'/>
+                    <time class='published js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time>
+                    <b:include data='post' name='postQuickEdit'/>
+                  </div>
+                </b:if>
+              </header>
+              <div class='post-body entry-content' expr:id='&quot;post-body-&quot; + data:post.id'>
+                <data:post.body/>
+              </div>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                <b:if cond='data:post.labels'>
+                  <div class='post-tags'>
+                    <span class='post-tags-label'>Filed under</span>
+                    <b:loop values='data:post.labels' var='label'>
+                      <a class='badge badge-soft' expr:href='data:label.url' rel='tag'><data:label.name/></a>
+                    </b:loop>
+                  </div>
+                </b:if>
+                <div class='post-share'>
+                  <span class='post-share-label'>Share</span>
+                  <a class='share-wa' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+                  <a class='share-fb' expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+                  <a class='share-x' expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
+                  <a class='share-in' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
+                  <button expr:data-copy-url='data:post.url' type='button'>Copy link</button>
+                </div>
+                <aside class='join-box'>
+                  <div class='join-box-text'>
+                    <p class='join-box-title'>Not a member yet?</p>
+                    <p>Workers are stronger together. Join the union and have a say in your pay, conditions and rights at work.</p>
+                  </div>
+                  <a class='btn btn-primary js-join-link' href='/search'>Join today</a>
+                </aside>
+                <div class='related' hidden='hidden'>
+                  <h2 class='related-title'>Related articles</h2>
+                  <div class='related-grid'/>
+                </div>
+              </b:if>
+              <b:include data='post' name='comment_picker'/>
+            </article>
+          </b:includable>
+
+          <b:includable id='uItemPager'>
+            <nav aria-label='More posts' class='blog-pager-nav'>
+              <b:if cond='data:newerPageUrl'>
+                <a class='btn btn-outline newer' expr:href='data:newerPageUrl' expr:title='data:newerPageTitle'>&#8592; Newer</a>
+              </b:if>
+              <b:if cond='data:olderPageUrl'>
+                <a class='btn btn-outline older' expr:href='data:olderPageUrl' expr:title='data:olderPageTitle'>Older &#8594;</a>
+              </b:if>
+            </nav>
+          </b:includable>
+
+          <b:includable id='uListPager'>
+            <nav aria-label='Pages' class='blog-pager-nav'>
+              <b:if cond='data:newerPageUrl'>
+                <a class='btn btn-outline newer' expr:href='data:newerPageUrl'>&#8592; Newer posts</a>
+              </b:if>
+              <b:if cond='data:olderPageUrl'>
+                <a class='btn btn-primary older' expr:href='data:olderPageUrl'>Older posts &#8594;</a>
+              </b:if>
+            </nav>
+          </b:includable>
+
+          <b:includable id='uNotFound'>
+            <div class='not-found'>
+              <p class='not-found-code'>404</p>
+              <h1>Page not found</h1>
+              <p>The page you were looking for has moved or no longer exists. Try a search, or go back to the homepage.</p>
+              <form action='/search' class='search-form' method='get' role='search'>
+                <input aria-label='Search this site' name='q' placeholder='Search this site...' type='search'/>
+                <button aria-label='Search' type='submit'>
+                  <svg aria-hidden='true' fill='none' height='18' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.2' viewBox='0 0 24 24' width='18'><circle cx='11' cy='11' r='8'/><line x1='21' x2='16.65' y1='21' y2='16.65'/></svg>
+                </button>
+              </form>
+              <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+            </div>
+          </b:includable>
+
+          <!-- Comment includables below are Blogger's own, copied unchanged from the blog's original theme -->
+<b:includable id='comment_picker' var='post'>
+  <b:if cond='data:post.forceIframeComments'>
+    <b:include data='post' name='iframe_comments'/>
+    <b:if cond='data:post.showThreadedComments'>
+      <b:include data='post' name='threaded_comments'/>
+      <b:else/>
+      <b:include data='post' name='comments'/>
+    </b:if>
+    <b:else/>
+    <b:if cond='data:post.commentSource == 1'>
+      <b:include data='post' name='iframe_comments'/>
+      <b:else/>
+      <b:if cond='data:post.showThreadedComments'>
+        <b:include data='post' name='threaded_comments'/>
+        <b:else/>
+        <b:include data='post' name='comments'/>
+      </b:if>
+    </b:if>
+  </b:if>
+</b:includable>
+<b:includable id='iframe_comments' var='post'>
+  <b:if cond='data:post.allowIframeComments'>
+    <script expr:src='data:post.iframeCommentSrc' type='text/javascript'/>
+    <div class='cmt_iframe_holder'/>
+    <b:if cond='data:post.embedCommentForm == &quot;false&quot;'>
+      <a expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'>
+        <data:postCommentMsg/>
+      </a>
+    </b:if>
+  </b:if>
+</b:includable>
+<b:includable id='threaded_comments' var='post'>
+  <div class='comments' id='comments'>
+    <a name='comments'/>
+    <h4>
+      <data:post.commentLabelFull/>
+      :
+    </h4>
+    <div class='comments-content'>
+      <b:if cond='data:post.embedCommentForm'>
+        <b:include data='post' name='threaded_comment_js'/>
+      </b:if>
+      <div id='comment-holder'>
+        <data:post.commentHtml/>
+      </div>
+    </div>
+    <p class='comment-footer'>
+      <b:if cond='data:post.allowNewComments'>
+        <b:include data='post' name='threaded-comment-form'/>
+        <b:else/>
+        <data:post.noNewCommentsText/>
+      </b:if>
+    </p>
+    <b:if cond='data:showCmtPopup'>
+      <div id='comment-popup'>
+        <iframe allowtransparency='true' frameborder='0' id='comment-actions' name='comment-actions' scrolling='no'>
+        </iframe>
+      </div>
+    </b:if>
+    <div id='backlinks-container'>
+      <div expr:id='data:widget.instanceId + &quot;_backlinks-container&quot;'>
+        <b:if cond='data:post.showBacklinks'>
+          <b:include data='post' name='backlinks'/>
+        </b:if>
+      </div>
+    </div>
+  </div>
+</b:includable>
+<b:includable id='threaded-comment-form' var='post'>
+  <div class='comment-form'>
+    <a name='comment-form'/>
+    <b:if cond='data:mobile'>
+      <p>
+        <data:blogCommentMessage/>
+      </p>
+      <data:blogTeamBlogMessage/>
+      <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+      <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' style='display: none' width='100%'/>
+      <b:else/>
+      <p>
+        <data:blogCommentMessage/>
+      </p>
+      <data:blogTeamBlogMessage/>
+      <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+      <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' width='100%'/>
+    </b:if>
+    <data:post.friendConnectJs/>
+    <data:post.cmtfpIframe/>
+    <script type='text/javascript'>
+      BLOG_CMT_createIframe(&#39;<data:post.appRpcRelayPath/>&#39;, &#39;<data:post.communityId/>&#39;);
+    </script>
+  </div>
+</b:includable>
+<b:includable id='threaded_comment_js' var='post'>
+  <script async='async' expr:src='data:post.commentSrc' type='text/javascript'/>
+  <script type='text/javascript'>
+    (function() {
+      var items = <data:post.commentJso/>;
+      var msgs = <data:post.commentMsgs/>;
+      var config = <data:post.commentConfig/>;
+      // <![CDATA[
+      var cursor = null;
+      if (items && items.length > 0) {
+        cursor = parseInt(items[items.length - 1].timestamp) + 1;
+      }
+      var bodyFromEntry = function(entry) {
+        if (entry.gd$extendedProperty) {
+          for (var k in entry.gd$extendedProperty) {
+            if (entry.gd$extendedProperty[k].name == 'blogger.contentRemoved') {
+              return '<span class="deleted-comment">' + entry.content.$t + '</span>';
+            }
+          }
+        }
+        return entry.content.$t;
+      }
+      var parse = function(data) {
+        cursor = null;
+        var comments = [];
+        if (data && data.feed && data.feed.entry) {
+          for (var i = 0, entry; entry = data.feed.entry[i]; i++) {
+            var comment = {};
+            // comment ID, parsed out of the original id format
+            var id = /blog-(\d+).post-(\d+)/.exec(entry.id.$t);
+            comment.id = id ? id[2] : null;
+            comment.body = bodyFromEntry(entry);
+            comment.timestamp = Date.parse(entry.published.$t) + '';
+            if (entry.author && entry.author.constructor === Array) {
+              var auth = entry.author[0];
+              if (auth) {
+                comment.author = {
+                  name: (auth.name ? auth.name.$t : undefined),
+                  profileUrl: (auth.uri ? auth.uri.$t : undefined),
+                  avatarUrl: (auth.gd$image ? auth.gd$image.src : undefined)
+                };
+              }
+            }
+            if (entry.link) {
+              if (entry.link[2]) {
+                comment.link = comment.permalink = entry.link[2].href;
+              }
+              if (entry.link[3]) {
+                var pid = /.*comments\/default\/(\d+)\?.*/.exec(entry.link[3].href);
+                if (pid && pid[1]) {
+                  comment.parentId = pid[1];
+                }
+              }
+            }
+            comment.deleteclass = 'item-control blog-admin';
+            if (entry.gd$extendedProperty) {
+              for (var k in entry.gd$extendedProperty) {
+                if (entry.gd$extendedProperty[k].name == 'blogger.itemClass') {
+                  comment.deleteclass += ' ' + entry.gd$extendedProperty[k].value;
+                } else if (entry.gd$extendedProperty[k].name == 'blogger.displayTime') {
+                  comment.displayTime = entry.gd$extendedProperty[k].value;
+                }
+              }
+            }
+            comments.push(comment);
+          }
+        }
+        return comments;
+      };
+      var paginator = function(callback) {
+        if (hasMore()) {
+          var url = config.feed + '?alt=json&v=2&orderby=published&reverse=false&max-results=50';
+          if (cursor) {
+            url += '&published-min=' + new Date(cursor).toISOString();
+          }
+          window.bloggercomments = function(data) {
+            var parsed = parse(data);
+            cursor = parsed.length < 50 ? null
+            : parseInt(parsed[parsed.length - 1].timestamp) + 1
+            callback(parsed);
+            window.bloggercomments = null;
+          }
+          url += '&callback=bloggercomments';
+          var script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = url;
+          document.getElementsByTagName('head')[0].appendChild(script);
+        }
+      };
+      var hasMore = function() {
+        return !!cursor;
+      };
+      var getMeta = function(key, comment) {
+        if ('iswriter' == key) {
+          var matches = !!comment.author
+          && comment.author.name == config.authorName
+          && comment.author.profileUrl == config.authorUrl;
+          return matches ? 'true' : '';
+        } else if ('deletelink' == key) {
+          return config.baseUri + '/delete-comment.g?blogID='
+          + config.blogId + '&postID=' + comment.id;
+        } else if ('deleteclass' == key) {
+          return comment.deleteclass;
+        }
+        return '';
+      };
+      var replybox = null;
+      var replyUrlParts = null;
+      var replyParent = undefined;
+      var onReply = function(commentId, domId) {
+        if (replybox == null) {
+          // lazily cache replybox, and adjust to suit this style:
+          replybox = document.getElementById('comment-editor');
+          if (replybox != null) {
+            replybox.height = '250px';
+            replybox.style.display = 'block';
+            replyUrlParts = replybox.src.split('#');
+          }
+        }
+        if (replybox && (commentId !== replyParent)) {
+          document.getElementById(domId).insertBefore(replybox, null);
+          replybox.src = replyUrlParts[0]
+          + (commentId ? '&parentID=' + commentId : '')
+          + '#' + replyUrlParts[1];
+          replyParent = commentId;
+        }
+      };
+      var hash = (window.location.hash || '#').substring(1);
+      var startThread, targetComment;
+      if (/^comment-form_/.test(hash)) {
+        startThread = hash.substring('comment-form_'.length);
+      } else if (/^c[0-9]+$/.test(hash)) {
+        targetComment = hash.substring(1);
+      }
+      // Configure commenting API:
+      var configJso = {
+        'maxDepth': config.maxThreadDepth
+      };
+      var provider = {
+        'id': config.postId,
+        'data': items,
+        'loadNext': paginator,
+        'hasMore': hasMore,
+        'getMeta': getMeta,
+        'onReply': onReply,
+        'rendered': true,
+        'initComment': targetComment,
+        'initReplyThread': startThread,
+        'config': configJso,
+        'messages': msgs
+      };
+      var render = function() {
+        if (window.goog && window.goog.comments) {
+          var holder = document.getElementById('comment-holder');
+          window.goog.comments.render(holder, provider);
+        }
+      };
+      // render now, or queue to render when library loads:
+      if (window.goog && window.goog.comments) {
+        render();
+      } else {
+        window.goog = window.goog || {};
+        window.goog.comments = window.goog.comments || {};
+        window.goog.comments.loadQueue = window.goog.comments.loadQueue || [];
+        window.goog.comments.loadQueue.push(render);
+      }
+    })();
+    // ]]>
+  </script>
+</b:includable>
+<b:includable id='comments' var='post'>
+  <div class='comments' id='comments'>
+    <a name='comments'/>
+    <b:if cond='data:post.allowComments'>
+      <b:if cond='data:post.commentPagingRequired'>
+        <span class='paging-control-container'>
+          <b:if cond='data:post.hasOlderLinks'>
+            <a expr:class='data:post.oldLinkClass' expr:href='data:post.oldestLinkUrl'>
+              <data:post.oldestLinkText/>
+            </a>
+            &#160;
+            <a expr:class='data:post.oldLinkClass' expr:href='data:post.olderLinkUrl'>
+              <data:post.olderLinkText/>
+            </a>
+            &#160;
+          </b:if>
+          <data:post.commentRangeText/>
+          <b:if cond='data:post.hasNewerLinks'>
+            &#160;
+            <a expr:class='data:post.newLinkClass' expr:href='data:post.newerLinkUrl'>
+              <data:post.newerLinkText/>
+            </a>
+            &#160;
+            <a expr:class='data:post.newLinkClass' expr:href='data:post.newestLinkUrl'>
+              <data:post.newestLinkText/>
+            </a>
+          </b:if>
+        </span>
+      </b:if>
+      <div expr:id='data:widget.instanceId + &quot;_comments-block-wrapper&quot;'>
+        <dl expr:class='data:post.avatarIndentClass' id='comments-block'>
+          <b:loop values='data:post.comments' var='comment'>
+            <dt expr:class='&quot;comment-author &quot; + data:comment.authorClass' expr:id='data:comment.anchorName'>
+              <b:if cond='data:comment.favicon'>
+                <img expr:src='data:comment.favicon' height='16px' style='margin-bottom:-2px;' width='16px'/>
+              </b:if>
+              <a expr:name='data:comment.anchorName'/>
+              <b:if cond='data:blog.enabledCommentProfileImages'>
+                <data:comment.authorAvatarImage/>
+              </b:if>
+              <b:if cond='data:comment.authorUrl'>
+                <a expr:href='data:comment.authorUrl' rel='nofollow'>
+                  <data:comment.author/>
+                </a>
+                <b:else/>
+                <data:comment.author/>
+              </b:if>
+              <data:commentPostedByMsg/>
+            </dt>
+            <dd class='comment-body' expr:id='data:widget.instanceId + data:comment.cmtBodyIdPostfix'>
+              <b:if cond='data:comment.isDeleted'>
+                <span class='deleted-comment'>
+                  <data:comment.body/>
+                </span>
+                <b:else/>
+                <p>
+                  <data:comment.body/>
+                </p>
+              </b:if>
+            </dd>
+            <dd class='comment-footer'>
+              <span class='comment-timestamp'>
+                <a expr:href='data:comment.url' title='comment permalink'>
+                  <data:comment.timestamp/>
+                </a>
+                <b:include data='comment' name='commentDeleteIcon'/>
+              </span>
+            </dd>
+          </b:loop>
+        </dl>
+      </div>
+      <b:if cond='data:post.commentPagingRequired'>
+        <span class='paging-control-container'>
+          <a expr:class='data:post.oldLinkClass' expr:href='data:post.oldestLinkUrl'>
+            <data:post.oldestLinkText/>
+          </a>
+          <a expr:class='data:post.oldLinkClass' expr:href='data:post.olderLinkUrl'>
+            <data:post.olderLinkText/>
+          </a>
+          &#160;
+          <data:post.commentRangeText/>
+          &#160;
+          <a expr:class='data:post.newLinkClass' expr:href='data:post.newerLinkUrl'>
+            <data:post.newerLinkText/>
+          </a>
+          <a expr:class='data:post.newLinkClass' expr:href='data:post.newestLinkUrl'>
+            <data:post.newestLinkText/>
+          </a>
+        </span>
+      </b:if>
+      <p class='comment-footer'>
+        <b:if cond='data:post.embedCommentForm'>
+          <b:if cond='data:post.allowNewComments'>
+            <b:include data='post' name='comment-form'/>
+            <b:else/>
+            <data:post.noNewCommentsText/>
+          </b:if>
+          <b:else/>
+          <b:if cond='data:post.allowComments'>
+            <a expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'>
+              <data:postCommentMsg/>
+            </a>
+          </b:if>
+        </b:if>
+      </p>
+    </b:if>
+    <b:if cond='data:showCmtPopup'>
+      <div id='comment-popup'>
+        <iframe allowtransparency='true' frameborder='0' id='comment-actions' name='comment-actions' scrolling='no'>
+        </iframe>
+      </div>
+    </b:if>
+    <div id='backlinks-container'>
+      <div expr:id='data:widget.instanceId + &quot;_backlinks-container&quot;'>
+        <b:if cond='data:post.showBacklinks'>
+          <b:include data='post' name='backlinks'/>
+        </b:if>
+      </div>
+    </div>
+  </div>
+</b:includable>
+<b:includable id='comment-form' var='post'>
+  <div class='comment-form'>
+    <a name='comment-form'/>
+    <b:if cond='data:mobile'>
+      <h4 id='comment-post-message'>
+        <a expr:id='data:widget.instanceId + &quot;_comment-editor-toggle-link&quot;' href='javascript:void(0)'>
+          <data:postCommentMsg/>
+        </a>
+      </h4>
+      <p>
+        <data:blogCommentMessage/>
+      </p>
+      <data:blogTeamBlogMessage/>
+      <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+      <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' style='display: none' width='100%'/>
+      <b:else/>
+      <h4 id='comment-post-message'>
+        <data:postCommentMsg/>
+      </h4>
+      <p>
+        <data:blogCommentMessage/>
+      </p>
+      <data:blogTeamBlogMessage/>
+      <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+      <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' width='100%'/>
+    </b:if>
+    <data:post.friendConnectJs/>
+    <data:post.cmtfpIframe/>
+    <script type='text/javascript'>
+      BLOG_CMT_createIframe(&#39;<data:post.appRpcRelayPath/>&#39;, &#39;<data:post.communityId/>&#39;);
+    </script>
+  </div>
+</b:includable>
+<b:includable id='commentDeleteIcon' var='comment'>
+  <span expr:class='&quot;item-control &quot; + data:comment.adminClass'>
+    <b:if cond='data:showCmtPopup'>
+      <div class='goog-toggle-button'>
+        <div class='goog-inline-block comment-action-icon'/>
+      </div>
+      <b:else/>
+      <a class='comment-delete' expr:href='data:comment.deleteUrl' expr:title='data:top.deleteCommentMsg'>
+        <img src='//www.blogger.com/img/icon_delete13.gif'/>
+      </a>
+    </b:if>
+  </span>
+</b:includable>
+<b:includable id='backlinks' var='post'>
+  <a name='links'/>
+  <h4>
+    <data:post.backlinksLabel/>
+  </h4>
+  <b:if cond='data:post.numBacklinks != 0'>
+    <dl class='comments-block' id='comments-block'>
+      <b:loop values='data:post.backlinks' var='backlink'>
+        <div class='collapsed-backlink backlink-control'>
+          <dt class='comment-title'>
+            <span class='backlink-toggle-zippy'>
+              &#160;
+            </span>
+            <a expr:href='data:backlink.url' rel='nofollow'>
+              <data:backlink.title/>
+            </a>
+            <b:include data='backlink' name='backlinkDeleteIcon'/>
+          </dt>
+          <dd class='comment-body collapseable'>
+            <data:backlink.snippet/>
+          </dd>
+          <dd class='comment-footer collapseable'>
+            <span class='comment-author'>
+              <data:post.authorLabel/>
+              <data:backlink.author/>
+            </span>
+            <span class='comment-timestamp'>
+              <data:post.timestampLabel/>
+              <data:backlink.timestamp/>
+            </span>
+          </dd>
+        </div>
+      </b:loop>
+    </dl>
+  </b:if>
+  <p class='comment-footer'>
+    <a class='comment-link' expr:href='data:post.createLinkUrl' expr:id='data:widget.instanceId + &quot;_backlinks-create-link&quot;' target='_blank'>
+      <data:post.createLinkLabel/>
+    </a>
+  </p>
+</b:includable>
+<b:includable id='backlinkDeleteIcon' var='backlink'>
+  <span expr:class='&quot;item-control &quot; + data:backlink.adminClass'>
+    <a expr:href='data:backlink.deleteUrl' expr:title='data:top.deleteBacklinkMsg'>
+      <img src='//www.blogger.com/img/icon_delete13.gif'/>
+    </a>
+  </span>
+</b:includable>
+<b:includable id='postQuickEdit' var='post'>
+  <b:if cond='data:post.editUrl'>
+    <span expr:class='&quot;item-control &quot; + data:post.adminClass'>
+      <a expr:href='data:post.editUrl' expr:title='data:top.editPostMsg'>
+        <img alt='' class='icon-action' height='18' src='https://img2.blogblog.com/img/icon18_edit_allbkg.gif' width='18'/>
+      </a>
+    </span>
+  </b:if>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+
+    <aside class='sidebar'>
+      <b:section class='sidebar-section' id='sidebar' preferred='yes'>
+        <b:widget id='HTML2' locked='false' title='Join the union' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<div class="join-card">
+<p>Stand together for fair pay, decent work and respect at work.</p>
+<a href="/p/join.html">How to join</a>
+</div>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+        <b:widget id='PopularPosts1' locked='false' title='Most read' type='PopularPosts' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='numItemsToShow'>5</b:widget-setting>
+            <b:widget-setting name='showThumbnails'>true</b:widget-setting>
+            <b:widget-setting name='showSnippets'>false</b:widget-setting>
+            <b:widget-setting name='timeRange'>LAST_YEAR</b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <b:if cond='data:title'>
+    <h2>
+      <data:title/>
+    </h2>
+  </b:if>
+  <div class='widget-content popular-posts'>
+    <ul>
+      <b:loop values='data:posts' var='post'>
+        <li>
+          <b:if cond='data:showThumbnails == &quot;false&quot;'>
+            <b:if cond='data:showSnippets == &quot;false&quot;'>
+              <!-- (1) No snippet/thumbnail -->
+              <a expr:href='data:post.href'>
+                <data:post.title/>
+              </a>
+              <b:else/>
+              <!-- (2) Show only snippets -->
+              <div class='item-title'>
+                <a expr:href='data:post.href'>
+                  <data:post.title/>
+                </a>
+              </div>
+              <div class='item-snippet'>
+                <data:post.snippet/>
+              </div>
+            </b:if>
+            <b:else/>
+            <b:if cond='data:showSnippets == &quot;false&quot;'>
+              <!-- (3) Show only thumbnails -->
+              <div class='item-thumbnail-only'>
+                <b:if cond='data:post.thumbnail'>
+                  <div class='item-thumbnail'>
+                    <a expr:href='data:post.href'>
+                      <img alt='' border='0' expr:height='data:thumbnailSize' expr:src='data:post.thumbnail' expr:width='data:thumbnailSize'/>
+                    </a>
+                  </div>
+                </b:if>
+                <div class='item-title'>
+                  <a expr:href='data:post.href'>
+                    <data:post.title/>
+                  </a>
+                </div>
+              </div>
+              <div style='clear: both;'/>
+              <b:else/>
+              <!-- (4) Show snippets and thumbnails -->
+              <div class='item-content'>
+                <b:if cond='data:post.thumbnail'>
+                  <div class='item-thumbnail'>
+                    <a expr:href='data:post.href'>
+                      <img alt='' border='0' expr:height='data:thumbnailSize' expr:src='data:post.thumbnail' expr:width='data:thumbnailSize'/>
+                    </a>
+                  </div>
+                </b:if>
+                <div class='item-title'>
+                  <a expr:href='data:post.href'>
+                    <data:post.title/>
+                  </a>
+                </div>
+                <div class='item-snippet'>
+                  <data:post.snippet/>
+                </div>
+              </div>
+              <div style='clear: both;'/>
+            </b:if>
+          </b:if>
+        </li>
+      </b:loop>
+    </ul>
+    <b:include name='quickedit'/>
+  </div>
+</b:includable>
+        </b:widget>
+        <b:widget id='HTML19' locked='false' title='Support our work' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<p>Our work is funded by members. Support campaigns, legal aid and training for workers.</p>
+<p><a class="btn" href="/p/donate.html">Donate</a></p>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+        <b:widget id='Label1' locked='false' title='Topics' type='Label' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+            <b:widget-setting name='display'>LIST</b:widget-setting>
+            <b:widget-setting name='selectedLabelsList'/>
+            <b:widget-setting name='showType'>ALL</b:widget-setting>
+            <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <b:if cond='data:title'>
+    <h2>
+      <data:title/>
+    </h2>
+  </b:if>
+  <div expr:class='&quot;widget-content &quot; + data:display + &quot;-label-widget-content&quot;'>
+    <b:if cond='data:display == &quot;list&quot;'>
+      <ul>
+        <b:loop values='data:labels' var='label'>
+          <li>
+            <b:if cond='data:blog.url == data:label.url'>
+              <span expr:dir='data:blog.languageDirection'>
+                <data:label.name/>
+              </span>
+              <b:else/>
+              <a expr:dir='data:blog.languageDirection' expr:href='data:label.url'>
+                <data:label.name/>
+              </a>
+            </b:if>
+            <b:if cond='data:showFreqNumbers'>
+              <span dir='ltr'>
+                (
+                <data:label.count/>
+                )
+              </span>
+            </b:if>
+          </li>
+        </b:loop>
+      </ul>
+      <b:else/>
+      <b:loop values='data:labels' var='label'>
+        <span expr:class='&quot;label-size label-size-&quot; + data:label.cssSize'>
+          <b:if cond='data:blog.url == data:label.url'>
+            <span expr:dir='data:blog.languageDirection'>
+              <data:label.name/>
+            </span>
+            <b:else/>
+            <a expr:dir='data:blog.languageDirection' expr:href='data:label.url'>
+              <data:label.name/>
+            </a>
+          </b:if>
+          <b:if cond='data:showFreqNumbers'>
+            <span class='label-count' dir='ltr'>
+              (
+              <data:label.count/>
+              )
+            </span>
+          </b:if>
+        </span>
+      </b:loop>
+    </b:if>
+    <b:include name='quickedit'/>
+  </div>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </aside>
+  </div>
+</div>
+
+<!-- ================= About, members, join, partners (homepage) ================= -->
+<section class='home-only band band-about'>
+  <div class='container'>
+    <b:section class='about-section' id='newsletter_wrapper' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML11' locked='false' title='Who we are' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[About]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <div class='feed-block' data-count='4' data-kind='list'>
+    <div class='feed-head'>
+      <b:if cond='data:title != &quot;&quot;'>
+        <h2 class='title'><data:title/></h2>
+      </b:if>
+      <a class='feed-more' href='/search'>View all</a>
+    </div>
+    <div class='feed-label' hidden='hidden'><data:content/></div>
+    <div class='feed-items'>
+      <p class='feed-status'>Loading&#8230;</p>
+    </div>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<section class='home-only band band-members'>
+  <div class='container'>
+    <b:section class='members-section' id='crosscol' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML13' locked='false' title='Our branches' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[Branches]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <div class='feed-block' data-count='12' data-kind='strip'>
+    <div class='feed-head'>
+      <b:if cond='data:title != &quot;&quot;'>
+        <h2 class='title'><data:title/></h2>
+      </b:if>
+      <a class='feed-more' href='/search'>View all</a>
+    </div>
+    <div class='feed-label' hidden='hidden'><data:content/></div>
+    <div class='feed-items'>
+      <p class='feed-status'>Loading&#8230;</p>
+    </div>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<section class='home-only band band-cta'>
+  <div class='container'>
+    <b:section class='cta-section' id='join-cta' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML29' locked='false' title='Stronger together' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<p>Every worker deserves fair pay, safe conditions and respect. Join your colleagues and make your voice count.</p>
+<ul>
+<li><a href="/p/join.html">Join now</a></li>
+<li><a href="/p/faqs.html">Read the FAQs</a></li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='cta-inner'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <h2 class='cta-title'><data:title/></h2>
+            </b:if>
+            <div class='widget-content cta-body'>
+              <data:content/>
+            </div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<section class='home-only band band-partners'>
+  <div class='container'>
+    <b:section class='partners-section' id='partners' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML4' locked='false' title='Our partners' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<ul class="logo-list">
+<li><span class="logo-placeholder">Partner logo</span></li>
+<li><span class="logo-placeholder">Partner logo</span></li>
+<li><span class="logo-placeholder">Partner logo</span></li>
+<li><span class="logo-placeholder">Partner logo</span></li>
+<li><span class="logo-placeholder">Partner logo</span></li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= Footer ================= -->
+<footer class='site-footer' id='contact'>
+  <div class='container'>
+    <div class='footer-grid'>
+      <b:section class='footer-col' id='f-widget-1' showaddelement='yes'>
+        <b:widget id='HTML30' locked='false' title='About us' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<p><strong>Your union name</strong> is a democratic trade union run by and for its members.</p>
+<p><a href="/p/about.html">Read our story &#8594;</a></p>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='f-widget-2' showaddelement='yes'>
+        <b:widget id='Label3' locked='false' title='Quick links' type='Label' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+            <b:widget-setting name='display'>LIST</b:widget-setting>
+            <b:widget-setting name='selectedLabelsList'/>
+            <b:widget-setting name='showType'>ALL</b:widget-setting>
+            <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <b:if cond='data:title'>
+    <h2>
+      <data:title/>
+    </h2>
+  </b:if>
+  <div expr:class='&quot;widget-content &quot; + data:display + &quot;-label-widget-content&quot;'>
+    <b:if cond='data:display == &quot;list&quot;'>
+      <ul>
+        <b:loop values='data:labels' var='label'>
+          <li>
+            <b:if cond='data:blog.url == data:label.url'>
+              <span expr:dir='data:blog.languageDirection'>
+                <data:label.name/>
+              </span>
+              <b:else/>
+              <a expr:dir='data:blog.languageDirection' expr:href='data:label.url'>
+                <data:label.name/>
+              </a>
+            </b:if>
+            <b:if cond='data:showFreqNumbers'>
+              <span dir='ltr'>
+                (
+                <data:label.count/>
+                )
+              </span>
+            </b:if>
+          </li>
+        </b:loop>
+      </ul>
+      <b:else/>
+      <b:loop values='data:labels' var='label'>
+        <span expr:class='&quot;label-size label-size-&quot; + data:label.cssSize'>
+          <b:if cond='data:blog.url == data:label.url'>
+            <span expr:dir='data:blog.languageDirection'>
+              <data:label.name/>
+            </span>
+            <b:else/>
+            <a expr:dir='data:blog.languageDirection' expr:href='data:label.url'>
+              <data:label.name/>
+            </a>
+          </b:if>
+          <b:if cond='data:showFreqNumbers'>
+            <span class='label-count' dir='ltr'>
+              (
+              <data:label.count/>
+              )
+            </span>
+          </b:if>
+        </span>
+      </b:loop>
+    </b:if>
+    <b:include name='quickedit'/>
+  </div>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='f-widget-3' showaddelement='yes'>
+        <b:widget id='HTML31' locked='false' title='Contact' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul class="contact-list">
+<li>Union House, Main Street, Your City</li>
+<li><a href="tel:+000000000">+000 000 000</a></li>
+<li><a href="mailto:info@example.org">info@example.org</a></li>
+<li>Mon&#8211;Fri, 8:00&#8211;17:00</li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='f-widget-last' showaddelement='yes'>
+        <b:widget id='HTML23' locked='false' title='Useful links' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/p/know-your-rights.html">Know your rights</a></li>
+<li><a href="/p/report-a-problem.html">Report a problem at work</a></li>
+<li><a href="https://www.ilo.org/">International Labour Organization</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+        <b:widget id='Translate1' locked='false' title='Translate' type='Translate' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='displayMode'>SIMPLE</b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <h2 class='title'><data:title/></h2>
+              </b:if>
+              <div id='google_translate_element'/>
+              <script>
+                function googleTranslateElementInit() {
+                  new google.translate.TranslateElement({
+                    pageLanguage: &#39;<data:pageLanguage/>&#39;,
+                    autoDisplay: &#39;true&#39;,
+                    layout: google.translate.TranslateElement.InlineLayout.<data:layout/>
+                  }, &#39;google_translate_element&#39;);
+                }
+              </script>
+              <script src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'/>
+              <b:include name='quickedit'/>
+            </b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+    <div class='footer-bottom'>
+      <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/>. All rights reserved.</p>
+      <div class='footer-social'/>
+      <b:section class='footer-credit' id='footer-credit' maxwidgets='1' showaddelement='no'>
+        <b:widget id='Attribution1' locked='false' title='' type='Attribution'>
+          
+          <b:includable id='main'>
+  <div class='widget-content' style='text-align: center;'>
+    <b:if cond='data:attribution != &quot;&quot;'>
+     <data:attribution/>
+    </b:if>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+  </div>
+  <a aria-label='Back to top' class='to-top' href='#content'>
+    <svg aria-hidden='true' fill='none' height='20' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.4' viewBox='0 0 24 24' width='20'><polyline points='18 15 12 9 6 15'/></svg>
+  </a>
+</footer>
+
+<script type='text/javascript'>
+//<![CDATA[
+// Solidarity theme behaviour: menu with dropdowns, hero slideshow, label news blocks,
+// latest-updates ticker, related posts, social icons and small helpers. No dependencies.
+(function () {
+  'use strict';
+  var doc = document;
+  var root = doc.documentElement;
+
+  function el(tag, attrs, children) {
+    var node = doc.createElement(tag);
+    if (attrs) {
+      for (var k in attrs) {
+        if (!attrs.hasOwnProperty(k) || attrs[k] == null) continue;
+        if (k === 'text') node.textContent = attrs[k];
+        else if (k === 'className') node.className = attrs[k];
+        else node.setAttribute(k, attrs[k]);
+      }
+    }
+    (children || []).forEach(function (c) { if (c) node.appendChild(c); });
+    return node;
+  }
+
+  function svg(paths, size) {
+    var ns = 'http://www.w3.org/2000/svg';
+    var s = doc.createElementNS(ns, 'svg');
+    s.setAttribute('viewBox', '0 0 24 24');
+    s.setAttribute('width', size || 18);
+    s.setAttribute('height', size || 18);
+    s.setAttribute('aria-hidden', 'true');
+    s.setAttribute('fill', 'none');
+    s.setAttribute('stroke', 'currentColor');
+    s.setAttribute('stroke-width', '2.4');
+    s.setAttribute('stroke-linecap', 'round');
+    s.setAttribute('stroke-linejoin', 'round');
+    var p = doc.createElementNS(ns, 'polyline');
+    p.setAttribute('points', paths);
+    s.appendChild(p);
+    return s;
+  }
+  var CHEVRON_DOWN = '6 9 12 15 18 9';
+  var CHEVRON_LEFT = '15 18 9 12 15 6';
+  var CHEVRON_RIGHT = '9 18 15 12 9 6';
+
+  // ---------------------------------------------------------------- menu
+  var header = doc.getElementById('site-header');
+  var toggle = doc.getElementById('nav-toggle');
+  var drawer = doc.getElementById('site-nav');
+  var desktop = window.matchMedia ? window.matchMedia('(min-width: 1100px)') : null;
+
+  function setMenu(open) {
+    if (!header || !toggle) return;
+    if (open) {
+      drawer.style.top = Math.max(0, header.getBoundingClientRect().bottom) + 'px';
+      header.classList.add('nav-open');
+      root.classList.add('nav-locked');
+    } else {
+      header.classList.remove('nav-open');
+      root.classList.remove('nav-locked');
+    }
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+
+  if (header && toggle && drawer) {
+    // Dropdowns: every menu item with a nested list gets a toggle button for touch screens
+    var parents = drawer.querySelectorAll('.site-nav li');
+    for (var p = 0; p < parents.length; p++) {
+      var li = parents[p];
+      var sub = li.querySelector('ul');
+      if (!sub || sub.parentNode !== li) continue;
+      li.classList.add('has-sub');
+      var link = li.querySelector('a');
+      var btn = el('button', { type: 'button', className: 'sub-toggle', 'aria-expanded': 'false',
+        'aria-label': 'Show submenu' + (link ? ': ' + link.textContent.trim() : '') }, [svg(CHEVRON_DOWN, 20)]);
+      li.insertBefore(btn, sub);
+      btn.addEventListener('click', function () {
+        var item = this.parentNode;
+        var open = !item.classList.contains('sub-open');
+        item.classList.toggle('sub-open', open);
+        this.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    }
+
+    toggle.addEventListener('click', function () {
+      setMenu(!header.classList.contains('nav-open'));
+    });
+    drawer.addEventListener('click', function (e) {
+      var t = e.target;
+      while (t && t !== drawer) {
+        if (t.tagName === 'A') {
+          var href = t.getAttribute('href') || '';
+          var item = t.parentNode;
+          // "#" parents only open their submenu on phones
+          if ((href === '#' || href === '') && item.classList.contains('has-sub')) {
+            e.preventDefault();
+            if (!(desktop && desktop.matches)) item.querySelector('.sub-toggle').click();
+            return;
+          }
+          setMenu(false);
+          return;
+        }
+        t = t.parentNode;
+      }
+    });
+    doc.addEventListener('keydown', function (e) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && header.classList.contains('nav-open')) {
+        setMenu(false);
+        toggle.focus();
+      }
+    });
+    if (desktop) {
+      var onChange = function () { if (desktop.matches) setMenu(false); };
+      if (desktop.addEventListener) desktop.addEventListener('change', onChange);
+      else if (desktop.addListener) desktop.addListener(onChange);
+    }
+  }
+
+  // ---------------------------------------------------------------- scroll effects
+  var toTop = doc.querySelector('.to-top');
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function () {
+      var y = window.pageYOffset;
+      if (header) header.classList.toggle('is-scrolled', y > 50);
+      if (toTop) toTop.classList.toggle('is-visible', y > 600);
+      ticking = false;
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ---------------------------------------------------------------- brand and hero title
+  var mark = doc.querySelector('.brand-mark');
+  var name = doc.querySelector('.brand-name');
+  if (mark && name && !mark.querySelector('img')) {
+    var skip = { the: 1, a: 1, an: 1, of: 1, and: 1, for: 1 };
+    var words = name.textContent.trim().split(/\s+/).filter(function (w) {
+      return w && !skip[w.toLowerCase()];
+    });
+    mark.textContent = words.slice(0, 2).map(function (w) { return w.charAt(0); }).join('').toUpperCase();
+  }
+
+  // Last word of the hero title in the highlight colour ("... Workers Union")
+  var heroTitle = doc.querySelector('.hero-title');
+  if (heroTitle && heroTitle.children.length === 0) {
+    var parts = heroTitle.textContent.trim().split(/\s+/);
+    if (parts.length > 1) {
+      heroTitle.textContent = parts.slice(0, -1).join(' ') + ' ';
+      heroTitle.appendChild(el('span', { className: 'accent', text: parts[parts.length - 1] }));
+    }
+  }
+
+  // ---------------------------------------------------------------- social icons
+  var ICONS = {
+    facebook: 'M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.6V11H7v4h2.5v9h4v-9h3l.5-4h-3.5V8.8c0-.5.3-.8.5-.8z',
+    x: 'M17.8 3h3.1l-6.8 7.8 8 10.2h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.8 3h6.4l4.4 5.9L17.8 3zm-1.1 16.2h1.7L7.4 4.7H5.6l11.1 14.5z',
+    youtube: 'M23 7.2c-.3-1.1-1.1-2-2.2-2.3C18.9 4.5 12 4.5 12 4.5s-6.9 0-8.8.4C2.1 5.2 1.3 6.1 1 7.2.6 9.1.6 12 .6 12s0 2.9.4 4.8c.3 1.1 1.1 2 2.2 2.3 1.9.4 8.8.4 8.8.4s6.9 0 8.8-.4c1.1-.3 1.9-1.2 2.2-2.3.4-1.9.4-4.8.4-4.8s0-2.9-.4-4.8zM9.7 15.5v-7l6 3.5-6 3.5z',
+    instagram: 'M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zM17.3 5.5a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4zM12 2.2c-2.7 0-3 0-4 .1-3.6.2-5.5 2.1-5.7 5.7-.1 1-.1 1.3-.1 4s0 3 .1 4c.2 3.6 2.1 5.5 5.7 5.7 1 .1 1.3.1 4 .1s3 0 4-.1c3.6-.2 5.5-2.1 5.7-5.7.1-1 .1-1.3.1-4s0-3-.1-4c-.2-3.6-2.1-5.5-5.7-5.7-1-.1-1.3-.1-4-.1zm0 1.8c2.6 0 2.9 0 4 .1 2.6.1 3.8 1.4 3.9 3.9.1 1 .1 1.3.1 4s0 2.9-.1 4c-.1 2.5-1.3 3.8-3.9 3.9-1 .1-1.3.1-4 .1s-2.9 0-4-.1c-2.6-.1-3.8-1.4-3.9-3.9-.1-1-.1-1.3-.1-4s0-2.9.1-4C4.2 5.4 5.4 4.2 8 4.1c1-.1 1.3-.1 4-.1z',
+    linkedin: 'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11.75H3V9.75zm6.5 0h3.8v1.6h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6.1v6.1h-4v-5.4c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.5h-4V9.75z',
+    tiktok: 'M16.6 2h-3.4v13.4a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .8.1V9.1a6.4 6.4 0 1 0 5.5 6.3V8.6a8 8 0 0 0 4.6 1.5V6.7a4.7 4.7 0 0 1-4.6-4.7z',
+    whatsapp: 'M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.1.3.7 1.1 1.5 1.8 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z',
+    email: 'M2 5h20v14H2V5zm2 2v.5l8 5 8-5V7H4zm16 2.8-8 5-8-5V17h16V9.8z'
+  };
+  function networkOf(href) {
+    var h = (href || '').toLowerCase();
+    if (h.indexOf('mailto:') === 0) return 'email';
+    if (/facebook\.com/.test(h)) return 'facebook';
+    if (/(twitter\.com|\/\/x\.com|\.x\.com)/.test(h)) return 'x';
+    if (/(youtube\.com|youtu\.be)/.test(h)) return 'youtube';
+    if (/instagram\.com/.test(h)) return 'instagram';
+    if (/linkedin\.com/.test(h)) return 'linkedin';
+    if (/tiktok\.com/.test(h)) return 'tiktok';
+    if (/(whatsapp\.com|wa\.me)/.test(h)) return 'whatsapp';
+    return null;
+  }
+  var socialLinks = doc.querySelectorAll('.topbar-social .widget-content a');
+  for (var s = 0; s < socialLinks.length; s++) {
+    var a = socialLinks[s];
+    var net = networkOf(a.getAttribute('href'));
+    if (!net) continue;
+    var label = a.textContent.trim();
+    a.textContent = '';
+    var ns = 'http://www.w3.org/2000/svg';
+    var icon = doc.createElementNS(ns, 'svg');
+    icon.setAttribute('viewBox', '0 0 24 24');
+    icon.setAttribute('class', 'social-icon');
+    icon.setAttribute('aria-hidden', 'true');
+    var path = doc.createElementNS(ns, 'path');
+    path.setAttribute('d', ICONS[net]);
+    icon.appendChild(path);
+    a.appendChild(icon);
+    a.appendChild(el('span', { className: 'social-text', text: label }));
+    a.classList.add('has-icon');
+    a.setAttribute('title', label);
+    a.setAttribute('target', '_blank');
+    a.setAttribute('rel', 'noopener');
+  }
+  // Repeat the social links in the footer
+  var socialList = doc.querySelector('.topbar-social .widget-content ul');
+  var footerSocial = doc.querySelector('.footer-social');
+  if (socialList && footerSocial) {
+    var copy = socialList.cloneNode(true);
+    copy.className = 'social-list';
+    var copied = copy.querySelectorAll('a');
+    for (var cs = 0; cs < copied.length; cs++) {
+      footerSocial.appendChild(copied[cs]);
+    }
+  }
+
+  // ---------------------------------------------------------------- images and dates
+  var googleImage = /^(https?:)?\/\/([a-z0-9-]+\.)*(googleusercontent\.com|blogspot\.com|ggpht\.com)\//i;
+  var youtubeThumb = /^(https?:\/\/(img\.youtube\.com|i\.ytimg\.com)\/vi\/[^/]+\/)[a-z]*default\.jpg$/i;
+  function sized(src, w, h) {
+    if (!src) return src;
+    var spec = 'w' + w + '-h' + h + '-c';
+    if (googleImage.test(src)) {
+      return src
+        .replace(/\/s\d+(-[a-z]+)*\//i, '/' + spec + '/')
+        .replace(/\/w\d+-h\d+(-[a-z]+)*\//i, '/' + spec + '/')
+        .replace(/=s\d+(-[a-z]+)*$/i, '=' + spec)
+        .replace(/=w\d+-h\d+(-[a-z]+)*$/i, '=' + spec);
+    }
+    if (youtubeThumb.test(src)) return src.replace(youtubeThumb, '$1hqdefault.jpg');
+    return src;
+  }
+  var cardImgs = doc.querySelectorAll('img.js-resize');
+  for (var c = 0; c < cardImgs.length; c++) {
+    var src = cardImgs[c].getAttribute('src') || '';
+    var better = sized(src, 720, 405);
+    if (better !== src) cardImgs[c].setAttribute('src', better);
+  }
+
+  function niceDate(iso, long) {
+    var when = new Date(iso);
+    if (isNaN(when.getTime())) return '';
+    return when.toLocaleDateString(undefined, { year: 'numeric', month: long ? 'long' : 'short', day: 'numeric' });
+  }
+  var dates = doc.querySelectorAll('time.js-date');
+  for (var d = 0; d < dates.length; d++) {
+    var text = niceDate(dates[d].getAttribute('datetime'), true);
+    if (text) dates[d].textContent = text;
+  }
+
+  // ---------------------------------------------------------------- hero slideshow
+  var media = doc.querySelector('.hero-media');
+  var slides = media ? media.querySelectorAll('img') : [];
+  if (media && slides.length > 1) {
+    media.classList.add('is-slideshow');
+    var current = 0;
+    var timer = null;
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var dots = el('div', { className: 'slide-dots' });
+    var show = function (n) {
+      current = (n + slides.length) % slides.length;
+      for (var i = 0; i < slides.length; i++) {
+        slides[i].classList.toggle('is-active', i === current);
+        dots.children[i].setAttribute('aria-current', i === current ? 'true' : 'false');
+      }
+    };
+    var play = function () {
+      if (reduced) return;
+      clearInterval(timer);
+      timer = setInterval(function () { show(current + 1); }, 5500);
+    };
+    for (var i = 0; i < slides.length; i++) {
+      if (i > 0) slides[i].setAttribute('loading', 'lazy');
+      dots.appendChild(el('button', { type: 'button', 'aria-label': 'Show slide ' + (i + 1), 'data-slide': i }));
+    }
+    dots.addEventListener('click', function (e) {
+      var n = e.target.getAttribute('data-slide');
+      if (n !== null) { show(parseInt(n, 10)); play(); }
+    });
+    var prev = el('button', { type: 'button', className: 'slide-btn slide-prev', 'aria-label': 'Previous slide' }, [svg(CHEVRON_LEFT, 20)]);
+    var next = el('button', { type: 'button', className: 'slide-btn slide-next', 'aria-label': 'Next slide' }, [svg(CHEVRON_RIGHT, 20)]);
+    prev.addEventListener('click', function () { show(current - 1); play(); });
+    next.addEventListener('click', function () { show(current + 1); play(); });
+    media.appendChild(prev);
+    media.appendChild(next);
+    media.appendChild(dots);
+    media.addEventListener('mouseenter', function () { clearInterval(timer); });
+    media.addEventListener('mouseleave', play);
+    show(0);
+    play();
+  }
+
+  // ---------------------------------------------------------------- Blogger feeds (JSONP)
+  var feedId = 0;
+  function loadFeed(label, count, done) {
+    var cb = '__unionFeed' + (++feedId);
+    var script = doc.createElement('script');
+    var finished = false;
+    var finish = function (data) {
+      if (finished) return;
+      finished = true;
+      try { delete window[cb]; } catch (err) { window[cb] = undefined; }
+      if (script.parentNode) script.parentNode.removeChild(script);
+      done(data);
+    };
+    window[cb] = function (json) { finish(json && json.feed ? json.feed.entry || [] : null); };
+    script.onerror = function () { finish(null); };
+    setTimeout(function () { finish(null); }, 12000);
+    script.src = '/feeds/posts/summary' + (label ? '/-/' + encodeURIComponent(label) : '') +
+      '?alt=json-in-script&max-results=' + count + '&callback=' + cb;
+    doc.body.appendChild(script);
+  }
+
+  function plainText(html) {
+    if (!html) return '';
+    try {
+      return (new DOMParser().parseFromString(html, 'text/html').body.textContent || '').replace(/\s+/g, ' ').trim();
+    } catch (err) {
+      return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+  }
+  function cut(text, n) {
+    if (text.length <= n) return text;
+    return text.slice(0, n).replace(/\s+\S*$/, '') + '…';
+  }
+  function parseEntry(e) {
+    var url = '#';
+    for (var i = 0; i < (e.link || []).length; i++) {
+      if (e.link[i].rel === 'alternate') { url = e.link[i].href; break; }
+    }
+    var body = (e.content && e.content.$t) || (e.summary && e.summary.$t) || '';
+    var img = e.media$thumbnail ? e.media$thumbnail.url : '';
+    if (!img) {
+      var m = body.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (m) img = m[1];
+    }
+    return {
+      title: (e.title && e.title.$t) || 'Untitled post',
+      url: url,
+      date: e.published ? e.published.$t : '',
+      image: img,
+      text: plainText(body)
+    };
+  }
+
+  function thumb(post, w, h, fallback) {
+    var box = el('a', { className: 'feed-thumb', href: post.url, tabindex: '-1', 'aria-hidden': 'true' });
+    if (post.image) {
+      box.appendChild(el('img', { src: sized(post.image, w, h), alt: '', loading: 'lazy' }));
+    } else {
+      box.classList.add('feed-thumb-empty');
+      box.textContent = (fallback || post.title).charAt(0);
+    }
+    return box;
+  }
+  function titleLink(post, tag) {
+    return el(tag || 'h3', { className: 'feed-title' }, [el('a', { href: post.url, text: post.title })]);
+  }
+  function dateTag(post) {
+    var t = niceDate(post.date);
+    return t ? el('time', { className: 'feed-date', datetime: post.date, text: t }) : null;
+  }
+  function card(post, label) {
+    return el('article', { className: 'feed-card' }, [
+      thumb(post, 480, 270, label),
+      el('div', { className: 'feed-body' }, [dateTag(post), titleLink(post)])
+    ]);
+  }
+
+  var RENDER = {
+    news: function (posts, label) {
+      var first = posts[0];
+      var out = [el('article', { className: 'feed-featured' }, [
+        thumb(first, 640, 360, label),
+        el('div', { className: 'feed-body' }, [dateTag(first), titleLink(first),
+          first.text ? el('p', { className: 'feed-excerpt', text: cut(first.text, 120) }) : null])
+      ])];
+      if (posts.length > 1) {
+        out.push(el('ul', { className: 'feed-list' }, posts.slice(1).map(function (p) {
+          return el('li', null, [thumb(p, 184, 138, label), el('div', null, [dateTag(p), titleLink(p)])]);
+        })));
+      }
+      return out;
+    },
+    message: function (posts, label) {
+      var p = posts[0];
+      return [el('article', { className: 'feed-message' }, [
+        thumb(p, 800, 600, label),
+        el('div', { className: 'feed-body' }, [titleLink(p),
+          p.text ? el('p', { className: 'feed-excerpt', text: cut(p.text, 240) }) : null,
+          el('a', { className: 'feed-readmore', href: p.url, text: 'Read the full message' })])
+      ])];
+    },
+    tiles: function (posts, label) {
+      return [el('div', { className: 'feed-tiles' }, posts.map(function (p) {
+        return el('a', { className: 'feed-tile', href: p.url }, [
+          p.image ? el('span', { className: 'feed-thumb' }, [el('img', { src: sized(p.image, 400, 400), alt: '', loading: 'lazy' })]) : null,
+          el('span', { className: 'feed-tile-text' }, [dateTag(p), el('span', { className: 'feed-title', text: p.title })])
+        ]);
+      }))];
+    },
+    list: function (posts, label) {
+      return [el('div', { className: 'feed-cards' }, posts.map(function (p) { return card(p, label); }))];
+    },
+    strip: function (posts, label) {
+      var list = el('ul', { className: 'feed-strip' }, posts.map(function (p) { return el('li', null, [card(p, label)]); }));
+      var step = function (dir) { list.scrollBy({ left: dir * list.clientWidth * 0.8, behavior: 'smooth' }); };
+      var prev = el('button', { type: 'button', className: 'strip-btn strip-prev', 'aria-label': 'Scroll left' }, [svg(CHEVRON_LEFT, 20)]);
+      var next = el('button', { type: 'button', className: 'strip-btn strip-next', 'aria-label': 'Scroll right' }, [svg(CHEVRON_RIGHT, 20)]);
+      prev.addEventListener('click', function () { step(-1); });
+      next.addEventListener('click', function () { step(1); });
+      return [el('div', { className: 'strip-wrap' }, [prev, list, next])];
+    }
+  };
+
+  function isVisible(node) {
+    return !!(node.offsetWidth || node.offsetHeight || node.getClientRects().length);
+  }
+
+  var blocks = doc.querySelectorAll('.feed-block');
+  for (var b = 0; b < blocks.length; b++) {
+    (function (block) {
+      var labelEl = block.querySelector('.feed-label');
+      var items = block.querySelector('.feed-items');
+      var label = labelEl ? labelEl.textContent.trim() : '';
+      var kind = block.getAttribute('data-kind');
+      var count = parseInt(block.getAttribute('data-count'), 10) || 4;
+      var more = block.querySelector('.feed-more');
+      if (more) more.setAttribute('href', label ? '/search/label/' + encodeURIComponent(label) : '/search');
+      if (!items || !RENDER[kind]) return;
+      // Homepage blocks are hidden on other pages: don't load their feeds there
+      if (!isVisible(block)) return;
+      loadFeed(label, count, function (entries) {
+        items.textContent = '';
+        if (!entries || !entries.length) {
+          items.appendChild(el('p', { className: 'feed-status', text: entries ?
+            'Nothing published under “' + label + '” yet.' : 'Posts could not be loaded right now.' }));
+          return;
+        }
+        RENDER[kind](entries.map(parseEntry), label).forEach(function (n) { items.appendChild(n); });
+      });
+    })(blocks[b]);
+  }
+
+  // Latest-updates ticker
+  var tickerList = doc.querySelector('.ticker-list');
+  if (tickerList && isVisible(tickerList.parentNode)) {
+    loadFeed('', 8, function (entries) {
+      if (!entries || !entries.length) {
+        doc.querySelector('.ticker').style.display = 'none';
+        return;
+      }
+      var posts = entries.map(parseEntry);
+      // Two copies so the CSS animation can loop seamlessly
+      for (var round = 0; round < 2; round++) {
+        posts.forEach(function (p) {
+          var item = el('li', null, [el('a', { href: p.url, text: p.title })]);
+          if (round === 1) item.setAttribute('aria-hidden', 'true');
+          tickerList.appendChild(item);
+        });
+      }
+      var hidden = tickerList.querySelectorAll('[aria-hidden] a');
+      for (var h = 0; h < hidden.length; h++) hidden[h].setAttribute('tabindex', '-1');
+    });
+  }
+
+  // Related articles on post pages (from the post's first label)
+  var related = doc.querySelector('.related');
+  var crumb = doc.querySelector('.breadcrumb .crumb-label');
+  if (related && crumb) {
+    var here = (window.location.href.split(/[?#]/)[0]).replace(/^https?:/, '');
+    loadFeed(crumb.textContent.trim(), 6, function (entries) {
+      if (!entries) return;
+      var posts = entries.map(parseEntry).filter(function (p) {
+        return p.url.split(/[?#]/)[0].replace(/^https?:/, '') !== here;
+      }).slice(0, 3);
+      if (!posts.length) return;
+      var grid = related.querySelector('.related-grid');
+      posts.forEach(function (p) { grid.appendChild(card(p)); });
+      related.hidden = false;
+    });
+  }
+
+  // ---------------------------------------------------------------- small helpers
+  // Hide homepage bands whose section has no gadget (e.g. "numbers" left empty)
+  var optional = doc.querySelectorAll('.js-hide-empty');
+  for (var o = 0; o < optional.length; o++) {
+    if (!optional[o].querySelector('.widget')) optional[o].hidden = true;
+  }
+
+  // "Join today" box on posts points wherever the header's Join button points
+  var joinSource = doc.querySelector('.header-cta .widget-content a');
+  var joinLinks = doc.querySelectorAll('.js-join-link');
+  for (var j = 0; j < joinLinks.length; j++) {
+    if (joinSource) {
+      joinLinks[j].setAttribute('href', joinSource.getAttribute('href'));
+    } else {
+      joinLinks[j].parentNode.style.display = 'none';
+    }
+  }
+
+  // Copy-link share button
+  var copyBtns = doc.querySelectorAll('[data-copy-url]');
+  for (var cb = 0; cb < copyBtns.length; cb++) {
+    copyBtns[cb].addEventListener('click', function () {
+      var btn = this;
+      var url = btn.getAttribute('data-copy-url');
+      var done = function () {
+        var text = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = text; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link:', url); });
+      } else {
+        window.prompt('Copy this link:', url);
+      }
+    });
+  }
+
+  // Footer year
+  var years = doc.querySelectorAll('.js-year');
+  for (var y = 0; y < years.length; y++) years[y].textContent = String(new Date().getFullYear());
+})();
+//]]>
+</script>
+</body>
+</html>
