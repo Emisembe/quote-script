@@ -1,8 +1,9 @@
 # Enterprise Quality Management & Planning Studio
 
-A single-file, browser-based workspace covering the **Seven Basic QC Tools** and the
-**Seven Management and Planning Tools**, with three preset business scenarios, JSON
-save/restore and a printable executive report.
+A single-file, browser-based workspace covering the **Seven Basic QC Tools**, the
+**Seven Management and Planning Tools** and a **Project Planning and Documentation** module
+(project plan, job descriptions, flowcharts), with three example scenarios, four languages,
+JSON save/restore and printable reports.
 
 ## Files
 
@@ -33,6 +34,20 @@ Open either HTML file directly in Chrome, Edge, Firefox or Safari. No server is 
 5. Prioritization matrix: weighted criteria scoring and automatic ranking
 6. PDPC: phases, what-if risks, countermeasures marked feasible or impractical
 7. Arrow diagram: CPM or PERT, ES/EF/LS/LF, float, critical path, network and Gantt views, on-time probability
+
+**Module 3: Project Planning and Documentation**
+1. Project plan: charter (sponsor, goal, scope, deliverables), tasks with owners, dates, status and progress, milestones, team, and a dated timeline with a Today line. Progress is compared with where the plan should be today. Tasks can be imported from the arrow diagram.
+2. Job descriptions: purpose, responsibilities, qualifications, skills and success measures, with a live print preview, completeness check and templates (Quality Manager, Quality Engineer, Project Manager, Process Improvement Specialist).
+3. Flowchart: steps, decisions with Yes/No paths, documents, waits and swimlanes per role. The chart is drawn automatically and hand-offs, rework loops and broken paths are highlighted.
+
+**Plain-language guides**: every tool opens with a guide (what it shows, when to use it, how to read it,
+what to do next, key terms), every chart has a one-line reading tip, and every result is explained in a
+"What this means" box. The printed report repeats the reading tip under each tool.
+
+**Languages**: English, German (Deutsch), French (Francais) and Spanish (Espanol), chosen in the header.
+The whole interface, the guides, results, charts and reports switch language; numbers and dates follow
+the language too. Your own text and the example data stay as typed. To add a language, add it to
+`LANGS`/`LANG_ORDER` and add one column to `I18N_ROWS` in `index.html`.
 
 **Workspace features**: scenario switcher (Manufacturing, SaaS, Healthcare, Blank) with undo,
 automatic local save, JSON export/import with validation, and "Generate Report", which compiles
