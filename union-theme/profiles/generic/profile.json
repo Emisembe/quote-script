@@ -1,0 +1,43 @@
+{
+  "_about": "Generic union / association template with placeholder content. Edit every gadget in Layout after installing.",
+  "omit": [
+    "HTML1",
+    "HTML5",
+    "HTML17",
+    "HTML21",
+    "HTML32"
+  ],
+  "banned": [
+    "KPUWU",
+    "Kenya Private",
+    "kpuwuke",
+    "91844755",
+    "ca-pub-"
+  ],
+  "titles": {
+    "Header1": "Union name (Header)",
+    "Blog1": "Latest news",
+    "HTML15": "Follow us",
+    "HTML16": "Main menu",
+    "HTML3": "Join button",
+    "HTML12": "Workers united",
+    "HTML26": "Hero buttons",
+    "HTML7": "Hero slideshow",
+    "HTML27": "How we support members",
+    "HTML28": "Our union in numbers",
+    "HTML6": "Campaigns",
+    "HTML8": "News",
+    "HTML9": "Publications",
+    "HTML14": "Message from the General Secretary",
+    "HTML10": "Events",
+    "HTML2": "Join the union",
+    "HTML19": "Support our work",
+    "HTML11": "Who we are",
+    "HTML13": "Our branches",
+    "HTML29": "Stronger together",
+    "HTML4": "Our partners",
+    "HTML30": "About us",
+    "HTML31": "Contact",
+    "HTML23": "Useful links"
+  }
+}

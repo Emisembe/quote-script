@@ -1,0 +1,15 @@
+<b:includable id='main'>
+  <div class='feed-block' data-count='@@COUNT@@' data-kind='@@KIND@@'>
+    <div class='feed-head'>
+      <b:if cond='data:title != &quot;&quot;'>
+        <h2 class='title'><data:title/></h2>
+      </b:if>
+      <a class='feed-more' href='/search'>View all</a>
+    </div>
+    <div class='feed-label' hidden='hidden'><data:content/></div>
+    <div class='feed-items'>
+      <p class='feed-status'>Loading&#8230;</p>
+    </div>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>

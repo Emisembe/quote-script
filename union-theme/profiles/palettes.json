@@ -1,0 +1,15 @@
+{
+  "red-navy": {
+    "_about": "Union red + navy",
+    "primary": "#13294B",
+    "primary.dark": "#0B1A33",
+    "accent": "#C8102E",
+    "accent.dark": "#9E0C23",
+    "highlight": "#F2B705",
+    "page.background": "#F4F6FA",
+    "band.background": "#EAEEF4",
+    "text": "#1B2533",
+    "muted": "#5B6778",
+    "border": "#DCE1EA"
+  }
+}

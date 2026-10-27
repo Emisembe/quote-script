@@ -1,0 +1,468 @@
+{
+  "_about": "Facts taken from a theme export that Blogger generated and accepted. scripts/check.py only allows what is listed here, plus 'extra' entries (each needs a reason).",
+  "html_attributes": [
+    "b:version",
+    "class"
+  ],
+  "b_tags": [
+    "b:else",
+    "b:if",
+    "b:includable",
+    "b:include",
+    "b:loop",
+    "b:section",
+    "b:skin",
+    "b:widget",
+    "b:widget-setting",
+    "b:widget-settings"
+  ],
+  "data_tags": [
+    "data:adCode",
+    "data:adEnd",
+    "data:adStart",
+    "data:attribution",
+    "data:backgroundPositionStyleStr",
+    "data:backlink.adminClass",
+    "data:backlink.author",
+    "data:backlink.deleteUrl",
+    "data:backlink.snippet",
+    "data:backlink.timestamp",
+    "data:backlink.title",
+    "data:backlink.url",
+    "data:blog.blogId",
+    "data:blog.enabledCommentProfileImages",
+    "data:blog.homepageUrl",
+    "data:blog.languageDirection",
+    "data:blog.pageName",
+    "data:blog.pageTitle",
+    "data:blog.pageType",
+    "data:blog.title",
+    "data:blog.url",
+    "data:blogCommentMessage",
+    "data:blogTeamBlogMessage",
+    "data:comment.adminClass",
+    "data:comment.anchorName",
+    "data:comment.author",
+    "data:comment.authorAvatarImage",
+    "data:comment.authorClass",
+    "data:comment.authorUrl",
+    "data:comment.body",
+    "data:comment.cmtBodyIdPostfix",
+    "data:comment.deleteUrl",
+    "data:comment.favicon",
+    "data:comment.isDeleted",
+    "data:comment.timestamp",
+    "data:comment.url",
+    "data:commentPostedByMsg",
+    "data:content",
+    "data:defaultAdEnd",
+    "data:defaultAdStart",
+    "data:description",
+    "data:desktopLinkMsg",
+    "data:desktopLinkUrl",
+    "data:display",
+    "data:f.feedType",
+    "data:f.mimeType",
+    "data:f.name",
+    "data:f.url",
+    "data:feedLinks",
+    "data:feedLinksMsg",
+    "data:height",
+    "data:homeMsg",
+    "data:imagePlacement",
+    "data:label.count",
+    "data:label.cssSize",
+    "data:label.isLast",
+    "data:label.name",
+    "data:label.url",
+    "data:labels",
+    "data:layout",
+    "data:links",
+    "data:mobile",
+    "data:mobileLinkMsg",
+    "data:mobileLinkUrl",
+    "data:navMessage",
+    "data:newerPageTitle",
+    "data:newerPageUrl",
+    "data:numPosts",
+    "data:olderPageTitle",
+    "data:olderPageUrl",
+    "data:pageLanguage",
+    "data:post.addCommentOnclick",
+    "data:post.addCommentUrl",
+    "data:post.adminClass",
+    "data:post.allowComments",
+    "data:post.allowIframeComments",
+    "data:post.allowNewComments",
+    "data:post.appRpcRelayPath",
+    "data:post.author",
+    "data:post.authorLabel",
+    "data:post.authorProfileUrl",
+    "data:post.avatarIndentClass",
+    "data:post.backlinks",
+    "data:post.backlinksLabel",
+    "data:post.body",
+    "data:post.canonicalUrl",
+    "data:post.cmtfpIframe",
+    "data:post.commentConfig",
+    "data:post.commentFormIframeSrc",
+    "data:post.commentHtml",
+    "data:post.commentJso",
+    "data:post.commentLabelFull",
+    "data:post.commentMsgs",
+    "data:post.commentPagingRequired",
+    "data:post.commentRangeText",
+    "data:post.commentSource",
+    "data:post.commentSrc",
+    "data:post.comments",
+    "data:post.communityId",
+    "data:post.createLinkLabel",
+    "data:post.createLinkUrl",
+    "data:post.dateHeader",
+    "data:post.dummyTag",
+    "data:post.editUrl",
+    "data:post.embedCommentForm",
+    "data:post.feedLinks",
+    "data:post.forceIframeComments",
+    "data:post.friendConnectJs",
+    "data:post.hasJumpLink",
+    "data:post.hasNewerLinks",
+    "data:post.hasOlderLinks",
+    "data:post.href",
+    "data:post.id",
+    "data:post.iframeCommentSrc",
+    "data:post.includeAd",
+    "data:post.isDateStart",
+    "data:post.isFirstPost",
+    "data:post.jumpText",
+    "data:post.labels",
+    "data:post.link",
+    "data:post.newLinkClass",
+    "data:post.newerLinkText",
+    "data:post.newerLinkUrl",
+    "data:post.newestLinkText",
+    "data:post.newestLinkUrl",
+    "data:post.noNewCommentsText",
+    "data:post.numBacklinks",
+    "data:post.numComments",
+    "data:post.oldLinkClass",
+    "data:post.olderLinkText",
+    "data:post.olderLinkUrl",
+    "data:post.oldestLinkText",
+    "data:post.oldestLinkUrl",
+    "data:post.sharePostUrl",
+    "data:post.showBacklinks",
+    "data:post.showThreadedComments",
+    "data:post.snippet",
+    "data:post.thumbnail",
+    "data:post.thumbnailUrl",
+    "data:post.timestamp",
+    "data:post.timestampISO8601",
+    "data:post.timestampLabel",
+    "data:post.title",
+    "data:post.url",
+    "data:postCommentMsg",
+    "data:posts",
+    "data:shareMsg",
+    "data:showCmtPopup",
+    "data:showFreqNumbers",
+    "data:showSnippets",
+    "data:showThumbnails",
+    "data:sourceUrl",
+    "data:thumbnailSize",
+    "data:title",
+    "data:top.blogThisMsg",
+    "data:top.blogspotReviews",
+    "data:top.deleteBacklinkMsg",
+    "data:top.deleteCommentMsg",
+    "data:top.dummyBootstrap",
+    "data:top.editPostMsg",
+    "data:top.emailThisMsg",
+    "data:top.languageCode",
+    "data:top.shareToFacebookMsg",
+    "data:top.shareToOrkutMsg",
+    "data:top.shareToTwitterMsg",
+    "data:top.showAuthor",
+    "data:top.showBlogThisButton",
+    "data:top.showDummy",
+    "data:top.showEmailButton",
+    "data:top.showFacebookButton",
+    "data:top.showMobileShare",
+    "data:top.showOrkutButton",
+    "data:top.showStars",
+    "data:top.showTimestamp",
+    "data:top.showTwitterButton",
+    "data:top.timestampLabel",
+    "data:useImage",
+    "data:widget.instanceId",
+    "data:width",
+    "data:widthStyleStr"
+  ],
+  "section_attributes": [
+    "class",
+    "id",
+    "maxwidgets",
+    "preferred",
+    "showaddelement"
+  ],
+  "widget_attributes": [
+    "id",
+    "locked",
+    "title",
+    "type",
+    "version"
+  ],
+  "widget_types": {
+    "AdSense": {
+      "versions": [
+        ""
+      ],
+      "settings": [],
+      "blank_ok": [],
+      "values": {}
+    },
+    "Attribution": {
+      "versions": [
+        ""
+      ],
+      "settings": [
+        "copyright"
+      ],
+      "blank_ok": [],
+      "values": {
+        "copyright": [
+          "KENYA PRIVATE UNIVERSITIES WORKERS UNION"
+        ]
+      }
+    },
+    "Blog": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "authorLabel",
+        "commentLabel",
+        "postLabelsLabel",
+        "postsPerAd",
+        "reactionsLabel",
+        "showAuthor",
+        "showAuthorProfile",
+        "showBacklinks",
+        "showCommentLink",
+        "showDateHeader",
+        "showInlineAds",
+        "showLabels",
+        "showLocation",
+        "showReactions",
+        "showShareButtons",
+        "showTimestamp",
+        "style.layout",
+        "style.unittype",
+        "timestampLabel"
+      ],
+      "blank_ok": [
+        "reactionsLabel"
+      ],
+      "values": {
+        "authorLabel": [
+          "By"
+        ],
+        "commentLabel": [
+          "\u03c3\u03c7\u03cc\u03bb\u03b9\u03b1"
+        ],
+        "postLabelsLabel": [
+          "\u0395\u03c4\u03b9\u03ba\u03ad\u03c4\u03b5\u03c2"
+        ],
+        "postsPerAd": [
+          "1"
+        ],
+        "showAuthor": [
+          "false"
+        ],
+        "showAuthorProfile": [
+          "false"
+        ],
+        "showBacklinks": [
+          "false"
+        ],
+        "showCommentLink": [
+          "false"
+        ],
+        "showDateHeader": [
+          "true"
+        ],
+        "showInlineAds": [
+          "false"
+        ],
+        "showLabels": [
+          "true"
+        ],
+        "showLocation": [
+          "false"
+        ],
+        "showReactions": [
+          "false"
+        ],
+        "showShareButtons": [
+          "true"
+        ],
+        "showTimestamp": [
+          "false"
+        ],
+        "style.layout": [
+          "1x1"
+        ],
+        "style.unittype": [
+          "TextAndImage"
+        ],
+        "timestampLabel": [
+          "\u03c3\u03c4\u03b9\u03c2"
+        ]
+      }
+    },
+    "HTML": {
+      "versions": [
+        "",
+        "1"
+      ],
+      "settings": [
+        "content"
+      ],
+      "blank_ok": [],
+      "values": {}
+    },
+    "Header": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "displayHeight",
+        "displayUrl",
+        "displayWidth",
+        "imagePlacement",
+        "sectionWidth",
+        "shrinkToFit",
+        "useImage"
+      ],
+      "blank_ok": [],
+      "values": {
+        "displayHeight": [
+          "106"
+        ],
+        "displayUrl": [
+          "https://blogger.googleusercontent.com/img/a/AVvXsEj-4GLvcRQiYNe6MZY1pCtNANQHT0eSWLVM1viq4LpSUJZ4TAvZyu65F4AMzrhmwDS8MMlKokHRQTw6x2-95nR66dCxyVtqC80Gwk8fmz1aS-RQIv_tAhCvib3LqnQllthxuto0iJ8p9AnO2ruIRA3w1dv8TO1a1MlKYEkEJK1b5Lcw3rgyixmQi1W0784=s304"
+        ],
+        "displayWidth": [
+          "304"
+        ],
+        "imagePlacement": [
+          "REPLACE"
+        ],
+        "sectionWidth": [
+          "600"
+        ],
+        "shrinkToFit": [
+          "false"
+        ],
+        "useImage": [
+          "true"
+        ]
+      }
+    },
+    "Label": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "display",
+        "selectedLabelsList",
+        "showFreqNumbers",
+        "showType",
+        "sorting"
+      ],
+      "blank_ok": [
+        "selectedLabelsList"
+      ],
+      "values": {
+        "display": [
+          "LIST"
+        ],
+        "showFreqNumbers": [
+          "false"
+        ],
+        "showType": [
+          "ALL"
+        ],
+        "sorting": [
+          "ALPHA"
+        ]
+      }
+    },
+    "Navbar": {
+      "versions": [
+        "1"
+      ],
+      "settings": [],
+      "blank_ok": [],
+      "values": {}
+    },
+    "PopularPosts": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "numItemsToShow",
+        "showSnippets",
+        "showThumbnails",
+        "timeRange"
+      ],
+      "blank_ok": [],
+      "values": {
+        "numItemsToShow": [
+          "5"
+        ],
+        "showSnippets": [
+          "true"
+        ],
+        "showThumbnails": [
+          "true"
+        ],
+        "timeRange": [
+          "LAST_YEAR"
+        ]
+      }
+    },
+    "Translate": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "displayMode"
+      ],
+      "blank_ok": [],
+      "values": {
+        "displayMode": [
+          "SIMPLE"
+        ]
+      }
+    }
+  },
+  "builtin_includes": [
+    "quickedit"
+  ],
+  "extra": {
+    "data_tags": {},
+    "setting_values": {
+      "boolean settings may be true or false": [
+        "true",
+        "false"
+      ]
+    },
+    "banned_strings": [
+      "YOUR_",
+      "YOUR DESCRIPTION",
+      "soratemplates"
+    ],
+    "notes": "Anything allowed beyond the reference export goes here with a reason. Add names/addresses of other blogs found in the reference to banned_strings."
+  }
+}

@@ -1,0 +1,705 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:version='2' class='v2' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<meta content='width=device-width, initial-scale=1' name='viewport'/>
+<b:include data='blog' name='all-head-content'/>
+<title>
+<b:if cond='data:blog.pageType == &quot;index&quot;'>
+<data:blog.pageTitle/>
+<b:else/>
+<b:if cond='data:blog.pageType != &quot;error_page&quot;'>
+<data:blog.pageName/> - <data:blog.title/>
+<b:else/>
+Page not found - <data:blog.title/>
+</b:if>
+</b:if>
+</title>
+<link href='https://fonts.googleapis.com' rel='preconnect'/>
+<link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
+<link href='https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;display=swap' rel='stylesheet'/>
+<b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
+<b:if cond='data:blog.url == data:blog.homepageUrl'>
+<style type='text/css'>.home-only { display: block; }</style>
+</b:if>
+<b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+<style type='text/css'>.home-only { display: block; }</style>
+</b:if>
+</head>
+<body expr:class='&quot;union pt-&quot; + data:blog.pageType'>
+<a class='skip-link' href='#content'>Skip to content</a>
+
+<!-- ================= Top bar: social links + search ================= -->
+<div class='topbar'>
+  <div class='container topbar-inner'>
+    <b:section class='topbar-social' id='topbar-social' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML15' locked='false' title='@@T:HTML15@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML15@@]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
+    <form action='/search' class='search-form topbar-search' method='get' role='search'>
+      <input aria-label='Search this site' name='q' placeholder='Search news, campaigns, documents...' type='search'/>
+      <button aria-label='Search' type='submit'>
+        <svg aria-hidden='true' fill='none' height='18' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.2' viewBox='0 0 24 24' width='18'><circle cx='11' cy='11' r='8'/><line x1='21' x2='16.65' y1='21' y2='16.65'/></svg>
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= Header: logo, menu, Join button ================= -->
+<header class='site-header' id='site-header'>
+  <div class='container header-inner'>
+    <b:section class='brand-section' id='header' maxwidgets='1' showaddelement='no'>
+      <b:widget id='Header1' locked='true' title='@@T:Header1@@' type='Header' version='1'>
+        <b:includable id='main'>
+          <a class='brand' expr:href='data:blog.homepageUrl'>
+            <b:if cond='data:useImage'>
+              <b:if cond='data:imagePlacement == &quot;REPLACE&quot;'>
+                <span class='brand-logo'><img expr:alt='data:title' expr:src='data:sourceUrl'/></span>
+              <b:else/>
+                <span aria-hidden='true' class='brand-mark'><img alt='' expr:src='data:sourceUrl'/></span>
+                <span class='brand-text'>
+                  <span class='brand-name'><data:title/></span>
+                  <b:if cond='data:description != &quot;&quot;'>
+                    <span class='brand-tagline'><data:description/></span>
+                  </b:if>
+                </span>
+              </b:if>
+            <b:else/>
+              <span aria-hidden='true' class='brand-mark'/>
+              <span class='brand-text'>
+                <span class='brand-name'><data:title/></span>
+                <b:if cond='data:description != &quot;&quot;'>
+                  <span class='brand-tagline'><data:description/></span>
+                </b:if>
+              </span>
+            </b:if>
+          </a>
+        </b:includable>
+      </b:widget>
+    </b:section>
+
+    <button aria-controls='site-nav' aria-expanded='false' aria-label='Open menu' class='nav-toggle' id='nav-toggle' type='button'>
+      <svg aria-hidden='true' class='icon-menu' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='3' x2='21' y1='6' y2='6'/><line x1='3' x2='21' y1='12' y2='12'/><line x1='3' x2='21' y1='18' y2='18'/></svg>
+      <svg aria-hidden='true' class='icon-close' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='18' x2='6' y1='6' y2='18'/><line x1='6' x2='18' y1='6' y2='18'/></svg>
+    </button>
+
+    <nav aria-label='Main' class='nav-drawer' id='site-nav'>
+      <b:section class='site-nav' id='menu' maxwidgets='1' showaddelement='no'>
+        <b:widget id='HTML16' locked='false' title='@@T:HTML16@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML16@@]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+            <div class='widget-content'>
+              <data:content/>
+            </div>
+            <b:include name='quickedit'/>
+          </b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='header-cta' id='header-cta' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML3' locked='false' title='@@T:HTML3@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML3@@]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+            <div class='widget-content'>
+              <data:content/>
+            </div>
+            <b:include name='quickedit'/>
+          </b:includable>
+        </b:widget>
+      </b:section>
+    </nav>
+  </div>
+</header>
+
+<main id='content'>
+
+<!-- ================= Latest-updates ticker (homepage) ================= -->
+<div class='home-only ticker' id='ticker'>
+  <div class='container ticker-inner'>
+    <span class='ticker-label'>Latest</span>
+    <div class='ticker-track'>
+      <ul class='ticker-list'/>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Hero (homepage) ================= -->
+<section class='home-only hero'>
+  <div class='container hero-grid'>
+    <b:section class='hero-main' id='hero-main' showaddelement='yes'>
+      <b:widget id='HTML12' locked='false' title='@@T:HTML12@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML12@@]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='hero-copy'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <p class='hero-eyebrow'><data:title/></p>
+            </b:if>
+            <b:if cond='data:blog.url == data:blog.homepageUrl'>
+              <h1 class='hero-title'><data:blog.title/></h1>
+            <b:else/>
+              <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+                <h1 class='hero-title'><data:blog.title/></h1>
+              <b:else/>
+                <p class='hero-title'><data:blog.title/></p>
+              </b:if>
+            </b:if>
+            <div class='hero-text'><data:content/></div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+      <b:widget id='HTML26' locked='false' title='@@T:HTML26@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML26@@]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='widget-content hero-actions'>
+            <data:content/>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+    <b:section class='hero-side' id='hero-side' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML7' locked='false' title='@@T:HTML7@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML7@@]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='hero-media'>
+            <data:content/>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= What we do + numbers (homepage) ================= -->
+<section class='home-only band band-services'>
+  <div class='container'>
+    <b:section class='services' id='services' showaddelement='yes'>
+      <b:widget id='HTML27' locked='false' title='@@T:HTML27@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML27@@]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<section class='home-only band band-stats js-hide-empty'>
+  <div class='container'>
+    <b:section class='stats' id='stats' showaddelement='yes'>
+      <b:widget id='HTML28' locked='false' title='@@T:HTML28@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML28@@]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Label-driven news blocks (homepage) ================= -->
+<section class='home-only band band-feeds'>
+  <div class='container'>
+    <div class='feed-row'>
+      <b:section class='feed-col' id='box3' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML6' locked='false' title='@@T:HTML6@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML6@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@FEED_MAIN:news:4@@
+        </b:widget>
+      </b:section>
+      <b:section class='feed-col' id='box' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML8' locked='false' title='@@T:HTML8@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML8@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@FEED_MAIN:news:4@@
+        </b:widget>
+      </b:section>
+      <b:section class='feed-col' id='box1' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML9' locked='false' title='@@T:HTML9@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML9@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@FEED_MAIN:news:4@@
+        </b:widget>
+      </b:section>
+    </div>
+  </div>
+</section>
+
+<section class='home-only band band-leader'>
+  <div class='container leader-grid'>
+    <b:section class='leader-col' id='box4' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML14' locked='false' title='@@T:HTML14@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML14@@]]></b:widget-setting>
+        </b:widget-settings>
+        @@FEED_MAIN:message:1@@
+      </b:widget>
+    </b:section>
+    <b:section class='events-col' id='box6' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML10' locked='false' title='@@T:HTML10@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML10@@]]></b:widget-setting>
+        </b:widget-settings>
+        @@FEED_MAIN:tiles:6@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Posts + sidebar (every page) ================= -->
+<div class='page-main' id='news'>
+  <div class='container main-grid'>
+    <div class='main-col'>
+      <b:section class='main' id='main' showaddelement='no'>
+        <b:widget id='Blog1' locked='true' title='@@T:Blog1@@' type='Blog' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='showDateHeader'>false</b:widget-setting>
+            <b:widget-setting name='showShareButtons'>false</b:widget-setting>
+            <b:widget-setting name='authorLabel'>By</b:widget-setting>
+            <b:widget-setting name='showCommentLink'>true</b:widget-setting>
+            <b:widget-setting name='showAuthor'>true</b:widget-setting>
+            <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
+            <b:widget-setting name='reactionsLabel'/>
+            <b:widget-setting name='showAuthorProfile'>false</b:widget-setting>
+            <b:widget-setting name='style.layout'>1x1</b:widget-setting>
+            <b:widget-setting name='showLabels'>true</b:widget-setting>
+            <b:widget-setting name='showLocation'>false</b:widget-setting>
+            <b:widget-setting name='showTimestamp'>true</b:widget-setting>
+            <b:widget-setting name='postsPerAd'>1</b:widget-setting>
+            <b:widget-setting name='showBacklinks'>false</b:widget-setting>
+            <b:widget-setting name='showInlineAds'>false</b:widget-setting>
+            <b:widget-setting name='showReactions'>false</b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main' var='top'>
+            <b:if cond='data:blog.pageType == &quot;error_page&quot;'>
+              <b:include name='uNotFound'/>
+            <b:else/>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='uSingle'/>
+                </b:loop>
+                <b:include name='uItemPager'/>
+              <b:else/>
+                <b:if cond='data:blog.pageType == &quot;static_page&quot;'>
+                  <b:loop values='data:posts' var='post'>
+                    <b:include data='post' name='uSingle'/>
+                  </b:loop>
+                <b:else/>
+                  <b:include name='uList'/>
+                </b:if>
+              </b:if>
+            </b:if>
+          </b:includable>
+
+          <b:includable id='uList'>
+            <div class='section-head'>
+              <b:if cond='data:blog.url == data:blog.homepageUrl'>
+                <h2 class='section-title'><data:title/></h2>
+              <b:else/>
+              <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+                <h2 class='section-title'><data:title/></h2>
+              <b:else/>
+                <h1 class='section-title'>
+                  <b:if cond='data:blog.searchQuery'>
+                    Search: <data:blog.searchQuery/>
+                  <b:else/>
+                    <b:if cond='data:blog.pageName != &quot;&quot;'>
+                      <data:blog.pageName/>
+                    <b:else/>
+                      <data:title/>
+                    </b:if>
+                  </b:if>
+                </h1>
+              </b:if>
+              </b:if>
+            </div>
+            <b:if cond='data:numPosts != 0'>
+              <div class='post-grid'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='uCard'/>
+                </b:loop>
+              </div>
+            <b:else/>
+              <div class='empty-state'>
+                <p>Nothing has been published here yet.</p>
+                <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+              </div>
+            </b:if>
+            <b:if cond='data:newerPageUrl'>
+              <b:include name='uListPager'/>
+            <b:else/>
+              <b:if cond='data:olderPageUrl'>
+                <b:include name='uListPager'/>
+              </b:if>
+            </b:if>
+          </b:includable>
+
+          <b:includable id='uCard' var='post'>
+            <article class='post-card'>
+              <a aria-hidden='true' class='post-card-media' expr:href='data:post.url' tabindex='-1'>
+                <b:if cond='data:post.firstImageUrl'>
+                  <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
+                <b:else/>
+                  <b:if cond='data:post.thumbnailUrl'>
+                    <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
+                  <b:else/>
+                    <span class='post-card-placeholder'>
+                      <svg aria-hidden='true' fill='none' height='40' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.6' viewBox='0 0 24 24' width='40'><path d='M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2'/><line x1='10' x2='18' y1='7' y2='7'/><line x1='10' x2='18' y1='11' y2='11'/><line x1='10' x2='15' y1='15' y2='15'/></svg>
+                    </span>
+                  </b:if>
+                </b:if>
+              </a>
+              <div class='post-card-body'>
+                <b:if cond='data:post.labels'>
+                  <div class='post-card-labels'>
+                    <b:loop values='data:post.labels' var='label'>
+                      <a class='badge' expr:href='data:label.url'><data:label.name/></a>
+                    </b:loop>
+                  </div>
+                </b:if>
+                <h3 class='post-card-title'>
+                  <a expr:href='data:post.url'><b:if cond='data:post.title'><data:post.title/><b:else/>Untitled post</b:if></a>
+                </h3>
+                <div class='post-card-meta'>
+                  <time class='js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time>
+                  <b:if cond='data:post.allowComments'>
+                    <b:if cond='data:post.numComments != 0'>
+                      <span class='post-card-comments'><data:post.numComments/> <b:if cond='data:post.numComments == 1'>comment<b:else/>comments</b:if></span>
+                    </b:if>
+                  </b:if>
+                </div>
+              </div>
+            </article>
+          </b:includable>
+
+          <b:includable id='uSingle' var='post'>
+            <article class='post-single post'>
+              <a expr:name='data:post.id'/>
+              <header class='post-head'>
+                <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                  <nav aria-label='Breadcrumb' class='breadcrumb'>
+                    <a expr:href='data:blog.homepageUrl'>Home</a>
+                    <b:if cond='data:post.labels'>
+                      <b:loop values='data:post.labels' var='label'>
+                        <a class='crumb-label' expr:href='data:label.url'><data:label.name/></a>
+                      </b:loop>
+                    </b:if>
+                  </nav>
+                </b:if>
+                <b:if cond='data:post.title'>
+                  <h1 class='post-title entry-title'><data:post.title/></h1>
+                </b:if>
+                <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                  <div class='post-meta'>
+                    <b:if cond='data:post.authorProfileUrl'>
+                      <a class='post-author' expr:href='data:post.authorProfileUrl' rel='author'><data:post.author/></a>
+                    <b:else/>
+                      <span class='post-author'><data:post.author/></span>
+                    </b:if>
+                    <span aria-hidden='true' class='sep'/>
+                    <time class='published js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time>
+                    <b:include data='post' name='postQuickEdit'/>
+                  </div>
+                </b:if>
+              </header>
+              <div class='post-body entry-content' expr:id='&quot;post-body-&quot; + data:post.id'>
+                <data:post.body/>
+              </div>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                <b:if cond='data:post.labels'>
+                  <div class='post-tags'>
+                    <span class='post-tags-label'>Filed under</span>
+                    <b:loop values='data:post.labels' var='label'>
+                      <a class='badge badge-soft' expr:href='data:label.url' rel='tag'><data:label.name/></a>
+                    </b:loop>
+                  </div>
+                </b:if>
+                <div class='post-share'>
+                  <span class='post-share-label'>Share</span>
+                  <a class='share-wa' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+                  <a class='share-fb' expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+                  <a class='share-x' expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
+                  <a class='share-in' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
+                  <button expr:data-copy-url='data:post.url' type='button'>Copy link</button>
+                </div>
+                <aside class='join-box'>
+                  <div class='join-box-text'>
+                    <p class='join-box-title'>Not a member yet?</p>
+                    <p>Workers are stronger together. Join the union and have a say in your pay, conditions and rights at work.</p>
+                  </div>
+                  <a class='btn btn-primary js-join-link' href='/search'>Join today</a>
+                </aside>
+                <div class='related' hidden='hidden'>
+                  <h2 class='related-title'>Related articles</h2>
+                  <div class='related-grid'/>
+                </div>
+              </b:if>
+              <b:include data='post' name='comment_picker'/>
+            </article>
+          </b:includable>
+
+          <b:includable id='uItemPager'>
+            <nav aria-label='More posts' class='blog-pager-nav'>
+              <b:if cond='data:newerPageUrl'>
+                <a class='btn btn-outline newer' expr:href='data:newerPageUrl' expr:title='data:newerPageTitle'>&#8592; Newer</a>
+              </b:if>
+              <b:if cond='data:olderPageUrl'>
+                <a class='btn btn-outline older' expr:href='data:olderPageUrl' expr:title='data:olderPageTitle'>Older &#8594;</a>
+              </b:if>
+            </nav>
+          </b:includable>
+
+          <b:includable id='uListPager'>
+            <nav aria-label='Pages' class='blog-pager-nav'>
+              <b:if cond='data:newerPageUrl'>
+                <a class='btn btn-outline newer' expr:href='data:newerPageUrl'>&#8592; Newer posts</a>
+              </b:if>
+              <b:if cond='data:olderPageUrl'>
+                <a class='btn btn-primary older' expr:href='data:olderPageUrl'>Older posts &#8594;</a>
+              </b:if>
+            </nav>
+          </b:includable>
+
+          <b:includable id='uNotFound'>
+            <div class='not-found'>
+              <p class='not-found-code'>404</p>
+              <h1>Page not found</h1>
+              <p>The page you were looking for has moved or no longer exists. Try a search, or go back to the homepage.</p>
+              <form action='/search' class='search-form' method='get' role='search'>
+                <input aria-label='Search this site' name='q' placeholder='Search this site...' type='search'/>
+                <button aria-label='Search' type='submit'>
+                  <svg aria-hidden='true' fill='none' height='18' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.2' viewBox='0 0 24 24' width='18'><circle cx='11' cy='11' r='8'/><line x1='21' x2='16.65' y1='21' y2='16.65'/></svg>
+                </button>
+              </form>
+              <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+            </div>
+          </b:includable>
+
+          <!-- Comment includables below are Blogger's own, copied unchanged from the blog's original theme -->
+@@BLOG_COMMENTS@@
+        </b:widget>
+      </b:section>
+    </div>
+
+    <aside class='sidebar'>
+      <b:section class='sidebar-section' id='sidebar' preferred='yes'>
+        <b:widget id='HTML2' locked='false' title='@@T:HTML2@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML2@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+        <b:widget id='PopularPosts1' locked='false' title='Most read' type='PopularPosts' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='numItemsToShow'>5</b:widget-setting>
+            <b:widget-setting name='showThumbnails'>true</b:widget-setting>
+            <b:widget-setting name='showSnippets'>false</b:widget-setting>
+            <b:widget-setting name='timeRange'>LAST_YEAR</b:widget-setting>
+          </b:widget-settings>
+          @@POPULARPOSTS_MAIN@@
+        </b:widget>
+        <b:widget id='HTML19' locked='false' title='@@T:HTML19@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML19@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+        <b:widget id='Label1' locked='false' title='Topics' type='Label' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+            <b:widget-setting name='display'>LIST</b:widget-setting>
+            <b:widget-setting name='selectedLabelsList'/>
+            <b:widget-setting name='showType'>ALL</b:widget-setting>
+            <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+          </b:widget-settings>
+          @@LABEL_MAIN@@
+        </b:widget>
+        <b:widget id='HTML5' locked='false' title='@@T:HTML5@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML5@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+        <b:widget id='HTML17' locked='false' title='@@T:HTML17@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML17@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+        <b:widget id='HTML1' locked='false' title='@@T:HTML1@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML1@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+    </aside>
+  </div>
+</div>
+
+<!-- ================= About, members, join, partners (homepage) ================= -->
+<section class='home-only band band-about'>
+  <div class='container'>
+    <b:section class='about-section' id='newsletter_wrapper' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML11' locked='false' title='@@T:HTML11@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML11@@]]></b:widget-setting>
+        </b:widget-settings>
+        @@FEED_MAIN:list:4@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<section class='home-only band band-members'>
+  <div class='container'>
+    <b:section class='members-section' id='crosscol' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML13' locked='false' title='@@T:HTML13@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML13@@]]></b:widget-setting>
+        </b:widget-settings>
+        @@FEED_MAIN:strip:12@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<section class='home-only band band-cta'>
+  <div class='container'>
+    <b:section class='cta-section' id='join-cta' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML29' locked='false' title='@@T:HTML29@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML29@@]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='cta-inner'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <h2 class='cta-title'><data:title/></h2>
+            </b:if>
+            <div class='widget-content cta-body'>
+              <data:content/>
+            </div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<section class='home-only band band-partners'>
+  <div class='container'>
+    <b:section class='partners-section' id='partners' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML4' locked='false' title='@@T:HTML4@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML4@@]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= Footer ================= -->
+<footer class='site-footer' id='contact'>
+  <div class='container'>
+    <div class='footer-grid'>
+      <b:section class='footer-col' id='f-widget-1' showaddelement='yes'>
+        <b:widget id='HTML30' locked='false' title='@@T:HTML30@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML30@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+        <b:widget id='HTML31' locked='false' title='@@T:HTML31@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML31@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='f-widget-2' showaddelement='yes'>
+        <b:widget id='Label3' locked='false' title='Quick links' type='Label' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+            <b:widget-setting name='display'>LIST</b:widget-setting>
+            <b:widget-setting name='selectedLabelsList'/>
+            <b:widget-setting name='showType'>ALL</b:widget-setting>
+            <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+          </b:widget-settings>
+          @@LABEL_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='f-widget-3' showaddelement='yes'>
+        <b:widget id='HTML21' locked='false' title='@@T:HTML21@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML21@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='f-widget-last' showaddelement='yes'>
+        <b:widget id='HTML23' locked='false' title='@@T:HTML23@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML23@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+        <b:widget id='Translate1' locked='false' title='Translate' type='Translate' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='displayMode'>SIMPLE</b:widget-setting>
+          </b:widget-settings>
+          @@TRANSLATE_MAIN@@
+        </b:widget>
+        <b:widget id='HTML32' locked='false' title='@@T:HTML32@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML32@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+    </div>
+    <div class='footer-bottom'>
+      <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/>. All rights reserved.</p>
+      <div class='footer-social'/>
+      <b:section class='footer-credit' id='footer-credit' maxwidgets='1' showaddelement='no'>
+        <b:widget id='Attribution1' locked='false' title='' type='Attribution'>
+          @@ATTRIBUTION_SETTINGS@@
+          @@ATTRIBUTION_MAIN@@
+        </b:widget>
+      </b:section>
+    </div>
+  </div>
+  <a aria-label='Back to top' class='to-top' href='#content'>
+    <svg aria-hidden='true' fill='none' height='20' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.4' viewBox='0 0 24 24' width='20'><polyline points='18 15 12 9 6 15'/></svg>
+  </a>
+</footer>
+
+<script type='text/javascript'>
+//<![CDATA[
+@@THEME_JS@@
+//]]>
+</script>
+</body>
+</html>
