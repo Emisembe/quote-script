@@ -34,6 +34,13 @@ LOGO_SVG = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width=
 SLIDE_SVG = ('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%271600%27 height=%27900%27%3E'
              '%3Crect width=%271600%27 height=%27900%27 fill=%27%232B3753%27/%3E%3Ccircle cx=%271180%27 cy=%27300%27 r=%27380%27 fill=%27%23E7B165%27 opacity=%270.22%27/%3E'
              '%3Crect x=%27120%27 y=%27180%27 width=%27520%27 height=%2730%27 fill=%27white%27 opacity=%270.15%27/%3E%3C/svg%3E')
+def badge(label):
+    svg = (f"<svg xmlns='http://www.w3.org/2000/svg' width='240' height='120'><rect width='240' height='120' rx='10' fill='white'/>"
+           f"<circle cx='60' cy='60' r='40' fill='none' stroke='#14213D' stroke-width='6'/><text x='60' y='68' font-family='Arial' font-size='22' "
+           f"font-weight='700' fill='#14213D' text-anchor='middle'>{label[-1]}</text><text x='112' y='66' font-family='Arial' font-size='18' fill='#14213D'>SAMPLE</text></svg>")
+    return 'data:image/svg+xml,' + svg.replace('#', '%23').replace("'", '%27').replace('<', '%3C').replace('>', '%3E')
+
+
 MENU = ['Quality Management', '_ISO Compliance', '_Certification', 'Logistics', '_Supplier Audits',
         '_Risk Management', '_Supply Chain Optimization', '_Trade Facilitation', 'Business Process Optimization',
         '_Project Management', '_Process Mapping', 'contact', 'Our Services', '_Client Interest Form', 'News']
@@ -177,10 +184,16 @@ def render(page):
             out += ("<div class='widget Image' id='Image1'><h2>ISO 9001 Readiness Workshops</h2><div class='widget-content'>"
                     "<a href='#section-2'><img id='Image1_img' alt='Workshop' width='1600' height='900' src=\"" + SLIDE_SVG + "\"/></a>"
                     "<br/><span class='caption'>Practical certification support for growing businesses</span></div></div>"
-                    "<div class='widget HTML' id='HTML10'><h2 class='title'>EFIC in 90 seconds</h2><div class='widget-content'>"
+                    "<div class='widget HTML' id='HTML90'><h2 class='title'>EFIC in 90 seconds</h2><div class='widget-content'>"
                     "https://www.youtube.com/watch?v=2bjBiOVQrUs</div></div>"
                     "<div class='widget Text' id='Text2'><h2 class='title'>Now serving Mombasa</h2><div class='widget-content'>"
                     "Our new branch opens on 1 November (sample slide)</div></div>")
+        if sid == 'footer-certifications' and page != 'layout':
+            # Preview only: badges added the way an owner would (Image gadgets, one text badge).
+            out += ''.join(f"<div class='widget Image' id='Image{9 + n}'><h2>{t}</h2><div class='widget-content'><a href='#'>"
+                           f"<img id='Image{9 + n}_img' alt='{t}' src=\"{badge(t)}\"/></a><br/><span class='caption'>{t}</span></div></div>"
+                           for n, t in enumerate(['Sample badge A', 'Sample badge B']))
+            out += "<div class='widget HTML' id='HTML91'><h2 class='title'></h2><div class='widget-content'>Member: Sample Association (sample)</div></div>"
         if sid == 'office-contacts' and page != 'layout':
             # Preview only: a branch added the way an owner would, as a Text gadget.
             out += ("<div class='widget Text' id='Text1'><h2 class='title'>Mombasa Branch (sample)</h2>"

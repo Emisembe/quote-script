@@ -11,11 +11,11 @@ The theme for eficc.blogspot.com, rebranded to the EFIC Brand Colour Guide v1.0.
 | `scripts/check.py` | Pre-upload audit. Everything must be proven by the original theme. |
 | `reference/proven.json` | What the original theme proves Blogger accepts, plus two documented exceptions. |
 | `scripts/preview.py` | Writes `preview/home.html` and `preview/post.html` for browser testing. |
-| `tests/` | Browser tests (Playwright): `full.js` menus and sharing, `langtest.js` languages and office cards, `slidetest.js` slideshow. |
+| `tests/` | Browser tests (Playwright): `full.js` menus and sharing, `langtest.js` languages and office cards, `slidetest.js` slideshow, `featuretest.js` Technology tile, message & video, newsletter, certifications. |
 
 ```bash
 python3 scripts/build.py && python3 scripts/check.py theme-eficc.xml && python3 scripts/preview.py
-node tests/full.js && node tests/langtest.js && node tests/slidetest.js
+node tests/full.js && node tests/langtest.js && node tests/slidetest.js && node tests/featuretest.js
 ```
 
 ## Install
@@ -91,6 +91,41 @@ node tests/full.js && node tests/langtest.js && node tests/slidetest.js
   - Visitors who turn off motion on their device get no automatic movement.
 - **Size:** 16:9 on computers and tablets, 4:3 on phones.
 - **Placement:** homepage only. With slides, the page goes: solid navy menu bar → slideshow → a compact band with the company name, tagline and buttons. With no slide gadgets, the homepage looks exactly as before.
+
+**Areas of Expertise: Technology**
+- A seventh tile, *Technology* (digital tools, data and automation), links to Our Services like the others. With seven tiles, the last row is centred.
+- To change its wording, edit the `Seventh` tile in `scripts/build.py` and rebuild.
+
+**Message & Video (homepage, under Areas of Expertise)**
+- **Layout → Message & Video (homepage)**. Two gadgets:
+  - **Who we are** (text): the gadget title is the small heading. In the content, the first line is the big headline, the next lines are paragraphs, and an optional line starting with `—` (for example `— Jane Doe, Managing Director`) is the name under the message. To add a signature, put a signature image at the end. In a Text gadget, use the image button; in HTML, add `<img src="...">`.
+  - **EFIC in action** (video card): the gadget title is the big text on the picture. The first content line is the small line above it. A YouTube link gives a gold **Play video** button, and the video opens in a pop-up (it only loads when pressed). The picture is the video's own thumbnail, unless you add a photo.
+- **Other card types:** you can replace the video card with an **Image** gadget (photo, caption, link). It then shows a **Learn more** button to the link.
+- **Layout:** side by side on computers, stacked on phones. Delete both gadgets to remove the block.
+- **Please edit the wording.** The text and the video (`2bjBiOVQrUs`, one of your own videos from the Videos section) are starting points.
+
+**Newsletter sign-up (every page, above the footer)**
+- **Layout → Newsletter sign-up**. In the gadget, the title is the heading and the text is the invitation. Then add one line with the address that receives sign-ups (`askeficc@gmail.com`; never shown on the page).
+- Visitors enter their email and tick the consent box ("I agree to receive emails from Efic Consultancy Ltd. I can unsubscribe at any time.").
+- **Now:** each sign-up opens the visitor's email app with a request addressed to you.
+- **Better, and free:** keep a real list. Add one more line with a form address from one of these:
+  - **Google Forms** (simplest; sign-ups land in a Google Sheet):
+    1. Create a form with one short-answer question "Email".
+    2. ⋮ → **Get pre-filled link**, type `x` in the answer, then **Get link**.
+    3. Copy the link, change `viewform` to `formResponse`, and delete everything after `entry.<number>`.
+    4. The result looks like `https://docs.google.com/forms/d/e/…/formResponse?entry.123456`.
+  - **Mailchimp:** Audience → Signup forms → Embedded form. Copy the `action="…"` address (`…list-manage.com/subscribe/post?u=…&id=…`).
+  - **MailerLite:** Forms → embedded form → HTML code. Copy the `action` address (`https://assets.mailerlite.com/jsonp/…/subscribe`).
+  - **Brevo:** Forms → share → HTML code. Copy the `action` address (`https://….sibforms.com/serve/…`).
+- With a service, a confirmation page opens in a new tab and the band says "Please check your inbox to confirm". Mailchimp, MailerLite and Brevo then send a confirmation email (double opt-in). That is the expected standard in Germany and the EU, and how you prove consent. Google Forms sends no confirmation, so for EU subscribers prefer one of the mailing services.
+- Spam bots are filtered by a hidden field.
+
+**Certifications & Memberships (footer)**
+- **Layout → Certifications & Memberships (footer)**: one **Image** gadget per badge (upload the logo; the caption shows under it; the link opens in a new tab, for example the certificate or the member directory). A Text gadget with just words, for example *Member of …*, shows as an outlined text badge.
+- Badges sit on white tiles between the social icons and the copyright line, and wrap on phones. The section ships empty: add only certifications and memberships EFIC actually holds (ISO and other marks have usage rules).
+
+**Footer icons on phones**
+- The social icons were in a fixed 392 px row, so on 320–390 px phones the last icon was cut off. They now wrap onto a second centred row.
 
 **Fixes inherited from the 2017 template**
 - Pinch-to-zoom works again (`maximum-scale=1` removed).

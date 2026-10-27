@@ -9,6 +9,9 @@ Each pattern below was built for a real blog (eficc.blogspot.com). It passed the
 4. Language switcher (Google translation) with a fallback
 5. Menus that outgrow one row
 6. Testing these in Playwright
+7. Message & video block (text + card with a video pop-up)
+8. Newsletter sign-up without Blogger's retired Follow by Email
+9. Badge row (certifications, memberships, partners)
 
 ---
 
@@ -128,3 +131,48 @@ A LinkList menu that the owner edits will eventually stop fitting. The EFIC them
 - **Touch:** create a context with `hasTouch: true` and dispatch `TouchEvent` objects built from `new Touch({...})`.
 - **Reduced motion:** use the context option `reducedMotion: 'reduce'`.
 - **"Is it really visible?"** Use `document.elementFromPoint` at the element's centre. Themes with `scroll-behavior: smooth` make `scrollIntoView()` animate, so measure after `scrollIntoView({behavior: 'instant'})`, or the point is off-screen and the check fails for the wrong reason.
+- **Clipped content hides from `scrollWidth`.** Old templates set `html { overflow-x: hidden }`, so content pushed past the right edge is cut off silently, and `scrollWidth == innerWidth` still passes. That is how a fixed-width footer icon row hid its last icon on phones. Also check that no visible element in your sections has `getBoundingClientRect().right > innerWidth` or `left < 0`.
+- **Preview sample gadget ids must not collide** with real gadget ids in the theme (`HTML10` sample vs a real `HTML10`). Give samples ids from a high, unused range (`HTML90+`, `Image9+`).
+
+## 7. Message & video block (text + card with a video pop-up)
+
+A "personal message + video" block, common on consultancy and agency sites.
+- **The section:** two shipped HTML gadgets, so it works on day one. Pre-fill them only with the blog's own wording and media, never invented names or quotes.
+- **Text gadget:**
+  - Title = the small kicker.
+  - First content line = the big headline. The following lines = paragraphs.
+  - A line starting with `—`, `–` or `-` = the name/title line.
+  - An `img` = the signature image.
+- **Card gadget:**
+  - Title = the big overlay text, and the first text line = the kicker.
+  - A YouTube link gives a **Play video** button; another link gives **Learn more**.
+  - The background is the video's thumbnail (with the HD-or-standard fallback) or an Image gadget's photo.
+- **Telling the two apart:** a gadget with a YouTube link, or a picture and at most two lines of text, is the card. Anything with more writing is the text side, even if it contains an image (the signature). The first version misread a Text gadget with a signature as the card.
+- **Video pop-up:** `role="dialog"` and `aria-modal="true"`. Focus goes to the Close button and Tab stays there. Escape, the Close button or a click on the backdrop closes it, removes the iframe (which stops the video) and returns focus to Play. Lock page scroll while it's open.
+- **Homepage-only section inside `<b:if>`:** if the homepage blocks are wrapped in a homepage-only `<b:if>` and the new block belongs between them, put the section after the `</b:if>` (so Layout still sees it). Then move its wrapper with JS (`anchor.parentNode.insertBefore(wrap, anchor.nextSibling)`), and show it only under the homepage class.
+
+## 8. Newsletter sign-up without Blogger's retired Follow by Email
+
+Blogger's *Follow by Email* gadget (FeedBurner) stopped sending emails in July 2021, so don't ship it. Instead, build a **Newsletter** section with one HTML gadget:
+- Title = the heading. Text lines = the invitation.
+- One email line = where sign-ups go when no list exists yet. It's never displayed; the script uses a `mailto:` with subject and body and shows the address as a fallback link.
+- An optional form-address line connects a real list:
+
+| Service | Address the owner pastes | Email field name |
+|---|---|---|
+| Google Forms | `https://docs.google.com/forms/d/e/<id>/formResponse?entry.<n>` | `entry.<n>` |
+| Mailchimp | `https://<dc>.list-manage.com/subscribe/post?u=…&id=…` | `EMAIL` |
+| Brevo | `https://<x>.sibforms.com/serve/…` | `EMAIL` |
+| MailerLite | `https://assets.mailerlite.com/jsonp/<acc>/forms/<id>/subscribe` | `fields[email]` |
+
+- **Submitting:** build a hidden `<form method="post" target="_blank">` with just the email field and submit it. The service shows its own confirmation page in a new tab.
+- **The thank-you message must match the service.** Google Forms sends no confirmation email; the mailing services send a double opt-in email, which is the expected standard in Germany and the EU.
+- **The form:** a required consent tick-box with the blog name taken from `meta[property="og:site_name"]` (page titles differ per page). Add a hidden honeypot field (ignore submissions that fill it), inline messages with `role="status"`, and stack the email box and button on phones.
+- **Test:** route each service's address in Playwright and assert the POST body (`entry.123456=test%40example.com`, `EMAIL=…`, `fields%5Bemail%5D=…`) and the new tab.
+
+## 9. Badge row (certifications, memberships, partners)
+
+- **The section:** a footer section that ships **empty**, because a badge is a claim and only the owner can make it. The owner adds an **Image** gadget per badge (logo, caption, link) or a Text gadget for a words-only badge.
+- **Rendering:** logos on white rounded tiles (most certificate logos assume a white background), centred and wrapping. Captions go under the tiles, links open in a new tab, and a short uppercase heading goes above the row. The heading and row exist only when there is at least one badge.
+- **Remind the owner:** ISO and accreditation marks have usage rules (for example, a consultancy that helps clients get certified is not itself certified).
+

@@ -3335,6 +3335,194 @@ html.efic-rtl .related-title { border-right-width: 3px; }
 html.efic-rtl .block-image .post-retitle { direction: rtl; text-align: right; }
 html.efic-rtl .block-image .post-retitle h2 { padding: 0 12px 0 0; border-left: 0; border-right: 3px solid #E7B165; }
 html.efic-rtl .sidebar .widget-content, html.efic-rtl .sidebar li, html.efic-rtl .sidebar .item-title { direction: rtl; text-align: right; }
+
+/* ---------- Areas of Expertise: centre an incomplete last row (7 tiles) ---------- */
+.special-wrap { display: flex; flex-wrap: wrap; justify-content: center; }
+.special-wrap .special-title { flex: 0 0 100%; }
+
+/* ---------- Message & Video (Layout > Message & Video; homepage) ---------- */
+.efic-feature-wrap { display: none; }
+#outer-wrapper.home .efic-feature-wrap.has-feature { display: block; background: #FFFFFF; padding: 88px 0; }
+.efic-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 56px;
+  align-items: center;
+  max-width: 1170px;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+.efic-feature.is-single { grid-template-columns: minmax(0, 1fr); max-width: 860px; }
+.ef-text { min-width: 0; text-align: left; }
+.ef-kicker {
+  margin: 0 0 10px;
+  color: #4A5568;
+  font: 600 14px/1.4 'Montserrat', 'Arial Black', Arial, sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.ef-kicker:before { content: ''; display: inline-block; width: 28px; height: 3px; margin: 0 12px 4px 0; background: #E7B165; vertical-align: middle; }
+.ef-headline { margin: 0 0 22px; color: #14213D; font: 700 42px/1.15 'Montserrat', 'Arial Black', Arial, sans-serif; letter-spacing: 0; text-transform: none; }
+.ef-body { margin: 0 0 14px; color: #4A5568; font-size: 17px; line-height: 1.65; }
+.ef-name { margin: 24px 0 4px; color: #14213D; font: 600 16px/1.4 'Montserrat', 'Arial Black', Arial, sans-serif; }
+.ef-signature { display: block; max-width: 260px; max-height: 96px; width: auto; height: auto; margin: 8px 0 0; padding: 0 !important; }
+.ef-media {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #14213D;
+  box-shadow: 0 18px 40px rgba(20, 33, 61, 0.18);
+}
+.ef-media-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; padding: 0 !important; margin: 0; transition: transform .6s ease; }
+.ef-media:hover .ef-media-img { transform: scale(1.04); }
+.ef-media-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(15, 26, 48, 0.35) 0%, rgba(15, 26, 48, 0.72) 100%);
+  text-align: center;
+}
+.ef-media-kicker { margin: 0 0 6px; color: rgba(255, 255, 255, 0.88); font: 600 15px/1.4 'Montserrat', 'Arial Black', Arial, sans-serif; letter-spacing: 2px; text-transform: uppercase; }
+.ef-media-title { margin: 0 0 26px; color: #FFFFFF; font: 800 36px/1.15 'Montserrat', 'Arial Black', Arial, sans-serif; letter-spacing: 0.5px; text-transform: uppercase; }
+.ef-play { display: inline-flex; align-items: center; gap: 10px; border: 0; cursor: pointer; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; }
+.ef-play:focus-visible, .ef-close:focus-visible { outline: 2px solid #E7B165; outline-offset: 3px; }
+.ef-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 16px 24px;
+  background: rgba(15, 26, 48, 0.92);
+  box-sizing: border-box;
+}
+.ef-lightbox-inner { position: relative; width: 100%; max-width: 1000px; aspect-ratio: 16 / 9; max-height: calc(100vh - 100px); background: #000; }
+.ef-lightbox-inner iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.ef-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  background: transparent;
+  color: #FFFFFF;
+  font-size: 18px;
+  cursor: pointer;
+}
+.ef-close:hover { background: #E7B165; border-color: #E7B165; color: #14213D; }
+html.ef-noscroll, html.ef-noscroll body { overflow: hidden; }
+@media only screen and (max-width: 900px) {
+  .efic-feature { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  #outer-wrapper.home .efic-feature-wrap.has-feature { padding: 64px 0; }
+  .ef-headline { font-size: 32px; }
+}
+@media only screen and (max-width: 600px) {
+  .efic-feature { padding: 0 16px; }
+  .ef-headline { font-size: 27px; }
+  .ef-body { font-size: 16px; }
+  .ef-media { aspect-ratio: 16 / 11; }
+  .ef-media-title { font-size: 24px; margin-bottom: 18px; }
+  .ef-media-kicker { font-size: 12px; }
+}
+
+/* ---------- Newsletter sign-up (Layout > Newsletter sign-up; every page) ---------- */
+.efic-newsletter-wrap { display: none; }
+.efic-newsletter-wrap.has-newsletter { display: block; background: #14213D; padding: 52px 0; }
+.efic-newsletter {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 40px;
+  align-items: center;
+  max-width: 1170px;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+  text-align: left;
+}
+.en-title { margin: 0 0 8px; color: #FFFFFF; font: 700 26px/1.25 'Montserrat', 'Arial Black', Arial, sans-serif; }
+.en-title:after { content: ''; display: block; width: 44px; height: 3px; margin-top: 12px; background: #E7B165; }
+.en-text { margin: 12px 0 0; color: rgba(255, 255, 255, 0.82); font-size: 16px; line-height: 1.55; }
+.en-form { min-width: 0; }
+.en-row { display: flex; gap: 10px; }
+.en-email {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 50px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 2px;
+  background: #FFFFFF;
+  color: #14213D;
+  font: 16px Calibri, Arial, 'Helvetica Neue', sans-serif;
+  box-sizing: border-box;
+}
+.en-email:focus { outline: 0; border-color: #E7B165; box-shadow: 0 0 0 3px rgba(231, 177, 101, 0.35); }
+.en-submit { flex: 0 0 auto; height: 50px; border: 0; cursor: pointer; font-family: 'Montserrat', 'Arial Black', Arial, sans-serif; }
+.en-submit:focus-visible { outline: 2px solid #E7B165; outline-offset: 3px; }
+.en-consent { display: flex; align-items: flex-start; gap: 10px; margin: 12px 0 0; color: rgba(255, 255, 255, 0.78); font-size: 13px; line-height: 1.45; cursor: pointer; }
+.en-consent input { flex: 0 0 auto; width: 16px; height: 16px; margin: 1px 0 0; accent-color: #E7B165; }
+.en-trap { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; opacity: 0; }
+.en-msg { margin: 10px 0 0; min-height: 0; color: #E7B165; font-size: 14px; }
+.en-msg:empty { display: none; }
+.en-msg a { color: #FFFFFF; text-decoration: underline; text-decoration-color: #E7B165; }
+.en-msg.is-error { color: #FFFFFF; }
+.en-msg.is-error:before { content: '\f071'; font-family: FontAwesome; color: #E7B165; margin-right: 8px; }
+@media only screen and (max-width: 820px) {
+  .efic-newsletter { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+}
+@media only screen and (max-width: 480px) {
+  .efic-newsletter { padding: 0 16px; }
+  .en-row { flex-direction: column; }
+  .en-submit { width: 100%; max-width: none; }
+  .en-title { font-size: 22px; }
+}
+
+/* ---------- Certifications & Memberships (footer) ---------- */
+.foot-certs { display: none; }
+.foot-certs.has-certs { display: block; clear: both; padding: 26px 16px 8px; text-align: center; }
+.cert-head { margin: 0 0 14px; color: rgba(255, 255, 255, 0.6); font: 600 11px/1.4 'Montserrat', 'Arial Black', Arial, sans-serif; letter-spacing: 2px; text-transform: uppercase; }
+.cert-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; margin: 0; padding: 0; list-style: none; }
+.cert-list li { display: flex; flex-direction: column; align-items: center; gap: 6px; max-width: 160px; margin: 0; padding: 0; }
+.cert-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 76px;
+  min-width: 76px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: #FFFFFF;
+  box-sizing: border-box;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+a.cert-badge:hover, a.cert-badge:focus-visible { transform: translateY(-2px); box-shadow: 0 0 0 2px #E7B165; outline: 0; }
+.cert-badge img { display: block; max-height: 60px; max-width: 136px; width: auto; height: auto; padding: 0 !important; margin: 0; }
+.cert-badge.is-text { height: auto; min-height: 40px; background: transparent; border: 1px solid rgba(231, 177, 101, 0.6); color: #FFFFFF; font: 600 12px/1.3 'Montserrat', 'Arial Black', Arial, sans-serif; letter-spacing: 0.5px; }
+.cert-caption { color: rgba(255, 255, 255, 0.72); font-size: 11px; line-height: 1.3; text-align: center; }
+@media only screen and (max-width: 480px) {
+  .cert-list { gap: 12px; }
+  .cert-badge { height: 64px; min-width: 64px; }
+  .cert-badge img { max-height: 48px; max-width: 110px; }
+}
+@media print {
+  .efic-feature-wrap, .efic-newsletter-wrap, .foot-certs { display: none !important; }
+}
+html.efic-rtl .ef-text, html.efic-rtl .efic-newsletter, html.efic-rtl .en-consent { direction: rtl; text-align: right; }
+html.efic-rtl .ef-kicker:before { margin: 0 0 4px 12px; }
+
+/* Footer social icons: wrap onto a second centred row on narrow phones (the row was
+   a fixed 392 px, so the last icon was cut off at 320-390 px) */
+#jugas_footer .foot-social ul#social { flex-wrap: wrap; width: auto !important; max-width: 100%; margin: 0 auto; box-sizing: border-box; row-gap: 12px; }
 </style><style>.insta-wrap{display:block}</style><style>
 /*-------Typography and ShortCodes-------*/
 .firstcharacter{float:left;color:#C9924A;font-size:75px;line-height:60px;padding-top:4px;padding-right:8px;padding-left:3px}.post-body h1,.post-body h2,.post-body h3,.post-body h4,.post-body h5,.post-body h6{margin-bottom:15px;color:#14213D}blockquote{font-style:italic;color:#14213D;background:#F7F6F2;border-left:5px solid #C9924A;margin-left:0;padding:10px 15px}blockquote:before{content:&#39;\f10d&#39;;display:inline-block;font-family:FontAwesome;font-style:normal;font-weight:400;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;margin-right:10px;color:#888}blockquote:after{content:&#39;\f10e&#39;;display:inline-block;font-family:FontAwesome;font-style:normal;font-weight:400;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;margin-left:10px;color:#888}.button{background-color:#14213D;float:left;padding:5px 12px;margin:5px;color:#fff;text-align:center;border:0;cursor:pointer;border-radius:3px;display:block;text-decoration:none;font-weight:400;transition:all .3s ease-out !important;-webkit-transition:all .3s ease-out !important}a.button{color:#fff}.button:hover{background-color:#E7B165;color:#14213D}.button.small{font-size:12px;padding:5px 12px}.button.medium{font-size:16px;padding:6px 15px}.button.large{font-size:18px;padding:8px 18px}.small-button{width:100%;overflow:hidden;clear:both}.medium-button{width:100%;overflow:hidden;clear:both}.large-button{width:100%;overflow:hidden;clear:both}.demo:before{content:&quot;\f06e&quot;;margin-right:5px;display:inline-block;font-family:FontAwesome;font-style:normal;font-weight:400;line-height:normal;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.download:before{content:&quot;\f019&quot;;margin-right:5px;display:inline-block;font-family:FontAwesome;font-style:normal;font-weight:400;line-height:normal;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.buy:before{content:&quot;\f09d&quot;;margin-right:5px;display:inline-block;font-family:FontAwesome;font-style:normal;font-weight:400;line-height:normal;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.visit:before{content:&quot;\f14c&quot;;margin-right:5px;display:inline-block;font-family:FontAwesome;font-style:normal;font-weight:400;line-height:normal;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.widget .post-body ul,.widget .post-body ol{line-height:1.5;font-weight:400}.widget .post-body li{margin:5px 0;padding:0;line-height:1.5}.post-body ul li:before{content:&quot;\f105&quot;;margin-right:5px;font-family:fontawesome}pre{font-family:Monaco, &quot;Andale Mono&quot;, &quot;Courier New&quot;, Courier, monospace;background-color:#14213D;background-image:-webkit-linear-gradient(rgba(0, 0, 0, 0.05) 50%, transparent 50%, transparent);background-image:-moz-linear-gradient(rgba(0, 0, 0, 0.05) 50%, transparent 50%, transparent);background-image:-ms-linear-gradient(rgba(0, 0, 0, 0.05) 50%, transparent 50%, transparent);background-image:-o-linear-gradient(rgba(0, 0, 0, 0.05) 50%, transparent 50%, transparent);background-image:linear-gradient(rgba(0, 0, 0, 0.05) 50%, transparent 50%, transparent);-webkit-background-size:100% 50px;-moz-background-size:100% 50px;background-size:100% 50px;line-height:25px;color:#f1f1f1;position:relative;padding:0 7px;margin:15px 0 10px;overflow:hidden;word-wrap:normal;white-space:pre;position:relative}pre:before{content:&#39;Code&#39;;display:block;background:#F7F7F7;margin-left:-7px;margin-right:-7px;color:#14213D;padding-left:7px;font-weight:400;font-size:14px}pre code,pre .line-number{display:block}pre .line-number a{color:#C9924A;opacity:0.6}pre .line-number span{display:block;float:left;clear:both;width:20px;text-align:center;margin-left:-7px;margin-right:7px}pre .line-number span:nth-child(odd){background-color:rgba(0, 0, 0, 0.11)}pre .line-number span:nth-child(even){background-color:rgba(255, 255, 255, 0.05)}pre .cl{display:block;clear:both}#contact{background-color:#fff;margin:30px 0 !important}#contact .contact-form-widget{max-width:100% !important}#contact .contact-form-name,#contact .contact-form-email,#contact .contact-form-email-message{background-color:#FFF;border:1px solid #eee;border-radius:3px;padding:10px;margin-bottom:10px !important;max-width:100% !important}#contact .contact-form-name{width:47.7%;height:50px}#contact .contact-form-email{width:49.7%;height:50px}#contact .contact-form-email-message{height:150px}#contact .contact-form-button-submit{max-width:100%;width:100%;z-index:0;margin:4px 0 0;padding:10px !important;text-align:center;cursor:pointer;background:#E7B165;border:0;height:auto;-webkit-border-radius:2px;-moz-border-radius:2px;-ms-border-radius:2px;-o-border-radius:2px;border-radius:2px;text-transform:uppercase;-webkit-transition:all .2s ease-out;-moz-transition:all .2s ease-out;-o-transition:all .2s ease-out;-ms-transition:all .2s ease-out;transition:all .2s ease-out;color:#14213D;font-weight:700}#contact .contact-form-button-submit:hover{background:#14213D;color:#fff}#contact .contact-form-email:focus,#contact .contact-form-name:focus,#contact .contact-form-email-message:focus{box-shadow:none !important}.alert-message{position:relative;display:block;background-color:#FAFAFA;padding:20px;margin:20px 0;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;color:#2f3239;border:1px solid}.alert-message p{margin:0 !important;padding:0;line-height:22px;font-size:13px;color:#2f3239}.alert-message span{font-size:14px !important}.alert-message i{font-size:16px;line-height:20px}.alert-message.success{background-color:#f1f9f7;border-color:#e0f1e9;color:#1d9d74}.alert-message.success a,.alert-message.success span{color:#1d9d74}.alert-message.alert{background-color:#DAEFFF;border-color:#8ED2FF;color:#378FFF}.alert-message.alert a,.alert-message.alert span{color:#378FFF}.alert-message.warning{background-color:#fcf8e3;border-color:#faebcc;color:#8a6d3b}.alert-message.warning a,.alert-message.warning span{color:#8a6d3b}.alert-message.error{background-color:#FFD7D2;border-color:#FF9494;color:#F55D5D}.alert-message.error a,.alert-message.error span{color:#F55D5D}.fa-check-circle:before{content:&quot;\f058&quot;}.fa-info-circle:before{content:&quot;\f05a&quot;}.fa-exclamation-triangle:before{content:&quot;\f071&quot;}.fa-exclamation-circle:before{content:&quot;\f06a&quot;}.post-table table{border-collapse:collapse;width:100%}.post-table th{background-color:#eee;font-weight:bold}.post-table th,.post-table td{border:0.125em solid #333;line-height:1.5;padding:0.75em;text-align:left}@media (max-width: 30em){.post-table thead tr{position:absolute;top:-9999em;left:-9999em}.post-table tr{border:0.125em solid #333;border-bottom:0}.post-table tr + tr{margin-top:1.5em}.post-table tr,.post-table td{display:block}.post-table td{border:none;border-bottom:0.125em solid #333;padding-left:50%}.post-table td:before{content:attr(data-label);display:inline-block;font-weight:bold;line-height:1.5;margin-left:-100%;width:100%}}@media (max-width: 20em){.post-table td{padding-left:0.75em}.post-table td:before{display:block;margin-bottom:0.75em;margin-left:0}}
@@ -3344,7 +3532,7 @@ html.efic-rtl .sidebar .widget-content, html.efic-rtl .sidebar li, html.efic-rtl
 </style></head><body class='index'>
 <div id="outer-wrapper" class="index home">
 <div class='efic-slider-wrap'>
-<div class='section efic-slides' id='slideshow' data-section-name='Slideshow (homepage, below the menu)'><div class='widget Image' id='Image1'><h2>ISO 9001 Readiness Workshops</h2><div class='widget-content'><a href='#section-2'><img id='Image1_img' alt='Workshop' width='1600' height='900' src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%271600%27 height=%27900%27%3E%3Crect width=%271600%27 height=%27900%27 fill=%27%232B3753%27/%3E%3Ccircle cx=%271180%27 cy=%27300%27 r=%27380%27 fill=%27%23E7B165%27 opacity=%270.22%27/%3E%3Crect x=%27120%27 y=%27180%27 width=%27520%27 height=%2730%27 fill=%27white%27 opacity=%270.15%27/%3E%3C/svg%3E"/></a><br/><span class='caption'>Practical certification support for growing businesses</span></div></div><div class='widget HTML' id='HTML10'><h2 class='title'>EFIC in 90 seconds</h2><div class='widget-content'>https://www.youtube.com/watch?v=2bjBiOVQrUs</div></div><div class='widget Text' id='Text2'><h2 class='title'>Now serving Mombasa</h2><div class='widget-content'>Our new branch opens on 1 November (sample slide)</div></div></div>
+<div class='section efic-slides' id='slideshow' data-section-name='Slideshow (homepage, below the menu)'><div class='widget Image' id='Image1'><h2>ISO 9001 Readiness Workshops</h2><div class='widget-content'><a href='#section-2'><img id='Image1_img' alt='Workshop' width='1600' height='900' src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%271600%27 height=%27900%27%3E%3Crect width=%271600%27 height=%27900%27 fill=%27%232B3753%27/%3E%3Ccircle cx=%271180%27 cy=%27300%27 r=%27380%27 fill=%27%23E7B165%27 opacity=%270.22%27/%3E%3Crect x=%27120%27 y=%27180%27 width=%27520%27 height=%2730%27 fill=%27white%27 opacity=%270.15%27/%3E%3C/svg%3E"/></a><br/><span class='caption'>Practical certification support for growing businesses</span></div></div><div class='widget HTML' id='HTML90'><h2 class='title'>EFIC in 90 seconds</h2><div class='widget-content'>https://www.youtube.com/watch?v=2bjBiOVQrUs</div></div><div class='widget Text' id='Text2'><h2 class='title'>Now serving Mombasa</h2><div class='widget-content'>Our new branch opens on 1 November (sample slide)</div></div></div>
 </div>
 <div id='header-wrapper'>
 <div class='tm-menu'>
@@ -3469,6 +3657,18 @@ html.efic-rtl .sidebar .widget-content, html.efic-rtl .sidebar li, html.efic-rtl
 </div>
 </a>
 <!-- Sixth Ends -->
+
+<!-- Seventh -->
+<a class='special-tiles-link' href='/p/our-services.html'>
+<div class='special-tiles'>
+<span class='special-icons'>
+<i aria-hidden='true' class='fa fa-microchip'></i>
+</span>
+<h6 class='special-heading'>Technology</h6>
+<p class='special-text'>Putting digital tools, data and automation to work, from ERP and dashboards to workflow automation, so your teams work faster and decide with better information.</p>
+</div>
+</a>
+<!-- Seventh Ends -->
   </div></div>
 <div style='clear: both;'></div>
 <div class='sora-works-box' id='section-3'>
@@ -3706,6 +3906,11 @@ height: 100%;
 
   </div></div>
 
+<div class='efic-feature-wrap'>
+<div class='section efic-feature-section' id='feature-story' data-section-name='Message &amp;amp; Video (homepage)'><div id='HTML10' class='widget HTML'><h2 class='title'>Who we are</h2><div class='widget-content'>Driving Efficacy &amp; Effective Solutions<br/>
+EFIC Consultancy Ltd helps organisations improve quality, compliance, logistics and business processes, with practical advice that turns into measurable results.</div></div><div id='HTML11' class='widget HTML'><h2 class='title'>EFIC in action</h2><div class='widget-content'>See how we work<br/>
+https://www.youtube.com/watch?v=2bjBiOVQrUs</div></div></div>
+</div>
 <div class='insta-wrap' id='section-6'>
 <div class='contact-title'>
 <h4>Get in Touch</h4>
@@ -3730,6 +3935,10 @@ WhatsApp: 🇩🇪 +49 123 3547892</div></div><div class='widget Text' id='Text1
 </div>
 </div>
 <div style='clear: both;'></div>
+<div class='efic-newsletter-wrap'>
+<div class='section efic-newsletter-section' id='newsletter' data-section-name='Newsletter sign-up'><div id='HTML12' class='widget HTML'><h2 class='title'>Stay informed</h2><div class='widget-content'>Practical insights on quality, compliance, logistics and process improvement, straight to your inbox.<br/>
+askeficc@gmail.com</div></div></div>
+</div>
 <div id='jugas_footer'>
         <div class='copy-container row'>
          <div class='foot-logo'>
@@ -3737,6 +3946,9 @@ WhatsApp: 🇩🇪 +49 123 3547892</div></div><div class='widget Text' id='Text1
          </div>
          <div class='foot-social'>
 <div class='section foot-bar-social blue' id='Footer social widget' data-section-name='Footer Social Widget'><div id='LinkList250' class='widget LinkList'><div class='widget-content'><ul id='social'><li><a class='facebook' href='#' title='facebook'></a></li><li><a class='LinkedIn' href='https://www.linkedin.com/company/efic-consultancy-ltd/' title='LinkedIn'></a></li><li><a class='youtube' href='https://youtube.com/' title='youtube'></a></li><li><a class='WhatsApp' href='https://wa.me/' title='WhatsApp'></a></li><li><a class='Telegram' href='https://t.me/' title='Telegram'></a></li><li><a class='TikTok' href='https://tiktok.com/' title='TikTok'></a></li><li><a class='X' href='https://x.com/' title='X'></a></li><li><a class='Email' href='mailto:askeficc@gmail.com' title='Email'></a></li><li><a class='Mastodon' href='https://mastodon.social/' title='Mastodon'></a></li></ul></div></div></div>
+</div>
+<div class='foot-certs'>
+<div class='section foot-certs-section' id='footer-certifications' data-section-name='Certifications &amp;amp; Memberships (footer)'><div class='widget Image' id='Image9'><h2>Sample badge A</h2><div class='widget-content'><a href='#'><img id='Image9_img' alt='Sample badge A' src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27240%27 height=%27120%27%3E%3Crect width=%27240%27 height=%27120%27 rx=%2710%27 fill=%27white%27/%3E%3Ccircle cx=%2760%27 cy=%2760%27 r=%2740%27 fill=%27none%27 stroke=%27%2314213D%27 stroke-width=%276%27/%3E%3Ctext x=%2760%27 y=%2768%27 font-family=%27Arial%27 font-size=%2722%27 font-weight=%27700%27 fill=%27%2314213D%27 text-anchor=%27middle%27%3EA%3C/text%3E%3Ctext x=%27112%27 y=%2766%27 font-family=%27Arial%27 font-size=%2718%27 fill=%27%2314213D%27%3ESAMPLE%3C/text%3E%3C/svg%3E"/></a><br/><span class='caption'>Sample badge A</span></div></div><div class='widget Image' id='Image10'><h2>Sample badge B</h2><div class='widget-content'><a href='#'><img id='Image10_img' alt='Sample badge B' src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27240%27 height=%27120%27%3E%3Crect width=%27240%27 height=%27120%27 rx=%2710%27 fill=%27white%27/%3E%3Ccircle cx=%2760%27 cy=%2760%27 r=%2740%27 fill=%27none%27 stroke=%27%2314213D%27 stroke-width=%276%27/%3E%3Ctext x=%2760%27 y=%2768%27 font-family=%27Arial%27 font-size=%2722%27 font-weight=%27700%27 fill=%27%2314213D%27 text-anchor=%27middle%27%3EB%3C/text%3E%3Ctext x=%27112%27 y=%2766%27 font-family=%27Arial%27 font-size=%2718%27 fill=%27%2314213D%27%3ESAMPLE%3C/text%3E%3C/svg%3E"/></a><br/><span class='caption'>Sample badge B</span></div></div><div class='widget HTML' id='HTML91'><h2 class='title'></h2><div class='widget-content'>Member: Sample Association (sample)</div></div></div>
 </div>
 
 <div style='clear:both'></div>
@@ -4460,6 +4672,195 @@ $("#related-posts").each(function(){var g=$(this),e=g.text(),r=3;relatedPost(g,e
   wrap.className += ' has-slides';
   if (outer) { outer.className += ' has-slider'; }
   show(0);
+})();
+
+// Message & Video (Layout > Message & Video): text gadget + video/photo card.
+(function () {
+  var sec = document.getElementById('feature-story');
+  if (!sec || document.body.id === 'layout') { return; }
+  var wrap = sec.parentNode, anchor = document.getElementById('section-2');
+  var YT = /(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#\s"']*&(?:amp;)?)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
+  var URL_LINE = /^https?:\/\/\S+$/i, IMG_URL = /\.(?:jpe?g|png|webp|gif)(?:\?\S*)?$|googleusercontent\.com|bp\.blogspot\.com/i;
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) { e.className = cls; } if (text) { e.textContent = text; } return e; }
+  function lines(node) {
+    var html = node.innerHTML.replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|li|h[1-6])>/gi, '\n');
+    var doc = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html');
+    return doc.body.textContent.split('\n').map(function (l) { return l.replace(/\s+/g, ' ').trim(); }).filter(Boolean);
+  }
+  var text = null, media = null, ws = sec.querySelectorAll('.widget');
+  for (var i = 0; i < ws.length; i++) {
+    var w = ws[i], box = w.querySelector('.widget-content') || w, h = w.querySelector('h2');
+    var title = h ? h.textContent.trim() : '', a = box.querySelector('a[href]'), img = box.querySelector('img'), cap = box.querySelector('.caption');
+    var ls = lines(box), m = (a && a.href.match(YT)) || box.innerHTML.match(YT);
+    var picture = img ? (img.currentSrc || img.src) : '';
+    ls.forEach(function (l) { if (!picture && URL_LINE.test(l) && IMG_URL.test(l) && !YT.test(l)) { picture = l; } });
+    var words = ls.filter(function (l) { return !URL_LINE.test(l); });
+    if ((m || picture) && !media && (m || words.length <= 2)) {
+      media = {title: title, video: m ? m[1] : '', picture: picture, kicker: cap ? cap.textContent.trim() : (words[0] || ''),
+        link: a && !m ? a.href : (ls.filter(function (l) { return URL_LINE.test(l) && !YT.test(l) && l !== picture; })[0] || '')};
+    } else if (!text && (title || words.length)) {
+      text = {kicker: title, lines: words, signature: img ? (img.currentSrc || img.src) : ''};
+    }
+  }
+  if (!text && !media) { return; }
+  var root = el('div', 'efic-feature' + (text && media ? '' : ' is-single'));
+  if (text) {
+    var t = el('div', 'ef-text');
+    if (text.kicker) { t.appendChild(el('p', 'ef-kicker', text.kicker)); }
+    text.lines.forEach(function (l, n) {
+      if (n === 0) { t.appendChild(el('h2', 'ef-headline', l)); }
+      else if (/^[\u2014\u2013-]\s*/.test(l)) { t.appendChild(el('p', 'ef-name', l.replace(/^[\u2014\u2013-]\s*/, ''))); }
+      else { t.appendChild(el('p', 'ef-body', l)); }
+    });
+    if (text.signature) { var sig = el('img', 'ef-signature'); sig.src = text.signature; sig.alt = 'Signature'; sig.loading = 'lazy'; t.appendChild(sig); }
+    root.appendChild(t);
+  }
+  if (media) {
+    var c = el('div', 'ef-media'), bg = media.picture || (media.video ? 'https://i.ytimg.com/vi/' + media.video + '/maxresdefault.jpg' : '');
+    if (bg) {
+      var im = el('img', 'ef-media-img'); im.alt = ''; im.loading = 'lazy'; im.src = bg;
+      if (!media.picture && media.video) { im.onload = function () { if (im.naturalWidth <= 120) { im.onload = null; im.src = 'https://i.ytimg.com/vi/' + media.video + '/hqdefault.jpg'; } }; }
+      c.appendChild(im);
+    }
+    var o = el('div', 'ef-media-text');
+    if (media.kicker) { o.appendChild(el('p', 'ef-media-kicker', media.kicker)); }
+    if (media.title) { o.appendChild(el('h3', 'ef-media-title', media.title)); }
+    if (media.video) {
+      var play = el('button', 'efic-btn efic-btn-gold ef-play');
+      play.type = 'button';
+      play.innerHTML = '<i class="fa fa-play" aria-hidden="true"></i> ';
+      play.appendChild(document.createTextNode('Play video'));
+      play.addEventListener('click', function () { openVideo(media.video, media.title, play); });
+      o.appendChild(play);
+    } else if (media.link) {
+      var more = el('a', 'efic-btn efic-btn-gold', 'Learn more'); more.href = media.link; o.appendChild(more);
+    }
+    c.appendChild(o);
+    root.appendChild(c);
+  }
+  function openVideo(id, title, from) {
+    var box = el('div', 'ef-lightbox'), inner = el('div', 'ef-lightbox-inner'), close = el('button', 'ef-close'), f = el('iframe');
+    box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', title || 'Video');
+    close.type = 'button'; close.setAttribute('aria-label', 'Close video'); close.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
+    f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&playsinline=1';
+    f.title = title || 'Video'; f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen'); f.setAttribute('allowfullscreen', '');
+    inner.appendChild(f); box.appendChild(close); box.appendChild(inner); document.body.appendChild(box);
+    document.documentElement.className += ' ef-noscroll';
+    var shut = function () {
+      document.removeEventListener('keydown', key);
+      if (box.parentNode) { box.parentNode.removeChild(box); }
+      document.documentElement.className = document.documentElement.className.replace(/\s*ef-noscroll/g, '');
+      from.focus();
+    };
+    var key = function (e) { if (e.key === 'Escape') { shut(); } else if (e.key === 'Tab') { e.preventDefault(); close.focus(); } };
+    close.addEventListener('click', shut);
+    box.addEventListener('click', function (e) { if (e.target === box) { shut(); } });
+    document.addEventListener('keydown', key);
+    close.focus();
+  }
+  sec.style.display = 'none';
+  wrap.appendChild(root);
+  wrap.className += ' has-feature';
+  if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(wrap, anchor.nextSibling); }
+})();
+
+// Newsletter sign-up (Layout > Newsletter sign-up). The gadget holds the text, an
+// email address (sign-ups are emailed there) and optionally a form address from
+// Google Forms, Mailchimp, Brevo or MailerLite (sign-ups then go to that list).
+(function () {
+  var sec = document.getElementById('newsletter');
+  if (!sec || document.body.id === 'layout') { return; }
+  var w = sec.querySelector('.widget');
+  if (!w) { return; }
+  var box = w.querySelector('.widget-content') || w, h = w.querySelector('h2');
+  var html = box.innerHTML.replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|li|h[1-6])>/gi, '\n');
+  var ls = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html').body.textContent.split('\n')
+    .map(function (l) { return l.replace(/\s+/g, ' ').trim(); }).filter(Boolean);
+  var EMAIL = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i, URL_LINE = /^https?:\/\/\S+$/i;
+  var to = '', action = '', words = [];
+  ls.forEach(function (l) { if (EMAIL.test(l)) { to = l; } else if (URL_LINE.test(l)) { action = l; } else { words.push(l); } });
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) { e.className = cls; } if (text) { e.textContent = text; } return e; }
+  // Which field name each service expects for the email address.
+  function field(url) {
+    if (/docs\.google\.com\/forms\//.test(url)) { var m = url.match(/[?&](entry\.\d+)/); return m ? m[1] : ''; }
+    if (/assets\.mailerlite\.com|app\.mailerlite\.com/.test(url)) { return 'fields[email]'; }
+    return 'EMAIL';   // Mailchimp, Brevo (Sendinblue)
+  }
+  var root = el('div', 'efic-newsletter'), intro = el('div', 'en-intro'), form = el('form', 'en-form');
+  intro.appendChild(el('h3', 'en-title', h ? h.textContent.trim() : 'Newsletter'));
+  words.forEach(function (l) { intro.appendChild(el('p', 'en-text', l)); });
+  form.setAttribute('novalidate', '');
+  var row = el('div', 'en-row'), input = el('input', 'en-email'), btn = el('button', 'efic-btn efic-btn-gold en-submit', 'Subscribe');
+  input.type = 'email'; input.required = true; input.name = 'email'; input.autocomplete = 'email';
+  input.placeholder = 'Your email address'; input.setAttribute('aria-label', 'Email address');
+  btn.type = 'submit';
+  row.appendChild(input); row.appendChild(btn);
+  var consent = el('label', 'en-consent'), tick = el('input');
+  tick.type = 'checkbox'; tick.required = true;
+  var site = document.querySelector('meta[property="og:site_name"]');
+  var who = (site && site.getAttribute('content')) || (document.querySelector('#header h1') || {}).textContent || '';
+  consent.appendChild(tick); consent.appendChild(document.createTextNode(' I agree to receive emails from ' + (who.trim() || 'us') + '. I can unsubscribe at any time.'));
+  var trap = el('input', 'en-trap'); trap.type = 'text'; trap.tabIndex = -1; trap.setAttribute('aria-hidden', 'true'); trap.autocomplete = 'off';
+  var msg = el('p', 'en-msg'); msg.setAttribute('role', 'status');
+  form.appendChild(row); form.appendChild(consent); form.appendChild(trap); form.appendChild(msg);
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    msg.className = 'en-msg'; msg.textContent = '';
+    if (trap.value) { return; }
+    if (!EMAIL.test(input.value.trim())) { msg.className = 'en-msg is-error'; msg.textContent = 'Please enter a valid email address.'; input.focus(); return; }
+    if (!tick.checked) { msg.className = 'en-msg is-error'; msg.textContent = 'Please tick the box to agree to receive our emails.'; tick.focus(); return; }
+    var email = input.value.trim(), name = action && field(action);
+    if (action && name) {
+      var post = el('form'), hidden = el('input');
+      post.method = 'post'; post.action = action.replace(/[?&]entry\.\d+=?[^&]*/, '').replace(/\?$/, ''); post.target = '_blank'; post.style.display = 'none';
+      hidden.type = 'hidden'; hidden.name = name; hidden.value = email;
+      post.appendChild(hidden); document.body.appendChild(post); post.submit(); document.body.removeChild(post);
+      msg.textContent = /docs\.google\.com/.test(action) ? 'Thank you! You are now on our mailing list.' : 'Thank you! Please check your inbox to confirm your subscription.';
+    } else if (to) {
+      var href = 'mailto:' + to + '?subject=' + encodeURIComponent('Newsletter sign-up') + '&body=' + encodeURIComponent('Please add ' + email + ' to your newsletter.');
+      msg.textContent = 'Thank you! Your email app will open to send your request. If it doesn\'t, write to ';
+      var a = el('a', '', to); a.href = href; msg.appendChild(a); msg.appendChild(document.createTextNode('.'));
+      window.location.href = href;
+    } else {
+      msg.className = 'en-msg is-error'; msg.textContent = 'Sign-up is not set up yet.';
+      return;
+    }
+    form.className += ' is-done';
+  });
+  root.appendChild(intro); root.appendChild(form);
+  sec.style.display = 'none';
+  sec.parentNode.appendChild(root);
+  sec.parentNode.className += ' has-newsletter';
+})();
+
+// Certifications & Memberships (footer): one Image gadget per badge.
+(function () {
+  var sec = document.getElementById('footer-certifications');
+  if (!sec || document.body.id === 'layout') { return; }
+  var ws = sec.querySelectorAll('.widget'), list = document.createElement('ul');
+  list.className = 'cert-list';
+  for (var i = 0; i < ws.length; i++) {
+    var w = ws[i], box = w.querySelector('.widget-content') || w, h = w.querySelector('h2');
+    var img = box.querySelector('img'), a = box.querySelector('a[href]'), cap = box.querySelector('.caption');
+    var title = (h ? h.textContent : '').trim(), text = box.textContent.replace(/\s+/g, ' ').trim();
+    var src = img ? (img.currentSrc || img.src) : (/^https?:\/\/\S+\.(?:jpe?g|png|webp|gif|svg)(\?\S*)?$/i.test(text) ? text : '');
+    var label = (cap ? cap.textContent.trim() : '') || title || (src ? '' : text);
+    if (!src && !label) { continue; }
+    var li = document.createElement('li'), holder = a ? document.createElement('a') : document.createElement('span');
+    holder.className = 'cert-badge' + (src ? '' : ' is-text');
+    if (a) { holder.href = a.href; holder.target = '_blank'; holder.rel = 'noopener'; }
+    if (src) { var im = document.createElement('img'); im.src = src; im.alt = label || (img && img.alt) || 'Certification'; im.loading = 'lazy'; holder.appendChild(im); }
+    else { holder.textContent = label; }
+    li.appendChild(holder);
+    if (src && label) { var c = document.createElement('span'); c.className = 'cert-caption'; c.textContent = label; li.appendChild(c); }
+    list.appendChild(li);
+  }
+  if (!list.children.length) { return; }
+  var head = document.createElement('p');
+  head.className = 'cert-head'; head.textContent = 'Certifications & Memberships';
+  sec.style.display = 'none';
+  sec.parentNode.appendChild(head); sec.parentNode.appendChild(list);
+  sec.parentNode.className += ' has-certs';
 })();
 
 // Desktop menu: if the Layout menu needs more than one row, use the hamburger instead.

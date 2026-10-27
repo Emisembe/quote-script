@@ -101,8 +101,12 @@ Keep these in mind when touching the theme itself (`blogger-theme/` in the `emis
   - Captions have a navy gradient, a white Montserrat headline and a short gold bar.
   - The play button is a gold disc with a navy triangle. The active dot is gold. Arrows and pause are navy discs that turn gold with navy icons on hover.
   - With slides, the homepage menu bar is solid navy, not see-through, and the hero becomes a compact band. Keep its content above the navy tint (`.fenix-head { position: relative; z-index: 1 }`).
+- **Areas of Expertise** has seven tiles (Technology added, `fa-microchip`). `.special-wrap` is a centred flex-wrap, so an incomplete last row is centred.
+- **Message & Video** (homepage, under the expertise tiles): white section. The kicker is grey Montserrat in uppercase with a short gold bar before it (never gold text on white), the headline navy Montserrat 700. The card has a navy gradient over the photo or thumbnail, white text and a gold **Play video** button. The video opens in a navy pop-up.
+- **Newsletter** (every page, above the footer): a navy `#14213D` band. White heading with a gold rule under it, a white email box, a gold Subscribe button with navy text, and a consent tick-box (gold `accent-color`). It ships emailing sign-ups to askeficc@gmail.com until the owner adds a Google Forms, Mailchimp, Brevo or MailerLite address.
+- **Certifications & Memberships** (footer, between the social icons and the copyright): white logo tiles on deep navy, with gold-outlined text badges. It ships empty; never add certifications EFIC doesn't hold.
 - **Menu bar** is solid `#14213D`. A semi-transparent bar let slide captions show through. The bar is up to 1400 px wide on big screens and switches itself to the hamburger whenever the Layout menu would wrap.
-- **Tests:** `blogger-theme/tests/`: `full.js` (menus, hamburger, share links), `langtest.js` (switcher placement at 320-1920 px, translation, fallback, office cards) and `slidetest.js` (slides, timing, video, swipe, reduced motion, empty section). Run them after `build.py` and `preview.py`; all must pass before a theme goes to the user.
+- **Tests:** `blogger-theme/tests/`: `full.js` (menus, hamburger, share links), `langtest.js` (switcher placement at 320-1920 px, translation, fallback, office cards) `slidetest.js` (slides, timing, video, swipe, reduced motion, empty section) and `featuretest.js` (Technology tile, message & video, newsletter services, certifications, clipping at 320-1920 px). Run them after `build.py` and `preview.py`; all must pass before a theme goes to the user.
 - The theme's audit checks run on every build; a passing preview is not proof Blogger accepts it, so always tell the user the upload is the real test.
 
 ## 6. Verification checklist

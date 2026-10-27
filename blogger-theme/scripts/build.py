@@ -825,6 +825,258 @@ sub("""// Desktop menu: if the Layout menu needs more than one row""", """// Sli
 
 // Desktop menu: if the Layout menu needs more than one row""")
 
+# Areas of Expertise: a seventh tile, Technology.
+sub("<!-- Sixth Ends -->", """<!-- Sixth Ends -->
+
+<!-- Seventh -->
+<a class='special-tiles-link' href='/p/our-services.html'>
+<div class='special-tiles'>
+<span class='special-icons'>
+<i aria-hidden='true' class='fa fa-microchip'/>
+</span>
+<h6 class='special-heading'>Technology</h6>
+<p class='special-text'>Putting digital tools, data and automation to work, from ERP and dashboards to workflow automation, so your teams work faster and decide with better information.</p>
+</div>
+</a>
+<!-- Seventh Ends -->""")
+
+# Message & Video block (homepage). Its section sits outside the homepage-only
+# <b:if> so it stays in Layout; the footer script moves it under the expertise tiles.
+sub("  </div></div>\n</b:if>\n<div class='insta-wrap' id='section-6'>", f"""  </div></div>
+</b:if>
+<div class='efic-feature-wrap'>
+<b:section class='efic-feature-section' id='feature-story' name='Message &amp; Video (homepage)' showaddelement='yes'>
+  <b:widget id='HTML10' locked='false' title='Who we are' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[Driving Efficacy &amp; Effective Solutions<br/>
+EFIC Consultancy Ltd helps organisations improve quality, compliance, logistics and business processes, with practical advice that turns into measurable results.]]></b:widget-setting>
+    </b:widget-settings>
+    {GADGET_MAIN}
+  </b:widget>
+  <b:widget id='HTML11' locked='false' title='EFIC in action' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[See how we work<br/>
+https://www.youtube.com/watch?v=2bjBiOVQrUs]]></b:widget-setting>
+    </b:widget-settings>
+    {GADGET_MAIN}
+  </b:widget>
+</b:section>
+</div>
+<div class='insta-wrap' id='section-6'>""")
+
+# Newsletter band above the footer (every page) and certifications row in the footer.
+sub("<div style='clear: both;'/>\n<div id='jugas_footer'>", f"""<div style='clear: both;'/>
+<div class='efic-newsletter-wrap'>
+<b:section class='efic-newsletter-section' id='newsletter' maxwidgets='1' name='Newsletter sign-up' showaddelement='yes'>
+  <b:widget id='HTML12' locked='false' title='Stay informed' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[Practical insights on quality, compliance, logistics and process improvement, straight to your inbox.<br/>
+askeficc@gmail.com]]></b:widget-setting>
+    </b:widget-settings>
+    {GADGET_MAIN}
+  </b:widget>
+</b:section>
+</div>
+<div id='jugas_footer'>""")
+resub(r"(<b:section class='foot-bar-social blue' id='Footer social widget'.*?</b:section>\n</div>\n)",
+      r"""\1<div class='foot-certs'>
+<b:section class='foot-certs-section' id='footer-certifications' name='Certifications &amp; Memberships (footer)' showaddelement='yes'>
+</b:section>
+</div>
+""")
+sub("body#layout .office-contacts-wrap {", "body#layout .efic-feature-wrap, body#layout .efic-newsletter-wrap, body#layout .foot-certs {\ndisplay: block !important;\nbackground: #fff !important;\npadding: 0 !important;\n}\nbody#layout .office-contacts-wrap {")
+
+sub("""// Desktop menu: if the Layout menu needs more than one row""", """// Message & Video (Layout > Message & Video): text gadget + video/photo card.
+(function () {
+  var sec = document.getElementById('feature-story');
+  if (!sec || document.body.id === 'layout') { return; }
+  var wrap = sec.parentNode, anchor = document.getElementById('section-2');
+  var YT = /(?:youtube(?:-nocookie)?\\.com\\/(?:watch\\?(?:[^#\\s"']*&(?:amp;)?)?v=|embed\\/|shorts\\/|live\\/)|youtu\\.be\\/)([A-Za-z0-9_-]{11})/;
+  var URL_LINE = /^https?:\\/\\/\\S+$/i, IMG_URL = /\\.(?:jpe?g|png|webp|gif)(?:\\?\\S*)?$|googleusercontent\\.com|bp\\.blogspot\\.com/i;
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) { e.className = cls; } if (text) { e.textContent = text; } return e; }
+  function lines(node) {
+    var html = node.innerHTML.replace(/<br\\s*\\/?>/gi, '\\n').replace(/<\\/(p|div|li|h[1-6])>/gi, '\\n');
+    var doc = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html');
+    return doc.body.textContent.split('\\n').map(function (l) { return l.replace(/\\s+/g, ' ').trim(); }).filter(Boolean);
+  }
+  var text = null, media = null, ws = sec.querySelectorAll('.widget');
+  for (var i = 0; i < ws.length; i++) {
+    var w = ws[i], box = w.querySelector('.widget-content') || w, h = w.querySelector('h2');
+    var title = h ? h.textContent.trim() : '', a = box.querySelector('a[href]'), img = box.querySelector('img'), cap = box.querySelector('.caption');
+    var ls = lines(box), m = (a && a.href.match(YT)) || box.innerHTML.match(YT);
+    var picture = img ? (img.currentSrc || img.src) : '';
+    ls.forEach(function (l) { if (!picture && URL_LINE.test(l) && IMG_URL.test(l) && !YT.test(l)) { picture = l; } });
+    var words = ls.filter(function (l) { return !URL_LINE.test(l); });
+    if ((m || picture) && !media && (m || words.length <= 2)) {
+      media = {title: title, video: m ? m[1] : '', picture: picture, kicker: cap ? cap.textContent.trim() : (words[0] || ''),
+        link: a && !m ? a.href : (ls.filter(function (l) { return URL_LINE.test(l) && !YT.test(l) && l !== picture; })[0] || '')};
+    } else if (!text && (title || words.length)) {
+      text = {kicker: title, lines: words, signature: img ? (img.currentSrc || img.src) : ''};
+    }
+  }
+  if (!text && !media) { return; }
+  var root = el('div', 'efic-feature' + (text && media ? '' : ' is-single'));
+  if (text) {
+    var t = el('div', 'ef-text');
+    if (text.kicker) { t.appendChild(el('p', 'ef-kicker', text.kicker)); }
+    text.lines.forEach(function (l, n) {
+      if (n === 0) { t.appendChild(el('h2', 'ef-headline', l)); }
+      else if (/^[\\u2014\\u2013-]\\s*/.test(l)) { t.appendChild(el('p', 'ef-name', l.replace(/^[\\u2014\\u2013-]\\s*/, ''))); }
+      else { t.appendChild(el('p', 'ef-body', l)); }
+    });
+    if (text.signature) { var sig = el('img', 'ef-signature'); sig.src = text.signature; sig.alt = 'Signature'; sig.loading = 'lazy'; t.appendChild(sig); }
+    root.appendChild(t);
+  }
+  if (media) {
+    var c = el('div', 'ef-media'), bg = media.picture || (media.video ? 'https://i.ytimg.com/vi/' + media.video + '/maxresdefault.jpg' : '');
+    if (bg) {
+      var im = el('img', 'ef-media-img'); im.alt = ''; im.loading = 'lazy'; im.src = bg;
+      if (!media.picture && media.video) { im.onload = function () { if (im.naturalWidth <= 120) { im.onload = null; im.src = 'https://i.ytimg.com/vi/' + media.video + '/hqdefault.jpg'; } }; }
+      c.appendChild(im);
+    }
+    var o = el('div', 'ef-media-text');
+    if (media.kicker) { o.appendChild(el('p', 'ef-media-kicker', media.kicker)); }
+    if (media.title) { o.appendChild(el('h3', 'ef-media-title', media.title)); }
+    if (media.video) {
+      var play = el('button', 'efic-btn efic-btn-gold ef-play');
+      play.type = 'button';
+      play.innerHTML = '<i class="fa fa-play" aria-hidden="true"></i> ';
+      play.appendChild(document.createTextNode('Play video'));
+      play.addEventListener('click', function () { openVideo(media.video, media.title, play); });
+      o.appendChild(play);
+    } else if (media.link) {
+      var more = el('a', 'efic-btn efic-btn-gold', 'Learn more'); more.href = media.link; o.appendChild(more);
+    }
+    c.appendChild(o);
+    root.appendChild(c);
+  }
+  function openVideo(id, title, from) {
+    var box = el('div', 'ef-lightbox'), inner = el('div', 'ef-lightbox-inner'), close = el('button', 'ef-close'), f = el('iframe');
+    box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', title || 'Video');
+    close.type = 'button'; close.setAttribute('aria-label', 'Close video'); close.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
+    f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&playsinline=1';
+    f.title = title || 'Video'; f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen'); f.setAttribute('allowfullscreen', '');
+    inner.appendChild(f); box.appendChild(close); box.appendChild(inner); document.body.appendChild(box);
+    document.documentElement.className += ' ef-noscroll';
+    var shut = function () {
+      document.removeEventListener('keydown', key);
+      if (box.parentNode) { box.parentNode.removeChild(box); }
+      document.documentElement.className = document.documentElement.className.replace(/\\s*ef-noscroll/g, '');
+      from.focus();
+    };
+    var key = function (e) { if (e.key === 'Escape') { shut(); } else if (e.key === 'Tab') { e.preventDefault(); close.focus(); } };
+    close.addEventListener('click', shut);
+    box.addEventListener('click', function (e) { if (e.target === box) { shut(); } });
+    document.addEventListener('keydown', key);
+    close.focus();
+  }
+  sec.style.display = 'none';
+  wrap.appendChild(root);
+  wrap.className += ' has-feature';
+  if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(wrap, anchor.nextSibling); }
+})();
+
+// Newsletter sign-up (Layout > Newsletter sign-up). The gadget holds the text, an
+// email address (sign-ups are emailed there) and optionally a form address from
+// Google Forms, Mailchimp, Brevo or MailerLite (sign-ups then go to that list).
+(function () {
+  var sec = document.getElementById('newsletter');
+  if (!sec || document.body.id === 'layout') { return; }
+  var w = sec.querySelector('.widget');
+  if (!w) { return; }
+  var box = w.querySelector('.widget-content') || w, h = w.querySelector('h2');
+  var html = box.innerHTML.replace(/<br\\s*\\/?>/gi, '\\n').replace(/<\\/(p|div|li|h[1-6])>/gi, '\\n');
+  var ls = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html').body.textContent.split('\\n')
+    .map(function (l) { return l.replace(/\\s+/g, ' ').trim(); }).filter(Boolean);
+  var EMAIL = /^[^\\s@]+@[^\\s@]+\\.[a-z]{2,}$/i, URL_LINE = /^https?:\\/\\/\\S+$/i;
+  var to = '', action = '', words = [];
+  ls.forEach(function (l) { if (EMAIL.test(l)) { to = l; } else if (URL_LINE.test(l)) { action = l; } else { words.push(l); } });
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) { e.className = cls; } if (text) { e.textContent = text; } return e; }
+  // Which field name each service expects for the email address.
+  function field(url) {
+    if (/docs\\.google\\.com\\/forms\\//.test(url)) { var m = url.match(/[?&](entry\\.\\d+)/); return m ? m[1] : ''; }
+    if (/assets\\.mailerlite\\.com|app\\.mailerlite\\.com/.test(url)) { return 'fields[email]'; }
+    return 'EMAIL';   // Mailchimp, Brevo (Sendinblue)
+  }
+  var root = el('div', 'efic-newsletter'), intro = el('div', 'en-intro'), form = el('form', 'en-form');
+  intro.appendChild(el('h3', 'en-title', h ? h.textContent.trim() : 'Newsletter'));
+  words.forEach(function (l) { intro.appendChild(el('p', 'en-text', l)); });
+  form.setAttribute('novalidate', '');
+  var row = el('div', 'en-row'), input = el('input', 'en-email'), btn = el('button', 'efic-btn efic-btn-gold en-submit', 'Subscribe');
+  input.type = 'email'; input.required = true; input.name = 'email'; input.autocomplete = 'email';
+  input.placeholder = 'Your email address'; input.setAttribute('aria-label', 'Email address');
+  btn.type = 'submit';
+  row.appendChild(input); row.appendChild(btn);
+  var consent = el('label', 'en-consent'), tick = el('input');
+  tick.type = 'checkbox'; tick.required = true;
+  var site = document.querySelector('meta[property="og:site_name"]');
+  var who = (site && site.getAttribute('content')) || (document.querySelector('#header h1') || {}).textContent || '';
+  consent.appendChild(tick); consent.appendChild(document.createTextNode(' I agree to receive emails from ' + (who.trim() || 'us') + '. I can unsubscribe at any time.'));
+  var trap = el('input', 'en-trap'); trap.type = 'text'; trap.tabIndex = -1; trap.setAttribute('aria-hidden', 'true'); trap.autocomplete = 'off';
+  var msg = el('p', 'en-msg'); msg.setAttribute('role', 'status');
+  form.appendChild(row); form.appendChild(consent); form.appendChild(trap); form.appendChild(msg);
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    msg.className = 'en-msg'; msg.textContent = '';
+    if (trap.value) { return; }
+    if (!EMAIL.test(input.value.trim())) { msg.className = 'en-msg is-error'; msg.textContent = 'Please enter a valid email address.'; input.focus(); return; }
+    if (!tick.checked) { msg.className = 'en-msg is-error'; msg.textContent = 'Please tick the box to agree to receive our emails.'; tick.focus(); return; }
+    var email = input.value.trim(), name = action && field(action);
+    if (action && name) {
+      var post = el('form'), hidden = el('input');
+      post.method = 'post'; post.action = action.replace(/[?&]entry\\.\\d+=?[^&]*/, '').replace(/\\?$/, ''); post.target = '_blank'; post.style.display = 'none';
+      hidden.type = 'hidden'; hidden.name = name; hidden.value = email;
+      post.appendChild(hidden); document.body.appendChild(post); post.submit(); document.body.removeChild(post);
+      msg.textContent = /docs\\.google\\.com/.test(action) ? 'Thank you! You are now on our mailing list.' : 'Thank you! Please check your inbox to confirm your subscription.';
+    } else if (to) {
+      var href = 'mailto:' + to + '?subject=' + encodeURIComponent('Newsletter sign-up') + '&body=' + encodeURIComponent('Please add ' + email + ' to your newsletter.');
+      msg.textContent = 'Thank you! Your email app will open to send your request. If it doesn\\'t, write to ';
+      var a = el('a', '', to); a.href = href; msg.appendChild(a); msg.appendChild(document.createTextNode('.'));
+      window.location.href = href;
+    } else {
+      msg.className = 'en-msg is-error'; msg.textContent = 'Sign-up is not set up yet.';
+      return;
+    }
+    form.className += ' is-done';
+  });
+  root.appendChild(intro); root.appendChild(form);
+  sec.style.display = 'none';
+  sec.parentNode.appendChild(root);
+  sec.parentNode.className += ' has-newsletter';
+})();
+
+// Certifications & Memberships (footer): one Image gadget per badge.
+(function () {
+  var sec = document.getElementById('footer-certifications');
+  if (!sec || document.body.id === 'layout') { return; }
+  var ws = sec.querySelectorAll('.widget'), list = document.createElement('ul');
+  list.className = 'cert-list';
+  for (var i = 0; i < ws.length; i++) {
+    var w = ws[i], box = w.querySelector('.widget-content') || w, h = w.querySelector('h2');
+    var img = box.querySelector('img'), a = box.querySelector('a[href]'), cap = box.querySelector('.caption');
+    var title = (h ? h.textContent : '').trim(), text = box.textContent.replace(/\\s+/g, ' ').trim();
+    var src = img ? (img.currentSrc || img.src) : (/^https?:\\/\\/\\S+\\.(?:jpe?g|png|webp|gif|svg)(\\?\\S*)?$/i.test(text) ? text : '');
+    var label = (cap ? cap.textContent.trim() : '') || title || (src ? '' : text);
+    if (!src && !label) { continue; }
+    var li = document.createElement('li'), holder = a ? document.createElement('a') : document.createElement('span');
+    holder.className = 'cert-badge' + (src ? '' : ' is-text');
+    if (a) { holder.href = a.href; holder.target = '_blank'; holder.rel = 'noopener'; }
+    if (src) { var im = document.createElement('img'); im.src = src; im.alt = label || (img && img.alt) || 'Certification'; im.loading = 'lazy'; holder.appendChild(im); }
+    else { holder.textContent = label; }
+    li.appendChild(holder);
+    if (src && label) { var c = document.createElement('span'); c.className = 'cert-caption'; c.textContent = label; li.appendChild(c); }
+    list.appendChild(li);
+  }
+  if (!list.children.length) { return; }
+  var head = document.createElement('p');
+  head.className = 'cert-head'; head.textContent = 'Certifications & Memberships';
+  sec.style.display = 'none';
+  sec.parentNode.appendChild(head); sec.parentNode.appendChild(list);
+  sec.parentNode.className += ' has-certs';
+})();
+
+// Desktop menu: if the Layout menu needs more than one row""")
+
 out = text
 if '--check' in sys.argv:
     if not OUT.exists() or OUT.read_text(encoding='utf-8') != out:

@@ -57,6 +57,10 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 → Legacy-engine custom themes default to Blogger's mobile template.
 → Tell the user: **Theme → ▾ → Mobile settings → Desktop**. A v3 theme can declare `b:responsive='true'` instead, but only if the reference proves it.
 
+**Follow by Email gadget does nothing**
+→ Blogger's *Follow by Email* (FeedBurner email) was retired in July 2021; old templates still ship it.
+→ Remove it and build a newsletter form that posts to Google Forms, Mailchimp, Brevo or MailerLite, with a `mailto:` fallback (see `patterns.md`, section 8).
+
 **Re-uploading resets gadget content**
 → Restoring a theme can overwrite gadget text and links the user already edited.
 → Always say: back up first, and note any edits.
@@ -86,6 +90,10 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 **The menu quietly wraps onto two rows**
 → The total width of the menu items exceeded the fixed `.row` width (1170 px) by 4 px. Nothing errored; the last two items just dropped to a second row.
 → Measure it: the distinct `top` of the top-level items at desktop widths. Use a wider bar on big screens, plus an automatic switch to the hamburger when it still doesn't fit (see `patterns.md`, section 5).
+
+**Content cut off on phones, yet "no horizontal scroll"**
+→ The template sets `html { overflow-x: hidden }`. A row with a fixed width (392 px of social icons) ran past a 320 px screen and the last icon was simply cut off, while `scrollWidth == innerWidth` still passed.
+→ Let rows wrap (`flex-wrap: wrap; width: auto; max-width: 100%`) and test element rectangles against the viewport, not just `scrollWidth`.
 
 **Layout editor**
 → The legacy engine applies the skin to Layout too (`body#layout`). Make hidden-by-default sections visible there: `body#layout .hero, body#layout .sidebar { display: block }`, and un-stick the header.
