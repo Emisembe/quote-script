@@ -55,6 +55,7 @@ Every label has `data-t="key"` (text) or `data-tp="key"` (placeholder), filled f
 | `Print` | `enterPrint`/`exitPrint`, `ldgPrint` |
 | `PDF` | `modal`, `fileName()` (reference + company), `ldgPdf` |
 | `Live update` | `ldgUpdateNow`, `update()` (render + save letterhead), `schedule()`, listeners, `fitLayout()` |
+| (before `Start`) | `fullPage()`: hides every sibling of `#ldg-app` at each level of the page (except Blogger's cookie notice), on start, on `load` and 1.5 s later. |
 | `Start` | Loads the saved letterhead, or adds 3 default footer columns. Then the sample text, the first render, and a re-render after fonts load. |
 
 ## Recipes

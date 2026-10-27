@@ -5,7 +5,7 @@ A Blogger **page** that creates invoices, receipts, quotations and 13 other fina
 ## Install
 In Blogger, go to **Pages**, open the page and click **Edit**. Switch to **HTML view**, replace everything with `efic-document-generator.html`, then click **Update**.
 
-The page hides the theme's menu, header, sidebar, title, share bar, comments and footer, but only on this page.
+The page hides the theme's menu, header, sidebar, title, share bar, comments and footer, but only on this page. When the page opens, it also hides anything else around the tool, so sections added to the theme later (like the newsletter band) never appear on this page. The only exception is Blogger's cookie notice for European visitors, which has to stay visible.
 
 ## Blogger-safe characters
 Blogger's page editor turns every special character (`×`, `—`, `ä`, Chinese text) into a code like `&#215;` when you save. Inside `<script>` and `<style>` those codes are never turned back, so they show up as text. The file is therefore pure ASCII:

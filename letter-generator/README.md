@@ -5,7 +5,7 @@ A Blogger **page** for writing business letters and contracts on EFIC letterhead
 ## Install
 In Blogger, go to **Pages**, open the page and click **Edit**. Switch to **HTML view**, replace everything with `efic-letter-generator.html`, then click **Update**.
 
-The tool fills the whole page. On this page only, it hides the theme's menu, header, sidebar, page title, share bar, comments, footer and any extra gadgets in the main column.
+The tool fills the whole page. On this page only, it hides the theme's menu, header, sidebar, page title, share bar, comments, footer and any extra gadgets in the main column. When the page opens, it also hides anything else around the tool, so sections added to the theme later (like the newsletter band) never appear on this page. The only exception is Blogger's cookie notice for European visitors, which has to stay visible.
 
 ## What it does
 **Layout:**

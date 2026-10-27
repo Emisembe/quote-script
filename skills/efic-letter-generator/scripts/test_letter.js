@@ -24,7 +24,7 @@ const theme = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="view
 <div class="widget Blog" id="Blog1"><div class="post hentry"><div class="post-header"><h1 class="post-title">Letter Generator</h1></div>
 <div class="post-body entry-content">${saved}</div><div class="post-footer"><div class="share-box">Share: WhatsApp Telegram Print</div></div></div>
 <div class="comments" id="comments"><h4>2 comments:</h4></div></div><div class="widget HTML" id="HTML5"><div class="widget-content"><p>HTML gadget</p></div></div></div></div>
-<div id="sidebar-wrapper"><div class="widget">Sidebar gadget</div></div></div><div id="jugas_footer">Footer</div></div></body></html>`;
+<div id="sidebar-wrapper"><div class="widget">Sidebar gadget</div></div></div><div class="efic-newsletter-wrap has-newsletter" style="display:block">Stay informed newsletter</div><div class="some-future-band">Future theme section</div><div id="jugas_footer">Footer</div></div><div class="cookie-choices-info" style="position:fixed;bottom:0;left:0;right:0;background:#fff">This site uses cookies from Google.</div></body></html>`;
 fs.writeFileSync(path.join(W, 'harness-theme.html'), theme);
 fs.writeFileSync(path.join(W, 'harness-bare.html'), `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body>${saved}</body></html>`);
 
@@ -58,12 +58,13 @@ const LONG = Array.from({length: 9}, (_, i) => `Paragraph ${i + 1}. ` + 'We are 
       const panel = document.querySelector('.ldg-panel').getBoundingClientRect(), app = document.getElementById('ldg-app');
       const over = [...document.querySelectorAll('.ldg-panel input,.ldg-panel select,.ldg-panel textarea')].filter(i => { const r = i.getBoundingClientRect(); return r.width > 0 && (r.right > panel.right + .5 || r.left < panel.left - .5); }).map(i => i.id);
       const outside = [];
-      document.querySelectorAll('body *').forEach(e => { if (app.contains(e) || e.contains(app) || !e.getClientRects().length) return; const t = [...e.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join(''); if (t) outside.push(t.slice(0, 30)); });
+      document.querySelectorAll('body *').forEach(e => { if (app.contains(e) || e.contains(app) || !e.getClientRects().length) return; const t = [...e.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent.trim()).join(''); if (t && !e.closest('.cookie-choices-info')) outside.push(t.slice(0, 30)); });
+      const cookie = !!document.querySelector('.cookie-choices-info') && document.querySelector('.cookie-choices-info').getClientRects().length > 0;
       const a = app.getBoundingClientRect();
-      return {sw: document.documentElement.scrollWidth, iw: innerWidth, over, outside, x: a.left, y: a.top, w: a.width};
+      return {sw: document.documentElement.scrollWidth, iw: innerWidth, over, outside, cookie, x: a.left, y: a.top, w: a.width};
     });
     ok(m.sw <= m.iw && !m.over.length && !errs.length, `${file}@${w}: no sideways scroll (${m.sw}/${m.iw}), fields inside the panel${m.over.length ? ' (overflow: ' + m.over + ')' : ''}, JS errors: ${errs.length ? errs : 'none'}`);
-    if (file === 'harness-theme.html') ok(!m.outside.length && Math.abs(m.x) < 1 && Math.abs(m.w - m.iw) < 1 && m.y < 2, `full page in the theme @${w}: nothing of the theme visible (${m.outside.join(', ') || 'none'}), tool at x=${m.x} y=${m.y} w=${m.w}`);
+    if (file === 'harness-theme.html') ok(!m.outside.length && m.cookie && Math.abs(m.x) < 1 && Math.abs(m.w - m.iw) < 1 && m.y < 2, `full page in the theme @${w}: nothing of the theme visible, even sections added later; Blogger's cookie notice kept (${m.outside.join(', ') || 'none'}), tool at x=${m.x} y=${m.y} w=${m.w}`);
     if (w === 1440 || w === 390) await p.screenshot({path: path.join(SHOTS, `${file.replace('.html', '')}-${w}.png`)});
     await c.close();
   }

@@ -13,7 +13,8 @@
 #header-wrapper, #jugas_footer, .tm-menu, .scroll-header, #sidebar-wrapper,
 .foot-bar-social, .Attribution, .feed-links, #blog-pager, .slicknav_menu,
 .post-header, .post-head, h1.post-title, .post-footer, .share-box, #related-posts,
-.comments, #comments, .insta-wrap, #main > .widget:not(.Blog) { display: none !important; }
+.comments, #comments, .insta-wrap, #main > .widget:not(.Blog),
+.efic-newsletter-wrap, .efic-slider-wrap, .efic-feature-wrap, .office-contacts-wrap, .foot-certs, .lang-switch, #google_translate_element { display: none !important; }
 #outer-wrapper { box-shadow: none !important; background: #ECEAE4 !important; }
 #content-wrapper { padding: 0 !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; }
 #main-wrapper, .item #main-wrapper, .static_page #main-wrapper { float: none !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
@@ -1318,6 +1319,23 @@
   }
   window.addEventListener('resize', function () { fitLayout(); fitPreview(); });
   function today() { var d = new Date(), p = function (n) { return n < 10 ? '0' + n : n; }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+
+
+  // Full page: hide everything around the tool at every level of the page, so sections
+  // added to the theme later can't appear here either. Blogger's cookie notice stays.
+  function fullPage() {
+    var n = document.getElementById('ldg-app');
+    while (n && n.parentNode && n !== document.body && n !== document.documentElement) {
+      Array.prototype.forEach.call(n.parentNode.children, function (sib) {
+        if (sib === n || /^(SCRIPT|STYLE|LINK|META|NOSCRIPT|TEMPLATE)$/.test(sib.tagName)) return;
+        if (/cookie/i.test((sib.id || '') + ' ' + (typeof sib.className === 'string' ? sib.className : ''))) return;
+        sib.style.setProperty('display', 'none', 'important');
+      });
+      n = n.parentNode;
+    }
+  }
+  fullPage();
+  window.addEventListener('load', function () { fullPage(); setTimeout(fullPage, 1500); });
 
   // -- Start --
   setVal('docDate', today());
