@@ -11,14 +11,14 @@ The theme was rebuilt on the foundation of the blog's **original theme**, which 
 | Area | Now |
 |---|---|
 | Widget engine | Same as the original (`b:version='2'`, version-1 widgets) |
-| Gadget types | Only the original's: Header, Blog, HTML, PopularPosts, Label, Attribution (no Image, Text or LinkList) |
+| Gadget types | Only proven ones: Header, Blog, HTML, PopularPosts, Label (from the original) and LinkList (from a second Blogger backup, see below). No Image or Text gadgets. |
 | Gadget settings | Only setting names **and values** the original used. Blank only where the original was blank. |
 | Data tags | All of them appear in the original theme |
 | Comments | The original's own Blogger-generated comment code (threaded comments, comment form, iframe comments), with the decorative wrapper divs removed |
-| Gadget code | HTML, Labels, Popular Posts and Attribution use the original's code verbatim, apart from opening popular posts in the same tab |
+| Gadget code | HTML, Labels and Popular Posts use the original's code verbatim, apart from opening popular posts in the same tab |
 | Stylesheet | Plain CSS with Blogger `$(variables)`, like the original's. CSS custom properties are resolved at build time. |
 
-## Automated audit (`python3 scripts/check.py`), 60 checks, all passing
+## Automated audit (`python3 scripts/check.py`), 64 checks, all passing
 
 **Proven-only rules** (from `reference/proven.json`, extracted from the original theme):
 - Only Blogger tags the original used (`b:if`, `b:loop`, `b:include`, ...): no `b:eval`, no `b:template-skin`.
@@ -44,13 +44,24 @@ The theme was rebuilt on the foundation of the blog's **original theme**, which 
 
 Each of these checks was confirmed to fail on a deliberately broken copy of the theme, so they really do catch the problem.
 
-Run against the version Blogger rejected, the audit reports 23 failures, including the Image gadget. The current theme passes all 60 checks (two fewer than before because the Attribution gadget was removed).
+Run against the version Blogger rejected, the audit reports 23 failures, including the Image gadget. The current theme passes all 64 checks.
 
 ## Link List gadgets (menu and footer social links)
 
 The original theme had no Link List gadget, so its format was proven from a second Blogger backup on the same account (`theme-4696870781314041925.xml`). Only the Link List facts were taken from it: type `LinkList`, version `1`, settings `sorting` = `NONE` and `text-N` / `link-N`, data tags `data:links`, `data:link.name`, `data:link.target`. Nothing else from that theme is used. `reference/proven.json` records the source.
 
 Browser-tested: `_` items become a dropdown on desktop (hover and keyboard focus) and a tap-to-open list in the phone menu; social links get matching icons and open in a new tab; a YouTube link in the host card shows a thumbnail with a play button and loads the player only when played; "Powered by Blogger" is gone and the copyright line remains.
+
+## Slideshow, downloads and videos
+
+Four Link List gadgets now exist: Menu (`LinkList1`), Connect (`LinkList2`), Slideshow (`LinkList3`) and Free Downloads (`LinkList4`). The two new ones use exactly the proven Link List settings (`sorting` = `NONE`) and ship empty, so their homepage sections stay hidden until links are added. Like the hero, the sections are always present in the template (so they stay editable in Layout) and are revealed only on the homepage with the same two-condition check.
+
+Browser-tested:
+- **Slideshow**: photos and YouTube slides, captions (`-` = none), arrows, dots, keyboard arrows, swipe on touch phones, autoplay every 6s that pauses on hover, focus, hidden tab and a playing video, and stops for reduced-motion users. Leaving a slide stops its video. Google Drive photo links are shown through Drive's thumbnail service at full width.
+- **Downloads**: Drive file, Docs, Sheets, Slides and Dropbox links convert to direct downloads; the file type (PDF, ZIP, ...) is shown from the name or address. Cards stack and centre on phones.
+- **Post videos**: a YouTube link alone on its line (as a link or as plain text) becomes a 16:9 player that loads only on click. A link inside a sentence is left alone.
+- **Card videos**: a card plays its post's video in place without leaving the homepage. The video is found from the YouTube thumbnail, or else from one request to the blog's own feed.
+- No horizontal scrolling at 320–1440px, and no JavaScript errors.
 
 ## Browser checks (preview pages, Chromium)
 

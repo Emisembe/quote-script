@@ -20,10 +20,10 @@ Page not found - <data:blog.title/>
 <link href='https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;display=swap' rel='stylesheet'/>
 <b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .topics { display: block; }</style>
+<style type='text/css'>.hero, .topics, .showcase.has-slides, .downloads.has-items { display: block; }</style>
 </b:if>
 <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .topics { display: block; }</style>
+<style type='text/css'>.hero, .topics, .showcase.has-slides, .downloads.has-items { display: block; }</style>
 </b:if>
 </head>
 <body expr:class='&quot;rm pt-&quot; + data:blog.pageType'>
@@ -149,6 +149,20 @@ Page not found - <data:blog.title/>
         </b:widget>
       </b:section>
     </div>
+  </div>
+</section>
+
+<!-- ================= Slideshow (homepage, shown once it has slides) ================= -->
+<section aria-label='Slideshow' class='showcase' id='showcase'>
+  <div class='container'>
+    <b:section class='slideshow-section' id='slideshow' maxwidgets='1' showaddelement='no'>
+      <b:widget id='LinkList3' locked='false' title='Slideshow' type='LinkList' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='sorting'>NONE</b:widget-setting>
+        </b:widget-settings>
+        @@LINKLIST_MAIN@@
+      </b:widget>
+    </b:section>
   </div>
 </section>
 
@@ -409,6 +423,20 @@ Page not found - <data:blog.title/>
     </aside>
   </div>
 </div>
+
+<!-- ================= Downloads (homepage, shown once it has items) ================= -->
+<section class='downloads' id='downloads'>
+  <div class='container'>
+    <b:section class='downloads-section' id='downloads-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='LinkList4' locked='false' title='Free Downloads' type='LinkList' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='sorting'>NONE</b:widget-setting>
+        </b:widget-settings>
+        @@LINKLIST_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
 
 <!-- ================= Topics (shown on the homepage) ================= -->
 <section class='topics' id='topics'>

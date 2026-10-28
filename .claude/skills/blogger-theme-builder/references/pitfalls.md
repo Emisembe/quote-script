@@ -62,8 +62,12 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 → Avoid changing gadget ids/types once a theme is live. When you must, warn the user before they upload: choose **delete** in that dialog (after backing up), or delete the old copy in Layout afterwards. In Layout, a Link List opens "Configure Link List"; an HTML gadget opens a content box. Also tell them to check for a kept **Attribution** gadget ("Powered by Blogger").
 
 **Re-uploading resets gadget content**
-→ Restoring a theme can overwrite gadget text and links the user already edited.
-→ Always say: back up first, and note any edits.
+→ Restoring a theme can overwrite gadget text and links the user already edited (menu links, social links, hero text, host video).
+→ Always say: back up first, and note any edits. New Link Lists ship with only `sorting`, so they start empty.
+
+**Favicon won't upload**
+→ Blogger's Settings → Favicon wants a square image under 100 KB (PNG or ICO). A wide logo or a large photo is refused or shows squashed.
+→ Make a square 512×512 PNG with simple, bold shapes (initials) that stay readable at 16–32px; keep it far under 100 KB. Browsers cache favicons, so check in a private window.
 
 ## 4. CSS
 
@@ -92,6 +96,10 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 - **Video in a card or hero**: let the user paste a plain YouTube link into an HTML gadget. JS extracts the 11-character id (watch, youtu.be, shorts, live, embed), removes the link text, and shows a thumbnail (`i.ytimg.com/vi/ID/hqdefault.jpg`) with a play button. Only on click insert `youtube-nocookie.com/embed/ID?autoplay=1`. This keeps the page fast and never needs an Image gadget.
 - **"Powered by Blogger"** is the Attribution gadget. Blogger doesn't require it, so removing the gadget is fine. Keep your own copyright line.
 - **Flex on a menu `ul`** also hits nested sub-menus. Use `.widget-content > ul` for the top row.
+- **Slideshow or download list without new gadget types**: use a Link List (one link = one slide or file) and let JS rebuild it. *Site URL* holds the photo/YouTube/file address, *Site Name* the caption or title (allow `-` for "no caption", since Blogger needs a name). Use a CSS scroll-snap track (swipe works natively), arrows, dots, keyboard arrows, and autoplay that pauses on hover, focus, hidden tab and a playing video and is off for `prefers-reduced-motion`. Stop a slide's video when the user leaves it.
+- **Ship such Link Lists empty and hidden**: hide the section in CSS, and have the homepage `<style>` reveal it only once JS adds a class (`.showcase.has-slides`). An empty gadget then never shows a blank box.
+- **Google Drive links**: a share link (`/file/d/ID/view`) is an HTML page, not a file. Downloads: `drive.google.com/uc?export=download&id=ID`. Docs/Sheets/Slides: `/export?format=pdf|xlsx` and `/export/pdf`. Images: `drive.google.com/thumbnail?id=ID&sz=w1600`. Dropbox: `dl=0` → `dl=1`. The file must be shared as "Anyone with the link".
+- **Videos pasted in posts**: turn a YouTube link that is alone on its line (as a link or bare text) into the lite player; leave links inside sentences alone. For homepage cards, take the id from a YouTube `thumbnailUrl` if present, otherwise make one request to the blog's own feed (`/feeds/posts/default?alt=json&max-results=50`, same origin, http(s) only) and match each entry's alternate link to the card's URL.
 
 - **Card images**: legacy `data:post.thumbnailUrl` is 72px (`/s72-c/`) and `data:post.firstImageUrl` is full size. Rewrite to `/w720-h405-c/` (path form) or `=w720-h405-c` (the newer `=s1600` form), **but only on Google hosts**: `googleusercontent.com`, `blogspot.com`, `ggpht.com`. Never touch other hosts, or you'll break their URLs.
 - **YouTube thumbnails** come from both `img.youtube.com` and `i.ytimg.com`. Upgrade `default.jpg` to `hqdefault.jpg`.

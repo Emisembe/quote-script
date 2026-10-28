@@ -1,4 +1,5 @@
-// River Musa theme behaviour: mobile menu, sticky-header shadow, brand initials,
+// River Musa theme behaviour: menu and sub-menus, social icons, videos (host card,
+// slideshow, posts, episode cards), downloads, sticky-header shadow, brand initials,
 // hero title accent, copy-link button and footer year. No dependencies.
 (function () {
   'use strict';
@@ -93,29 +94,73 @@
     }
   }
 
+  // ---------- Shared helpers ----------
+  var ytPattern = /(?:youtube\.com\/(?:watch\?(?:[^\s"'<>]*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/|youtube-nocookie\.com\/embed\/)([A-Za-z0-9_-]{11})/;
+  var googleImage = /^https?:\/\/([a-z0-9-]+\.)*(googleusercontent\.com|blogspot\.com|ggpht\.com)\//i;
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function ytId(text) {
+    var m = ytPattern.exec(text || '');
+    return m ? m[1] : null;
+  }
+  function ytFrame(id) {
+    var frame = doc.createElement('iframe');
+    frame.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&playsinline=1';
+    frame.title = 'YouTube video';
+    frame.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+    frame.setAttribute('allowfullscreen', '');
+    return frame;
+  }
+  var PLAY_ICON = '<span class="yt-play-icon" aria-hidden="true"><svg fill="currentColor" height="28" viewBox="0 0 24 24" width="28"><polygon points="8 5 19 12 8 19 8 5"/></svg></span>';
+  // A YouTube thumbnail with a play button. The real player loads only when
+  // pressed, which keeps pages fast. onPlay(box) is called when it starts.
+  function makeVideo(id, label, onPlay) {
+    var box = doc.createElement('div');
+    box.className = 'yt-lite';
+    box.setAttribute('data-yt', id);
+    var btn = doc.createElement('button');
+    btn.type = 'button';
+    btn.className = 'yt-lite-play';
+    btn.setAttribute('aria-label', label ? 'Play video: ' + label : 'Play video');
+    var img = doc.createElement('img');
+    img.alt = '';
+    img.loading = 'lazy';
+    img.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+    btn.appendChild(img);
+    btn.insertAdjacentHTML('beforeend', PLAY_ICON);
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      box.innerHTML = '';
+      box.appendChild(ytFrame(id));
+      box.classList.add('is-playing');
+      if (onPlay) onPlay(box);
+    });
+    box.appendChild(btn);
+    return box;
+  }
+
   // Host card video: a YouTube link (or YouTube embed) in the host card gadget
-  // replaces the microphone with the video. The player loads only on play.
+  // replaces the microphone with the video.
   var hostCard = doc.querySelector('.host-card');
   var hostRole = hostCard ? hostCard.querySelector('.host-role') : null;
-  var ytPattern = /(?:youtube\.com\/(?:watch\?(?:[^\s"'<>]*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})[^\s"'<>]*/;
   function findVideoId(node) {
     var frames = node.querySelectorAll('iframe');
     for (var fi = 0; fi < frames.length; fi++) {
-      var fm = ytPattern.exec(frames[fi].getAttribute('src') || '');
-      if (fm) { frames[fi].parentNode.removeChild(frames[fi]); return fm[1]; }
+      var fid = ytId(frames[fi].getAttribute('src'));
+      if (fid) { frames[fi].parentNode.removeChild(frames[fi]); return fid; }
     }
     var anchors = node.querySelectorAll('a');
     for (var ai = 0; ai < anchors.length; ai++) {
-      var am = ytPattern.exec(anchors[ai].getAttribute('href') || '');
-      if (am) { anchors[ai].parentNode.removeChild(anchors[ai]); return am[1]; }
+      var aid = ytId(anchors[ai].getAttribute('href'));
+      if (aid) { anchors[ai].parentNode.removeChild(anchors[ai]); return aid; }
     }
     var walker = doc.createTreeWalker(node, 4, null, false);
     var textNode;
     while ((textNode = walker.nextNode())) {
-      var tm = ytPattern.exec(textNode.nodeValue);
-      if (tm) {
+      var tid = ytId(textNode.nodeValue);
+      if (tid) {
         textNode.nodeValue = textNode.nodeValue.replace(/\S*(?:youtube\.com|youtu\.be)\S*/, '').replace(/\s+$/, '');
-        return tm[1];
+        return tid;
       }
     }
     return null;
@@ -128,32 +173,305 @@
         if (!paras[pi].textContent.trim() && !paras[pi].querySelector('img')) paras[pi].parentNode.removeChild(paras[pi]);
       }
       var avatarSlot = hostCard.querySelector('.host-avatar');
-      var video = doc.createElement('div');
-      video.className = 'host-video';
-      var playBtn = doc.createElement('button');
-      playBtn.type = 'button';
-      playBtn.className = 'host-video-play';
-      playBtn.setAttribute('aria-label', 'Play video');
-      var thumb = doc.createElement('img');
-      thumb.alt = '';
-      thumb.loading = 'lazy';
-      thumb.src = 'https://i.ytimg.com/vi/' + videoId + '/hqdefault.jpg';
-      playBtn.appendChild(thumb);
-      playBtn.insertAdjacentHTML('beforeend', '<span class="host-video-icon"><svg aria-hidden="true" fill="currentColor" height="28" viewBox="0 0 24 24" width="28"><polygon points="8 5 19 12 8 19 8 5"/></svg></span>');
-      playBtn.addEventListener('click', function () {
-        var frame = doc.createElement('iframe');
-        frame.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1&rel=0';
-        frame.title = 'Video';
-        frame.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-        frame.setAttribute('allowfullscreen', '');
-        video.innerHTML = '';
-        video.appendChild(frame);
-      });
-      video.appendChild(playBtn);
+      var video = makeVideo(videoId, (hostCard.querySelector('.host-name') || {}).textContent);
+      video.classList.add('host-video');
       if (avatarSlot) avatarSlot.parentNode.replaceChild(video, avatarSlot);
       else hostCard.insertBefore(video, hostCard.firstChild);
       hostCard.classList.add('has-video');
     }
+  }
+
+  // ---------- Slideshow (Link List: name = caption, address = photo or YouTube link) ----------
+  function driveFileId(url) {
+    var m = /drive\.google\.com\/(?:file\/d\/|open\?(?:[^#]*&)?id=|uc\?(?:[^#]*&)?id=|thumbnail\?(?:[^#]*&)?id=)([A-Za-z0-9_-]{10,})/.exec(url || '');
+    return m ? m[1] : null;
+  }
+  function photoUrl(url) {
+    var did = driveFileId(url);
+    if (did) return 'https://drive.google.com/thumbnail?id=' + did + '&sz=w1600';
+    if (googleImage.test(url)) {
+      return url.replace(/\/s\d+(-[a-z]+)*\//i, '/s1600/').replace(/=s\d+(-[a-z]+)*$/i, '=s1600');
+    }
+    return url;
+  }
+  var slideLinks = doc.querySelectorAll('#slideshow .widget-content li a');
+  var showcase = doc.getElementById('showcase');
+  if (showcase && slideLinks.length) {
+    var slideList = slideLinks[0].closest('ul');
+    var slider = doc.createElement('div');
+    slider.className = 'slider';
+    slider.setAttribute('role', 'region');
+    slider.setAttribute('aria-roledescription', 'carousel');
+    slider.setAttribute('aria-label', 'Slideshow');
+    var track = doc.createElement('div');
+    track.className = 'slider-track';
+    slider.appendChild(track);
+    var total = slideLinks.length;
+    for (var sIdx = 0; sIdx < total; sIdx++) {
+      var href = slideLinks[sIdx].getAttribute('href') || '';
+      var caption = slideLinks[sIdx].textContent.trim();
+      if (caption === '-' || caption === '.' || caption === href) caption = '';
+      var slide = doc.createElement('div');
+      slide.className = 'slide';
+      slide.setAttribute('role', 'group');
+      slide.setAttribute('aria-roledescription', 'slide');
+      slide.setAttribute('aria-label', (sIdx + 1) + ' of ' + total + (caption ? ': ' + caption : ''));
+      var media = doc.createElement('div');
+      media.className = 'slide-media';
+      var vid = ytId(href);
+      if (vid) {
+        slide.classList.add('is-video');
+        media.appendChild(makeVideo(vid, caption, function (box) {
+          box.parentNode.parentNode.classList.add('is-playing');
+          stopAuto();
+        }));
+      } else {
+        var pic = doc.createElement('img');
+        pic.alt = caption;
+        pic.loading = sIdx === 0 ? 'eager' : 'lazy';
+        pic.src = photoUrl(href);
+        media.appendChild(pic);
+      }
+      slide.appendChild(media);
+      if (caption) {
+        var cap = doc.createElement('p');
+        cap.className = 'slide-caption';
+        cap.textContent = caption;
+        slide.appendChild(cap);
+      }
+      track.appendChild(slide);
+    }
+    var slides = track.children;
+    var current = 0;
+    var dots = [];
+    function resetVideos(except) {
+      for (var r = 0; r < slides.length; r++) {
+        if (r === except) continue;
+        var playing = slides[r].querySelector('.yt-lite.is-playing');
+        if (playing) {
+          var fresh = makeVideo(playing.getAttribute('data-yt'), slides[r].getAttribute('aria-label'), function (box) {
+            box.parentNode.parentNode.classList.add('is-playing');
+            stopAuto();
+          });
+          playing.parentNode.replaceChild(fresh, playing);
+          slides[r].classList.remove('is-playing');
+        }
+      }
+    }
+    function goTo(n, instant) {
+      current = (n + total) % total;
+      track.scrollTo({ left: current * track.clientWidth, behavior: instant || reduceMotion ? 'auto' : 'smooth' });
+      markCurrent();
+    }
+    function markCurrent() {
+      for (var q = 0; q < dots.length; q++) {
+        dots[q].classList.toggle('is-active', q === current);
+        dots[q].setAttribute('aria-current', q === current ? 'true' : 'false');
+      }
+      resetVideos(current);
+    }
+    var scrollTimer = null;
+    track.addEventListener('scroll', function () {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(function () {
+        var n = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+        if (n !== current) { current = n; markCurrent(); }
+      }, 80);
+    }, { passive: true });
+    window.addEventListener('resize', function () { goTo(current, true); });
+    if (total > 1) {
+      var arrow = function (cls, label, points, step) {
+        var btn = doc.createElement('button');
+        btn.type = 'button';
+        btn.className = 'slider-arrow ' + cls;
+        btn.setAttribute('aria-label', label);
+        btn.innerHTML = '<svg aria-hidden="true" fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" viewBox="0 0 24 24" width="22"><polyline points="' + points + '"/></svg>';
+        btn.addEventListener('click', function () { stopAuto(); goTo(current + step); });
+        slider.appendChild(btn);
+      };
+      arrow('slider-prev', 'Previous slide', '15 18 9 12 15 6', -1);
+      arrow('slider-next', 'Next slide', '9 18 15 12 9 6', 1);
+      var dotBar = doc.createElement('div');
+      dotBar.className = 'slider-dots';
+      for (var dIdx = 0; dIdx < total; dIdx++) {
+        var dot = doc.createElement('button');
+        dot.type = 'button';
+        dot.setAttribute('aria-label', 'Go to slide ' + (dIdx + 1));
+        dot.addEventListener('click', (function (k) { return function () { stopAuto(); goTo(k); }; })(dIdx));
+        dotBar.appendChild(dot);
+        dots.push(dot);
+      }
+      slider.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') { stopAuto(); goTo(current - 1); }
+        if (e.key === 'ArrowRight') { stopAuto(); goTo(current + 1); }
+      });
+    }
+    // Photos advance every 6 seconds; stops for good once someone interacts or plays a video
+    var autoTimer = null;
+    var hovering = false;
+    function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
+    if (total > 1 && !reduceMotion) {
+      autoTimer = setInterval(function () {
+        if (hovering || doc.hidden || slides[current].classList.contains('is-playing')) return;
+        goTo(current + 1);
+      }, 6000);
+      slider.addEventListener('mouseenter', function () { hovering = true; });
+      slider.addEventListener('mouseleave', function () { hovering = false; });
+      slider.addEventListener('focusin', function () { hovering = true; });
+      slider.addEventListener('focusout', function () { hovering = false; });
+      track.addEventListener('touchstart', stopAuto, { passive: true });
+    }
+    slideList.parentNode.replaceChild(slider, slideList);
+    if (dots.length) slider.parentNode.insertBefore(dotBar, slider.nextSibling);
+    markCurrent();
+    showcase.classList.add('has-slides');
+  }
+
+  // ---------- Downloads (Link List: name = title, address = file link) ----------
+  function downloadInfo(url, name) {
+    var u = url || '';
+    var id;
+    var info = { href: u, type: '' };
+    if ((id = /docs\.google\.com\/document\/d\/([A-Za-z0-9_-]+)/.exec(u))) {
+      info.href = 'https://docs.google.com/document/d/' + id[1] + '/export?format=pdf'; info.type = 'PDF';
+    } else if ((id = /docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9_-]+)/.exec(u))) {
+      info.href = 'https://docs.google.com/spreadsheets/d/' + id[1] + '/export?format=xlsx'; info.type = 'Spreadsheet';
+    } else if ((id = /docs\.google\.com\/presentation\/d\/([A-Za-z0-9_-]+)/.exec(u))) {
+      info.href = 'https://docs.google.com/presentation/d/' + id[1] + '/export/pdf'; info.type = 'PDF';
+    } else if ((id = driveFileId(u))) {
+      info.href = 'https://drive.google.com/uc?export=download&id=' + id;
+    } else if (/dropbox\.com/.test(u)) {
+      info.href = u.replace(/([?&])dl=0/, '$1dl=1');
+    }
+    if (!info.type) {
+      var ext = /\.([a-z0-9]{2,4})(?:[?#]|$)/i.exec(u.split('?')[0]) || /\(?\b(pdf|docx?|xlsx?|csv|pptx?|zip|mp3|wav|m4a|mp4|mov|jpe?g|png)\b\)?\s*$/i.exec(name || '');
+      var e = ext ? ext[1].toLowerCase() : '';
+      var types = { pdf: 'PDF', doc: 'Word', docx: 'Word', xls: 'Spreadsheet', xlsx: 'Spreadsheet', csv: 'Spreadsheet', ppt: 'Slides', pptx: 'Slides', zip: 'ZIP', mp3: 'Audio', wav: 'Audio', m4a: 'Audio', mp4: 'Video', mov: 'Video', jpg: 'Image', jpeg: 'Image', png: 'Image' };
+      info.type = types[e] || 'File';
+    }
+    return info;
+  }
+  var dlLinks = doc.querySelectorAll('#downloads-widgets .widget-content li a');
+  var dlSection = doc.getElementById('downloads');
+  if (dlSection && dlLinks.length) {
+    var dlList = dlLinks[0].closest('ul');
+    dlList.classList.add('dl-grid');
+    for (var dl = 0; dl < dlLinks.length; dl++) {
+      var a = dlLinks[dl];
+      var title = a.textContent.trim();
+      var infoD = downloadInfo(a.getAttribute('href'), title);
+      var li = a.parentNode;
+      li.className = 'dl-card';
+      li.innerHTML = '<span class="dl-icon" aria-hidden="true"><svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" x2="12" y1="11" y2="17"/><polyline points="9 14 12 17 15 14"/></svg></span>';
+      var body = doc.createElement('div');
+      body.className = 'dl-body';
+      var t = doc.createElement('p');
+      t.className = 'dl-title';
+      t.textContent = title;
+      var ty = doc.createElement('p');
+      ty.className = 'dl-type';
+      ty.textContent = infoD.type;
+      body.appendChild(t);
+      body.appendChild(ty);
+      li.appendChild(body);
+      var btnD = doc.createElement('a');
+      btnD.className = 'btn btn-primary dl-btn';
+      btnD.href = infoD.href;
+      btnD.target = '_blank';
+      btnD.rel = 'noopener';
+      btnD.setAttribute('aria-label', 'Download ' + title);
+      btnD.textContent = 'Download';
+      li.appendChild(btnD);
+    }
+    dlSection.classList.add('has-items');
+  }
+
+  // ---------- Videos inside posts and pages ----------
+  // A YouTube link on its own line becomes a responsive player.
+  var postBodies = doc.querySelectorAll('.post-single .post-body');
+  for (var pb = 0; pb < postBodies.length; pb++) {
+    var bodyEl = postBodies[pb];
+    var links = bodyEl.querySelectorAll('a[href]');
+    for (var li2 = 0; li2 < links.length; li2++) {
+      var ln = links[li2];
+      var lid = ytId(ln.getAttribute('href'));
+      var holder = ln.parentNode;
+      if (!lid || !holder || holder.textContent.trim() !== ln.textContent.trim()) continue;
+      holder.replaceChild(makeVideo(lid, ln.textContent.trim()), ln);
+    }
+    var tw = doc.createTreeWalker(bodyEl, 4, null, false);
+    var bare = [];
+    var tn;
+    while ((tn = tw.nextNode())) {
+      if (tn.parentNode.closest('a, iframe, script, style, .yt-lite')) continue;
+      if (/^\s*https?:\/\/\S+\s*$/.test(tn.nodeValue) && ytId(tn.nodeValue)) bare.push(tn);
+    }
+    for (var bIdx = 0; bIdx < bare.length; bIdx++) {
+      bare[bIdx].parentNode.replaceChild(makeVideo(ytId(bare[bIdx].nodeValue), ''), bare[bIdx]);
+    }
+  }
+
+  // ---------- Play videos straight from the episode cards ----------
+  var cards = doc.querySelectorAll('.post-card');
+  function enableCardVideo(card, id) {
+    if (card.classList.contains('has-video')) return;
+    var mediaLink = card.querySelector('.post-card-media');
+    if (!mediaLink) return;
+    var titleText = (card.querySelector('.post-card-title') || {}).textContent || '';
+    card.classList.add('has-video');
+    var img = mediaLink.querySelector('img');
+    if (!img) {
+      mediaLink.innerHTML = '';
+      img = doc.createElement('img');
+      img.alt = '';
+      img.loading = 'lazy';
+      mediaLink.appendChild(img);
+    }
+    if (!/ytimg\.com|youtube\.com/.test(img.getAttribute('src') || '')) img.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+    mediaLink.insertAdjacentHTML('beforeend', PLAY_ICON);
+    mediaLink.removeAttribute('aria-hidden');
+    mediaLink.removeAttribute('tabindex');
+    mediaLink.setAttribute('role', 'button');
+    mediaLink.setAttribute('aria-label', 'Play video: ' + titleText.trim());
+    mediaLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      var box = doc.createElement('div');
+      box.className = 'post-card-media is-playing';
+      box.appendChild(ytFrame(id));
+      mediaLink.parentNode.replaceChild(box, mediaLink);
+    });
+  }
+  var needFeed = [];
+  for (var cIdx = 0; cIdx < cards.length; cIdx++) {
+    var cImg = cards[cIdx].querySelector('.post-card-media img');
+    var fromThumb = cImg ? ytId((cImg.getAttribute('src') || '').replace(/^.*\/vi\/([A-Za-z0-9_-]{11})\/.*$/, 'https://youtu.be/$1')) : null;
+    if (fromThumb) enableCardVideo(cards[cIdx], fromThumb);
+    else needFeed.push(cards[cIdx]);
+  }
+  // Posts with a pasted link (no YouTube thumbnail): look the video up in the blog's own feed
+  if (needFeed.length && window.fetch && /^https?:$/.test(location.protocol)) {
+    fetch('/feeds/posts/default?alt=json&max-results=50', { credentials: 'same-origin' })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) {
+        var entries = data && data.feed && data.feed.entry;
+        if (!entries) return;
+        var byUrl = {};
+        for (var en = 0; en < entries.length; en++) {
+          var content = (entries[en].content && entries[en].content.$t) || '';
+          var fid = ytId(content);
+          if (!fid) continue;
+          var links2 = entries[en].link || [];
+          for (var lk = 0; lk < links2.length; lk++) {
+            if (links2[lk].rel === 'alternate') byUrl[links2[lk].href.replace(/^https?:/, '')] = fid;
+          }
+        }
+        for (var nf = 0; nf < needFeed.length; nf++) {
+          var cardLink = needFeed[nf].querySelector('.post-card-title a');
+          var key = cardLink ? cardLink.href.replace(/^https?:/, '').split('?')[0] : '';
+          if (byUrl[key]) enableCardVideo(needFeed[nf], byUrl[key]);
+        }
+      })
+      .catch(function () {});
   }
 
   // Mobile menu
@@ -254,7 +572,6 @@
   }
 
   // Card images: ask Blogger/YouTube for a 16:9 size instead of the full image or a 72px thumbnail
-  var googleImage = /^https?:\/\/([a-z0-9-]+\.)*(googleusercontent\.com|blogspot\.com|bp\.blogspot\.com|ggpht\.com)\//i;
   var youtubeThumb = /^(https?:\/\/(img\.youtube\.com|i\.ytimg\.com)\/vi\/[^/]+\/)[a-z]*default\.jpg$/i;
   var cardImgs = doc.querySelectorAll('img.js-resize');
   for (var c = 0; c < cardImgs.length; c++) {
