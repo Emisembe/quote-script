@@ -60,6 +60,22 @@ About the author: Jane has represented support staff at KCA University since 201
 
 **Also automatic on every article:** reading time ("4 min read"); the first paragraph shown as a larger introduction; quotes (the editor's *Quote* button) shown as large pull quotes; and an **In this article** contents box on long articles with 3 or more headings (use *Heading* / *Subheading* in the editor).
 
+## Videos under short articles
+
+**Layout → Videos** (near the bottom of Layout): one YouTube link per line, optionally followed by `|` and a title:
+
+```
+https://www.youtube.com/watch?v=8ZJz4Cda9MY | History of trade unions
+https://youtu.be/VIDEO-ID | Another union video
+```
+
+- **On computers:** under a post or page, the column beside the sidebar often ends early and leaves empty space. The theme fills that space with **as many videos as fit** (two per row), never making the page longer: a long article gets none, a short one gets two or more. It adjusts as photos load and when the window is resized.
+- **On phones and tablets:** the first video shows under the article.
+- Videos show as a picture with a play button and only load YouTube when someone presses play, so pages stay fast. A video that is playing is never moved.
+- Empty list = no videos.
+
+**Related articles** stay under every post, above the videos: other articles on the same topic first, topped up with your latest articles when the topic has fewer than three (or the post has no topic), so the box is never missing.
+
 ## Branch offices
 
 **Layout → Branch offices** (near the bottom of Layout) holds the list. Add one `<li>` per branch, one detail per line (the instructions are inside the gadget):

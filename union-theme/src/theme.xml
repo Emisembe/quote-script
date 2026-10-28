@@ -692,6 +692,17 @@ Page not found - <data:blog.title/>
     </b:widget>
   </b:section>
 </div>
+<!-- Videos (Layout gadget): fill the space under short posts and pages; one video on phones -->
+<div class='u-data video-data' hidden='hidden'>
+  <b:section class='videos-section' id='videos-list' maxwidgets='1' showaddelement='yes'>
+    <b:widget id='HTML37' locked='false' title='@@T:HTML37@@' type='HTML' version='1'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[@@C:HTML37@@]]></b:widget-setting>
+      </b:widget-settings>
+      @@HTML_MAIN@@
+    </b:widget>
+  </b:section>
+</div>
 
 <!-- ================= Footer ================= -->
 <footer class='site-footer' id='contact'>

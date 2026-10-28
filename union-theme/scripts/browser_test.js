@@ -114,7 +114,7 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
         return route.fulfill({ status: 200, contentType: 'application/javascript', body });
       }
       if (url.startsWith(base)) return route.continue();
-      if (/googleusercontent\.com|blogspot\.com/.test(url)) {
+      if (/googleusercontent\.com|blogspot\.com|ytimg\.com/.test(url)) {
         return route.fulfill({ status: 200, contentType: 'image/svg+xml', body: placeholder(url) });
       }
       return route.abort();
@@ -450,6 +450,57 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
   {
     const { page } = await open('kpuwu-branches', 1024);
     note(/added here soon/.test(await page.textContent('.u-branches')), 'kpuwu branches: friendly message while no branch is listed');
+    await page.close();
+  }
+
+  // Videos fill the empty space under short articles, never more; phones show one; related articles always there
+  for (const [name, width, expect] of [['generic-page', 1440, 'fill'], ['generic-page', 1280, 'fill'], ['generic-page', 1024, 'fill'],
+                                       ['kpuwu-post', 1440, 'any'], ['generic-page', 390, 'one'], ['kpuwu-post', 390, 'one'], ['generic-post', 768, 'one']]) {
+    const { page } = await open(name, width);
+    await page.waitForTimeout(500);
+    const r = await page.evaluate(() => {
+      const box = document.querySelector('.video-fill');
+      const cards = box && !box.hidden ? box.querySelectorAll('.video-card').length : 0;
+      const main = [...document.querySelector('.main-col').children].filter((c) => !c.hidden).reduce((m, c) => Math.max(m, c.getBoundingClientRect().bottom), 0);
+      const side = document.querySelector('.sidebar .sidebar-section').getBoundingClientRect().bottom;
+      const rel = document.querySelector('.related');
+      return { cards, total: 7, mainBottom: Math.round(main), sideBottom: Math.round(side), related: rel ? !rel.hidden && rel.querySelectorAll('.feed-card').length : null,
+        scroll: document.documentElement.scrollWidth, inner: innerWidth };
+    });
+    if (expect === 'fill') {
+      note(r.cards >= 1 && r.mainBottom <= r.sideBottom + 2, `videos ${name} @${width}: ${r.cards} video(s) fill the space, article column ends at ${r.mainBottom} <= sidebar ${r.sideBottom}`);
+      // one more video would have overflowed (or all were used)
+      const more = await page.evaluate(() => {
+        const box = document.querySelector('.video-fill'); const grid = box.querySelector('.video-grid');
+        const n = grid.children.length; if (n >= 7) return 'all';
+        const clone = grid.children[0].cloneNode(true); grid.appendChild(clone);
+        const cloneRow = !grid.children[n - 1] || clone.getBoundingClientRect().top > grid.children[n - 1].getBoundingClientRect().top + 1;
+        const bottom = [...document.querySelector('.main-col').children].filter((c) => !c.hidden).reduce((m, c) => Math.max(m, c.getBoundingClientRect().bottom), 0);
+        grid.removeChild(clone);
+        return bottom > document.querySelector('.sidebar .sidebar-section').getBoundingClientRect().bottom + 2 ? 'would overflow' : (cloneRow ? 'fits' : 'same row');
+      });
+      note(more !== 'fits', `videos ${name} @${width}: as many as fit (next one: ${more})`);
+    } else if (expect === 'one') {
+      note(r.cards === 1, `videos ${name} @${width}: one video under the article on phones/tablets (${r.cards})`);
+    } else {
+      note(r.mainBottom <= r.sideBottom + 2 || r.cards === 0, `videos ${name} @${width}: long article: ${r.cards} video(s), no extra length`);
+    }
+    if (name.endsWith('post')) note(r.related === 3, `related ${name} @${width}: related articles shown (${r.related})`);
+    note(r.scroll <= r.inner, `videos ${name} @${width}: no horizontal scroll`);
+    if (name === 'generic-page' && (width === 1440 || width === 390)) await page.screenshot({ path: path.join(OUT, `videos-${width}.png`), fullPage: true });
+    if (name === 'generic-page' && width === 1440) {
+      await page.click('.video-thumb');
+      const frame = await page.evaluate(() => (document.querySelector('.video-frame iframe') || {}).src || '');
+      note(/youtube-nocookie\.com\/embed\/TestVideo01\?autoplay=1/.test(frame), `videos: clicking plays the video (${frame})`);
+      await page.setViewportSize({ width: 1100, height: 900 });
+      await page.waitForTimeout(300);
+      note(await page.evaluate(() => !!document.querySelector('.video-frame iframe')), 'videos: a playing video is not interrupted by resizing');
+    }
+    await page.close();
+  }
+  {
+    const { page } = await open('kpuwu-home', 1440);
+    note(!(await page.evaluate(() => document.querySelector('.video-fill'))), 'videos: none on the homepage');
     await page.close();
   }
 

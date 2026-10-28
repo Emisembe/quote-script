@@ -581,21 +581,34 @@
     });
   }
 
-  // Related articles on post pages (from the post's first label)
+  // Related articles on every post: same topic first (the post's first label), topped up with
+  // the latest articles when the topic has fewer than 3 others or the post has no label
   var related = doc.querySelector('.related');
   var crumb = doc.querySelector('.breadcrumb .crumb-label');
-  if (related && crumb) {
-    var here = (window.location.href.split(/[?#]/)[0]).replace(/^https?:/, '');
-    loadFeed(crumb.textContent.trim(), 6, function (entries) {
-      if (!entries) return;
-      var posts = entries.map(parseEntry).filter(function (p) {
-        return p.url.split(/[?#]/)[0].replace(/^https?:/, '') !== here;
-      }).slice(0, 3);
-      if (!posts.length) return;
+  if (related) {
+    var plainUrl = function (u) { return u.split(/[?#]/)[0].replace(/^https?:/, ''); };
+    var seenPosts = {};
+    seenPosts[plainUrl(window.location.href)] = true;
+    var picked = [];
+    var take = function (entries) {
+      (entries || []).map(parseEntry).forEach(function (p) {
+        var k = plainUrl(p.url);
+        if (picked.length < 3 && !seenPosts[k]) { seenPosts[k] = true; picked.push(p); }
+      });
+    };
+    var showRelated = function (latestOnly) {
+      if (!picked.length) return;
+      if (latestOnly) related.querySelector('.related-title').textContent = 'Latest articles';
       var grid = related.querySelector('.related-grid');
-      posts.forEach(function (p) { grid.appendChild(card(p)); });
+      picked.forEach(function (p) { grid.appendChild(card(p)); });
       related.hidden = false;
-    });
+    };
+    var topUp = function (hadTopic) {
+      if (picked.length >= 3) { showRelated(false); return; }
+      loadFeed('', 8, function (entries) { take(entries); showRelated(!hadTopic); });
+    };
+    if (crumb) loadFeed(crumb.textContent.trim(), 6, function (entries) { take(entries); topUp(picked.length > 0); });
+    else topUp(false);
   }
 
   // ---------------------------------------------------------------- small helpers
@@ -1194,6 +1207,90 @@
         new window.google.translate.TranslateElement({ pageLanguage: original, autoDisplay: false }, 'union-translate');
       };
       doc.body.appendChild(el('script', { src: 'https://translate.google.com/translate_a/element.js?cb=__unionTranslateInit' }));
+    }
+  }
+
+  // ---------------------------------------------------------------- videos in the space under short articles
+  // Layout > Videos holds YouTube links (one per line, optional title after |). On computers, the
+  // empty space under a post or page (when the sidebar is longer) is filled with as many videos as
+  // fit, never more. Phones and tablets show one video under the article.
+  function youtubeId(u) {
+    var m = (u || '').match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#\s]*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([\w-]{11})/);
+    return m ? m[1] : null;
+  }
+  var videoData = doc.querySelector('.video-data .widget-content');
+  var videoList = [];
+  if (videoData) {
+    var vLines = [];
+    textLines(videoData).forEach(function (line) { vLines = vLines.concat(line.text.split(/\r?\n/)); });
+    [].forEach.call(videoData.querySelectorAll('a[href]'), function (a) { vLines.push(a.getAttribute('href') + ' | ' + a.textContent); });
+    var seenVideos = {};
+    vLines.forEach(function (line) {
+      var id = youtubeId(line);
+      if (!id || seenVideos[id]) return;
+      seenVideos[id] = true;
+      var title = (line.split('|')[1] || '').trim();
+      if (youtubeId(title)) title = '';
+      videoList.push({ id: id, title: title });
+    });
+  }
+  var mainCol = doc.querySelector('.main-col');
+  var sideSection = doc.querySelector('.sidebar .sidebar-section');
+  var onArticle = doc.querySelector('.pt-item .post-single, .pt-static_page .post-single');
+  if (videoList.length && mainCol && sideSection && onArticle) {
+    var gadgetTitle = doc.querySelector('.video-data h2.title');
+    var videoGrid = el('div', { className: 'video-grid' });
+    var videoBox = el('section', { className: 'video-fill', 'aria-label': 'Videos' }, [
+      el('h2', { className: 'section-title', text: gadgetTitle && gadgetTitle.textContent.trim() ? gadgetTitle.textContent.trim() : 'Videos' }),
+      videoGrid]);
+    videoBox.hidden = true;
+    mainCol.appendChild(videoBox);
+    var playing = false;
+    var videoCards = videoList.map(function (v) {
+      var thumbBtn = el('button', { type: 'button', className: 'video-thumb', 'aria-label': 'Play video' + (v.title ? ': ' + v.title : '') }, [
+        el('img', { src: 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg', alt: '', loading: 'lazy' }),
+        el('span', { className: 'video-play', 'aria-hidden': 'true' })]);
+      thumbBtn.addEventListener('click', function () {
+        playing = true;
+        var frame = el('iframe', { src: 'https://www.youtube-nocookie.com/embed/' + v.id + '?autoplay=1&rel=0', title: v.title || 'Video',
+          allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture', allowfullscreen: '' });
+        thumbBtn.parentNode.replaceChild(el('div', { className: 'video-frame' }, [frame]), thumbBtn);
+      });
+      return el('article', { className: 'video-card' }, [thumbBtn, v.title ? el('p', { className: 'video-title', text: v.title }) : null]);
+    });
+    var twoColumns = window.matchMedia ? window.matchMedia('(min-width: 1024px)') : null;
+    var contentBottom = function () {
+      var bottom = 0;
+      [].forEach.call(mainCol.children, function (c) { if (!c.hidden) bottom = Math.max(bottom, c.getBoundingClientRect().bottom); });
+      return bottom;
+    };
+    var fillVideos = function () {
+      if (playing) return;                      // never move a video someone is watching
+      videoGrid.textContent = '';
+      videoBox.hidden = false;
+      if (!(twoColumns && twoColumns.matches)) { videoGrid.appendChild(videoCards[0]); return; }
+      var limit = sideSection.getBoundingClientRect().bottom + 2;
+      for (var vi = 0; vi < videoCards.length && vi < 8; vi++) {
+        videoGrid.appendChild(videoCards[vi]);
+        if (contentBottom() > limit) { videoGrid.removeChild(videoCards[vi]); break; }
+      }
+      if (!videoGrid.children.length) videoBox.hidden = true;
+    };
+    var fillQueued = false;
+    var queueFill = function () {
+      if (fillQueued) return;
+      fillQueued = true;
+      window.requestAnimationFrame(function () { fillQueued = false; fillVideos(); });
+    };
+    fillVideos();
+    window.addEventListener('load', queueFill);
+    window.addEventListener('resize', queueFill);
+    // Photos, related articles and comments load later and change the lengths: fill again
+    if (window.ResizeObserver) {
+      var watch = new ResizeObserver(queueFill);
+      watch.observe(sideSection);
+      var blogSection = mainCol.querySelector('.main.section') || mainCol.firstElementChild;
+      if (blogSection) watch.observe(blogSection);
     }
   }
 

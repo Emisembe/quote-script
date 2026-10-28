@@ -138,6 +138,11 @@ def render(name, kind):
            f"<div class='widget-content cta-body'>{content['HTML29']}</div></div></div>")
 
     share = SHARE_BAR
+    # Test-only videos for the generic preview (the generic profile ships an empty list)
+    videos = content['HTML37']
+    if name == 'generic':
+        videos += '\n' + '\n'.join(f'https://www.youtube.com/watch?v=TestVideo0{i} | Test video {i}' for i in range(1, 7))
+        videos += "\n<a href='https://youtu.be/TestVideo07'>Linked test video 7</a>"
     # Test-only extra documents (preview, never in a profile): a Drive file and a Google Sheet
     docs = content['HTML35']
     if name == 'generic':
@@ -250,6 +255,7 @@ def render(name, kind):
 <section class='home-only band band-downloads' id='downloads'><div class='container'>{section('downloads-section', 'downloads-list', pg.html_widget('HTML35', f"<div class='widget-content'>{docs}</div>"))}</div></section>
 </main>
 <div class='u-data branch-data' hidden='hidden'>{section('branches-section', 'branch-offices', pg.html_widget('HTML36'))}</div>
+<div class='u-data video-data' hidden='hidden'>{section('videos-section', 'videos-list', pg.html_widget('HTML37', f"<div class='widget-content'>{videos}</div>"))}</div>
 <footer class='site-footer' id='contact'><div class='container'>
 <div class='footer-certs'>{section('certs-section', 'footer-certs', pg.html_widget('HTML34'))}</div>
 <div class='footer-grid'>

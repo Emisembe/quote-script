@@ -1220,6 +1220,40 @@ body .widget .toc-list li { padding: 3px 0; }
 .branch-btn .social-icon { width: 16px; height: 16px; }
 @media (max-width: 479px) { .post-body .branch-btn { flex: 1 1 calc(50% - 4px); justify-content: center; } }
 
+/* ---------- Videos under short articles ---------- */
+.video-fill { margin-top: 36px; }
+.video-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+@media (min-width: 640px) { .video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.video-card { background: #fff; border-radius: var(--u-radius); box-shadow: var(--u-shadow); overflow: hidden; }
+.video-thumb, .video-frame { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+.video-thumb { padding: 0; border: 0; cursor: pointer; }
+.video-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: opacity 0.2s; }
+.video-thumb:hover img { opacity: 1; }
+.video-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border-radius: 50%;
+  background: var(--u-accent);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s;
+}
+.video-play::after {
+  content: '';
+  position: absolute;
+  left: 26px;
+  top: 20px;
+  border-style: solid;
+  border-width: 12px 0 12px 19px;
+  border-color: transparent transparent transparent #fff;
+}
+.video-thumb:hover .video-play, .video-thumb:focus-visible .video-play { transform: scale(1.08); }
+.video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-title { margin: 0; padding: 12px 16px 14px; font-weight: 700; font-size: 15px; line-height: 1.35; color: var(--u-primary); }
+
 /* ---------- HTML site map page ---------- */
 .sitemap-summary { color: var(--u-muted); }
 .sitemap-topics { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
@@ -1235,7 +1269,8 @@ body .widget .post-body .sitemap-list li { display: flex; flex-wrap: wrap; justi
 /* ---------- Posts area ---------- */
 .page-main { padding: 44px 0 60px; }
 .main-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 44px; }
-@media (min-width: 1024px) { .main-grid { grid-template-columns: minmax(0, 1fr) 320px; gap: 44px; } }
+/* align-items: start lets each column keep its own height, so theme.js can measure the empty space under a short article */
+@media (min-width: 1024px) { .main-grid { grid-template-columns: minmax(0, 1fr) 320px; gap: 44px; align-items: start; } }
 .section-head { margin-bottom: 4px; }
 .post-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 @media (min-width: 640px) { .post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
