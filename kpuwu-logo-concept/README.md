@@ -5,16 +5,43 @@ A proposal for a new KPUWU logo, kept separate from the website theme. The theme
 - `kpuwu-logo-concept.png`: overview sheet with the website header version, white-on-dark, stacked, and small sizes (favicon, WhatsApp).
 - `kpuwu-emblem-concept.svg`: the emblem on its own, as a vector file a designer can refine.
 
-## High-resolution PNG files (`png/`, transparent background)
+## Files for printing (300 dpi)
+
+**Vector PDFs (`print-pdf/`): best for printing, sharp at any size.** Give these to printers for banners, signs, T-shirts, stamps and anything large. No pixels inside; fonts embedded.
+
+| File | Use it for |
+|---|---|
+| `kpuwu-logo-horizontal.pdf` | Letterheads, reports, banners (light backgrounds) |
+| `kpuwu-logo-horizontal-white.pdf` | The same on dark or photo backgrounds |
+| `kpuwu-logo-stacked.pdf` | Posters, ID cards, T-shirts |
+| `kpuwu-logo-stacked-white.pdf` | The same on navy or other dark backgrounds |
+| `kpuwu-emblem.pdf` | The emblem alone: stamps, badges, embroidery |
+
+**300 dpi PNGs (`png/`, transparent background)**: for Word, PowerPoint, Canva and office printing. Each file is tagged 300 dpi, so it opens at its true print size.
+
+| File | Pixels | Prints sharp up to |
+|---|---|---|
+| `kpuwu-logo-horizontal.png` / `-white` | 4830 × 1140 | 40.9 × 9.7 cm (16.1 × 3.8 in) |
+| `kpuwu-logo-stacked.png` / `-white` | 2862 × 3204 | 24.2 × 27.1 cm (9.5 × 10.7 in) |
+| `kpuwu-emblem.png` | 3072 × 3072 | 26 × 26 cm (10.2 × 10.2 in) |
+
+Bigger than that (roll-up banners, billboards): use the PDF.
+
+**Colours for printers** (the Pantone matches are exact for these screen colours; CMYK values are standard conversions, so ask the printer for a proof):
+
+| Colour | Screen (HEX) | Pantone | CMYK (approx.) |
+|---|---|---|---|
+| Union red | #C8102E | 186 C | 0 / 100 / 81 / 4 |
+| Navy | #13294B | 2767 C | 100 / 78 / 0 / 54 |
+| Gold (tassel) | #F2B705 | close to 7409 C | 0 / 25 / 100 / 5 |
+
+## Files for screens (website, phones)
+
+These are screen images, so dpi doesn't apply to them.
 
 | File | Size (px) | Use it for |
 |---|---|---|
-| `kpuwu-logo-horizontal.png` | 3220 × 760 | Letterheads, reports, banners, presentations (light backgrounds) |
-| `kpuwu-logo-horizontal-white.png` | 3220 × 760 | The same on dark or photo backgrounds |
-| `kpuwu-logo-stacked.png` | 1908 × 2136 | Posters, ID cards, T-shirts, social media profile banners |
-| `kpuwu-logo-stacked-white.png` | 1908 × 2136 | The same on dark or red backgrounds |
 | `kpuwu-logo-header.png` | 1686 × 366 | **Website header**: the name stays readable at header size |
-| `kpuwu-emblem-2048.png` | 2048 × 2048 | The emblem alone: stamps, badges, embroidery, print |
 | `kpuwu-icon-512.png`, `-192`, `-180-apple`, `-64` | square | Social media profile picture, WhatsApp group icon, phone home-screen icon |
 | `kpuwu-favicon-32.png` | 32 × 32 | Browser tab icon |
 
