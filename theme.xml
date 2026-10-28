@@ -2828,6 +2828,17 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
     frame.setAttribute('allowfullscreen', '');
     return frame;
   }
+  // Sharpest available YouTube thumbnail: HD (maxresdefault, 16:9) when the video
+  // has one, otherwise the standard one (YouTube serves a 120px grey image for
+  // missing HD thumbnails, so check the loaded width too)
+  function setYtThumb(img, id) {
+    var fallback = function () {
+      if (img.src.indexOf('/hqdefault.jpg') < 0) img.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+    };
+    img.addEventListener('error', fallback);
+    img.addEventListener('load', function () { if (img.naturalWidth > 0 && img.naturalWidth <= 120) fallback(); });
+    img.src = 'https://i.ytimg.com/vi/' + id + '/maxresdefault.jpg';
+  }
   var PLAY_ICON = '<span class="yt-play-icon" aria-hidden="true"><svg fill="currentColor" height="28" viewBox="0 0 24 24" width="28"><polygon points="8 5 19 12 8 19 8 5"/></svg></span>';
   // A YouTube thumbnail with a play button. The real player loads only when
   // pressed, which keeps pages fast. onPlay(box) is called when it starts.
@@ -2842,7 +2853,7 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
     var img = doc.createElement('img');
     img.alt = '';
     img.loading = 'lazy';
-    img.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+    setYtThumb(img, id);
     btn.appendChild(img);
     btn.insertAdjacentHTML('beforeend', PLAY_ICON);
     btn.addEventListener('click', function (e) {
@@ -3130,10 +3141,16 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
   }
 
   // ---------- Videos inside posts and pages ----------
-  // A YouTube link on its own line becomes a responsive player.
+  // YouTube videos added with Blogger's video button (or pasted embed code), and
+  // YouTube links on their own line, become the same thumbnail player.
   var postBodies = doc.querySelectorAll('.post-single .post-body');
   for (var pb = 0; pb < postBodies.length; pb++) {
     var bodyEl = postBodies[pb];
+    var frames = bodyEl.querySelectorAll('iframe');
+    for (var fr = 0; fr < frames.length; fr++) {
+      var fid = ytId(frames[fr].getAttribute('src')) || frames[fr].getAttribute('youtube-src-id');
+      if (fid && /^[A-Za-z0-9_-]{11}$/.test(fid)) frames[fr].parentNode.replaceChild(makeVideo(fid, frames[fr].getAttribute('title') || ''), frames[fr]);
+    }
     var links = bodyEl.querySelectorAll('a[href]');
     for (var li2 = 0; li2 < links.length; li2++) {
       var ln = links[li2];
@@ -3170,7 +3187,7 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
       img.loading = 'lazy';
       mediaLink.appendChild(img);
     }
-    if (!/ytimg\.com|youtube\.com/.test(img.getAttribute('src') || '')) img.src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+    setYtThumb(img, id);
     mediaLink.insertAdjacentHTML('beforeend', PLAY_ICON);
     mediaLink.removeAttribute('aria-hidden');
     mediaLink.removeAttribute('tabindex');
@@ -3327,7 +3344,7 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
         .replace(/=s\d+(-[a-z]+)*$/i, '=w720-h405-c')
         .replace(/=w\d+-h\d+(-[a-z]+)*$/i, '=w720-h405-c');
     }
-    if (youtubeThumb.test(src)) return src.replace(youtubeThumb, '$1hqdefault.jpg');
+    if (youtubeThumb.test(src) && !/\/(maxres|hq)default\.jpg$/.test(src)) return src.replace(youtubeThumb, '$1hqdefault.jpg');
     return src;
   }
   var cardImgs = doc.querySelectorAll('img.js-resize');
@@ -3452,7 +3469,8 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
         var pic = doc.createElement('img');
         pic.alt = '';
         pic.loading = 'lazy';
-        pic.src = post.video ? 'https://i.ytimg.com/vi/' + post.video + '/hqdefault.jpg' : cardImageSize(post.image);
+        if (post.video) setYtThumb(pic, post.video);
+        else pic.src = cardImageSize(post.image);
         media.appendChild(pic);
       } else {
         media.innerHTML = '<span class="post-card-placeholder"><svg aria-hidden="true" fill="none" height="40" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="40"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="23"/><line x1="8" x2="16" y1="23" y2="23"/></svg></span>';

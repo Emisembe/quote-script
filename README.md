@@ -44,7 +44,7 @@ Every gadget is a standard Blogger gadget. The menu, social links, slideshow and
 | Footer bar | **Link List** (`LinkList5`, "Legal") | Links next to the copyright. Starts with *Impressum* → `/p/impressum.html` and *Datenschutz* → `/p/datenschutz.html`: create pages with exactly those titles. |
 | Posts | (automatic) | **Related episodes** under each post: up to 3 posts with the same first label, topped up with the newest posts. Video posts play in the card. |
 
-**Videos in posts:** paste a YouTube link on its own line in a post (in Compose view, or as a link) and it becomes a responsive player that loads only when played. A link inside a sentence stays a normal link. On the homepage, a card whose post contains a video shows the video's thumbnail with a play button and plays the video in the card.
+**Videos in posts:** paste a YouTube link on its own line in a post (in Compose view, or as a link), or add it with Blogger's video button, and it becomes the same branded player as the host card: the video's HD thumbnail with a teal play button, loading YouTube only when played. A link inside a sentence stays a normal link. On the homepage, a card whose post contains a video shows the video's thumbnail with a play button and plays the video in the card.
 
 **Favicon:** `assets/favicon-rivermusa.png` (512×512, 23 KB) is ready for **Settings → Favicon**. Blogger needs a square image under 100 KB. Browsers cache favicons, so check in a private window.
 
