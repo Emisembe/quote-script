@@ -549,6 +549,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 
 /* ---------- Slideshow (homepage) ---------- */
 .showcase { display: none; padding: 56px 0 0; }
+body .showcase .slideshow-section { max-width: 860px; margin: 0 auto; text-align: center; }
 .slideshow-section .widget > h2.title {
   display: inline-block;
   margin: 0 0 24px;
@@ -588,6 +589,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 }
 .slide-media > .yt-lite { position: absolute; top: 0; left: 0; height: 100%; padding: 0; border-radius: 0; }
 .slide-caption {
+  text-align: left;
   position: absolute;
   left: 0;
   right: 0;
@@ -1351,6 +1353,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   .topics .container, .topics .widget,
   .downloads .container, .downloads .widget,
   .showcase .container, .showcase .widget { text-align: center; }
+  .slideshow-section .slide-caption { text-align: center; }
   .topics .Label ul, .topics .cloud-label-widget-content { justify-content: center; }
   .post-head { text-align: center; }
   .post-labels, .post-meta { justify-content: center; }

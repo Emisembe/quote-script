@@ -87,6 +87,10 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 → A responsive layout that only stacks into one column still reads as lopsided on phones.
 → With phone-only rules (no structure change), centre the hero (whenever it is a single column, ≤959px), section headings, card text and meta, topic pills, post header (labels/title/date), share buttons, pager buttons (full width) and footer. Keep long article paragraphs left-aligned for readability. Turn the hero title's vertical accent bar into a centred bar under the title. Verify with a measurement, not by eye: at 320/360/375/390/414px, compare each element's left and right gap (≤2px difference) and confirm `scrollWidth == innerWidth`.
 
+**`margin: 0 auto` on a section does nothing**
+→ The `body .section { margin: 0 }` reset (needed against Blogger's widget CSS) is more specific than `.my-section { margin: 0 auto }`, so a narrowed section sits on the left.
+→ Raise the selector: `body .showcase .slideshow-section { max-width: 860px; margin: 0 auto; }`. Measure left/right gaps in the browser test.
+
 **Layout editor**
 → The legacy engine applies the skin to Layout too (`body#layout`). Make hidden-by-default sections visible there: `body#layout .hero, body#layout .sidebar { display: block }`, and un-stick the header.
 
