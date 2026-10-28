@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- EFIC Consultancy Ltd: logo master. Open in Inkscape 1.2 or newer.
+     Install the fonts in the fonts folder first (see README.md). -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+     xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+     width="837.65px" height="508.82px" viewBox="0 0 837.65 508.82" version="1.1" id="efic-logo-master">
+  <title>EFIC Consultancy Ltd logo master</title>
+  <sodipodi:namedview id="namedview" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1"
+     inkscape:pagecheckerboard="true" inkscape:deskcolor="#d1d1d1" inkscape:document-units="px">
+    <inkscape:page x="0" y="0" width="837.65" height="508.82" id="page-primary-navy-bg" inkscape:label="Primary logo (stacked) - Full colour on navy"/>
+    <inkscape:page x="957.65" y="0" width="744.32" height="415.49" id="page-primary-positive" inkscape:label="Primary logo (stacked) - Navy and gold, no background (for white backgrounds)"/>
+    <inkscape:page x="1821.97" y="0" width="744.32" height="415.49" id="page-primary-reverse" inkscape:label="Primary logo (stacked) - White and gold, no background (for dark backgrounds)"/>
+    <inkscape:page x="0" y="628.82" width="744.32" height="415.49" id="page-primary-white" inkscape:label="Primary logo (stacked) - One colour: white"/>
+    <inkscape:page x="864.32" y="628.82" width="744.32" height="415.49" id="page-primary-navy" inkscape:label="Primary logo (stacked) - One colour: navy"/>
+    <inkscape:page x="1728.65" y="628.82" width="744.32" height="415.49" id="page-primary-black" inkscape:label="Primary logo (stacked) - One colour: black"/>
+    <inkscape:page x="0" y="1164.31" width="1627.62" height="418.41" id="page-horizontal-navy-bg" inkscape:label="Horizontal logo - Full colour on navy"/>
+    <inkscape:page x="1747.62" y="1164.31" width="1534.29" height="325.09" id="page-horizontal-positive" inkscape:label="Horizontal logo - Navy and gold, no background (for white backgrounds)"/>
+    <inkscape:page x="0" y="1702.72" width="1534.29" height="325.09" id="page-horizontal-reverse" inkscape:label="Horizontal logo - White and gold, no background (for dark backgrounds)"/>
+    <inkscape:page x="1654.29" y="1702.72" width="1534.29" height="325.09" id="page-horizontal-navy" inkscape:label="Horizontal logo - One colour: navy"/>
+    <inkscape:page x="0" y="2147.81" width="837.65" height="428.84" id="page-wordmark-navy-bg" inkscape:label="Wordmark (EFIC and rule) - Full colour on navy"/>
+    <inkscape:page x="957.65" y="2147.81" width="744.32" height="335.52" id="page-wordmark-positive" inkscape:label="Wordmark (EFIC and rule) - Navy and gold, no background (for white backgrounds)"/>
+    <inkscape:page x="1821.97" y="2147.81" width="744.32" height="335.52" id="page-wordmark-navy" inkscape:label="Wordmark (EFIC and rule) - One colour: navy"/>
+    <inkscape:page x="0" y="2696.65" width="512" height="512" id="page-icon-navy-bg" inkscape:label="Icon (E) - Full colour on navy"/>
+  </sodipodi:namedview>
+  <defs id="defs">
+    <linearGradient id="efic-navy" inkscape:swatch="solid" osb:paint="solid" inkscape:label="EFIC Navy"><stop offset="0" style="stop-color:#14213D;stop-opacity:1"/></linearGradient>
+    <linearGradient id="efic-gold" inkscape:swatch="solid" osb:paint="solid" inkscape:label="EFIC Gold"><stop offset="0" style="stop-color:#E7B165;stop-opacity:1"/></linearGradient>
+    <linearGradient id="efic-white" inkscape:swatch="solid" osb:paint="solid" inkscape:label="EFIC White"><stop offset="0" style="stop-color:#FFFFFF;stop-opacity:1"/></linearGradient>
+    <linearGradient id="efic-black" inkscape:swatch="solid" osb:paint="solid" inkscape:label="EFIC Black"><stop offset="0" style="stop-color:#000000;stop-opacity:1"/></linearGradient>
+  </defs>
+  <g inkscape:groupmode="layer" id="layer-primary-navy-bg" inkscape:label="01 Primary logo (stacked) - Full colour on navy">
+    <g transform="translate(418.82,93.32)">
+      <rect x="-418.82" y="-93.32" width="837.65" height="508.82" style="fill:url(#efic-navy)" inkscape:label="Background" sodipodi:insensitive="true"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="-7.42" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="-325.5" y="230.2" width="651" height="8" rx="4" style="fill:url(#efic-gold)" inkscape:label="Gold rule"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:70.7px;line-height:1;letter-spacing:0.74px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="0.09" y="307.4" inkscape:label="Efic Consultancy Ltd">Efic Consultancy Ltd</text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-primary-positive" inkscape:label="02 Primary logo (stacked) - Navy and gold, no background (for white backgrounds)">
+    <g transform="translate(1329.81,46.65)">
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-navy)" x="-7.42" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="-325.5" y="230.2" width="651" height="8" rx="4" style="fill:url(#efic-gold)" inkscape:label="Gold rule"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:70.7px;line-height:1;letter-spacing:0.74px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-navy)" x="0.09" y="307.4" inkscape:label="Efic Consultancy Ltd">Efic Consultancy Ltd</text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-primary-reverse" inkscape:label="03 Primary logo (stacked) - White and gold, no background (for dark backgrounds)">
+    <g transform="translate(2194.13,46.65)">
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="-7.42" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="-325.5" y="230.2" width="651" height="8" rx="4" style="fill:url(#efic-gold)" inkscape:label="Gold rule"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:70.7px;line-height:1;letter-spacing:0.74px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="0.09" y="307.4" inkscape:label="Efic Consultancy Ltd">Efic Consultancy Ltd</text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-primary-white" inkscape:label="04 Primary logo (stacked) - One colour: white">
+    <g transform="translate(372.16,675.47)">
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="-7.42" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="-325.5" y="230.2" width="651" height="8" rx="4" style="fill:url(#efic-white)" inkscape:label="Gold rule"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:70.7px;line-height:1;letter-spacing:0.74px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="0.09" y="307.4" inkscape:label="Efic Consultancy Ltd">Efic Consultancy Ltd</text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-primary-navy" inkscape:label="05 Primary logo (stacked) - One colour: navy">
+    <g transform="translate(1236.49,675.47)">
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-navy)" x="-7.42" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="-325.5" y="230.2" width="651" height="8" rx="4" style="fill:url(#efic-navy)" inkscape:label="Gold rule"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:70.7px;line-height:1;letter-spacing:0.74px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-navy)" x="0.09" y="307.4" inkscape:label="Efic Consultancy Ltd">Efic Consultancy Ltd</text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-primary-black" inkscape:label="06 Primary logo (stacked) - One colour: black">
+    <g transform="translate(2100.81,675.47)">
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-black)" x="-7.42" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="-325.5" y="230.2" width="651" height="8" rx="4" style="fill:url(#efic-black)" inkscape:label="Gold rule"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:70.7px;line-height:1;letter-spacing:0.74px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-black)" x="0.09" y="307.4" inkscape:label="Efic Consultancy Ltd">Efic Consultancy Ltd</text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-horizontal-navy-bg" inkscape:label="07 Horizontal logo - Full colour on navy">
+    <g transform="translate(93.32,1257.62)">
+      <rect x="-93.32" y="-93.32" width="1627.62" height="418.41" style="fill:url(#efic-navy)" inkscape:label="Background" sodipodi:insensitive="true"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="295.5" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="654.82" y="0.01" width="10" height="212.98" rx="5" style="fill:url(#efic-gold)" inkscape:label="Gold rule"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:108px;line-height:1;letter-spacing:1.13px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="788.49" y="78.2" inkscape:label="Efic">Efic</text>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:108px;line-height:1;letter-spacing:1.13px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="1079.57" y="209.2" inkscape:label="Consultancy Ltd">Consultancy Ltd</text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-horizontal-positive" inkscape:label="08 Horizontal logo - Navy and gold, no background (for white backgrounds)">
+    <g transform="translate(1794.28,1210.96)">
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-navy)" x="295.5" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="654.82" y="0.01" width="10" height="212.98" rx="5" style="fill:url(#efic-gold)" inkscape:label="Gold rule"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:108px;line-height:1;letter-spacing:1.13px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-navy)" x="788.49" y="78.2" inkscape:label="Efic">Efic</text>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:108px;line-height:1;letter-spacing:1.13px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-navy)" x="1079.57" y="209.2" inkscape:label="Consultancy Ltd">Consultancy Ltd</text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-horizontal-reverse" inkscape:label="09 Horizontal logo - White and gold, no background (for dark backgrounds)">
+    <g transform="translate(46.66,1749.37)">
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="295.5" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="654.82" y="0.01" width="10" height="212.98" rx="5" style="fill:url(#efic-gold)" inkscape:label="Gold rule"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:108px;line-height:1;letter-spacing:1.13px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="788.49" y="78.2" inkscape:label="Efic">Efic</text>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:108px;line-height:1;letter-spacing:1.13px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="1079.57" y="209.2" inkscape:label="Consultancy Ltd">Consultancy Ltd</text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-horizontal-navy" inkscape:label="10 Horizontal logo - One colour: navy">
+    <g transform="translate(1700.95,1749.37)">
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-navy)" x="295.5" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="654.82" y="0.01" width="10" height="212.98" rx="5" style="fill:url(#efic-navy)" inkscape:label="Gold rule"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:108px;line-height:1;letter-spacing:1.13px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-navy)" x="788.49" y="78.2" inkscape:label="Efic">Efic</text>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:108px;line-height:1;letter-spacing:1.13px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-navy)" x="1079.57" y="209.2" inkscape:label="Consultancy Ltd">Consultancy Ltd</text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-wordmark-navy-bg" inkscape:label="11 Wordmark (EFIC and rule) - Full colour on navy">
+    <g transform="translate(418.82,2241.12)">
+      <rect x="-418.82" y="-93.32" width="837.65" height="428.84" style="fill:url(#efic-navy)" inkscape:label="Background" sodipodi:insensitive="true"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="-7.42" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="-325.5" y="230.2" width="651" height="12" rx="6" style="fill:url(#efic-gold)" inkscape:label="Gold rule"/>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-wordmark-positive" inkscape:label="12 Wordmark (EFIC and rule) - Navy and gold, no background (for white backgrounds)">
+    <g transform="translate(1329.81,2194.46)">
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-navy)" x="-7.42" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="-325.5" y="230.2" width="651" height="12" rx="6" style="fill:url(#efic-gold)" inkscape:label="Gold rule"/>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-wordmark-navy" inkscape:label="13 Wordmark (EFIC and rule) - One colour: navy">
+    <g transform="translate(2194.13,2194.46)">
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-navy)" x="-7.42" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="-325.5" y="230.2" width="651" height="12" rx="6" style="fill:url(#efic-navy)" inkscape:label="Gold rule"/>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-icon-navy-bg" inkscape:label="14 Icon (E) - Full colour on navy">
+    <g transform="translate(0,2696.65)">
+      <rect x="0" y="0" width="512" height="512" style="fill:url(#efic-navy)" inkscape:label="Background" sodipodi:insensitive="true"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:364.61px;line-height:1;letter-spacing:0px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-white)" x="252.72" y="339.94" inkscape:label="E">E</text>
+      <rect x="165.85" y="370.66" width="180.3" height="38.4" rx="19.2" style="fill:url(#efic-gold)" inkscape:label="Gold rule"/>
+    </g>
+  </g>
+</svg>
