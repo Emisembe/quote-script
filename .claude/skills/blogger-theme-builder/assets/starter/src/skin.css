@@ -164,6 +164,59 @@ a.badge:hover { background: var(--rm-primary); color: var(--rm-accent); }
 }
 .btn-outline:hover { border-color: var(--rm-primary); }
 
+/* ---------- Announcement bar (Link List above the header, shown once it has messages) ---------- */
+.announce { display: none; background: var(--rm-accent); color: var(--rm-primary); }
+.announce.has-items { display: block; }
+.announce-inner { position: relative; height: 30px; overflow: hidden; }
+.announce-item {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--rm-primary);
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.45s, transform 0.45s;
+}
+.announce-item.is-active { opacity: 1; transform: translateY(0); }
+.announce-item.is-leaving { opacity: 0; transform: translateY(-100%); }
+.announce-text { overflow: hidden; text-overflow: ellipsis; }
+.announce-icon, .announce-arrow { flex: 0 0 auto; }
+.announce-arrow { transition: transform 0.2s; }
+a.announce-item:hover { color: var(--rm-primary); }
+a.announce-item:hover .announce-text { text-decoration: underline; }
+a.announce-item:hover .announce-arrow { transform: translateX(3px); }
+.has-dots .announce-item { left: 64px; right: 64px; }
+.announce-dots { position: absolute; top: 0; bottom: 0; right: 14px; display: flex; align-items: center; }
+.announce-dots button { width: 14px; height: 30px; padding: 0; border: 0; background: none; cursor: pointer; }
+.announce-dots button::before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: rgba(13, 28, 46, 0.3);
+  transition: background 0.2s;
+}
+.announce-dots button.is-active::before { background: var(--rm-primary); }
+@media (min-width: 768px) { .announce-dots { right: 26px; } }
+@media (max-width: 600px) {
+  .announce-item { justify-content: flex-start; font-size: 12.5px; }
+  .has-dots .announce-item { left: 20px; right: 56px; }
+}
+@media (prefers-reduced-motion: reduce) { .announce-item, .announce-arrow { transition: none; } }
+
 /* ---------- Header ---------- */
 .site-header {
   position: -webkit-sticky;
@@ -1332,6 +1385,27 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   .newsletter-btn { width: 100%; }
 }
 
+/* ---------- "Page not found" extras: video gadget + newest episodes ---------- */
+.notfound-extra { display: none; }
+.pt-error_page .notfound-extra.has-video,
+.pt-error_page .notfound-extra.has-latest { display: block; padding: 0 0 64px; }
+body .notfound-extra .notfound-section { max-width: 760px; margin: 0 auto; text-align: center; }
+body .notfound-section .widget > h2.title {
+  display: inline-block;
+  margin: 0 0 20px;
+  padding-bottom: 6px;
+  font-family: var(--rm-display);
+  font-weight: 400;
+  font-size: 30px;
+  letter-spacing: 1px;
+  line-height: 1;
+  color: var(--rm-primary);
+  border-bottom: 3px solid var(--rm-accent);
+}
+.notfound-section .yt-lite { box-shadow: 0 12px 32px rgba(13, 28, 46, 0.18); }
+.notfound-latest { margin-top: 56px; }
+@media (max-width: 767px) { .notfound-latest { text-align: center; } }
+
 /* ---------- Related episodes (under a post) ---------- */
 .related { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--rm-border); }
 .related-title {
@@ -1411,7 +1485,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 
 /* ---------- Printing a post: just the article, with its address ---------- */
 @media print {
-  .site-header, .nav-backdrop, .hero, .showcase, .downloads, .topics, .sidebar,
+  .announce, .site-header, .nav-backdrop, .hero, .showcase, .downloads, .topics, .sidebar,
   .newsletter, .site-footer, .post-share, .related, .comments, #comments,
   .blog-pager-nav, .yt-play-icon, .navbar, #navbar { display: none !important; }
   body { background: #fff; color: #000; font-size: 12pt; }
@@ -1431,7 +1505,8 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 body#layout .site-header { position: static; }
 body#layout .hero, body#layout .topics, body#layout .sidebar,
 body#layout .showcase, body#layout .downloads,
-body#layout .newsletter, body#layout #LinkList6, body#layout .footer-actions { display: block; }
+body#layout .newsletter, body#layout #LinkList6, body#layout .footer-actions,
+body#layout .announce, body#layout .notfound-extra { display: block; }
 body#layout .container { max-width: none; padding: 0; }
 body#layout .header-inner, body#layout .hero-grid, body#layout .main-grid,
 body#layout .footer-grid, body#layout .footer-bottom { display: block; }

@@ -15,6 +15,33 @@ Page not found - <data:blog.title/>
 </b:if>
 </b:if>
 </title>
+<!-- Search engines and social sharing -->
+<b:if cond='data:blog.pageType == &quot;archive&quot;'>
+<meta content='noindex, follow' name='robots'/>
+</b:if>
+<b:if cond='data:blog.pageType == &quot;error_page&quot;'>
+<meta content='noindex, follow' name='robots'/>
+</b:if>
+<meta expr:content='data:blog.title' property='og:site_name'/>
+<b:if cond='data:blog.pageType == &quot;item&quot;'>
+<meta content='article' property='og:type'/>
+<meta expr:content='data:blog.pageName' property='og:title'/>
+<b:else/>
+<meta content='website' property='og:type'/>
+<meta expr:content='data:blog.pageTitle' property='og:title'/>
+</b:if>
+<meta expr:content='data:blog.canonicalUrl' property='og:url'/>
+<b:if cond='data:blog.metaDescription != &quot;&quot;'>
+<meta expr:content='data:blog.metaDescription' property='og:description'/>
+<meta expr:content='data:blog.metaDescription' name='twitter:description'/>
+</b:if>
+<b:if cond='data:blog.postImageUrl'>
+<meta expr:content='data:blog.postImageUrl' property='og:image'/>
+<meta content='summary_large_image' name='twitter:card'/>
+<meta expr:content='data:blog.postImageUrl' name='twitter:image'/>
+<b:else/>
+<meta content='summary' name='twitter:card'/>
+</b:if>
 <b:skin><![CDATA[
 /*
 -----------------------------------------------
@@ -162,6 +189,59 @@ a.badge:hover { background: $(primary.color); color: $(accent.color); }
   color: $(primary.color);
 }
 .btn-outline:hover { border-color: $(primary.color); }
+
+/* ---------- Announcement bar (Link List above the header, shown once it has messages) ---------- */
+.announce { display: none; background: $(accent.color); color: $(primary.color); }
+.announce.has-items { display: block; }
+.announce-inner { position: relative; height: 30px; overflow: hidden; }
+.announce-item {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: $(primary.color);
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.45s, transform 0.45s;
+}
+.announce-item.is-active { opacity: 1; transform: translateY(0); }
+.announce-item.is-leaving { opacity: 0; transform: translateY(-100%); }
+.announce-text { overflow: hidden; text-overflow: ellipsis; }
+.announce-icon, .announce-arrow { flex: 0 0 auto; }
+.announce-arrow { transition: transform 0.2s; }
+a.announce-item:hover { color: $(primary.color); }
+a.announce-item:hover .announce-text { text-decoration: underline; }
+a.announce-item:hover .announce-arrow { transform: translateX(3px); }
+.has-dots .announce-item { left: 64px; right: 64px; }
+.announce-dots { position: absolute; top: 0; bottom: 0; right: 14px; display: flex; align-items: center; }
+.announce-dots button { width: 14px; height: 30px; padding: 0; border: 0; background: none; cursor: pointer; }
+.announce-dots button::before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: rgba(13, 28, 46, 0.3);
+  transition: background 0.2s;
+}
+.announce-dots button.is-active::before { background: $(primary.color); }
+@media (min-width: 768px) { .announce-dots { right: 26px; } }
+@media (max-width: 600px) {
+  .announce-item { justify-content: flex-start; font-size: 12.5px; }
+  .has-dots .announce-item { left: 20px; right: 56px; }
+}
+@media (prefers-reduced-motion: reduce) { .announce-item, .announce-arrow { transition: none; } }
 
 /* ---------- Header ---------- */
 .site-header {
@@ -1331,6 +1411,27 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   .newsletter-btn { width: 100%; }
 }
 
+/* ---------- "Page not found" extras: video gadget + newest episodes ---------- */
+.notfound-extra { display: none; }
+.pt-error_page .notfound-extra.has-video,
+.pt-error_page .notfound-extra.has-latest { display: block; padding: 0 0 64px; }
+body .notfound-extra .notfound-section { max-width: 760px; margin: 0 auto; text-align: center; }
+body .notfound-section .widget > h2.title {
+  display: inline-block;
+  margin: 0 0 20px;
+  padding-bottom: 6px;
+  font-family: 'Bebas Neue', Impact, 'Arial Narrow', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 30px;
+  letter-spacing: 1px;
+  line-height: 1;
+  color: $(primary.color);
+  border-bottom: 3px solid $(accent.color);
+}
+.notfound-section .yt-lite { box-shadow: 0 12px 32px rgba(13, 28, 46, 0.18); }
+.notfound-latest { margin-top: 56px; }
+@media (max-width: 767px) { .notfound-latest { text-align: center; } }
+
 /* ---------- Related episodes (under a post) ---------- */
 .related { margin-top: 40px; padding-top: 32px; border-top: 1px solid $(border.color); }
 .related-title {
@@ -1410,7 +1511,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 
 /* ---------- Printing a post: just the article, with its address ---------- */
 @media print {
-  .site-header, .nav-backdrop, .hero, .showcase, .downloads, .topics, .sidebar,
+  .announce, .site-header, .nav-backdrop, .hero, .showcase, .downloads, .topics, .sidebar,
   .newsletter, .site-footer, .post-share, .related, .comments, #comments,
   .blog-pager-nav, .yt-play-icon, .navbar, #navbar { display: none !important; }
   body { background: #fff; color: #000; font-size: 12pt; }
@@ -1430,7 +1531,8 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 body#layout .site-header { position: static; }
 body#layout .hero, body#layout .topics, body#layout .sidebar,
 body#layout .showcase, body#layout .downloads,
-body#layout .newsletter, body#layout #LinkList6, body#layout .footer-actions { display: block; }
+body#layout .newsletter, body#layout #LinkList6, body#layout .footer-actions,
+body#layout .announce, body#layout .notfound-extra { display: block; }
 body#layout .container { max-width: none; padding: 0; }
 body#layout .header-inner, body#layout .hero-grid, body#layout .main-grid,
 body#layout .footer-grid, body#layout .footer-bottom { display: block; }
@@ -1452,6 +1554,30 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
 </head>
 <body expr:class='&quot;rm pt-&quot; + data:blog.pageType'>
 <a class='skip-link' href='#content'>Skip to content</a>
+
+<!-- ================= Announcement bar (shown once it has messages) ================= -->
+<div class='announce' id='announce'>
+  <b:section class='announce-section' id='announcement' maxwidgets='1' showaddelement='no'>
+    <b:widget id='LinkList8' locked='false' title='Announcements' type='LinkList' version='1'>
+      <b:widget-settings>
+        <b:widget-setting name='sorting'>NONE</b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <ul>
+      <b:loop values='data:links' var='link'>
+        <li><a expr:href='data:link.target'><data:link.name/></a></li>
+      </b:loop>
+    </ul>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>
+    </b:widget>
+  </b:section>
+</div>
 
 <!-- ================= Header ================= -->
 <header class='site-header' id='site-header'>
@@ -2371,6 +2497,27 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
                     </b:includable>
         </b:widget>
       </b:section>
+      <!-- "Page not found" extras: shown only on the 404 page -->
+      <div class='notfound-extra' id='notfound-extra'>
+        <b:section class='notfound-section' id='notfound-video' maxwidgets='1' showaddelement='no'>
+          <b:widget id='HTML10' locked='false' title='While you are here, watch this' type='HTML'>
+            <b:widget-settings>
+              <b:widget-setting name='content'><![CDATA[<p>Paste a YouTube link here to show a video on the Page not found page.</p>]]></b:widget-setting>
+            </b:widget-settings>
+            <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+          </b:widget>
+        </b:section>
+      </div>
     </div>
 
     <aside class='sidebar'>
@@ -3526,83 +3673,95 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
     if (ready) news.classList.add('has-signup');
   }
 
+  // ---------- Episode cards from the blog's own feed (related episodes, 404 page) ----------
+  function feedEntries(url) {
+    return fetch(url, { credentials: 'same-origin' })
+      .then(function (res) { return res.ok ? res.json() : null; })
+      .then(function (data) { return (data && data.feed && data.feed.entry) || []; })
+      .catch(function () { return []; });
+  }
+  function feedPost(entry) {
+    var url = '';
+    var links3 = entry.link || [];
+    for (var k = 0; k < links3.length; k++) if (links3[k].rel === 'alternate') url = links3[k].href;
+    var content = (entry.content && entry.content.$t) || (entry.summary && entry.summary.$t) || '';
+    var img = /<img[^>]+src=["']([^"']+)["']/i.exec(content);
+    return {
+      url: url,
+      title: (entry.title && entry.title.$t) || 'Untitled post',
+      date: entry.published && entry.published.$t,
+      label: entry.category && entry.category[0] ? entry.category[0].term : '',
+      video: ytId(content),
+      image: img ? img[1] : (entry.media$thumbnail ? entry.media$thumbnail.url : '')
+    };
+  }
+  function buildCard(post) {
+    var card = doc.createElement('article');
+    card.className = 'post-card';
+    var media = doc.createElement('a');
+    media.className = 'post-card-media';
+    media.href = post.url;
+    media.setAttribute('aria-hidden', 'true');
+    media.setAttribute('tabindex', '-1');
+    if (post.image || post.video) {
+      var pic = doc.createElement('img');
+      pic.alt = '';
+      pic.loading = 'lazy';
+      if (post.video) setYtThumb(pic, post.video);
+      else pic.src = cardImageSize(post.image);
+      media.appendChild(pic);
+    } else {
+      media.innerHTML = '<span class="post-card-placeholder"><svg aria-hidden="true" fill="none" height="40" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="40"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="23"/><line x1="8" x2="16" y1="23" y2="23"/></svg></span>';
+    }
+    card.appendChild(media);
+    var body = doc.createElement('div');
+    body.className = 'post-card-body';
+    if (post.label) {
+      var labels = doc.createElement('div');
+      labels.className = 'post-card-labels';
+      var badge = doc.createElement('a');
+      badge.className = 'badge';
+      badge.href = '/search/label/' + encodeURIComponent(post.label);
+      badge.textContent = post.label;
+      labels.appendChild(badge);
+      body.appendChild(labels);
+    }
+    var h = doc.createElement('h3');
+    h.className = 'post-card-title';
+    var a = doc.createElement('a');
+    a.href = post.url;
+    a.textContent = post.title;
+    h.appendChild(a);
+    body.appendChild(h);
+    if (post.date) {
+      var meta = doc.createElement('div');
+      meta.className = 'post-card-meta';
+      var t = doc.createElement('time');
+      t.setAttribute('datetime', post.date);
+      formatDate(t);
+      meta.appendChild(t);
+      body.appendChild(meta);
+    }
+    card.appendChild(body);
+    return card;
+  }
+  function cardGrid(posts, className) {
+    var grid = doc.createElement('div');
+    grid.className = className;
+    for (var r = 0; r < posts.length; r++) {
+      var card = buildCard(posts[r]);
+      grid.appendChild(card);
+      if (posts[r].video) enableCardVideo(card, posts[r].video);
+    }
+    return grid;
+  }
+
   // ---------- Related episodes under a post (same label first, then the newest posts) ----------
   var postArticle = doc.querySelector('.pt-item .post-single');
   if (postArticle && window.fetch && /^https?:$/.test(location.protocol)) {
     var here = location.href.split(/[?#]/)[0].replace(/^https?:/, '');
     var firstLabel = postArticle.querySelector('.post-labels a');
     var labelName = firstLabel ? firstLabel.textContent.trim() : '';
-    var feedEntries = function (url) {
-      return fetch(url, { credentials: 'same-origin' })
-        .then(function (res) { return res.ok ? res.json() : null; })
-        .then(function (data) { return (data && data.feed && data.feed.entry) || []; })
-        .catch(function () { return []; });
-    };
-    var feedPost = function (entry) {
-      var url = '';
-      var links3 = entry.link || [];
-      for (var k = 0; k < links3.length; k++) if (links3[k].rel === 'alternate') url = links3[k].href;
-      var content = (entry.content && entry.content.$t) || (entry.summary && entry.summary.$t) || '';
-      var img = /<img[^>]+src=["']([^"']+)["']/i.exec(content);
-      return {
-        url: url,
-        title: (entry.title && entry.title.$t) || 'Untitled post',
-        date: entry.published && entry.published.$t,
-        label: entry.category && entry.category[0] ? entry.category[0].term : '',
-        video: ytId(content),
-        image: img ? img[1] : (entry.media$thumbnail ? entry.media$thumbnail.url : '')
-      };
-    };
-    var buildCard = function (post) {
-      var card = doc.createElement('article');
-      card.className = 'post-card';
-      var media = doc.createElement('a');
-      media.className = 'post-card-media';
-      media.href = post.url;
-      media.setAttribute('aria-hidden', 'true');
-      media.setAttribute('tabindex', '-1');
-      if (post.image || post.video) {
-        var pic = doc.createElement('img');
-        pic.alt = '';
-        pic.loading = 'lazy';
-        if (post.video) setYtThumb(pic, post.video);
-        else pic.src = cardImageSize(post.image);
-        media.appendChild(pic);
-      } else {
-        media.innerHTML = '<span class="post-card-placeholder"><svg aria-hidden="true" fill="none" height="40" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="40"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="23"/><line x1="8" x2="16" y1="23" y2="23"/></svg></span>';
-      }
-      card.appendChild(media);
-      var body = doc.createElement('div');
-      body.className = 'post-card-body';
-      if (post.label) {
-        var labels = doc.createElement('div');
-        labels.className = 'post-card-labels';
-        var badge = doc.createElement('a');
-        badge.className = 'badge';
-        badge.href = '/search/label/' + encodeURIComponent(post.label);
-        badge.textContent = post.label;
-        labels.appendChild(badge);
-        body.appendChild(labels);
-      }
-      var h = doc.createElement('h3');
-      h.className = 'post-card-title';
-      var a = doc.createElement('a');
-      a.href = post.url;
-      a.textContent = post.title;
-      h.appendChild(a);
-      body.appendChild(h);
-      if (post.date) {
-        var meta = doc.createElement('div');
-        meta.className = 'post-card-meta';
-        var t = doc.createElement('time');
-        t.setAttribute('datetime', post.date);
-        formatDate(t);
-        meta.appendChild(t);
-        body.appendChild(meta);
-      }
-      card.appendChild(body);
-      return card;
-    };
     var picked = [];
     var seen = {};
     seen[here] = true;
@@ -3634,17 +3793,239 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
       heading.className = 'related-title';
       heading.textContent = sameLabel === picked.length && labelName ? 'More on ' + labelName : 'More episodes';
       section.appendChild(heading);
-      var grid = doc.createElement('div');
-      grid.className = 'post-grid related-grid';
-      for (var r = 0; r < picked.length; r++) {
-        var card = buildCard(picked[r]);
-        grid.appendChild(card);
-        if (picked[r].video) enableCardVideo(card, picked[r].video);
-      }
-      section.appendChild(grid);
+      section.appendChild(cardGrid(picked, 'post-grid related-grid'));
       var share = postArticle.querySelector('.post-share') || postArticle.querySelector('.post-body');
       share.parentNode.insertBefore(section, share.nextSibling);
     });
+  }
+
+  // ---------- "Page not found": a video (HTML gadget) and the newest episodes ----------
+  var nfExtra = doc.querySelector('.pt-error_page #notfound-extra');
+  if (nfExtra) {
+    var nfGadget = nfExtra.querySelector('.widget');
+    var nfBox = nfGadget && nfGadget.querySelector('.widget-content');
+    var nfId = nfBox ? findVideoId(nfBox) : null;
+    if (nfId) {
+      var nfTitle = nfGadget.querySelector('.title');
+      nfBox.innerHTML = '';
+      nfBox.appendChild(makeVideo(nfId, nfTitle ? nfTitle.textContent.trim() : ''));
+      nfExtra.classList.add('has-video');
+    } else if (nfGadget) {
+      nfGadget.style.display = 'none';
+    }
+    if (window.fetch && /^https?:$/.test(location.protocol)) {
+      feedEntries('/feeds/posts/default?alt=json&max-results=3').then(function (entries) {
+        var latest = [];
+        for (var le = 0; le < entries.length; le++) latest.push(feedPost(entries[le]));
+        if (!latest.length) return;
+        var block = doc.createElement('div');
+        block.className = 'notfound-latest';
+        var lh = doc.createElement('h2');
+        lh.className = 'related-title';
+        lh.textContent = 'Latest episodes';
+        block.appendChild(lh);
+        block.appendChild(cardGrid(latest, 'post-grid'));
+        nfExtra.appendChild(block);
+        nfExtra.classList.add('has-latest');
+      });
+    }
+  }
+
+  // ---------- Announcement bar (Link List: name = message, address = link or "-") ----------
+  var announce = doc.getElementById('announce');
+  var annLinks = announce ? announce.querySelectorAll('.widget-content li a') : [];
+  var annIcons = {
+    episode: '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>',
+    event: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>',
+    download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+    video: '<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>',
+    email: '<rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/>',
+    support: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
+    shop: '<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+    news: '<path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>'
+  };
+  function annIcon(text, href) {
+    var t = (text + ' ' + href).toLowerCase();
+    if (/download|checklist|pdf|free guide|workbook/.test(t)) return 'download';
+    if (/live|event|tour|meet|webinar|\b\d{1,2}\s?(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)|calendar|ticket/.test(t)) return 'event';
+    if (/episode|podcast|listen|folge|season/.test(t)) return 'episode';
+    if (/youtube|youtu\.be|video|watch|trailer|premiere/.test(t)) return 'video';
+    if (/newsletter|subscribe|email|mailto:/.test(t)) return 'email';
+    if (/support|donat|paypal|ko-fi|patreon|spende/.test(t)) return 'support';
+    if (/shop|store|merch|sale|order/.test(t)) return 'shop';
+    return 'news';
+  }
+  if (announce && annLinks.length) {
+    var annInner = doc.createElement('div');
+    annInner.className = 'announce-inner container';
+    var annItems = [];
+    for (var an = 0; an < annLinks.length; an++) {
+      var aText = annLinks[an].textContent.trim();
+      var aHref = annLinks[an].getAttribute('href') || '';
+      var isLink = aHref && !/^(-|#|\.)?$/.test(aHref.trim());
+      var item = doc.createElement(isLink ? 'a' : 'p');
+      item.className = 'announce-item' + (an === 0 ? ' is-active' : '');
+      if (isLink) {
+        item.href = aHref;
+        if (/^https?:/i.test(aHref) && aHref.indexOf(location.host) < 0) {
+          item.target = '_blank';
+          item.rel = 'noopener';
+        }
+      }
+      var startsWithEmoji = false;
+      try { startsWithEmoji = new RegExp('^\\p{Extended_Pictographic}', 'u').test(aText); } catch (err) {}
+      if (!startsWithEmoji) {
+        item.insertAdjacentHTML('beforeend', '<svg aria-hidden="true" class="announce-icon" fill="none" height="15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="15">' + annIcons[annIcon(aText, aHref)] + '</svg>');
+      }
+      var aSpan = doc.createElement('span');
+      aSpan.className = 'announce-text';
+      aSpan.textContent = aText;
+      item.appendChild(aSpan);
+      if (isLink) item.insertAdjacentHTML('beforeend', '<svg aria-hidden="true" class="announce-arrow" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" viewBox="0 0 24 24" width="14"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>');
+      if (an > 0) item.setAttribute('aria-hidden', 'true');
+      annInner.appendChild(item);
+      annItems.push(item);
+    }
+    var annCurrent = 0;
+    var annDots = [];
+    var showAnn = function (n) {
+      if (n === annCurrent) return;
+      var old = annItems[annCurrent];
+      old.classList.remove('is-active');
+      old.classList.add('is-leaving');
+      old.setAttribute('aria-hidden', 'true');
+      setTimeout(function () { old.classList.remove('is-leaving'); }, 600);
+      annCurrent = n;
+      annItems[n].classList.add('is-active');
+      annItems[n].removeAttribute('aria-hidden');
+      for (var dn = 0; dn < annDots.length; dn++) annDots[dn].classList.toggle('is-active', dn === n);
+    };
+    if (annItems.length > 1) {
+      var dotsBox = doc.createElement('div');
+      dotsBox.className = 'announce-dots';
+      for (var di = 0; di < annItems.length; di++) {
+        var annDot = doc.createElement('button');
+        annDot.type = 'button';
+        annDot.className = di === 0 ? 'is-active' : '';
+        annDot.setAttribute('aria-label', 'Show announcement ' + (di + 1));
+        annDot.addEventListener('click', (function (k) { return function () { showAnn(k); }; })(di));
+        dotsBox.appendChild(annDot);
+        annDots.push(annDot);
+      }
+      annInner.appendChild(dotsBox);
+      annInner.classList.add('has-dots');
+      // Rotate every 5 seconds; pause while hovered, focused or touched; no rotation for reduced motion
+      var annPaused = false;
+      var pause = function () { annPaused = true; };
+      var resume = function () { annPaused = false; };
+      announce.addEventListener('mouseenter', pause);
+      announce.addEventListener('mouseleave', resume);
+      announce.addEventListener('focusin', pause);
+      announce.addEventListener('focusout', resume);
+      announce.addEventListener('touchstart', function () { pause(); setTimeout(resume, 8000); }, { passive: true });
+      if (!reduceMotion) {
+        setInterval(function () {
+          if (!annPaused && !doc.hidden) showAnn((annCurrent + 1) % annItems.length);
+        }, 5000);
+      }
+    }
+    var annSection = announce.querySelector('.announce-section');
+    if (annSection) annSection.style.display = 'none';
+    announce.setAttribute('role', 'region');
+    announce.setAttribute('aria-label', 'Announcements');
+    announce.appendChild(annInner);
+    announce.classList.add('has-items');
+  }
+
+  // Images in a post without a description (alt text) get the post title, for image search
+  var altPost = doc.querySelector('.post-single');
+  if (altPost) {
+    var altTitle = ((altPost.querySelector('.post-title') || {}).textContent || '').trim();
+    var bodyImgs = altPost.querySelectorAll('.post-body img');
+    for (var bi = 0; bi < bodyImgs.length; bi++) {
+      if (altTitle && !bodyImgs[bi].closest('.yt-lite') && !(bodyImgs[bi].getAttribute('alt') || '').trim()) bodyImgs[bi].setAttribute('alt', altTitle);
+    }
+  }
+
+  // ---------- Structured data for search engines (JSON-LD) ----------
+  function addJsonLd(data) {
+    var ld = doc.createElement('script');
+    ld.type = 'application/ld+json';
+    ld.textContent = JSON.stringify(data);
+    doc.head.appendChild(ld);
+  }
+  var metaContent = function (sel) { var m = doc.querySelector(sel); return m ? m.getAttribute('content') || '' : ''; };
+  var siteName = metaContent('meta[property="og:site_name"]') || ((doc.querySelector('.brand-name') || {}).textContent || '').trim();
+  var homeUrl = location.protocol + '//' + location.host + '/';
+  var sameAs = [];
+  var profileLinks = doc.querySelectorAll('#footer-connect .widget-content a[href^="http"], #LinkList6 .widget-content a[href^="http"]');
+  for (var pl = 0; pl < profileLinks.length; pl++) {
+    var profile = profileLinks[pl].href;
+    if (!/wa\.me|whatsapp\.com\/send|api\.whatsapp/.test(profile) && sameAs.indexOf(profile) < 0) sameAs.push(profile);
+  }
+  var logoImg = doc.querySelector('.brand-mark img, .brand-logo img');
+  var organization = { '@type': 'Organization', name: siteName, url: homeUrl };
+  if (logoImg) organization.logo = logoImg.src;
+  if (/^https?:$/.test(location.protocol)) {
+    if (doc.body.classList.contains('pt-index') && location.pathname === '/') {
+      var orgData = { '@context': 'https://schema.org' };
+      for (var ok in organization) orgData[ok] = organization[ok];
+      if (sameAs.length) orgData.sameAs = sameAs;
+      addJsonLd({ '@context': 'https://schema.org', '@type': 'WebSite', name: siteName, url: homeUrl });
+      addJsonLd(orgData);
+    }
+    var ldPost = doc.querySelector('.pt-item .post-single');
+    if (ldPost) {
+      var ldTitle = ((ldPost.querySelector('.post-title') || {}).textContent || doc.title).trim();
+      var ldUrl = ldPost.getAttribute('data-url') || location.href.split(/[?#]/)[0];
+      var ldTime = ldPost.querySelector('time[datetime]');
+      var ldDate = ldTime ? ldTime.getAttribute('datetime') : '';
+      var ldAuthor = ((ldPost.querySelector('.post-author') || {}).textContent || '').trim();
+      var ldBody = ldPost.querySelector('.post-body');
+      var ldDesc = metaContent('meta[name="description"]') || metaContent('meta[property="og:description"]') ||
+        (ldBody ? ldBody.innerText.replace(/\s+/g, ' ').trim().slice(0, 200) : '');
+      var ldImages = [];
+      var ogImage = metaContent('meta[property="og:image"]');
+      if (ogImage) ldImages.push(ogImage);
+      var ldVideos = ldBody ? ldBody.querySelectorAll('.yt-lite[data-yt]') : [];
+      if (!ldImages.length && ldVideos.length) ldImages.push('https://i.ytimg.com/vi/' + ldVideos[0].getAttribute('data-yt') + '/hqdefault.jpg');
+      var ldLabels = [];
+      var ldLabelLinks = ldPost.querySelectorAll('.post-labels a');
+      for (var ll = 0; ll < ldLabelLinks.length; ll++) ldLabels.push(ldLabelLinks[ll].textContent.trim());
+      var article = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: ldTitle.slice(0, 110),
+        url: ldUrl,
+        mainEntityOfPage: ldUrl,
+        datePublished: ldDate,
+        dateModified: ldDate,
+        publisher: organization
+      };
+      if (ldAuthor) article.author = { '@type': 'Person', name: ldAuthor };
+      if (ldDesc) article.description = ldDesc;
+      if (ldImages.length) article.image = ldImages;
+      if (ldLabels.length) article.keywords = ldLabels.join(', ');
+      addJsonLd(article);
+      // Each YouTube video in the post, so it can appear in Google's video results
+      for (var lv = 0; lv < ldVideos.length; lv++) {
+        var vid = ldVideos[lv].getAttribute('data-yt');
+        var videoLd = {
+          '@context': 'https://schema.org',
+          '@type': 'VideoObject',
+          name: ldVideos.length > 1 ? ldTitle + ' (video ' + (lv + 1) + ')' : ldTitle,
+          description: ldDesc || ldTitle,
+          thumbnailUrl: ['https://i.ytimg.com/vi/' + vid + '/maxresdefault.jpg', 'https://i.ytimg.com/vi/' + vid + '/hqdefault.jpg'],
+          embedUrl: 'https://www.youtube.com/embed/' + vid
+        };
+        if (ldDate) videoLd.uploadDate = ldDate;
+        addJsonLd(videoLd);
+      }
+      var crumbs = [{ '@type': 'ListItem', position: 1, name: siteName || 'Home', item: homeUrl }];
+      if (ldLabels.length) crumbs.push({ '@type': 'ListItem', position: 2, name: ldLabels[0], item: homeUrl + 'search/label/' + encodeURIComponent(ldLabels[0]) });
+      crumbs.push({ '@type': 'ListItem', position: crumbs.length + 1, name: ldTitle, item: ldUrl });
+      addJsonLd({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: crumbs });
+    }
   }
 
   // Post share bar: the phone's own share menu (where supported) and printing

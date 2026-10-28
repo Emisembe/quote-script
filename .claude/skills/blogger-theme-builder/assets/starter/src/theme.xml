@@ -15,6 +15,33 @@ Page not found - <data:blog.title/>
 </b:if>
 </b:if>
 </title>
+<!-- Search engines and social sharing -->
+<b:if cond='data:blog.pageType == &quot;archive&quot;'>
+<meta content='noindex, follow' name='robots'/>
+</b:if>
+<b:if cond='data:blog.pageType == &quot;error_page&quot;'>
+<meta content='noindex, follow' name='robots'/>
+</b:if>
+<meta expr:content='data:blog.title' property='og:site_name'/>
+<b:if cond='data:blog.pageType == &quot;item&quot;'>
+<meta content='article' property='og:type'/>
+<meta expr:content='data:blog.pageName' property='og:title'/>
+<b:else/>
+<meta content='website' property='og:type'/>
+<meta expr:content='data:blog.pageTitle' property='og:title'/>
+</b:if>
+<meta expr:content='data:blog.canonicalUrl' property='og:url'/>
+<b:if cond='data:blog.metaDescription != &quot;&quot;'>
+<meta expr:content='data:blog.metaDescription' property='og:description'/>
+<meta expr:content='data:blog.metaDescription' name='twitter:description'/>
+</b:if>
+<b:if cond='data:blog.postImageUrl'>
+<meta expr:content='data:blog.postImageUrl' property='og:image'/>
+<meta content='summary_large_image' name='twitter:card'/>
+<meta expr:content='data:blog.postImageUrl' name='twitter:image'/>
+<b:else/>
+<meta content='summary' name='twitter:card'/>
+</b:if>
 <b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
 <style type='text/css'>.hero, .topics, .showcase.has-slides, .downloads.has-items { display: block; }</style>
@@ -25,6 +52,18 @@ Page not found - <data:blog.title/>
 </head>
 <body expr:class='&quot;rm pt-&quot; + data:blog.pageType'>
 <a class='skip-link' href='#content'>Skip to content</a>
+
+<!-- ================= Announcement bar (shown once it has messages) ================= -->
+<div class='announce' id='announce'>
+  <b:section class='announce-section' id='announcement' maxwidgets='1' showaddelement='no'>
+    <b:widget id='LinkList8' locked='false' title='Announcements' type='LinkList' version='1'>
+      <b:widget-settings>
+        <b:widget-setting name='sorting'>NONE</b:widget-setting>
+      </b:widget-settings>
+      @@LINKLIST_MAIN@@
+    </b:widget>
+  </b:section>
+</div>
 
 <!-- ================= Header ================= -->
 <header class='site-header' id='site-header'>
@@ -402,6 +441,17 @@ Page not found - <data:blog.title/>
 @@BLOG_COMMENTS@@
         </b:widget>
       </b:section>
+      <!-- "Page not found" extras: shown only on the 404 page -->
+      <div class='notfound-extra' id='notfound-extra'>
+        <b:section class='notfound-section' id='notfound-video' maxwidgets='1' showaddelement='no'>
+          <b:widget id='HTML10' locked='false' title='While you are here, watch this' type='HTML'>
+            <b:widget-settings>
+              <b:widget-setting name='content'><![CDATA[<p>Paste a YouTube link here to show a video on the Page not found page.</p>]]></b:widget-setting>
+            </b:widget-settings>
+            @@HTML_MAIN@@
+          </b:widget>
+        </b:section>
+      </div>
     </div>
 
     <aside class='sidebar'>

@@ -18,7 +18,7 @@ The theme was rebuilt on the foundation of the blog's **original theme**, which 
 | Gadget code | HTML, Labels and Popular Posts use the original's code verbatim, apart from opening popular posts in the same tab |
 | Stylesheet | Plain CSS with Blogger `$(variables)`, like the original's. CSS custom properties are resolved at build time. |
 
-## Automated audit (`python3 scripts/check.py`), 72 checks, all passing
+## Automated audit (`python3 scripts/check.py`), 78 checks, all passing
 
 **Proven-only rules** (from `reference/proven.json`, extracted from the original theme):
 - Only Blogger tags the original used (`b:if`, `b:loop`, `b:include`, ...): no `b:eval`, no `b:template-skin`.
@@ -44,7 +44,7 @@ The theme was rebuilt on the foundation of the blog's **original theme**, which 
 
 Each of these checks was confirmed to fail on a deliberately broken copy of the theme, so they really do catch the problem.
 
-Run against the version Blogger rejected, the audit reports 23 failures, including the Image gadget. The current theme passes all 72 checks.
+Run against the version Blogger rejected, the audit reports 23 failures, including the Image gadget. The current theme passes all 78 checks.
 
 ## Link List gadgets (menu and footer social links)
 
@@ -78,6 +78,12 @@ Browser-tested (desktop and iPhone 13): badges get platform icons and open in a 
 ## Footer buttons, share and print
 
 `LinkList7` ("Support the Show", proven Link List settings) adds WhatsApp, Telegram and donation buttons above the footer bar; donation addresses (PayPal, Ko-fi, Buy Me a Coffee, Patreon, Stripe links, betterplace, GoFundMe) become the primary button. The share bar adds Telegram, Print, and a native Share button that only appears where the browser supports it. A print stylesheet hides everything but the article, prints videos as `Video: https://youtu.be/ID` and ends with the post's address. Browser-tested: hero buttons full width at 320 and 390px and one equal row at 768px, footer buttons full width on phones with icons and new-tab links, the Share button passes the post's title and address to the phone's share menu, Print opens printing, and a PDF of the print view was checked.
+
+## Announcement bar, 404 extras, SEO
+
+`LinkList8` (Announcements, above the header) and `HTML10` (404 video, non-blank default text that is never shown) use proven settings. Browser-tested: the bar is 30px high; messages get SVG icons and an arrow when they link; 3 messages rotate every 5 s, pause while hovered and resume after, switch with the dots, and don't move for reduced-motion users; a `-` address gives plain text; the bar scrolls away while the header stays stuck; text fits at 320px. The 404 page keeps its "Page not found" block and adds the video (centred) and the 3 newest episodes; with no video link only the episodes show; the section is hidden on other pages.
+
+SEO, server side with proven tags only: `og:site_name/type/title/url/description/image` and Twitter card tags; `noindex, follow` on archive and 404 pages (two new audit checks, mutation-tested). In the browser: JSON-LD `WebSite` + `Organization` (sameAs from Connect and Listen-on links) on the homepage; `BlogPosting`, `VideoObject` per YouTube video (thumbnails, embed URL, upload date) and `BreadcrumbList` on posts; all parsed as valid JSON in the test. Missing post image alt text is filled with the post title. Google runs JavaScript and reads JSON-LD added this way; other search engines may not.
 
 ## Browser checks (preview pages, Chromium)
 

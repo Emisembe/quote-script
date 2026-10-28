@@ -27,6 +27,7 @@ Every gadget is a standard Blogger gadget. The menu, social links, slideshow and
 
 | Area | Gadget | What it controls |
 |---|---|---|
+| Top bar | **Link List** (`LinkList8`, "Announcements") | Thin teal announcement bar above the header. *Site Name* = message, *Site URL* = where it leads (`-` for no link). Several messages rotate every 5 s (pause on hover/touch, dots to switch, no motion for reduced-motion users). An SVG icon is picked from the words (episode, live/event/date, download, video, newsletter, support, shop; otherwise a megaphone); start a message with an emoji to use that instead. Hidden while empty. |
 | Brand | **Header** (`Header1`) | Blog title and description. Upload a square logo to replace the "RM" initials. Choose *Instead of title and description* to use a wide logo. |
 | Main menu | **Link List** (`LinkList1`) | Menu links. Start a link's name with `_` to make it a sub-page of the link above (shown as a dropdown; the `_` is hidden). `/#about`, `/#episodes`, `/#downloads`, `/#topics` and `#connect` jump to homepage sections. |
 | Header button | HTML (`HTML2`) | One link, shown as the teal button. |
@@ -42,6 +43,7 @@ Every gadget is a standard Blogger gadget. The menu, social links, slideshow and
 | Newsletter | HTML (`HTML9`) | Signup box above the footer on every page. *Title* = heading, *Content* = the text plus **one** of: a link to your signup page (becomes a button), a Substack link (shows Substack's own signup box), a `mailto:` link (opens an email with "Subscribe" as subject), or the embed code from Mailchimp/Brevo/Kit (styled to match). Hidden until it has a link or form. |
 | Footer | HTML `HTML6`, **Link List** `LinkList2`, HTML `HTML8` | About text, social and contact links (icons are added automatically from the address: YouTube, TikTok, Instagram, LinkedIn, Facebook, X, WhatsApp, Spotify, podcasts, `mailto:` email, `tel:` phone), and quick links. There is no "Powered by Blogger" line. |
 | Footer buttons | **Link List** (`LinkList7`, "Support the Show") | Big buttons above the copyright: starts with *Chat on WhatsApp* (`https://wa.me/`), *Join on Telegram* (`https://t.me/`) and *Support the Show* (`https://www.paypal.com/paypalme/`). Replace the links with yours (`https://wa.me/49151…`, `https://t.me/yourchannel`, your PayPal.me / Ko-fi / Buy Me a Coffee page). Donation links become the solid teal button. Full width on phones. |
+| 404 page | HTML (`HTML10`) | Under "Page not found": *Title* = heading, *Content* = a YouTube link (shown as the branded video player). The 3 newest episodes are added automatically. With no link, only the episodes show. |
 | Footer bar | **Link List** (`LinkList5`, "Legal") | Links next to the copyright. Starts with *Impressum* → `/p/impressum.html` and *Datenschutz* → `/p/datenschutz.html`: create pages with exactly those titles. |
 | Posts | (automatic) | **Share bar**: the phone's own Share menu (where supported), Facebook, X, LinkedIn, WhatsApp, Telegram, Copy link and **Print**. Printing gives a clean page: just the article, videos as links, and the post's address. |
 | Posts | (automatic) | **Related episodes** under each post: up to 3 posts with the same first label, topped up with the newest posts. Video posts play in the card. |
@@ -49,6 +51,8 @@ Every gadget is a standard Blogger gadget. The menu, social links, slideshow and
 **Videos in posts:** paste a YouTube link on its own line in a post (in Compose view, or as a link), or add it with Blogger's video button, and it becomes the same branded player as the host card: the video's HD thumbnail with a teal play button, loading YouTube only when played. A link inside a sentence stays a normal link. On the homepage, a card whose post contains a video shows the video's thumbnail with a play button and plays the video in the card.
 
 **Favicon:** `assets/favicon-rivermusa.png` (512×512, 23 KB) is ready for **Settings → Favicon**. Blogger needs a square image under 100 KB. Browsers cache favicons, so check in a private window.
+
+**Search engines (SEO):** the theme adds Open Graph/Twitter tags (title, description, picture for shared links), `noindex` on archive and 404 pages, and structured data built in the browser: `WebSite` + `Organization` (with your profile links as `sameAs`) on the homepage, and `BlogPosting`, one `VideoObject` per YouTube video and `BreadcrumbList` on posts. Post images without alt text get the post title. The heading font is built in and videos load on click, which keeps pages fast. Ranking still depends on content: write a search description for every post, use clear titles, labels and show notes, and submit `/sitemap.xml` in Google Search Console (see the guide).
 
 **Placeholder links to replace:** the YouTube, TikTok, Instagram and LinkedIn links point to each site's homepage. "Learn More" and "Shop" go to `/p/about.html` and `/p/shop.html`, so create pages with those names or change the links.
 

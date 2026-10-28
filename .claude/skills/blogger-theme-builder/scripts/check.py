@@ -139,6 +139,12 @@ allowed_tags = set(REF['data_tags']) | set(REF['extra']['data_tags'])
 check(data_tags <= allowed_tags, f'all {len(data_tags)} data: tags are proven by the original theme',
       str(sorted(data_tags - allowed_tags)))
 
+# Search engines and social sharing
+check(all(t in text for t in ("property='og:title'", "property='og:url'", "property='og:image'", "name='twitter:card'")),
+      'social sharing tags (Open Graph + Twitter card) are in <head>')
+check(len(re.findall(r"pageType == &quot;(?:archive|error_page)&quot;'>\s*<meta content='noindex, follow' name='robots'/>", text)) == 2,
+      'archive and 404 pages are noindex, follow (no thin or duplicate pages in Google)')
+
 # ---------------------------------------------------------------- CSS
 skin = root.find(f'.//{B}skin').text or ''
 defined_vars = set(re.findall(r'<Variable name="([^"]+)"', skin))
