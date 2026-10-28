@@ -55,7 +55,7 @@ function feedJson(label, count) {
     entries.push({
       title: { $t: (label && label !== 'Branches' && label !== 'universities' ? '' : 'Branch ' + (i + 1) + ': ') + TITLES[n] },
       published: { $t: new Date(Date.UTC(2026, 9, 25 - i * 3, 9)).toISOString() },
-      link: [{ rel: 'alternate', href: '/preview/kpuwu-post.html?p=' + n }],
+      link: [{ rel: 'alternate', href: '/2026/10/sample-article-' + n + '.html' }],
       summary: { $t: 'The union has welcomed the outcome, saying it shows what workers can achieve when they organise. Members are invited to branch meetings to discuss the next steps and to share their views.' },
       media$thumbnail: i % 4 === 3 ? undefined : { url: `https://blogger.googleusercontent.com/img/b/feed/s72-c/${encodeURIComponent(label || 'all')}-${i}.jpg` },
     });

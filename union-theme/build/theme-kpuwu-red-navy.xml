@@ -1239,6 +1239,40 @@ body .widget .toc-list li { padding: 3px 0; }
 .branch-btn .social-icon { width: 16px; height: 16px; }
 @media (max-width: 479px) { .post-body .branch-btn { flex: 1 1 calc(50% - 4px); justify-content: center; } }
 
+/* ---------- Videos under short articles ---------- */
+.video-fill { margin-top: 36px; }
+.video-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+@media (min-width: 640px) { .video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.video-card { background: #fff; border-radius: 10px; box-shadow: 0 2px 14px rgba(15, 30, 55, 0.08); overflow: hidden; }
+.video-thumb, .video-frame { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+.video-thumb { padding: 0; border: 0; cursor: pointer; }
+.video-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: opacity 0.2s; }
+.video-thumb:hover img { opacity: 1; }
+.video-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border-radius: 50%;
+  background: $(accent.color);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s;
+}
+.video-play::after {
+  content: '';
+  position: absolute;
+  left: 26px;
+  top: 20px;
+  border-style: solid;
+  border-width: 12px 0 12px 19px;
+  border-color: transparent transparent transparent #fff;
+}
+.video-thumb:hover .video-play, .video-thumb:focus-visible .video-play { transform: scale(1.08); }
+.video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-title { margin: 0; padding: 12px 16px 14px; font-weight: 700; font-size: 15px; line-height: 1.35; color: $(primary.color); }
+
 /* ---------- HTML site map page ---------- */
 .sitemap-summary { color: $(muted.color); }
 .sitemap-topics { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
@@ -1254,7 +1288,8 @@ body .widget .post-body .sitemap-list li { display: flex; flex-wrap: wrap; justi
 /* ---------- Posts area ---------- */
 .page-main { padding: 44px 0 60px; }
 .main-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 44px; }
-@media (min-width: 1024px) { .main-grid { grid-template-columns: minmax(0, 1fr) 320px; gap: 44px; } }
+/* align-items: start lets each column keep its own height, so theme.js can measure the empty space under a short article */
+@media (min-width: 1024px) { .main-grid { grid-template-columns: minmax(0, 1fr) 320px; gap: 44px; align-items: start; } }
 .section-head { margin-bottom: 4px; }
 .post-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
 @media (min-width: 640px) { .post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -3566,6 +3601,33 @@ body#layout .header-inner { display: block; }
     </b:widget>
   </b:section>
 </div>
+<!-- Videos (Layout gadget): fill the space under short posts and pages; one video on phones -->
+<div class='u-data video-data' hidden='hidden'>
+  <b:section class='videos-section' id='videos-list' maxwidgets='1' showaddelement='yes'>
+    <b:widget id='HTML37' locked='false' title='Watch: KPUWU videos' type='HTML' version='1'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<!--
+  VIDEOS: one YouTube link per line, optionally followed by | and a title:
+  https://www.youtube.com/watch?v=VIDEO-ID | Title of the video
+  On computers they fill the empty space under short posts and pages (as many as fit);
+  phones and tablets show the first one. Leave the list empty to show no videos.
+-->
+https://www.youtube.com/watch?v=8ZJz4Cda9MY | History of trade unions]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+    </b:widget>
+  </b:section>
+</div>
 
 <!-- ================= Footer ================= -->
 <footer class='site-footer' id='contact'>
@@ -4362,21 +4424,34 @@ body#layout .header-inner { display: block; }
     });
   }
 
-  // Related articles on post pages (from the post's first label)
+  // Related articles on every post: same topic first (the post's first label), topped up with
+  // the latest articles when the topic has fewer than 3 others or the post has no label
   var related = doc.querySelector('.related');
   var crumb = doc.querySelector('.breadcrumb .crumb-label');
-  if (related && crumb) {
-    var here = (window.location.href.split(/[?#]/)[0]).replace(/^https?:/, '');
-    loadFeed(crumb.textContent.trim(), 6, function (entries) {
-      if (!entries) return;
-      var posts = entries.map(parseEntry).filter(function (p) {
-        return p.url.split(/[?#]/)[0].replace(/^https?:/, '') !== here;
-      }).slice(0, 3);
-      if (!posts.length) return;
+  if (related) {
+    var plainUrl = function (u) { return u.split(/[?#]/)[0].replace(/^https?:/, ''); };
+    var seenPosts = {};
+    seenPosts[plainUrl(window.location.href)] = true;
+    var picked = [];
+    var take = function (entries) {
+      (entries || []).map(parseEntry).forEach(function (p) {
+        var k = plainUrl(p.url);
+        if (picked.length < 3 && !seenPosts[k]) { seenPosts[k] = true; picked.push(p); }
+      });
+    };
+    var showRelated = function (latestOnly) {
+      if (!picked.length) return;
+      if (latestOnly) related.querySelector('.related-title').textContent = 'Latest articles';
       var grid = related.querySelector('.related-grid');
-      posts.forEach(function (p) { grid.appendChild(card(p)); });
+      picked.forEach(function (p) { grid.appendChild(card(p)); });
       related.hidden = false;
-    });
+    };
+    var topUp = function (hadTopic) {
+      if (picked.length >= 3) { showRelated(false); return; }
+      loadFeed('', 8, function (entries) { take(entries); showRelated(!hadTopic); });
+    };
+    if (crumb) loadFeed(crumb.textContent.trim(), 6, function (entries) { take(entries); topUp(picked.length > 0); });
+    else topUp(false);
   }
 
   // ---------------------------------------------------------------- small helpers
@@ -4975,6 +5050,90 @@ body#layout .header-inner { display: block; }
         new window.google.translate.TranslateElement({ pageLanguage: original, autoDisplay: false }, 'union-translate');
       };
       doc.body.appendChild(el('script', { src: 'https://translate.google.com/translate_a/element.js?cb=__unionTranslateInit' }));
+    }
+  }
+
+  // ---------------------------------------------------------------- videos in the space under short articles
+  // Layout > Videos holds YouTube links (one per line, optional title after |). On computers, the
+  // empty space under a post or page (when the sidebar is longer) is filled with as many videos as
+  // fit, never more. Phones and tablets show one video under the article.
+  function youtubeId(u) {
+    var m = (u || '').match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#\s]*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([\w-]{11})/);
+    return m ? m[1] : null;
+  }
+  var videoData = doc.querySelector('.video-data .widget-content');
+  var videoList = [];
+  if (videoData) {
+    var vLines = [];
+    textLines(videoData).forEach(function (line) { vLines = vLines.concat(line.text.split(/\r?\n/)); });
+    [].forEach.call(videoData.querySelectorAll('a[href]'), function (a) { vLines.push(a.getAttribute('href') + ' | ' + a.textContent); });
+    var seenVideos = {};
+    vLines.forEach(function (line) {
+      var id = youtubeId(line);
+      if (!id || seenVideos[id]) return;
+      seenVideos[id] = true;
+      var title = (line.split('|')[1] || '').trim();
+      if (youtubeId(title)) title = '';
+      videoList.push({ id: id, title: title });
+    });
+  }
+  var mainCol = doc.querySelector('.main-col');
+  var sideSection = doc.querySelector('.sidebar .sidebar-section');
+  var onArticle = doc.querySelector('.pt-item .post-single, .pt-static_page .post-single');
+  if (videoList.length && mainCol && sideSection && onArticle) {
+    var gadgetTitle = doc.querySelector('.video-data h2.title');
+    var videoGrid = el('div', { className: 'video-grid' });
+    var videoBox = el('section', { className: 'video-fill', 'aria-label': 'Videos' }, [
+      el('h2', { className: 'section-title', text: gadgetTitle && gadgetTitle.textContent.trim() ? gadgetTitle.textContent.trim() : 'Videos' }),
+      videoGrid]);
+    videoBox.hidden = true;
+    mainCol.appendChild(videoBox);
+    var playing = false;
+    var videoCards = videoList.map(function (v) {
+      var thumbBtn = el('button', { type: 'button', className: 'video-thumb', 'aria-label': 'Play video' + (v.title ? ': ' + v.title : '') }, [
+        el('img', { src: 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg', alt: '', loading: 'lazy' }),
+        el('span', { className: 'video-play', 'aria-hidden': 'true' })]);
+      thumbBtn.addEventListener('click', function () {
+        playing = true;
+        var frame = el('iframe', { src: 'https://www.youtube-nocookie.com/embed/' + v.id + '?autoplay=1&rel=0', title: v.title || 'Video',
+          allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture', allowfullscreen: '' });
+        thumbBtn.parentNode.replaceChild(el('div', { className: 'video-frame' }, [frame]), thumbBtn);
+      });
+      return el('article', { className: 'video-card' }, [thumbBtn, v.title ? el('p', { className: 'video-title', text: v.title }) : null]);
+    });
+    var twoColumns = window.matchMedia ? window.matchMedia('(min-width: 1024px)') : null;
+    var contentBottom = function () {
+      var bottom = 0;
+      [].forEach.call(mainCol.children, function (c) { if (!c.hidden) bottom = Math.max(bottom, c.getBoundingClientRect().bottom); });
+      return bottom;
+    };
+    var fillVideos = function () {
+      if (playing) return;                      // never move a video someone is watching
+      videoGrid.textContent = '';
+      videoBox.hidden = false;
+      if (!(twoColumns && twoColumns.matches)) { videoGrid.appendChild(videoCards[0]); return; }
+      var limit = sideSection.getBoundingClientRect().bottom + 2;
+      for (var vi = 0; vi < videoCards.length && vi < 8; vi++) {
+        videoGrid.appendChild(videoCards[vi]);
+        if (contentBottom() > limit) { videoGrid.removeChild(videoCards[vi]); break; }
+      }
+      if (!videoGrid.children.length) videoBox.hidden = true;
+    };
+    var fillQueued = false;
+    var queueFill = function () {
+      if (fillQueued) return;
+      fillQueued = true;
+      window.requestAnimationFrame(function () { fillQueued = false; fillVideos(); });
+    };
+    fillVideos();
+    window.addEventListener('load', queueFill);
+    window.addEventListener('resize', queueFill);
+    // Photos, related articles and comments load later and change the lengths: fill again
+    if (window.ResizeObserver) {
+      var watch = new ResizeObserver(queueFill);
+      watch.observe(sideSection);
+      var blogSection = mainCol.querySelector('.main.section') || mainCol.firstElementChild;
+      if (blogSection) watch.observe(blogSection);
     }
   }
 
