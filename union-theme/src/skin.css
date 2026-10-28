@@ -59,9 +59,13 @@ body {
   color: var(--u-text);
   background: var(--u-bg);
   -webkit-font-smoothing: antialiased;
+  /* clip (not hidden): stops sideways scrolling without turning <body> into a scroll box,
+     which would break the sticky header (hidden is the fallback for old browsers) */
   overflow-x: hidden;
+  overflow-x: clip;
 }
-html.nav-locked, html.nav-locked body { overflow: hidden; }
+/* Menu open: stop the page scrolling behind it. Only <html>: locking <body> too would unstick the header */
+html.nav-locked { overflow: hidden; }
 img, video, iframe, embed, object { max-width: 100%; }
 img { height: auto; border: 0; }
 a { color: inherit; text-decoration: none; }
@@ -395,6 +399,7 @@ body { top: 0 !important; }
   padding: 8px 16px 32px;
   display: none;
   border-top: 1px solid var(--u-border);
+  overscroll-behavior: contain;
 }
 .nav-open .nav-drawer { display: block; }
 .site-nav .widget-content > ul > li { border-bottom: 1px solid var(--u-border); position: relative; }
@@ -1210,7 +1215,7 @@ body .widget .toc-list li { padding: 3px 0; }
 }
 .post-body .branch-btn:hover { opacity: 0.9; }
 .post-body .branch-call { background: var(--u-accent); }
-.post-body .branch-whatsapp { background: #1E8E4E; }
+.post-body .branch-whatsapp { background: #147A3E; }
 .post-body .branch-map { background: #fff; color: var(--u-primary) !important; box-shadow: inset 0 0 0 2px var(--u-border); }
 .branch-btn .social-icon { width: 16px; height: 16px; }
 @media (max-width: 479px) { .post-body .branch-btn { flex: 1 1 calc(50% - 4px); justify-content: center; } }

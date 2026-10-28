@@ -503,6 +503,40 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
     await page.close();
   }
 
+  // Opening the menu after scrolling down (phones, tablets): header stays on screen, menu directly
+  // under it, page does not scroll behind the menu, and closing returns to the same place
+  for (const [width, mobile] of [[320, true], [390, true], [622, false], [834, true], [1024, false]]) {
+    for (const name of ['kpuwu-post', 'generic-home']) {
+      const ctx = await browser.newContext({ viewport: { width, height: 760 }, isMobile: mobile, hasTouch: mobile });
+      const page = await ctx.newPage();
+      await page.route('**/*', (route) => route.request().url().startsWith(base) ? route.continue() : route.abort());
+      await page.goto(`${base}/preview/${name}.html`);
+      await page.evaluate(() => window.scrollTo(0, 2200));
+      await page.waitForTimeout(250);
+      await page.click('#nav-toggle');
+      await page.waitForTimeout(250);
+      const open = await page.evaluate(() => {
+        const h = document.getElementById('site-header').getBoundingClientRect(), d = document.getElementById('site-nav').getBoundingClientRect();
+        return { headerTop: Math.round(h.top), headerBottom: Math.round(h.bottom), drawerTop: Math.round(d.top), y: Math.round(scrollY) };
+      });
+      await page.mouse.wheel(0, 600);
+      await page.waitForTimeout(250);
+      const yAfterWheel = await page.evaluate(() => Math.round(scrollY));
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(150);
+      const yClosed = await page.evaluate(() => Math.round(scrollY));
+      note(open.headerTop === 0 && Math.abs(open.drawerTop - open.headerBottom) <= 1,
+        `menu after scrolling ${name} @${width}: header stays on screen, menu right under it ${JSON.stringify(open)}`);
+      note(yAfterWheel === open.y && yClosed === open.y, `menu after scrolling ${name} @${width}: page stays put while the menu is open and after closing (${open.y} / ${yAfterWheel} / ${yClosed})`);
+      if (name === 'kpuwu-post' && width === 390) {
+        await page.click('#nav-toggle');
+        await page.waitForTimeout(200);
+        await page.screenshot({ path: path.join(OUT, 'menu-after-scroll-390.png') });
+      }
+      await ctx.close();
+    }
+  }
+
   // Every desktop dropdown opens fully on screen
   for (const width of [1100, 1280, 1440]) {
     for (const name of ['kpuwu-home', 'generic-home']) {
