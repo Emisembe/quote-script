@@ -510,6 +510,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
   overflow: hidden;
   background: #000;
 }
+.yt-print { display: none; }
 .yt-lite iframe,
 .yt-lite-play {
   position: absolute;
@@ -1013,6 +1014,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   transition: border-color 0.2s, color 0.2s;
 }
 .post-share a:hover, .post-share button:hover { border-color: $(accent.color); color: $(accent.color); }
+.post-share [hidden] { display: none; }
 
 /* Comments (Blogger's built-in markup) */
 .post-single .comments {
@@ -1212,6 +1214,24 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 .footer-bottom .widget-content { font-size: 13px; }
 @media (max-width: 600px) { .footer-bottom { justify-content: center; text-align: center; } }
 
+/* Footer buttons: WhatsApp, Telegram, donate (Link List, shown once it has links) */
+.footer-actions { display: none; padding: 0 0 32px; }
+.footer-actions.has-items { display: block; }
+.footer-actions .widget > h2.title { display: none; }
+.footer-actions .widget-content ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.site-footer .footer-actions .widget-content li { margin: 0; }
+.footer-actions .btn { min-width: 210px; }
+.site-footer .footer-actions a.btn-primary,
+.site-footer .footer-actions a.btn-primary:hover { color: $(primary.color); }
+.btn-footer { background: transparent; border-color: rgba(255, 255, 255, 0.35); color: #fff; }
+.site-footer .footer-actions a.btn-footer { color: #fff; }
+.site-footer .footer-actions a.btn-footer:hover { border-color: $(accent.color); color: $(accent.color); }
+.btn-footer .social-icon { color: $(accent.color); }
+@media (max-width: 600px) {
+  .footer-actions .widget-content li { flex: 1 1 100%; }
+  .footer-actions .btn { width: 100%; }
+}
+
 /* Legal links (Link List next to the copyright) */
 .footer-legal .widget > h2.title { display: none; }
 .footer-legal .widget-content ul { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0; padding: 0; list-style: none; }
@@ -1369,6 +1389,17 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   .header-cta .widget-content a { justify-content: center; }
 }
 
+/* Hero buttons: full width on phones, one row of equal buttons on tablets */
+@media (max-width: 600px) {
+  #HTML4 .widget-content ul { flex-direction: column; }
+  #HTML4 .widget-content li,
+  #HTML4 .widget-content a { width: 100%; }
+}
+@media (min-width: 601px) and (max-width: 959px) {
+  #HTML4 .widget-content li { flex: 1 1 0; }
+  #HTML4 .widget-content a { width: 100%; }
+}
+
 /* ---------- Small screens ---------- */
 @media (max-width: 380px) {
   body { font-size: 15px; }
@@ -1377,11 +1408,29 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   .hero-main .widget-content a { width: 100%; }
 }
 
+/* ---------- Printing a post: just the article, with its address ---------- */
+@media print {
+  .site-header, .nav-backdrop, .hero, .showcase, .downloads, .topics, .sidebar,
+  .newsletter, .site-footer, .post-share, .related, .comments, #comments,
+  .blog-pager-nav, .yt-play-icon, .navbar, #navbar { display: none !important; }
+  body { background: #fff; color: #000; font-size: 12pt; }
+  .container { max-width: none; padding: 0; }
+  .page-main, .main-grid { display: block; padding: 0; margin: 0; }
+  .post-single { border: 0; box-shadow: none; padding: 0; }
+  .post-single::after { content: "Read online: " attr(data-url); display: block; margin-top: 24px; font-size: 10pt; color: #555; }
+  .post-body a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.85em; color: #555; word-break: break-all; }
+  .post-body img, blockquote { break-inside: avoid; }
+  .post-body .yt-lite { padding: 0; background: none; border-radius: 0; overflow: visible; }
+  .post-body .yt-lite-play { display: none; }
+  .post-body .yt-print { display: block; font-weight: 700; }
+  h1, h2, h3 { break-after: avoid; }
+}
+
 /* ---------- Blogger Layout editor ---------- */
 body#layout .site-header { position: static; }
 body#layout .hero, body#layout .topics, body#layout .sidebar,
 body#layout .showcase, body#layout .downloads,
-body#layout .newsletter, body#layout #LinkList6 { display: block; }
+body#layout .newsletter, body#layout #LinkList6, body#layout .footer-actions { display: block; }
 body#layout .container { max-width: none; padding: 0; }
 body#layout .header-inner, body#layout .hero-grid, body#layout .main-grid,
 body#layout .footer-grid, body#layout .footer-bottom { display: block; }
@@ -1745,7 +1794,7 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
           </b:includable>
 
           <b:includable id='rmSingle' var='post'>
-            <article class='post-single post'>
+            <article class='post-single post' expr:data-url='data:post.url'>
               <a expr:name='data:post.id'/>
               <header class='post-head'>
                 <b:if cond='data:post.labels'>
@@ -1777,11 +1826,14 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
               <b:if cond='data:blog.pageType == &quot;item&quot;'>
                 <div class='post-share'>
                   <span class='post-share-label'>Share</span>
+                  <button class='js-native-share' hidden='hidden' type='button'>Share…</button>
                   <a expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
                   <a expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
                   <a expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
                   <a expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+                  <a expr:href='&quot;https://t.me/share/url?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Telegram</a>
                   <button expr:data-copy-url='data:post.url' type='button'>Copy link</button>
+                  <button class='js-print' type='button'>Print</button>
                 </div>
               </b:if>
               <b:include data='post' name='comment_picker'/>
@@ -2679,6 +2731,32 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
         </b:widget>
       </b:section>
     </div>
+    <b:section class='footer-actions' id='footer-actions' maxwidgets='1' showaddelement='no'>
+      <b:widget id='LinkList7' locked='false' title='Support the Show' type='LinkList' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='sorting'>NONE</b:widget-setting>
+          <b:widget-setting name='text-0'>Chat on WhatsApp</b:widget-setting>
+          <b:widget-setting name='link-0'>https://wa.me/</b:widget-setting>
+          <b:widget-setting name='text-1'>Join on Telegram</b:widget-setting>
+          <b:widget-setting name='link-1'>https://t.me/</b:widget-setting>
+          <b:widget-setting name='text-2'>Support the Show</b:widget-setting>
+          <b:widget-setting name='link-2'>https://www.paypal.com/paypalme/</b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <ul>
+      <b:loop values='data:links' var='link'>
+        <li><a expr:href='data:link.target'><data:link.name/></a></li>
+      </b:loop>
+    </ul>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>
+      </b:widget>
+    </b:section>
     <div class='footer-bottom'>
       <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/></p>
       <b:section class='footer-legal' id='footer-legal' maxwidgets='1' showaddelement='no'>
@@ -2779,6 +2857,8 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
     spotify: '<circle cx="12" cy="12" r="10"/><path d="M7 9.5c3.5-1 7.5-.7 10.5 1"/><path d="M7.5 12.7c2.9-.8 6-.5 8.5.9"/><path d="M8 15.8c2.3-.6 4.6-.4 6.6.7"/>',
     podcast: '<circle cx="12" cy="11" r="3"/><path d="M8.5 16.5a6 6 0 1 1 7 0"/><path d="M12 14v8"/>',
     email: '<rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/>',
+    telegram: '<path d="M21.5 4.5L2.5 11.8l6 2.2 2.3 6.5 3.4-4.2 5 3.7z"/><path d="M8.5 14l8.5-6"/>',
+    donate: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
     phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
     link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>'
   };
@@ -2793,11 +2873,13 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
     if (/facebook\.com|fb\.com|fb\.me/.test(h)) return 'facebook';
     if (/(^|\/\/|\.)(x|twitter)\.com/.test(h)) return 'x';
     if (/whatsapp\.com|wa\.me/.test(h)) return 'whatsapp';
+    if (/(^|\/\/|\.)(t\.me|telegram\.me|telegram\.org)/.test(h)) return 'telegram';
+    if (/paypal\.|ko-fi\.com|buymeacoffee\.com|patreon\.com|betterplace\.|gofundme\.com|buy\.stripe\.com|donate|spende/.test(h)) return 'donate';
     if (/spotify\.com/.test(h)) return 'spotify';
     if (/podcasts\.apple\.com|anchor\.fm|podbean|buzzsprout/.test(h)) return 'podcast';
     return 'link';
   }
-  var socialLinks = doc.querySelectorAll('#footer-connect .widget-content a, #LinkList6 .widget-content a');
+  var socialLinks = doc.querySelectorAll('#footer-connect .widget-content a, #LinkList6 .widget-content a, #footer-actions .widget-content a');
   for (var so = 0; so < socialLinks.length; so++) {
     var sl = socialLinks[so];
     if (sl.querySelector('svg')) continue;
@@ -2808,6 +2890,15 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
       sl.setAttribute('rel', 'noopener');
     }
   }
+  // Footer buttons (WhatsApp, Telegram, donate): donation links are the solid teal button
+  var actionLinks = doc.querySelectorAll('#footer-actions .widget-content a');
+  for (var ac = 0; ac < actionLinks.length; ac++) {
+    var donate = socialType(actionLinks[ac].getAttribute('href')) === 'donate';
+    actionLinks[ac].className = 'btn ' + (donate ? 'btn-primary' : 'btn-footer');
+  }
+  var actions = doc.getElementById('footer-actions');
+  if (actions && actionLinks.length) actions.classList.add('has-items');
+
   // "Listen on" badges in the hero: hidden until the list has links
   var listen = doc.getElementById('LinkList6');
   if (listen && listen.querySelector('.widget-content a')) listen.classList.add('has-items');
@@ -2865,6 +2956,11 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
       if (onPlay) onPlay(box);
     });
     box.appendChild(btn);
+    // Printed pages show the video's address instead of a picture that can't play
+    var printNote = doc.createElement('span');
+    printNote.className = 'yt-print';
+    printNote.textContent = 'Video: https://youtu.be/' + id;
+    box.appendChild(printNote);
     return box;
   }
 
@@ -3549,6 +3645,21 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
       var share = postArticle.querySelector('.post-share') || postArticle.querySelector('.post-body');
       share.parentNode.insertBefore(section, share.nextSibling);
     });
+  }
+
+  // Post share bar: the phone's own share menu (where supported) and printing
+  var nativeShare = doc.querySelector('.js-native-share');
+  var sharedPost = doc.querySelector('.post-single[data-url]');
+  if (nativeShare && sharedPost && navigator.share) {
+    nativeShare.hidden = false;
+    nativeShare.addEventListener('click', function () {
+      var heading = sharedPost.querySelector('.post-title');
+      navigator.share({ title: heading ? heading.textContent.trim() : doc.title, url: sharedPost.getAttribute('data-url') }).catch(function () {});
+    });
+  }
+  var printBtns = doc.querySelectorAll('.js-print');
+  for (var pr = 0; pr < printBtns.length; pr++) {
+    printBtns[pr].addEventListener('click', function () { window.print(); });
   }
 
   // Footer year

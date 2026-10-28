@@ -311,7 +311,7 @@ Page not found - <data:blog.title/>
           </b:includable>
 
           <b:includable id='rmSingle' var='post'>
-            <article class='post-single post'>
+            <article class='post-single post' expr:data-url='data:post.url'>
               <a expr:name='data:post.id'/>
               <header class='post-head'>
                 <b:if cond='data:post.labels'>
@@ -343,11 +343,14 @@ Page not found - <data:blog.title/>
               <b:if cond='data:blog.pageType == &quot;item&quot;'>
                 <div class='post-share'>
                   <span class='post-share-label'>Share</span>
+                  <button class='js-native-share' hidden='hidden' type='button'>Share…</button>
                   <a expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
                   <a expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
                   <a expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
                   <a expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+                  <a expr:href='&quot;https://t.me/share/url?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Telegram</a>
                   <button expr:data-copy-url='data:post.url' type='button'>Copy link</button>
+                  <button class='js-print' type='button'>Print</button>
                 </div>
               </b:if>
               <b:include data='post' name='comment_picker'/>
@@ -517,6 +520,20 @@ Page not found - <data:blog.title/>
         </b:widget>
       </b:section>
     </div>
+    <b:section class='footer-actions' id='footer-actions' maxwidgets='1' showaddelement='no'>
+      <b:widget id='LinkList7' locked='false' title='Support the Show' type='LinkList' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='sorting'>NONE</b:widget-setting>
+          <b:widget-setting name='text-0'>Chat on WhatsApp</b:widget-setting>
+          <b:widget-setting name='link-0'>https://wa.me/</b:widget-setting>
+          <b:widget-setting name='text-1'>Join on Telegram</b:widget-setting>
+          <b:widget-setting name='link-1'>https://t.me/</b:widget-setting>
+          <b:widget-setting name='text-2'>Support the Show</b:widget-setting>
+          <b:widget-setting name='link-2'>https://www.paypal.com/paypalme/</b:widget-setting>
+        </b:widget-settings>
+        @@LINKLIST_MAIN@@
+      </b:widget>
+    </b:section>
     <div class='footer-bottom'>
       <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/></p>
       <b:section class='footer-legal' id='footer-legal' maxwidgets='1' showaddelement='no'>

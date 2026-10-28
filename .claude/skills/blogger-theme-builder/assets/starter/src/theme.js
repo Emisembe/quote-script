@@ -66,6 +66,8 @@
     spotify: '<circle cx="12" cy="12" r="10"/><path d="M7 9.5c3.5-1 7.5-.7 10.5 1"/><path d="M7.5 12.7c2.9-.8 6-.5 8.5.9"/><path d="M8 15.8c2.3-.6 4.6-.4 6.6.7"/>',
     podcast: '<circle cx="12" cy="11" r="3"/><path d="M8.5 16.5a6 6 0 1 1 7 0"/><path d="M12 14v8"/>',
     email: '<rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/>',
+    telegram: '<path d="M21.5 4.5L2.5 11.8l6 2.2 2.3 6.5 3.4-4.2 5 3.7z"/><path d="M8.5 14l8.5-6"/>',
+    donate: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
     phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
     link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>'
   };
@@ -80,11 +82,13 @@
     if (/facebook\.com|fb\.com|fb\.me/.test(h)) return 'facebook';
     if (/(^|\/\/|\.)(x|twitter)\.com/.test(h)) return 'x';
     if (/whatsapp\.com|wa\.me/.test(h)) return 'whatsapp';
+    if (/(^|\/\/|\.)(t\.me|telegram\.me|telegram\.org)/.test(h)) return 'telegram';
+    if (/paypal\.|ko-fi\.com|buymeacoffee\.com|patreon\.com|betterplace\.|gofundme\.com|buy\.stripe\.com|donate|spende/.test(h)) return 'donate';
     if (/spotify\.com/.test(h)) return 'spotify';
     if (/podcasts\.apple\.com|anchor\.fm|podbean|buzzsprout/.test(h)) return 'podcast';
     return 'link';
   }
-  var socialLinks = doc.querySelectorAll('#footer-connect .widget-content a, #LinkList6 .widget-content a');
+  var socialLinks = doc.querySelectorAll('#footer-connect .widget-content a, #LinkList6 .widget-content a, #footer-actions .widget-content a');
   for (var so = 0; so < socialLinks.length; so++) {
     var sl = socialLinks[so];
     if (sl.querySelector('svg')) continue;
@@ -95,6 +99,15 @@
       sl.setAttribute('rel', 'noopener');
     }
   }
+  // Footer buttons (WhatsApp, Telegram, donate): donation links are the solid teal button
+  var actionLinks = doc.querySelectorAll('#footer-actions .widget-content a');
+  for (var ac = 0; ac < actionLinks.length; ac++) {
+    var donate = socialType(actionLinks[ac].getAttribute('href')) === 'donate';
+    actionLinks[ac].className = 'btn ' + (donate ? 'btn-primary' : 'btn-footer');
+  }
+  var actions = doc.getElementById('footer-actions');
+  if (actions && actionLinks.length) actions.classList.add('has-items');
+
   // "Listen on" badges in the hero: hidden until the list has links
   var listen = doc.getElementById('LinkList6');
   if (listen && listen.querySelector('.widget-content a')) listen.classList.add('has-items');
@@ -152,6 +165,11 @@
       if (onPlay) onPlay(box);
     });
     box.appendChild(btn);
+    // Printed pages show the video's address instead of a picture that can't play
+    var printNote = doc.createElement('span');
+    printNote.className = 'yt-print';
+    printNote.textContent = 'Video: https://youtu.be/' + id;
+    box.appendChild(printNote);
     return box;
   }
 
@@ -836,6 +854,21 @@
       var share = postArticle.querySelector('.post-share') || postArticle.querySelector('.post-body');
       share.parentNode.insertBefore(section, share.nextSibling);
     });
+  }
+
+  // Post share bar: the phone's own share menu (where supported) and printing
+  var nativeShare = doc.querySelector('.js-native-share');
+  var sharedPost = doc.querySelector('.post-single[data-url]');
+  if (nativeShare && sharedPost && navigator.share) {
+    nativeShare.hidden = false;
+    nativeShare.addEventListener('click', function () {
+      var heading = sharedPost.querySelector('.post-title');
+      navigator.share({ title: heading ? heading.textContent.trim() : doc.title, url: sharedPost.getAttribute('data-url') }).catch(function () {});
+    });
+  }
+  var printBtns = doc.querySelectorAll('.js-print');
+  for (var pr = 0; pr < printBtns.length; pr++) {
+    printBtns[pr].addEventListener('click', function () { window.print(); });
   }
 
   // Footer year

@@ -511,6 +511,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
   overflow: hidden;
   background: #000;
 }
+.yt-print { display: none; }
 .yt-lite iframe,
 .yt-lite-play {
   position: absolute;
@@ -1014,6 +1015,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   transition: border-color 0.2s, color 0.2s;
 }
 .post-share a:hover, .post-share button:hover { border-color: var(--rm-accent); color: var(--rm-accent); }
+.post-share [hidden] { display: none; }
 
 /* Comments (Blogger's built-in markup) */
 .post-single .comments {
@@ -1213,6 +1215,24 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 .footer-bottom .widget-content { font-size: 13px; }
 @media (max-width: 600px) { .footer-bottom { justify-content: center; text-align: center; } }
 
+/* Footer buttons: WhatsApp, Telegram, donate (Link List, shown once it has links) */
+.footer-actions { display: none; padding: 0 0 32px; }
+.footer-actions.has-items { display: block; }
+.footer-actions .widget > h2.title { display: none; }
+.footer-actions .widget-content ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.site-footer .footer-actions .widget-content li { margin: 0; }
+.footer-actions .btn { min-width: 210px; }
+.site-footer .footer-actions a.btn-primary,
+.site-footer .footer-actions a.btn-primary:hover { color: var(--rm-primary); }
+.btn-footer { background: transparent; border-color: rgba(255, 255, 255, 0.35); color: #fff; }
+.site-footer .footer-actions a.btn-footer { color: #fff; }
+.site-footer .footer-actions a.btn-footer:hover { border-color: var(--rm-accent); color: var(--rm-accent); }
+.btn-footer .social-icon { color: var(--rm-accent); }
+@media (max-width: 600px) {
+  .footer-actions .widget-content li { flex: 1 1 100%; }
+  .footer-actions .btn { width: 100%; }
+}
+
 /* Legal links (Link List next to the copyright) */
 .footer-legal .widget > h2.title { display: none; }
 .footer-legal .widget-content ul { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0; padding: 0; list-style: none; }
@@ -1370,6 +1390,17 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   .header-cta .widget-content a { justify-content: center; }
 }
 
+/* Hero buttons: full width on phones, one row of equal buttons on tablets */
+@media (max-width: 600px) {
+  #HTML4 .widget-content ul { flex-direction: column; }
+  #HTML4 .widget-content li,
+  #HTML4 .widget-content a { width: 100%; }
+}
+@media (min-width: 601px) and (max-width: 959px) {
+  #HTML4 .widget-content li { flex: 1 1 0; }
+  #HTML4 .widget-content a { width: 100%; }
+}
+
 /* ---------- Small screens ---------- */
 @media (max-width: 380px) {
   body { font-size: 15px; }
@@ -1378,11 +1409,29 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   .hero-main .widget-content a { width: 100%; }
 }
 
+/* ---------- Printing a post: just the article, with its address ---------- */
+@media print {
+  .site-header, .nav-backdrop, .hero, .showcase, .downloads, .topics, .sidebar,
+  .newsletter, .site-footer, .post-share, .related, .comments, #comments,
+  .blog-pager-nav, .yt-play-icon, .navbar, #navbar { display: none !important; }
+  body { background: #fff; color: #000; font-size: 12pt; }
+  .container { max-width: none; padding: 0; }
+  .page-main, .main-grid { display: block; padding: 0; margin: 0; }
+  .post-single { border: 0; box-shadow: none; padding: 0; }
+  .post-single::after { content: "Read online: " attr(data-url); display: block; margin-top: 24px; font-size: 10pt; color: #555; }
+  .post-body a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.85em; color: #555; word-break: break-all; }
+  .post-body img, blockquote { break-inside: avoid; }
+  .post-body .yt-lite { padding: 0; background: none; border-radius: 0; overflow: visible; }
+  .post-body .yt-lite-play { display: none; }
+  .post-body .yt-print { display: block; font-weight: 700; }
+  h1, h2, h3 { break-after: avoid; }
+}
+
 /* ---------- Blogger Layout editor ---------- */
 body#layout .site-header { position: static; }
 body#layout .hero, body#layout .topics, body#layout .sidebar,
 body#layout .showcase, body#layout .downloads,
-body#layout .newsletter, body#layout #LinkList6 { display: block; }
+body#layout .newsletter, body#layout #LinkList6, body#layout .footer-actions { display: block; }
 body#layout .container { max-width: none; padding: 0; }
 body#layout .header-inner, body#layout .hero-grid, body#layout .main-grid,
 body#layout .footer-grid, body#layout .footer-bottom { display: block; }
