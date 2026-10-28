@@ -129,7 +129,18 @@ def render(name, kind):
            f"<div class='widget-content cta-body'>{content['HTML29']}</div></div></div>")
 
     share = SHARE_BAR
-    if kind == 'page':
+    # Test-only extra documents (preview, never in a profile): a Drive file and a Google Sheet
+    docs = content['HTML35']
+    if name == 'generic':
+        docs = docs.replace('</ul>', "<li><a href='https://drive.google.com/file/d/1AbCdEfGh_ijk-LMN/view?usp=sharing' data-type='pdf'>Preview: Drive file</a> Shared from Google Drive</li>"
+                            "<li><a href='https://docs.google.com/spreadsheets/d/1ZyXwV_uts-RQ/edit?usp=sharing'>Preview: Google Sheet</a> Exported as Excel</li></ul>")
+    if kind in ('downloads', 'sitemap'):
+        heading = 'Downloads' if kind == 'downloads' else 'Sitemap'
+        holder = "<p>All our documents in one place.</p><div class='u-downloads'></div>" if kind == 'downloads' else "<div class='u-sitemap'></div>"
+        main = f"""<article class='post-single post'><a name='3'></a><header class='post-head'><h1 class='post-title entry-title'>{heading}</h1></header>
+<div class='post-body entry-content' id='post-body-3'>{holder}</div>
+""" + share.replace('{title}', heading).replace('{slug}', 'p/' + kind).replace('{blog}', blog_title) + "</article>"
+    elif kind == 'page':
         main = f"""<article class='post-single post'><a name='2'></a><header class='post-head'><h1 class='post-title entry-title'>Who can join?</h1></header>
 <div class='post-body entry-content' id='post-body-2'>
 <p>Membership is open to every worker employed by a member institution, whether permanent, on contract or casual.</p>
@@ -189,7 +200,7 @@ def render(name, kind):
 <style>{BLOGGER_WIDGET_CSS}{BLOGGER_BUNDLE_V2_CSS}</style>
 {home_style}
 </head>
-<body class='union pt-{'index' if home else ('static_page' if kind == 'page' else 'item')}'>
+<body class='union pt-{'index' if home else ('item' if kind == 'post' else 'static_page')}'>
 <a class='skip-link' href='#content'>Skip to content</a>
 <div class='topbar'><div class='container topbar-inner'>
 {section('topbar-social', 'topbar-social', pg.html_widget('HTML15'))}
@@ -224,6 +235,7 @@ def render(name, kind):
 <section class='home-only band band-members'><div class='container'>{section('members-section', 'crosscol', pg.feed_widget('HTML13', 'strip', 12))}</div></section>
 <section class='home-only band band-cta'><div class='container'>{section('cta-section', 'join-cta', cta)}</div></section>
 <section class='home-only band band-partners'><div class='container'>{section('partners-section', 'partners', pg.html_widget('HTML4'))}</div></section>
+<section class='home-only band band-downloads' id='downloads'><div class='container'>{section('downloads-section', 'downloads-list', pg.html_widget('HTML35', f"<div class='widget-content'>{docs}</div>"))}</div></section>
 </main>
 <footer class='site-footer' id='contact'><div class='container'>
 <div class='footer-certs'>{section('certs-section', 'footer-certs', pg.html_widget('HTML34'))}</div>
@@ -248,7 +260,7 @@ def render(name, kind):
 def main():
     OUT.mkdir(exist_ok=True)
     for name in ('kpuwu', 'generic'):
-        for kind in ('home', 'post', 'page'):
+        for kind in ('home', 'post', 'page', 'downloads', 'sitemap'):
             (OUT / f'{name}-{kind}.html').write_text(render(name, kind), encoding='utf-8')
             print(f'wrote preview/{name}-{kind}.html')
 

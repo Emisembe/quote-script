@@ -18,6 +18,26 @@ Page not found - <data:blog.title/>
 <link href='https://fonts.googleapis.com' rel='preconnect'/>
 <link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
 <link href='https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;display=swap' rel='stylesheet'/>
+<!-- SEO: Blogger's head include already adds the canonical link, description and og:url/title/description/image -->
+<link href='/sitemap.xml' rel='sitemap' title='Sitemap' type='application/xml'/>
+<meta expr:content='data:blog.title' property='og:site_name'/>
+<b:if cond='data:blog.pageType == &quot;item&quot;'>
+<meta content='article' property='og:type'/>
+<b:else/>
+<meta content='website' property='og:type'/>
+</b:if>
+<meta content='summary_large_image' name='twitter:card'/>
+<!-- Lists that only repeat posts (archives, labels, search, older-posts pages): keep out of Google, follow their links -->
+<b:if cond='data:blog.pageType == &quot;archive&quot;'>
+<meta content='noindex, follow' name='robots'/>
+</b:if>
+<b:if cond='data:blog.pageType == &quot;index&quot;'>
+<b:if cond='data:blog.url != data:blog.homepageUrl'>
+<b:if cond='data:blog.canonicalUrl != data:blog.homepageUrl'>
+<meta content='noindex, follow' name='robots'/>
+</b:if>
+</b:if>
+</b:if>
 <b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
 <style type='text/css'>.home-only { display: block; }</style>
@@ -638,6 +658,20 @@ Page not found - <data:blog.title/>
       <b:widget id='HTML4' locked='false' title='@@T:HTML4@@' type='HTML' version='1'>
         <b:widget-settings>
           <b:widget-setting name='content'><![CDATA[@@C:HTML4@@]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Important documents (homepage; also fills the Downloads page) ================= -->
+<section class='home-only band band-downloads' id='downloads'>
+  <div class='container'>
+    <b:section class='downloads-section' id='downloads-list' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML35' locked='false' title='@@T:HTML35@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML35@@]]></b:widget-setting>
         </b:widget-settings>
         @@HTML_MAIN@@
       </b:widget>

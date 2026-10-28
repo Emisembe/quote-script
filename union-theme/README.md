@@ -38,9 +38,52 @@ A rebuild of the BCorporate v3 theme used on kpuwuke.blogspot.com. It has the sa
 | Members | **Member institutions / Our branches** | A label name. A scrollable strip. |
 | Call to action | **Stronger together** | A paragraph and a `<ul>` of two buttons. |
 | Partners | **Our partners** | `<ul class="logo-list">` with an `<img>` per `<li>`. |
+| Documents | **Important documents** (below the partners) | One `<li><a href="LINK">Title</a> Short description</li>` per document; instructions are inside the gadget. The homepage shows the first 6 as download cards; your **Downloads** page shows all of them. Hidden while the list is empty. |
 | Footer | **Certifications & accreditations** | ISO and other certificates: one `<li><img src="…" alt="ISO 9001:2015" /><span>ISO 9001:2015 Quality management</span></li>` each (instructions are inside the gadget). The strip stays hidden while the list is empty. |
 
 Label names must match exactly (same spelling and capitals) the labels on your posts.
+
+## Downloads page and Sitemap page (one-time setup, 2 minutes)
+
+Both pages fill themselves from the theme; you only create them once, empty.
+
+1. Blogger → **Pages** → **New page**. Title: **Downloads**. Leave the text empty (or write an intro line). **Publish**. The address must end in `/p/downloads.html`. Blogger makes it from the title; check it under *Page settings → Permalink*.
+2. **Pages** → **New page**. Title: **Sitemap**. Leave it empty. **Publish**. The address must end in `/p/sitemap.html`.
+3. Add both to the menu: **Layout** → *Main menu* → Edit, e.g. `<li><a href="/p/downloads.html">Downloads</a></li>`, and put the Sitemap link in the footer *Quick links* or *Useful links* gadget.
+
+- **Downloads** shows every document from the *Important documents* gadget, with a Download button (and a View button for Google Drive files).
+- **Sitemap** lists every page and every article, grouped by topic (label), newest first. It updates itself whenever you publish.
+- Using other page names? Put `<div class="u-downloads"></div>` or `<div class="u-sitemap"></div>` in the page (in *HTML view*) and the theme fills that spot.
+
+## Getting found on Google (SEO)
+
+**What the theme does automatically**
+- Tells Google who you are (structured data): the union's name, logo and social profiles, and for every post the headline, date, image, author and breadcrumb (Home › topic › article).
+- Proper titles, one main heading per page, image descriptions (alt text added automatically from captions or the post title), fast, mobile-friendly pages. Google's Lighthouse SEO audit scores **100** on the home, post, page, Downloads and Sitemap pages.
+- Shared links show a large preview image on WhatsApp, Facebook, X and LinkedIn.
+- Points crawlers to Blogger's sitemap, and keeps list pages that only repeat posts (labels, search, archives, "older posts") out of Google's index while still following their links. Your posts and pages are indexed as normal.
+
+**Blogger's XML sitemap.** Blogger creates it for you and keeps it up to date:
+- `https://kpuwuke.blogspot.com/sitemap.xml`: all posts
+- `https://kpuwuke.blogspot.com/sitemap-pages.xml`: all pages
+
+**Submit it to Google Search Console (about 10 minutes, once)**
+1. Go to <https://search.google.com/search-console> and sign in with the Google account that owns the blog.
+2. **Add property** → choose **URL prefix** → enter `https://kpuwuke.blogspot.com/` → Continue. Blogger blogs owned by that account are usually verified automatically. If not, choose **HTML tag**, copy the `content="…"` code, and ask me to add it to the theme (or check Blogger *Settings → Crawlers and indexing*, which links to Search Console).
+3. Left menu → **Sitemaps** → enter `sitemap.xml` → **Submit**. Then enter `sitemap-pages.xml` → **Submit**. Both should show *Success* within a day or two.
+4. Optional: **URL inspection** → paste your homepage address → **Request indexing**.
+
+**Blogger settings to switch on** (Blogger → **Settings**)
+- *Meta tags* → **Enable search description** → on, then write a one-sentence description of the union (up to 150 characters). It appears under your name in Google.
+- After that, every post editor has a **Search description** box (right side, *Post settings*): write one sentence per post. This is the biggest single help for clicks from Google.
+- *Crawlers and indexing* → leave **Custom robots.txt** off (Blogger's default already lists the sitemap).
+- *Basic* → **Description**: a short line about the union.
+- *Publishing*: if you ever get a custom domain (e.g. kpuwu.or.ke), set it here and submit the sitemap again for the new address.
+
+**Habits that matter most for ranking**
+- Post regularly; use clear titles with the words people search for ("NSSF contribution rates 2026", not "Update").
+- Give every image a caption or alt text, and use labels consistently (they become the Sitemap topics).
+- Ask partners (COTU, universities, NGOs) to link to your site.
 
 ## Sharing, printing, languages
 

@@ -178,6 +178,7 @@
     tiktok: 'M16.6 2h-3.4v13.4a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .8.1V9.1a6.4 6.4 0 1 0 5.5 6.3V8.6a8 8 0 0 0 4.6 1.5V6.7a4.7 4.7 0 0 1-4.6-4.7z',
     whatsapp: 'M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.1.3.7 1.1 1.5 1.8 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z',
     email: 'M2 5h20v14H2V5zm2 2v.5l8 5 8-5V7H4zm16 2.8-8 5-8-5V17h16V9.8z',
+    download: 'M11 3h2v9.6l3.3-3.3 1.4 1.4L12 16.4l-5.7-5.7 1.4-1.4 3.3 3.3V3zM4 18h16v2H4z',
     telegram: 'M21.9 4.3l-3.3 15.5c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6 13.4l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.5 2.9c.9-.3 1.7.2 1.4 1.4z',
     reddit: 'M22 12.1a2.2 2.2 0 0 0-3.7-1.6 10.8 10.8 0 0 0-5.8-1.8l1-4.6 3.2.7a1.6 1.6 0 1 0 .2-1l-3.6-.8a.5.5 0 0 0-.6.4l-1.1 5.3a10.8 10.8 0 0 0-5.9 1.8A2.2 2.2 0 1 0 3.3 14a4.3 4.3 0 0 0 0 .6c0 3.3 3.9 6 8.7 6s8.7-2.7 8.7-6a4.3 4.3 0 0 0 0-.6 2.2 2.2 0 0 0 1.3-1.9zM7.3 13.6a1.6 1.6 0 1 1 1.6 1.6 1.6 1.6 0 0 1-1.6-1.6zm8.8 4.1a5.6 5.6 0 0 1-4.1 1.3 5.6 5.6 0 0 1-4.1-1.3.4.4 0 0 1 .5-.5 4.8 4.8 0 0 0 3.6 1.1 4.8 4.8 0 0 0 3.6-1.1.4.4 0 1 1 .5.5zm-.3-2.5a1.6 1.6 0 1 1 1.6-1.6 1.6 1.6 0 0 1-1.6 1.6z',
     pinterest: 'M12 2a10 10 0 0 0-3.6 19.3c-.1-.8-.2-2 0-2.9l1.2-5s-.3-.6-.3-1.5c0-1.4.8-2.4 1.8-2.4.9 0 1.3.6 1.3 1.4 0 .9-.5 2.2-.8 3.4-.2 1 .5 1.8 1.5 1.8 1.8 0 3.2-1.9 3.2-4.6 0-2.4-1.7-4.1-4.2-4.1-2.9 0-4.5 2.1-4.5 4.4 0 .9.3 1.8.8 2.3.1.1.1.2.1.3l-.3 1.2c0 .2-.2.2-.4.1-1.3-.6-2.1-2.5-2.1-4 0-3.3 2.4-6.3 6.9-6.3 3.6 0 6.4 2.6 6.4 6 0 3.6-2.3 6.5-5.4 6.5-1 0-2-.5-2.4-1.2l-.6 2.5c-.2.9-.9 2.1-1.3 2.8A10 10 0 1 0 12 2z',
@@ -361,7 +362,9 @@
 
   // ---------------------------------------------------------------- Blogger feeds (JSONP)
   var feedId = 0;
-  function loadFeed(label, count, done) {
+  // opts: { pages: true } reads the static-pages feed; { start: n } reads from the n-th post
+  function loadFeed(label, count, done, opts) {
+    opts = opts || {};
     var cb = '__unionFeed' + (++feedId);
     var script = doc.createElement('script');
     var finished = false;
@@ -375,9 +378,24 @@
     window[cb] = function (json) { finish(json && json.feed ? json.feed.entry || [] : null); };
     script.onerror = function () { finish(null); };
     setTimeout(function () { finish(null); }, 12000);
-    script.src = '/feeds/posts/summary' + (label ? '/-/' + encodeURIComponent(label) : '') +
-      '?alt=json-in-script&max-results=' + count + '&callback=' + cb;
+    script.src = (opts.pages ? '/feeds/pages/default' : '/feeds/posts/summary') +
+      (label ? '/-/' + encodeURIComponent(label) : '') +
+      '?alt=json-in-script&max-results=' + count + (opts.start ? '&start-index=' + opts.start : '') + '&callback=' + cb;
     doc.body.appendChild(script);
+  }
+
+  // Every post (or page), 150 at a time, for the site map
+  function loadAll(pages, done) {
+    var all = [];
+    var next = function (start) {
+      loadFeed('', 150, function (entries) {
+        if (!entries) { done(all.length ? all : null); return; }
+        all = all.concat(entries);
+        if (entries.length === 150 && all.length < 3000) next(start + 150);
+        else done(all);
+      }, { pages: pages, start: start });
+    };
+    next(1);
   }
 
   function plainText(html) {
@@ -407,6 +425,7 @@
       title: (e.title && e.title.$t) || 'Untitled post',
       url: url,
       date: e.published ? e.published.$t : '',
+      labels: (e.category || []).map(function (c) { return c.term; }),
       image: img,
       text: plainText(body)
     };
@@ -559,6 +578,189 @@
   }
 
   // ---------------------------------------------------------------- small helpers
+  // ---------------------------------------------------------------- important documents
+  // The "Important documents" gadget is the single list: the homepage shows the first 6 as
+  // download cards, the Downloads page (/p/downloads.html, or any post/page containing
+  // <div class="u-downloads"></div>) shows all of them.
+  var DOC_TYPES = { pdf: 'PDF', word: 'DOC', excel: 'XLS', powerpoint: 'PPT', zip: 'ZIP', image: 'IMG', file: 'FILE' };
+  var EXT_TYPES = { pdf: 'pdf', doc: 'word', docx: 'word', odt: 'word', rtf: 'word', xls: 'excel', xlsx: 'excel', csv: 'excel',
+    ods: 'excel', ppt: 'powerpoint', pptx: 'powerpoint', odp: 'powerpoint', zip: 'zip', rar: 'zip', '7z': 'zip',
+    jpg: 'image', jpeg: 'image', png: 'image', gif: 'image', webp: 'image' };
+  function docInfo(a) {
+    var href = a.getAttribute('href') || '';
+    var type = (a.getAttribute('data-type') || '').toLowerCase();
+    var info = { view: href, download: href };
+    var m = href.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]+)/);
+    var g = href.match(/docs\.google\.com\/(document|spreadsheets|presentation)\/d\/([\w-]+)/);
+    if (m) {
+      // Google Drive file: the button downloads it, "View" opens Drive's viewer
+      info.download = 'https://drive.google.com/uc?export=download&id=' + m[1];
+      info.view = 'https://drive.google.com/file/d/' + m[1] + '/view';
+    } else if (g) {
+      // Google Docs / Sheets / Slides: download as PDF / Excel / PDF
+      info.download = 'https://docs.google.com/' + g[1] + '/d/' + g[2] +
+        (g[1] === 'spreadsheets' ? '/export?format=xlsx' : g[1] === 'presentation' ? '/export/pdf' : '/export?format=pdf');
+      if (!type) type = g[1] === 'spreadsheets' ? 'excel' : 'pdf';
+    }
+    if (!DOC_TYPES[type]) type = EXT_TYPES[href.split(/[?#]/)[0].split('.').pop().toLowerCase()] || 'file';
+    info.type = type;
+    info.hasViewer = info.view !== info.download;
+    return info;
+  }
+  function docCard(li, level) {
+    var a = li.querySelector('a[href]');
+    if (!a) return null;
+    var info = docInfo(a);
+    var title = a.textContent.trim();
+    var desc = li.textContent.replace(a.textContent, '').replace(/\s+/g, ' ').trim();
+    var download = el('a', { className: 'btn btn-primary doc-download', href: info.download, rel: 'noopener', target: '_blank',
+      'aria-label': 'Download ' + title }, [iconSvg('download')]);
+    download.appendChild(doc.createTextNode('Download'));
+    return el('article', { className: 'doc-card doc-' + info.type }, [
+      el('span', { className: 'doc-icon', 'aria-hidden': 'true', text: DOC_TYPES[info.type] }),
+      el('div', { className: 'doc-text' }, [
+        el(level || 'h3', { className: 'doc-title', text: title }),
+        desc ? el('p', { className: 'doc-desc', text: desc }) : null
+      ]),
+      el('div', { className: 'doc-actions' }, [download,
+        info.hasViewer ? el('a', { className: 'btn btn-outline doc-view', href: info.view, rel: 'noopener', target: '_blank',
+          'aria-label': 'View ' + title, text: 'View' }) : null])
+    ]);
+  }
+  function docGrid(items, level) {
+    var grid = el('div', { className: 'doc-grid' });
+    items.forEach(function (li) { var c = docCard(li, level); if (c) grid.appendChild(c); });
+    return grid;
+  }
+  var docSource = doc.querySelector('.band-downloads .doc-list');
+  var docItems = docSource ? [].slice.call(docSource.querySelectorAll('li')).filter(function (li) { return li.querySelector('a[href]'); }) : [];
+  var docBand = doc.querySelector('.band-downloads');
+  if (docBand) {
+    if (!docItems.length) {
+      docBand.hidden = true;
+    } else {
+      docSource.hidden = true;
+      docSource.parentNode.insertBefore(docGrid(docItems.slice(0, 6)), docSource.nextSibling);
+      if (docItems.length > 6) {
+        docSource.parentNode.appendChild(el('p', { className: 'doc-more' }, [
+          el('a', { className: 'btn btn-outline', href: '/p/downloads.html', text: 'All documents (' + docItems.length + ') →' })]));
+      }
+    }
+  }
+  var docPage = doc.querySelector('.post-body .u-downloads') ||
+    (/\/p\/downloads?\.html$/i.test(window.location.pathname) ? doc.querySelector('.post-single .post-body') : null);
+  if (docPage) {
+    var docHolder = docPage.classList.contains('u-downloads') ? docPage : docPage.appendChild(el('div', { className: 'u-downloads' }));
+    docHolder.appendChild(docItems.length ? docGrid(docItems, 'h2') :
+      el('p', { className: 'feed-status', text: 'No documents have been added yet.' }));
+  }
+
+  // ---------------------------------------------------------------- HTML site map
+  // A Blogger page at /p/sitemap.html (or any page containing <div class="u-sitemap"></div>)
+  // lists every page and every article, grouped by topic. It updates itself as you publish.
+  var mapHost = doc.querySelector('.post-body .u-sitemap') ||
+    (/\/p\/site-?map\.html$/i.test(window.location.pathname) ? doc.querySelector('.post-single .post-body') : null);
+  if (mapHost) {
+    var mapBox = mapHost.classList.contains('u-sitemap') ? mapHost : mapHost.appendChild(el('div', { className: 'u-sitemap' }));
+    var mapStatus = el('p', { className: 'feed-status', text: 'Loading the full list of articles…' });
+    mapBox.appendChild(mapStatus);
+    var slug = function (t) { return 'topic-' + t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); };
+    var linkList = function (items, withDate) {
+      return el('ul', { className: 'sitemap-list' }, items.map(function (p) {
+        return el('li', null, [el('a', { href: p.url, text: p.title }),
+          withDate && p.date ? el('time', { datetime: p.date, text: niceDate(p.date) }) : null]);
+      }));
+    };
+    loadAll(true, function (pageEntries) {
+      loadAll(false, function (postEntries) {
+        mapBox.removeChild(mapStatus);
+        if (!postEntries && !pageEntries) {
+          mapBox.appendChild(el('p', { className: 'feed-status', text: 'The list could not be loaded right now. Please refresh the page.' }));
+          return;
+        }
+        var posts = (postEntries || []).map(parseEntry);
+        var pages = (pageEntries || []).map(parseEntry).filter(function (p) { return !/\/p\/site-?map\.html$/i.test(p.url); });
+        var topics = {};
+        posts.forEach(function (p) {
+          (p.labels.length ? p.labels : ['Other articles']).forEach(function (l) { (topics[l] = topics[l] || []).push(p); });
+        });
+        var names = Object.keys(topics).sort(function (a, b) {
+          if (a === 'Other articles') return 1;
+          if (b === 'Other articles') return -1;
+          return a.localeCompare(b);
+        });
+        mapBox.appendChild(el('p', { className: 'sitemap-summary', text: posts.length + ' articles in ' + names.length +
+          ' topics' + (pages.length ? ', and ' + pages.length + ' pages' : '') + '.' }));
+        if (names.length) {
+          mapBox.appendChild(el('nav', { className: 'sitemap-topics', 'aria-label': 'Topics' }, names.map(function (n) {
+            return el('a', { className: 'badge badge-soft', href: '#' + slug(n), text: n + ' (' + topics[n].length + ')' });
+          })));
+        }
+        if (pages.length) {
+          mapBox.appendChild(el('h2', { id: 'topic-pages', text: 'Pages' }));
+          mapBox.appendChild(linkList(pages, false));
+        }
+        names.forEach(function (n) {
+          mapBox.appendChild(el('h2', { id: slug(n), text: n }));
+          mapBox.appendChild(linkList(topics[n], true));
+        });
+      });
+    });
+  }
+
+  // ---------------------------------------------------------------- structured data for Google
+  // schema.org JSON-LD: who the organisation is, the website, and on posts the article and
+  // its breadcrumb. Built from what is on the page, so it is always in step with the gadgets.
+  function addJsonLd(data) {
+    var tag = doc.createElement('script');
+    tag.type = 'application/ld+json';
+    tag.textContent = JSON.stringify(data);
+    doc.head.appendChild(tag);
+  }
+  var homeUrl = window.location.protocol + '//' + window.location.host + '/';
+  var siteMeta = doc.querySelector('meta[property="og:site_name"]');
+  var logoImg = doc.querySelector('.brand-logo img, .brand-mark img');
+  var siteName = (siteMeta && siteMeta.getAttribute('content')) ||
+    (doc.querySelector('.brand-name') && doc.querySelector('.brand-name').textContent.trim()) ||
+    (logoImg && logoImg.getAttribute('alt')) || doc.title;
+  var org = { '@type': 'WorkersUnion', '@id': homeUrl + '#organization', name: siteName, url: homeUrl };
+  if (logoImg && logoImg.src) org.logo = { '@type': 'ImageObject', url: logoImg.src };
+  var sameAs = [].slice.call(doc.querySelectorAll('.topbar-social .widget-content a[href^="http"]')).map(function (a) { return a.href; });
+  if (sameAs.length) org.sameAs = sameAs;
+  var graph = [org, { '@type': 'WebSite', '@id': homeUrl + '#website', url: homeUrl, name: siteName, publisher: { '@id': org['@id'] } }];
+  var article = doc.querySelector('.pt-item .post-single');
+  if (article) {
+    var canonical = doc.querySelector('link[rel="canonical"]');
+    var pageUrl = canonical ? canonical.href : window.location.href.split(/[?#]/)[0];
+    var h1 = article.querySelector('.post-title');
+    var headline = h1 ? h1.textContent.trim() : doc.title;
+    var published = article.querySelector('time.published');
+    var authorEl = article.querySelector('.post-author');
+    var authorName = authorEl ? authorEl.textContent.trim() : '';
+    var bodyImg = article.querySelector('.post-body img');
+    var ogImage = doc.querySelector('meta[property="og:image"]');
+    var news = {
+      '@type': 'NewsArticle',
+      '@id': pageUrl + '#article',
+      headline: headline.length > 110 ? headline.slice(0, 107) + '…' : headline,
+      mainEntityOfPage: pageUrl,
+      url: pageUrl,
+      publisher: { '@id': org['@id'] },
+      author: authorName && authorName !== 'Unknown' ? { '@type': 'Person', name: authorName } : { '@id': org['@id'] }
+    };
+    if (published) news.datePublished = news.dateModified = published.getAttribute('datetime');
+    var imgUrl = bodyImg ? sized(bodyImg.src, 1200, 675) : ogImage ? ogImage.getAttribute('content') : '';
+    if (imgUrl) news.image = [imgUrl];
+    var crumbLabel = article.querySelector('.breadcrumb .crumb-label');
+    if (crumbLabel) news.articleSection = crumbLabel.textContent.trim();
+    graph.push(news);
+    var crumbs = [{ '@type': 'ListItem', position: 1, name: 'Home', item: homeUrl }];
+    if (crumbLabel) crumbs.push({ '@type': 'ListItem', position: 2, name: crumbLabel.textContent.trim(), item: crumbLabel.href });
+    crumbs.push({ '@type': 'ListItem', position: crumbs.length + 1, name: headline, item: pageUrl });
+    graph.push({ '@type': 'BreadcrumbList', itemListElement: crumbs });
+  }
+  addJsonLd({ '@context': 'https://schema.org', '@graph': graph });
+
   // Blogger shows "Unknown" when a post's author profile is private: hide it
   var authors = doc.querySelectorAll('.post-author');
   for (var au = 0; au < authors.length; au++) {
@@ -721,6 +923,36 @@
       doc.body.appendChild(el('script', { src: 'https://translate.google.com/translate_a/element.js?cb=__unionTranslateInit' }));
     }
   }
+
+  // ---------------------------------------------------------------- accessibility + image SEO
+  // Images in posts without a description get one (the photo caption, else the post title):
+  // Google reads it to understand the image, screen readers read it aloud
+  var postTitle = doc.querySelector('.post-single .post-title');
+  var bodyImgs = doc.querySelectorAll('.post-body img');
+  for (var bi = 0; bi < bodyImgs.length; bi++) {
+    if ((bodyImgs[bi].getAttribute('alt') || '').trim()) continue;
+    var capTable = bodyImgs[bi].closest ? bodyImgs[bi].closest('.tr-caption-container') : null;
+    var caption = capTable ? capTable.querySelector('.tr-caption') : null;
+    var altText = caption && caption.textContent.trim() ? caption.textContent.trim() : postTitle ? postTitle.textContent.trim() : '';
+    if (altText) bodyImgs[bi].setAttribute('alt', altText);
+  }
+  var frames = doc.querySelectorAll('.post-body iframe:not([title]), .widget-content iframe:not([title])');
+  for (var fi = 0; fi < frames.length; fi++) {
+    frames[fi].setAttribute('title', /youtube|youtu\.be|vimeo|dailymotion|facebook\.com\/plugins\/video/.test(frames[fi].src) ? 'Embedded video' : 'Embedded content');
+  }
+  // Picture-only links that repeat the title link next to them: skipped by screen readers and keyboards
+  var picLinks = doc.querySelectorAll('.popular-posts .item-thumbnail a');
+  for (var pl = 0; pl < picLinks.length; pl++) {
+    picLinks[pl].setAttribute('aria-hidden', 'true');
+    picLinks[pl].setAttribute('tabindex', '-1');
+  }
+  // Google Translate builds its language box later: give it a name when it appears
+  var labelTranslate = function () {
+    var combo = doc.querySelector('.goog-te-combo, #google_translate_element select');
+    if (combo && !combo.getAttribute('aria-label')) combo.setAttribute('aria-label', 'Translate this site');
+  };
+  labelTranslate();
+  [1500, 4000, 8000].forEach(function (ms) { setTimeout(labelTranslate, ms); });
 
   // Footer year
   var years = doc.querySelectorAll('.js-year');

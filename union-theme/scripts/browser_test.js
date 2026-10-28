@@ -62,8 +62,28 @@ function feedJson(label, count) {
   }
   return { feed: { entry: entries } };
 }
+// Site map feeds: 180 labelled posts served 150 at a time, and the blog's static pages
+const TOPICS = ['Campaigns and policy', 'Emerging Issues', 'Events', 'NHIF and NSSF', 'Publications'];
+function allPostsJson(start, count) {
+  const entries = [];
+  for (let i = start - 1; i < Math.min(180, start - 1 + count); i++) {
+    entries.push({
+      title: { $t: `Article ${i + 1}: ${TITLES[i % TITLES.length]}` },
+      published: { $t: new Date(Date.UTC(2026, 9, 25) - i * 86400000 * 3).toISOString() },
+      link: [{ rel: 'alternate', href: `/preview/kpuwu-post.html?a=${i + 1}` }],
+      category: i % 7 === 6 ? undefined : [{ term: TOPICS[i % TOPICS.length] }].concat(i % 3 === 0 ? [{ term: TOPICS[(i + 2) % TOPICS.length] }] : []),
+    });
+  }
+  return { feed: { entry: entries } };
+}
+function pagesJson() {
+  return { feed: { entry: ['About KPUWU', 'Who can join?', 'Benefits', 'FAQs', 'Sitemap'].map((title) => ({
+    title: { $t: title },
+    link: [{ rel: 'alternate', href: '/p/' + title.toLowerCase().replace(/[^a-z]+/g, '-').replace(/-$/, '') + '.html' }],
+  })) } };
+}
 
-const PAGES = ['kpuwu-home', 'kpuwu-post', 'kpuwu-page', 'generic-home', 'generic-post', 'generic-page'];
+const PAGES = ['kpuwu-home', 'kpuwu-post', 'kpuwu-page', 'generic-home', 'generic-post', 'generic-page', 'generic-downloads', 'kpuwu-sitemap'];
 const WIDTHS = [280, 320, 360, 375, 414, 480, 600, 768, 834, 1024, 1100, 1280, 1440, 1920];
 const SHOTS = [280, 375, 768, 1100, 1440, 1920];
 const failures = [];
@@ -85,7 +105,10 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
         const u = new URL(url);
         const m = u.pathname.match(/\/-\/(.+)$/);
         const label = m ? decodeURIComponent(m[1]) : '';
-        const body = `${u.searchParams.get('callback')}(${JSON.stringify(feedJson(label, +u.searchParams.get('max-results')))});`;
+        const max = +u.searchParams.get('max-results');
+        const data = u.pathname.startsWith('/feeds/pages/') ? pagesJson()
+          : max === 150 && !label ? allPostsJson(+(u.searchParams.get('start-index') || 1), max) : feedJson(label, max);
+        const body = `${u.searchParams.get('callback')}(${JSON.stringify(data)});`;
         return route.fulfill({ status: 200, contentType: 'application/javascript', body });
       }
       if (url.startsWith(base)) return route.continue();
@@ -261,6 +284,79 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
     note(r.logo && r.photo, `${name}: logos shown whole, photos fill their frame`);
     note(r.certs === certs, `${name}: certifications strip ${certs ? 'shown with ' + r.n + ' items' : 'hidden while empty'}`);
     if (certs) await page.locator('.footer-certs').screenshot({ path: path.join(OUT, `${name}-certs.png`) });
+    await page.close();
+  }
+
+  // Important documents: homepage cards, Downloads page, Google Drive / Docs links
+  {
+    let { page } = await open('generic-home', 1440);
+    let r = await page.evaluate(() => ({ cards: document.querySelectorAll('.band-downloads .doc-card').length,
+      more: (document.querySelector('.doc-more a') || {}).textContent, visible: !!document.querySelector('.band-downloads').offsetHeight }));
+    note(r.visible && r.cards === 6 && /All documents \(9\)/.test(r.more), `generic-home: 6 document cards + "All documents (9)" link ${JSON.stringify(r)}`);
+    await page.locator('.band-downloads').screenshot({ path: path.join(OUT, 'downloads-home-1440.png') });
+    await page.close();
+    ({ page } = await open('kpuwu-home', 1440));
+    note(!(await page.evaluate(() => document.querySelector('.band-downloads').offsetHeight)), 'kpuwu-home: documents section hidden while the list is empty');
+    await page.close();
+    ({ page } = await open('generic-downloads', 390));
+    r = await page.evaluate(() => {
+      const card = (t) => [...document.querySelectorAll('.u-downloads .doc-card')].find((c) => c.querySelector('.doc-title').textContent.includes(t));
+      const info = (c) => ({ cls: c.className, dl: c.querySelector('.doc-download').getAttribute('href'), view: c.querySelector('.doc-view') && c.querySelector('.doc-view').getAttribute('href'),
+        icon: getComputedStyle(c.querySelector('.doc-icon')).backgroundColor, btnFont: getComputedStyle(c.querySelector('.doc-download')).fontFamily });
+      return { n: document.querySelectorAll('.u-downloads .doc-card').length, drive: info(card('Drive file')), sheet: info(card('Google Sheet')),
+        pdf: info(card('constitution')), word: info(card('Membership')), ppt: info(card('AGM')) };
+    });
+    note(r.n === 9, `downloads page lists every document (${r.n})`);
+    note(r.drive.dl === 'https://drive.google.com/uc?export=download&id=1AbCdEfGh_ijk-LMN' && /\/file\/d\/1AbCdEfGh_ijk-LMN\/view$/.test(r.drive.view), `Drive link: Download = direct download, View = Drive viewer ${JSON.stringify(r.drive)}`);
+    note(/doc-excel/.test(r.sheet.cls) && /\/export\?format=xlsx$/.test(r.sheet.dl), `Google Sheet downloads as Excel ${JSON.stringify(r.sheet)}`);
+    note(/doc-pdf/.test(r.pdf.cls) && !r.pdf.view && /doc-word/.test(r.word.cls) && /doc-powerpoint/.test(r.ppt.cls), 'file types detected from the link (PDF, Word, PowerPoint)');
+    note(r.pdf.icon === 'rgb(200, 16, 46)' && r.word.icon === 'rgb(43, 87, 154)', `file icons keep their colours inside a page (${r.pdf.icon}, ${r.word.icon})`);
+    note(/Oswald/.test(r.pdf.btnFont), 'Download buttons keep the theme font inside a page');
+    await page.screenshot({ path: path.join(OUT, 'downloads-page-390.png'), fullPage: true });
+    await page.close();
+    ({ page } = await open('kpuwu-downloads', 1024));
+    note(/No documents have been added yet/.test(await page.textContent('.u-downloads')), 'kpuwu downloads page: friendly message while empty');
+    await page.close();
+  }
+
+  // HTML site map page: every page and article, grouped by topic, fetched 150 at a time
+  for (const width of [1440, 390]) {
+    const { page } = await open('kpuwu-sitemap', width);
+    await page.waitForFunction(() => document.querySelector('.sitemap-summary'), null, { timeout: 8000 }).catch(() => {});
+    const r = await page.evaluate(() => {
+      const box = document.querySelector('.u-sitemap');
+      const links = [...box.querySelectorAll('.sitemap-list a')].map((a) => a.getAttribute('href'));
+      return { summary: (box.querySelector('.sitemap-summary') || {}).textContent, topics: box.querySelectorAll('.sitemap-topics a').length,
+        unique: new Set(links.filter((h) => /a=\d+/.test(h))).size, pages: [...box.querySelectorAll('#topic-pages + ul a')].map((a) => a.textContent),
+        other: !!document.getElementById('topic-other-articles'), bullet: getComputedStyle(box.querySelector('.sitemap-list')).listStyleType,
+        scroll: document.documentElement.scrollWidth, inner: innerWidth };
+    });
+    note(/180 articles in 6 topics, and 4 pages/.test(r.summary), `sitemap @${width}: summary "${r.summary}"`);
+    note(r.unique === 180 && r.topics === 6 && r.other, `sitemap @${width}: all 180 articles (both batches) under 6 topics incl. "Other articles"`);
+    note(r.pages.length === 4 && !r.pages.includes('Sitemap'), `sitemap @${width}: static pages listed, the sitemap page itself left out ${JSON.stringify(r.pages)}`);
+    note(r.bullet === 'none' && r.scroll <= r.inner, `sitemap @${width}: clean list, no horizontal scroll`);
+    await page.screenshot({ path: path.join(OUT, `sitemap-${width}.png`) });
+    await page.close();
+  }
+
+  // Structured data (schema.org JSON-LD) for Google
+  for (const [name, person] of [['kpuwu-post', null], ['generic-post', 'Secretariat'], ['kpuwu-home', null]]) {
+    const { page } = await open(name, 1024);
+    const g = await page.evaluate(() => {
+      const s = [...document.querySelectorAll('script[type="application/ld+json"]')].map((x) => JSON.parse(x.textContent));
+      const graph = s.length === 1 ? s[0]['@graph'] : [];
+      const by = (t) => graph.find((n) => n['@type'] === t);
+      return { count: s.length, org: by('WorkersUnion'), site: by('WebSite'), news: by('NewsArticle'), crumbs: by('BreadcrumbList'),
+        h1: (document.querySelector('.post-title') || {}).textContent };
+    });
+    note(g.count === 1 && g.org && g.site && g.org.sameAs && g.org.sameAs.length >= 4, `${name}: Organization (WorkersUnion) + WebSite structured data, ${g.org && g.org.sameAs ? g.org.sameAs.length : 0} social profiles`);
+    if (name.endsWith('post')) {
+      note(g.news && g.news.headline === g.h1.trim() && g.news.datePublished && g.news.image && g.news.image.length === 1, `${name}: NewsArticle with headline, date and image`);
+      note(person ? g.news.author.name === person : g.news.author['@id'] === g.org['@id'], `${name}: author is ${person || 'the union (author "Unknown")'}`);
+      note(g.crumbs && g.crumbs.itemListElement.length === 3, `${name}: breadcrumb Home > topic > article`);
+    } else {
+      note(!g.news, `${name}: no article markup on the homepage`);
+    }
     await page.close();
   }
 
