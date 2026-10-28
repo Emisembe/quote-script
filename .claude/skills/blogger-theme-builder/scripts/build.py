@@ -8,6 +8,7 @@ The skin is authored with CSS custom properties for readability. The build
 resolves them to plain values / Blogger $(variables), so the uploaded skin
 uses only the CSS features the blog's original Blogger theme used.
 """
+import base64
 import pathlib
 import re
 import sys
@@ -44,8 +45,16 @@ def resolve_custom_properties(css):
     return css
 
 
+def embed_fonts(css):
+    """Inline src/fonts/*.woff2 where skin.css says @@FONT:name.woff2@@ (no request to Google Fonts)."""
+    def data_uri(m):
+        data = (SRC / 'fonts' / m.group(1)).read_bytes()
+        return 'data:font/woff2;base64,' + base64.b64encode(data).decode('ascii')
+    return re.sub(r'@@FONT:([\w.-]+\.woff2)@@', data_uri, css)
+
+
 def skin_css():
-    return resolve_custom_properties(read('skin.css'))
+    return embed_fonts(resolve_custom_properties(read('skin.css')))
 
 
 def build():

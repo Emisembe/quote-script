@@ -132,7 +132,9 @@ for w in widgets:
                 problems.append(f'setting "{key}" = "{value}" not proven (proven: {known})')
     check(not problems, f'{wid} ({wtype}): type, version and settings are proven', '; '.join(problems))
 
-data_tags = set(re.findall(r'data:[a-zA-Z_][a-zA-Z0-9_.]*', text))
+# Embedded files (url(data:font/woff2;base64,...)) are not Blogger data tags
+no_data_uris = re.sub(r"url\(['\"]?data:[^)]*\)", 'url()', text)
+data_tags = set(re.findall(r'data:[a-zA-Z_][a-zA-Z0-9_.]*', no_data_uris))
 allowed_tags = set(REF['data_tags']) | set(REF['extra']['data_tags'])
 check(data_tags <= allowed_tags, f'all {len(data_tags)} data: tags are proven by the original theme',
       str(sorted(data_tags - allowed_tags)))

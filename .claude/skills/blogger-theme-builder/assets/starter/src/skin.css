@@ -39,6 +39,17 @@ License:  Free to use on any Blogger blog
   --rm-max: 1200px;
 }
 
+/* ---------- Heading font ----------
+   Bebas Neue (SIL Open Font License, src/fonts/OFL-bebas-neue.txt), built into the
+   theme so visitors' browsers never contact Google Fonts (a GDPR issue in Germany). */
+@font-face {
+  font-family: 'Bebas Neue';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(@@FONT:bebas-neue-latin-400-normal.woff2@@) format('woff2');
+}
+
 /* ---------- Base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 html {
@@ -1200,6 +1211,121 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 .footer-bottom .widget-content { font-size: 13px; }
 @media (max-width: 600px) { .footer-bottom { justify-content: center; text-align: center; } }
 
+/* Legal links (Link List next to the copyright) */
+.footer-legal .widget > h2.title { display: none; }
+.footer-legal .widget-content ul { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0; padding: 0; list-style: none; }
+.site-footer .footer-legal .widget-content li { margin: 0; }
+.footer-legal .widget-content a { color: var(--rm-on-dark-muted); }
+.footer-legal .widget-content a:hover { color: var(--rm-accent); }
+@media (max-width: 600px) { .footer-legal .widget-content ul { justify-content: center; } }
+
+/* ---------- "Listen on" badges (hero Link List, shown once it has links) ---------- */
+#LinkList6 { display: none; }
+#LinkList6.has-items { display: block; }
+.hero #LinkList6 > h2.title {
+  display: block;
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--rm-on-dark-muted);
+}
+#LinkList6 .widget-content ul { flex-direction: row; gap: 8px; }
+#LinkList6 .widget-content li a,
+#LinkList6 .widget-content li:first-child a {
+  width: auto;
+  min-height: 36px;
+  padding: 7px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+#LinkList6 .widget-content li a:hover { border-color: var(--rm-accent); color: var(--rm-accent); }
+#LinkList6 .social-icon { flex: 0 0 auto; color: var(--rm-accent); }
+
+/* ---------- Newsletter (every page, shown once it has a signup link or form) ---------- */
+.newsletter { display: none; padding: 0 0 64px; }
+.newsletter.has-signup { display: block; }
+.newsletter .widget {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 32px;
+  text-align: center;
+  background: var(--rm-primary);
+  border-top: 4px solid var(--rm-accent);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(13, 28, 46, 0.18);
+  color: var(--rm-on-dark);
+}
+.newsletter .widget > h2.title {
+  margin: 0 0 10px;
+  font-family: var(--rm-display);
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 38px);
+  letter-spacing: 1.5px;
+  line-height: 1.05;
+  color: #fff;
+}
+.newsletter .widget-content { font-size: 16px; line-height: 1.6; }
+.newsletter .widget-content p { margin: 0 0 20px; }
+.newsletter .widget-content > :last-child,
+.newsletter .newsletter-action { margin-bottom: 0; }
+.newsletter-btn { min-width: 200px; }
+.newsletter-frame { display: block; width: 100%; max-width: 480px; height: 150px; margin: 0 auto; border: 0; border-radius: var(--rm-radius-sm); background: transparent; }
+.newsletter form { margin: 0 auto; max-width: 480px; }
+.newsletter input[type='email'],
+.newsletter input[type='text'] {
+  width: 100%;
+  min-height: 46px;
+  margin: 0 0 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--rm-radius-sm);
+  background: #fff;
+  color: var(--rm-text);
+  font: inherit;
+  font-size: 15px;
+}
+.newsletter input[type='submit'],
+.newsletter button {
+  min-height: 46px;
+  padding: 10px 24px;
+  border: 0;
+  border-radius: var(--rm-radius-sm);
+  background: var(--rm-accent);
+  color: var(--rm-primary);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.newsletter input[type='submit']:hover,
+.newsletter button:hover { background: var(--rm-accent-hover); }
+@media (max-width: 600px) {
+  .newsletter { padding-bottom: 40px; }
+  .newsletter .widget { padding: 32px 20px; border-radius: 12px; }
+  .newsletter-btn { width: 100%; }
+}
+
+/* ---------- Related episodes (under a post) ---------- */
+.related { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--rm-border); }
+.related-title {
+  display: inline-block;
+  margin: 0 0 22px;
+  padding-bottom: 6px;
+  font-family: var(--rm-display);
+  font-weight: 400;
+  font-size: 30px;
+  letter-spacing: 1px;
+  line-height: 1;
+  color: var(--rm-primary);
+  border-bottom: 3px solid var(--rm-accent);
+}
+@media (max-width: 767px) { .related { text-align: center; } }
+
 /* ---------- Centred mobile layout (styling only; structure unchanged) ---------- */
 /* Hero: centred whenever it is a single column */
 @media (max-width: 959px) {
@@ -1252,7 +1378,8 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 /* ---------- Blogger Layout editor ---------- */
 body#layout .site-header { position: static; }
 body#layout .hero, body#layout .topics, body#layout .sidebar,
-body#layout .showcase, body#layout .downloads { display: block; }
+body#layout .showcase, body#layout .downloads,
+body#layout .newsletter, body#layout #LinkList6 { display: block; }
 body#layout .container { max-width: none; padding: 0; }
 body#layout .header-inner, body#layout .hero-grid, body#layout .main-grid,
 body#layout .footer-grid, body#layout .footer-bottom { display: block; }

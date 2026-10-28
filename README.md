@@ -6,6 +6,8 @@ A full-width, responsive Blogger theme for **The River Musa Show**. It works on 
 - Full-screen hero on the homepage: tagline, title, intro text, buttons and a host card.
 - Homepage slideshow of photos and YouTube videos, and a "Free Downloads" section, both edited as Link Lists.
 - YouTube links in posts become responsive players, and episode cards with a video play it right on the homepage.
+- "Listen on" platform badges in the hero, a newsletter signup box, related episodes under each post, and Impressum/Datenschutz links in the footer.
+- The heading font (Bebas Neue) is built into the theme, so visitors' browsers never contact Google Fonts.
 - Episode grid: 3 columns on desktop, 2 on tablet, 1 on phone.
 - Single-post layout with a sidebar, share buttons and Blogger comments.
 - Topics strip, three-column footer, and a 404 page with search.
@@ -30,13 +32,17 @@ Every gadget is a standard Blogger gadget. The menu, social links, slideshow and
 | Header button | HTML (`HTML2`) | One link, shown as the teal button. |
 | Hero | HTML (`HTML3`) | *Title* = the small teal tagline. *Content* = the intro paragraph. The big headline is your **blog title**. |
 | Hero | HTML (`HTML4`) | Hero buttons, as a list of links. The first is solid teal, the rest are outlined. |
+| Hero | **Link List** (`LinkList6`, "Listen on") | Platform badges under the hero buttons (YouTube, Spotify, Apple Podcasts, TikTok, ...): *Site Name* = the label, *Site URL* = your show's page there. Icons are added from the address. Hidden while empty. |
 | Hero | HTML (`HTML5`) | Host card: *Title* = name, *Content* = role. Paste a **YouTube link** on its own line and the video appears in the card (it loads only when played). Or add `<img src="PHOTO-URL">` to show a photo instead of the microphone. |
 | Slideshow | **Link List** (`LinkList3`, titled "Highlights") | Homepage slideshow under the hero. The gadget's **title is the heading** above it (clear it for no heading). Each link is one slide: *Site URL* = a photo address (Blogger/Google Photos image, a public Google Drive image, or any image URL) or a YouTube link; *Site Name* = the caption (type `-` for no caption). Slides change every 6 seconds and swipe on phones. A strip of thumbnails under the slideshow shows every slide (the video's own thumbnail for YouTube links, including YouTube Studio links). The arrows hide while a video plays so they don't cover YouTube's buttons. Hidden while empty. |
 | Free Downloads | **Link List** (`LinkList4`) | Download cards. *Site Name* = the file title (end with `(PDF)` etc. to show the type), *Site URL* = the file link. Google Drive, Docs, Sheets, Slides and Dropbox share links are turned into direct downloads. Link to it with `/#downloads`. Hidden while empty. |
 | Posts | **Blog Posts** (`Blog1`) | Its title ("Latest Episodes") is the heading above the grid. |
 | Topics | **Labels** (`Label1`) | Homepage topic pills, built from your post labels. |
 | Sidebar | `PopularPosts1`, `Label2` | Shown next to single posts and pages. You can add more gadgets here. |
-| Footer | HTML `HTML6`, **Link List** `LinkList2`, HTML `HTML8` | About text, social links (icons are added automatically from the address: YouTube, TikTok, Instagram, LinkedIn, Facebook, X, WhatsApp, Spotify, podcasts, email), and quick links. There is no "Powered by Blogger" line. |
+| Newsletter | HTML (`HTML9`) | Signup box above the footer on every page. *Title* = heading, *Content* = the text plus **one** of: a link to your signup page (becomes a button), a Substack link (shows Substack's own signup box), a `mailto:` link (opens an email with "Subscribe" as subject), or the embed code from Mailchimp/Brevo/Kit (styled to match). Hidden until it has a link or form. |
+| Footer | HTML `HTML6`, **Link List** `LinkList2`, HTML `HTML8` | About text, social and contact links (icons are added automatically from the address: YouTube, TikTok, Instagram, LinkedIn, Facebook, X, WhatsApp, Spotify, podcasts, `mailto:` email, `tel:` phone), and quick links. There is no "Powered by Blogger" line. |
+| Footer bar | **Link List** (`LinkList5`, "Legal") | Links next to the copyright. Starts with *Impressum* → `/p/impressum.html` and *Datenschutz* → `/p/datenschutz.html`: create pages with exactly those titles. |
+| Posts | (automatic) | **Related episodes** under each post: up to 3 posts with the same first label, topped up with the newest posts. Video posts play in the card. |
 
 **Videos in posts:** paste a YouTube link on its own line in a post (in Compose view, or as a link) and it becomes a responsive player that loads only when played. A link inside a sentence stays a normal link. On the homepage, a card whose post contains a video shows the video's thumbnail with a play button and plays the video in the card.
 
@@ -55,6 +61,7 @@ src/theme.xml          page structure, sections and gadgets (with @@ markers)
 src/skin.css           all styles + colour variables  -> goes into <b:skin>
 src/theme.js           menu, slideshow, downloads, video players, header shadow, initials, image sizing, dates, copy-link
 src/includables/       gadget code taken from the blog's original Blogger theme
+src/fonts/             Bebas Neue (OFL), inlined into the skin at build time
 reference/proven.json  what the original theme proves Blogger accepts
 ```
 

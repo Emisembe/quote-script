@@ -15,9 +15,6 @@ Page not found - <data:blog.title/>
 </b:if>
 </b:if>
 </title>
-<link href='https://fonts.googleapis.com' rel='preconnect'/>
-<link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
-<link href='https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;display=swap' rel='stylesheet'/>
 <b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
 <style type='text/css'>.hero, .topics, .showcase.has-slides, .downloads.has-items { display: block; }</style>
@@ -127,6 +124,12 @@ Page not found - <data:blog.title/>
 </ul>]]></b:widget-setting>
           </b:widget-settings>
           @@HTML_MAIN@@
+        </b:widget>
+        <b:widget id='LinkList6' locked='false' title='Listen on' type='LinkList' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='sorting'>NONE</b:widget-setting>
+          </b:widget-settings>
+          @@LINKLIST_MAIN@@
         </b:widget>
       </b:section>
       <b:section class='hero-side' id='hero-side' showaddelement='yes'>
@@ -458,6 +461,20 @@ Page not found - <data:blog.title/>
 
 </main>
 
+<!-- ================= Newsletter (every page, shown once it has a signup link or form) ================= -->
+<section class='newsletter' id='newsletter'>
+  <div class='container'>
+    <b:section class='newsletter-section' id='newsletter-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML9' locked='false' title='Get new episodes by email' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<p>New episodes, behind-the-scenes stories and free downloads, straight to your inbox.</p>]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
 <!-- ================= Footer ================= -->
 <footer class='site-footer' id='connect'>
   <div class='container'>
@@ -502,6 +519,18 @@ Page not found - <data:blog.title/>
     </div>
     <div class='footer-bottom'>
       <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/></p>
+      <b:section class='footer-legal' id='footer-legal' maxwidgets='1' showaddelement='no'>
+        <b:widget id='LinkList5' locked='false' title='Legal' type='LinkList' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='sorting'>NONE</b:widget-setting>
+            <b:widget-setting name='text-0'>Impressum</b:widget-setting>
+            <b:widget-setting name='link-0'>/p/impressum.html</b:widget-setting>
+            <b:widget-setting name='text-1'>Datenschutz</b:widget-setting>
+            <b:widget-setting name='link-1'>/p/datenschutz.html</b:widget-setting>
+          </b:widget-settings>
+          @@LINKLIST_MAIN@@
+        </b:widget>
+      </b:section>
     </div>
   </div>
 </footer>

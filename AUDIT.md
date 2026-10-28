@@ -18,7 +18,7 @@ The theme was rebuilt on the foundation of the blog's **original theme**, which 
 | Gadget code | HTML, Labels and Popular Posts use the original's code verbatim, apart from opening popular posts in the same tab |
 | Stylesheet | Plain CSS with Blogger `$(variables)`, like the original's. CSS custom properties are resolved at build time. |
 
-## Automated audit (`python3 scripts/check.py`), 64 checks, all passing
+## Automated audit (`python3 scripts/check.py`), 70 checks, all passing
 
 **Proven-only rules** (from `reference/proven.json`, extracted from the original theme):
 - Only Blogger tags the original used (`b:if`, `b:loop`, `b:include`, ...): no `b:eval`, no `b:template-skin`.
@@ -44,7 +44,7 @@ The theme was rebuilt on the foundation of the blog's **original theme**, which 
 
 Each of these checks was confirmed to fail on a deliberately broken copy of the theme, so they really do catch the problem.
 
-Run against the version Blogger rejected, the audit reports 23 failures, including the Image gadget. The current theme passes all 64 checks.
+Run against the version Blogger rejected, the audit reports 23 failures, including the Image gadget. The current theme passes all 70 checks.
 
 ## Link List gadgets (menu and footer social links)
 
@@ -66,6 +66,14 @@ Browser-tested:
 ## Phone menu opened while scrolled down (fixed)
 
 On the live blog, opening the phone menu after scrolling down showed only the dimmed overlay and the page seemed frozen. Cause: the scroll lock set `overflow: hidden` on `<body>`, which stops the sticky header from sticking, so the header and its close button jumped to the top of the page, off-screen. Reproduced in the preview (header at -600px / -1500px after opening), fixed by locking only `<html>` and moving the sideways-overflow guard from `body` to `html`, plus a safety net that pins the header to the top if it is ever off-screen. Re-tested on a 500px desktop window, iPhone 13 and Pixel 7 at 600px and 1500px scroll: header stays at the top, the X closes the menu, and the page keeps its position. The safety net was tested by forcing the old CSS back in.
+
+## Listen on, newsletter, related episodes, legal links
+
+New gadgets use only proven types and settings: `LinkList5` (Legal), `LinkList6` (Listen on), both `sorting` = `NONE` with `text-N` / `link-N`, and `HTML9` (Newsletter, non-blank `content`). Sections stay unconditional and editable in Layout; the hero badges and the newsletter are hidden by CSS until they have content.
+
+Privacy: the Bebas Neue font is now embedded in the skin as a base64 `woff2` (13.8 KB, SIL Open Font License), and the Google Fonts `<link>` tags are gone, so no font request goes to Google. The audit's data-tag check skips embedded `url(data:...)` files; a mutation test confirmed it still fails on an unknown `data:blog.fakeTag`.
+
+Browser-tested (desktop and iPhone 13): badges get platform icons and open in a new tab; `mailto:` and `tel:` contact links get icons; legal links render in the footer bar and centre on phones; the newsletter turns a signup link into a button, a `mailto:` link into "Subscribe" email, a Substack link into Substack's embed, keeps pasted provider forms (styled), and stays hidden with the default text; related episodes skip the current post, fill from the newest posts when a label has fewer than 3, use the video thumbnail or first image, and play videos in place. No horizontal scroll and no JavaScript errors.
 
 ## Browser checks (preview pages, Chromium)
 

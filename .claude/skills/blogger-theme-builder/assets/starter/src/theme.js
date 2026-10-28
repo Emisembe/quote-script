@@ -66,11 +66,13 @@
     spotify: '<circle cx="12" cy="12" r="10"/><path d="M7 9.5c3.5-1 7.5-.7 10.5 1"/><path d="M7.5 12.7c2.9-.8 6-.5 8.5.9"/><path d="M8 15.8c2.3-.6 4.6-.4 6.6.7"/>',
     podcast: '<circle cx="12" cy="11" r="3"/><path d="M8.5 16.5a6 6 0 1 1 7 0"/><path d="M12 14v8"/>',
     email: '<rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22 6 12 13 2 6"/>',
+    phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
     link: '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>'
   };
   function socialType(href) {
     var h = (href || '').toLowerCase();
     if (h.indexOf('mailto:') === 0) return 'email';
+    if (h.indexOf('tel:') === 0) return 'phone';
     if (/youtube\.com|youtu\.be/.test(h)) return 'youtube';
     if (/tiktok\.com/.test(h)) return 'tiktok';
     if (/instagram\.com/.test(h)) return 'instagram';
@@ -82,7 +84,7 @@
     if (/podcasts\.apple\.com|anchor\.fm|podbean|buzzsprout/.test(h)) return 'podcast';
     return 'link';
   }
-  var socialLinks = doc.querySelectorAll('#footer-connect .widget-content a');
+  var socialLinks = doc.querySelectorAll('#footer-connect .widget-content a, #LinkList6 .widget-content a');
   for (var so = 0; so < socialLinks.length; so++) {
     var sl = socialLinks[so];
     if (sl.querySelector('svg')) continue;
@@ -93,6 +95,9 @@
       sl.setAttribute('rel', 'noopener');
     }
   }
+  // "Listen on" badges in the hero: hidden until the list has links
+  var listen = doc.getElementById('LinkList6');
+  if (listen && listen.querySelector('.widget-content a')) listen.classList.add('has-items');
 
   // ---------- Shared helpers ----------
   var ytPattern = /(?:youtube\.com\/(?:watch\?(?:[^\s"'<>]*&)?v=|embed\/|shorts\/|live\/|v\/|video\/)|youtu\.be\/|youtube-nocookie\.com\/embed\/)([A-Za-z0-9_-]{11})/;
@@ -601,30 +606,33 @@
 
   // Card images: ask Blogger/YouTube for a 16:9 size instead of the full image or a 72px thumbnail
   var youtubeThumb = /^(https?:\/\/(img\.youtube\.com|i\.ytimg\.com)\/vi\/[^/]+\/)[a-z]*default\.jpg$/i;
-  var cardImgs = doc.querySelectorAll('img.js-resize');
-  for (var c = 0; c < cardImgs.length; c++) {
-    var src = cardImgs[c].getAttribute('src') || '';
-    var sized = src;
+  function cardImageSize(src) {
     if (googleImage.test(src)) {
-      sized = src
+      return src
         .replace(/\/s\d+(-[a-z]+)*\//i, '/w720-h405-c/')
         .replace(/\/w\d+-h\d+(-[a-z]+)*\//i, '/w720-h405-c/')
         .replace(/=s\d+(-[a-z]+)*$/i, '=w720-h405-c')
         .replace(/=w\d+-h\d+(-[a-z]+)*$/i, '=w720-h405-c');
-    } else if (youtubeThumb.test(src)) {
-      sized = src.replace(youtubeThumb, '$1hqdefault.jpg');
     }
+    if (youtubeThumb.test(src)) return src.replace(youtubeThumb, '$1hqdefault.jpg');
+    return src;
+  }
+  var cardImgs = doc.querySelectorAll('img.js-resize');
+  for (var c = 0; c < cardImgs.length; c++) {
+    var src = cardImgs[c].getAttribute('src') || '';
+    var sized = cardImageSize(src);
     if (sized !== src) cardImgs[c].setAttribute('src', sized);
   }
 
   // Dates: show "12 October 2026" style dates whatever the blog's timestamp format is
-  var dates = doc.querySelectorAll('time.js-date');
-  for (var d = 0; d < dates.length; d++) {
-    var when = new Date(dates[d].getAttribute('datetime'));
+  function formatDate(timeEl) {
+    var when = new Date(timeEl.getAttribute('datetime'));
     if (!isNaN(when.getTime())) {
-      dates[d].textContent = when.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+      timeEl.textContent = when.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
     }
   }
+  var dates = doc.querySelectorAll('time.js-date');
+  for (var d = 0; d < dates.length; d++) formatDate(dates[d]);
 
   // Host card: a photo placed in the gadget's content replaces the microphone icon
   var hostImg = doc.querySelector('.host-role img');
@@ -650,6 +658,165 @@
       } else {
         window.prompt('Copy this link:', url);
       }
+    });
+  }
+
+  // ---------- Newsletter signup (HTML gadget: title = heading, content = text + signup link or form) ----------
+  var news = doc.getElementById('newsletter');
+  var newsBox = news && news.querySelector('.widget-content');
+  if (newsBox) {
+    var ready = false;
+    if (newsBox.querySelector('form, iframe')) {
+      ready = true; // provider embed code (Mailchimp, Brevo, Kit, ...) is kept as it is
+    } else {
+      var signup = newsBox.querySelector('a[href]');
+      var sHref = signup ? signup.getAttribute('href') : '';
+      var substack = /^https?:\/\/([a-z0-9-]+)\.substack\.com/i.exec(sHref);
+      if (substack) {
+        // Substack's own signup box (email field + subscribe button)
+        var frame = doc.createElement('iframe');
+        frame.src = 'https://' + substack[1] + '.substack.com/embed';
+        frame.title = 'Newsletter signup';
+        frame.className = 'newsletter-frame';
+        frame.setAttribute('frameborder', '0');
+        frame.setAttribute('scrolling', 'no');
+        signup.parentNode.replaceChild(frame, signup);
+        ready = true;
+      } else if (signup) {
+        if (/^mailto:/i.test(sHref) && sHref.indexOf('subject=') < 0) {
+          signup.setAttribute('href', sHref + (sHref.indexOf('?') < 0 ? '?' : '&') + 'subject=Subscribe');
+        } else if (/^https?:/i.test(sHref)) {
+          signup.setAttribute('target', '_blank');
+          signup.setAttribute('rel', 'noopener');
+        }
+        signup.className = 'btn btn-primary newsletter-btn';
+        // A link alone in a paragraph becomes the button row
+        if (signup.parentNode !== newsBox && signup.parentNode.textContent.trim() === signup.textContent.trim()) {
+          signup.parentNode.className = 'newsletter-action';
+        }
+        ready = true;
+      }
+    }
+    if (ready) news.classList.add('has-signup');
+  }
+
+  // ---------- Related episodes under a post (same label first, then the newest posts) ----------
+  var postArticle = doc.querySelector('.pt-item .post-single');
+  if (postArticle && window.fetch && /^https?:$/.test(location.protocol)) {
+    var here = location.href.split(/[?#]/)[0].replace(/^https?:/, '');
+    var firstLabel = postArticle.querySelector('.post-labels a');
+    var labelName = firstLabel ? firstLabel.textContent.trim() : '';
+    var feedEntries = function (url) {
+      return fetch(url, { credentials: 'same-origin' })
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (data) { return (data && data.feed && data.feed.entry) || []; })
+        .catch(function () { return []; });
+    };
+    var feedPost = function (entry) {
+      var url = '';
+      var links3 = entry.link || [];
+      for (var k = 0; k < links3.length; k++) if (links3[k].rel === 'alternate') url = links3[k].href;
+      var content = (entry.content && entry.content.$t) || (entry.summary && entry.summary.$t) || '';
+      var img = /<img[^>]+src=["']([^"']+)["']/i.exec(content);
+      return {
+        url: url,
+        title: (entry.title && entry.title.$t) || 'Untitled post',
+        date: entry.published && entry.published.$t,
+        label: entry.category && entry.category[0] ? entry.category[0].term : '',
+        video: ytId(content),
+        image: img ? img[1] : (entry.media$thumbnail ? entry.media$thumbnail.url : '')
+      };
+    };
+    var buildCard = function (post) {
+      var card = doc.createElement('article');
+      card.className = 'post-card';
+      var media = doc.createElement('a');
+      media.className = 'post-card-media';
+      media.href = post.url;
+      media.setAttribute('aria-hidden', 'true');
+      media.setAttribute('tabindex', '-1');
+      if (post.image || post.video) {
+        var pic = doc.createElement('img');
+        pic.alt = '';
+        pic.loading = 'lazy';
+        pic.src = post.video ? 'https://i.ytimg.com/vi/' + post.video + '/hqdefault.jpg' : cardImageSize(post.image);
+        media.appendChild(pic);
+      } else {
+        media.innerHTML = '<span class="post-card-placeholder"><svg aria-hidden="true" fill="none" height="40" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="40"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="23"/><line x1="8" x2="16" y1="23" y2="23"/></svg></span>';
+      }
+      card.appendChild(media);
+      var body = doc.createElement('div');
+      body.className = 'post-card-body';
+      if (post.label) {
+        var labels = doc.createElement('div');
+        labels.className = 'post-card-labels';
+        var badge = doc.createElement('a');
+        badge.className = 'badge';
+        badge.href = '/search/label/' + encodeURIComponent(post.label);
+        badge.textContent = post.label;
+        labels.appendChild(badge);
+        body.appendChild(labels);
+      }
+      var h = doc.createElement('h3');
+      h.className = 'post-card-title';
+      var a = doc.createElement('a');
+      a.href = post.url;
+      a.textContent = post.title;
+      h.appendChild(a);
+      body.appendChild(h);
+      if (post.date) {
+        var meta = doc.createElement('div');
+        meta.className = 'post-card-meta';
+        var t = doc.createElement('time');
+        t.setAttribute('datetime', post.date);
+        formatDate(t);
+        meta.appendChild(t);
+        body.appendChild(meta);
+      }
+      card.appendChild(body);
+      return card;
+    };
+    var picked = [];
+    var seen = {};
+    seen[here] = true;
+    var take = function (entries) {
+      for (var e = 0; e < entries.length && picked.length < 3; e++) {
+        var post = feedPost(entries[e]);
+        var key = post.url.replace(/^https?:/, '');
+        if (!post.url || seen[key]) continue;
+        seen[key] = true;
+        picked.push(post);
+      }
+    };
+    var byLabel = labelName
+      ? feedEntries('/feeds/posts/default/-/' + encodeURIComponent(labelName) + '?alt=json&max-results=7')
+      : Promise.resolve([]);
+    byLabel.then(function (entries) {
+      take(entries);
+      var sameLabel = picked.length;
+      if (picked.length >= 3) return sameLabel;
+      return feedEntries('/feeds/posts/default?alt=json&max-results=7').then(function (recent) {
+        take(recent);
+        return sameLabel;
+      });
+    }).then(function (sameLabel) {
+      if (!picked.length) return;
+      var section = doc.createElement('section');
+      section.className = 'related';
+      var heading = doc.createElement('h2');
+      heading.className = 'related-title';
+      heading.textContent = sameLabel === picked.length && labelName ? 'More on ' + labelName : 'More episodes';
+      section.appendChild(heading);
+      var grid = doc.createElement('div');
+      grid.className = 'post-grid related-grid';
+      for (var r = 0; r < picked.length; r++) {
+        var card = buildCard(picked[r]);
+        grid.appendChild(card);
+        if (picked[r].video) enableCardVideo(card, picked[r].video);
+      }
+      section.appendChild(grid);
+      var share = postArticle.querySelector('.post-share') || postArticle.querySelector('.post-body');
+      share.parentNode.insertBefore(section, share.nextSibling);
     });
   }
 
