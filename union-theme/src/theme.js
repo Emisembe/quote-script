@@ -785,9 +785,10 @@
       if (found[key] !== undefined) return;
       found[key] = m[2].trim();
       if (key === 'author photo' && line.nodes.length) {
-        // remember where the line was: a picture placed right after it is the author's photo
-        photoLine = doc.createComment('author-photo');
-        line.nodes[0].parentNode.insertBefore(photoLine, line.nodes[0]);
+        // remember what comes right after the line: a picture placed there is the author's photo
+        var after = doc.createTreeWalker(singleBody, 1, null, false);
+        after.currentNode = line.br || line.nodes[line.nodes.length - 1];
+        photoLine = after.nextNode();
       }
       takeLine(line, singleBody);
     });
@@ -798,10 +799,10 @@
       // Photo: a link typed after "Author photo:", or a picture placed right after that line
       var url = (found['author photo'] || '').match(/https?:\/\/\S+/);
       if (url) guestAuthor.photo = url[0];
-      else if (photoLine && photoLine.parentNode) {
+      else if (photoLine && singleBody.contains(photoLine)) {
         var walker = doc.createTreeWalker(singleBody, 1, null, false);
         walker.currentNode = photoLine;
-        for (var step = 0; step < 12 && walker.nextNode(); step++) {
+        for (var step = 0; step < 12; step++) {
           if (walker.currentNode.tagName === 'IMG') {
             var pic = walker.currentNode;
             guestAuthor.photo = pic.currentSrc || pic.src;
@@ -810,9 +811,9 @@
             pruneEmpty(picParent, singleBody);
             break;
           }
+          if (!walker.nextNode()) break;
         }
       }
-      if (photoLine && photoLine.parentNode) photoLine.parentNode.removeChild(photoLine);
       guestAuthor.page = writerLinks[guestAuthor.name.toLowerCase()] || '';
       // Byline under the title
       var meta = single.querySelector('.post-meta');

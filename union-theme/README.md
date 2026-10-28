@@ -43,6 +43,46 @@ A rebuild of the BCorporate v3 theme used on kpuwuke.blogspot.com. It has the sa
 
 Label names must match exactly (same spelling and capitals) the labels on your posts.
 
+## Articles written by members: credit the writer
+
+The office publishes every article (writers don't need a Blogger account). To credit the person who wrote it, type these lines anywhere in the post, usually at the end, in the normal editor:
+
+```
+Written by: Jane Wanjiku | Shop steward, KCA University branch
+Author photo: https://link-to-a-photo.jpg
+About the author: Jane has represented support staff at KCA University since 2019.
+```
+
+- Only **Written by:** is needed. After the name, put the role after a `|` (or a comma).
+- **Author photo:** paste a picture link, *or* leave it empty and insert the photo (Insert image) on the line just after it. No photo? The box shows the writer's initials.
+- The lines disappear from the article and become a **byline** under the title ("By Jane Wanjiku · Shop steward…") and an **About the author** box at the end. Google is told who wrote it.
+- **Writer pages (optional):** also give the post the label `Writer: Jane Wanjiku` (exactly the same name). The byline then links to a page of all her articles ("Articles by Jane Wanjiku"). Writer labels are kept out of topic lists, news cards, breadcrumbs and the Sitemap.
+
+**Also automatic on every article:** reading time ("4 min read"); the first paragraph shown as a larger introduction; quotes (the editor's *Quote* button) shown as large pull quotes; and an **In this article** contents box on long articles with 3 or more headings (use *Heading* / *Subheading* in the editor).
+
+## Branch offices
+
+**Layout → Branch offices** (near the bottom of Layout) holds the list. Add one `<li>` per branch, one detail per line (the instructions are inside the gadget):
+
+```
+<li>Nairobi branch
+Region: Nairobi
+Address: Solidarity Building, Digo Road, Nairobi
+Contact: Jane Wanjiku, Branch Secretary
+Phone: +254 700 000 000
+Email: nairobi@example.com
+WhatsApp: +254 700 000 000
+Hours: Mon-Fri, 8:00-17:00
+Notes: Visits by appointment only
+</li>
+```
+
+Only the first line (the branch name) is required; also possible: `Map:` (a Google Maps link) and `Photo:` (a picture link). Each branch becomes a card with **Call**, **Email**, **WhatsApp** and **Directions** buttons. With more than 3 branches, a search box and a region filter appear. The branches are also given to Google (address, phone), which helps people searching for your offices.
+
+Where it shows:
+- a **Branches** page: Pages → New page → title **Branches** → publish (the address must end in `/p/branches.html`); the KPUWU menu item *Regions & Branches* already points there;
+- any other page or post, e.g. **About KPUWU**: open the page → *HTML view* → put `<div class="u-branches"></div>` where the list should appear.
+
 ## Downloads page and Sitemap page (one-time setup, 2 minutes)
 
 Both pages fill themselves from the theme; you only create them once, empty.

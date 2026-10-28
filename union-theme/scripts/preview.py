@@ -31,7 +31,16 @@ SAMPLE_POSTS = [
     ('Annual delegates conference: resolutions adopted', 'Events', '2026-10-02T09:00:00Z', False),
     ('Statement on the new minimum wage order', 'News', '2026-09-28T09:00:00Z', True),
 ]
-LABELS = ['Campaigns', 'Decent Work', 'Events', 'Minimum Wage', 'News', 'Publications', 'Regions', 'Training']
+LABELS = ['Campaigns', 'Decent Work', 'Events', 'Minimum Wage', 'News', 'Publications', 'Regions', 'Training', 'Writer: Jane Wanjiku']
+# Writer credit lines as editors would type them: separate paragraphs + a photo on the next line (KPUWU),
+# or <br>-separated lines with bold inside one block (generic)
+WRITER_LINES = {
+    'kpuwu': """<p>Written by: Jane Wanjiku | Shop steward, KCA University branch</p>
+<p>Author photo:</p>
+<div class='separator' style='clear: both; text-align: center;'><a href='#'><img class='stress-author-photo' src='https://blogger.googleusercontent.com/img/b/sample/s200/jane-photo.jpg'/></a></div>
+<p>About the author: Jane has represented support staff at KCA University since 2019 and chairs the branch women's committee.</p>""",
+    'generic': """<div>Written by: <b>Peter Otieno</b>, Branch Secretary<br/>About the author: Peter leads the North branch and writes about pensions.</div>""",
+}
 
 
 def esc(s):
@@ -81,7 +90,7 @@ def card(title, label, date, image, n):
     img = (f"<img class='js-resize' alt='{esc(title)}' src='https://blogger.googleusercontent.com/img/b/sample/s72-c/{"logo-kca.png" if n == 1 else f"post{n}.jpg"}' loading='lazy'/>"
            if image else "<span class='post-card-placeholder'>&#9633;</span>")
     return (f"<article class='post-card'><a aria-hidden='true' class='post-card-media' href='post.html' tabindex='-1'>{img}</a>"
-            f"<div class='post-card-body'><div class='post-card-labels'><a class='badge' href='/search/label/{label}'>{label}</a>"
+            f"<div class='post-card-body'><div class='post-card-labels'>{"<a class='badge' href='/search/label/Writer%3A%20Jane%20Wanjiku'>Writer: Jane Wanjiku</a>" if n == 0 else ''}<a class='badge' href='/search/label/{label}'>{label}</a>"
             f"<a class='badge' href='/search/label/News'>News</a></div>"
             f"<h3 class='post-card-title'><a href='post.html'>{esc(title)}</a></h3>"
             f"<div class='post-card-meta'><time class='js-date' datetime='{date}'>9:00 AM</time>"
@@ -134,9 +143,11 @@ def render(name, kind):
     if name == 'generic':
         docs = docs.replace('</ul>', "<li><a href='https://drive.google.com/file/d/1AbCdEfGh_ijk-LMN/view?usp=sharing' data-type='pdf'>Preview: Drive file</a> Shared from Google Drive</li>"
                             "<li><a href='https://docs.google.com/spreadsheets/d/1ZyXwV_uts-RQ/edit?usp=sharing'>Preview: Google Sheet</a> Exported as Excel</li></ul>")
-    if kind in ('downloads', 'sitemap'):
-        heading = 'Downloads' if kind == 'downloads' else 'Sitemap'
-        holder = "<p>All our documents in one place.</p><div class='u-downloads'></div>" if kind == 'downloads' else "<div class='u-sitemap'></div>"
+    if kind in ('downloads', 'sitemap', 'branches'):
+        heading = {'downloads': 'Downloads', 'sitemap': 'Sitemap', 'branches': 'About us'}[kind]
+        holder = {'downloads': "<p>All our documents in one place.</p><div class='u-downloads'></div>",
+                  'sitemap': "<div class='u-sitemap'></div>",
+                  'branches': "<p>We are a democratic union run by and for our members. Find your nearest office below.</p><h2>Our branch offices</h2><div class='u-branches'></div>"}[kind]
         main = f"""<article class='post-single post'><a name='3'></a><header class='post-head'><h1 class='post-title entry-title'>{heading}</h1></header>
 <div class='post-body entry-content' id='post-body-3'>{holder}</div>
 """ + share.replace('{title}', heading).replace('{slug}', 'p/' + kind).replace('{blog}', blog_title) + "</article>"
@@ -155,7 +166,7 @@ def render(name, kind):
                 + "</div><nav aria-label='Pages' class='blog-pager-nav'><a class='btn btn-primary older' href='#'>Older posts &#8594;</a></nav>")
     else:
         main = f"""<article class='post-single post'><a name='1'></a><header class='post-head'>
-<nav aria-label='Breadcrumb' class='breadcrumb'><a href='home.html'>Home</a><a class='crumb-label' href='/search/label/Campaigns'>Campaigns</a><a class='crumb-label' href='/search/label/News'>News</a></nav>
+<nav aria-label='Breadcrumb' class='breadcrumb'><a href='home.html'>Home</a><a class='crumb-label' href='/search/label/Writer%3A%20Jane%20Wanjiku'>Writer: Jane Wanjiku</a><a class='crumb-label' href='/search/label/Campaigns'>Campaigns</a><a class='crumb-label' href='/search/label/News'>News</a></nav>
 <h1 class='post-title entry-title'>{esc(SAMPLE_POSTS[0][0])}</h1>
 <div class='post-meta'><a class='post-author' href='#'>{'Unknown' if name == 'kpuwu' else 'Secretariat'}</a><span aria-hidden='true' class='sep'></span><time class='published js-date' datetime='2026-10-20T09:00:00Z'>9:00 AM</time></div></header>
 <div class='post-body entry-content' id='post-body-1'>
@@ -175,8 +186,9 @@ def render(name, kind):
 <table class='stress-table'><tr><th>Grade</th><th>Basic pay</th><th>House allowance</th><th>Commuter allowance</th><th>Medical cover</th><th>Leave days</th><th>Overtime rate</th><th>Pension</th><th>Effective date</th></tr><tr><td>A</td><td>100</td><td>20</td><td>10</td><td>Yes</td><td>24</td><td>1.5x</td><td>10%</td><td>1 January 2027</td></tr></table>
 <pre><code>Clause 14.2(b): overtime_rate = basic_hourly_rate * 1.5 for every hour beyond the normal working week of forty hours</code></pre>
 <table><tr><th>Grade</th><th>Old</th><th>New</th></tr><tr><td>A</td><td>100</td><td>108</td></tr><tr><td>B</td><td>120</td><td>130</td></tr></table>
+{WRITER_LINES[name]}
 </div>
-<div class='post-tags'><span class='post-tags-label'>Filed under</span><a class='badge badge-soft' href='#'>Campaigns</a><a class='badge badge-soft' href='#'>News</a></div>
+<div class='post-tags'><span class='post-tags-label'>Filed under</span><a class='badge badge-soft' href='/search/label/Writer%3A%20Jane%20Wanjiku'>Writer: Jane Wanjiku</a><a class='badge badge-soft' href='#'>Campaigns</a><a class='badge badge-soft' href='#'>News</a></div>
 <div class='u-share' data-title='{esc(SAMPLE_POSTS[0][0])}' data-url='https://example.org/post.html'><span class='u-share-label'>Share</span><div class='u-share-list'><a class='u-share-btn u-share-whatsapp' href='#'>WhatsApp</a><a class='u-share-btn u-share-facebook' href='#'>Facebook</a></div></div>
 <p class='print-source'>Printed from {blog_title}: https://example.org/post.html</p>
 <aside class='join-box'><div class='join-box-text'><p class='join-box-title'>Not a member yet?</p><p>Workers are stronger together. Join the union and have a say in your pay, conditions and rights at work.</p></div><a class='btn btn-primary js-join-link' href='/search'>Join today</a></aside>
@@ -237,6 +249,7 @@ def render(name, kind):
 <section class='home-only band band-partners'><div class='container'>{section('partners-section', 'partners', pg.html_widget('HTML4'))}</div></section>
 <section class='home-only band band-downloads' id='downloads'><div class='container'>{section('downloads-section', 'downloads-list', pg.html_widget('HTML35', f"<div class='widget-content'>{docs}</div>"))}</div></section>
 </main>
+<div class='u-data branch-data' hidden='hidden'>{section('branches-section', 'branch-offices', pg.html_widget('HTML36'))}</div>
 <footer class='site-footer' id='contact'><div class='container'>
 <div class='footer-certs'>{section('certs-section', 'footer-certs', pg.html_widget('HTML34'))}</div>
 <div class='footer-grid'>
@@ -260,7 +273,7 @@ def render(name, kind):
 def main():
     OUT.mkdir(exist_ok=True)
     for name in ('kpuwu', 'generic'):
-        for kind in ('home', 'post', 'page', 'downloads', 'sitemap'):
+        for kind in ('home', 'post', 'page', 'downloads', 'sitemap', 'branches'):
             (OUT / f'{name}-{kind}.html').write_text(render(name, kind), encoding='utf-8')
             print(f'wrote preview/{name}-{kind}.html')
 

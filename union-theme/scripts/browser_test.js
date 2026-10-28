@@ -83,9 +83,11 @@ function pagesJson() {
   })) } };
 }
 
-const PAGES = ['kpuwu-home', 'kpuwu-post', 'kpuwu-page', 'generic-home', 'generic-post', 'generic-page', 'generic-downloads', 'kpuwu-sitemap'];
+const PAGES = ['kpuwu-home', 'kpuwu-post', 'kpuwu-page', 'generic-home', 'generic-post', 'generic-page', 'generic-downloads', 'kpuwu-sitemap', 'generic-branches'];
 const WIDTHS = [280, 320, 360, 375, 414, 480, 600, 768, 834, 1024, 1100, 1280, 1440, 1920];
 const SHOTS = [280, 375, 768, 1100, 1440, 1920];
+// QUICK=1 node scripts/browser_test.js : only 390 and 1440 in the page matrix (for fast iteration)
+if (process.env.QUICK) WIDTHS.splice(0, WIDTHS.length, 390, 1440);
 const failures = [];
 const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok  ' : 'FAIL'}  ${msg}`); };
 
@@ -259,10 +261,11 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
       if (name === 'kpuwu-post') {
         const t = await page.evaluate(() => {
           const cs = (s) => getComputedStyle(document.querySelector(s));
-          const p = cs('.post-body > p'), messy = cs('.stress-messy'), font = cs('.stress-font'), h = cs('.post-body h2 span'), h2 = cs('.post-body h2');
+          const p = cs('p.MsoNormal'), messy = cs('.stress-messy'), font = cs('.stress-font'), h = cs('.post-body h2 span'), h2 = cs('.post-body h2');
           return { same: [messy, font].every((c) => c.fontFamily === p.fontFamily && c.fontSize === p.fontSize && c.color === p.color),
                    bg: messy.backgroundColor, heading: h.fontSize === h2.fontSize && h.fontFamily === h2.fontFamily && h.color === h2.color,
-                   bold: cs('.stress-font + b').fontWeight >= 600, author: document.querySelector('.post-author').offsetWidth };
+                   bold: cs('.stress-font + b').fontWeight >= 600,
+                   author: [...document.querySelectorAll('.post-meta *')].filter((e) => e.offsetWidth && e.textContent.trim() === 'Unknown').length };
         });
         note(t.same, `${name} @${width}: text pasted with other fonts/sizes/colours shows in the theme's style`);
         note(t.bg === 'rgba(0, 0, 0, 0)', `${name} @${width}: pasted highlight colour removed (${t.bg})`);
@@ -340,7 +343,7 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
   }
 
   // Structured data (schema.org JSON-LD) for Google
-  for (const [name, person] of [['kpuwu-post', null], ['generic-post', 'Secretariat'], ['kpuwu-home', null]]) {
+  for (const [name, person] of [['kpuwu-post', 'Jane Wanjiku'], ['generic-post', 'Peter Otieno'], ['kpuwu-home', null]]) {
     const { page } = await open(name, 1024);
     const g = await page.evaluate(() => {
       const s = [...document.querySelectorAll('script[type="application/ld+json"]')].map((x) => JSON.parse(x.textContent));
@@ -357,6 +360,96 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
     } else {
       note(!g.news, `${name}: no article markup on the homepage`);
     }
+    await page.close();
+  }
+
+  // Writer credit ("Written by:" lines), writer labels, reading time, intro paragraph, contents box, pull quotes
+  for (const width of [1440, 390]) {
+    for (const [name, who, role, photo] of [['kpuwu-post', 'Jane Wanjiku', 'Shop steward, KCA University branch', true], ['generic-post', 'Peter Otieno', 'Branch Secretary', false]]) {
+      const { page } = await open(name, width);
+      const r = await page.evaluate(() => {
+        const q = (s) => document.querySelector(s);
+        const body = q('.post-body');
+        const box = q('.author-box');
+        return {
+          leftover: /Written by|About the author:|Author photo/.test(body.textContent),
+          bodyPhoto: !!body.querySelector('img[src*="jane-photo"]'),
+          byline: q('.guest-byline') ? q('.guest-byline').textContent.replace(/\s+/g, ' ').trim() : '',
+          bylineHref: q('.guest-byline a') ? q('.guest-byline a').getAttribute('href') : null,
+          box: box ? { name: box.querySelector('.author-name').textContent, role: (box.querySelector('.author-role') || {}).textContent,
+            bio: (box.querySelector('.author-bio') || {}).textContent, img: (box.querySelector('img.author-photo') || {}).src || '',
+            initials: (box.querySelector('.author-initials') || {}).textContent, more: !!box.querySelector('.author-more') } : null,
+          reading: (q('.reading-time') || {}).textContent,
+          lead: q('.lead-para') ? getComputedStyle(q('.lead-para')).fontSize : null,
+          toc: [...document.querySelectorAll('.toc-list a')].map((a) => ({ text: a.textContent, ok: !!document.getElementById(a.getAttribute('href').slice(1)) })),
+          crumbs: [...document.querySelectorAll('.breadcrumb .crumb-label')].map((a) => a.textContent),
+          tags: [...document.querySelectorAll('.post-tags a')].map((a) => a.textContent),
+          sideWriter: [...document.querySelectorAll('.Label li')].some((li) => /Writer:/.test(li.textContent)),
+          quote: getComputedStyle(q('.post-body blockquote')).fontFamily,
+          scroll: document.documentElement.scrollWidth, inner: innerWidth,
+        };
+      });
+      note(!r.leftover && !r.bodyPhoto, `${name} @${width}: "Written by" / photo / bio lines taken out of the article text`);
+      note(r.byline.startsWith('By ' + who) && r.byline.includes(role), `${name} @${width}: byline "${r.byline}"`);
+      note(photo ? /Writer/.test(decodeURIComponent(r.bylineHref || '')) : true, `${name} @${width}: byline links to the writer's page when a Writer label exists`);
+      note(r.box && r.box.name === who && r.box.role === role && /\S/.test(r.box.bio || ''), `${name} @${width}: About-the-author box with name, role and bio`);
+      note(photo ? /jane-photo/.test(r.box.img) && r.box.more : r.box.initials === 'PO' && !r.box.more, `${name} @${width}: ${photo ? 'photo from the line after "Author photo:" + "More articles" link' : 'initials when there is no photo'}`);
+      note(/^\d+ min read$/.test(r.reading || ''), `${name} @${width}: reading time "${r.reading}"`);
+      note(parseFloat(r.lead) >= 18, `${name} @${width}: first paragraph shown larger (${r.lead})`);
+      note(r.toc.length >= 3 && r.toc.every((x) => x.ok), `${name} @${width}: "In this article" box with ${r.toc.length} working links`);
+      note(r.crumbs[0] === 'Campaigns' && !r.tags.some((x) => /Writer/.test(x)) && !r.sideWriter, `${name} @${width}: writer labels kept out of breadcrumb, tags and topic list`);
+      note(/Oswald/.test(r.quote), `${name} @${width}: pull quote in the display font`);
+      note(r.scroll <= r.inner, `${name} @${width}: no horizontal scroll`);
+      if (width === 1440 && name === 'kpuwu-post') {
+        await page.locator('.post-head').screenshot({ path: path.join(OUT, 'article-head-1440.png') });
+        await page.locator('.author-box').screenshot({ path: path.join(OUT, 'author-box-1440.png') });
+      }
+      if (width === 390 && name === 'generic-post') await page.locator('.author-box').screenshot({ path: path.join(OUT, 'author-box-390.png') });
+      await page.close();
+    }
+  }
+  {
+    const { page } = await open('kpuwu-home', 1440);
+    const first = await page.evaluate(() => [...document.querySelectorAll('.post-card')][0].querySelector('.post-card-labels a').textContent);
+    note(!/Writer/.test(first), `news cards show the topic, not the writer label (first card: "${first}")`);
+    await page.close();
+  }
+
+  // Branch offices: cards, search, region filter, buttons, structured data
+  for (const width of [1440, 390]) {
+    const { page } = await open('generic-branches', width);
+    const r = await page.evaluate(() => {
+      const cards = [...document.querySelectorAll('.u-branches .branch-card')];
+      const head = cards[0];
+      const href = (c, s) => (c.querySelector(s) || {}).getAttribute ? c.querySelector(s).getAttribute('href') : null;
+      const ld = [...document.querySelectorAll('script[type="application/ld+json"]')].map((x) => JSON.parse(x.textContent))[0]['@graph'][0];
+      return { n: cards.length, name: head.querySelector('.branch-name').textContent, region: (head.querySelector('.branch-region') || {}).textContent,
+        call: href(head, '.branch-call'), mail: href(head, '.branch-email'), wa: href(head, '.branch-whatsapp'), map: href(head, '.branch-map'),
+        notes: [...document.querySelectorAll('.branch-notes')].map((p) => p.textContent), count: (document.querySelector('.branch-count') || {}).textContent,
+        options: [...document.querySelectorAll('.branch-region-select option')].map((o) => o.textContent),
+        subs: (ld.subOrganization || []).length, scroll: document.documentElement.scrollWidth, inner: innerWidth };
+    });
+    note(r.n === 5 && r.name === 'Head office' && r.region === 'Capital', `branches @${width}: 5 branch cards, first "${r.name}" (${r.region})`);
+    note(r.call === 'tel:+000700000001' && r.mail === 'mailto:info@example.org' && r.wa === 'https://wa.me/000700000001' &&
+      /google\.com\/maps\/search\/\?api=1&query=Head%20office%2C%20Union%20House/.test(r.map), `branches @${width}: Call / Email / WhatsApp / Directions links ${JSON.stringify([r.call, r.mail, r.wa])}`);
+    note(r.notes.length === 1 && /appointment/.test(r.notes[0]), `branches @${width}: notes shown`);
+    note(r.options.join('|') === 'All regions|Capital|Coast|North|West' && r.count === '5 branches', `branches @${width}: region filter + count`);
+    await page.fill('.branch-search', 'harbour');
+    const afterSearch = await page.evaluate(() => [...document.querySelectorAll('.branch-card')].filter((c) => !c.hidden).map((c) => c.querySelector('.branch-name').textContent));
+    note(afterSearch.length === 1 && afterSearch[0] === 'Coast branch', `branches @${width}: search "harbour" finds the Coast branch`);
+    await page.fill('.branch-search', '');
+    await page.selectOption('.branch-region-select', 'Capital');
+    const afterRegion = await page.evaluate(() => ({ shown: [...document.querySelectorAll('.branch-card')].filter((c) => !c.hidden).length, count: document.querySelector('.branch-count').textContent }));
+    note(afterRegion.shown === 2 && afterRegion.count === 'Showing 2 of 5 branches', `branches @${width}: region "Capital" shows 2 (${afterRegion.count})`);
+    note(r.subs === 5, `branches @${width}: branches in Google structured data (${r.subs})`);
+    note(r.scroll <= r.inner, `branches @${width}: no horizontal scroll`);
+    await page.selectOption('.branch-region-select', '');
+    await page.screenshot({ path: path.join(OUT, `branches-${width}.png`), fullPage: true });
+    await page.close();
+  }
+  {
+    const { page } = await open('kpuwu-branches', 1024);
+    note(/added here soon/.test(await page.textContent('.u-branches')), 'kpuwu branches: friendly message while no branch is listed');
     await page.close();
   }
 
