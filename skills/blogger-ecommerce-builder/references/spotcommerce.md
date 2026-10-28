@@ -35,11 +35,27 @@ so everything below comes from the theme and demo data alone. Say so when you re
   `.post-header-action-buttons`, `.post-similar`) that JS fills with the gallery, price, buy buttons and
   similar products. Wishlist is `/?page=wishlist`; cart and checkout are JS views too.
 - **Comments are reviews:** `comment_picker` relabels Blogger comments as "Reviews" / "Add a review".
-- **Order delivery (inferred):** the Blogger **ContactForm** widget sits inside the Blog section and the
-  strings mention "the shop owner did not receive your order" and a Google Form fallback
-  (`GOOGLE_FORM_PREFILL_URL`). So orders most likely go through Blogger's contact-form mail to the
-  blog owner, falling back to a prefilled Google Form or a screenshot. That's an undocumented Blogger
-  endpoint, and it fails silently when Blogger changes it.
+- **Order delivery (confirmed from the 2014 demo's unpacked script; 2.3.9 keeps the same widget and
+  adds fallbacks):** the hidden Blogger **ContactForm2** gadget is the order channel.
+  1. The checkout page (`/checkout/`, built by JS) moves ContactForm2's `<form>` into the checkout,
+     hides its name/email/message fields and relabels Blogger's **Send** button "Place Order".
+  2. When the pointer moves over that button (`mouseenter`), JS fills the hidden fields:
+     name = billing first + last name, email = billing email, message = a plain-text order
+     ("NEW ORDER: #<Order ID>", payment method, addresses, notes, each product with price, quantity,
+     line total and link, subtotal, shipping, total).
+  3. The click is handled by **Blogger's own contact-form script** (added by Blogger, not in the theme),
+     which emails the message to the blog owner. SpotCommerce then polls every 10 ms for Blogger's
+     success text; after ~10 s **with no error text it shows "order received" anyway**. With an error
+     it alerts "Blogger server had an unknown error!!". PayPal orders redirect to PayPal 4 s later.
+  - **The "code" is the Order ID:** `Date.getTime()` plus seconds, minutes, hours, weekday, date, month
+    and year. A timestamp, not a secret or verification code. It's shown on the thank-you page and is
+    the bank/cheque payment reference.
+  - Prices are re-read from each post's `_price` label via the feed at checkout (not from the stored
+    cart), but the order text is still assembled in the buyer's browser.
+  - Weak spots: keyboard users (Tab + Enter) never trigger `mouseenter`, so the message can go out
+    empty or be refused; the 10 s timeout can show a false "received"; the thank-you date is off by
+    one day (`getDate()+1`); the owner gets plain email with no order list. 2.3.9 adds a prefilled
+    Google Form fallback (`GOOGLE_FORM_PREFILL_URL`) and a "take a screenshot" message for failures.
 - **Payments:** direct bank transfer (up to 5 accounts), cheque, cash on delivery, PayPal (by email
   address), UPI QR codes (Paytm/PhonePe/GPay) and "Order via WhatsApp". A Stripe block exists but is
   disabled (`b:comment` + `b:if cond='false'`) and holds a **test** publishable key. Nothing confirms
@@ -127,7 +143,8 @@ The demo shirts carry real brand logos (Scott, La Sportiva). Never ship them on 
 3. **Client-side totals:** prices, coupons, tax and shipping are computed in the browser and sent as text.
    A tampered cart produces a "valid-looking" order. The owner must re-check every order against the
    real prices (our Apps Script backend does this automatically).
-4. **Fragile order delivery:** an undocumented contact-form endpoint, a Google Form fallback, and
+4. **Fragile order delivery:** Blogger's contact form driven by script (see §1): no documented API,
+   a fill step that keyboard users skip, a timeout that can report success without one, and
    "take a screenshot and send it" as the last resort.
 5. **Old dependencies:** jQuery UI 1.10.4 (2014, known XSS issues) loaded protocol-relative;
    lorempixel default thumbnails (service dead); an AddThis wrapper (AddThis shut down in 2023).
