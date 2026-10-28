@@ -194,6 +194,8 @@
       var slot = card.querySelector('.shop-card-buy');
       if (!p || !slot) return;
       card.classList.add('is-product');
+      var img = card.querySelector('.shop-card-media img');
+      if (img) img.src = sized(img.getAttribute('src'), 600); // full product, no crop
       if (!isNaN(p.oldPrice)) card.appendChild(el('span', { 'class': 'shop-badge', text: t('Sale') }));
       slot.appendChild(priceNode(p));
       var title = card.getAttribute('data-title') || (card.querySelector('h2, h3') || {}).textContent || '';
@@ -563,7 +565,7 @@
   function hidePriceLabels() {
     if (!CFG.labelPrices) return;
     Array.prototype.forEach.call(document.querySelectorAll('.Label li, .Label a, .shop-cat'), function (n) {
-      if (/^[_\-!]\d[\d.,]*\s*(\(\d+\))?$/.test(n.textContent.trim())) n.hidden = true;
+      if (/^[_\-!]\d[\d.,]*(\s*\(\s*\d+\s*\))?$/.test(n.textContent.trim())) n.hidden = true;
     });
   }
 

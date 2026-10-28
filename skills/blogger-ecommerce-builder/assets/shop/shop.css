@@ -71,9 +71,9 @@ body .shop-line { display: grid; grid-template-columns: 56px 1fr 64px 32px; gap:
 .shop-line-info a { color: #222; font-weight: 700; text-decoration: none; }
 .shop-line-info small { color: #666; }
 .shop-line input { width: 64px; padding: 6px; font: inherit; box-sizing: border-box; }
-.shop-sum { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; margin: 16px 0 4px; }
+.shop-sum { display: grid; grid-template-columns: 1fr auto; gap: 6px 0; margin: 16px 0 4px; }
 .shop-sum dt, .shop-sum dd { margin: 0; }
-.shop-sum dd { text-align: right; }
+.shop-sum dd { text-align: right; padding-left: 12px; }
 .shop-sum dt:last-of-type, .shop-sum dd:last-of-type { font-weight: 700; font-size: 1.1rem; border-top: 1px solid #ddd; padding-top: 6px; }
 .shop-empty, .shop-done { font-size: 1.05rem; }
 

@@ -15,10 +15,10 @@
   <article class='shop-card' expr:data-id='data:post.id' expr:data-url='data:post.url' expr:data-title='data:post.title' expr:data-image='data:post.firstImageUrl'>
     <a aria-hidden='true' class='shop-card-media' expr:href='data:post.url' tabindex='-1'>
       <b:if cond='data:post.firstImageUrl'>
-        <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
+        <img class='shop-img' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
       <b:else/>
         <b:if cond='data:post.thumbnailUrl'>
-          <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
+          <img class='shop-img' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
         </b:if>
       </b:if>
     </a>
@@ -48,10 +48,21 @@
         </b:if>
         <h1 class='post-title'><data:post.title/></h1>
         <div class='shop-buy'/>
+        <div class='shop-share'>
+          <a expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+          <a expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+          <a expr:href='&quot;https://pinterest.com/pin/create/button/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Pinterest</a>
+          <b:include data='post' name='postQuickEdit'/>
+        </div>
       </div>
     </div>
     <div class='post-body' expr:id='&quot;post-body-&quot; + data:post.id'>
       <data:post.body/>
+    </div>
+    <!-- Blogger comments, shown as reviews. Needs the theme's own comment_picker and
+         postQuickEdit includables (every Blogger-generated theme has them). -->
+    <div class='shop-reviews'>
+      <b:include data='post' name='comment_picker'/>
     </div>
   </article>
 </b:includable>

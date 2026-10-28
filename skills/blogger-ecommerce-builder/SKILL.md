@@ -30,7 +30,7 @@ Follow blogger-theme-builder steps 1–2 (reference backup, starter project). Th
 python3 <this skill>/scripts/add_shop_layer.py path/to/project   # once; then build + both audits
 ```
 
-On the unmodified starter this passes check.py (66/66) and check_shop.py (14/14). If the project's markup
+On the unmodified starter this passes check.py and check_shop.py with no failures. If the project's markup
 has drifted, the script names the missing anchor; add that piece by hand. The pieces in `assets/shop/`:
 
 - `theme-snippets.xml`: the skin `<Variable>`s (`shop.accent`, `shop.ink`, `shop.tile`), the header cart

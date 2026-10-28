@@ -1,0 +1,3215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:version='2' expr:dir='data:blog.languageDirection' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<meta content='width=device-width, initial-scale=1' name='viewport'/>
+<b:include data='blog' name='all-head-content'/>
+<title>
+<b:if cond='data:blog.pageType == &quot;index&quot;'>
+<data:blog.pageTitle/>
+<b:else/>
+<b:if cond='data:blog.pageType != &quot;error_page&quot;'>
+<data:blog.pageName/> - <data:blog.title/>
+<b:else/>
+Page not found - <data:blog.title/>
+</b:if>
+</b:if>
+</title>
+<link href='https://fonts.googleapis.com' rel='preconnect'/>
+<link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
+<link href='https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&amp;family=Open+Sans:wght@400;600;700&amp;display=swap' rel='stylesheet'/>
+<b:skin><![CDATA[
+/*
+-----------------------------------------------
+Blogger Template Style
+Name:     Night Shop (Blogger shop theme)
+Version:  1.0.0
+License:  Free to use on any Blogger blog
+----------------------------------------------- */
+
+/* Variable definitions (editable in Theme > Customize > Advanced)
+====================
+<Variable name="primary.color" description="Primary (header, hero, footer)" type="color" default="#111111" value="#111111"/>
+<Variable name="primary.soft.color" description="Cards on the primary colour" type="color" default="#1C1C1C" value="#1C1C1C"/>
+<Variable name="accent.color" description="Accent (buttons, highlights)" type="color" default="#FF3300" value="#FF3300"/>
+<Variable name="accent.hover.color" description="Accent hover" type="color" default="#FF5A2E" value="#FF5A2E"/>
+<Variable name="page.background.color" description="Page background" type="color" default="#F0F0F0" value="#F0F0F0"/>
+<Variable name="text.color" description="Body text" type="color" default="#222222" value="#222222"/>
+<Variable name="muted.color" description="Muted text" type="color" default="#6B6B6B" value="#6B6B6B"/>
+<Variable name="border.color" description="Borders and dividers" type="color" default="#E2E2E2" value="#E2E2E2"/>
+<Variable name="shop.accent" description="Shop accent (buttons, prices, badges)" type="color" default="#FF3300" value="#FF3300"/>
+<Variable name="shop.ink" description="Shop text" type="color" default="#222222" value="#222222"/>
+<Variable name="shop.tile" description="Product photo background" type="color" default="#EBE2D9" value="#EBE2D9"/>
+*/
+
+
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(68px + 12px);
+}
+body {
+  margin: 0;
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  color: $(text.color);
+  background: $(page.background.color);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+html.nav-locked, html.nav-locked body { overflow: hidden; }
+img, video, iframe, embed, object { max-width: 100%; }
+img { height: auto; border: 0; }
+a { color: inherit; text-decoration: none; }
+p { margin: 0 0 1em; }
+h1, h2, h3, h4, h5, h6 { margin: 0 0 0.5em; line-height: 1.15; color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
+/* "body" prefix: Blogger injects its own widget stylesheet, sometimes after this skin */
+body .section, body .widget { margin: 0; padding: 0; }
+body .widget ul, body .widget ol { list-style: none; margin: 0; padding: 0; }
+body .widget li { margin: 0; padding: 0; }
+:focus-visible { outline: 2px solid $(accent.color); outline-offset: 3px; }
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+@media (min-width: 768px) { .container { padding: 0 32px; } }
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 12px;
+  z-index: 300;
+  background: #fff;
+  color: $(primary.color);
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+.skip-link:focus { left: 16px; }
+
+.badge {
+  display: inline-block;
+  background: $(accent.color);
+  color: $(primary.color);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+}
+a.badge:hover { background: $(primary.color); color: $(accent.color); }
+
+/* ---------- Buttons ---------- */
+.btn,
+.header-cta .widget-content a,
+.hero-main .widget-content a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 12px 26px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.3px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+}
+.btn-primary,
+.header-cta .widget-content a,
+.hero-main .widget-content li:first-child a {
+  background: $(accent.color);
+  border-color: $(accent.color);
+  color: $(primary.color);
+}
+.btn-primary:hover,
+.header-cta .widget-content a:hover,
+.hero-main .widget-content li:first-child a:hover {
+  background: $(accent.hover.color);
+  border-color: $(accent.hover.color);
+  color: $(primary.color);
+}
+.hero-main .widget-content li a {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.55);
+  color: #fff;
+}
+.hero-main .widget-content li a:hover { border-color: $(accent.color); color: $(accent.color); }
+.btn-outline {
+  background: transparent;
+  border-color: $(border.color);
+  color: $(primary.color);
+}
+.btn-outline:hover { border-color: $(primary.color); }
+
+/* ---------- Header ---------- */
+.site-header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: $(primary.color);
+  border-bottom: 2px solid $(accent.color);
+  transition: box-shadow 0.2s;
+}
+.site-header.is-scrolled { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28); }
+.header-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 68px;
+}
+.brand-section { flex: 1 1 auto; min-width: 0; }
+.brand { display: flex; align-items: center; gap: 10px; color: #fff; }
+.brand:hover { color: #fff; }
+.brand-mark {
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: $(accent.color);
+  color: $(primary.color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  overflow: hidden;
+}
+.brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+.brand-logo img { display: block; max-height: 44px; width: auto; }
+.brand-text { display: flex; flex-direction: column; min-width: 0; }
+.brand-name {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.brand-tagline {
+  font-size: 12px;
+  line-height: 1.35;
+  color: $(accent.color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-toggle {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -8px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+}
+.nav-toggle:hover { color: $(accent.color); }
+.nav-toggle svg { display: block; }
+.nav-toggle .icon-close { display: none; }
+.site-header.nav-open .nav-toggle .icon-menu { display: none; }
+.site-header.nav-open .nav-toggle .icon-close { display: block; }
+
+/* Mobile drawer */
+.nav-drawer { display: none; }
+.site-header.nav-open .nav-drawer {
+  display: block;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 2px;
+  padding: 8px 20px 24px;
+  background: $(primary.color);
+  border-bottom: 2px solid $(accent.color);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+  max-height: calc(100vh - 68px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.site-nav .widget > .title, .site-nav .widget > h2, .site-nav .widget > h3,
+.header-cta .widget > .title, .header-cta .widget > h2, .header-cta .widget > h3 { display: none; }
+.site-nav li a {
+  display: block;
+  padding: 14px 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #E6ECF3;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: color 0.2s, border-color 0.2s;
+}
+.site-nav li a:hover { color: $(accent.color); }
+.header-cta .widget-content { margin-top: 18px; }
+.header-cta .widget-content a { display: flex; width: 100%; }
+
+@media (min-width: 1024px) {
+  .nav-toggle { display: none; }
+  .nav-drawer,
+  .site-header.nav-open .nav-drawer {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    position: static;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+    max-height: none;
+    overflow: visible;
+  }
+  .site-nav .widget-content ul { display: flex; align-items: center; gap: 26px; }
+  .site-nav li a {
+    padding: 6px 0;
+    font-size: 15px;
+    border-bottom: 2px solid transparent;
+  }
+  .site-nav li a:hover { border-bottom-color: $(accent.color); }
+  .header-cta .widget-content { margin: 0; }
+  .header-cta .widget-content a { display: inline-flex; width: auto; min-height: 40px; padding: 9px 18px; font-size: 14px; }
+}
+
+/* ---------- Hero (homepage) ---------- */
+.hero {
+  display: none;
+  position: relative;
+  overflow: hidden;
+  background: $(primary.color);
+  color: #fff;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(55% 60% at 78% 45%, rgba(0, 192, 168, 0.10), rgba(0, 192, 168, 0) 70%);
+  pointer-events: none;
+}
+.hero-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: calc(92vh - 68px);
+  min-height: calc(92svh - 68px);
+  padding-top: 64px;
+  padding-bottom: 72px;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+  width: 100%;
+}
+.hero .widget > h2.title { display: none; }
+.hero-main .widget + .widget { margin-top: 28px; }
+.hero-eyebrow {
+  margin: 0 0 18px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: $(accent.color);
+}
+.hero-title {
+  position: relative;
+  margin: 0 0 24px;
+  padding-left: 18px;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 400;
+  font-size: clamp(46px, 8vw, 84px);
+  line-height: 0.95;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+}
+.hero-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 4px;
+  border-radius: 2px;
+  background: linear-gradient(to bottom, #FFB347, $(accent.color));
+}
+.hero-title .accent { color: $(accent.color); }
+.hero-text { max-width: 560px; font-size: 17px; line-height: 1.75; color: #E6E1DB; }
+.hero-text p:last-child { margin-bottom: 0; }
+.hero-text a { color: $(accent.color); text-decoration: underline; }
+.hero-main .widget-content ul { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.host-card {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 36px 24px;
+  text-align: center;
+  background: $(primary.soft.color);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 16px;
+  color: #fff;
+}
+a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
+.host-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 112px;
+  height: 112px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  border: 3px solid $(accent.color);
+  background: rgba(0, 192, 168, 0.12);
+  color: #fff;
+  overflow: hidden;
+}
+.host-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.host-name { margin: 0 0 4px; font-size: 20px; font-weight: 700; color: #fff; }
+.host-role { font-size: 14px; font-weight: 600; color: $(accent.color); }
+.host-role p { margin: 0; }
+
+@media (min-width: 960px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    column-gap: 72px;
+    align-items: center;
+  }
+  .host-card { padding: 44px 28px; }
+}
+
+/* ---------- Main content ---------- */
+.page-main { padding: 48px 0 64px; }
+@media (min-width: 768px) { .page-main { padding: 64px 0 80px; } }
+.main-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; }
+@media (min-width: 1024px) {
+  .pt-item .main-grid,
+  .pt-static_page .main-grid { grid-template-columns: minmax(0, 1fr) 320px; }
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.section-title {
+  display: inline-block;
+  margin: 0;
+  padding-bottom: 6px;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 400;
+  font-size: clamp(30px, 4vw, 42px);
+  letter-spacing: 1.5px;
+  line-height: 1;
+  color: $(primary.color);
+  border-bottom: 3px solid $(accent.color);
+}
+
+.search-form { display: flex; width: 100%; max-width: 340px; }
+.search-form input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  background: #fff;
+  border: 1.5px solid $(border.color);
+  border-right: 0;
+  border-radius: 8px 0 0 8px;
+  font-size: 15px;
+  color: $(text.color);
+  transition: border-color 0.2s;
+}
+.search-form input:focus { border-color: $(accent.color); outline: none; }
+.search-form button {
+  flex: 0 0 48px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $(primary.color);
+  color: $(accent.color);
+  border: 0;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+}
+.search-form button:hover { color: #fff; }
+
+/* Post cards */
+.post-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+@media (min-width: 640px) { .post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .post-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; } }
+.post-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid $(border.color);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.post-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(13, 28, 46, 0.12); }
+.post-card-media {
+  position: relative;
+  display: block;
+  padding-top: 56.25%;
+  background: $(primary.color);
+  overflow: hidden;
+}
+.post-card-media img,
+.post-card-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.post-card-media img { object-fit: cover; transition: transform 0.4s; }
+.post-card:hover .post-card-media img { transform: scale(1.04); }
+.post-card-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $(accent.color);
+  background: linear-gradient(135deg, $(primary.color), $(primary.soft.color));
+}
+.post-card-body { display: flex; flex-direction: column; flex: 1 1 auto; padding: 18px 20px 20px; }
+.post-card-labels { margin-bottom: 10px; }
+.post-card-title { margin: 0 0 8px; font-size: 19px; font-weight: 700; line-height: 1.35; color: $(primary.color); }
+.post-card-title a {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.post-card-title a:hover { color: $(accent.color); }
+.post-card-excerpt {
+  margin: 0 0 14px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: $(muted.color);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.post-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-top: auto;
+  padding-top: 6px;
+  font-size: 12.5px;
+  color: $(muted.color);
+}
+
+.empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  background: #ffffff;
+  border: 1px solid $(border.color);
+  border-radius: 12px;
+}
+.empty-state p { color: $(muted.color); }
+
+/* Pagers */
+.blog-pager-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 36px;
+}
+.blog-pager-nav .older { margin-left: auto; }
+
+/* Single post / page */
+.post-single {
+  background: #ffffff;
+  border: 1px solid $(border.color);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  padding: 24px 20px 32px;
+}
+@media (min-width: 768px) { .post-single { padding: 44px 48px 48px; } }
+.post-labels { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.post-title {
+  margin: 0 0 12px;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 400;
+  font-size: clamp(34px, 5.5vw, 56px);
+  line-height: 1.02;
+  letter-spacing: 1px;
+  color: $(primary.color);
+}
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding-bottom: 18px;
+  margin-bottom: 26px;
+  border-bottom: 1px solid $(border.color);
+  font-size: 13.5px;
+  color: $(muted.color);
+}
+.post-meta .post-author { font-weight: 700; color: $(primary.color); }
+.post-meta .quick-edit-link { font-weight: 700; color: $(accent.color); }
+.post-meta .sep { width: 4px; height: 4px; border-radius: 50%; background: $(accent.color); }
+
+.post-body {
+  font-size: 17px;
+  line-height: 1.8;
+  color: #2B3A4A;
+  overflow-wrap: break-word;
+}
+.post-body h2, .post-body h3, .post-body h4 {
+  margin: 1.6em 0 0.5em;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 400;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  color: $(primary.color);
+}
+.post-body h2 { font-size: 34px; }
+.post-body h3 { font-size: 28px; }
+.post-body h4 { font-size: 23px; }
+.post-body a {
+  color: $(primary.color);
+  text-decoration: underline;
+  text-decoration-color: $(accent.color);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.post-body a:hover { color: $(accent.color); }
+.post-body img { max-width: 100%; height: auto; border-radius: 8px; }
+.post-body .separator a { text-decoration: none; }
+@media (max-width: 600px) {
+  .post-body .separator a { float: none !important; margin-left: 0 !important; margin-right: 0 !important; }
+  .post-body .separator { text-align: center; }
+}
+.post-body iframe { max-width: 100%; border: 0; }
+.post-body iframe[src*="youtube"], .post-body iframe[src*="vimeo"] {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+}
+body .widget .post-body ul, body .widget .post-body ol { margin: 0 0 1.2em; padding-left: 1.4em; }
+body .widget .post-body ul { list-style: disc; }
+body .widget .post-body ol { list-style: decimal; }
+body .widget .post-body li { margin: 0.3em 0; padding: 0; }
+.post-body blockquote {
+  margin: 28px 0;
+  padding: 18px 22px;
+  background: rgba(0, 192, 168, 0.07);
+  border-left: 4px solid $(accent.color);
+  border-radius: 0 12px 12px 0;
+  font-style: italic;
+}
+.post-body pre, .post-body code {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.9em;
+  background: $(page.background.color);
+  border-radius: 6px;
+}
+.post-body code { padding: 2px 6px; }
+.post-body pre { padding: 16px; overflow-x: auto; }
+.post-body pre code { padding: 0; background: none; }
+.post-body table { max-width: 100%; border-collapse: collapse; }
+.post-body table:not(.tr-caption-container) { display: block; overflow-x: auto; }
+.post-body table:not(.tr-caption-container) td,
+.post-body table:not(.tr-caption-container) th { padding: 8px 12px; border: 1px solid $(border.color); }
+.post-body .tr-caption { font-size: 13px; color: $(muted.color); }
+.post-body hr { border: 0; height: 1px; background: $(border.color); margin: 2em 0; }
+
+.post-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 36px;
+  padding-top: 22px;
+  border-top: 1px solid $(border.color);
+}
+.post-share-label {
+  margin-right: 6px;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: $(primary.color);
+}
+.post-share a, .post-share button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1.5px solid $(border.color);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: $(primary.color);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.post-share a:hover, .post-share button:hover { border-color: $(accent.color); color: $(accent.color); }
+
+/* Comments (Blogger's built-in markup) */
+.post-single .comments {
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid $(border.color);
+}
+.comments .title, .comments h3, .comments h4 {
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 28px;
+  letter-spacing: 1px;
+  color: $(primary.color);
+}
+.comments ol, .comments ul { list-style: none; margin: 0; padding: 0; }
+.comments .comment { margin: 0 0 18px; }
+.comments .avatar-image-container {
+  float: left;
+  width: 40px;
+  height: 40px;
+  max-height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: $(page.background.color);
+}
+.comments .avatar-image-container img { width: 100%; height: 100%; object-fit: cover; }
+.comments .comment-block {
+  margin-left: 52px;
+  padding: 14px 16px;
+  background: $(page.background.color);
+  border: 1px solid $(border.color);
+  border-radius: 12px;
+}
+.comments .comment-header .user, .comments .comment-header .user a { font-weight: 700; color: $(primary.color); }
+.comments .datetime, .comments .datetime a { margin-left: 8px; font-size: 12px; color: $(muted.color); }
+.comments .comment-content { margin: 6px 0; overflow-wrap: anywhere; }
+.comments .comment-actions a,
+.comments .continue a,
+.comments .thread-toggle,
+.comments .comment-reply {
+  display: inline-block;
+  margin-right: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: $(primary.color);
+  cursor: pointer;
+}
+.comments .comment-actions a:hover, .comments .continue a:hover { color: $(accent.color); }
+.comments .comment-replies { margin: 14px 0 0 20px; }
+.comments .comment-replybox-thread, .comments .comment-replybox-single { margin-top: 12px; }
+.comments iframe, #comment-editor { width: 100%; border: 0; }
+@media (max-width: 480px) {
+  .comments .comment-block { margin-left: 0; margin-top: 50px; }
+  .comments .comment-replies { margin-left: 8px; }
+}
+
+#comments-block dt { margin: 18px 0 4px; font-weight: 700; color: $(primary.color); }
+#comments-block dd { margin: 0 0 6px; }
+#comments-block .comment-footer { font-size: 12px; color: $(muted.color); }
+.comment-footer { margin: 16px 0 0; }
+
+/* 404 */
+.not-found { padding: 56px 20px; text-align: center; }
+.not-found-code {
+  margin: 0;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-size: clamp(96px, 20vw, 180px);
+  line-height: 1;
+  color: $(accent.color);
+}
+.not-found h1 { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-weight: 400; font-size: 40px; letter-spacing: 1px; color: $(primary.color); }
+.not-found p { color: $(muted.color); }
+.not-found .search-form { margin: 24px auto; }
+
+/* ---------- Sidebar ---------- */
+.pt-index .sidebar, .pt-archive .sidebar, .pt-error_page .sidebar { display: none; }
+.sidebar .widget {
+  margin-bottom: 24px;
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid $(border.color);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+}
+.sidebar .widget:last-child { margin-bottom: 0; }
+.sidebar .widget > .title, .sidebar .widget > h2, .sidebar .widget > h3,
+.topics .widget > .title, .topics .widget > h2, .topics .widget > h3 {
+  display: inline-block;
+  margin: 0 0 16px;
+  padding-bottom: 6px;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  letter-spacing: 1px;
+  line-height: 1;
+  color: $(primary.color);
+  border-bottom: 2px solid $(accent.color);
+}
+.sidebar a:hover { color: $(accent.color); }
+.sidebar .PopularPosts .post,
+.sidebar .PopularPosts li { margin: 0 0 14px; padding: 0 0 14px; border-bottom: 1px solid $(border.color); }
+.sidebar .PopularPosts .post:last-child,
+.sidebar .PopularPosts li:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+.sidebar .PopularPosts .item-thumbnail { float: left; margin: 0 12px 4px 0; }
+.sidebar .PopularPosts img { display: block; width: 64px; height: 64px; object-fit: cover; border-radius: 8px; }
+.sidebar .PopularPosts .post-title, .sidebar .PopularPosts .item-title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: $(primary.color);
+}
+.sidebar .PopularPosts .snippet-item, .sidebar .PopularPosts .item-snippet { font-size: 13px; color: $(muted.color); }
+.sidebar input[type="text"], .sidebar input[type="search"] {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 1.5px solid $(border.color);
+  border-radius: 8px;
+}
+
+/* ---------- Topics (homepage) ---------- */
+.topics { display: none; padding: 0 0 72px; }
+.topics .Label ul, .topics .cloud-label-widget-content, .sidebar .Label ul,
+.sidebar .cloud-label-widget-content { display: flex; flex-wrap: wrap; gap: 10px; }
+.topics .Label a, .sidebar .Label a {
+  display: inline-block;
+  padding: 9px 16px;
+  background: #ffffff;
+  border: 1px solid $(border.color);
+  border-radius: 22px;
+  font-size: 14px;
+  font-weight: 700;
+  color: $(primary.color);
+  transition: border-color 0.2s, color 0.2s;
+}
+.topics .Label a:hover, .sidebar .Label a:hover { border-color: $(accent.color); color: $(accent.color); }
+.topics .Label .label-count, .sidebar .Label .label-count { font-weight: 400; color: $(muted.color); }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  background: $(primary.color);
+  color: #E6E1DB;
+  border-top: 2px solid $(accent.color);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 36px;
+  padding: 56px 0 36px;
+}
+@media (min-width: 768px) { .footer-grid { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 48px; } }
+.site-footer .widget { margin-bottom: 20px; }
+.site-footer .widget > .title, .site-footer .widget > h2, .site-footer .widget > h3 {
+  display: inline-block;
+  margin: 0 0 16px;
+  padding-bottom: 6px;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  letter-spacing: 1px;
+  line-height: 1;
+  color: #fff;
+  border-bottom: 2px solid $(accent.color);
+}
+.site-footer a { color: #E6E1DB; transition: color 0.2s, border-color 0.2s; }
+.site-footer a:hover { color: $(accent.color); }
+.site-footer .widget-content { font-size: 15px; line-height: 1.75; }
+.site-footer .widget-content li { margin: 0 0 10px; }
+#footer-connect .widget-content ul { display: flex; flex-wrap: wrap; gap: 8px; }
+#footer-connect .widget-content li { margin: 0; }
+#footer-connect .widget-content a {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+}
+#footer-connect .widget-content a:hover { border-color: $(accent.color); color: $(accent.color); }
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  padding: 18px 0 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+  color: #A59C92;
+}
+.footer-bottom p { margin: 0; }
+.footer-bottom .widget { margin: 0; }
+.footer-bottom .widget-content { font-size: 13px; }
+@media (max-width: 600px) { .footer-bottom { justify-content: center; text-align: center; } }
+
+/* ---------- Centred mobile layout (styling only; structure unchanged) ---------- */
+/* Hero: centred whenever it is a single column */
+@media (max-width: 959px) {
+  .hero-inner { text-align: center; }
+  .hero-title { padding-left: 0; padding-bottom: 18px; }
+  .hero-title::before {
+    top: auto;
+    bottom: 0;
+    left: 50%;
+    width: 64px;
+    height: 4px;
+    margin-left: -32px;
+    background: linear-gradient(to right, #1A7BC4, $(accent.color));
+  }
+  .hero-text { margin-left: auto; margin-right: auto; }
+  .hero-main .widget-content ul { justify-content: center; }
+}
+/* Phones and small tablets */
+@media (max-width: 767px) {
+  .section-head { flex-direction: column; align-items: center; text-align: center; }
+  .section-head .search-form { max-width: none; }
+  .post-card-body { text-align: center; align-items: center; }
+  .post-card-meta { justify-content: center; }
+  .topics .container, .topics .widget { text-align: center; }
+  .topics .Label ul, .topics .cloud-label-widget-content { justify-content: center; }
+  .post-head { text-align: center; }
+  .post-labels, .post-meta { justify-content: center; }
+  .post-share { justify-content: center; }
+  .post-share-label { flex-basis: 100%; margin: 0 0 4px; text-align: center; }
+  .blog-pager-nav { flex-direction: column; }
+  .blog-pager-nav .btn { width: 100%; }
+  .blog-pager-nav .older { margin-left: 0; }
+  .empty-state, .not-found { text-align: center; }
+  .sidebar .widget > .title, .sidebar .widget > h2, .sidebar .widget > h3 { display: table; margin-left: auto; margin-right: auto; }
+  .site-footer .footer-grid { text-align: center; }
+  #footer-connect .widget-content ul { justify-content: center; }
+  .header-cta .widget-content a { justify-content: center; }
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 380px) {
+  body { font-size: 15px; }
+  .brand-tagline { display: none; }
+  .hero-main .widget-content ul { flex-direction: column; }
+  .hero-main .widget-content a { width: 100%; }
+}
+
+/* ---------- Blogger Layout editor ---------- */
+body#layout .site-header { position: static; }
+body#layout .hero, body#layout .topics, body#layout .sidebar { display: block; }
+body#layout .container { max-width: none; padding: 0; }
+body#layout .header-inner, body#layout .hero-grid, body#layout .main-grid,
+body#layout .footer-grid, body#layout .footer-bottom { display: block; }
+body#layout .nav-drawer { display: block; position: static; }
+body#layout .nav-toggle, body#layout .skip-link, body#layout .copyright { display: none; }
+body#layout .hero-inner { min-height: 0; padding: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* ---- shop (blogger-ecommerce-builder) ---- */
+/* Blogger shop styles. Paste into the skin (inside <b:skin>), after the theme CSS.
+ * Colours are Blogger variables: define $(shop.accent) / $(shop.ink) / $(shop.tile)
+ * as <Variable>s, or replace them with plain values. */
+
+/* product cards */
+body .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; }
+.shop-card { position: relative; display: flex; flex-direction: column; }
+.shop-card-media { display: block; aspect-ratio: 4 / 5; background: $(shop.tile); overflow: hidden; border-radius: 6px; }
+.shop-card-media img { width: 100%; height: 100%; object-fit: contain; transition: transform .3s ease; }
+.shop-card:hover .shop-card-media img { transform: scale(1.04); }
+.shop-card-title { font-size: 1rem; margin: 12px 0 6px; line-height: 1.3; }
+.shop-card-title a { color: $(shop.ink); text-decoration: none; }
+.shop-card-buy { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
+.shop-card.is-soldout .shop-card-media img { opacity: .45; }
+.shop-badge { position: absolute; top: 10px; left: 10px; background: $(shop.accent); color: #fff; font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 8px; border-radius: 3px; }
+.shop-src { display: none; }
+/* SpotCommerce-style price labels (_39, -49, !0) are data, not categories */
+.shop-cat[data-label^="_"], .shop-cat[data-label^="!"] { display: none; }
+.shop-cats { margin: 0 0 4px; font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; }
+.shop-cat { margin-right: 10px; }
+
+/* price */
+.shop-price { font-weight: 700; color: $(shop.ink); }
+.shop-price-old { color: #8a8a8a; font-weight: 400; margin-right: 4px; }
+.shop-price-now { color: $(shop.accent); }
+.shop-item .shop-price { font-size: 1.6rem; display: block; margin: 8px 0 16px; }
+.shop-soldout { color: #a00; font-weight: 700; }
+.shop-note { font-size: .85rem; color: #666; }
+
+/* buttons and fields */
+.shop-btn { display: inline-block; border: 2px solid $(shop.accent); background: $(shop.accent); color: #fff; font: inherit; font-weight: 700; padding: 8px 14px; border-radius: 4px; cursor: pointer; text-decoration: none; text-align: center; }
+.shop-btn:hover, .shop-btn:focus-visible { filter: brightness(.92); }
+.shop-btn-ghost { background: transparent; color: $(shop.accent); }
+.shop-btn-big { display: block; width: 100%; padding: 14px; margin: 12px 0; font-size: 1.05rem; }
+.shop-btn[disabled] { opacity: .5; cursor: wait; }
+.shop-link { background: none; border: 0; color: $(shop.accent); font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
+.shop-field { display: block; margin: 0 0 12px; }
+.shop-field span { display: block; font-size: .85rem; font-weight: 700; margin-bottom: 4px; }
+.shop-field input, .shop-field select, .shop-field textarea { width: 100%; box-sizing: border-box; font: inherit; padding: 10px; border: 1px solid #c8c8c8; border-radius: 4px; background: #fff; color: #222; }
+.shop-qty input { max-width: 100px; }
+.shop-msg { color: #a00; min-height: 1.2em; }
+.shop-hp { position: absolute !important; left: -9999px !important; }
+.shop-methods { border: 1px solid #ddd; border-radius: 4px; padding: 10px 12px; margin: 0 0 12px; }
+.shop-methods label { display: block; padding: 4px 0; cursor: pointer; }
+
+/* product page */
+.shop-item.is-product .shop-top { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: start; }
+.shop-gallery-main { width: 100%; background: $(shop.tile); border-radius: 6px; aspect-ratio: 4 / 5; object-fit: contain; }
+.shop-gallery-thumbs { display: flex; gap: 8px; margin-top: 8px; overflow-x: auto; }
+.shop-gallery-thumbs button { border: 1px solid #ddd; padding: 0; background: $(shop.tile); border-radius: 4px; cursor: pointer; flex: 0 0 64px; height: 80px; }
+.shop-gallery-thumbs img { width: 100%; height: 100%; object-fit: contain; }
+
+/* cart button in the header: <a href="#cart" data-cart-open aria-label="Cart">…<span data-cart-count hidden>0</span></a> */
+[data-cart-open] { position: relative; }
+[data-cart-count] { position: absolute; top: -6px; right: -8px; min-width: 18px; height: 18px; line-height: 18px; border-radius: 9px; background: $(shop.accent); color: #fff; font-size: 11px; font-weight: 700; text-align: center; padding: 0 4px; }
+
+/* drawer */
+.shop-locked { overflow: hidden; }
+.shop-drawer { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 9999; }
+.shop-drawer[hidden] { display: none; }
+.shop-shade { position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: rgba(0,0,0,.45); }
+.shop-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 420px; max-width: 100%; background: #fff; color: #222; overflow-y: auto; padding: 16px 20px 32px; box-sizing: border-box; box-shadow: -8px 0 24px rgba(0,0,0,.2); }
+.shop-panel:focus { outline: none; }
+.shop-panel-head { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; margin-bottom: 12px; }
+.shop-panel-head h2 { margin: 8px 0; font-size: 1.3rem; }
+.shop-x { background: none; border: 0; font-size: 26px; line-height: 1; cursor: pointer; color: #555; padding: 4px 8px; }
+body .shop-lines { list-style: none; margin: 0; padding: 0; }
+body .shop-line { display: grid; grid-template-columns: 56px 1fr 64px 32px; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+.shop-line img, .shop-line-noimg { width: 56px; height: 70px; object-fit: contain; background: $(shop.tile); border-radius: 4px; display: block; }
+.shop-line-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.shop-line-info a { color: #222; font-weight: 700; text-decoration: none; }
+.shop-line-info small { color: #666; }
+.shop-line input { width: 64px; padding: 6px; font: inherit; box-sizing: border-box; }
+.shop-sum { display: grid; grid-template-columns: 1fr auto; gap: 6px 0; margin: 16px 0 4px; }
+.shop-sum dt, .shop-sum dd { margin: 0; }
+.shop-sum dd { text-align: right; padding-left: 12px; }
+.shop-sum dt:last-of-type, .shop-sum dd:last-of-type { font-weight: 700; font-size: 1.1rem; border-top: 1px solid #ddd; padding-top: 6px; }
+.shop-empty, .shop-done { font-size: 1.05rem; }
+
+/* toast */
+.shop-toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 150%); background: #222; color: #fff; padding: 12px 16px; border-radius: 6px; z-index: 9998; max-width: calc(100% - 32px); box-sizing: border-box; transition: transform .25s ease; }
+.shop-toast.is-on { transform: translate(-50%, 0); }
+.shop-toast .shop-link { color: #fff; }
+
+@media (max-width: 760px) {
+  .shop-item.is-product .shop-top { grid-template-columns: 1fr; gap: 16px; }
+  body .shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .shop-card-buy { justify-content: center; text-align: center; }
+  .shop-card-buy .shop-btn { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shop-card-media img, .shop-toast { transition: none; }
+}
+
+.shop-admin { display: none; }
+body#layout .shop-admin { display: block; }
+
+/* ================= Night Shop look (SpotCommerce-inspired) ================= */
+/* logo: white wordmark with a dot in the accent colour */
+.shop .brand-mark { display: none; }
+.shop .brand-name { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-weight: 600; font-size: 26px; letter-spacing: 0.04em; text-transform: uppercase; }
+.shop .brand-name::after { content: '.'; color: $(accent.color); }
+.shop .brand-tagline { color: #A59C92; }
+.cart-button { order: 3; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: 4px; color: #fff; border-radius: 50%; flex: 0 0 auto; }
+.cart-button:hover { color: $(accent.color); }
+.header-inner { gap: 4px; }
+.nav-toggle { order: 2; }
+@media (min-width: 1024px) { .cart-button { order: 4; } }
+
+/* hero: blurred night-city lights, drawn in CSS; a photo from Shop settings replaces them */
+.shop .hero {
+  background-color: #140d07;
+  background-image:
+    radial-gradient(circle at 8% 78%, rgba(255, 170, 60, 0.55) 0, rgba(255, 170, 60, 0) 4%),
+    radial-gradient(circle at 18% 70%, rgba(255, 196, 92, 0.45) 0, rgba(255, 196, 92, 0) 3.5%),
+    radial-gradient(circle at 30% 76%, rgba(255, 150, 50, 0.5) 0, rgba(255, 150, 50, 0) 5%),
+    radial-gradient(circle at 44% 66%, rgba(255, 210, 120, 0.4) 0, rgba(255, 210, 120, 0) 3%),
+    radial-gradient(circle at 57% 74%, rgba(255, 160, 70, 0.5) 0, rgba(255, 160, 70, 0) 4.5%),
+    radial-gradient(circle at 68% 62%, rgba(255, 70, 140, 0.35) 0, rgba(255, 70, 140, 0) 4%),
+    radial-gradient(circle at 79% 72%, rgba(255, 190, 80, 0.5) 0, rgba(255, 190, 80, 0) 5%),
+    radial-gradient(circle at 91% 64%, rgba(255, 220, 140, 0.45) 0, rgba(255, 220, 140, 0) 3.5%),
+    radial-gradient(circle at 24% 30%, rgba(255, 240, 200, 0.18) 0, rgba(255, 240, 200, 0) 6%),
+    radial-gradient(circle at 62% 22%, rgba(120, 220, 255, 0.16) 0, rgba(120, 220, 255, 0) 6%),
+    radial-gradient(circle at 84% 34%, rgba(255, 240, 200, 0.16) 0, rgba(255, 240, 200, 0) 7%),
+    linear-gradient(180deg, #120b07 0%, #2b1a0e 55%, #3d2510 78%, #120b07 100%);
+  background-size: cover;
+  background-position: center;
+}
+.shop .hero::before { background: linear-gradient(90deg, rgba(10, 6, 3, 0.72) 0%, rgba(10, 6, 3, 0.25) 70%); }
+.shop .hero-inner { min-height: 0; padding-top: 88px; padding-bottom: 96px; }
+.shop .hero-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-weight: 600; letter-spacing: 0.01em; }
+.shop .hero-eyebrow { color: $(accent.color); }
+
+/* perks card in the hero */
+.perk-card { background: rgba(17, 17, 17, 0.72); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 26px 26px 18px; color: #fff; }
+.perk-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.06em; font-size: 15px; color: $(accent.color); margin: 0 0 12px; }
+body .perk-list li { position: relative; padding: 10px 0 10px 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #E6E1DB; font-size: 15px; }
+body .perk-list li:first-child { border-top: 0; }
+.perk-list li::before { content: ''; position: absolute; left: 4px; top: 17px; width: 12px; height: 7px; border-left: 2px solid $(accent.color); border-bottom: 2px solid $(accent.color); transform: rotate(-45deg); }
+.perk-list strong { color: #fff; }
+
+/* product grid replaces the post grid */
+.shop .post-grid.shop-grid { gap: 28px 24px; }
+@media (min-width: 640px) { .shop .post-grid.shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .shop .post-grid.shop-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .shop .post-grid.shop-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 639px) { .shop .post-grid.shop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 14px; } }
+.shop-card { background: transparent; }
+.shop-card-media { border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03); }
+.shop-card-media img { padding: 8%; box-sizing: border-box; }
+.shop-card-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-weight: 500; font-size: 17px; text-transform: uppercase; letter-spacing: 0.02em; }
+.shop-card-title a:hover { color: $(accent.color); }
+.shop .section-title { text-transform: uppercase; }
+
+/* single product */
+.shop .pt-item .main-grid, .pt-item.shop .main-grid { grid-template-columns: minmax(0, 1fr); }
+.shop-item { background: #fff; border: 1px solid $(border.color); border-radius: 14px; padding: 20px; }
+@media (min-width: 768px) { .shop-item { padding: 36px; } }
+.shop-item .post-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 34px; line-height: 1.1; margin: 4px 0 0; }
+.shop-cat { color: $(accent.color); font-weight: 700; }
+.shop-share { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; font-size: 14px; }
+.shop-share a { color: #6B6B6B; text-decoration: underline; }
+.shop-item .post-body { margin-top: 28px; border-top: 1px solid $(border.color); padding-top: 24px; }
+.shop-reviews { margin-top: 28px; border-top: 1px solid $(border.color); padding-top: 20px; }
+
+/* sidebar becomes a row of popular products + categories under the content */
+.pt-index .sidebar, .pt-archive .sidebar { display: none; }
+.pt-item .sidebar-section { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (min-width: 900px) { .pt-item .sidebar-section { grid-template-columns: 2fr 1fr; } }
+body .sidebar .popular-posts ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.sidebar .popular-posts .item-thumbnail { float: none; margin: 0 0 8px; background: #EBE2D9; border-radius: 8px; aspect-ratio: 4 / 5; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.sidebar .popular-posts .item-thumbnail img { width: 100%; height: 100%; object-fit: contain; padding: 8%; box-sizing: border-box; }
+.sidebar .popular-posts .item-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 14px; }
+.sidebar .popular-posts .item-title b { font-weight: 500; }
+
+/* promo banner: teal night street, drawn in CSS; banner_image replaces it */
+.promo {
+  display: none;
+  color: #fff;
+  background-color: #06191b;
+  background-image:
+    radial-gradient(circle at 12% 30%, rgba(80, 220, 200, 0.35) 0, rgba(80, 220, 200, 0) 7%),
+    radial-gradient(circle at 26% 62%, rgba(255, 90, 60, 0.35) 0, rgba(255, 90, 60, 0) 5%),
+    radial-gradient(circle at 40% 25%, rgba(120, 200, 255, 0.3) 0, rgba(120, 200, 255, 0) 6%),
+    radial-gradient(circle at 63% 70%, rgba(255, 200, 90, 0.4) 0, rgba(255, 200, 90, 0) 5%),
+    radial-gradient(circle at 78% 28%, rgba(60, 230, 140, 0.3) 0, rgba(60, 230, 140, 0) 6%),
+    radial-gradient(circle at 92% 66%, rgba(255, 70, 70, 0.3) 0, rgba(255, 70, 70, 0) 5%),
+    linear-gradient(180deg, #071c1f 0%, #0c2b2c 60%, #050f10 100%);
+  background-size: cover;
+  background-position: center;
+}
+.promo .container { padding-top: 72px; padding-bottom: 72px; }
+.promo .widget { max-width: 620px; }
+.promo .widget > h2.title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 40px; letter-spacing: 0.02em; margin: 0 0 12px; }
+.promo .widget > h2.title::after { content: '.'; color: $(accent.color); }
+.promo .widget-content { font-size: 17px; line-height: 1.7; color: #DDE7E6; }
+.promo .widget-content a { display: inline-block; margin-top: 6px; padding: 12px 22px; border-radius: 6px; background: $(accent.color); color: #fff; font-weight: 700; text-decoration: none; }
+.promo .widget-content a:hover { background: $(accent.hover.color); }
+
+/* categories on the homepage: big pill links */
+.shop .topics .widget > h2 { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; }
+
+/* footer */
+.shop .site-footer { background: #111111; }
+
+/* layout editor: show the hidden blocks */
+body#layout .promo { display: block; }
+
+.shop .promo + .topics { padding-top: 56px; }
+.shop-buy .shop-msg { margin: 0 0 6px; }
+@media (max-width: 959px) {
+  .promo .widget { margin: 0 auto; text-align: center; }
+  .promo .container { padding-top: 56px; padding-bottom: 56px; }
+}
+@media (max-width: 600px) { .promo .widget > h2.title { font-size: 32px; } }
+]]></b:skin>
+<b:if cond='data:blog.url == data:blog.homepageUrl'>
+<style type='text/css'>.hero, .topics, .promo { display: block; }</style>
+</b:if>
+<b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+<style type='text/css'>.hero, .topics, .promo { display: block; }</style>
+</b:if>
+</head>
+<body expr:class='&quot;rm shop pt-&quot; + data:blog.pageType'>
+<a class='skip-link' href='#content'>Skip to content</a>
+
+<!-- ================= Header ================= -->
+<header class='site-header' id='site-header'>
+  <div class='container header-inner'>
+<a aria-label='Cart' class='cart-button' data-cart-open='' href='#cart'>
+  <svg aria-hidden='true' height='22' viewBox='0 0 24 24' width='22'><path d='M6 6h15l-1.5 9h-12z' fill='none' stroke='currentColor' stroke-width='2'/><circle cx='9' cy='20' fill='currentColor' r='1.5'/><circle cx='18' cy='20' fill='currentColor' r='1.5'/><path d='M6 6L5 2H2' fill='none' stroke='currentColor' stroke-width='2'/></svg>
+  <span data-cart-count='' hidden='hidden'>0</span>
+</a>
+    <b:section class='brand-section' id='header' maxwidgets='1' showaddelement='no'>
+      <b:widget id='Header1' locked='true' title='Blog title (Header)' type='Header' version='1'>
+        <b:includable id='main'>
+          <a class='brand' expr:href='data:blog.homepageUrl'>
+            <b:if cond='data:useImage'>
+              <b:if cond='data:imagePlacement == &quot;REPLACE&quot;'>
+                <span class='brand-logo'><img expr:alt='data:title' expr:src='data:sourceUrl'/></span>
+              <b:else/>
+                <span aria-hidden='true' class='brand-mark'><img alt='' expr:src='data:sourceUrl'/></span>
+                <span class='brand-text'>
+                  <span class='brand-name'><data:title/></span>
+                  <b:if cond='data:description != &quot;&quot;'>
+                    <span class='brand-tagline'><data:description/></span>
+                  </b:if>
+                </span>
+              </b:if>
+            <b:else/>
+              <span aria-hidden='true' class='brand-mark'/>
+              <span class='brand-text'>
+                <span class='brand-name'><data:title/></span>
+                <b:if cond='data:description != &quot;&quot;'>
+                  <span class='brand-tagline'><data:description/></span>
+                </b:if>
+              </span>
+            </b:if>
+          </a>
+        </b:includable>
+      </b:widget>
+    </b:section>
+
+    <button aria-controls='site-nav' aria-expanded='false' aria-label='Open menu' class='nav-toggle' id='nav-toggle' type='button'>
+      <svg aria-hidden='true' class='icon-menu' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='3' x2='21' y1='6' y2='6'/><line x1='3' x2='21' y1='12' y2='12'/><line x1='3' x2='21' y1='18' y2='18'/></svg>
+      <svg aria-hidden='true' class='icon-close' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='18' x2='6' y1='6' y2='18'/><line x1='6' x2='18' y1='6' y2='18'/></svg>
+    </button>
+
+    <nav aria-label='Main' class='nav-drawer' id='site-nav'>
+      <b:section class='site-nav' id='menu' maxwidgets='1' showaddelement='no'>
+        <b:widget id='HTML1' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/">Home</a></li>
+<li><a href="/search/label/Women">Women</a></li>
+<li><a href="/search/label/Men">Men</a></li>
+<li><a href="/search/label/Sale">Sale</a></li>
+<li><a href="/#categories">Categories</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='header-cta' id='header-cta' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML2' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<a href="/p/contact.html">Contact</a>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </nav>
+  </div>
+</header>
+
+<main id='content'>
+
+<!-- ================= Hero (shown on the homepage) ================= -->
+<section class='hero' id='top'>
+  <div class='container hero-inner'>
+    <div class='hero-grid'>
+      <b:section class='hero-main' id='hero-main' showaddelement='yes'>
+        <b:widget id='HTML3' locked='false' title='New collection' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<p>Fresh styles for every day and every night out. Pick your size, add to cart and order in under a minute, online or on WhatsApp.</p>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+            <div class='hero-copy'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <p class='hero-eyebrow'><data:title/></p>
+              </b:if>
+              <h1 class='hero-title'><data:blog.title/></h1>
+              <div class='hero-text'><data:content/></div>
+            </div>
+            <b:include name='quickedit'/>
+          </b:includable>
+        </b:widget>
+        <b:widget id='HTML4' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="#shop">Shop now</a></li>
+<li><a href="/search/label/Sale">See the sale</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='hero-side' id='hero-side' showaddelement='yes'>
+        <b:widget id='HTML5' locked='false' title='Why shop with us' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><strong>Free shipping</strong> on orders from 50 &euro;</li>
+<li><strong>Order your way</strong>: online checkout or WhatsApp</li>
+<li><strong>Personal service</strong>: we confirm every order</li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+            <div class='perk-card'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <p class='perk-title'><data:title/></p>
+              </b:if>
+              <div class='perk-list'><data:content/></div>
+            </div>
+            <b:include name='quickedit'/>
+          </b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Posts ================= -->
+<div class='page-main' id='shop'>
+  <div class='container main-grid'>
+    <div class='main-col'>
+      <b:section class='main' id='main' showaddelement='no'>
+        <b:widget id='Blog1' locked='true' title='New arrivals' type='Blog' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='showDateHeader'>false</b:widget-setting>
+            <b:widget-setting name='showShareButtons'>false</b:widget-setting>
+            <b:widget-setting name='authorLabel'>By</b:widget-setting>
+            <b:widget-setting name='showCommentLink'>true</b:widget-setting>
+            <b:widget-setting name='showAuthor'>true</b:widget-setting>
+            <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
+            <b:widget-setting name='reactionsLabel'/>
+            <b:widget-setting name='showAuthorProfile'>false</b:widget-setting>
+            <b:widget-setting name='style.layout'>1x1</b:widget-setting>
+            <b:widget-setting name='showLabels'>true</b:widget-setting>
+            <b:widget-setting name='showLocation'>false</b:widget-setting>
+            <b:widget-setting name='showTimestamp'>false</b:widget-setting>
+            <b:widget-setting name='postsPerAd'>3</b:widget-setting>
+            <b:widget-setting name='showBacklinks'>false</b:widget-setting>
+            <b:widget-setting name='showInlineAds'>false</b:widget-setting>
+            <b:widget-setting name='showReactions'>false</b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main' var='top'>
+            <b:if cond='data:blog.pageType == &quot;error_page&quot;'>
+              <b:include name='rmNotFound'/>
+            <b:else/>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='shopItem'/>
+                </b:loop>
+                <b:include name='rmItemPager'/>
+              <b:else/>
+                <b:if cond='data:blog.pageType == &quot;static_page&quot;'>
+                  <b:loop values='data:posts' var='post'>
+                    <b:include data='post' name='rmSingle'/>
+                  </b:loop>
+                <b:else/>
+                  <b:include name='rmList'/>
+                </b:if>
+              </b:if>
+            </b:if>
+          </b:includable>
+
+          <b:includable id='rmList'>
+            <div class='section-head'>
+              <b:if cond='data:blog.url == data:blog.homepageUrl'>
+                <h2 class='section-title'><data:title/></h2>
+              <b:else/>
+              <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+                <h2 class='section-title'><data:title/></h2>
+              <b:else/>
+                <h1 class='section-title'>
+                <b:if cond='data:blog.searchQuery'>
+                  Search: <data:blog.searchQuery/>
+                <b:else/>
+                  <b:if cond='data:blog.url == data:blog.homepageUrl'>
+                    <data:title/>
+                  <b:else/>
+                    <b:if cond='data:blog.pageName != &quot;&quot;'>
+                      <data:blog.pageName/>
+                    <b:else/>
+                      <data:title/>
+                    </b:if>
+                  </b:if>
+                </b:if>
+              </h1>
+              </b:if>
+              </b:if>
+              <b:include name='rmSearchForm'/>
+            </div>
+            <b:if cond='data:numPosts != 0'>
+              <div class='post-grid shop-grid'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='shopCard'/>
+                </b:loop>
+              </div>
+            <b:else/>
+              <div class='empty-state'>
+                <p>No posts found here yet.</p>
+                <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+              </div>
+            </b:if>
+            <b:if cond='data:newerPageUrl'>
+              <b:include name='rmListPager'/>
+            <b:else/>
+              <b:if cond='data:olderPageUrl'>
+                <b:include name='rmListPager'/>
+              </b:if>
+            </b:if>
+          </b:includable>
+
+          <b:includable id='shopCard' var='post'>
+  <article class='shop-card' expr:data-id='data:post.id' expr:data-url='data:post.url' expr:data-title='data:post.title' expr:data-image='data:post.firstImageUrl'>
+    <a aria-hidden='true' class='shop-card-media' expr:href='data:post.url' tabindex='-1'>
+      <b:if cond='data:post.firstImageUrl'>
+        <img class='shop-img' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
+      <b:else/>
+        <b:if cond='data:post.thumbnailUrl'>
+          <img class='shop-img' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
+        </b:if>
+      </b:if>
+    </a>
+    <h2 class='shop-card-title'><a expr:href='data:post.url'><data:post.title/></a></h2>
+    <div class='shop-card-buy'/>
+    <b:loop values='data:post.labels' var='label'>
+      <span class='shop-src' expr:data-label='data:label.name'/>
+    </b:loop>
+    <!-- The post body (up to the jump break) carries the product block. Inside
+         <template> it is inert: no images download, no scripts run. -->
+    <template class='shop-src'><data:post.body/></template>
+  </article>
+</b:includable>
+
+<b:includable id='shopItem' var='post'>
+  <article class='shop-item' expr:data-id='data:post.id' expr:data-url='data:post.url' expr:data-title='data:post.title' expr:data-image='data:post.firstImageUrl'>
+    <a expr:name='data:post.id'/>
+    <div class='shop-top'>
+      <div class='shop-gallery'/>
+      <div class='shop-summary'>
+        <b:if cond='data:post.labels'>
+          <p class='shop-cats'>
+            <b:loop values='data:post.labels' var='label'>
+              <a class='shop-cat' expr:data-label='data:label.name' expr:href='data:label.url' rel='tag'><data:label.name/></a>
+            </b:loop>
+          </p>
+        </b:if>
+        <h1 class='post-title'><data:post.title/></h1>
+        <div class='shop-buy'/>
+        <div class='shop-share'>
+          <a expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+          <a expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+          <a expr:href='&quot;https://pinterest.com/pin/create/button/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Pinterest</a>
+          <b:include data='post' name='postQuickEdit'/>
+        </div>
+      </div>
+    </div>
+    <div class='post-body' expr:id='&quot;post-body-&quot; + data:post.id'>
+      <data:post.body/>
+    </div>
+    <!-- Blogger comments, shown as reviews. Needs the theme's own comment_picker and
+         postQuickEdit includables (every Blogger-generated theme has them). -->
+    <div class='shop-reviews'>
+      <b:include data='post' name='comment_picker'/>
+    </div>
+  </article>
+</b:includable>
+
+          <b:includable id='rmCard' var='post'>
+            <article class='post-card'>
+              <a aria-hidden='true' class='post-card-media' expr:href='data:post.url' tabindex='-1'>
+                <b:if cond='data:post.firstImageUrl'>
+                  <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
+                <b:else/>
+                  <b:if cond='data:post.thumbnailUrl'>
+                    <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
+                  <b:else/>
+                    <span class='post-card-placeholder'>
+                      <svg aria-hidden='true' fill='none' height='40' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8' viewBox='0 0 24 24' width='40'><path d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'/><path d='M19 10v2a7 7 0 0 1-14 0v-2'/><line x1='12' x2='12' y1='19' y2='23'/><line x1='8' x2='16' y1='23' y2='23'/></svg>
+                    </span>
+                  </b:if>
+                </b:if>
+              </a>
+              <div class='post-card-body'>
+                <b:if cond='data:post.labels'>
+                  <div class='post-card-labels'>
+                    <b:loop index='x' values='data:post.labels' var='label'>
+                      <b:if cond='data:x == 0'>
+                        <a class='badge' expr:href='data:label.url'><data:label.name/></a>
+                      </b:if>
+                    </b:loop>
+                  </div>
+                </b:if>
+                <h3 class='post-card-title'>
+                  <a expr:href='data:post.url'><b:if cond='data:post.title'><data:post.title/><b:else/>Untitled post</b:if></a>
+                </h3>
+                <div class='post-card-meta'>
+                  <time class='js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time>
+                  <b:if cond='data:post.allowComments'>
+                    <b:if cond='data:post.numComments != 0'>
+                      <span class='post-card-comments'><data:post.numComments/> <b:if cond='data:post.numComments == 1'>comment<b:else/>comments</b:if></span>
+                    </b:if>
+                  </b:if>
+                </div>
+              </div>
+            </article>
+          </b:includable>
+
+          <b:includable id='rmSingle' var='post'>
+            <article class='post-single post'>
+              <a expr:name='data:post.id'/>
+              <header class='post-head'>
+                <b:if cond='data:post.labels'>
+                  <div class='post-labels'>
+                    <b:loop values='data:post.labels' var='label'>
+                      <a class='badge' expr:href='data:label.url' rel='tag'><data:label.name/></a>
+                    </b:loop>
+                  </div>
+                </b:if>
+                <b:if cond='data:post.title'>
+                  <h1 class='post-title entry-title'><data:post.title/></h1>
+                </b:if>
+                <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                  <div class='post-meta'>
+                    <b:if cond='data:post.authorProfileUrl'>
+                      <a class='post-author' expr:href='data:post.authorProfileUrl' rel='author'><data:post.author/></a>
+                    <b:else/>
+                      <span class='post-author'><data:post.author/></span>
+                    </b:if>
+                    <span aria-hidden='true' class='sep'/>
+                    <time class='published js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time>
+                    <b:include data='post' name='postQuickEdit'/>
+                  </div>
+                </b:if>
+              </header>
+              <div class='post-body entry-content' expr:id='&quot;post-body-&quot; + data:post.id'>
+                <data:post.body/>
+              </div>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                <div class='post-share'>
+                  <span class='post-share-label'>Share</span>
+                  <a expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+                  <a expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
+                  <a expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
+                  <a expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+                  <button expr:data-copy-url='data:post.url' type='button'>Copy link</button>
+                </div>
+              </b:if>
+              <b:include data='post' name='comment_picker'/>
+            </article>
+          </b:includable>
+
+          <b:includable id='rmItemPager'>
+            <nav aria-label='More posts' class='blog-pager-nav'>
+              <b:if cond='data:newerPageUrl'>
+                <a class='btn btn-outline newer' expr:href='data:newerPageUrl' expr:title='data:newerPageTitle'>&#8592; Newer post</a>
+              </b:if>
+              <b:if cond='data:olderPageUrl'>
+                <a class='btn btn-outline older' expr:href='data:olderPageUrl' expr:title='data:olderPageTitle'>Older post &#8594;</a>
+              </b:if>
+            </nav>
+          </b:includable>
+
+          <b:includable id='rmListPager'>
+            <nav aria-label='Pages' class='blog-pager-nav'>
+              <b:if cond='data:newerPageUrl'>
+                <a class='btn btn-outline newer' expr:href='data:newerPageUrl'>&#8592; Newer posts</a>
+              </b:if>
+              <b:if cond='data:olderPageUrl'>
+                <a class='btn btn-primary older' expr:href='data:olderPageUrl'>Older posts &#8594;</a>
+              </b:if>
+            </nav>
+          </b:includable>
+
+          <b:includable id='rmSearchForm'>
+            <form action='/search' class='search-form' method='get' role='search'>
+              <input aria-label='Search this site' name='q' placeholder='Search products...' type='search'/>
+              <button aria-label='Search' type='submit'>
+                <svg aria-hidden='true' fill='none' height='20' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='20'><circle cx='11' cy='11' r='8'/><line x1='21' x2='16.65' y1='21' y2='16.65'/></svg>
+              </button>
+            </form>
+          </b:includable>
+
+          <b:includable id='rmNotFound'>
+            <div class='not-found'>
+              <p class='not-found-code'>404</p>
+              <h1>Page not found</h1>
+              <p>The page you were looking for has moved or no longer exists.</p>
+              <b:include name='rmSearchForm'/>
+              <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+            </div>
+          </b:includable>
+
+          <!-- Comment includables below are Blogger's own, taken from the blog's original theme -->
+                    <b:includable id='backlinkDeleteIcon' var='backlink'>
+                      <span expr:class='&quot;item-control &quot; + data:backlink.adminClass'>
+                        <a expr:href='data:backlink.deleteUrl' expr:title='data:top.deleteBacklinkMsg'>
+                          <img src='//www.blogger.com/img/icon_delete13.gif'/>
+                        </a>
+                      </span>
+                    </b:includable>
+                    <b:includable id='backlinks' var='post'>
+                      <a name='links'/>
+                      <h4>
+                        <data:post.backlinksLabel/>
+                      </h4>
+                      <b:if cond='data:post.numBacklinks != 0'>
+                        <dl class='comments-block' id='comments-block'>
+                          <b:loop values='data:post.backlinks' var='backlink'>
+                            <div class='collapsed-backlink backlink-control'>
+                              <dt class='comment-title'>
+                                <span class='backlink-toggle-zippy'>
+                                  &#160;
+                                </span>
+                                <a expr:href='data:backlink.url' rel='nofollow'>
+                                  <data:backlink.title/>
+                                </a>
+                                <b:include data='backlink' name='backlinkDeleteIcon'/>
+                              </dt>
+                              <dd class='comment-body collapseable'>
+                                <data:backlink.snippet/>
+                              </dd>
+                              <dd class='comment-footer collapseable'>
+                                <span class='comment-author'>
+                                  <data:post.authorLabel/>
+                                  <data:backlink.author/>
+                                </span>
+                                <span class='comment-timestamp'>
+                                  <data:post.timestampLabel/>
+                                  <data:backlink.timestamp/>
+                                </span>
+                              </dd>
+                            </div>
+                          </b:loop>
+                        </dl>
+                      </b:if>
+                      <p class='comment-footer'>
+                        <a class='comment-link' expr:href='data:post.createLinkUrl' expr:id='data:widget.instanceId + &quot;_backlinks-create-link&quot;' target='_blank'>
+                          <data:post.createLinkLabel/>
+                        </a>
+                      </p>
+                    </b:includable>
+                    <b:includable id='comment-form' var='post'>
+                      <div class='comment-form'>
+                        <a name='comment-form'/>
+                        <b:if cond='data:mobile'>
+                          <h4 id='comment-post-message'>
+                            <a expr:id='data:widget.instanceId + &quot;_comment-editor-toggle-link&quot;' href='javascript:void(0)'>
+                              <data:postCommentMsg/>
+                            </a>
+                          </h4>
+                          <div class='pesan-komentar'>
+                            <p>
+                              <data:blogCommentMessage/>
+                            </p>
+                          </div>
+                          <data:blogTeamBlogMessage/>
+                          <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+                          <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' style='display: none' width='100%'/>
+                          <b:else/>
+                          <h4 id='comment-post-message'>
+                            <data:postCommentMsg/>
+                          </h4>
+                          <div class='pesan-komentar'>
+                            <p>
+                              <data:blogCommentMessage/>
+                            </p>
+                          </div>
+                          <data:blogTeamBlogMessage/>
+                          <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+                          <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' width='100%'/>
+                        </b:if>
+                        <data:post.friendConnectJs/>
+                        <data:post.cmtfpIframe/>
+                        <script type='text/javascript'>
+                          BLOG_CMT_createIframe(&#39;<data:post.appRpcRelayPath/>&#39;, &#39;<data:post.communityId/>&#39;);
+                        </script>
+                      </div>
+                    </b:includable>
+                    <b:includable id='commentDeleteIcon' var='comment'>
+                      <span expr:class='&quot;item-control &quot; + data:comment.adminClass'>
+                        <b:if cond='data:showCmtPopup'>
+                          <div class='goog-toggle-button'>
+                            <div class='goog-inline-block comment-action-icon'/>
+                          </div>
+                          <b:else/>
+                          <a class='comment-delete' expr:href='data:comment.deleteUrl' expr:title='data:top.deleteCommentMsg'>
+                            <img src='//www.blogger.com/img/icon_delete13.gif'/>
+                          </a>
+                        </b:if>
+                      </span>
+                    </b:includable>
+                    <b:includable id='comment_picker' var='post'>
+                      <b:if cond='data:post.commentSource == 1'>
+                        <b:include data='post' name='iframe_comments'/>
+                        <b:else/>
+                        <b:if cond='data:post.showThreadedComments'>
+                          <b:include data='post' name='threaded_comments'/>
+                          <b:else/>
+                          <b:include data='post' name='comments'/>
+                        </b:if>
+                      </b:if>
+                    </b:includable>
+                    <b:includable id='comments' var='post'>
+  <div class='comments' id='comments'>
+
+    <a name='comments'/>
+    <b:if cond='data:post.allowComments'>
+      <h4 class='comments-title'>
+        <b:if cond='data:post.numComments == 1'>
+          1 <data:commentLabel/>:
+        <b:else/>
+          <data:post.numComments/> <data:commentLabelPlural/>:
+        </b:if>
+      </h4>
+      <b:if cond='data:post.commentPagingRequired'>
+        <span class='paging-control-container'>
+          <a expr:class='data:post.oldLinkClass' expr:href='data:post.oldestLinkUrl'><data:post.oldestLinkText/></a>
+          &#160;
+          <a expr:class='data:post.oldLinkClass' expr:href='data:post.olderLinkUrl'><data:post.olderLinkText/></a>
+          &#160;
+          <data:post.commentRangeText/>
+          &#160;
+          <a expr:class='data:post.newLinkClass' expr:href='data:post.newerLinkUrl'><data:post.newerLinkText/></a>
+          &#160;
+          <a expr:class='data:post.newLinkClass' expr:href='data:post.newestLinkUrl'><data:post.newestLinkText/></a>
+        </span>
+      </b:if>
+
+      <div expr:id='data:widget.instanceId + &quot;_comments-block-wrapper&quot;'>
+        <dl expr:class='data:post.avatarIndentClass' id='comments-block'>
+          <b:loop values='data:post.comments' var='comment'>
+            <dt expr:class='&quot;comment-author &quot; + data:comment.authorClass' expr:id='data:comment.anchorName'>
+              <b:if cond='data:comment.favicon'>
+                <img expr:src='data:comment.favicon' height='16px' style='margin-bottom:-2px;' width='16px'/>
+              </b:if>
+              <a expr:name='data:comment.anchorName'/>
+              <b:if cond='data:blog.enabledCommentProfileImages'>
+                <data:comment.authorAvatarImage/>
+              </b:if>
+              <b:if cond='data:comment.authorUrl'>
+                <a expr:href='data:comment.authorUrl' rel='nofollow'><data:comment.author/></a>
+              <b:else/>
+                <data:comment.author/>
+              </b:if>
+              <data:commentPostedByMsg/>
+            </dt>
+            <dd class='comment-body' expr:id='data:widget.instanceId + data:comment.cmtBodyIdPostfix'>
+              <b:if cond='data:comment.isDeleted'>
+                <span class='deleted-comment'><data:comment.body/></span>
+              <b:else/>
+                <p>
+                  <data:comment.body/>
+                </p>
+              </b:if>
+            </dd>
+            <dd class='comment-footer'>
+              <span class='comment-timestamp'>
+                <a expr:href='data:comment.url' title='comment permalink'>
+                  <data:comment.timestamp/>
+                </a>
+                <b:include data='comment' name='commentDeleteIcon'/>
+              </span>
+            </dd>
+          </b:loop>
+        </dl>
+      </div>
+
+      <b:if cond='data:post.commentPagingRequired'>
+        <span class='paging-control-container'>
+          <a expr:class='data:post.oldLinkClass' expr:href='data:post.oldestLinkUrl'>
+            <data:post.oldestLinkText/>
+          </a>
+          <a expr:class='data:post.oldLinkClass' expr:href='data:post.olderLinkUrl'>
+            <data:post.olderLinkText/>
+          </a>
+          &#160;
+          <data:post.commentRangeText/>
+          &#160;
+          <a expr:class='data:post.newLinkClass' expr:href='data:post.newerLinkUrl'>
+            <data:post.newerLinkText/>
+          </a>
+          <a expr:class='data:post.newLinkClass' expr:href='data:post.newestLinkUrl'>
+            <data:post.newestLinkText/>
+          </a>
+        </span>
+      </b:if>
+
+      <p class='comment-footer'>
+        <b:if cond='data:post.embedCommentForm'>
+          <b:if cond='data:post.allowNewComments'>
+            <b:include data='post' name='comment-form'/>
+          <b:else/>
+            <data:post.noNewCommentsText/>
+          </b:if>
+        <b:else/>
+          <b:if cond='data:post.allowComments'>
+            <a expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'><data:postCommentMsg/></a>
+          </b:if>
+        </b:if>
+
+      </p>
+    </b:if>
+    <b:if cond='data:showCmtPopup'>
+      <div id='comment-popup'>
+        <iframe allowtransparency='true' frameborder='0' id='comment-actions' name='comment-actions' scrolling='no'>
+        </iframe>
+      </div>
+    </b:if>
+
+    <div id='backlinks-container'>
+    <div expr:id='data:widget.instanceId + &quot;_backlinks-container&quot;'>
+       <b:if cond='data:post.showBacklinks'>
+         <b:include data='post' name='backlinks'/>
+       </b:if>
+    </div>
+    </div>
+  </div>
+                    </b:includable>
+                    <b:includable id='iframe_comments' var='post'>
+                      <b:if cond='data:post.allowIframeComments'>
+                        <script expr:src='data:post.iframeCommentSrc' type='text/javascript'/>
+                        <div class='cmt_iframe_holder' expr:data-href='data:post.canonicalUrl' expr:data-viewtype='data:post.viewType'/>
+                        <b:if cond='data:post.embedCommentForm == &quot;false&quot;'>
+                          <a expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'>
+                            <data:postCommentMsg/>
+                          </a>
+                        </b:if>
+                      </b:if>
+                    </b:includable>
+                    <b:includable id='postQuickEdit' var='post'>
+                      <b:if cond='data:post.editUrl'>
+                        <span expr:class='&quot;item-control &quot; + data:post.adminClass'>
+                          <a expr:href='data:post.editUrl' expr:title='data:top.editPostMsg'>
+                            <span class='quick-edit-link'>Edit</span>
+                          </a>
+                        </span>
+                      </b:if>
+                    </b:includable>
+                    <b:includable id='threaded-comment-form' var='post'>
+                      <div class='comment-form'>
+                        <a name='comment-form'/>
+                        <b:if cond='data:mobile'>
+                          <div class='pesan-komentar'>
+                            <p>
+                              <data:blogCommentMessage/>
+                            </p>
+                          </div>
+                          <data:blogTeamBlogMessage/>
+                          <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+                          <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' style='display: none' width='100%'/>
+                          <b:else/>
+                          <div class='pesan-komentar'>
+                            <p>
+                              <data:blogCommentMessage/>
+                            </p>
+                          </div>
+                          <data:blogTeamBlogMessage/>
+                          <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+                          <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' width='100%'/>
+                        </b:if>
+                        <data:post.friendConnectJs/>
+                        <data:post.cmtfpIframe/>
+                        <script type='text/javascript'>
+                          BLOG_CMT_createIframe(&#39;<data:post.appRpcRelayPath/>&#39;, &#39;<data:post.communityId/>&#39;);
+                        </script>
+                      </div>
+                    </b:includable>
+                    <b:includable id='threaded_comment_js' var='post'>
+                      <script async='async' expr:src='data:post.commentSrc' type='text/javascript'/>
+                      <script type='text/javascript'>
+                        (function() {
+                          var items = <data:post.commentJso/>;
+                          var msgs = <data:post.commentMsgs/>;
+                          var config = <data:post.commentConfig/>;
+                          // <![CDATA[
+                          var cursor = null;
+                          if (items && items.length > 0) {
+                            cursor = parseInt(items[items.length - 1].timestamp) + 1;
+                          }
+                          var bodyFromEntry = function(entry) {
+                            if (entry.gd$extendedProperty) {
+                              for (var k in entry.gd$extendedProperty) {
+                                if (entry.gd$extendedProperty[k].name == 'blogger.contentRemoved') {
+                                  return '<span class="deleted-comment">' + entry.content.$t + '</span>';
+                                }
+                              }
+                            }
+                            return entry.content.$t;
+                          }
+                          var parse = function(data) {
+                            cursor = null;
+                            var comments = [];
+                            if (data && data.feed && data.feed.entry) {
+                              for (var i = 0, entry; entry = data.feed.entry[i]; i++) {
+                                var comment = {};
+                                // comment ID, parsed out of the original id format
+                                var id = /blog-(\d+).post-(\d+)/.exec(entry.id.$t);
+                                comment.id = id ? id[2] : null;
+                                comment.body = bodyFromEntry(entry);
+                                comment.timestamp = Date.parse(entry.published.$t) + '';
+                                if (entry.author && entry.author.constructor === Array) {
+                                  var auth = entry.author[0];
+                                  if (auth) {
+                                    comment.author = {
+                                      name: (auth.name ? auth.name.$t : undefined),
+                                      profileUrl: (auth.uri ? auth.uri.$t : undefined),
+                                      avatarUrl: (auth.gd$image ? auth.gd$image.src : undefined)
+                                    };
+                                  }
+                                }
+                                if (entry.link) {
+                                  if (entry.link[2]) {
+                                    comment.link = comment.permalink = entry.link[2].href;
+                                  }
+                                  if (entry.link[3]) {
+                                    var pid = /.*comments\/default\/(\d+)\?.*/.exec(entry.link[3].href);
+                                    if (pid && pid[1]) {
+                                      comment.parentId = pid[1];
+                                    }
+                                  }
+                                }
+                                comment.deleteclass = 'item-control blog-admin';
+                                if (entry.gd$extendedProperty) {
+                                  for (var k in entry.gd$extendedProperty) {
+                                    if (entry.gd$extendedProperty[k].name == 'blogger.itemClass') {
+                                      comment.deleteclass += ' ' + entry.gd$extendedProperty[k].value;
+                                    } else if (entry.gd$extendedProperty[k].name == 'blogger.displayTime') {
+                                      comment.displayTime = entry.gd$extendedProperty[k].value;
+                                    }
+                                  }
+                                }
+                                comments.push(comment);
+                              }
+                            }
+                            return comments;
+                          };
+                          var paginator = function(callback) {
+                            if (hasMore()) {
+                              var url = config.feed + '?alt=json&v=2&orderby=published&reverse=false&max-results=50';
+                              if (cursor) {
+                                url += '&published-min=' + new Date(cursor).toISOString();
+                              }
+                              window.bloggercomments = function(data) {
+                                var parsed = parse(data);
+                                cursor = parsed.length < 50 ? null
+                                : parseInt(parsed[parsed.length - 1].timestamp) + 1
+                                callback(parsed);
+                                window.bloggercomments = null;
+                              }
+                              url += '&callback=bloggercomments';
+                              var script = document.createElement('script');
+                              script.type = 'text/javascript';
+                              script.src = url;
+                              document.getElementsByTagName('head')[0].appendChild(script);
+                            }
+                          };
+                          var hasMore = function() {
+                            return !!cursor;
+                          };
+                          var getMeta = function(key, comment) {
+                            if ('iswriter' == key) {
+                              var matches = !!comment.author
+                              && comment.author.name == config.authorName
+                              && comment.author.profileUrl == config.authorUrl;
+                              return matches ? 'true' : '';
+                            } else if ('deletelink' == key) {
+                              return config.baseUri + '/delete-comment.g?blogID='
+                              + config.blogId + '&postID=' + comment.id;
+                            } else if ('deleteclass' == key) {
+                              return comment.deleteclass;
+                            }
+                            return '';
+                          };
+                          var replybox = null;
+                          var replyUrlParts = null;
+                          var replyParent = undefined;
+                          var onReply = function(commentId, domId) {
+                            if (replybox == null) {
+                              // lazily cache replybox, and adjust to suit this style:
+                              replybox = document.getElementById('comment-editor');
+                              if (replybox != null) {
+                                replybox.height = '250px';
+                                replybox.style.display = 'block';
+                                replyUrlParts = replybox.src.split('#');
+                              }
+                            }
+                            if (replybox && (commentId !== replyParent)) {
+                              document.getElementById(domId).insertBefore(replybox.parentNode, null);
+                              replybox.src = replyUrlParts[0]
+                              + (commentId ? '&parentID=' + commentId : '')
+                              + '#' + replyUrlParts[1];
+                              replyParent = commentId;
+                            }
+                          };
+                          var hash = (window.location.hash || '#').substring(1);
+                          var startThread, targetComment;
+                          if (/^comment-form_/.test(hash)) {
+                            startThread = hash.substring('comment-form_'.length);
+                          } else if (/^c[0-9]+$/.test(hash)) {
+                            targetComment = hash.substring(1);
+                          }
+                          // Configure commenting API:
+                          var configJso = {
+                            'maxDepth': config.maxThreadDepth
+                          };
+                          var provider = {
+                            'id': config.postId,
+                            'data': items,
+                            'loadNext': paginator,
+                            'hasMore': hasMore,
+                            'getMeta': getMeta,
+                            'onReply': onReply,
+                            'rendered': true,
+                            'initComment': targetComment,
+                            'initReplyThread': startThread,
+                            'config': configJso,
+                            'messages': msgs
+                          };
+                          var render = function() {
+                            if (window.goog && window.goog.comments) {
+                              var holder = document.getElementById('comment-holder');
+                              window.goog.comments.render(holder, provider);
+                            }
+                          };
+                          // render now, or queue to render when library loads:
+                          if (window.goog && window.goog.comments) {
+                            render();
+                          } else {
+                            window.goog = window.goog || {};
+                            window.goog.comments = window.goog.comments || {};
+                            window.goog.comments.loadQueue = window.goog.comments.loadQueue || [];
+                            window.goog.comments.loadQueue.push(render);
+                          }
+                        })();
+                        // ]]>
+                      </script>
+                    </b:includable>
+                    <b:includable id='threaded_comments' var='post'>
+  <div class='comments' id='comments'>
+    <a name='comments'/>
+    <h4 class='comments-title'>
+      <b:if cond='data:post.numComments == 1'>
+        1 <data:commentLabel/>:
+      <b:else/>
+        <data:post.numComments/> <data:commentLabelPlural/>:
+      </b:if>
+    </h4>
+    <div class='comments-content'>
+      <b:if cond='data:post.embedCommentForm'>
+        <b:include data='post' name='threaded_comment_js'/>
+      </b:if>
+      <div id='comment-holder'>
+         <data:post.commentHtml/>
+      </div>
+    </div>
+
+    <p class='comment-footer'>
+      <b:if cond='data:post.allowNewComments'>
+        <b:include data='post' name='threaded-comment-form'/>
+      <b:else/>
+        <data:post.noNewCommentsText/>
+      </b:if>
+    </p>
+
+    <b:if cond='data:showCmtPopup'>
+      <div id='comment-popup'>
+        <iframe allowtransparency='true' frameborder='0' id='comment-actions' name='comment-actions' scrolling='no'>
+        </iframe>
+      </div>
+    </b:if>
+
+    <div id='backlinks-container'>
+    <div expr:id='data:widget.instanceId + &quot;_backlinks-container&quot;'>
+       <b:if cond='data:post.showBacklinks'>
+         <b:include data='post' name='backlinks'/>
+       </b:if>
+    </div>
+    </div>
+  </div>
+                    </b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+
+    <aside class='sidebar'>
+      <b:section class='sidebar-section' id='sidebar' preferred='yes'>
+        <b:widget id='PopularPosts1' locked='false' title='Popular products' type='PopularPosts' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='numItemsToShow'>3</b:widget-setting>
+            <b:widget-setting name='showThumbnails'>true</b:widget-setting>
+            <b:widget-setting name='showSnippets'>false</b:widget-setting>
+            <b:widget-setting name='timeRange'>LAST_YEAR</b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <b:if cond='data:title'>
+    <h2>
+      <data:title/>
+    </h2>
+  </b:if>
+  <div class='widget-content popular-posts'>
+    <ul>
+      <b:loop values='data:posts' var='post'>
+        <li>
+          <b:if cond='data:showThumbnails == &quot;false&quot;'>
+            <b:if cond='data:showSnippets == &quot;false&quot;'>
+              <!-- (1) No snippet/thumbnail -->
+              <a expr:href='data:post.href'>
+                <b>
+                  <data:post.title/>
+                </b>
+              </a>
+              <b:else/>
+              <!-- (2) Show only snippets -->
+              <div class='item-title'>
+                <a expr:href='data:post.href'>
+                  <b>
+                    <data:post.title/>
+                  </b>
+                </a>
+              </div>
+              <div class='item-snippet'>
+                <data:post.snippet/>
+              </div>
+            </b:if>
+            <b:else/>
+            <b:if cond='data:showSnippets == &quot;false&quot;'>
+              <!-- (3) Show only thumbnails -->
+              <div class='item-thumbnail-only'>
+                <b:if cond='data:post.thumbnail'>
+                  <div class='item-thumbnail'>
+                    <a expr:href='data:post.href'>
+                      <img border='0' expr:alt='data:post.title' expr:height='data:thumbnailSize' expr:src='data:post.thumbnail' expr:title='data:post.title' expr:width='data:thumbnailSize'/>
+                    </a>
+                  </div>
+                </b:if>
+                <div class='item-title'>
+                  <a expr:href='data:post.href'>
+                    <b>
+                      <data:post.title/>
+                    </b>
+                  </a>
+                </div>
+              </div>
+              <div style='clear: both;'/>
+              <b:else/>
+              <!-- (4) Show snippets and thumbnails -->
+              <div class='item-content'>
+                <b:if cond='data:post.thumbnail'>
+                  <div class='item-thumbnail'>
+                    <a expr:href='data:post.href'>
+                      <img border='0' expr:alt='data:post.title' expr:height='data:thumbnailSize' expr:src='data:post.thumbnail' expr:title='data:post.title' expr:width='data:thumbnailSize'/>
+                    </a>
+                  </div>
+                </b:if>
+                <div class='item-title'>
+                  <a expr:href='data:post.href'>
+                    <b>
+                      <data:post.title/>
+                    </b>
+                  </a>
+                </div>
+                <div class='item-snippet'>
+                  <data:post.snippet/>
+                </div>
+              </div>
+              <div style='clear: both;'/>
+            </b:if>
+          </b:if>
+        </li>
+      </b:loop>
+    </ul>
+    <b:include name='quickedit'/>
+  </div>
+</b:includable>
+        </b:widget>
+        <b:widget id='Label2' locked='false' title='Categories' type='Label' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+            <b:widget-setting name='display'>LIST</b:widget-setting>
+            <b:widget-setting name='selectedLabelsList'/>
+            <b:widget-setting name='showType'>ALL</b:widget-setting>
+            <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <b:if cond='data:title'>
+    <h2>
+      <data:title/>
+    </h2>
+  </b:if>
+  <div expr:class='&quot;widget-content &quot; + data:display + &quot;-label-widget-content&quot;'>
+    <b:if cond='data:display == &quot;list&quot;'>
+      <ul>
+        <b:loop values='data:labels' var='label'>
+          <li>
+            <b:if cond='data:blog.url == data:label.url'>
+              <span expr:dir='data:blog.languageDirection'>
+                <data:label.name/>
+              </span>
+              <b:else/>
+              <a expr:dir='data:blog.languageDirection' expr:href='data:label.url'>
+                <data:label.name/>
+              </a>
+            </b:if>
+            <b:if cond='data:showFreqNumbers'>
+              <span dir='ltr'>
+                (
+                <data:label.count/>
+                )
+              </span>
+            </b:if>
+          </li>
+        </b:loop>
+      </ul>
+      <b:else/>
+      <b:loop values='data:labels' var='label'>
+        <span expr:class='&quot;label-size label-size-&quot; + data:label.cssSize'>
+          <b:if cond='data:blog.url == data:label.url'>
+            <span expr:dir='data:blog.languageDirection'>
+              <data:label.name/>
+            </span>
+            <b:else/>
+            <a expr:dir='data:blog.languageDirection' expr:href='data:label.url'>
+              <data:label.name/>
+            </a>
+          </b:if>
+          <b:if cond='data:showFreqNumbers'>
+            <span class='label-count' dir='ltr'>
+              (
+              <data:label.count/>
+              )
+            </span>
+          </b:if>
+        </span>
+      </b:loop>
+    </b:if>
+    <b:include name='quickedit'/>
+  </div>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </aside>
+  </div>
+</div>
+
+<!-- ================= Promo banner (shown on the homepage) ================= -->
+<section class='promo' id='promo'>
+  <div class='container'>
+    <b:section class='promo-section' id='promo-widgets' showaddelement='yes'>
+      <b:widget id='HTML10' locked='false' title='Order directly' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<p>Questions about a size or colour? Message us and we answer the same day. You can also place your whole order on WhatsApp.</p>
+<p><a href="/p/contact.html">Contact us</a></p>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Categories (shown on the homepage) ================= -->
+<section class='topics' id='categories'>
+  <div class='container'>
+    <b:section class='topics-section' id='topics-widgets' showaddelement='yes'>
+      <b:widget id='Label1' locked='false' title='Shop by category' type='Label' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+          <b:widget-setting name='display'>LIST</b:widget-setting>
+          <b:widget-setting name='selectedLabelsList'/>
+          <b:widget-setting name='showType'>ALL</b:widget-setting>
+          <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <b:if cond='data:title'>
+    <h2>
+      <data:title/>
+    </h2>
+  </b:if>
+  <div expr:class='&quot;widget-content &quot; + data:display + &quot;-label-widget-content&quot;'>
+    <b:if cond='data:display == &quot;list&quot;'>
+      <ul>
+        <b:loop values='data:labels' var='label'>
+          <li>
+            <b:if cond='data:blog.url == data:label.url'>
+              <span expr:dir='data:blog.languageDirection'>
+                <data:label.name/>
+              </span>
+              <b:else/>
+              <a expr:dir='data:blog.languageDirection' expr:href='data:label.url'>
+                <data:label.name/>
+              </a>
+            </b:if>
+            <b:if cond='data:showFreqNumbers'>
+              <span dir='ltr'>
+                (
+                <data:label.count/>
+                )
+              </span>
+            </b:if>
+          </li>
+        </b:loop>
+      </ul>
+      <b:else/>
+      <b:loop values='data:labels' var='label'>
+        <span expr:class='&quot;label-size label-size-&quot; + data:label.cssSize'>
+          <b:if cond='data:blog.url == data:label.url'>
+            <span expr:dir='data:blog.languageDirection'>
+              <data:label.name/>
+            </span>
+            <b:else/>
+            <a expr:dir='data:blog.languageDirection' expr:href='data:label.url'>
+              <data:label.name/>
+            </a>
+          </b:if>
+          <b:if cond='data:showFreqNumbers'>
+            <span class='label-count' dir='ltr'>
+              (
+              <data:label.count/>
+              )
+            </span>
+          </b:if>
+        </span>
+      </b:loop>
+    </b:if>
+    <b:include name='quickedit'/>
+  </div>
+</b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= Footer ================= -->
+<footer class='site-footer' id='contact'>
+  <div class='container'>
+    <div class='footer-grid'>
+      <b:section class='footer-col' id='footer-about' preferred='yes'>
+        <b:widget id='HTML6' locked='false' title='About the shop' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<p>Hand-picked clothing and accessories, shipped quickly and packed with care. Every order is confirmed personally.</p>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='footer-connect' preferred='yes'>
+        <b:widget id='HTML7' locked='false' title='Customer service' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/p/shipping.html">Shipping &amp; delivery</a></li>
+<li><a href="/p/returns.html">Returns (Widerruf)</a></li>
+<li><a href="/p/contact.html">Contact</a></li>
+<li><a href="/p/impressum.html">Impressum</a></li>
+<li><a href="/p/privacy.html">Privacy policy</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='footer-explore' preferred='yes'>
+        <b:widget id='HTML8' locked='false' title='Follow us' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="https://www.instagram.com/">Instagram</a></li>
+<li><a href="https://www.facebook.com/">Facebook</a></li>
+<li><a href="https://www.tiktok.com/">TikTok</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+    <div class='footer-bottom'>
+      <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/></p>
+      <b:section class='footer-credit' id='footer-credit' maxwidgets='1' showaddelement='no'>
+        <b:widget id='Attribution1' locked='false' title='' type='Attribution'>
+          <b:widget-settings>
+            <b:widget-setting name='copyright'/>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <div class='widget-content' style='text-align: center;'>
+    <b:if cond='data:attribution != &quot;&quot;'>
+     <data:attribution/>
+    </b:if>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+  </div>
+</footer>
+
+<div class='shop-admin'>
+  <b:section class='shop-settings-section' id='shop-settings' showaddelement='no'>
+    <b:widget id='HTML91' locked='true' title='Shop settings' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[currency: EUR
+locale: de-DE
+whatsapp:
+email:
+order_endpoint:
+paypal:
+shipping: 4,90
+free_shipping_over: 50
+tax_note: Incl. VAT, plus shipping
+bank:
+label_prices: yes
+hero_image:
+banner_image:]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-settings'><data:content/></div>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML92' locked='false' title='Shop words (optional translations)' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[Add to cart: Add to cart]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-words'><data:content/></div>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</div>
+<script type='text/javascript'>
+//<![CDATA[
+// Shop theme behaviour: mobile menu, sticky-header shadow, hero title accent,
+// hero/banner photos from Shop settings, copy-link button and footer year. No dependencies.
+(function () {
+  'use strict';
+  var doc = document;
+  var root = doc.documentElement;
+
+  // Mobile menu
+  var header = doc.getElementById('site-header');
+  var toggle = doc.getElementById('nav-toggle');
+  var drawer = doc.getElementById('site-nav');
+  var desktop = window.matchMedia ? window.matchMedia('(min-width: 1024px)') : null;
+
+  function setMenu(open) {
+    if (!header || !toggle) return;
+    if (open) {
+      header.classList.add('nav-open');
+      root.classList.add('nav-locked');
+    } else {
+      header.classList.remove('nav-open');
+      root.classList.remove('nav-locked');
+    }
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+
+  if (header && toggle && drawer) {
+    toggle.addEventListener('click', function () {
+      setMenu(!header.classList.contains('nav-open'));
+    });
+    // Close after choosing a link (also covers same-page #anchors)
+    drawer.addEventListener('click', function (e) {
+      var t = e.target;
+      while (t && t !== drawer) {
+        if (t.tagName === 'A') { setMenu(false); return; }
+        t = t.parentNode;
+      }
+    });
+    doc.addEventListener('keydown', function (e) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && header.classList.contains('nav-open')) {
+        setMenu(false);
+        toggle.focus();
+      }
+    });
+    if (desktop) {
+      var onChange = function () { if (desktop.matches) setMenu(false); };
+      if (desktop.addEventListener) desktop.addEventListener('change', onChange);
+      else if (desktop.addListener) desktop.addListener(onChange);
+    }
+  }
+
+  // Shadow under the sticky header once the page scrolls
+  if (header) {
+    var ticking = false;
+    var onScroll = function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        if (window.pageYOffset > 8) header.classList.add('is-scrolled');
+        else header.classList.remove('is-scrolled');
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // Hero title: first word white, the rest in the accent colour
+  var title = doc.querySelector('.hero-title');
+  if (title && title.children.length === 0) {
+    var parts = title.textContent.trim().split(/\s+/);
+    if (parts.length > 1) {
+      title.textContent = parts[0] + ' ';
+      var accent = doc.createElement('span');
+      accent.className = 'accent';
+      accent.textContent = parts.slice(1).join(' ');
+      title.appendChild(accent);
+    }
+  }
+
+  // Card images: ask Blogger/YouTube for a 16:9 size instead of the full image or a 72px thumbnail
+  var googleImage = /^https?:\/\/([a-z0-9-]+\.)*(googleusercontent\.com|blogspot\.com|bp\.blogspot\.com|ggpht\.com)\//i;
+  var youtubeThumb = /^(https?:\/\/(img\.youtube\.com|i\.ytimg\.com)\/vi\/[^/]+\/)[a-z]*default\.jpg$/i;
+  var cardImgs = doc.querySelectorAll('img.js-resize');
+  for (var c = 0; c < cardImgs.length; c++) {
+    var src = cardImgs[c].getAttribute('src') || '';
+    var sized = src;
+    if (googleImage.test(src)) {
+      sized = src
+        .replace(/\/s\d+(-[a-z]+)*\//i, '/w720-h405-c/')
+        .replace(/\/w\d+-h\d+(-[a-z]+)*\//i, '/w720-h405-c/')
+        .replace(/=s\d+(-[a-z]+)*$/i, '=w720-h405-c')
+        .replace(/=w\d+-h\d+(-[a-z]+)*$/i, '=w720-h405-c');
+    } else if (youtubeThumb.test(src)) {
+      sized = src.replace(youtubeThumb, '$1hqdefault.jpg');
+    }
+    if (sized !== src) cardImgs[c].setAttribute('src', sized);
+  }
+
+  // Dates: show "12 October 2026" style dates whatever the blog's timestamp format is
+  var dates = doc.querySelectorAll('time.js-date');
+  for (var d = 0; d < dates.length; d++) {
+    var when = new Date(dates[d].getAttribute('datetime'));
+    if (!isNaN(when.getTime())) {
+      dates[d].textContent = when.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+  }
+
+  // Hero and banner photos: "hero_image:" / "banner_image:" lines in the Shop settings gadget
+  var settings = doc.querySelector('.shop-settings');
+  if (settings) {
+    var lines = settings.cloneNode(true);
+    var breaks = lines.querySelectorAll('br, p, div');
+    for (var k = 0; k < breaks.length; k++) breaks[k].appendChild(doc.createTextNode('\n'));
+    lines.textContent.split(/\r?\n/).forEach(function (line) {
+      var m = /^\s*(hero_image|banner_image)\s*:\s*(https:\/\/\S+)\s*$/.exec(line);
+      var target = m && doc.querySelector(m[1] === 'hero_image' ? '.hero' : '.promo');
+      if (!target) return;
+      target.style.backgroundImage = 'linear-gradient(rgba(10, 8, 6, 0.62), rgba(10, 8, 6, 0.45)), url("' + m[2].replace(/["\\]/g, '') + '")';
+      target.classList.add('has-photo');
+    });
+  }
+
+  // Copy-link share button
+  var copyBtns = doc.querySelectorAll('[data-copy-url]');
+  for (var i = 0; i < copyBtns.length; i++) {
+    copyBtns[i].addEventListener('click', function () {
+      var btn = this;
+      var url = btn.getAttribute('data-copy-url');
+      var done = function () {
+        var label = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = label; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link:', url); });
+      } else {
+        window.prompt('Copy this link:', url);
+      }
+    });
+  }
+
+  // Footer year
+  var years = doc.querySelectorAll('.js-year');
+  for (var y = 0; y < years.length; y++) years[y].textContent = String(new Date().getFullYear());
+})();
+//]]>
+</script>
+<script type='text/javascript'>
+//<![CDATA[
+/* Blogger shop: product cards, product page, cart drawer, checkout.
+ * Vanilla JS: no libraries, no external CDN. Goes inside a CDATA-wrapped <script>
+ * at the end of <body>, after the theme's own script.
+ *
+ * Reads:
+ *   .shop-settings      HTML gadget text, one "key: value" per line
+ *   .shop-words         optional HTML gadget text, "English: Translation" per line
+ *   .shop-card          product cards on list pages (see blog-includables.xml)
+ *   .shop-item          the single product page wrapper
+ *   .product[data-price] the product block inside each post body
+ * Writes: localStorage "shop-cart-v1" (cart survives reloads; fails safe).
+ */
+(function () {
+  'use strict';
+
+  // ------------------------------------------------------------ settings
+  function readLines(selector) {
+    var out = {};
+    var el = document.querySelector(selector);
+    if (!el) return out;
+    // Gadget text may use real line breaks, <br> or one <p>/<div> per line.
+    var copy = el.cloneNode(true);
+    Array.prototype.forEach.call(copy.querySelectorAll('br, p, div, li'), function (n) {
+      n.appendChild(document.createTextNode('\n'));
+    });
+    (copy.textContent || '').split(/\r?\n/).forEach(function (line) {
+      var i = line.indexOf(':');
+      if (i < 1) return;
+      var key = line.slice(0, i).trim();
+      var value = line.slice(i + 1).trim();
+      if (key) out[key] = value;
+    });
+    return out;
+  }
+
+  var S = readLines('.shop-settings');
+  var WORDS = readLines('.shop-words');
+  var on = function (v) { return /^(yes|true|on|1)$/i.test(String(v || '').trim()); };
+
+  var CFG = {
+    currency: (S.currency || 'EUR').toUpperCase(),
+    locale: S.locale || document.documentElement.lang || 'en',
+    shop: S.shop_name || document.title.split('|').pop().trim(),
+    whatsapp: (S.whatsapp || '').replace(/[^\d]/g, ''),
+    email: S.email || '',
+    endpoint: S.order_endpoint || '',
+    paypal: S.paypal || '',
+    bank: S.bank || '',
+    shipping: parseNumber(S.shipping) || 0,
+    freeOver: parseNumber(S.free_shipping_over) || 0,
+    taxNote: S.tax_note || '',
+    labelPrices: on(S.label_prices) // also read SpotCommerce-style labels: _39 -49 !0
+  };
+
+  function t(text) { return WORDS[text] || text; }
+
+  // ------------------------------------------------------------ helpers
+  function parseNumber(v) {
+    if (v === undefined || v === null || v === '') return NaN;
+    var s = String(v).replace(/[^\d.,-]/g, '');
+    // "1.299,50" -> 1299.50 ; "1,299.50" -> 1299.50 ; "39,90" -> 39.90
+    if (s.indexOf(',') > -1 && s.indexOf('.') > -1) {
+      s = s.lastIndexOf(',') > s.lastIndexOf('.') ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
+    } else {
+      s = s.replace(',', '.');
+    }
+    return parseFloat(s);
+  }
+
+  var fmt;
+  try {
+    fmt = new Intl.NumberFormat(CFG.locale, { style: 'currency', currency: CFG.currency });
+  } catch (e) {
+    fmt = { format: function (n) { return CFG.currency + ' ' + n.toFixed(2); } };
+  }
+  function money(n) { return fmt.format(Math.round(n * 100) / 100); }
+
+  function el(tag, attrs, children) {
+    var node = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === 'text') node.textContent = attrs[k];
+      else if (k.slice(0, 2) === 'on') node.addEventListener(k.slice(2), attrs[k]);
+      else if (attrs[k] !== false && attrs[k] !== null && attrs[k] !== undefined) node.setAttribute(k, attrs[k]);
+    });
+    (children || []).forEach(function (c) {
+      if (c) node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return node;
+  }
+
+  // Bigger images from Google-hosted URLs only (other hosts are left alone).
+  function sized(url, w) {
+    if (!url || !/(googleusercontent\.com|blogspot\.com|ggpht\.com)/.test(url)) return url;
+    if (/\/s\d+(-c)?\//.test(url) || /\/w\d+-h\d+(-[a-z]+)?\//.test(url)) {
+      return url.replace(/\/(s\d+(-c)?|w\d+-h\d+(-[a-z]+)?)\//, '/w' + w + '/');
+    }
+    if (/=s\d+(-c)?$|=w\d+(-h\d+)?(-[a-z]+)?$/.test(url)) return url.replace(/=[^=]+$/, '=w' + w);
+    return url;
+  }
+
+  // ------------------------------------------------------------ product data
+  // <div class="product" data-price="39" data-old-price="49" data-stock="12"
+  //      data-sku="TS-01" data-options="Size: S, M, L | Colour: Red, Black">Price: 39 EUR</div>
+  function parseOptions(text) {
+    return String(text || '').split('|').map(function (group) {
+      var i = group.indexOf(':');
+      if (i < 1) return null;
+      var values = group.slice(i + 1).split(',').map(function (v) { return v.trim(); }).filter(Boolean);
+      return values.length ? { name: group.slice(0, i).trim(), values: values } : null;
+    }).filter(Boolean);
+  }
+
+  function productFrom(root, labels) {
+    var p = { price: NaN, oldPrice: NaN, stock: NaN, sku: '', options: [] };
+    var block = root && root.querySelector ? root.querySelector('.product[data-price]') : null;
+    if (block) {
+      p.price = parseNumber(block.getAttribute('data-price'));
+      p.oldPrice = parseNumber(block.getAttribute('data-old-price'));
+      p.stock = parseNumber(block.getAttribute('data-stock'));
+      p.sku = block.getAttribute('data-sku') || '';
+      p.options = parseOptions(block.getAttribute('data-options'));
+    }
+    if (isNaN(p.price) && CFG.labelPrices && labels) {
+      labels.forEach(function (name) {
+        var m = /^([_\-!])(\d[\d.,]*)$/.exec(name.trim());
+        if (!m) return;
+        var n = parseNumber(m[2]);
+        if (m[1] === '_') p.price = n;
+        else if (m[1] === '-') p.oldPrice = n;
+        else p.stock = n;
+      });
+    }
+    if (!(p.oldPrice > p.price)) p.oldPrice = NaN;
+    return isNaN(p.price) ? null : p;
+  }
+
+  function labelsOf(scope) {
+    return Array.prototype.map.call(scope.querySelectorAll('[data-label]'), function (n) {
+      return n.getAttribute('data-label');
+    });
+  }
+
+  function priceNode(p) {
+    var box = el('span', { 'class': 'shop-price' });
+    if (!isNaN(p.oldPrice)) {
+      box.appendChild(el('del', { 'class': 'shop-price-old', text: money(p.oldPrice) }));
+      box.appendChild(document.createTextNode(' '));
+    }
+    box.appendChild(el('span', { 'class': 'shop-price-now', text: money(p.price) }));
+    return box;
+  }
+
+  function soldOut(p) { return !isNaN(p.stock) && p.stock <= 0; }
+
+  // ------------------------------------------------------------ cart store
+  var KEY = 'shop-cart-v1';
+  var cart = [];
+  try { cart = JSON.parse(localStorage.getItem(KEY) || '[]') || []; } catch (e) { cart = []; }
+  if (!Array.isArray(cart)) cart = [];
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) { /* private mode: cart lives for this page only */ }
+    renderCount();
+    if (drawer && drawer.getAttribute('data-open') === 'true') renderCart();
+  }
+
+  function lineKey(id, chosen) { return id + '|' + chosen.join('|'); }
+
+  function addToCart(item, qty) {
+    var key = lineKey(item.id, item.chosen);
+    var line = cart.filter(function (l) { return l.key === key; })[0];
+    if (line) line.qty += qty;
+    else cart.push({ key: key, id: item.id, title: item.title, url: item.url, image: item.image,
+                     price: item.price, chosen: item.chosen, sku: item.sku, qty: qty });
+    line = cart.filter(function (l) { return l.key === key; })[0];
+    var limited = !isNaN(item.stock) && line.qty > item.stock;
+    if (limited) line.qty = item.stock;
+    save();
+    toast(limited ? t('Only') + ' ' + item.stock + ' ' + t('in stock') + ' — ' + item.title
+                  : item.title + ' — ' + t('added to cart'));
+  }
+
+  function totals() {
+    var sub = cart.reduce(function (s, l) { return s + l.price * l.qty; }, 0);
+    var ship = cart.length && CFG.shipping && !(CFG.freeOver && sub >= CFG.freeOver) ? CFG.shipping : 0;
+    return { sub: sub, ship: ship, total: sub + ship, count: cart.reduce(function (s, l) { return s + l.qty; }, 0) };
+  }
+
+  // ------------------------------------------------------------ list cards
+  function enhanceCards() {
+    Array.prototype.forEach.call(document.querySelectorAll('.shop-card'), function (card) {
+      var src = card.querySelector('template.shop-src');
+      var p = productFrom(src ? src.content : card, labelsOf(card));
+      var slot = card.querySelector('.shop-card-buy');
+      if (!p || !slot) return;
+      card.classList.add('is-product');
+      var img = card.querySelector('.shop-card-media img');
+      if (img) img.src = sized(img.getAttribute('src'), 600); // full product, no crop
+      if (!isNaN(p.oldPrice)) card.appendChild(el('span', { 'class': 'shop-badge', text: t('Sale') }));
+      slot.appendChild(priceNode(p));
+      var title = card.getAttribute('data-title') || (card.querySelector('h2, h3') || {}).textContent || '';
+      if (soldOut(p)) {
+        card.classList.add('is-soldout');
+        slot.appendChild(el('span', { 'class': 'shop-soldout', text: t('Out of stock') }));
+      } else if (p.options.length) {
+        slot.appendChild(el('a', { 'class': 'shop-btn shop-btn-ghost', href: card.getAttribute('data-url'), text: t('Choose options') }));
+      } else {
+        slot.appendChild(el('button', {
+          type: 'button', 'class': 'shop-btn', text: t('Add to cart'),
+          'aria-label': t('Add to cart') + ': ' + title.trim(),
+          onclick: function () {
+            addToCart({ id: card.getAttribute('data-id'), title: title.trim(), url: card.getAttribute('data-url'),
+                        image: card.getAttribute('data-image') || '', price: p.price, stock: p.stock,
+                        sku: p.sku, chosen: [] }, 1);
+          }
+        }));
+      }
+    });
+  }
+
+  // ------------------------------------------------------------ product page
+  function enhanceItem() {
+    var item = document.querySelector('.shop-item');
+    if (!item) return;
+    var body = item.querySelector('.post-body') || item;
+    var p = productFrom(body, labelsOf(item));
+    var slot = item.querySelector('.shop-buy');
+    if (!p || !slot) return;
+    item.classList.add('is-product');
+    var block = body.querySelector('.product[data-price]');
+    if (block) block.hidden = true;
+
+    var title = (item.getAttribute('data-title') || (item.querySelector('h1') || {}).textContent || '').trim();
+    var images = Array.prototype.map.call(body.querySelectorAll('img'), function (i) { return i.src; })
+      .filter(function (src) { return src && !/^http:/.test(src); });
+    var image = item.getAttribute('data-image') || images[0] || '';
+
+    buildGallery(item, images);
+
+    slot.appendChild(priceNode(p));
+    if (CFG.taxNote) slot.appendChild(el('p', { 'class': 'shop-note', text: t(CFG.taxNote) }));
+
+    var selects = p.options.map(function (opt, n) {
+      var id = 'shop-opt-' + n;
+      var select = el('select', { id: id, required: 'required' },
+        [el('option', { value: '', text: t('Choose') + '…' })].concat(opt.values.map(function (v) {
+          return el('option', { value: v, text: v });
+        })));
+      slot.appendChild(el('label', { 'class': 'shop-field', 'for': id }, [el('span', { text: t(opt.name) }), select]));
+      return select;
+    });
+
+    if (soldOut(p)) {
+      slot.appendChild(el('p', { 'class': 'shop-soldout', text: t('Out of stock') }));
+    } else {
+      var qty = el('input', { type: 'number', min: '1', value: '1', inputmode: 'numeric', id: 'shop-qty',
+                              max: isNaN(p.stock) ? false : String(p.stock) });
+      var msg = el('p', { 'class': 'shop-msg', role: 'status' });
+      slot.appendChild(el('label', { 'class': 'shop-field shop-qty', 'for': 'shop-qty' }, [el('span', { text: t('Quantity') }), qty]));
+      slot.appendChild(el('button', {
+        type: 'button', 'class': 'shop-btn shop-btn-big', text: t('Add to cart'),
+        onclick: function () {
+          var missing = selects.filter(function (s) { return !s.value; });
+          if (missing.length) { msg.textContent = t('Please choose') + ' ' + t(p.options[selects.indexOf(missing[0])].name); missing[0].focus(); return; }
+          msg.textContent = '';
+          var chosen = selects.map(function (s, n) { return p.options[n].name + ': ' + s.value; });
+          var n = Math.max(1, parseInt(qty.value, 10) || 1);
+          addToCart({ id: item.getAttribute('data-id'), title: title, url: item.getAttribute('data-url') || location.href.split('?')[0],
+                      image: image, price: p.price, stock: p.stock, sku: p.sku, chosen: chosen }, n);
+        }
+      }));
+      slot.appendChild(msg);
+    }
+    if (CFG.whatsapp) {
+      slot.appendChild(el('a', { 'class': 'shop-btn shop-btn-ghost', target: '_blank', rel: 'noopener',
+        href: 'https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(t('Hi, I am interested in') + ' ' + title + ' ' + location.href.split('?')[0]),
+        text: t('Ask on WhatsApp') }));
+    }
+
+    // Product structured data for Google (rich results with price and stock).
+    var ld = {
+      '@context': 'https://schema.org', '@type': 'Product', name: title,
+      image: images.slice(0, 5), url: location.href.split('?')[0],
+      offers: {
+        '@type': 'Offer', priceCurrency: CFG.currency, price: p.price.toFixed(2),
+        availability: soldOut(p) ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+        url: location.href.split('?')[0]
+      }
+    };
+    if (p.sku) ld.sku = p.sku;
+    var desc = item.querySelector('meta[itemprop=description]') || document.querySelector('meta[name=description]');
+    if (desc && desc.content) ld.description = desc.content;
+    document.head.appendChild(el('script', { type: 'application/ld+json', text: JSON.stringify(ld) }));
+  }
+
+  function buildGallery(item, images) {
+    var target = item.querySelector('.shop-gallery');
+    if (!target || !images.length) return;
+    // The gallery now shows the photos, so hide Blogger's own image blocks in the description.
+    Array.prototype.forEach.call(item.querySelectorAll('.post-body .separator'), function (s) {
+      if (s.querySelector('img') && !s.textContent.trim()) s.hidden = true;
+    });
+    var main = el('img', { 'class': 'shop-gallery-main', src: sized(images[0], 900), alt: '' });
+    target.appendChild(main);
+    if (images.length < 2) return;
+    var row = el('div', { 'class': 'shop-gallery-thumbs' });
+    images.slice(0, 8).forEach(function (src, n) {
+      row.appendChild(el('button', {
+        type: 'button', 'aria-label': t('Image') + ' ' + (n + 1),
+        onclick: function () { main.src = sized(src, 900); }
+      }, [el('img', { src: sized(src, 160), alt: '', loading: 'lazy' })]));
+    });
+    target.appendChild(row);
+  }
+
+  // ------------------------------------------------------------ drawer
+  var drawer, panel, lastFocus;
+
+  function renderCount() {
+    var n = totals().count;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-cart-count]'), function (b) {
+      b.textContent = n;
+      b.hidden = n === 0;
+    });
+  }
+
+  function buildDrawer() {
+    drawer = el('div', { 'class': 'shop-drawer', 'data-open': 'false', hidden: 'hidden' });
+    var shade = el('div', { 'class': 'shop-shade', onclick: closeDrawer });
+    panel = el('div', { 'class': 'shop-panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('Cart'), tabindex: '-1' });
+    drawer.appendChild(shade);
+    drawer.appendChild(panel);
+    document.body.appendChild(drawer);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && drawer.getAttribute('data-open') === 'true') closeDrawer();
+    });
+    document.addEventListener('click', function (e) {
+      var open = e.target.closest && e.target.closest('[data-cart-open]');
+      if (open) { e.preventDefault(); openDrawer(); }
+    });
+    if (location.hash === '#cart') openDrawer();
+  }
+
+  function openDrawer() {
+    lastFocus = document.activeElement;
+    drawer.hidden = false;
+    drawer.setAttribute('data-open', 'true');
+    document.documentElement.classList.add('shop-locked');
+    renderCart();
+    panel.focus();
+  }
+
+  function closeDrawer() {
+    drawer.setAttribute('data-open', 'false');
+    drawer.hidden = true;
+    document.documentElement.classList.remove('shop-locked');
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  function header(title) {
+    return el('div', { 'class': 'shop-panel-head' }, [
+      el('h2', { text: title }),
+      el('button', { type: 'button', 'class': 'shop-x', 'aria-label': t('Close'), text: '×', onclick: closeDrawer })
+    ]);
+  }
+
+  function sumRows(tt) {
+    var rows = [[t('Subtotal'), money(tt.sub)]];
+    if (CFG.shipping) rows.push([t('Shipping'), tt.ship ? money(tt.ship) : t('Free')]);
+    rows.push([t('Total'), money(tt.total)]);
+    return el('dl', { 'class': 'shop-sum' }, rows.reduce(function (a, r) {
+      return a.concat([el('dt', { text: r[0] }), el('dd', { text: r[1] })]);
+    }, []));
+  }
+
+  function renderCart() {
+    panel.textContent = '';
+    panel.appendChild(header(t('Cart')));
+    if (!cart.length) {
+      panel.appendChild(el('p', { 'class': 'shop-empty', text: t('Your cart is empty.') }));
+      return;
+    }
+    var list = el('ul', { 'class': 'shop-lines' });
+    cart.forEach(function (l) {
+      var qty = el('input', { type: 'number', min: '0', value: String(l.qty), 'aria-label': t('Quantity') + ': ' + l.title,
+        onchange: function () {
+          var n = Math.max(0, parseInt(qty.value, 10) || 0);
+          if (n === 0) cart = cart.filter(function (x) { return x !== l; }); else l.qty = n;
+          save();
+        } });
+      list.appendChild(el('li', { 'class': 'shop-line' }, [
+        l.image ? el('img', { src: sized(l.image, 120), alt: '', loading: 'lazy' }) : el('span', { 'class': 'shop-line-noimg' }),
+        el('div', { 'class': 'shop-line-info' }, [
+          el('a', { href: l.url, text: l.title }),
+          l.chosen.length ? el('small', { text: l.chosen.join(' · ') }) : null,
+          el('span', { 'class': 'shop-line-price', text: money(l.price) })
+        ]),
+        qty,
+        el('button', { type: 'button', 'class': 'shop-x', 'aria-label': t('Remove') + ': ' + l.title, text: '×',
+          onclick: function () { cart = cart.filter(function (x) { return x !== l; }); save(); } })
+      ]));
+    });
+    panel.appendChild(list);
+    var tt = totals();
+    panel.appendChild(sumRows(tt));
+    if (CFG.freeOver && CFG.shipping && tt.sub < CFG.freeOver) {
+      panel.appendChild(el('p', { 'class': 'shop-note', text: t('Free shipping from') + ' ' + money(CFG.freeOver) }));
+    }
+    panel.appendChild(el('button', { type: 'button', 'class': 'shop-btn shop-btn-big', text: t('Checkout'), onclick: renderCheckout }));
+  }
+
+  // ------------------------------------------------------------ checkout
+  function methods() {
+    var m = [];
+    if (CFG.endpoint) m.push(['order', t('Place order (we confirm by email)')]);
+    if (CFG.whatsapp) m.push(['whatsapp', t('Send order on WhatsApp')]);
+    if (CFG.paypal) m.push(['paypal', t('Pay with PayPal')]);
+    if (CFG.email && !CFG.endpoint) m.push(['email', t('Send order by email')]);
+    return m;
+  }
+
+  function field(name, label, type, required, extra) {
+    var id = 'shop-f-' + name;
+    var input = type === 'textarea'
+      ? el('textarea', { id: id, name: name, rows: '3' })
+      : el('input', Object.assign({ id: id, name: name, type: type || 'text' }, extra || {}));
+    if (required) input.required = true;
+    return el('label', { 'class': 'shop-field', 'for': id }, [el('span', { text: t(label) + (required ? ' *' : '') }), input]);
+  }
+
+  function renderCheckout() {
+    panel.textContent = '';
+    panel.appendChild(header(t('Checkout')));
+    var list = methods();
+    if (!list.length) {
+      panel.appendChild(el('p', { 'class': 'shop-msg', text: 'Shop settings: add whatsapp, email, paypal or order_endpoint.' }));
+      return;
+    }
+    var form = el('form', { 'class': 'shop-form', novalidate: 'novalidate' }, [
+      field('name', 'Full name', 'text', true, { autocomplete: 'name' }),
+      field('phone', 'Phone', 'tel', true, { autocomplete: 'tel' }),
+      field('email', 'Email', 'email', !!CFG.endpoint, { autocomplete: 'email' }),
+      field('address', 'Delivery address', 'textarea', true),
+      field('note', 'Note', 'textarea', false),
+      el('input', { type: 'text', name: 'website', tabindex: '-1', autocomplete: 'off', 'class': 'shop-hp', 'aria-hidden': 'true' })
+    ]);
+    var fs = el('fieldset', { 'class': 'shop-methods' }, [el('legend', { text: t('How do you want to order?') })]);
+    list.forEach(function (m, n) {
+      fs.appendChild(el('label', {}, [el('input', { type: 'radio', name: 'method', value: m[0], checked: n === 0 ? 'checked' : false }), ' ' + m[1]]));
+    });
+    form.appendChild(fs);
+    form.appendChild(sumRows(totals()));
+    var msg = el('p', { 'class': 'shop-msg', role: 'status' });
+    var submit = el('button', { type: 'submit', 'class': 'shop-btn shop-btn-big', text: t('Send order') });
+    form.appendChild(submit);
+    form.appendChild(msg);
+    form.appendChild(el('button', { type: 'button', 'class': 'shop-link', text: '← ' + t('Back to cart'), onclick: renderCart }));
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (form.elements.website.value) return; // bot filled the honeypot
+      var bad = Array.prototype.filter.call(form.querySelectorAll('[required]'), function (i) { return !i.value.trim() || !i.checkValidity(); });
+      if (bad.length) { msg.textContent = t('Please fill in the marked fields.'); bad[0].focus(); return; }
+      var data = {};
+      ['name', 'phone', 'email', 'address', 'note'].forEach(function (k) { data[k] = form.elements[k].value.trim(); });
+      submitOrder(form.elements.method.value, data, msg, submit);
+    });
+    panel.appendChild(form);
+    form.elements.name.focus();
+  }
+
+  function orderId() {
+    var d = new Date();
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    return 'O' + String(d.getFullYear()).slice(2) + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' +
+      Math.random().toString(36).slice(2, 6).toUpperCase();
+  }
+
+  function orderText(id, c) {
+    var tt = totals();
+    var lines = [t('New order') + ' ' + id + ' — ' + CFG.shop, ''];
+    cart.forEach(function (l) {
+      lines.push(l.qty + ' × ' + l.title + (l.chosen.length ? ' (' + l.chosen.join(', ') + ')' : '') + ' — ' + money(l.price * l.qty));
+    });
+    lines.push('', t('Subtotal') + ': ' + money(tt.sub));
+    if (CFG.shipping) lines.push(t('Shipping') + ': ' + (tt.ship ? money(tt.ship) : t('Free')));
+    lines.push(t('Total') + ': ' + money(tt.total), '');
+    [c.name, c.phone, c.email, c.address].forEach(function (v) { if (v) lines.push(v); });
+    if (c.note) lines.push('', c.note);
+    return lines.join('\n');
+  }
+
+  function submitOrder(method, customer, msg, button) {
+    var id = orderId();
+    if (method === 'whatsapp') {
+      window.open('https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(orderText(id, customer)), '_blank', 'noopener');
+      return done(id, t('WhatsApp opened with your order. Press send there to complete it.'), false);
+    }
+    if (method === 'email') {
+      location.href = 'mailto:' + CFG.email + '?subject=' + encodeURIComponent(t('Order') + ' ' + id) +
+        '&body=' + encodeURIComponent(orderText(id, customer));
+      return done(id, t('Your email app opened with the order. Press send there to complete it.'), false);
+    }
+    if (method === 'paypal') return paypal(id);
+    // Apps Script endpoint: text/plain keeps it a "simple" request, so no CORS preflight.
+    button.disabled = true;
+    msg.textContent = t('Sending…');
+    fetch(CFG.endpoint, {
+      method: 'POST',
+      body: JSON.stringify({ orderId: id, customer: customer, page: location.href,
+        items: cart.map(function (l) { return { id: l.id, title: l.title, qty: l.qty, chosen: l.chosen, price: l.price, url: l.url }; }) })
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      if (!res || !res.ok) throw new Error(res && res.error || 'failed');
+      done(res.orderId || id, t('Thank you! Your order was received. Total') + ': ' + money(res.total), true);
+    }).catch(function () {
+      button.disabled = false;
+      msg.textContent = t('Sorry, the order could not be sent.') + (CFG.whatsapp ? ' ' + t('Please choose WhatsApp instead.') : '');
+    });
+  }
+
+  function paypal(id) {
+    var f = el('form', { method: 'post', action: 'https://www.paypal.com/cgi-bin/webscr', target: '_top' });
+    var add = function (k, v) { f.appendChild(el('input', { type: 'hidden', name: k, value: String(v) })); };
+    add('cmd', '_cart'); add('upload', '1'); add('business', CFG.paypal);
+    add('currency_code', CFG.currency); add('invoice', id); add('charset', 'utf-8');
+    add('return', location.href.split('#')[0]);
+    cart.forEach(function (l, n) {
+      add('item_name_' + (n + 1), (l.title + (l.chosen.length ? ' (' + l.chosen.join(', ') + ')' : '')).slice(0, 127));
+      add('amount_' + (n + 1), l.price.toFixed(2));
+      add('quantity_' + (n + 1), l.qty);
+    });
+    var tt = totals();
+    if (tt.ship) add('handling_cart', tt.ship.toFixed(2));
+    document.body.appendChild(f);
+    cart = []; save();
+    f.submit();
+  }
+
+  function done(id, text, clear) {
+    panel.textContent = '';
+    panel.appendChild(header(t('Thank you')));
+    panel.appendChild(el('p', { 'class': 'shop-done', text: text }));
+    panel.appendChild(el('p', { text: t('Order number') + ': ' + id }));
+    if (CFG.bank) panel.appendChild(el('p', { 'class': 'shop-note', text: t('Bank transfer') + ': ' + CFG.bank + ' — ' + t('Reference') + ': ' + id }));
+    var clearBtn = el('button', { type: 'button', 'class': 'shop-btn', text: t('Clear cart'), onclick: function () { cart = []; save(); closeDrawer(); } });
+    if (clear) { cart = []; save(); } else panel.appendChild(clearBtn);
+  }
+
+  // ------------------------------------------------------------ toast
+  var toastEl, toastTimer;
+  function toast(text) {
+    if (!toastEl) {
+      toastEl = el('div', { 'class': 'shop-toast', role: 'status', 'aria-live': 'polite' });
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = '';
+    toastEl.appendChild(document.createTextNode(text + ' '));
+    toastEl.appendChild(el('button', { type: 'button', 'class': 'shop-link', 'data-cart-open': '', text: t('View cart') }));
+    toastEl.classList.add('is-on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('is-on'); }, 3500);
+  }
+
+  // ------------------------------------------------------------ start
+  // Price labels (_39, -49, !0) must not show up as categories in Label gadgets.
+  function hidePriceLabels() {
+    if (!CFG.labelPrices) return;
+    Array.prototype.forEach.call(document.querySelectorAll('.Label li, .Label a, .shop-cat'), function (n) {
+      if (/^[_\-!]\d[\d.,]*(\s*\(\s*\d+\s*\))?$/.test(n.textContent.trim())) n.hidden = true;
+    });
+  }
+
+  function start() {
+    hidePriceLabels();
+    buildDrawer();
+    enhanceCards();
+    enhanceItem();
+    renderCount();
+    window.addEventListener('storage', function (e) {
+      if (e.key !== KEY) return;
+      try { cart = JSON.parse(e.newValue || '[]') || []; } catch (x) { cart = []; }
+      renderCount();
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+//]]>
+</script>
+</body>
+</html>
