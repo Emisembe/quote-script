@@ -1,0 +1,56 @@
+<!--
+  Pieces that wire the shop into a blogger-theme-builder project (src/theme.xml + src/skin.css).
+  Widget ids are examples: keep them TypeN and unique in the whole theme.
+-->
+
+<!-- 1. Skin variables: add inside the skin's opening Variable comment (src/skin.css).
+        They show up in Theme > Customise, so the owner can recolour the shop. -->
+<Variable name="shop.accent" description="Shop accent (buttons, prices, badges)" type="color" default="#FF3300" value="#FF3300"/>
+<Variable name="shop.ink" description="Shop text" type="color" default="#222222" value="#222222"/>
+<Variable name="shop.tile" description="Product photo background" type="color" default="#EBE2D9" value="#EBE2D9"/>
+
+
+<!-- 2. Cart button: put it in the header markup (not inside a gadget, so it is on every page). -->
+<a aria-label='Cart' class='cart-button' data-cart-open='' href='#cart'>
+  <svg aria-hidden='true' height='22' viewBox='0 0 24 24' width='22'><path d='M6 6h15l-1.5 9h-12z' fill='none' stroke='currentColor' stroke-width='2'/><circle cx='9' cy='20' fill='currentColor' r='1.5'/><circle cx='18' cy='20' fill='currentColor' r='1.5'/><path d='M6 6L5 2H2' fill='none' stroke='currentColor' stroke-width='2'/></svg>
+  <span data-cart-count='' hidden='hidden'>0</span>
+</a>
+
+
+<!-- 3. Settings section: unconditional (so it stays editable in Layout), hidden on the site by CSS.
+        Paste settings-gadget.html content into HTML91's content box. -->
+<div class='shop-admin'>
+  <b:section class='shop-settings-section' id='shop-settings' showaddelement='no'>
+    <b:widget id='HTML91' locked='true' title='Shop settings' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[currency: EUR
+shipping: 0
+whatsapp:
+email:
+order_endpoint:]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-settings'><data:content/></div>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML92' locked='false' title='Shop words (optional translations)' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[Add to cart: Add to cart]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-words'><data:content/></div>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</div>
+<!-- skin.css:
+     .shop-admin { display: none; }
+     body#layout .shop-admin { display: block; }
+-->
+
+
+<!-- 4. Script: after the theme's own script, at the end of <body>. With blogger-theme-builder,
+        add a @@SHOP_JS@@ marker here and map it to src/shop.js in build.py's parts. -->
+<script>//<![CDATA[
+@@SHOP_JS@@
+//]]></script>

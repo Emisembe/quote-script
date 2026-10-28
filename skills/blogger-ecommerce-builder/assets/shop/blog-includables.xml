@@ -1,0 +1,57 @@
+<!--
+  Shop includables for a legacy-engine Blog widget (Blog1, b:version='2').
+  Paste them inside <b:widget id='Blog1' ...> next to the theme's other includables,
+  then call them from the theme's post loop:
+
+    list pages:   <div class='shop-grid'> <b:loop values='data:posts' var='post'>
+                    <b:include data='post' name='shopCard'/> </b:loop> </div>
+    post pages:   <b:include data='post' name='shopItem'/>
+
+  Every data: tag below appears in Blogger-generated legacy themes, but still
+  confirm each one against the project's reference/proven.json (check.py does).
+-->
+
+<b:includable id='shopCard' var='post'>
+  <article class='shop-card' expr:data-id='data:post.id' expr:data-url='data:post.url' expr:data-title='data:post.title' expr:data-image='data:post.firstImageUrl'>
+    <a aria-hidden='true' class='shop-card-media' expr:href='data:post.url' tabindex='-1'>
+      <b:if cond='data:post.firstImageUrl'>
+        <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
+      <b:else/>
+        <b:if cond='data:post.thumbnailUrl'>
+          <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
+        </b:if>
+      </b:if>
+    </a>
+    <h2 class='shop-card-title'><a expr:href='data:post.url'><data:post.title/></a></h2>
+    <div class='shop-card-buy'/>
+    <b:loop values='data:post.labels' var='label'>
+      <span class='shop-src' expr:data-label='data:label.name'/>
+    </b:loop>
+    <!-- The post body (up to the jump break) carries the product block. Inside
+         <template> it is inert: no images download, no scripts run. -->
+    <template class='shop-src'><data:post.body/></template>
+  </article>
+</b:includable>
+
+<b:includable id='shopItem' var='post'>
+  <article class='shop-item' expr:data-id='data:post.id' expr:data-url='data:post.url' expr:data-title='data:post.title' expr:data-image='data:post.firstImageUrl'>
+    <a expr:name='data:post.id'/>
+    <div class='shop-top'>
+      <div class='shop-gallery'/>
+      <div class='shop-summary'>
+        <b:if cond='data:post.labels'>
+          <p class='shop-cats'>
+            <b:loop values='data:post.labels' var='label'>
+              <a class='shop-cat' expr:data-label='data:label.name' expr:href='data:label.url' rel='tag'><data:label.name/></a>
+            </b:loop>
+          </p>
+        </b:if>
+        <h1 class='post-title'><data:post.title/></h1>
+        <div class='shop-buy'/>
+      </div>
+    </div>
+    <div class='post-body' expr:id='&quot;post-body-&quot; + data:post.id'>
+      <data:post.body/>
+    </div>
+  </article>
+</b:includable>

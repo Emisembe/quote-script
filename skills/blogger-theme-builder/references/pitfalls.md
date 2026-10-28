@@ -26,6 +26,11 @@ Each entry: **symptom → cause → fix**. All were hit on real blogs.
 **Unverified engine features**
 → The first rebuild used Layouts v3 features (`b:layoutsVersion='3'`, version-2 widgets, `b:eval`, `b:template-skin`, `data:view.*`, `data:posts.empty`, `resizeImage`, widgets without includables relying on Blogger's defaults). None could be checked offline, and the upload failed.
 → Use only what the reference theme proves (`reference/proven.json`). A legacy reference proves the legacy engine; a v3 export proves v3.
+→ Mixed themes exist: SpotCommerce, a legacy (`b:version='2'`) commercial theme, also uses `b:with`, `resizeImage()`, `data:post.featuredImage` and `data:view.isLayoutMode`. That proves them only when *that* theme is the user's reference. Never infer "legacy accepts v3 tags" in general.
+
+**Build stops with `content contains "]]>"`**
+→ A script or the skin contains the literal text `]]>`. It ends the `<![CDATA[` block early and breaks the theme, even when it's only inside a comment like `// paste inside //<![CDATA[ ... //]]>`.
+→ Reword the text. `build.py` refuses to build until it's gone; don't remove that guard.
 
 **Sections inside `<b:if>`**
 → Gadgets in those sections can vanish from the Layout editor, so the user can't edit them.
@@ -45,6 +50,12 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 - **Leftover content from other blogs** (names, addresses, social links, AdSense ids, author box text). Users notice and get confused. Strip it, and add the names to `extra.banned_strings` so the audit catches them.
 - **Google+ share links** and `fb-like-box` (both retired). Replace with LinkedIn/WhatsApp/X links and Facebook's Page Plugin.
 - **`selectnav` / `document.write` menus and feeds.** Replace with a vanilla JS hamburger and Blogger's own pagination links.
+- **Someone else's payment and contact details.** Shop templates (e.g. SpotCommerce) ship with the author's PayPal email, bank account, store address, ShareThis/AdSense ids and demo QR codes as *defaults*. Missing one means customers pay the template author. Search the whole XML for emails, IBAN-like numbers, `@gmail`, `PAYPAL`, `BANK`, `STORE_`, and add every one found to `extra.banned_strings`. For shops, run blogger-ecommerce-builder's `check_shop.py`.
+- **The theme is only a shell.** Some "premium" templates keep all logic in a closed script on the vendor's own host (`<name>.github.io/cdn/...`) behind a licence key. If that host goes away, the site breaks. Tell the user plainly, list every outside host the theme loads (`check_shop.py` prints them), and prefer rebuilding the needed features in `theme.js`.
+- **`?m=1` → `?m=0` redirect scripts** at the top of `<head>`. Every phone visit loads twice and loses referrer data. Delete the script and use **Theme → Mobile settings → Desktop** instead (`check.py` flags it).
+- **Dead services:** AddThis (shut down 2023), lorempixel placeholder images (offline), Google+, `data-vocabulary.org`. Replace with plain share links, the blog's own images and schema.org.
+- **jQuery UI 1.10–1.12** (often protocol-relative `//ajax.googleapis.com/...`): known XSS issues and no `https:`. If the vendor script needs it, at least load it over `https://`.
+- **Icon-only controls** (`<a class='menu-toggle'><i class='fa fa-bars'/></a>` with no `href`): no accessible name, not keyboard-focusable. Use `<button type='button' aria-label='Menu'>`.
 - **Menu hidden at middle widths** (e.g. `#menu-main { display: none }` at ≤1024px while the dropdown only appeared at ≤770px). Always test 771–1024px.
 
 ## 3. Live-blog behaviour

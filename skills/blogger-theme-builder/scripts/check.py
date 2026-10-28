@@ -140,7 +140,9 @@ check(data_tags <= allowed_tags, f'all {len(data_tags)} data: tags are proven by
 # ---------------------------------------------------------------- CSS
 skin = root.find(f'.//{B}skin').text or ''
 defined_vars = set(re.findall(r'<Variable name="([^"]+)"', skin))
-used_vars = set(re.findall(r'\$\(([^)]+)\)', skin))
+# A background Variable's default may say "$(color) none repeat ..." -- that refers to its own
+# color attribute, not to another Variable, so look only outside the <Variable .../> tags.
+used_vars = set(re.findall(r'\$\(([^)]+)\)', re.sub(r'<Variable [^>]*/>', '', skin)))
 check(used_vars <= defined_vars, 'every $(variable) in the skin is defined', str(used_vars - defined_vars))
 bad_vars = [v for v in re.findall(r'<Variable [^>]*/>', skin)
             if not all(f'{a}="' in v for a in ('name', 'description', 'type', 'default', 'value'))]
@@ -169,12 +171,17 @@ check('//' not in re.sub(r'/\*.*?\*/|https?://|url\([^)]*\)', '', skin, flags=re
 insecure = re.findall(r'''(?:src|href|action)\s*=\s*['"](http://[^'"]+)''', text) + re.findall(r'url\((http://[^)]+)', text)
 check(not insecure, 'no insecure http:// resources (blocked on HTTPS blogs)', str(insecure))
 check('document.write' not in text, 'no document.write')
-check('jquery' not in text.lower(), 'no jQuery dependency')
+jquery_use = re.search(r'''<script[^>]+src\s*=\s*['"][^'"]*jquery|\bjQuery\s*[(.]|\$\s*\(\s*(?:document|window|function|['"])''', text)
+check(not jquery_use, 'no jQuery dependency', jquery_use.group(0) if jquery_use else '')
 check(not re.search(r'[a-z0-9-]+\.blogspot\.com', text), 'no hard-coded blogspot addresses')
 banned = REF.get('extra', {}).get('banned_strings', ['YOUR_', 'YOUR DESCRIPTION', 'soratemplates'])
 leftovers = [w for w in banned if w.lower() in text.lower()]
 check(not leftovers, 'no leftover content from other blogs/templates', str(leftovers))
 check('maximum-scale' not in text and 'user-scalable' not in text, 'pinch-zoom is not disabled')
+check(not re.search(r"indexOf\(\s*['\"]m=1['\"]\s*\)", text),
+      'no ?m=1 -> ?m=0 redirect script (doubles mobile load; use Theme > Mobile settings > Desktop)')
+retired = [w for w in ('addthis', 'lorempixel.com', 'plus.google.com', 'data-vocabulary.org') if w in text.lower()]
+check(not retired, 'no retired services (AddThis, lorempixel, Google+, data-vocabulary)', str(retired))
 check(len(text.encode('utf-8')) < 900_000, 'theme file is well under Blogger size limits')
 
 # Behaviour that only shows up on a live blog

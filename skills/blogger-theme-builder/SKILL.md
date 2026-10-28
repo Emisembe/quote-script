@@ -21,6 +21,8 @@ Then generate the rulebook:
 python3 scripts/extract_reference.py path/to/backup.xml reference/proven.json
 ```
 
+**Reviewing a downloaded or bought template?** Use the template itself as the reference (it's what the user will upload), run `check.py` on it, then read `references/pitfalls.md` §2 and search it for leftover personal data before giving an opinion. Report what it does well, too (`references/patterns.md`).
+
 If the user genuinely can't provide one, use `assets/starter/` as-is (it uploaded successfully on a real blog) and its bundled `reference/proven.json`. Tell them the first upload is the real test.
 
 **Don't upgrade the engine on a hunch.** If the reference uses the legacy engine (`b:version='2'` with version-1 widgets, no `b:layoutsVersion`), stay on it. If it is a Layouts v3 export (Contempo, Soho, ...), v3 tags are proven and fine to use. The rule is *match the reference*, not "always legacy".
@@ -49,7 +51,9 @@ Edit `src/`, never `theme.xml`. `python3 scripts/build.py` regenerates it, and `
 - **Widget ids are `TypeN`** (`HTML3`, `Label2`), unique, and every widget sits in a `b:section`.
 - **Keep sections unconditional.** A section inside `<b:if>` disappears from the Layout editor. To show something only on the homepage, hide it in CSS and reveal it with a conditional `<style>` in `<head>` (see pitfalls: homepage detection).
 - **Content belongs in gadgets, not hard-coded markup**, so the theme works on any blog. Never copy another blog's text, links or addresses.
+- **Make it owner-editable.** Settings, background images and translations belong in gadgets the owner edits in Layout, not in code. See `references/patterns.md` (settings gadget, Image-gadget backgrounds, translations, hidden Label data, Layout hints, `<template>` post data).
 - If the user has a **brand skill** (colours, fonts, tone), load it and apply it.
+- **Selling products?** Load `blogger-ecommerce-builder` as well. It adds products, cart, checkout and order delivery on top of this workflow, plus an audit for shop templates.
 
 ### 4. Audit, then test in a browser
 
@@ -57,7 +61,7 @@ Edit `src/`, never `theme.xml`. `python3 scripts/build.py` regenerates it, and `
 python3 scripts/build.py && python3 scripts/check.py
 ```
 
-`check.py` rejects anything the reference doesn't prove: unproven gadget types, versions, setting names, setting values, blank required settings, Blogger tags, attributes and data tags. It also catches general hazards: `http://` assets, `document.write`, jQuery, unbalanced CSS, broken JS, leftover content, disabled zoom, missing homepage fallbacks. Fix every failure. Don't weaken a rule to make it pass unless you add the exception to `reference/proven.json → extra` with a reason.
+`check.py` rejects anything the reference doesn't prove: unproven gadget types, versions, setting names, setting values, blank required settings, Blogger tags, attributes and data tags. It also catches general hazards: `http://` assets, `document.write`, real jQuery use (script tags, `jQuery(`, `$(document`), unbalanced CSS, broken JS, leftover content, disabled zoom, the `?m=1` redirect, retired services (AddThis, lorempixel, Google+), missing homepage fallbacks. Fix every failure. Don't weaken a rule to make it pass unless you add the exception to `reference/proven.json → extra` with a reason.
 
 When you add a new check, **prove it works**: run it against a deliberately broken copy and confirm it fails. One check in the original project silently passed everything because of a regex escaping bug.
 
@@ -84,6 +88,8 @@ Read `references/pitfalls.md` before writing or fixing a theme. It lists every r
 - broken legacy templates (insecure jQuery, `document.write`, invalid CSS)
 - `hentry` Search Console errors
 - image-URL resizing rules
+- bought templates: someone else's payment details as defaults, closed vendor scripts, `?m=1` redirects, dead services, icon-only controls
+- a `]]>` inside a script or comment ending the CDATA block
 
 For data tags and settings commonly needed in legacy Blog widgets, see `references/legacy-tags.md`.
 
