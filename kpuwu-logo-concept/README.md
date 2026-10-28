@@ -27,7 +27,7 @@ A proposal for a new KPUWU logo, kept separate from the website theme. The theme
 
 Bigger than that (roll-up banners, billboards): use the PDF.
 
-**Colours for printers** (the Pantone matches are exact for these screen colours; CMYK values are standard conversions, so ask the printer for a proof):
+**Colours for printers** (closest Pantone matches and standard CMYK conversions; ask the printer for a proof before a big print run):
 
 | Colour | Screen (HEX) | Pantone | CMYK (approx.) |
 |---|---|---|---|
