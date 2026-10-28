@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- KPUWU logo concept. Font: Oswald (Bold + Medium), see fonts/. Colours: red #C8102E, navy #13294B, gold #F2B705 -->
+
+<svg
+   width="512.00"
+   height="512.00"
+   viewBox="0 0 512.00 512.00"
+   version="1.1"
+   id="svg61"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <title
+     id="title2">KPUWU logo - Emblem</title>
+  <defs
+     id="defs22">
+    <linearGradient
+       id="swatch-union-red">
+      <stop
+         offset="0"
+         stop-color="#c8102e"
+         id="stop4" />
+    </linearGradient>
+    <linearGradient
+       id="swatch-navy">
+      <stop
+         offset="0"
+         stop-color="#13294b"
+         id="stop7" />
+    </linearGradient>
+    <linearGradient
+       id="swatch-gold">
+      <stop
+         offset="0"
+         stop-color="#f2b705"
+         id="stop10" />
+    </linearGradient>
+    <linearGradient
+       id="swatch-light-blue">
+      <stop
+         offset="0"
+         stop-color="#b9c6da"
+         id="stop13" />
+    </linearGradient>
+    <linearGradient
+       id="swatch-grey">
+      <stop
+         offset="0"
+         stop-color="#4a5668"
+         id="stop16" />
+    </linearGradient>
+    <linearGradient
+       id="swatch-dark-navy">
+      <stop
+         offset="0"
+         stop-color="#0b1a33"
+         id="stop19" />
+    </linearGradient>
+  </defs>
+  <g
+     id="g59">
+    <g
+       transform="scale(4.266667)"
+       id="g57">
+      <clipPath
+         id="clip-emblem">
+        <circle
+           cx="60"
+           cy="60"
+           r="51"
+           id="circle24" />
+      </clipPath>
+      <path
+         id="circle27"
+         style="fill:#c8102e"
+         d="M 118,60 A 58,58 0 0 1 60,118 58,58 0 0 1 2,60 58,58 0 0 1 60,2 58,58 0 0 1 118,60 Z" />
+      <path
+         id="circle29"
+         style="fill:#ffffff"
+         d="M 112.5,60 A 52.5,52.5 0 0 1 60,112.5 52.5,52.5 0 0 1 7.5,60 52.5,52.5 0 0 1 60,7.5 52.5,52.5 0 0 1 112.5,60 Z" />
+      <path
+         id="circle31"
+         style="fill:#13294b"
+         d="M 111,60 A 51,51 0 0 1 60,111 51,51 0 0 1 9,60 51,51 0 0 1 60,9 51,51 0 0 1 111,60 Z" />
+      <g
+         clip-path="url(#clip-emblem)"
+         id="g45">
+        <path
+           id="circle33"
+           style="fill:#b9c6da"
+           d="M 44.5,75 A 7.5,7.5 0 0 1 37,82.5 7.5,7.5 0 0 1 29.5,75 7.5,7.5 0 0 1 37,67.5 7.5,7.5 0 0 1 44.5,75 Z" />
+        <path
+           d="m 22,112 q 0,-26 15,-26 15,0 15,26 z"
+           fill="#b9c6da"
+           id="path35" />
+        <path
+           id="circle37"
+           style="fill:#b9c6da"
+           d="M 90.5,75 A 7.5,7.5 0 0 1 83,82.5 7.5,7.5 0 0 1 75.5,75 7.5,7.5 0 0 1 83,67.5 7.5,7.5 0 0 1 90.5,75 Z" />
+        <path
+           d="m 68,112 q 0,-26 15,-26 15,0 15,26 z"
+           fill="#b9c6da"
+           id="path39" />
+        <path
+           id="circle41"
+           style="fill:#ffffff;stroke:#13294b;stroke-width:2.5"
+           d="M 69.5,70 A 9.5,9.5 0 0 1 60,79.5 9.5,9.5 0 0 1 50.5,70 9.5,9.5 0 0 1 60,60.5 9.5,9.5 0 0 1 69.5,70 Z" />
+        <path
+           d="m 41,114 q 0,-32 19,-32 19,0 19,32 z"
+           fill="#ffffff"
+           stroke="#13294b"
+           stroke-width="2.5"
+           id="path43" />
+      </g>
+      <g
+         id="g55">
+        <path
+           d="m 39,40 v 10 q 21,10 42,0 V 40 l -21,8 z"
+           fill="#dde3ee"
+           id="path47" />
+        <path
+           id="polygon49"
+           style="fill:#ffffff"
+           d="M 60,20 99,35 60,50 21,35 Z" />
+        <path
+           id="line51"
+           style="stroke:#f2b705;stroke-width:2.6;stroke-linecap:round"
+           d="M 91,38 V 55" />
+        <path
+           id="circle53"
+           style="fill:#f2b705"
+           d="M 94.4,57 A 3.4000001,3.4000001 0 0 1 91,60.4 3.4000001,3.4000001 0 0 1 87.6,57 3.4000001,3.4000001 0 0 1 91,53.6 3.4000001,3.4000001 0 0 1 94.4,57 Z" />
+      </g>
+    </g>
+  </g>
+</svg>

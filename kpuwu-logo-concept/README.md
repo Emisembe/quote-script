@@ -5,6 +5,10 @@ A proposal for a new KPUWU logo, kept separate from the website theme. The theme
 - `kpuwu-logo-concept.png`: overview sheet with the website header version, white-on-dark, stacked, and small sizes (favicon, WhatsApp).
 - `kpuwu-emblem-concept.svg`: the emblem on its own, as a vector file a designer can refine.
 
+## Editable project files (`editable/`)
+
+Open `editable/kpuwu-logo-project.svg` in **Inkscape** (free, inkscape.org): all six versions in one file, with live text, named layers and one master emblem. Separate SVGs are included for Illustrator, Affinity Designer, CorelDRAW and Figma. Install the Oswald font from `editable/fonts/` first. Full instructions: `editable/README.md`.
+
 ## Files for printing (300 dpi)
 
 **Vector PDFs (`print-pdf/`): best for printing, sharp at any size.** Give these to printers for banners, signs, T-shirts, stamps and anything large. No pixels inside; fonts embedded.

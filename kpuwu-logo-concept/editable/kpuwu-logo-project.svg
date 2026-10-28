@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- KPUWU logo concept. Font: Oswald (Bold + Medium), see fonts/. Colours: red #C8102E, navy #13294B, gold #F2B705 -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+     width="4518.34" height="533.39" viewBox="0 0 4518.34 533.39" version="1.1">
+  <title>KPUWU logo - editable project</title>
+  <sodipodi:namedview id="namedview" pagecolor="#ffffff" bordercolor="#999999" inkscape:document-units="px" inkscape:pagecheckerboard="true" inkscape:zoom="0.5">
+    <inkscape:page x="0.00" y="0" width="804.73" height="190.00" id="page-horizontal" inkscape:label="Horizontal"/>
+    <inkscape:page x="924.73" y="0" width="804.73" height="190.00" id="page-horizontal-white" inkscape:label="Horizontal - white (for dark backgrounds)"/>
+    <inkscape:page x="1849.47" y="0" width="476.95" height="533.39" id="page-stacked" inkscape:label="Stacked"/>
+    <inkscape:page x="2446.42" y="0" width="476.95" height="533.39" id="page-stacked-white" inkscape:label="Stacked - white (for dark backgrounds)"/>
+    <inkscape:page x="3043.38" y="0" width="842.97" height="182.00" id="page-header" inkscape:label="Website header"/>
+    <inkscape:page x="4006.34" y="0" width="512.00" height="512.00" id="page-emblem" inkscape:label="Emblem"/>
+  </sodipodi:namedview>
+  <defs>
+    <linearGradient id="swatch-union-red" inkscape:swatch="solid" inkscape:label="Union red"><stop offset="0" stop-color="#c8102e"/></linearGradient>
+    <linearGradient id="swatch-navy" inkscape:swatch="solid" inkscape:label="Navy"><stop offset="0" stop-color="#13294b"/></linearGradient>
+    <linearGradient id="swatch-gold" inkscape:swatch="solid" inkscape:label="Gold"><stop offset="0" stop-color="#f2b705"/></linearGradient>
+    <linearGradient id="swatch-light-blue" inkscape:swatch="solid" inkscape:label="Light blue (workers)"><stop offset="0" stop-color="#b9c6da"/></linearGradient>
+    <linearGradient id="swatch-grey" inkscape:swatch="solid" inkscape:label="Name grey"><stop offset="0" stop-color="#4a5668"/></linearGradient>
+    <linearGradient id="swatch-dark-navy" inkscape:swatch="solid" inkscape:label="Dark navy (backgrounds)"><stop offset="0" stop-color="#0b1a33"/></linearGradient>
+  </defs>
+  <g inkscape:groupmode="layer" id="layer-horizontal" inkscape:label="Horizontal">
+    <g transform="translate(0.00,0)" inkscape:label="Horizontal artwork">
+      <use inkscape:label="Emblem (clone of the Emblem page - edit it there)" xlink:href="#emblem-master" transform="matrix(0.292969,0,0,0.292969,-1153.734,20.000)"/>
+      <text inkscape:label="Wordmark KPUWU" xml:space="preserve" x="200.00" y="110.30" style="font-family:Oswald;font-weight:bold;font-size:98px;letter-spacing:6px;fill:#13294b;text-anchor:start;-inkscape-font-specification:'Oswald Bold'"><tspan sodipodi:role="line" x="200.00" y="110.30">KPUWU</tspan></text>
+      <rect inkscape:label="Red line" x="200.00" y="121.45" width="584.73" height="6" fill="#c8102e"/>
+      <text inkscape:label="Union name" xml:space="preserve" x="200.00" y="164.45" style="font-family:Oswald;font-weight:500;font-size:25px;letter-spacing:3.2px;fill:#4a5668;text-anchor:start;-inkscape-font-specification:'Oswald Medium'"><tspan sodipodi:role="line" x="200.00" y="164.45">KENYA PRIVATE UNIVERSITIES WORKERS UNION</tspan></text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-horizontal-white" inkscape:label="Horizontal - white (for dark backgrounds)">
+    <rect inkscape:label="Dark background (hide this before exporting a transparent file)" x="924.73" y="0" width="804.73" height="190.00" fill="#0b1a33" sodipodi:insensitive="true"/>
+    <g transform="translate(924.73,0)" inkscape:label="Horizontal - white (for dark backgrounds) artwork">
+      <use inkscape:label="Emblem (clone of the Emblem page - edit it there)" xlink:href="#emblem-master" transform="matrix(0.292969,0,0,0.292969,-1153.734,20.000)"/>
+      <text inkscape:label="Wordmark KPUWU" xml:space="preserve" x="200.00" y="110.30" style="font-family:Oswald;font-weight:bold;font-size:98px;letter-spacing:6px;fill:#ffffff;text-anchor:start;-inkscape-font-specification:'Oswald Bold'"><tspan sodipodi:role="line" x="200.00" y="110.30">KPUWU</tspan></text>
+      <rect inkscape:label="Red line" x="200.00" y="121.45" width="584.73" height="6" fill="#c8102e"/>
+      <text inkscape:label="Union name" xml:space="preserve" x="200.00" y="164.45" style="font-family:Oswald;font-weight:500;font-size:25px;letter-spacing:3.2px;fill:#dce3ee;text-anchor:start;-inkscape-font-specification:'Oswald Medium'"><tspan sodipodi:role="line" x="200.00" y="164.45">KENYA PRIVATE UNIVERSITIES WORKERS UNION</tspan></text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-stacked" inkscape:label="Stacked">
+    <g transform="translate(1849.47,0)" inkscape:label="Stacked artwork">
+      <use inkscape:label="Emblem (clone of the Emblem page - edit it there)" xlink:href="#emblem-master" transform="matrix(0.507812,0,0,0.507812,-1926.003,20.000)"/>
+      <text inkscape:label="Wordmark KPUWU" xml:space="preserve" x="234.48" y="411.00" style="font-family:Oswald;font-weight:bold;font-size:120px;letter-spacing:8px;fill:#13294b;text-anchor:middle;-inkscape-font-specification:'Oswald Bold'"><tspan sodipodi:role="line" x="234.48" y="411.00">KPUWU</tspan></text>
+      <rect inkscape:label="Red line" x="20.00" y="422.39" width="436.95" height="6" fill="#c8102e"/>
+      <text inkscape:label="Union name" xml:space="preserve" x="236.68" y="470.39" style="font-family:Oswald;font-weight:500;font-size:30px;letter-spacing:3.6px;fill:#4a5668;text-anchor:middle;-inkscape-font-specification:'Oswald Medium'"><tspan sodipodi:role="line" x="236.68" y="470.39">KENYA PRIVATE UNIVERSITIES</tspan><tspan sodipodi:role="line" x="236.68" y="507.89">WORKERS UNION</tspan></text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-stacked-white" inkscape:label="Stacked - white (for dark backgrounds)">
+    <rect inkscape:label="Dark background (hide this before exporting a transparent file)" x="2446.42" y="0" width="476.95" height="533.39" fill="#0b1a33" sodipodi:insensitive="true"/>
+    <g transform="translate(2446.42,0)" inkscape:label="Stacked - white (for dark backgrounds) artwork">
+      <use inkscape:label="Emblem (clone of the Emblem page - edit it there)" xlink:href="#emblem-master" transform="matrix(0.507812,0,0,0.507812,-1926.003,20.000)"/>
+      <text inkscape:label="Wordmark KPUWU" xml:space="preserve" x="234.48" y="411.00" style="font-family:Oswald;font-weight:bold;font-size:120px;letter-spacing:8px;fill:#ffffff;text-anchor:middle;-inkscape-font-specification:'Oswald Bold'"><tspan sodipodi:role="line" x="234.48" y="411.00">KPUWU</tspan></text>
+      <rect inkscape:label="Red line" x="20.00" y="422.39" width="436.95" height="6" fill="#c8102e"/>
+      <text inkscape:label="Union name" xml:space="preserve" x="236.68" y="470.39" style="font-family:Oswald;font-weight:500;font-size:30px;letter-spacing:3.6px;fill:#dce3ee;text-anchor:middle;-inkscape-font-specification:'Oswald Medium'"><tspan sodipodi:role="line" x="236.68" y="470.39">KENYA PRIVATE UNIVERSITIES</tspan><tspan sodipodi:role="line" x="236.68" y="507.89">WORKERS UNION</tspan></text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-header" inkscape:label="Website header">
+    <g transform="translate(3043.38,0)" inkscape:label="Website header artwork">
+      <use inkscape:label="Emblem (clone of the Emblem page - edit it there)" xlink:href="#emblem-master" transform="matrix(0.292969,0,0,0.292969,-1157.734,16.000)"/>
+      <text inkscape:label="Wordmark KPUWU" xml:space="preserve" x="192.00" y="137.16" style="font-family:Oswald;font-weight:bold;font-size:104px;letter-spacing:5px;fill:#13294b;text-anchor:start;-inkscape-font-specification:'Oswald Bold'"><tspan sodipodi:role="line" x="192.00" y="137.16">KPUWU</tspan></text>
+      <rect inkscape:label="Red divider" x="556.16" y="38.00" width="7.00" height="106.00" rx="3.5" fill="#c8102e"/>
+      <text inkscape:label="Union name" xml:space="preserve" x="589.16" y="66.28" style="font-family:Oswald;font-weight:500;font-size:31px;letter-spacing:2.6px;fill:#4a5668;text-anchor:start;-inkscape-font-specification:'Oswald Medium'"><tspan sodipodi:role="line" x="589.16" y="66.28">KENYA PRIVATE</tspan><tspan sodipodi:role="line" x="589.16" y="104.09">UNIVERSITIES</tspan><tspan sodipodi:role="line" x="589.16" y="141.91">WORKERS UNION</tspan></text>
+    </g>
+  </g>
+  <g inkscape:groupmode="layer" id="layer-emblem" inkscape:label="Emblem">
+    <g id="emblem-master" inkscape:label="EMBLEM MASTER (edit here: every page updates)" transform="translate(4006.34,0) scale(4.266667)">
+    <clipPath id="emblem-clip"><circle cx="60" cy="60" r="51"/></clipPath>
+    <circle inkscape:label="Red ring" cx="60" cy="60" r="58" fill="#c8102e"/>
+    <circle inkscape:label="White ring" cx="60" cy="60" r="52.5" fill="#ffffff"/>
+    <circle inkscape:label="Navy disc" cx="60" cy="60" r="51" fill="#13294b"/>
+    <g inkscape:label="Workers (three people)" clip-path="url(#emblem-clip)">
+      <circle inkscape:label="Left head" cx="37" cy="75" r="7.5" fill="#b9c6da"/>
+      <path inkscape:label="Left body" d="M22 112 Q22 86 37 86 Q52 86 52 112 Z" fill="#b9c6da"/>
+      <circle inkscape:label="Right head" cx="83" cy="75" r="7.5" fill="#b9c6da"/>
+      <path inkscape:label="Right body" d="M68 112 Q68 86 83 86 Q98 86 98 112 Z" fill="#b9c6da"/>
+      <circle inkscape:label="Centre head" cx="60" cy="70" r="9.5" fill="#ffffff" stroke="#13294b" stroke-width="2.5"/>
+      <path inkscape:label="Centre body" d="M41 114 Q41 82 60 82 Q79 82 79 114 Z" fill="#ffffff" stroke="#13294b" stroke-width="2.5"/>
+    </g>
+    <g inkscape:label="Graduation cap">
+      <path inkscape:label="Cap band" d="M39 40 L39 50 Q60 60 81 50 L81 40 L60 48 Z" fill="#dde3ee"/>
+      <polygon inkscape:label="Cap top" points="60,20 99,35 60,50 21,35" fill="#ffffff"/>
+      <line inkscape:label="Tassel cord" x1="91" y1="38" x2="91" y2="55" stroke="#f2b705" stroke-width="2.6" stroke-linecap="round"/>
+      <circle inkscape:label="Tassel" cx="91" cy="57" r="3.4" fill="#f2b705"/>
+    </g>
+    </g>
+  </g>
+</svg>
