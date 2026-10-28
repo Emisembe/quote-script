@@ -95,7 +95,7 @@
   }
 
   // ---------- Shared helpers ----------
-  var ytPattern = /(?:youtube\.com\/(?:watch\?(?:[^\s"'<>]*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/|youtube-nocookie\.com\/embed\/)([A-Za-z0-9_-]{11})/;
+  var ytPattern = /(?:youtube\.com\/(?:watch\?(?:[^\s"'<>]*&)?v=|embed\/|shorts\/|live\/|v\/|video\/)|youtu\.be\/|youtube-nocookie\.com\/embed\/)([A-Za-z0-9_-]{11})/;
   var googleImage = /^https?:\/\/([a-z0-9-]+\.)*(googleusercontent\.com|blogspot\.com|ggpht\.com)\//i;
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function ytId(text) {
@@ -194,6 +194,14 @@
     }
     return url;
   }
+  function photoThumb(url) {
+    var did = driveFileId(url);
+    if (did) return 'https://drive.google.com/thumbnail?id=' + did + '&sz=w320';
+    if (googleImage.test(url)) {
+      return url.replace(/\/s\d+(-[a-z]+)*\//i, '/s320/').replace(/=s\d+(-[a-z]+)*$/i, '=s320');
+    }
+    return url;
+  }
   var slideLinks = doc.querySelectorAll('#slideshow .widget-content li a');
   var showcase = doc.getElementById('showcase');
   if (showcase && slideLinks.length) {
@@ -203,6 +211,12 @@
     slider.setAttribute('role', 'region');
     slider.setAttribute('aria-roledescription', 'carousel');
     slider.setAttribute('aria-label', 'Slideshow');
+    // A slide's video started: hide the arrows (they cover YouTube's buttons) and stop autoplay
+    var onSlidePlay = function (box) {
+      box.parentNode.parentNode.classList.add('is-playing');
+      slider.classList.add('video-playing');
+      stopAuto();
+    };
     var track = doc.createElement('div');
     track.className = 'slider-track';
     slider.appendChild(track);
@@ -221,10 +235,7 @@
       var vid = ytId(href);
       if (vid) {
         slide.classList.add('is-video');
-        media.appendChild(makeVideo(vid, caption, function (box) {
-          box.parentNode.parentNode.classList.add('is-playing');
-          stopAuto();
-        }));
+        media.appendChild(makeVideo(vid, caption, onSlidePlay));
       } else {
         var pic = doc.createElement('img');
         pic.alt = caption;
@@ -244,15 +255,13 @@
     var slides = track.children;
     var current = 0;
     var dots = [];
+    var dotBar = null;
     function resetVideos(except) {
       for (var r = 0; r < slides.length; r++) {
         if (r === except) continue;
         var playing = slides[r].querySelector('.yt-lite.is-playing');
         if (playing) {
-          var fresh = makeVideo(playing.getAttribute('data-yt'), slides[r].getAttribute('aria-label'), function (box) {
-            box.parentNode.parentNode.classList.add('is-playing');
-            stopAuto();
-          });
+          var fresh = makeVideo(playing.getAttribute('data-yt'), slides[r].getAttribute('aria-label'), onSlidePlay);
           playing.parentNode.replaceChild(fresh, playing);
           slides[r].classList.remove('is-playing');
         }
@@ -268,7 +277,14 @@
         dots[q].classList.toggle('is-active', q === current);
         dots[q].setAttribute('aria-current', q === current ? 'true' : 'false');
       }
+      // Keep the active thumbnail in view without scrolling the page
+      var on = dots[current];
+      if (on) {
+        if (on.offsetLeft < dotBar.scrollLeft) dotBar.scrollLeft = on.offsetLeft - 8;
+        else if (on.offsetLeft + on.offsetWidth > dotBar.scrollLeft + dotBar.clientWidth) dotBar.scrollLeft = on.offsetLeft + on.offsetWidth - dotBar.clientWidth + 8;
+      }
       resetVideos(current);
+      slider.classList.toggle('video-playing', slides[current].classList.contains('is-playing'));
     }
     var scrollTimer = null;
     track.addEventListener('scroll', function () {
@@ -291,12 +307,21 @@
       };
       arrow('slider-prev', 'Previous slide', '15 18 9 12 15 6', -1);
       arrow('slider-next', 'Next slide', '9 18 15 12 9 6', 1);
-      var dotBar = doc.createElement('div');
-      dotBar.className = 'slider-dots';
+      // Thumbnail strip: one small picture per slide (the video's thumbnail or the photo)
+      dotBar = doc.createElement('div');
+      dotBar.className = 'slider-thumbs';
       for (var dIdx = 0; dIdx < total; dIdx++) {
         var dot = doc.createElement('button');
         dot.type = 'button';
         dot.setAttribute('aria-label', 'Go to slide ' + (dIdx + 1));
+        var dHref = slideLinks[dIdx].getAttribute('href') || '';
+        var dVid = ytId(dHref);
+        var dImg = doc.createElement('img');
+        dImg.alt = '';
+        dImg.loading = 'lazy';
+        dImg.src = dVid ? 'https://i.ytimg.com/vi/' + dVid + '/mqdefault.jpg' : photoThumb(dHref);
+        dot.appendChild(dImg);
+        if (dVid) dot.insertAdjacentHTML('beforeend', '<span class="slider-thumb-play" aria-hidden="true"><svg fill="currentColor" height="12" viewBox="0 0 24 24" width="12"><polygon points="8 5 19 12 8 19 8 5"/></svg></span>');
         dot.addEventListener('click', (function (k) { return function () { stopAuto(); goTo(k); }; })(dIdx));
         dotBar.appendChild(dot);
         dots.push(dot);
@@ -495,9 +520,12 @@
     if (open) {
       header.classList.add('nav-open');
       root.classList.add('nav-locked');
+      // Safety net: if the header still isn't on screen, pin it to the top
+      if (header.getBoundingClientRect().top < -1) header.classList.add('nav-pinned');
       if (backdrop) backdrop.classList.add('is-visible');
     } else {
       header.classList.remove('nav-open');
+      header.classList.remove('nav-pinned');
       root.classList.remove('nav-locked');
       if (backdrop) backdrop.classList.remove('is-visible');
     }

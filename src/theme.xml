@@ -156,7 +156,7 @@ Page not found - <data:blog.title/>
 <section aria-label='Slideshow' class='showcase' id='showcase'>
   <div class='container'>
     <b:section class='slideshow-section' id='slideshow' maxwidgets='1' showaddelement='no'>
-      <b:widget id='LinkList3' locked='false' title='Slideshow' type='LinkList' version='1'>
+      <b:widget id='LinkList3' locked='false' title='Highlights' type='LinkList' version='1'>
         <b:widget-settings>
           <b:widget-setting name='sorting'>NONE</b:widget-setting>
         </b:widget-settings>

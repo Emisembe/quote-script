@@ -63,6 +63,10 @@ Browser-tested:
 - **Card videos**: a card plays its post's video in place without leaving the homepage. The video is found from the YouTube thumbnail, or else from one request to the blog's own feed.
 - No horizontal scrolling at 320–1440px, and no JavaScript errors.
 
+## Phone menu opened while scrolled down (fixed)
+
+On the live blog, opening the phone menu after scrolling down showed only the dimmed overlay and the page seemed frozen. Cause: the scroll lock set `overflow: hidden` on `<body>`, which stops the sticky header from sticking, so the header and its close button jumped to the top of the page, off-screen. Reproduced in the preview (header at -600px / -1500px after opening), fixed by locking only `<html>` and moving the sideways-overflow guard from `body` to `html`, plus a safety net that pins the header to the top if it is ever off-screen. Re-tested on a 500px desktop window, iPhone 13 and Pixel 7 at 600px and 1500px scroll: header stays at the top, the X closes the menu, and the page keeps its position. The safety net was tested by forcing the old CSS back in.
+
 ## Browser checks (preview pages, Chromium)
 
 Homepage and post, at 1440px, 820px and 390px wide:
