@@ -179,6 +179,8 @@
     whatsapp: 'M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.1.3.7 1.1 1.5 1.8 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z',
     email: 'M2 5h20v14H2V5zm2 2v.5l8 5 8-5V7H4zm16 2.8-8 5-8-5V17h16V9.8z',
     download: 'M11 3h2v9.6l3.3-3.3 1.4 1.4L12 16.4l-5.7-5.7 1.4-1.4 3.3 3.3V3zM4 18h16v2H4z',
+    phone: 'M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z',
+    pin: 'M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z',
     telegram: 'M21.9 4.3l-3.3 15.5c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6 13.4l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.5 2.9c.9-.3 1.7.2 1.4 1.4z',
     reddit: 'M22 12.1a2.2 2.2 0 0 0-3.7-1.6 10.8 10.8 0 0 0-5.8-1.8l1-4.6 3.2.7a1.6 1.6 0 1 0 .2-1l-3.6-.8a.5.5 0 0 0-.6.4l-1.1 5.3a10.8 10.8 0 0 0-5.9 1.8A2.2 2.2 0 1 0 3.3 14a4.3 4.3 0 0 0 0 .6c0 3.3 3.9 6 8.7 6s8.7-2.7 8.7-6a4.3 4.3 0 0 0 0-.6 2.2 2.2 0 0 0 1.3-1.9zM7.3 13.6a1.6 1.6 0 1 1 1.6 1.6 1.6 1.6 0 0 1-1.6-1.6zm8.8 4.1a5.6 5.6 0 0 1-4.1 1.3 5.6 5.6 0 0 1-4.1-1.3.4.4 0 0 1 .5-.5 4.8 4.8 0 0 0 3.6 1.1 4.8 4.8 0 0 0 3.6-1.1.4.4 0 1 1 .5.5zm-.3-2.5a1.6 1.6 0 1 1 1.6-1.6 1.6 1.6 0 0 1-1.6 1.6z',
     pinterest: 'M12 2a10 10 0 0 0-3.6 19.3c-.1-.8-.2-2 0-2.9l1.2-5s-.3-.6-.3-1.5c0-1.4.8-2.4 1.8-2.4.9 0 1.3.6 1.3 1.4 0 .9-.5 2.2-.8 3.4-.2 1 .5 1.8 1.5 1.8 1.8 0 3.2-1.9 3.2-4.6 0-2.4-1.7-4.1-4.2-4.1-2.9 0-4.5 2.1-4.5 4.4 0 .9.3 1.8.8 2.3.1.1.1.2.1.3l-.3 1.2c0 .2-.2.2-.4.1-1.3-.6-2.1-2.5-2.1-4 0-3.3 2.4-6.3 6.9-6.3 3.6 0 6.4 2.6 6.4 6 0 3.6-2.3 6.5-5.4 6.5-1 0-2-.5-2.4-1.2l-.6 2.5c-.2.9-.9 2.1-1.3 2.8A10 10 0 1 0 12 2z',
@@ -234,6 +236,25 @@
     for (var cs = 0; cs < copied.length; cs++) {
       footerSocial.appendChild(copied[cs]);
     }
+  }
+
+  // ---------------------------------------------------------------- writer labels
+  // A label "Writer: Jane Wanjiku" gives that writer a page of all their articles. Such labels
+  // are not topics, so they are removed from topic lists, card badges and breadcrumbs.
+  var WRITER_LABEL = /^\s*writer\s*:\s*/i;
+  var writerLinks = {};
+  var labelLinks = doc.querySelectorAll('.Label li, .post-card-labels a, .breadcrumb .crumb-label, .post-tags a');
+  for (var wl = 0; wl < labelLinks.length; wl++) {
+    var lt = labelLinks[wl].textContent;
+    if (!WRITER_LABEL.test(lt)) continue;
+    var wa = labelLinks[wl].tagName === 'A' ? labelLinks[wl] : labelLinks[wl].querySelector('a');
+    if (wa) writerLinks[lt.replace(WRITER_LABEL, '').trim().toLowerCase()] = wa.href;
+    labelLinks[wl].parentNode.removeChild(labelLinks[wl]);
+  }
+  // A writer's page: "Articles by Jane Wanjiku" instead of the raw label name
+  var listTitle = doc.querySelector('h1.section-title');
+  if (listTitle && WRITER_LABEL.test(listTitle.textContent)) {
+    listTitle.textContent = 'Articles by ' + listTitle.textContent.replace(WRITER_LABEL, '').trim();
   }
 
   // ---------------------------------------------------------------- images and dates
@@ -682,7 +703,8 @@
         var pages = (pageEntries || []).map(parseEntry).filter(function (p) { return !/\/p\/site-?map\.html$/i.test(p.url); });
         var topics = {};
         posts.forEach(function (p) {
-          (p.labels.length ? p.labels : ['Other articles']).forEach(function (l) { (topics[l] = topics[l] || []).push(p); });
+          var topicLabels = p.labels.filter(function (l) { return !WRITER_LABEL.test(l); });
+          (topicLabels.length ? topicLabels : ['Other articles']).forEach(function (l) { (topics[l] = topics[l] || []).push(p); });
         });
         var names = Object.keys(topics).sort(function (a, b) {
           if (a === 'Other articles') return 1;
@@ -708,6 +730,237 @@
     });
   }
 
+  // ---------------------------------------------------------------- article presentation
+  // Lines typed in a post (anywhere, usually at the end) credit the real writer:
+  //   Written by: Jane Wanjiku | Shop steward, KCA University branch
+  //   Author photo: https://...            (optional; or put a picture on the next line)
+  //   About the author: Jane has represented support staff since 2019.   (optional)
+  // They are taken out of the text and shown as a byline and an "About the author" box.
+  var BLOCK_TAGS = /^(P|DIV|LI|H[1-6]|BLOCKQUOTE|TD|TH|SECTION|ARTICLE|UL|OL|TABLE|TBODY|TR|FIGURE|PRE)$/;
+  function textLines(root) {
+    var out = [];
+    var cur = { nodes: [], text: '' };
+    var flush = function (br) {
+      if (cur.nodes.length || br) { cur.br = br || null; out.push(cur); }
+      cur = { nodes: [], text: '' };
+    };
+    (function walk(n) {
+      for (var c = n.firstChild; c; c = c.nextSibling) {
+        if (c.nodeType === 3) { cur.nodes.push(c); cur.text += c.nodeValue; }
+        else if (c.nodeType === 1) {
+          if (c.tagName === 'BR') flush(c);
+          else if (BLOCK_TAGS.test(c.tagName)) { flush(); walk(c); flush(); }
+          else if (c.tagName !== 'SCRIPT' && c.tagName !== 'STYLE') walk(c);
+        }
+      }
+    })(root);
+    flush();
+    return out;
+  }
+  function pruneEmpty(node, stop) {
+    while (node && node !== stop && node.parentNode) {
+      var parent = node.parentNode;
+      if (node.nodeType === 1 && !node.textContent.trim() && !node.querySelector('img, iframe, video, table')) parent.removeChild(node);
+      else break;
+      node = parent;
+    }
+  }
+  function takeLine(line, body) {
+    var parents = [];
+    line.nodes.forEach(function (n) { parents.push(n.parentNode); n.parentNode.removeChild(n); });
+    if (line.br && line.br.parentNode) { parents.push(line.br.parentNode); line.br.parentNode.removeChild(line.br); }
+    parents.forEach(function (pn) { pruneEmpty(pn, body); });
+  }
+  var guestAuthor = null;
+  var single = doc.querySelector('.pt-item .post-single');
+  var singleBody = single ? single.querySelector('.post-body') : null;
+  if (singleBody) {
+    var FIELD = /^\s*(written by|author photo|about the author)\s*:\s*(.*)$/i;
+    var found = {};
+    var photoLine = null;
+    textLines(singleBody).forEach(function (line) {
+      var m = line.text.replace(/\u00a0/g, ' ').match(FIELD);
+      if (!m) return;
+      var key = m[1].toLowerCase();
+      if (found[key] !== undefined) return;
+      found[key] = m[2].trim();
+      if (key === 'author photo' && line.nodes.length) {
+        // remember where the line was: a picture placed right after it is the author's photo
+        photoLine = doc.createComment('author-photo');
+        line.nodes[0].parentNode.insertBefore(photoLine, line.nodes[0]);
+      }
+      takeLine(line, singleBody);
+    });
+    if (found['written by']) {
+      var parts = found['written by'].split(/\s*\|\s*/);
+      if (parts.length === 1) parts = found['written by'].split(/\s*,\s*/);
+      guestAuthor = { name: parts.shift().trim(), role: parts.join(', ').trim(), bio: found['about the author'] || '', photo: '' };
+      // Photo: a link typed after "Author photo:", or a picture placed right after that line
+      var url = (found['author photo'] || '').match(/https?:\/\/\S+/);
+      if (url) guestAuthor.photo = url[0];
+      else if (photoLine && photoLine.parentNode) {
+        var walker = doc.createTreeWalker(singleBody, 1, null, false);
+        walker.currentNode = photoLine;
+        for (var step = 0; step < 12 && walker.nextNode(); step++) {
+          if (walker.currentNode.tagName === 'IMG') {
+            var pic = walker.currentNode;
+            guestAuthor.photo = pic.currentSrc || pic.src;
+            var picParent = pic.parentNode;
+            picParent.removeChild(pic);
+            pruneEmpty(picParent, singleBody);
+            break;
+          }
+        }
+      }
+      if (photoLine && photoLine.parentNode) photoLine.parentNode.removeChild(photoLine);
+      guestAuthor.page = writerLinks[guestAuthor.name.toLowerCase()] || '';
+      // Byline under the title
+      var meta = single.querySelector('.post-meta');
+      if (meta) {
+        var blogAuthor = meta.querySelector('.post-author');
+        var byline = el('span', { className: 'post-author guest-byline' }, [doc.createTextNode('By '),
+          guestAuthor.page ? el('a', { href: guestAuthor.page, rel: 'author', text: guestAuthor.name }) : el('strong', { text: guestAuthor.name })]);
+        if (guestAuthor.role) byline.appendChild(el('span', { className: 'guest-role', text: ' · ' + guestAuthor.role }));
+        if (blogAuthor) meta.replaceChild(byline, blogAuthor); else meta.insertBefore(byline, meta.firstChild);
+      }
+      // "About the author" box after the article
+      var initials = guestAuthor.name.split(/\s+/).map(function (w) { return w.charAt(0); }).slice(0, 2).join('').toUpperCase();
+      var box = el('aside', { className: 'author-box', 'aria-label': 'About the author' }, [
+        guestAuthor.photo ? el('img', { className: 'author-photo', src: sized(guestAuthor.photo, 192, 192), alt: guestAuthor.name, loading: 'lazy' })
+          : el('span', { className: 'author-photo author-initials', 'aria-hidden': 'true', text: initials }),
+        el('div', { className: 'author-text' }, [
+          el('p', { className: 'author-eyebrow', text: 'About the author' }),
+          el('p', { className: 'author-name' }, [guestAuthor.page ? el('a', { href: guestAuthor.page, text: guestAuthor.name }) : doc.createTextNode(guestAuthor.name)]),
+          guestAuthor.role ? el('p', { className: 'author-role', text: guestAuthor.role }) : null,
+          guestAuthor.bio ? el('p', { className: 'author-bio', text: guestAuthor.bio }) : null,
+          guestAuthor.page ? el('a', { className: 'author-more', href: guestAuthor.page, text: 'More articles by ' + guestAuthor.name.split(/\s+/)[0] }) : null
+        ])
+      ]);
+      singleBody.parentNode.insertBefore(box, singleBody.nextSibling);
+    }
+    // Reading time (about 200 words a minute)
+    var words = (singleBody.textContent.match(/\S+/g) || []).length;
+    var metaRow = single.querySelector('.post-meta');
+    if (metaRow && words > 60) {
+      metaRow.insertBefore(el('span', { 'aria-hidden': 'true', className: 'sep' }), metaRow.querySelector('.item-control'));
+      metaRow.insertBefore(el('span', { className: 'reading-time', text: Math.max(1, Math.round(words / 200)) + ' min read' }), metaRow.querySelector('.item-control'));
+    }
+    // The first real paragraph reads as an introduction
+    var firstText = textLines(singleBody).filter(function (l) { return l.text.trim().length > 40; })[0];
+    if (firstText) {
+      var host = firstText.nodes[0].parentNode;
+      while (host !== singleBody && !BLOCK_TAGS.test(host.tagName)) host = host.parentNode;
+      if (host !== singleBody && /^(P|DIV)$/.test(host.tagName) && host.textContent.trim().length < 700) host.classList.add('lead-para');
+    }
+    // "In this article": contents box for long articles with 3 or more headings
+    var heads = [].slice.call(singleBody.querySelectorAll('h2, h3')).filter(function (h) { return h.textContent.trim(); });
+    if (heads.length >= 3) {
+      var tocList = el('ol', { className: 'toc-list' });
+      heads.forEach(function (h, i) {
+        if (!h.id) h.id = 'section-' + (i + 1) + '-' + h.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
+        tocList.appendChild(el('li', { className: h.tagName === 'H3' ? 'toc-sub' : null }, [el('a', { href: '#' + h.id, text: h.textContent.trim() })]));
+      });
+      singleBody.parentNode.insertBefore(el('nav', { className: 'toc', 'aria-label': 'In this article' }, [
+        el('p', { className: 'toc-title', text: 'In this article' }), tocList]), singleBody);
+    }
+  }
+
+  // ---------------------------------------------------------------- branch offices
+  // One gadget (Layout > Branch offices) lists every branch. It shows on the Branches page
+  // (/p/branches.html) and on any page containing <div class="u-branches"></div> (e.g. About).
+  var BRANCH_KEYS = { region: 'region', county: 'region', address: 'address', location: 'address', contact: 'contact',
+    'contact person': 'contact', secretary: 'contact', phone: 'phone', tel: 'phone', telephone: 'phone', mobile: 'phone',
+    email: 'email', 'e-mail': 'email', whatsapp: 'whatsapp', hours: 'hours', 'opening hours': 'hours', 'office hours': 'hours',
+    map: 'map', directions: 'map', photo: 'photo', image: 'photo', picture: 'photo', notes: 'notes', note: 'notes' };
+  function parseBranch(li) {
+    var b = { notes: [] };
+    var rows = [];
+    // details may be separated by <br>, by blocks, or simply typed on new lines in the gadget
+    textLines(li).forEach(function (line) { rows = rows.concat(line.text.split(/\r?\n/)); });
+    rows.forEach(function (t) {
+      t = t.replace(/\u00a0/g, ' ').trim();
+      if (!t) return;
+      var m = t.match(/^([A-Za-z][A-Za-z -]{0,20}?)\s*:\s*(.+)$/);
+      var key = m ? BRANCH_KEYS[m[1].trim().toLowerCase()] : null;
+      if (key === 'notes') b.notes.push(m[2].trim());
+      else if (key) b[key] = m[2].trim();
+      else if (!b.name) b.name = t;
+      else b.notes.push(t);
+    });
+    var img = li.querySelector('img');
+    if (!b.photo && img) b.photo = img.src;
+    return b.name ? b : null;
+  }
+  function branchCard(b, level) {
+    var digits = function (v) { return (v || '').replace(/[^\d+]/g, ''); };
+    var mapUrl = b.map && /^https?:/.test(b.map) ? b.map : (b.address ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(b.name + ', ' + b.address) : '');
+    var actions = el('div', { className: 'branch-actions' });
+    var action = function (cls, href, label, icon, external) {
+      var a = el('a', { className: 'branch-btn ' + cls, href: href, rel: external ? 'noopener' : null, target: external ? '_blank' : null,
+        'aria-label': label + ' (' + b.name + ')' }, [iconSvg(icon)]);
+      a.appendChild(doc.createTextNode(label));
+      actions.appendChild(a);
+    };
+    if (b.phone) action('branch-call', 'tel:' + digits(b.phone), 'Call', 'phone');
+    if (b.email) action('branch-email', 'mailto:' + b.email, 'Email', 'email');
+    if (b.whatsapp) action('branch-whatsapp', 'https://wa.me/' + digits(b.whatsapp).replace(/^\+/, ''), 'WhatsApp', 'whatsapp', true);
+    if (mapUrl) action('branch-map', mapUrl, 'Directions', 'pin', true);
+    var details = el('dl', { className: 'branch-details' });
+    var row = function (label, value, href) {
+      if (!value) return;
+      details.appendChild(el('dt', { text: label }));
+      details.appendChild(el('dd', null, [href ? el('a', { href: href, text: value }) : doc.createTextNode(value)]));
+    };
+    row('Address', b.address);
+    row('Contact', b.contact);
+    row('Phone', b.phone, b.phone ? 'tel:' + digits(b.phone) : null);
+    row('Email', b.email, b.email ? 'mailto:' + b.email : null);
+    row('Hours', b.hours);
+    return el('article', { className: 'branch-card', 'data-region': b.region || '' }, [
+      b.photo ? el('img', { className: 'branch-photo', src: sized(b.photo, 640, 360), alt: b.name, loading: 'lazy' }) : null,
+      el('div', { className: 'branch-body' }, [
+        b.region ? el('span', { className: 'badge badge-soft branch-region', text: b.region }) : null,
+        el(level || 'h3', { className: 'branch-name', text: b.name }),
+        details,
+        b.notes.length ? el('p', { className: 'branch-notes', text: b.notes.join(' ') }) : null,
+        actions
+      ])
+    ]);
+  }
+  var branchItems = [].slice.call(doc.querySelectorAll('.branch-data .branch-list > li')).map(parseBranch).filter(Boolean);
+  var branchHost = doc.querySelector('.post-body .u-branches') ||
+    (/\/p\/branch(es)?\.html$/i.test(window.location.pathname) ? doc.querySelector('.post-single .post-body') : null);
+  if (branchHost) {
+    var bBox = branchHost.classList.contains('u-branches') ? branchHost : branchHost.appendChild(el('div', { className: 'u-branches' }));
+    if (!branchItems.length) {
+      bBox.appendChild(el('p', { className: 'feed-status', text: 'Branch office details will be added here soon.' }));
+    } else {
+      var grid = el('div', { className: 'branch-grid' });
+      branchItems.forEach(function (b) { grid.appendChild(branchCard(b, 'h2')); });
+      if (branchItems.length > 3) {
+        var regions = branchItems.map(function (b) { return b.region; }).filter(function (r, i, a) { return r && a.indexOf(r) === i; }).sort();
+        var search = el('input', { type: 'search', className: 'branch-search', placeholder: 'Search by town, university or name…', 'aria-label': 'Search branches' });
+        var select = regions.length > 1 ? el('select', { className: 'branch-region-select', 'aria-label': 'Filter by region' },
+          [el('option', { value: '', text: 'All regions' })].concat(regions.map(function (r) { return el('option', { value: r, text: r }); }))) : null;
+        var count = el('p', { className: 'branch-count', 'aria-live': 'polite' });
+        var apply = function () {
+          var q = search.value.trim().toLowerCase(), reg = select ? select.value : '', shown = 0;
+          [].forEach.call(grid.children, function (card) {
+            var ok = (!q || card.textContent.toLowerCase().indexOf(q) !== -1) && (!reg || card.getAttribute('data-region') === reg);
+            card.hidden = !ok;
+            if (ok) shown++;
+          });
+          count.textContent = shown === branchItems.length ? branchItems.length + ' branches' : 'Showing ' + shown + ' of ' + branchItems.length + ' branches';
+        };
+        search.addEventListener('input', apply);
+        if (select) select.addEventListener('change', apply);
+        bBox.appendChild(el('div', { className: 'branch-filter' }, [search, select, count]));
+        apply();
+      }
+      bBox.appendChild(grid);
+    }
+  }
+
   // ---------------------------------------------------------------- structured data for Google
   // schema.org JSON-LD: who the organisation is, the website, and on posts the article and
   // its breadcrumb. Built from what is on the page, so it is always in step with the gadgets.
@@ -727,6 +980,24 @@
   if (logoImg && logoImg.src) org.logo = { '@type': 'ImageObject', url: logoImg.src };
   var sameAs = [].slice.call(doc.querySelectorAll('.topbar-social .widget-content a[href^="http"]')).map(function (a) { return a.href; });
   if (sameAs.length) org.sameAs = sameAs;
+  // Branch offices, on the pages that show them
+  if (branchHost && branchItems.length) {
+    org.subOrganization = branchItems.map(function (b) {
+      var o = { '@type': 'Organization', name: siteName + ' – ' + b.name };
+      if (b.address) o.address = { '@type': 'PostalAddress', streetAddress: b.address, addressRegion: b.region || undefined };
+      if (b.phone) o.telephone = b.phone;
+      if (b.email) o.email = b.email;
+      return o;
+    });
+  }
+  function personLd(a) {
+    var person = { '@type': 'Person', name: a.name };
+    if (a.role) person.jobTitle = a.role;
+    if (a.photo) person.image = a.photo;
+    if (a.page) person.url = a.page;
+    if (a.bio) person.description = a.bio;
+    return person;
+  }
   var graph = [org, { '@type': 'WebSite', '@id': homeUrl + '#website', url: homeUrl, name: siteName, publisher: { '@id': org['@id'] } }];
   var article = doc.querySelector('.pt-item .post-single');
   if (article) {
@@ -746,7 +1017,8 @@
       mainEntityOfPage: pageUrl,
       url: pageUrl,
       publisher: { '@id': org['@id'] },
-      author: authorName && authorName !== 'Unknown' ? { '@type': 'Person', name: authorName } : { '@id': org['@id'] }
+      author: guestAuthor ? personLd(guestAuthor) :
+        authorName && authorName !== 'Unknown' ? { '@type': 'Person', name: authorName } : { '@id': org['@id'] }
     };
     if (published) news.datePublished = news.dateModified = published.getAttribute('datetime');
     var imgUrl = bodyImg ? sized(bodyImg.src, 1200, 675) : ogImage ? ogImage.getAttribute('content') : '';
