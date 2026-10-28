@@ -49,9 +49,17 @@ These are screen images, so dpi doesn't apply to them.
 | `kpuwu-icon-512.png`, `-192`, `-180-apple`, `-64` | square | Social media profile picture, WhatsApp group icon, phone home-screen icon |
 | `kpuwu-favicon-32.png` | 32 × 32 | Browser tab icon |
 
+**Favicon (`favicon/`)**: a design made for tiny sizes: the graduation cap over a worker on a navy tile with a union-red base. It stays recognisable at 16 px, where the full emblem would blur.
+
+| File | Size | Use |
+|---|---|---|
+| `kpuwu-favicon.png` | 512 × 512 px, 17 KB | **Upload this to Blogger** (square, well under the 100 KB limit) |
+| `kpuwu-favicon-48.png`, `-32.png` | 48 / 32 px | Pre-shrunk copies, if another site asks for a small icon |
+| `kpuwu-favicon.svg` | vector | Editable source |
+
 **On the website (if the union adopts it)**
 - Logo: Blogger → **Layout** → *Header* → Edit → upload `kpuwu-logo-header.png` → choose **Instead of title and description** → Save.
-- Browser tab icon: **Layout** → *Favicon* (top of the page) → Edit → upload `kpuwu-icon-64.png`.
+- Browser tab icon: **Layout** → *Favicon* (top of the page) → Edit → upload `favicon/kpuwu-favicon.png` → Save. Browsers can take a day to show a new favicon; open the site in a private window to see it sooner.
 
 ## Why a new logo
 

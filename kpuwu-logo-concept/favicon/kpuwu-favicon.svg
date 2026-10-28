@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- KPUWU favicon: navy tile, union-red base, graduation cap (universities) over a worker -->
+  <defs><clipPath id="tile"><rect width="64" height="64" rx="12"/></clipPath></defs>
+  <g clip-path="url(#tile)">
+    <rect width="64" height="64" fill="#13294B"/>
+    <rect y="54" width="64" height="10" fill="#C8102E"/>
+    <circle cx="32" cy="36" r="6.5" fill="#FFFFFF"/>
+    <path d="M18 54 Q18 43 32 43 Q46 43 46 54 Z" fill="#FFFFFF"/>
+    <path d="M19 19 L19 25 Q32 31 45 25 L45 19 L32 24 Z" fill="#DDE3EE"/>
+    <polygon points="32,6 55,15.5 32,25 9,15.5" fill="#FFFFFF"/>
+    <line x1="50" y1="17" x2="50" y2="27" stroke="#F2B705" stroke-width="2.6" stroke-linecap="round"/>
+    <circle cx="50" cy="28.5" r="2.6" fill="#F2B705"/>
+  </g>
+</svg>
