@@ -4,8 +4,7 @@
     "HTML1",
     "HTML5",
     "HTML17",
-    "HTML21",
-    "HTML32"
+    "HTML21"
   ],
   "banned": [
     "KPUWU",
@@ -39,6 +38,7 @@
     "HTML30": "About us",
     "HTML31": "Contact",
     "HTML23": "Useful links",
-    "HTML33": "Languages"
+    "HTML33": "Languages",
+    "HTML34": "Certifications & accreditations"
   }
 }

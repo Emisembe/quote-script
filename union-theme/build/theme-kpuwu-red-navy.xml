@@ -501,6 +501,8 @@ body { top: 0 !important; }
     transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
     z-index: 120;
   }
+  /* Dropdowns near the right edge open leftwards (set by theme.js) */
+  .site-nav .widget-content li.drop-left > ul { left: auto; right: 0; }
   .site-nav .widget-content li:hover > ul,
   .site-nav .widget-content li:focus-within > ul {
     opacity: 1;
@@ -1096,17 +1098,30 @@ a.feed-thumb:hover img,
   font-style: italic;
   color: $(primary.color);
 }
-.post-body table { width: 100%; border-collapse: collapse; margin: 1.2em 0; display: block; overflow-x: auto; }
-.post-body th, .post-body td { border: 1px solid $(border.color); padding: 8px 10px; text-align: left; }
-.post-body th { background: $(band.background.color); }
-.post-body iframe { display: block; margin: 1em auto; }
+/* Data tables scroll sideways on phones; Blogger's image-caption tables are left alone */
+.post-body table:not(.tr-caption-container) { width: 100%; border-collapse: collapse; margin: 1.2em 0; display: block; overflow-x: auto; }
+.post-body table:not(.tr-caption-container) th, .post-body table:not(.tr-caption-container) td { border: 1px solid $(border.color); padding: 8px 10px; text-align: left; }
+.post-body table:not(.tr-caption-container) th { background: $(band.background.color); }
+.post-body iframe { display: block; margin: 1em auto; border: 0; }
+/* Videos and maps pasted into posts keep their shape on every screen (Blogger gives them a fixed width/height) */
+.post-body iframe[src*='youtube'], .post-body iframe[src*='youtu.be'], .post-body iframe[src*='vimeo'],
+.post-body iframe[src*='facebook.com/plugins/video'], .post-body iframe[src*='dailymotion'],
+.post-body .YOUTUBE-iframe-video, .post-body iframe.b-hbp-video {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+}
+.post-body iframe[src*='google.com/maps'] { width: 100% !important; aspect-ratio: 4 / 3; height: auto !important; }
+.post-body video { width: 100%; height: auto; }
+.post-body pre, .post-body code { white-space: pre-wrap; overflow-wrap: anywhere; }
+.post-body pre { overflow-x: auto; background: $(page.background.color); padding: 12px 14px; border-radius: 6px; font-size: 14px; }
 .post-body .tr-caption-container { max-width: 100%; }
 .post-body .tr-caption { font-size: 13px; color: $(muted.color); }
 .post-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 30px; }
-.post-tags-label, .post-share-label { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase; color: $(muted.color); margin-right: 4px; }
-.post-share { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-top: 24px; padding: 16px 0; border-top: 1px solid $(border.color); border-bottom: 1px solid $(border.color); }
-.share-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.share-btn {
+.post-tags-label, .u-share-label { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase; color: $(muted.color); margin-right: 4px; }
+.u-share { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-top: 24px; padding: 16px 0; border-top: 1px solid $(border.color); border-bottom: 1px solid $(border.color); }
+.u-share-list { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; position: static; background: none; box-shadow: none; min-width: 0; padding: 0; margin: 0; }
+.u-share-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1124,19 +1139,19 @@ a.feed-thumb:hover img,
   cursor: pointer;
   transition: transform 0.15s, opacity 0.15s;
 }
-.share-btn .social-icon { width: 18px; height: 18px; }
-.share-btn:hover { transform: translateY(-2px); opacity: 0.9; color: #fff; }
-.share-whatsapp { background: #1E8E4E; }
-.share-facebook { background: #1877F2; }
-.share-x { background: #111111; }
-.share-linkedin { background: #0A66C2; }
-.share-telegram { background: #229ED9; }
-.share-reddit { background: #FF4500; }
-.share-pinterest { background: #E60023; }
-.share-email { background: #5B6778; }
-.share-native { background: $(primary.color); }
-.share-copy, .share-print { background: $(band.background.color); color: $(primary.color); padding: 0 16px; }
-.share-copy:hover, .share-print:hover { color: $(primary.color); }
+.u-share-btn .social-icon { width: 18px; height: 18px; }
+.u-share-btn:hover { transform: translateY(-2px); opacity: 0.9; color: #fff; }
+.u-share-whatsapp { background: #1E8E4E; }
+.u-share-facebook { background: #1877F2; }
+.u-share-x { background: #111111; }
+.u-share-linkedin { background: #0A66C2; }
+.u-share-telegram { background: #229ED9; }
+.u-share-reddit { background: #FF4500; }
+.u-share-pinterest { background: #E60023; }
+.u-share-email { background: #5B6778; }
+.u-share-native { background: $(primary.color); }
+.u-share-copy, .u-share-print { background: $(band.background.color); color: $(primary.color); padding: 0 16px; }
+.u-share-copy:hover, .u-share-print:hover { color: $(primary.color); }
 .sr-only {
   position: absolute !important;
   width: 1px;
@@ -1311,6 +1326,35 @@ a.feed-thumb:hover img,
 }
 .footer-bottom p { margin: 0; }
 .footer-social { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+/* Certifications & accreditations strip at the top of the footer */
+.footer-certs { padding: 40px 0 34px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); text-align: center; }
+.footer-certs .widget > h2, .footer-certs h2.title { display: inline-block; }
+.footer-certs h2.title::after { margin-left: auto; margin-right: auto; }
+.cert-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+body .cert-list li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 140px;
+  padding: 0;
+}
+.cert-list img, .cert-list .logo-placeholder {
+  display: block;
+  width: 120px;
+  height: 90px;
+  object-fit: contain;
+  padding: 8px;
+  background: #fff;
+  border-radius: 6px;
+}
+.cert-list .logo-placeholder { border: 2px dashed rgba(19, 41, 75, 0.35); font-size: 11px; line-height: 1.3; text-align: center; }
+.cert-list li > span:not(.logo-placeholder), .cert-list li > a > span { font-size: 12px; line-height: 1.35; color: #D5DDE8; }
+@media (max-width: 479px) {
+  body .cert-list li { width: calc(50% - 8px); }
+  .cert-list img, .cert-list .logo-placeholder { width: 100%; }
+}
 /* "Powered by Blogger" is hidden; the gadget stays so Blogger doesn't re-add it */
 .footer-credit, .Attribution { display: none !important; }
 @media (min-width: 900px) {
@@ -1319,7 +1363,9 @@ a.feed-thumb:hover img,
 .to-top {
   position: fixed;
   right: 16px;
+  right: max(16px, env(safe-area-inset-right));
   bottom: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
   z-index: 90;
   width: 44px;
   height: 44px;
@@ -1367,15 +1413,257 @@ a.feed-thumb:hover img,
 @media (max-width: 479px) {
   .topbar-inner { flex-wrap: wrap; gap: 6px 10px; padding-top: 5px; padding-bottom: 8px; }
   .topbar-search { order: 3; flex: 1 1 100%; max-width: none; }
-  .share-copy, .share-print { flex: 1 1 calc(50% - 4px); }
+  .u-share-copy, .u-share-print { flex: 1 1 calc(50% - 4px); }
 }
+
+/* ---------- Responsive extras ---------- */
+/* Long words, URLs and names never push the page sideways */
+.hero-title, .post-title, .post-card-title, .feed-title, .section-title, .cta-title,
+.brand-name, .band h2.title, .sidebar h2, .site-footer h2, .site-footer .widget-content { overflow-wrap: break-word; }
+.post-body { overflow-wrap: anywhere; }
+/* ...but data tables keep whole words and scroll sideways instead of squashing to one letter per line */
+.post-body table:not(.tr-caption-container) { overflow-wrap: normal; -webkit-overflow-scrolling: touch; }
+.post-body table:not(.tr-caption-container) th,
+.post-body table:not(.tr-caption-container) td { overflow-wrap: normal; word-break: normal; min-width: 4.5em; }
+.post-body img { max-width: 100% !important; height: auto !important; }
+.post-body .tr-caption-container { max-width: 100%; height: auto !important; }
+.post-body .tr-caption-container td { padding: 0; }
+/* Very small phones (fold-style, 280-340px) */
+@media (max-width: 340px) {
+  .container { padding: 0 12px; }
+  .hero-title { font-size: 28px; }
+  .brand-name { font-size: 17px; }
+  .brand-mark { flex-basis: 40px; width: 40px; height: 40px; font-size: 15px; }
+  .nav-toggle { width: 42px; height: 42px; }
+  .topbar-social .widget-content a { width: 28px; height: 28px; }
+  .lang-toggle { padding: 0 9px; }
+  .post-single { padding: 18px 14px 22px; }
+  .band { padding: 40px 0; }
+  .feed-strip > li { flex-basis: 84%; }
+  .feed-tiles { grid-template-columns: minmax(0, 1fr); }
+}
+/* Phones held sideways: a slimmer sticky header leaves room to read */
+@media (max-height: 520px) and (orientation: landscape) {
+  .header-inner { min-height: 56px; }
+  .brand { padding: 4px 0; }
+  .brand-logo img { max-height: 40px; }
+  .brand-mark { flex-basis: 38px; width: 38px; height: 38px; }
+  .hero-grid { padding-top: 28px; padding-bottom: 36px; }
+  .hero-media { max-width: 560px; margin: 0 auto; }
+}
+/* Tablets: sidebar gadgets side by side under the posts */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .sidebar-section { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; align-items: start; }
+}
+/* Large monitors: use a little more of the width */
+@media (min-width: 1600px) {
+  .container { max-width: 1320px; }
+  body { font-size: 17px; }
+}
+/* Touch screens: finger-sized tap targets (44px where space allows) */
+@media (pointer: coarse) {
+  .topbar-social .widget-content a, .footer-social a { width: 40px; height: 40px; }
+  .lang-toggle { height: 40px; }
+  .topbar-search input { min-height: 40px; }
+  .topbar-search button { width: 44px; }
+  .u-share-btn { min-width: 44px; height: 44px; }
+  .feed-more, .breadcrumb a { display: inline-block; padding-top: 10px; padding-bottom: 10px; }
+  .slide-btn { width: 44px; height: 44px; margin-top: -22px; }
+  .slide-dots button { width: 12px; height: 12px; margin: 0 2px; }
+  .site-footer .widget-content ul li a, .sidebar .list-label-widget-content li a { display: inline-block; padding-top: 8px; padding-bottom: 8px; }
+  .lang-menu a { padding: 12px 18px; }
+  .ticker-list a { display: inline-block; padding: 12px 0; }
+}
+@media (pointer: coarse) and (max-width: 479px) {
+  .topbar-social .widget-content a { width: 38px; height: 38px; }
+}
+@media (pointer: coarse) and (max-width: 340px) {
+  .topbar-social .widget-content a { width: 34px; height: 34px; }
+}
+/* Respect "reduce motion" settings */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+  .ticker-list { animation: none !important; }
+}
+
+/* ---------- One consistent text style, whatever was pasted in ----------
+   Posts and gadgets often carry fonts, sizes and colours from Word, websites or old
+   themes (Times New Roman 8px, blue Comic Sans...). The theme's style always wins;
+   bold, italics, underline, alignment, quotes and links still work. In gadgets only
+   unclassed elements (pasted text) are reset, so the theme's own gadget markup keeps its design. */
+.post-body p,
+.post-body span,
+.post-body font,
+.post-body div,
+.post-body li,
+.post-body td,
+.post-body th,
+.post-body a,
+.post-body b,
+.post-body strong,
+.post-body em,
+.post-body i,
+.post-body u,
+.post-body small,
+.post-body big,
+.post-body section,
+.post-body article,
+.post-body label,
+.post-body dd,
+.post-body dt,
+.post-body center,
+.sidebar .HTML .widget-content p:not([class]),
+.sidebar .HTML .widget-content span:not([class]),
+.sidebar .HTML .widget-content font:not([class]),
+.sidebar .HTML .widget-content div:not([class]),
+.sidebar .HTML .widget-content li:not([class]),
+.sidebar .HTML .widget-content td:not([class]),
+.sidebar .HTML .widget-content center:not([class]),
+.site-footer .HTML .widget-content p:not([class]),
+.site-footer .HTML .widget-content span:not([class]),
+.site-footer .HTML .widget-content font:not([class]),
+.site-footer .HTML .widget-content div:not([class]),
+.site-footer .HTML .widget-content li:not([class]),
+.site-footer .HTML .widget-content td:not([class]),
+.site-footer .HTML .widget-content center:not([class]),
+.hero-text p:not([class]),
+.hero-text span:not([class]),
+.hero-text font:not([class]),
+.hero-text div:not([class]),
+.hero-text li:not([class]),
+.hero-text td:not([class]),
+.hero-text center:not([class]),
+.cta-body p:not([class]),
+.cta-body span:not([class]),
+.cta-body font:not([class]),
+.cta-body div:not([class]),
+.cta-body li:not([class]),
+.cta-body td:not([class]),
+.cta-body center:not([class]),
+.band-services .widget-content p:not([class]),
+.band-services .widget-content span:not([class]),
+.band-services .widget-content font:not([class]),
+.band-services .widget-content div:not([class]),
+.band-services .widget-content li:not([class]),
+.band-services .widget-content td:not([class]),
+.band-services .widget-content center:not([class]),
+.comments .comment-content p:not([class]),
+.comments .comment-content span:not([class]),
+.comments .comment-content font:not([class]),
+.comments .comment-content div:not([class]),
+.comments .comment-content li:not([class]),
+.comments .comment-content td:not([class]),
+.comments .comment-content center:not([class]) {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  letter-spacing: normal !important;
+}
+.post-body p,
+.post-body span,
+.post-body font,
+.post-body div,
+.post-body li,
+.post-body td,
+.post-body th,
+.post-body b,
+.post-body strong,
+.post-body em,
+.post-body i,
+.post-body u,
+.post-body small,
+.post-body big,
+.post-body section,
+.post-body article,
+.post-body label,
+.post-body dd,
+.post-body dt,
+.post-body center,
+.sidebar .HTML .widget-content p:not([class]),
+.sidebar .HTML .widget-content span:not([class]),
+.sidebar .HTML .widget-content font:not([class]),
+.sidebar .HTML .widget-content div:not([class]),
+.sidebar .HTML .widget-content li:not([class]),
+.sidebar .HTML .widget-content td:not([class]),
+.sidebar .HTML .widget-content center:not([class]),
+.site-footer .HTML .widget-content p:not([class]),
+.site-footer .HTML .widget-content span:not([class]),
+.site-footer .HTML .widget-content font:not([class]),
+.site-footer .HTML .widget-content div:not([class]),
+.site-footer .HTML .widget-content li:not([class]),
+.site-footer .HTML .widget-content td:not([class]),
+.site-footer .HTML .widget-content center:not([class]),
+.hero-text p:not([class]),
+.hero-text span:not([class]),
+.hero-text font:not([class]),
+.hero-text div:not([class]),
+.hero-text li:not([class]),
+.hero-text td:not([class]),
+.hero-text center:not([class]),
+.cta-body p:not([class]),
+.cta-body span:not([class]),
+.cta-body font:not([class]),
+.cta-body div:not([class]),
+.cta-body li:not([class]),
+.cta-body td:not([class]),
+.cta-body center:not([class]),
+.band-services .widget-content p:not([class]),
+.band-services .widget-content span:not([class]),
+.band-services .widget-content font:not([class]),
+.band-services .widget-content div:not([class]),
+.band-services .widget-content li:not([class]),
+.band-services .widget-content td:not([class]),
+.band-services .widget-content center:not([class]),
+.comments .comment-content p:not([class]),
+.comments .comment-content span:not([class]),
+.comments .comment-content font:not([class]),
+.comments .comment-content div:not([class]),
+.comments .comment-content li:not([class]),
+.comments .comment-content td:not([class]),
+.comments .comment-content center:not([class]) {
+  color: inherit !important;
+  background-color: transparent !important;
+}
+.post-body a, .post-body a span, .post-body a font { color: $(accent.color) !important; }
+.post-body h1, .post-body h2, .post-body h3, .post-body h4, .post-body h5, .post-body h6 {
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif !important;
+  color: $(primary.color) !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0.2px !important;
+  background: none !important;
+}
+.post-body h1 { font-size: 30px !important; }
+.post-body h2 { font-size: 27px !important; }
+.post-body h3 { font-size: 23px !important; }
+.post-body h4 { font-size: 20px !important; }
+.post-body h5, .post-body h6 { font-size: 18px !important; }
+.post-body h1 *, .post-body h2 *, .post-body h3 *, .post-body h4 *, .post-body h5 *, .post-body h6 * { font-size: inherit !important; color: inherit !important; }
+.post-body sub, .post-body sup { font-size: 0.75em !important; }
+.post-body p:empty, .post-body div:empty:not(.separator) { display: none; }
+@media (max-width: 639px) {
+  .post-body h1 { font-size: 26px !important; }
+  .post-body h2 { font-size: 24px !important; }
+  .post-body h3 { font-size: 21px !important; }
+}
+
+/* ---------- Photos fit, whatever their size or shape ---------- */
+.post-body img, .post-body video, .post-body svg,
+.sidebar .HTML .widget-content img, .site-footer .HTML .widget-content img,
+.comments .comment-content img { max-width: 100% !important; height: auto !important; }
+.post-body .separator, .post-body a[imageanchor], .post-body figure { max-width: 100%; }
+.post-body figure { margin: 1em 0; }
+.post-body figcaption { font-size: 13px !important; color: $(muted.color) !important; text-align: center; }
+/* Cards and thumbnails: photos fill the frame; logos and odd shapes are shown whole (theme.js adds .fit-contain) */
+img.fit-contain { object-fit: contain !important; padding: 8px; background: #fff; }
+.popular-posts img.fit-contain, .feed-list img.fit-contain { padding: 3px; }
 
 /* ---------- Print: just the article ---------- */
 @media print {
   @page { margin: 16mm 14mm; }
   html, body { background: #fff !important; color: #000; font-size: 11.5pt; }
   .topbar, .site-header, .ticker, .home-only, .sidebar, .site-footer, .to-top, .skip-link,
-  .post-share, .join-box, .related, .comments, #comments, .blog-pager-nav, .breadcrumb,
+  .u-share, .join-box, .related, .comments, #comments, .blog-pager-nav, .breadcrumb,
   .item-control, .post-tags, .feed-block, .navbar, iframe.skiptranslate { display: none !important; }
   .page-main { padding: 0; }
   .container { max-width: none; padding: 0; }
@@ -2020,15 +2308,15 @@ body#layout .header-inner { display: block; }
                 </b:if>
               </b:if>
               <!-- Share + print on every post and page. theme.js adds the other networks with properly encoded links -->
-              <div class='post-share' expr:data-title='data:post.title' expr:data-url='data:post.url'>
-                <span class='post-share-label'>Share</span>
-                <div class='share-buttons'>
-                  <a class='share-btn share-whatsapp' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
-                  <a class='share-btn share-facebook' expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
-                  <a class='share-btn share-x' expr:href='&quot;https://x.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
-                  <a class='share-btn share-linkedin' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
-                  <a class='share-btn share-telegram' expr:href='&quot;https://t.me/share/url?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Telegram</a>
-                  <a class='share-btn share-email' expr:href='&quot;mailto:?body=&quot; + data:post.url'>Email</a>
+              <div class='u-share' expr:data-title='data:post.title' expr:data-url='data:post.url'>
+                <span class='u-share-label'>Share</span>
+                <div class='u-share-list'>
+                  <a class='u-share-btn u-share-whatsapp' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+                  <a class='u-share-btn u-share-facebook' expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+                  <a class='u-share-btn u-share-x' expr:href='&quot;https://x.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
+                  <a class='u-share-btn u-share-linkedin' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
+                  <a class='u-share-btn u-share-telegram' expr:href='&quot;https://t.me/share/url?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Telegram</a>
+                  <a class='u-share-btn u-share-email' expr:href='&quot;mailto:?body=&quot; + data:post.url'>Email</a>
                 </div>
               </div>
               <p class='print-source'>Printed from <data:blog.title/>: <data:post.url/></p>
@@ -2950,6 +3238,36 @@ body#layout .header-inner { display: block; }
 <!-- ================= Footer ================= -->
 <footer class='site-footer' id='contact'>
   <div class='container'>
+    <!-- Certifications & accreditations (ISO etc.): hidden automatically while the list is empty -->
+    <div class='footer-certs'>
+      <b:section class='certs-section' id='footer-certs' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML34' locked='false' title='Certifications &amp; accreditations' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<!--
+  CERTIFICATIONS: add one <li> per certificate inside the list below. Example:
+  <li><img src="PASTE-IMAGE-LINK" alt="ISO 9001:2015" /><span>ISO 9001:2015 Quality management</span></li>
+  Make the logo clickable (e.g. to the certificate PDF):
+  <li><a href="PASTE-PDF-LINK"><img src="PASTE-IMAGE-LINK" alt="ISO 45001" /><span>ISO 45001 Health &amp; safety</span></a></li>
+  Get an image link: upload the logo in a draft post, open it, right-click the image > Copy image address.
+  While the list is empty, this strip is hidden on the site.
+-->
+<ul class="cert-list">
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </div>
     <div class='footer-grid'>
       <b:section class='footer-col' id='f-widget-1' showaddelement='yes'>
         <b:widget id='HTML30' locked='false' title='About KPUWU' type='HTML' version='1'>
@@ -3099,29 +3417,6 @@ body#layout .header-inner { display: block; }
               <b:include name='quickedit'/>
             </b:includable>
         </b:widget>
-        <b:widget id='HTML32' locked='false' title='' type='HTML' version='1'>
-          <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[<script>
-(function () {
-  var s = document.createElement('script');
-  s.async = true;
-  s.src = 'https://mylivechat.com/chatinline.aspx?hccid=91844755';
-  document.body.appendChild(s);
-})();
-</script>]]></b:widget-setting>
-          </b:widget-settings>
-          <b:includable id='main'>
-  <!-- only display title if it's non-empty -->
-  <b:if cond='data:title != &quot;&quot;'>
-    <h2 class='title'><data:title/></h2>
-  </b:if>
-  <div class='widget-content'>
-    <data:content/>
-  </div>
-
-  <b:include name='quickedit'/>
-</b:includable>
-        </b:widget>
       </b:section>
     </div>
     <div class='footer-bottom'>
@@ -3261,6 +3556,23 @@ body#layout .header-inner { display: block; }
         toggle.focus();
       }
     });
+    window.addEventListener('resize', function () {
+      if (header.classList.contains('nav-open')) {
+        drawer.style.top = Math.max(0, header.getBoundingClientRect().bottom) + 'px';
+      }
+    });
+    // Desktop dropdowns that would run off the right edge open to the left instead
+    var placeDropdowns = function () {
+      var subs = drawer.querySelectorAll('.site-nav .widget-content > ul > li.has-sub');
+      for (var q = 0; q < subs.length; q++) {
+        subs[q].classList.remove('drop-left');
+        if (!desktop || !desktop.matches) continue;
+        var menu = subs[q].querySelector('ul');
+        if (menu.getBoundingClientRect().right > root.clientWidth - 8) subs[q].classList.add('drop-left');
+      }
+    };
+    placeDropdowns();
+    window.addEventListener('resize', placeDropdowns);
     if (desktop) {
       var onChange = function () { if (desktop.matches) setMenu(false); };
       if (desktop.addEventListener) desktop.addEventListener('change', onChange);
@@ -3375,9 +3687,11 @@ body#layout .header-inner { display: block; }
   // ---------------------------------------------------------------- images and dates
   var googleImage = /^(https?:)?\/\/([a-z0-9-]+\.)*(googleusercontent\.com|blogspot\.com|ggpht\.com)\//i;
   var youtubeThumb = /^(https?:\/\/(img\.youtube\.com|i\.ytimg\.com)\/vi\/[^/]+\/)[a-z]*default\.jpg$/i;
+  // Ask Blogger for an uncropped image big enough for a w x h frame; the browser then
+  // decides how it fits the frame (see smartFit), so logos are never cut off
   function sized(src, w, h) {
     if (!src) return src;
-    var spec = 'w' + w + '-h' + h + '-c';
+    var spec = 's' + Math.min(1600, Math.round(Math.max(w, h) * 1.15));
     if (googleImage.test(src)) {
       return src
         .replace(/\/s\d+(-[a-z]+)*\//i, '/' + spec + '/')
@@ -3388,11 +3702,49 @@ body#layout .header-inner { display: block; }
     if (youtubeThumb.test(src)) return src.replace(youtubeThumb, '$1hqdefault.jpg');
     return src;
   }
+  // Request images at the size they are shown, times the screen density (max 2x):
+  // sharp on retina screens, light on phones
+  var DPR = Math.min(window.devicePixelRatio || 1, 2);
+  function fit(px, step, min, max) {
+    return Math.max(min, Math.min(max, Math.ceil((px * DPR) / step) * step));
+  }
+  function scaled(src, w) {
+    if (!src || !googleImage.test(src)) return src;
+    return src.replace(/\/s\d+(-[a-z]+)*\//i, '/s' + w + '/').replace(/=s\d+(-[a-z]+)*$/i, '=s' + w);
+  }
   var cardImgs = doc.querySelectorAll('img.js-resize');
   for (var c = 0; c < cardImgs.length; c++) {
     var src = cardImgs[c].getAttribute('src') || '';
-    var better = sized(src, 720, 405);
+    var box = cardImgs[c].parentNode.clientWidth || 360;
+    var cw = fit(box, 80, 320, 1280);
+    var better = sized(src, cw, Math.round(cw * 9 / 16));
     if (better !== src) cardImgs[c].setAttribute('src', better);
+    smartFit(cardImgs[c]);
+  }
+
+  // Photos fill their frame; logos, banners and tall images (shape very different
+  // from the frame) or small images are shown whole instead of being cropped or blown up
+  function smartFit(img) {
+    var check = function () {
+      var frame = img.parentNode;
+      var w = frame.clientWidth, h = frame.clientHeight;
+      if (!w || !h || !img.naturalWidth || !img.naturalHeight) return;
+      var ratio = img.naturalWidth / img.naturalHeight;
+      var frameRatio = w / h;
+      var mismatch = Math.max(ratio, frameRatio) / Math.min(ratio, frameRatio);
+      var tooSmall = img.naturalWidth < w * 0.5 && img.naturalHeight < h * 0.5;
+      img.classList.toggle('fit-contain', mismatch > 1.4 || tooSmall);
+    };
+    if (img.complete && img.naturalWidth) check();
+    else img.addEventListener('load', check);
+  }
+  // Sidebar "Most read" thumbnails: sharper than Blogger's 72px crop, and fitted the same way
+  var popImgs = doc.querySelectorAll('.popular-posts .item-thumbnail img');
+  for (var pi = 0; pi < popImgs.length; pi++) {
+    var ps = popImgs[pi].getAttribute('src') || '';
+    var pb = sized(ps, Math.round(64 * DPR), Math.round(64 * DPR));
+    if (pb !== ps) popImgs[pi].setAttribute('src', pb);
+    smartFit(popImgs[pi]);
   }
 
   function niceDate(iso, long) {
@@ -3409,6 +3761,14 @@ body#layout .header-inner { display: block; }
   // ---------------------------------------------------------------- hero slideshow
   var media = doc.querySelector('.hero-media');
   var slides = media ? media.querySelectorAll('img') : [];
+  if (media && slides.length) {
+    var mw = fit(media.clientWidth || 600, 200, 400, 1600);
+    for (var si = 0; si < slides.length; si++) {
+      var ss = slides[si].getAttribute('src') || '';
+      var sb = scaled(ss, mw);
+      if (sb !== ss) slides[si].setAttribute('src', sb);
+    }
+  }
   if (media && slides.length > 1) {
     media.classList.add('is-slideshow');
     var current = 0;
@@ -3504,7 +3864,9 @@ body#layout .header-inner { display: block; }
   function thumb(post, w, h, fallback) {
     var box = el('a', { className: 'feed-thumb', href: post.url, tabindex: '-1', 'aria-hidden': 'true' });
     if (post.image) {
-      box.appendChild(el('img', { src: sized(post.image, w, h), alt: '', loading: 'lazy' }));
+      var im = el('img', { src: sized(post.image, Math.round(w * DPR), Math.round(h * DPR)), alt: '', loading: 'lazy' });
+      box.appendChild(im);
+      smartFit(im);
     } else {
       box.classList.add('feed-thumb-empty');
       box.textContent = (fallback || post.title).charAt(0);
@@ -3523,6 +3885,12 @@ body#layout .header-inner { display: block; }
       thumb(post, 480, 270, label),
       el('div', { className: 'feed-body' }, [dateTag(post), titleLink(post)])
     ]);
+  }
+
+  function tileImg(src) {
+    var im = el('img', { src: sized(src, Math.round(300 * DPR), Math.round(300 * DPR)), alt: '', loading: 'lazy' });
+    smartFit(im);
+    return im;
   }
 
   var RENDER = {
@@ -3552,7 +3920,7 @@ body#layout .header-inner { display: block; }
     tiles: function (posts, label) {
       return [el('div', { className: 'feed-tiles' }, posts.map(function (p) {
         return el('a', { className: 'feed-tile', href: p.url }, [
-          p.image ? el('span', { className: 'feed-thumb' }, [el('img', { src: sized(p.image, 400, 400), alt: '', loading: 'lazy' })]) : null,
+          p.image ? el('span', { className: 'feed-thumb' }, [tileImg(p.image)]) : null,
           el('span', { className: 'feed-tile-text' }, [dateTag(p), el('span', { className: 'feed-title', text: p.title })])
         ]);
       }))];
@@ -3640,6 +4008,20 @@ body#layout .header-inner { display: block; }
   }
 
   // ---------------------------------------------------------------- small helpers
+  // Blogger shows "Unknown" when a post's author profile is private: hide it
+  var authors = doc.querySelectorAll('.post-author');
+  for (var au = 0; au < authors.length; au++) {
+    if (authors[au].textContent.trim() === 'Unknown') {
+      var sep = authors[au].nextElementSibling;
+      authors[au].style.display = 'none';
+      if (sep && sep.classList.contains('sep')) sep.style.display = 'none';
+    }
+  }
+
+  // Footer certifications strip: hidden until at least one certificate is added
+  var certs = doc.querySelector('.footer-certs');
+  if (certs && !certs.querySelector('.widget-content li, .widget-content img')) certs.hidden = true;
+
   // Hide homepage bands whose section has no gadget (e.g. "numbers" left empty)
   var optional = doc.querySelectorAll('.js-hide-empty');
   for (var o = 0; o < optional.length; o++) {
@@ -3672,14 +4054,14 @@ body#layout .header-inner { display: block; }
     ['email', 'Email', function (u, t) { return 'mailto:?subject=' + enc(t) + '&body=' + enc(t + '\n\n' + u); }]
   ];
   function shareButton(cls, label, icon, showText) {
-    var btn = el('button', { type: 'button', className: 'share-btn ' + cls, title: label, 'aria-label': label }, [iconSvg(icon)]);
-    btn.appendChild(el('span', { className: showText ? 'share-text' : 'share-text sr-only', text: label }));
+    var btn = el('button', { type: 'button', className: 'u-share-btn ' + cls, title: label, 'aria-label': label }, [iconSvg(icon)]);
+    btn.appendChild(el('span', { className: showText ? 'u-share-text' : 'u-share-text sr-only', text: label }));
     return btn;
   }
-  var shareBars = doc.querySelectorAll('.post-share');
+  var shareBars = doc.querySelectorAll('.u-share');
   for (var sb = 0; sb < shareBars.length; sb++) {
     (function (bar) {
-      var holder = bar.querySelector('.share-buttons');
+      var holder = bar.querySelector('.u-share-list');
       if (!holder) return;
       // Clean address: no ?m=1 / tracking parameters / #anchors
       var url = (bar.getAttribute('data-url') || window.location.href).split(/[?#]/)[0];
@@ -3689,22 +4071,22 @@ body#layout .header-inner { display: block; }
       var img = firstImg ? firstImg.src : '';
       holder.textContent = '';
       NETWORKS.forEach(function (n) {
-        var link = el('a', { className: 'share-btn share-' + n[0], href: n[2](url, title, img), title: 'Share on ' + n[1],
+        var link = el('a', { className: 'u-share-btn u-share-' + n[0], href: n[2](url, title, img), title: 'Share on ' + n[1],
           'aria-label': 'Share on ' + n[1], rel: 'nofollow noopener', target: n[0] === 'email' ? null : '_blank' }, [iconSvg(n[0])]);
-        link.appendChild(el('span', { className: 'share-text sr-only', text: n[1] }));
+        link.appendChild(el('span', { className: 'u-share-text sr-only', text: n[1] }));
         holder.appendChild(link);
       });
       // Phones: the system share sheet reaches every installed app (Instagram, Signal, SMS...)
       if (navigator.share) {
-        var more = shareButton('share-native', 'More apps', 'share');
+        var more = shareButton('u-share-native', 'More apps', 'share');
         more.addEventListener('click', function () {
           navigator.share({ title: title, url: url })['catch'](function () {});
         });
         holder.appendChild(more);
       }
-      var copyBtn = shareButton('share-copy', 'Copy link', 'link', true);
+      var copyBtn = shareButton('u-share-copy', 'Copy link', 'link', true);
       copyBtn.addEventListener('click', function () {
-        var text = copyBtn.querySelector('.share-text');
+        var text = copyBtn.querySelector('.u-share-text');
         var done = function () {
           text.textContent = 'Copied!';
           setTimeout(function () { text.textContent = 'Copy link'; }, 1600);
@@ -3716,7 +4098,7 @@ body#layout .header-inner { display: block; }
         }
       });
       holder.appendChild(copyBtn);
-      var printBtn = shareButton('share-print', 'Print', 'print', true);
+      var printBtn = shareButton('u-share-print', 'Print', 'print', true);
       printBtn.addEventListener('click', function () { window.print(); });
       holder.appendChild(printBtn);
     })(shareBars[sb]);

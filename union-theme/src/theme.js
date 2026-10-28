@@ -107,6 +107,23 @@
         toggle.focus();
       }
     });
+    window.addEventListener('resize', function () {
+      if (header.classList.contains('nav-open')) {
+        drawer.style.top = Math.max(0, header.getBoundingClientRect().bottom) + 'px';
+      }
+    });
+    // Desktop dropdowns that would run off the right edge open to the left instead
+    var placeDropdowns = function () {
+      var subs = drawer.querySelectorAll('.site-nav .widget-content > ul > li.has-sub');
+      for (var q = 0; q < subs.length; q++) {
+        subs[q].classList.remove('drop-left');
+        if (!desktop || !desktop.matches) continue;
+        var menu = subs[q].querySelector('ul');
+        if (menu.getBoundingClientRect().right > root.clientWidth - 8) subs[q].classList.add('drop-left');
+      }
+    };
+    placeDropdowns();
+    window.addEventListener('resize', placeDropdowns);
     if (desktop) {
       var onChange = function () { if (desktop.matches) setMenu(false); };
       if (desktop.addEventListener) desktop.addEventListener('change', onChange);
@@ -221,9 +238,11 @@
   // ---------------------------------------------------------------- images and dates
   var googleImage = /^(https?:)?\/\/([a-z0-9-]+\.)*(googleusercontent\.com|blogspot\.com|ggpht\.com)\//i;
   var youtubeThumb = /^(https?:\/\/(img\.youtube\.com|i\.ytimg\.com)\/vi\/[^/]+\/)[a-z]*default\.jpg$/i;
+  // Ask Blogger for an uncropped image big enough for a w x h frame; the browser then
+  // decides how it fits the frame (see smartFit), so logos are never cut off
   function sized(src, w, h) {
     if (!src) return src;
-    var spec = 'w' + w + '-h' + h + '-c';
+    var spec = 's' + Math.min(1600, Math.round(Math.max(w, h) * 1.15));
     if (googleImage.test(src)) {
       return src
         .replace(/\/s\d+(-[a-z]+)*\//i, '/' + spec + '/')
@@ -234,11 +253,49 @@
     if (youtubeThumb.test(src)) return src.replace(youtubeThumb, '$1hqdefault.jpg');
     return src;
   }
+  // Request images at the size they are shown, times the screen density (max 2x):
+  // sharp on retina screens, light on phones
+  var DPR = Math.min(window.devicePixelRatio || 1, 2);
+  function fit(px, step, min, max) {
+    return Math.max(min, Math.min(max, Math.ceil((px * DPR) / step) * step));
+  }
+  function scaled(src, w) {
+    if (!src || !googleImage.test(src)) return src;
+    return src.replace(/\/s\d+(-[a-z]+)*\//i, '/s' + w + '/').replace(/=s\d+(-[a-z]+)*$/i, '=s' + w);
+  }
   var cardImgs = doc.querySelectorAll('img.js-resize');
   for (var c = 0; c < cardImgs.length; c++) {
     var src = cardImgs[c].getAttribute('src') || '';
-    var better = sized(src, 720, 405);
+    var box = cardImgs[c].parentNode.clientWidth || 360;
+    var cw = fit(box, 80, 320, 1280);
+    var better = sized(src, cw, Math.round(cw * 9 / 16));
     if (better !== src) cardImgs[c].setAttribute('src', better);
+    smartFit(cardImgs[c]);
+  }
+
+  // Photos fill their frame; logos, banners and tall images (shape very different
+  // from the frame) or small images are shown whole instead of being cropped or blown up
+  function smartFit(img) {
+    var check = function () {
+      var frame = img.parentNode;
+      var w = frame.clientWidth, h = frame.clientHeight;
+      if (!w || !h || !img.naturalWidth || !img.naturalHeight) return;
+      var ratio = img.naturalWidth / img.naturalHeight;
+      var frameRatio = w / h;
+      var mismatch = Math.max(ratio, frameRatio) / Math.min(ratio, frameRatio);
+      var tooSmall = img.naturalWidth < w * 0.5 && img.naturalHeight < h * 0.5;
+      img.classList.toggle('fit-contain', mismatch > 1.4 || tooSmall);
+    };
+    if (img.complete && img.naturalWidth) check();
+    else img.addEventListener('load', check);
+  }
+  // Sidebar "Most read" thumbnails: sharper than Blogger's 72px crop, and fitted the same way
+  var popImgs = doc.querySelectorAll('.popular-posts .item-thumbnail img');
+  for (var pi = 0; pi < popImgs.length; pi++) {
+    var ps = popImgs[pi].getAttribute('src') || '';
+    var pb = sized(ps, Math.round(64 * DPR), Math.round(64 * DPR));
+    if (pb !== ps) popImgs[pi].setAttribute('src', pb);
+    smartFit(popImgs[pi]);
   }
 
   function niceDate(iso, long) {
@@ -255,6 +312,14 @@
   // ---------------------------------------------------------------- hero slideshow
   var media = doc.querySelector('.hero-media');
   var slides = media ? media.querySelectorAll('img') : [];
+  if (media && slides.length) {
+    var mw = fit(media.clientWidth || 600, 200, 400, 1600);
+    for (var si = 0; si < slides.length; si++) {
+      var ss = slides[si].getAttribute('src') || '';
+      var sb = scaled(ss, mw);
+      if (sb !== ss) slides[si].setAttribute('src', sb);
+    }
+  }
   if (media && slides.length > 1) {
     media.classList.add('is-slideshow');
     var current = 0;
@@ -350,7 +415,9 @@
   function thumb(post, w, h, fallback) {
     var box = el('a', { className: 'feed-thumb', href: post.url, tabindex: '-1', 'aria-hidden': 'true' });
     if (post.image) {
-      box.appendChild(el('img', { src: sized(post.image, w, h), alt: '', loading: 'lazy' }));
+      var im = el('img', { src: sized(post.image, Math.round(w * DPR), Math.round(h * DPR)), alt: '', loading: 'lazy' });
+      box.appendChild(im);
+      smartFit(im);
     } else {
       box.classList.add('feed-thumb-empty');
       box.textContent = (fallback || post.title).charAt(0);
@@ -369,6 +436,12 @@
       thumb(post, 480, 270, label),
       el('div', { className: 'feed-body' }, [dateTag(post), titleLink(post)])
     ]);
+  }
+
+  function tileImg(src) {
+    var im = el('img', { src: sized(src, Math.round(300 * DPR), Math.round(300 * DPR)), alt: '', loading: 'lazy' });
+    smartFit(im);
+    return im;
   }
 
   var RENDER = {
@@ -398,7 +471,7 @@
     tiles: function (posts, label) {
       return [el('div', { className: 'feed-tiles' }, posts.map(function (p) {
         return el('a', { className: 'feed-tile', href: p.url }, [
-          p.image ? el('span', { className: 'feed-thumb' }, [el('img', { src: sized(p.image, 400, 400), alt: '', loading: 'lazy' })]) : null,
+          p.image ? el('span', { className: 'feed-thumb' }, [tileImg(p.image)]) : null,
           el('span', { className: 'feed-tile-text' }, [dateTag(p), el('span', { className: 'feed-title', text: p.title })])
         ]);
       }))];
@@ -486,6 +559,20 @@
   }
 
   // ---------------------------------------------------------------- small helpers
+  // Blogger shows "Unknown" when a post's author profile is private: hide it
+  var authors = doc.querySelectorAll('.post-author');
+  for (var au = 0; au < authors.length; au++) {
+    if (authors[au].textContent.trim() === 'Unknown') {
+      var sep = authors[au].nextElementSibling;
+      authors[au].style.display = 'none';
+      if (sep && sep.classList.contains('sep')) sep.style.display = 'none';
+    }
+  }
+
+  // Footer certifications strip: hidden until at least one certificate is added
+  var certs = doc.querySelector('.footer-certs');
+  if (certs && !certs.querySelector('.widget-content li, .widget-content img')) certs.hidden = true;
+
   // Hide homepage bands whose section has no gadget (e.g. "numbers" left empty)
   var optional = doc.querySelectorAll('.js-hide-empty');
   for (var o = 0; o < optional.length; o++) {
@@ -518,14 +605,14 @@
     ['email', 'Email', function (u, t) { return 'mailto:?subject=' + enc(t) + '&body=' + enc(t + '\n\n' + u); }]
   ];
   function shareButton(cls, label, icon, showText) {
-    var btn = el('button', { type: 'button', className: 'share-btn ' + cls, title: label, 'aria-label': label }, [iconSvg(icon)]);
-    btn.appendChild(el('span', { className: showText ? 'share-text' : 'share-text sr-only', text: label }));
+    var btn = el('button', { type: 'button', className: 'u-share-btn ' + cls, title: label, 'aria-label': label }, [iconSvg(icon)]);
+    btn.appendChild(el('span', { className: showText ? 'u-share-text' : 'u-share-text sr-only', text: label }));
     return btn;
   }
-  var shareBars = doc.querySelectorAll('.post-share');
+  var shareBars = doc.querySelectorAll('.u-share');
   for (var sb = 0; sb < shareBars.length; sb++) {
     (function (bar) {
-      var holder = bar.querySelector('.share-buttons');
+      var holder = bar.querySelector('.u-share-list');
       if (!holder) return;
       // Clean address: no ?m=1 / tracking parameters / #anchors
       var url = (bar.getAttribute('data-url') || window.location.href).split(/[?#]/)[0];
@@ -535,22 +622,22 @@
       var img = firstImg ? firstImg.src : '';
       holder.textContent = '';
       NETWORKS.forEach(function (n) {
-        var link = el('a', { className: 'share-btn share-' + n[0], href: n[2](url, title, img), title: 'Share on ' + n[1],
+        var link = el('a', { className: 'u-share-btn u-share-' + n[0], href: n[2](url, title, img), title: 'Share on ' + n[1],
           'aria-label': 'Share on ' + n[1], rel: 'nofollow noopener', target: n[0] === 'email' ? null : '_blank' }, [iconSvg(n[0])]);
-        link.appendChild(el('span', { className: 'share-text sr-only', text: n[1] }));
+        link.appendChild(el('span', { className: 'u-share-text sr-only', text: n[1] }));
         holder.appendChild(link);
       });
       // Phones: the system share sheet reaches every installed app (Instagram, Signal, SMS...)
       if (navigator.share) {
-        var more = shareButton('share-native', 'More apps', 'share');
+        var more = shareButton('u-share-native', 'More apps', 'share');
         more.addEventListener('click', function () {
           navigator.share({ title: title, url: url })['catch'](function () {});
         });
         holder.appendChild(more);
       }
-      var copyBtn = shareButton('share-copy', 'Copy link', 'link', true);
+      var copyBtn = shareButton('u-share-copy', 'Copy link', 'link', true);
       copyBtn.addEventListener('click', function () {
-        var text = copyBtn.querySelector('.share-text');
+        var text = copyBtn.querySelector('.u-share-text');
         var done = function () {
           text.textContent = 'Copied!';
           setTimeout(function () { text.textContent = 'Copy link'; }, 1600);
@@ -562,7 +649,7 @@
         }
       });
       holder.appendChild(copyBtn);
-      var printBtn = shareButton('share-print', 'Print', 'print', true);
+      var printBtn = shareButton('u-share-print', 'Print', 'print', true);
       printBtn.addEventListener('click', function () { window.print(); });
       holder.appendChild(printBtn);
     })(shareBars[sb]);

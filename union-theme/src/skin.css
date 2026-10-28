@@ -502,6 +502,8 @@ body { top: 0 !important; }
     transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
     z-index: 120;
   }
+  /* Dropdowns near the right edge open leftwards (set by theme.js) */
+  .site-nav .widget-content li.drop-left > ul { left: auto; right: 0; }
   .site-nav .widget-content li:hover > ul,
   .site-nav .widget-content li:focus-within > ul {
     opacity: 1;
@@ -1097,17 +1099,30 @@ a.feed-thumb:hover img,
   font-style: italic;
   color: var(--u-primary);
 }
-.post-body table { width: 100%; border-collapse: collapse; margin: 1.2em 0; display: block; overflow-x: auto; }
-.post-body th, .post-body td { border: 1px solid var(--u-border); padding: 8px 10px; text-align: left; }
-.post-body th { background: var(--u-band); }
-.post-body iframe { display: block; margin: 1em auto; }
+/* Data tables scroll sideways on phones; Blogger's image-caption tables are left alone */
+.post-body table:not(.tr-caption-container) { width: 100%; border-collapse: collapse; margin: 1.2em 0; display: block; overflow-x: auto; }
+.post-body table:not(.tr-caption-container) th, .post-body table:not(.tr-caption-container) td { border: 1px solid var(--u-border); padding: 8px 10px; text-align: left; }
+.post-body table:not(.tr-caption-container) th { background: var(--u-band); }
+.post-body iframe { display: block; margin: 1em auto; border: 0; }
+/* Videos and maps pasted into posts keep their shape on every screen (Blogger gives them a fixed width/height) */
+.post-body iframe[src*='youtube'], .post-body iframe[src*='youtu.be'], .post-body iframe[src*='vimeo'],
+.post-body iframe[src*='facebook.com/plugins/video'], .post-body iframe[src*='dailymotion'],
+.post-body .YOUTUBE-iframe-video, .post-body iframe.b-hbp-video {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+}
+.post-body iframe[src*='google.com/maps'] { width: 100% !important; aspect-ratio: 4 / 3; height: auto !important; }
+.post-body video { width: 100%; height: auto; }
+.post-body pre, .post-body code { white-space: pre-wrap; overflow-wrap: anywhere; }
+.post-body pre { overflow-x: auto; background: var(--u-bg); padding: 12px 14px; border-radius: var(--u-radius-sm); font-size: 14px; }
 .post-body .tr-caption-container { max-width: 100%; }
 .post-body .tr-caption { font-size: 13px; color: var(--u-muted); }
 .post-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 30px; }
-.post-tags-label, .post-share-label { font-family: var(--u-display); font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase; color: var(--u-muted); margin-right: 4px; }
-.post-share { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-top: 24px; padding: 16px 0; border-top: 1px solid var(--u-border); border-bottom: 1px solid var(--u-border); }
-.share-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.share-btn {
+.post-tags-label, .u-share-label { font-family: var(--u-display); font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase; color: var(--u-muted); margin-right: 4px; }
+.u-share { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; margin-top: 24px; padding: 16px 0; border-top: 1px solid var(--u-border); border-bottom: 1px solid var(--u-border); }
+.u-share-list { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; position: static; background: none; box-shadow: none; min-width: 0; padding: 0; margin: 0; }
+.u-share-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1125,19 +1140,19 @@ a.feed-thumb:hover img,
   cursor: pointer;
   transition: transform 0.15s, opacity 0.15s;
 }
-.share-btn .social-icon { width: 18px; height: 18px; }
-.share-btn:hover { transform: translateY(-2px); opacity: 0.9; color: #fff; }
-.share-whatsapp { background: #1E8E4E; }
-.share-facebook { background: #1877F2; }
-.share-x { background: #111111; }
-.share-linkedin { background: #0A66C2; }
-.share-telegram { background: #229ED9; }
-.share-reddit { background: #FF4500; }
-.share-pinterest { background: #E60023; }
-.share-email { background: #5B6778; }
-.share-native { background: var(--u-primary); }
-.share-copy, .share-print { background: var(--u-band); color: var(--u-primary); padding: 0 16px; }
-.share-copy:hover, .share-print:hover { color: var(--u-primary); }
+.u-share-btn .social-icon { width: 18px; height: 18px; }
+.u-share-btn:hover { transform: translateY(-2px); opacity: 0.9; color: #fff; }
+.u-share-whatsapp { background: #1E8E4E; }
+.u-share-facebook { background: #1877F2; }
+.u-share-x { background: #111111; }
+.u-share-linkedin { background: #0A66C2; }
+.u-share-telegram { background: #229ED9; }
+.u-share-reddit { background: #FF4500; }
+.u-share-pinterest { background: #E60023; }
+.u-share-email { background: #5B6778; }
+.u-share-native { background: var(--u-primary); }
+.u-share-copy, .u-share-print { background: var(--u-band); color: var(--u-primary); padding: 0 16px; }
+.u-share-copy:hover, .u-share-print:hover { color: var(--u-primary); }
 .sr-only {
   position: absolute !important;
   width: 1px;
@@ -1312,6 +1327,35 @@ a.feed-thumb:hover img,
 }
 .footer-bottom p { margin: 0; }
 .footer-social { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+/* Certifications & accreditations strip at the top of the footer */
+.footer-certs { padding: 40px 0 34px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); text-align: center; }
+.footer-certs .widget > h2, .footer-certs h2.title { display: inline-block; }
+.footer-certs h2.title::after { margin-left: auto; margin-right: auto; }
+.cert-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+body .cert-list li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 140px;
+  padding: 0;
+}
+.cert-list img, .cert-list .logo-placeholder {
+  display: block;
+  width: 120px;
+  height: 90px;
+  object-fit: contain;
+  padding: 8px;
+  background: #fff;
+  border-radius: var(--u-radius-sm);
+}
+.cert-list .logo-placeholder { border: 2px dashed rgba(19, 41, 75, 0.35); font-size: 11px; line-height: 1.3; text-align: center; }
+.cert-list li > span:not(.logo-placeholder), .cert-list li > a > span { font-size: 12px; line-height: 1.35; color: var(--u-on-dark); }
+@media (max-width: 479px) {
+  body .cert-list li { width: calc(50% - 8px); }
+  .cert-list img, .cert-list .logo-placeholder { width: 100%; }
+}
 /* "Powered by Blogger" is hidden; the gadget stays so Blogger doesn't re-add it */
 .footer-credit, .Attribution { display: none !important; }
 @media (min-width: 900px) {
@@ -1320,7 +1364,9 @@ a.feed-thumb:hover img,
 .to-top {
   position: fixed;
   right: 16px;
+  right: max(16px, env(safe-area-inset-right));
   bottom: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
   z-index: 90;
   width: 44px;
   height: 44px;
@@ -1368,15 +1414,257 @@ a.feed-thumb:hover img,
 @media (max-width: 479px) {
   .topbar-inner { flex-wrap: wrap; gap: 6px 10px; padding-top: 5px; padding-bottom: 8px; }
   .topbar-search { order: 3; flex: 1 1 100%; max-width: none; }
-  .share-copy, .share-print { flex: 1 1 calc(50% - 4px); }
+  .u-share-copy, .u-share-print { flex: 1 1 calc(50% - 4px); }
 }
+
+/* ---------- Responsive extras ---------- */
+/* Long words, URLs and names never push the page sideways */
+.hero-title, .post-title, .post-card-title, .feed-title, .section-title, .cta-title,
+.brand-name, .band h2.title, .sidebar h2, .site-footer h2, .site-footer .widget-content { overflow-wrap: break-word; }
+.post-body { overflow-wrap: anywhere; }
+/* ...but data tables keep whole words and scroll sideways instead of squashing to one letter per line */
+.post-body table:not(.tr-caption-container) { overflow-wrap: normal; -webkit-overflow-scrolling: touch; }
+.post-body table:not(.tr-caption-container) th,
+.post-body table:not(.tr-caption-container) td { overflow-wrap: normal; word-break: normal; min-width: 4.5em; }
+.post-body img { max-width: 100% !important; height: auto !important; }
+.post-body .tr-caption-container { max-width: 100%; height: auto !important; }
+.post-body .tr-caption-container td { padding: 0; }
+/* Very small phones (fold-style, 280-340px) */
+@media (max-width: 340px) {
+  .container { padding: 0 12px; }
+  .hero-title { font-size: 28px; }
+  .brand-name { font-size: 17px; }
+  .brand-mark { flex-basis: 40px; width: 40px; height: 40px; font-size: 15px; }
+  .nav-toggle { width: 42px; height: 42px; }
+  .topbar-social .widget-content a { width: 28px; height: 28px; }
+  .lang-toggle { padding: 0 9px; }
+  .post-single { padding: 18px 14px 22px; }
+  .band { padding: 40px 0; }
+  .feed-strip > li { flex-basis: 84%; }
+  .feed-tiles { grid-template-columns: minmax(0, 1fr); }
+}
+/* Phones held sideways: a slimmer sticky header leaves room to read */
+@media (max-height: 520px) and (orientation: landscape) {
+  .header-inner { min-height: 56px; }
+  .brand { padding: 4px 0; }
+  .brand-logo img { max-height: 40px; }
+  .brand-mark { flex-basis: 38px; width: 38px; height: 38px; }
+  .hero-grid { padding-top: 28px; padding-bottom: 36px; }
+  .hero-media { max-width: 560px; margin: 0 auto; }
+}
+/* Tablets: sidebar gadgets side by side under the posts */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .sidebar-section { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; align-items: start; }
+}
+/* Large monitors: use a little more of the width */
+@media (min-width: 1600px) {
+  .container { max-width: 1320px; }
+  body { font-size: 17px; }
+}
+/* Touch screens: finger-sized tap targets (44px where space allows) */
+@media (pointer: coarse) {
+  .topbar-social .widget-content a, .footer-social a { width: 40px; height: 40px; }
+  .lang-toggle { height: 40px; }
+  .topbar-search input { min-height: 40px; }
+  .topbar-search button { width: 44px; }
+  .u-share-btn { min-width: 44px; height: 44px; }
+  .feed-more, .breadcrumb a { display: inline-block; padding-top: 10px; padding-bottom: 10px; }
+  .slide-btn { width: 44px; height: 44px; margin-top: -22px; }
+  .slide-dots button { width: 12px; height: 12px; margin: 0 2px; }
+  .site-footer .widget-content ul li a, .sidebar .list-label-widget-content li a { display: inline-block; padding-top: 8px; padding-bottom: 8px; }
+  .lang-menu a { padding: 12px 18px; }
+  .ticker-list a { display: inline-block; padding: 12px 0; }
+}
+@media (pointer: coarse) and (max-width: 479px) {
+  .topbar-social .widget-content a { width: 38px; height: 38px; }
+}
+@media (pointer: coarse) and (max-width: 340px) {
+  .topbar-social .widget-content a { width: 34px; height: 34px; }
+}
+/* Respect "reduce motion" settings */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+  .ticker-list { animation: none !important; }
+}
+
+/* ---------- One consistent text style, whatever was pasted in ----------
+   Posts and gadgets often carry fonts, sizes and colours from Word, websites or old
+   themes (Times New Roman 8px, blue Comic Sans...). The theme's style always wins;
+   bold, italics, underline, alignment, quotes and links still work. In gadgets only
+   unclassed elements (pasted text) are reset, so the theme's own gadget markup keeps its design. */
+.post-body p,
+.post-body span,
+.post-body font,
+.post-body div,
+.post-body li,
+.post-body td,
+.post-body th,
+.post-body a,
+.post-body b,
+.post-body strong,
+.post-body em,
+.post-body i,
+.post-body u,
+.post-body small,
+.post-body big,
+.post-body section,
+.post-body article,
+.post-body label,
+.post-body dd,
+.post-body dt,
+.post-body center,
+.sidebar .HTML .widget-content p:not([class]),
+.sidebar .HTML .widget-content span:not([class]),
+.sidebar .HTML .widget-content font:not([class]),
+.sidebar .HTML .widget-content div:not([class]),
+.sidebar .HTML .widget-content li:not([class]),
+.sidebar .HTML .widget-content td:not([class]),
+.sidebar .HTML .widget-content center:not([class]),
+.site-footer .HTML .widget-content p:not([class]),
+.site-footer .HTML .widget-content span:not([class]),
+.site-footer .HTML .widget-content font:not([class]),
+.site-footer .HTML .widget-content div:not([class]),
+.site-footer .HTML .widget-content li:not([class]),
+.site-footer .HTML .widget-content td:not([class]),
+.site-footer .HTML .widget-content center:not([class]),
+.hero-text p:not([class]),
+.hero-text span:not([class]),
+.hero-text font:not([class]),
+.hero-text div:not([class]),
+.hero-text li:not([class]),
+.hero-text td:not([class]),
+.hero-text center:not([class]),
+.cta-body p:not([class]),
+.cta-body span:not([class]),
+.cta-body font:not([class]),
+.cta-body div:not([class]),
+.cta-body li:not([class]),
+.cta-body td:not([class]),
+.cta-body center:not([class]),
+.band-services .widget-content p:not([class]),
+.band-services .widget-content span:not([class]),
+.band-services .widget-content font:not([class]),
+.band-services .widget-content div:not([class]),
+.band-services .widget-content li:not([class]),
+.band-services .widget-content td:not([class]),
+.band-services .widget-content center:not([class]),
+.comments .comment-content p:not([class]),
+.comments .comment-content span:not([class]),
+.comments .comment-content font:not([class]),
+.comments .comment-content div:not([class]),
+.comments .comment-content li:not([class]),
+.comments .comment-content td:not([class]),
+.comments .comment-content center:not([class]) {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  letter-spacing: normal !important;
+}
+.post-body p,
+.post-body span,
+.post-body font,
+.post-body div,
+.post-body li,
+.post-body td,
+.post-body th,
+.post-body b,
+.post-body strong,
+.post-body em,
+.post-body i,
+.post-body u,
+.post-body small,
+.post-body big,
+.post-body section,
+.post-body article,
+.post-body label,
+.post-body dd,
+.post-body dt,
+.post-body center,
+.sidebar .HTML .widget-content p:not([class]),
+.sidebar .HTML .widget-content span:not([class]),
+.sidebar .HTML .widget-content font:not([class]),
+.sidebar .HTML .widget-content div:not([class]),
+.sidebar .HTML .widget-content li:not([class]),
+.sidebar .HTML .widget-content td:not([class]),
+.sidebar .HTML .widget-content center:not([class]),
+.site-footer .HTML .widget-content p:not([class]),
+.site-footer .HTML .widget-content span:not([class]),
+.site-footer .HTML .widget-content font:not([class]),
+.site-footer .HTML .widget-content div:not([class]),
+.site-footer .HTML .widget-content li:not([class]),
+.site-footer .HTML .widget-content td:not([class]),
+.site-footer .HTML .widget-content center:not([class]),
+.hero-text p:not([class]),
+.hero-text span:not([class]),
+.hero-text font:not([class]),
+.hero-text div:not([class]),
+.hero-text li:not([class]),
+.hero-text td:not([class]),
+.hero-text center:not([class]),
+.cta-body p:not([class]),
+.cta-body span:not([class]),
+.cta-body font:not([class]),
+.cta-body div:not([class]),
+.cta-body li:not([class]),
+.cta-body td:not([class]),
+.cta-body center:not([class]),
+.band-services .widget-content p:not([class]),
+.band-services .widget-content span:not([class]),
+.band-services .widget-content font:not([class]),
+.band-services .widget-content div:not([class]),
+.band-services .widget-content li:not([class]),
+.band-services .widget-content td:not([class]),
+.band-services .widget-content center:not([class]),
+.comments .comment-content p:not([class]),
+.comments .comment-content span:not([class]),
+.comments .comment-content font:not([class]),
+.comments .comment-content div:not([class]),
+.comments .comment-content li:not([class]),
+.comments .comment-content td:not([class]),
+.comments .comment-content center:not([class]) {
+  color: inherit !important;
+  background-color: transparent !important;
+}
+.post-body a, .post-body a span, .post-body a font { color: var(--u-accent) !important; }
+.post-body h1, .post-body h2, .post-body h3, .post-body h4, .post-body h5, .post-body h6 {
+  font-family: var(--u-display) !important;
+  color: var(--u-primary) !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0.2px !important;
+  background: none !important;
+}
+.post-body h1 { font-size: 30px !important; }
+.post-body h2 { font-size: 27px !important; }
+.post-body h3 { font-size: 23px !important; }
+.post-body h4 { font-size: 20px !important; }
+.post-body h5, .post-body h6 { font-size: 18px !important; }
+.post-body h1 *, .post-body h2 *, .post-body h3 *, .post-body h4 *, .post-body h5 *, .post-body h6 * { font-size: inherit !important; color: inherit !important; }
+.post-body sub, .post-body sup { font-size: 0.75em !important; }
+.post-body p:empty, .post-body div:empty:not(.separator) { display: none; }
+@media (max-width: 639px) {
+  .post-body h1 { font-size: 26px !important; }
+  .post-body h2 { font-size: 24px !important; }
+  .post-body h3 { font-size: 21px !important; }
+}
+
+/* ---------- Photos fit, whatever their size or shape ---------- */
+.post-body img, .post-body video, .post-body svg,
+.sidebar .HTML .widget-content img, .site-footer .HTML .widget-content img,
+.comments .comment-content img { max-width: 100% !important; height: auto !important; }
+.post-body .separator, .post-body a[imageanchor], .post-body figure { max-width: 100%; }
+.post-body figure { margin: 1em 0; }
+.post-body figcaption { font-size: 13px !important; color: var(--u-muted) !important; text-align: center; }
+/* Cards and thumbnails: photos fill the frame; logos and odd shapes are shown whole (theme.js adds .fit-contain) */
+img.fit-contain { object-fit: contain !important; padding: 8px; background: #fff; }
+.popular-posts img.fit-contain, .feed-list img.fit-contain { padding: 3px; }
 
 /* ---------- Print: just the article ---------- */
 @media print {
   @page { margin: 16mm 14mm; }
   html, body { background: #fff !important; color: #000; font-size: 11.5pt; }
   .topbar, .site-header, .ticker, .home-only, .sidebar, .site-footer, .to-top, .skip-link,
-  .post-share, .join-box, .related, .comments, #comments, .blog-pager-nav, .breadcrumb,
+  .u-share, .join-box, .related, .comments, #comments, .blog-pager-nav, .breadcrumb,
   .item-control, .post-tags, .feed-block, .navbar, iframe.skiptranslate { display: none !important; }
   .page-main { padding: 0; }
   .container { max-width: none; padding: 0; }

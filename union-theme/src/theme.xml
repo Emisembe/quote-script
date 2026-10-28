@@ -454,15 +454,15 @@ Page not found - <data:blog.title/>
                 </b:if>
               </b:if>
               <!-- Share + print on every post and page. theme.js adds the other networks with properly encoded links -->
-              <div class='post-share' expr:data-title='data:post.title' expr:data-url='data:post.url'>
-                <span class='post-share-label'>Share</span>
-                <div class='share-buttons'>
-                  <a class='share-btn share-whatsapp' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
-                  <a class='share-btn share-facebook' expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
-                  <a class='share-btn share-x' expr:href='&quot;https://x.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
-                  <a class='share-btn share-linkedin' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
-                  <a class='share-btn share-telegram' expr:href='&quot;https://t.me/share/url?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Telegram</a>
-                  <a class='share-btn share-email' expr:href='&quot;mailto:?body=&quot; + data:post.url'>Email</a>
+              <div class='u-share' expr:data-title='data:post.title' expr:data-url='data:post.url'>
+                <span class='u-share-label'>Share</span>
+                <div class='u-share-list'>
+                  <a class='u-share-btn u-share-whatsapp' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+                  <a class='u-share-btn u-share-facebook' expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+                  <a class='u-share-btn u-share-x' expr:href='&quot;https://x.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
+                  <a class='u-share-btn u-share-linkedin' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
+                  <a class='u-share-btn u-share-telegram' expr:href='&quot;https://t.me/share/url?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Telegram</a>
+                  <a class='u-share-btn u-share-email' expr:href='&quot;mailto:?body=&quot; + data:post.url'>Email</a>
                 </div>
               </div>
               <p class='print-source'>Printed from <data:blog.title/>: <data:post.url/></p>
@@ -650,6 +650,17 @@ Page not found - <data:blog.title/>
 <!-- ================= Footer ================= -->
 <footer class='site-footer' id='contact'>
   <div class='container'>
+    <!-- Certifications & accreditations (ISO etc.): hidden automatically while the list is empty -->
+    <div class='footer-certs'>
+      <b:section class='certs-section' id='footer-certs' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML34' locked='false' title='@@T:HTML34@@' type='HTML' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[@@C:HTML34@@]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+    </div>
     <div class='footer-grid'>
       <b:section class='footer-col' id='f-widget-1' showaddelement='yes'>
         <b:widget id='HTML30' locked='false' title='@@T:HTML30@@' type='HTML' version='1'>
@@ -697,12 +708,6 @@ Page not found - <data:blog.title/>
             <b:widget-setting name='displayMode'>SIMPLE</b:widget-setting>
           </b:widget-settings>
           @@TRANSLATE_MAIN@@
-        </b:widget>
-        <b:widget id='HTML32' locked='false' title='@@T:HTML32@@' type='HTML' version='1'>
-          <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[@@C:HTML32@@]]></b:widget-setting>
-          </b:widget-settings>
-          @@HTML_MAIN@@
         </b:widget>
       </b:section>
     </div>

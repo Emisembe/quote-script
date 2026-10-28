@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs><clipPath id="c"><circle cx="60" cy="60" r="51"/></clipPath></defs>
+  <circle cx="60" cy="60" r="58" fill="#C8102E"/>
+  <circle cx="60" cy="60" r="52.5" fill="#FFFFFF"/>
+  <circle cx="60" cy="60" r="51" fill="#13294B"/>
+  <g clip-path="url(#c)">
+    <!-- three workers, the middle one in front: standing together -->
+    <circle cx="37" cy="75" r="7.5" fill="#B9C6DA"/>
+    <path d="M22 112 Q22 86 37 86 Q52 86 52 112 Z" fill="#B9C6DA"/>
+    <circle cx="83" cy="75" r="7.5" fill="#B9C6DA"/>
+    <path d="M68 112 Q68 86 83 86 Q98 86 98 112 Z" fill="#B9C6DA"/>
+    <circle cx="60" cy="70" r="9.5" fill="#FFFFFF" stroke="#13294B" stroke-width="2.5"/>
+    <path d="M41 114 Q41 82 60 82 Q79 82 79 114 Z" fill="#FFFFFF" stroke="#13294B" stroke-width="2.5"/>
+  </g>
+  <!-- graduation cap: universities -->
+  <path d="M39 40 L39 50 Q60 60 81 50 L81 40 L60 48 Z" fill="#DDE3EE"/>
+  <polygon points="60,20 99,35 60,50 21,35" fill="#FFFFFF"/>
+  <line x1="91" y1="38" x2="91" y2="55" stroke="#F2B705" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="91" cy="57" r="3.4" fill="#F2B705"/>
+</svg>

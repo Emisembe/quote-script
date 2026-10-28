@@ -38,6 +38,7 @@ A rebuild of the BCorporate v3 theme used on kpuwuke.blogspot.com. It has the sa
 | Members | **Member institutions / Our branches** | A label name. A scrollable strip. |
 | Call to action | **Stronger together** | A paragraph and a `<ul>` of two buttons. |
 | Partners | **Our partners** | `<ul class="logo-list">` with an `<img>` per `<li>`. |
+| Footer | **Certifications & accreditations** | ISO and other certificates: one `<li><img src="…" alt="ISO 9001:2015" /><span>ISO 9001:2015 Quality management</span></li>` each (instructions are inside the gadget). The strip stays hidden while the list is empty. |
 
 Label names must match exactly (same spelling and capitals) the labels on your posts.
 
@@ -50,7 +51,8 @@ Label names must match exactly (same spelling and capitals) the labels on your p
 
 ## KPUWU version: what changed
 
-- **Kept:** logo, all menu links, the 12 slider images, philosophy, all label blocks, partners, donate button, map, Ministry of Labour and COTU links, YouTube video, Translate, live chat, AdSense sponsor gadget.
+- **Kept:** logo, all menu links, the 12 slider images, philosophy, all label blocks, partners, donate button, map, Ministry of Labour and COTU links, YouTube video, Translate, AdSense sponsor gadget.
+- **Removed on request:** the MyLiveChat "Leave a message" box.
 - **The menu is now a gadget** (Layout → *Main menu*), so you no longer need Edit HTML to change it.
 - **Removed (broken or retired):** jQuery and its plugins; AddThis share buttons (the service shut down), replaced by WhatsApp/Facebook/X/LinkedIn/copy-link buttons; Google+ links; the old Facebook like-box, replaced by Facebook's current Page embed; the Twitter timeline embed (it no longer loads reliably for visitors), now an icon in the top bar; the duplicate PayPal button and fake payment icons in the footer; the clock widget; the `<marquee>`, replaced by a smooth "Latest" ticker; Greek leftover labels; the old Universal Analytics code (Google stopped collecting data with it in 2023).
 - **Analytics:** to track visitors again, create a GA4 property and paste its `G-…` ID under Blogger **Settings → Google Analytics property ID**.
@@ -64,6 +66,11 @@ Several items point to the same page, so they probably need their real targets:
 - *Departments* and *Why join?* → label **Youth League**; *Decent Work* → label **Membership Section**; *Climate Change* → YouTube channel
 
 Fix them in Layout → *Main menu* → Edit.
+
+## Text and photos, whatever you paste in
+
+- **Text:** fonts, sizes, colours and highlights pasted from Word, WhatsApp or other websites (or left over from the old theme) are replaced by the theme's style in posts, pages and gadgets. **Bold**, *italics*, underline, alignment, lists, quotes and links still work. Headings inside posts always use the theme's heading style.
+- **Photos:** every photo shrinks to fit the screen, at any upload size. In news cards and thumbnails, photos fill the frame; logos, banners, very tall images and small images are shown whole, never cropped or blown up. Videos and maps pasted into posts keep their shape on phones, and wide tables scroll sideways.
 
 ## Colours
 

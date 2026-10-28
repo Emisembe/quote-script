@@ -17,6 +17,11 @@ PROFILES = ROOT / 'profiles'
 OUT = ROOT / 'preview'
 
 # Blogger's own widget stylesheet, loaded after the skin, to prove the resets win
+# ...plus rules from Blogger's newer injected bundle that once collided with this theme's class names
+BLOGGER_BUNDLE_V2_CSS = ('.share-buttons{background-color:#fff;border-radius:2px;box-shadow:0 2px 2px 0 rgba(0,0,0,.14),'
+                         '0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);color:#000;list-style:none;margin:0;'
+                         'padding:8px 0;position:absolute;top:-11px;min-width:200px;z-index:101}.hidden{display:none}'
+                         '.share-button{width:20px;height:20px;overflow:hidden;position:relative}')
 BLOGGER_WIDGET_CSS = ('.widget{margin:30px 0;_margin:0 0 10px}.widget ul{padding:0 0 0 1.25em;margin:0;line-height:1.2}'
                       '.widget li{padding:.25em 0;margin:0}.section{margin:0 15px}')
 
@@ -73,7 +78,7 @@ def section(cls, sid, widgets):
 
 
 def card(title, label, date, image, n):
-    img = (f"<img class='js-resize' alt='{esc(title)}' src='https://blogger.googleusercontent.com/img/b/sample/s72-c/post{n}.jpg' loading='lazy'/>"
+    img = (f"<img class='js-resize' alt='{esc(title)}' src='https://blogger.googleusercontent.com/img/b/sample/s72-c/{"logo-kca.png" if n == 1 else f"post{n}.jpg"}' loading='lazy'/>"
            if image else "<span class='post-card-placeholder'>&#9633;</span>")
     return (f"<article class='post-card'><a aria-hidden='true' class='post-card-media' href='post.html' tabindex='-1'>{img}</a>"
             f"<div class='post-card-body'><div class='post-card-labels'><a class='badge' href='/search/label/{label}'>{label}</a>"
@@ -99,7 +104,7 @@ def popular():
             f"<div class='widget-content popular-posts'><ul>{items}</ul></div></div>")
 
 
-SHARE_BAR = """<div class='post-share' data-title='{title}' data-url='https://example.org/{slug}.html'><span class='post-share-label'>Share</span><div class='share-buttons'><a class='share-btn share-whatsapp' href='#'>WhatsApp</a><a class='share-btn share-facebook' href='#'>Facebook</a></div></div>
+SHARE_BAR = """<div class='u-share' data-title='{title}' data-url='https://example.org/{slug}.html'><span class='u-share-label'>Share</span><div class='u-share-list'><a class='u-share-btn u-share-whatsapp' href='#'>WhatsApp</a><a class='u-share-btn u-share-facebook' href='#'>Facebook</a></div></div>
 <p class='print-source'>Printed from {blog}: https://example.org/{slug}.html</p>"""
 
 
@@ -141,7 +146,7 @@ def render(name, kind):
         main = f"""<article class='post-single post'><a name='1'></a><header class='post-head'>
 <nav aria-label='Breadcrumb' class='breadcrumb'><a href='home.html'>Home</a><a class='crumb-label' href='/search/label/Campaigns'>Campaigns</a><a class='crumb-label' href='/search/label/News'>News</a></nav>
 <h1 class='post-title entry-title'>{esc(SAMPLE_POSTS[0][0])}</h1>
-<div class='post-meta'><a class='post-author' href='#'>Secretariat</a><span aria-hidden='true' class='sep'></span><time class='published js-date' datetime='2026-10-20T09:00:00Z'>9:00 AM</time></div></header>
+<div class='post-meta'><a class='post-author' href='#'>{'Unknown' if name == 'kpuwu' else 'Secretariat'}</a><span aria-hidden='true' class='sep'></span><time class='published js-date' datetime='2026-10-20T09:00:00Z'>9:00 AM</time></div></header>
 <div class='post-body entry-content' id='post-body-1'>
 <div class='separator' style='clear: both; text-align: center;'><a href='#' style='margin-left: 1em; margin-right: 1em;'><img border='0' height='360' width='640' src='https://blogger.googleusercontent.com/img/b/sample/s640/post0.jpg'/></a></div>
 <p>After months of negotiations, the union and the employers' association have signed a new collective bargaining agreement covering pay, allowances and working hours for the next two years.</p>
@@ -149,10 +154,19 @@ def render(name, kind):
 <ul><li>A general pay increase across all grades</li><li>Improved house and commuter allowances</li><li>Clear rules on overtime and leave</li></ul>
 <blockquote>When we stand together, we win. This agreement belongs to every member who took part.</blockquote>
 <p>Branch officials will hold meetings at every workplace to explain the agreement. Contact your shop steward with any questions.</p>
+<h2><span style='font-size: 48px; color: green; font-family: Impact;'>A heading pasted with its own style</span></h2>
+<p class='MsoNormal'><span class='stress-messy' style='font-family: "Times New Roman"; font-size: 8pt; color: blue; background: yellow;'>Pasted from Word in tiny blue Times.</span> <font class='stress-font' face='Comic Sans MS' size='7' color='#ff00ff'>Huge pink Comic Sans.</font> <b>Bold stays bold.</b></p>
+<h3>Stress test: content that often breaks phone layouts</h3>
+<p>Full text: https://www.example.org/documents/collective-bargaining-agreement-2026-2028-final-signed-version-with-annexes-and-schedules.pdf and Arbeitnehmerinteressenvertretungsorganisationsgesetzgebung.</p>
+<iframe class='stress-video' width='640' height='360' src='https://www.youtube.com/embed/8ZJz4Cda9MY' allowfullscreen=''></iframe>
+<p><img class='stress-wide' width='1600' height='500' src='https://blogger.googleusercontent.com/img/b/sample/s1600/wide.jpg'/></p>
+<table align='center' cellpadding='0' cellspacing='0' class='tr-caption-container' style='margin-left: auto; margin-right: auto;'><tbody><tr><td style='text-align: center;'><a href='#' style='margin-left: auto; margin-right: auto;'><img border='0' width='640' height='427' src='https://blogger.googleusercontent.com/img/b/sample/s640/caption.jpg'/></a></td></tr><tr><td class='tr-caption' style='text-align: center;'>Members at the signing ceremony</td></tr></tbody></table>
+<table class='stress-table'><tr><th>Grade</th><th>Basic pay</th><th>House allowance</th><th>Commuter allowance</th><th>Medical cover</th><th>Leave days</th><th>Overtime rate</th><th>Pension</th><th>Effective date</th></tr><tr><td>A</td><td>100</td><td>20</td><td>10</td><td>Yes</td><td>24</td><td>1.5x</td><td>10%</td><td>1 January 2027</td></tr></table>
+<pre><code>Clause 14.2(b): overtime_rate = basic_hourly_rate * 1.5 for every hour beyond the normal working week of forty hours</code></pre>
 <table><tr><th>Grade</th><th>Old</th><th>New</th></tr><tr><td>A</td><td>100</td><td>108</td></tr><tr><td>B</td><td>120</td><td>130</td></tr></table>
 </div>
 <div class='post-tags'><span class='post-tags-label'>Filed under</span><a class='badge badge-soft' href='#'>Campaigns</a><a class='badge badge-soft' href='#'>News</a></div>
-<div class='post-share' data-title='{esc(SAMPLE_POSTS[0][0])}' data-url='https://example.org/post.html'><span class='post-share-label'>Share</span><div class='share-buttons'><a class='share-btn share-whatsapp' href='#'>WhatsApp</a><a class='share-btn share-facebook' href='#'>Facebook</a></div></div>
+<div class='u-share' data-title='{esc(SAMPLE_POSTS[0][0])}' data-url='https://example.org/post.html'><span class='u-share-label'>Share</span><div class='u-share-list'><a class='u-share-btn u-share-whatsapp' href='#'>WhatsApp</a><a class='u-share-btn u-share-facebook' href='#'>Facebook</a></div></div>
 <p class='print-source'>Printed from {blog_title}: https://example.org/post.html</p>
 <aside class='join-box'><div class='join-box-text'><p class='join-box-title'>Not a member yet?</p><p>Workers are stronger together. Join the union and have a say in your pay, conditions and rights at work.</p></div><a class='btn btn-primary js-join-link' href='/search'>Join today</a></aside>
 <div class='related' hidden='hidden'><h2 class='related-title'>Related articles</h2><div class='related-grid'></div></div>
@@ -172,7 +186,7 @@ def render(name, kind):
 <html lang='en'><head><meta charset='utf-8'/><meta content='width=device-width, initial-scale=1' name='viewport'/>
 <title>{name} {kind} preview</title>
 <link href='../dist/{palette}.css' rel='stylesheet'/>
-<style>{BLOGGER_WIDGET_CSS}</style>
+<style>{BLOGGER_WIDGET_CSS}{BLOGGER_BUNDLE_V2_CSS}</style>
 {home_style}
 </head>
 <body class='union pt-{'index' if home else ('static_page' if kind == 'page' else 'item')}'>
@@ -211,7 +225,9 @@ def render(name, kind):
 <section class='home-only band band-cta'><div class='container'>{section('cta-section', 'join-cta', cta)}</div></section>
 <section class='home-only band band-partners'><div class='container'>{section('partners-section', 'partners', pg.html_widget('HTML4'))}</div></section>
 </main>
-<footer class='site-footer' id='contact'><div class='container'><div class='footer-grid'>
+<footer class='site-footer' id='contact'><div class='container'>
+<div class='footer-certs'>{section('certs-section', 'footer-certs', pg.html_widget('HTML34'))}</div>
+<div class='footer-grid'>
 {section('footer-col', 'f-widget-1', pg.html_widget('HTML30'))}
 {section('footer-col', 'f-widget-2', label_widget('Label3', 'Quick links'))}
 {section('footer-col', 'f-widget-3', pg.html_widget('HTML31') + pg.html_widget('HTML21'))}

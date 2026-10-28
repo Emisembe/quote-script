@@ -64,7 +64,8 @@ function feedJson(label, count) {
 }
 
 const PAGES = ['kpuwu-home', 'kpuwu-post', 'kpuwu-page', 'generic-home', 'generic-post', 'generic-page'];
-const WIDTHS = [1440, 1024, 820, 390, 320];
+const WIDTHS = [280, 320, 360, 375, 414, 480, 600, 768, 834, 1024, 1100, 1280, 1440, 1920];
+const SHOTS = [280, 375, 768, 1100, 1440, 1920];
 const failures = [];
 const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok  ' : 'FAIL'}  ${msg}`); };
 
@@ -124,36 +125,142 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
         note(m.ticker > 0, `${name} @${width}: ticker filled (${m.ticker})`);
       } else {
         if (name.endsWith('post')) note(m.related, `${name} @${width}: related posts shown`);
-        const share = await page.evaluate(() => [...document.querySelectorAll('.post-share .share-btn')].map((b) => b.className.split(' ')[1]));
-        const want = ['share-whatsapp', 'share-facebook', 'share-x', 'share-linkedin', 'share-telegram', 'share-reddit', 'share-pinterest', 'share-email', 'share-copy', 'share-print'];
+        const share = await page.evaluate(() => [...document.querySelectorAll('.u-share .u-share-btn')].map((b) => b.className.split(' ')[1]));
+        const want = ['u-share-whatsapp', 'u-share-facebook', 'u-share-x', 'u-share-linkedin', 'u-share-telegram', 'u-share-reddit', 'u-share-pinterest', 'u-share-email', 'u-share-copy', 'u-share-print'];
         note(want.every((w) => share.includes(w)), `${name} @${width}: share bar has all networks + copy + print (${share.length})`);
       }
       const credit = await page.evaluate(() => { const c = document.querySelector('.Attribution'); return !c || !c.offsetHeight; });
       note(credit, `${name} @${width}: "Powered by Blogger" hidden`);
-      await page.screenshot({ path: path.join(OUT, `${name}-${width}.png`), fullPage: true });
+      if (name.endsWith('post')) {
+        const stress = await page.evaluate(() => {
+          const body = document.querySelector('.post-body').getBoundingClientRect();
+          const wider = [...document.querySelectorAll('.post-body > *, .post-body img, .post-body iframe')]
+            .filter((e) => !e.matches('table.stress-table, pre') && e.getBoundingClientRect().width > body.width + 1)
+            .map((e) => e.tagName + '.' + e.className);
+          const v = document.querySelector('.stress-video').getBoundingClientRect();
+          const cap = document.querySelector('.tr-caption-container img').getBoundingClientRect();
+          return { wider, ratio: v.width / v.height, videoFits: v.width <= body.width + 1, capFits: cap.width <= body.width + 1 };
+        });
+        note(stress.wider.length === 0, `${name} @${width}: long URLs/words, wide image and caption stay inside the article ${stress.wider.join(',')}`);
+        note(stress.videoFits && Math.abs(stress.ratio - 16 / 9) < 0.05, `${name} @${width}: embedded video fits and keeps 16:9 (${stress.ratio.toFixed(2)})`);
+        note(stress.capFits, `${name} @${width}: captioned image fits`);
+        const narrowest = await page.evaluate(() => Math.min(...[...document.querySelectorAll('.stress-table th')].map((c) => c.getBoundingClientRect().width)));
+        note(narrowest >= 50, `${name} @${width}: wide table scrolls instead of squashing (narrowest column ${Math.round(narrowest)}px)`);
+      }
+      if (SHOTS.includes(width)) await page.screenshot({ path: path.join(OUT, `${name}-${width}.png`), fullPage: true });
       await page.close();
     }
+  }
+
+  // Touch screens (phone emulation): finger-sized tap targets in the top bar, header, share bar, slideshow
+  for (const [name, width] of [['kpuwu-home', 320], ['generic-home', 390], ['kpuwu-post', 390], ['generic-page', 360]]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 800 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+    const page = await ctx.newPage();
+    await page.route('**/*', (route) => route.request().url().startsWith(base) ? route.continue()
+      : /googleusercontent/.test(route.request().url()) ? route.fulfill({ status: 200, contentType: 'image/svg+xml', body: placeholder(route.request().url()) }) : route.abort());
+    await page.goto(`${base}/preview/${name}.html`);
+    await page.waitForTimeout(400);
+    const r = await page.evaluate(() => {
+      const coarse = matchMedia('(pointer: coarse)').matches;
+      const sel = '.topbar a, .topbar button, .nav-toggle, .header-cta a, .u-share .u-share-btn, .slide-btn, .hero-actions a, .btn';
+      const small = [...document.querySelectorAll(sel)].filter((e) => e.offsetWidth).map((e) => {
+        const b = e.getBoundingClientRect();
+        return [e.className || e.tagName, Math.round(Math.min(b.width, b.height))];
+      }).filter((x) => x[1] < 34);
+      return { coarse, small, scroll: document.documentElement.scrollWidth, inner: innerWidth };
+    });
+    note(r.coarse, `touch ${name} @${width}: phone emulation reports a coarse pointer`);
+    note(r.small.length === 0, `touch ${name} @${width}: every tap target is at least 34px ${JSON.stringify(r.small)}`);
+    note(r.scroll <= r.inner, `touch ${name} @${width}: no horizontal scroll`);
+    await page.screenshot({ path: path.join(OUT, `touch-${name}-${width}.png`) });
+    await ctx.close();
+  }
+
+  // Phones held sideways: compact header, menu still reachable to the last item
+  for (const [w, h] of [[844, 390], [740, 360], [667, 375]]) {
+    const ctx = await browser.newContext({ viewport: { width: w, height: h }, isMobile: true, hasTouch: true });
+    const page = await ctx.newPage();
+    await page.route('**/*', (route) => route.request().url().startsWith(base) ? route.continue() : route.abort());
+    await page.goto(`${base}/preview/kpuwu-home.html`);
+    await page.waitForTimeout(300);
+    const hh = await page.evaluate(() => document.querySelector('.site-header').offsetHeight);
+    note(hh <= 70, `landscape ${w}x${h}: header is compact (${hh}px)`);
+    await page.click('#nav-toggle');
+    const reach = await page.evaluate(() => {
+      const d = document.getElementById('site-nav');
+      d.scrollTop = d.scrollHeight;
+      const last = document.querySelector('.header-cta a').getBoundingClientRect();
+      return { bottom: Math.round(last.bottom), h: innerHeight, scroll: document.documentElement.scrollWidth, inner: innerWidth };
+    });
+    note(reach.bottom <= reach.h, `landscape ${w}x${h}: menu scrolls down to the Join button (${reach.bottom} <= ${reach.h})`);
+    note(reach.scroll <= reach.inner, `landscape ${w}x${h}: no horizontal scroll`);
+    await page.screenshot({ path: path.join(OUT, `landscape-${w}x${h}-menu.png`) });
+    await ctx.close();
   }
 
   // Share links are encoded; Print calls window.print(); print layout shows only the article
   for (const name of ['kpuwu-post', 'generic-page']) {
     const { page } = await open(name, 1024);
-    const hrefs = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll('.post-share a.share-btn')].map((a) => [a.className.split(' ')[1], a.getAttribute('href')])));
-    note(/^https:\/\/api\.whatsapp\.com\/send\?text=[^ ]+%20https%3A%2F%2Fexample\.org/.test(hrefs['share-whatsapp']), `${name}: WhatsApp link carries encoded title + URL`);
-    note(/x\.com\/intent\/tweet\?url=https%3A%2F%2Fexample\.org%2F.+&text=/.test(hrefs['share-x']), `${name}: X link encoded`);
-    note(/pinterest\.com\/pin\/create\/button\/\?url=https%3A/.test(hrefs['share-pinterest']), `${name}: Pinterest link encoded`);
-    note(/^mailto:\?subject=.+&body=/.test(hrefs['share-email']), `${name}: email link has subject and body`);
+    const hrefs = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll('.u-share a.u-share-btn')].map((a) => [a.className.split(' ')[1], a.getAttribute('href')])));
+    note(/^https:\/\/api\.whatsapp\.com\/send\?text=[^ ]+%20https%3A%2F%2Fexample\.org/.test(hrefs['u-share-whatsapp']), `${name}: WhatsApp link carries encoded title + URL`);
+    note(/x\.com\/intent\/tweet\?url=https%3A%2F%2Fexample\.org%2F.+&text=/.test(hrefs['u-share-x']), `${name}: X link encoded`);
+    note(/pinterest\.com\/pin\/create\/button\/\?url=https%3A/.test(hrefs['u-share-pinterest']), `${name}: Pinterest link encoded`);
+    note(/^mailto:\?subject=.+&body=/.test(hrefs['u-share-email']), `${name}: email link has subject and body`);
     await page.evaluate(() => { window.__printed = 0; window.print = () => { window.__printed++; }; });
-    await page.click('.share-print');
+    await page.click('.u-share-print');
     note((await page.evaluate(() => window.__printed)) === 1, `${name}: Print button opens the print dialog`);
     await page.emulateMedia({ media: 'print' });
     const vis = await page.evaluate(() => {
       const shown = (s) => { const e = document.querySelector(s); return !!e && getComputedStyle(e).display !== 'none'; };
-      return { header: shown('.site-header'), sidebar: shown('.sidebar'), footer: shown('.site-footer'), share: shown('.post-share'), body: shown('.post-body'), source: shown('.print-source') };
+      return { header: shown('.site-header'), sidebar: shown('.sidebar'), footer: shown('.site-footer'), share: shown('.u-share'), body: shown('.post-body'), source: shown('.print-source') };
     });
     note(!vis.header && !vis.sidebar && !vis.footer && !vis.share && vis.body && vis.source, `${name}: print layout shows only the article + source line ${JSON.stringify(vis)}`);
     await page.pdf({ path: path.join(OUT, `${name}-print.pdf`), format: 'A4' });
     await page.screenshot({ path: path.join(OUT, `${name}-print.png`), fullPage: true });
+    await page.close();
+  }
+
+  // Fixes from the live site: share bar stays in place despite Blogger's own .share-buttons CSS,
+  // pasted fonts/colours are overridden, logos are not cropped, certifications strip, "Unknown" author
+  for (const width of [1440, 390]) {
+    for (const name of ['kpuwu-post', 'generic-page']) {
+      const { page } = await open(name, width);
+      const r = await page.evaluate(() => {
+        const list = document.querySelector('.u-share-list');
+        const lb = list.getBoundingClientRect();
+        const body = document.querySelector('.post-body').getBoundingClientRect();
+        const bar = document.querySelector('.u-share').getBoundingClientRect();
+        return { pos: getComputedStyle(list).position, below: lb.top >= body.bottom - 1, inside: lb.top >= bar.top - 1 && lb.bottom <= bar.bottom + 1, n: list.children.length };
+      });
+      note(r.pos === 'static' && r.below && r.inside && r.n >= 10, `${name} @${width}: share buttons sit in the share bar under the article ${JSON.stringify(r)}`);
+      if (name === 'kpuwu-post') {
+        const t = await page.evaluate(() => {
+          const cs = (s) => getComputedStyle(document.querySelector(s));
+          const p = cs('.post-body > p'), messy = cs('.stress-messy'), font = cs('.stress-font'), h = cs('.post-body h2 span'), h2 = cs('.post-body h2');
+          return { same: [messy, font].every((c) => c.fontFamily === p.fontFamily && c.fontSize === p.fontSize && c.color === p.color),
+                   bg: messy.backgroundColor, heading: h.fontSize === h2.fontSize && h.fontFamily === h2.fontFamily && h.color === h2.color,
+                   bold: cs('.stress-font + b').fontWeight >= 600, author: document.querySelector('.post-author').offsetWidth };
+        });
+        note(t.same, `${name} @${width}: text pasted with other fonts/sizes/colours shows in the theme's style`);
+        note(t.bg === 'rgba(0, 0, 0, 0)', `${name} @${width}: pasted highlight colour removed (${t.bg})`);
+        note(t.heading, `${name} @${width}: a pasted heading uses the theme's heading style`);
+        note(t.bold, `${name} @${width}: bold text stays bold`);
+        note(t.author === 0, `${name} @${width}: "Unknown" author hidden`);
+      }
+      await page.close();
+    }
+  }
+  for (const [name, certs] of [['kpuwu-home', false], ['generic-home', true]]) {
+    const { page } = await open(name, 1440);
+    const r = await page.evaluate(() => {
+      const imgs = [...document.querySelectorAll('.post-card-media img')];
+      return { logo: imgs.filter((i) => /logo/.test(i.src)).every((i) => i.classList.contains('fit-contain')),
+               photo: imgs.filter((i) => !/logo/.test(i.src)).every((i) => !i.classList.contains('fit-contain')),
+               certs: !!document.querySelector('.footer-certs').offsetHeight, n: document.querySelectorAll('.cert-list li').length };
+    });
+    note(r.logo && r.photo, `${name}: logos shown whole, photos fill their frame`);
+    note(r.certs === certs, `${name}: certifications strip ${certs ? 'shown with ' + r.n + ' items' : 'hidden while empty'}`);
+    if (certs) await page.locator('.footer-certs').screenshot({ path: path.join(OUT, `${name}-certs.png`) });
     await page.close();
   }
 
@@ -205,6 +312,24 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
     note(await page.locator('.site-nav li.has-sub >> nth=0').locator('> ul').isVisible(), `${name}: desktop dropdown opens on hover`);
     await page.screenshot({ path: path.join(OUT, `${name}-dropdown-1440.png`) });
     await page.close();
+  }
+
+  // Every desktop dropdown opens fully on screen
+  for (const width of [1100, 1280, 1440]) {
+    for (const name of ['kpuwu-home', 'generic-home']) {
+      const { page } = await open(name, width);
+      const n = await page.locator('.site-nav .widget-content > ul > li.has-sub').count();
+      const off = [];
+      for (let i = 0; i < n; i++) {
+        const li = page.locator('.site-nav .widget-content > ul > li.has-sub').nth(i);
+        await li.hover();
+        await page.waitForTimeout(250);
+        const r = await li.evaluate((e) => { const b = e.querySelector('ul').getBoundingClientRect(); return [Math.round(b.left), Math.round(b.right), innerWidth]; });
+        if (r[0] < 0 || r[1] > r[2]) off.push(r);
+      }
+      note(off.length === 0, `${name} @${width}: all ${n} dropdowns open on screen ${JSON.stringify(off)}`);
+      await page.close();
+    }
   }
 
   // Phone centring: left gap == right gap for centred elements
