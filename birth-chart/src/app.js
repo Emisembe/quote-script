@@ -1857,6 +1857,103 @@
     return 'Your chart is balanced between independence and structure. A stable base plus a side project, or an autonomous role inside an organisation, often works best.';
   }
 
+  // ---------- careers in detail and team building ----------
+  const CR = window.ChartCareer;
+  const wideSection = (t, b) => sectionHtml(t, b).replace('guide-section', 'guide-section wide');
+  const PLANETS10 = ['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto'];
+  // Planet prominence for any chart (a lighter version of dominance(), without aspects).
+  function strengthFor(c) {
+    const at = k => c.points.find(p => p.key === k);
+    const ruleOf = k => E.signOf(at(k).lon).sign.ruler;
+    const sc = {}; PLANETS10.forEach(k => { sc[k] = 0; });
+    if (!c.noHouses) { sc[ruleOf('asc')] += 3; sc[ruleOf('mc')] += 2; }
+    sc[ruleOf('sun')] += 2; sc[ruleOf('moon')] += 1; sc.sun += 1; sc.moon += 1;
+    PLANETS10.forEach(k => {
+      const p = at(k), d = dignity(k, E.signOf(p.lon).sign.key);
+      if (d === 'Domicile') sc[k] += 2; if (d === 'Exaltation') sc[k] += 1.5;
+      if (!c.noHouses && [1, 4, 7, 10].includes(p.house)) sc[k] += 2;
+      if (!c.noHouses) ['asc', 'mc'].forEach(a => { if (Math.abs(E.angDiff(p.lon, at(a).lon)) < 8) sc[k] += 2; });
+    });
+    return sc;
+  }
+  function balanceFor(c) {
+    const el = { fire: 0, earth: 0, air: 0, water: 0 }, md = { cardinal: 0, fixed: 0, mutable: 0 };
+    Object.entries(WEIGHTS).forEach(([k, w]) => {
+      if (c.noHouses && (k === 'asc' || k === 'mc')) return;
+      const sg = E.signOf(c.points.find(p => p.key === k).lon).sign; el[sg.element] += w; md[sg.mode] += w;
+    });
+    return { el, md, tot: Object.values(el).reduce((a, b) => a + b, 0) };
+  }
+  const ROLE_EL = { fire: ['drive', 'lead'], earth: ['build', 'finish'], air: ['connect', 'vision'], water: ['care', 'expert'] };
+  const ROLE_MD = { cardinal: ['lead', 'drive'], fixed: ['finish', 'expert'], mutable: ['connect', 'vision'] };
+  const ROLE_NORM = { drive: [4.68, 1.74], lead: [5.18, 1.86], expert: [4.9, 1.4], finish: [4.9, 2.27], care: [3.9, 1.5], build: [3.82, 1.94], connect: [5.23, 1.74], vision: [4.67, 1.62] };
+  const ROLE_TYPE = { lead: ['E', 'J'], drive: ['T', 'J'], vision: ['N', 'P'], build: ['S', 'J'], finish: ['J', 'S'], connect: ['E', 'P'], care: ['F'], expert: ['I', 'T'] };
+  // Team roles ranked for a chart (and personality type, when known).
+  function teamRolesFor(c, mbti) {
+    const st = strengthFor(c), b = balanceFor(c);
+    return CR.TEAM_ROLES.map(r => {
+      let sc = r.planets.reduce((a, k) => a + st[k], 0) / r.planets.length;
+      Object.entries(ROLE_EL).forEach(([el, rs]) => { if (rs.includes(r.key)) sc += b.el[el] / b.tot * 6; });
+      Object.entries(ROLE_MD).forEach(([md, rs]) => { if (rs.includes(r.key)) sc += b.md[md] / b.tot * 4; });
+      // Compare with how this role usually scores (mean, spread over 2,000 random charts) so every role gets a fair chance.
+      const [mean, sd] = ROLE_NORM[r.key]; sc = (sc - mean) / sd;
+      if (mbti && MB.LIFE[mbti]) sc += 0.9 * ROLE_TYPE[r.key].filter(l => mbti.includes(l)).length;
+      return { ...r, score: sc };
+    }).sort((x, y) => y.score - x.score);
+  }
+  const leanOf = c => { const b = balanceFor(c); return Object.keys(b.el).sort((x, y) => b.el[y] - b.el[x])[0]; };
+
+  // Career section: concrete roles, environment, what to avoid and a first step per key placement.
+  function careerPaths() {
+    const nh = state.chart.noHouses, src = [];
+    if (!nh) src.push(['Midheaven', E.signOf(pt('mc').lon).index]);
+    src.push(['Sun', E.signOf(pt('sun').lon).index]);
+    if (!nh) { const r = houseRuler(10); src.push([`${P(r.key).name} (ruler of your career house)`, E.signOf(r.lon).index]); }
+    const seen = new Set();
+    return src.filter(([, i]) => !seen.has(i) && seen.add(i)).map(([label, i]) => { const d = CR.SIGN_CAREER[i];
+      return `<div class="path-card"><div class="eyebrow">From your ${esc(label)} in ${E.SIGNS[i].name}</div>
+        <div class="chips role-chips">${d.roles.map(r => `<span class="chip">${esc(r)}</span>`).join('')}</div>
+        <p><b>Best environment:</b> ${esc(d.env)}</p><p><b>Avoid:</b> ${esc(d.avoid)}</p><p><b>First step:</b> ${esc(d.start)}</p></div>`; }).join('');
+  }
+  function careerExtras() {
+    const top = dominance().slice(0, 3);
+    const talents = `<ul class="syn-list">${top.map(d => { const pc = CR.PLANET_CAREER[d.key]; return `<li><b>${P(d.key).name}</b> <span class="faint">(${esc(d.why.slice(0, 2).join(', '))})</span>: a talent for ${esc(pc.talent)}. Suits roles such as ${esc(pc.roles.join(', '))}.</li>`; }).join('')}</ul>`;
+    const b = balance(), low = Object.keys(b.el).sort((x, y) => b.el[x] - b.el[y])[0];
+    const t = state.input.mbti, Lt = t && MB.LIFE[t];
+    const checks = [CR.OFFER_CHECK[dominantEl()], CR.OFFER_CHECK[dominantMd()], 'Is there a clear path to grow my expertise and earn more within two or three years?',
+      `Who will cover what I am weaker at (${ELEMENT_TEAM_LABEL[low]})?`, Lt ? `Does the job avoid what drains me most: ${Lt.stress.charAt(0).toLowerCase() + Lt.stress.slice(1)}` : 'Does the job avoid what drains my energy (see Wellbeing and energy)?', 'Does the role use at least one of the fields at the top of this answer?'];
+    return { talents, checks: `<ol class="check-list">${checks.map(q => `<li>${esc(q)}</li>`).join('')}</ol><p class="faint">Ask these before you accept an offer or start a business. Mostly "no" answers mean keep looking.</p>` };
+  }
+  const ELEMENT_TEAM_LABEL = { fire: 'starting, selling and energy', earth: 'money, systems and follow-through', air: 'communication and networking', water: 'reading people and caring for clients' };
+
+  // Team members chosen in the "Check your team" tool.
+  state.team = store.get('teamMembers', []);
+  function teamMembers() {
+    const saved = store.get('saved', []);
+    return state.team.map(id => id === 'partner' ? (state.compat.B && { id, input: state.compat.B }) : saved[+id.slice(6)] && { id, input: saved[+id.slice(6)] })
+      .filter(Boolean).map(m => { try { return { ...m, chart: chartFor(m.input), name: m.input.name || 'Unnamed' }; } catch (e) { return null; } }).filter(Boolean);
+  }
+  function teamChecker(myRoles) {
+    const saved = store.get('saved', []);
+    const opts = [state.compat.B ? ['partner', `${state.compat.B.name || 'Partner'} (Compatibility, Person B)`] : null].concat(saved.map((c, i) => [`saved:${i}`, c.name || 'Unnamed'])).filter(Boolean);
+    const picker = opts.length ? `<div class="team-pick no-print">${opts.map(([id, n]) => `<label class="check-line"><input type="checkbox" data-team="${id}" ${state.team.includes(id) ? 'checked' : ''}> ${esc(n)}</label>`).join('')}</div>`
+      : '<p class="muted">Save the charts of people you are considering (Edit birth data → Save chart) and they appear here.</p>';
+    const members = [{ name: state.input.name || 'You', chart: state.chart, input: state.input, me: true }].concat(teamMembers());
+    const rows = members.map(m => { const all = teamRolesFor(m.chart, m.input.mbti); return { ...m, roles: all.slice(0, 2), also: all[2], lean: leanOf(m.chart) }; });
+    // Main roles count fully; each person's third role also covers a gap, marked "also".
+    const cover = {}; rows.forEach(r => { r.roles.forEach(x => { (cover[x.key] = cover[x.key] || []).push(esc(r.name)); }); (cover[r.also.key] = cover[r.also.key] || []).push(`<i>${esc(r.name)} (also)</i>`); });
+    const gaps = CR.TEAM_ROLES.filter(r => !cover[r.key]);
+    const els = {}; rows.forEach(r => { els[r.lean] = (els[r.lean] || 0) + 1; });
+    const missingEl = Object.keys(CR.ELEMENT_TEAM).filter(e => !els[e]);
+    const table = members.length > 1 ? `<div class="table-wrap"><table class="qa team-table"><thead><tr><th>Person</th><th>Main roles</th><th>Leans</th><th>Type</th></tr></thead><tbody>
+        ${rows.map(r => `<tr class="static"><td><b>${esc(r.name)}</b></td><td data-label="Roles: ">${r.roles.map(x => x.name).join(', ')} <span class="faint">· also ${r.also.name.toLowerCase()}</span></td><td data-label="Leans: ">${r.lean}</td><td data-label="Type: ">${r.input.mbti ? esc(typeName(r.input.mbti)) : '<span class="faint">not set</span>'}</td></tr>`).join('')}
+      </tbody></table></div>
+      <div class="role-grid">${CR.TEAM_ROLES.map(r => `<div class="role-tile ${cover[r.key] ? 'have' : 'gap'}"><b>${esc(r.name)}</b><span>${cover[r.key] ? cover[r.key].join(', ') : 'Nobody yet'}</span></div>`).join('')}</div>
+      <p style="margin-top:8px">${gaps.length ? `<b>Still missing:</b> ${gaps.map(g => g.name).join(', ')}. Look for ${gaps.slice(0, 3).map(g => `${g.name.toLowerCase()} (${g.signs.join(', ')} strong; ${g.mbti})`).join('; ')}.` : '<b>Every role is covered.</b> Agree who owns which role so people do not compete.'}
+      ${missingEl.length ? ` No one in the team leans ${missingEl.join(' or ')}: ${missingEl.map(e => CR.ELEMENT_TEAM[e].brings).join('; ')} may be thin.` : ''}</p>` : '';
+    return `<p class="muted">Tick the people you are considering. The table shows the roles each person naturally plays and which team roles are still empty.</p>${picker}${table}`;
+  }
+
   // Personality-type layer for a Life guidance answer; asks for a type when none is set.
   function typeGuide(key) {
     const t = state.input.mbti, Lt = t && MB.LIFE[t], Mt = t && CN.MBTI[t];
@@ -1878,7 +1975,8 @@
       purpose: [['Core', Mt.core], ['Growth edge', Lt.grow]],
       friends: [['Friendship', Lt.friends], ['Communication', Lt.comm]],
       mind: [['How they learn', Lt.learn], ['Communication', Lt.comm]],
-      strengths: [['Core', Mt.core], ['At work', Lt.work], ['Growth edge', Lt.grow]]
+      strengths: [['Core', Mt.core], ['At work', Lt.work], ['Growth edge', Lt.grow]],
+      team: [['At work', Lt.work], ['Leads best in', Lt.lead], ['Communication', Lt.comm], ['Under stress', Lt.stress]]
     }[key] || [];
     return parts.length ? sectionHtml(title, parts.map(([k, v]) => `<p><b>${k}:</b> ${esc(v)}</p>`).join('')) : '';
   }
@@ -1902,14 +2000,41 @@
       if (!nh) factors.unshift(factor(`Midheaven in ${sgn('mc').name}`, 'mc'), factor(`Career ruler ${P(houseRuler(10).key).name}`, houseRuler(10).key));
       const fields = careerFields();
       body += sectionHtml('Your direction', (nh ? '' : para(signReading('mc', pt('mc').lon)) + para(rulerLine(10, 'your career house'))) + para(signReading('sun', pt('sun').lon)) + (nh ? '' : (occupants(10).length ? `<ul class="syn-list">${occupantLines(10)}</ul>` : '')));
+      const ex = careerExtras();
+      body += wideSection('Career paths in detail', `<p class="muted">Concrete roles from the placements that describe your vocation, with the setting where you thrive and a first step.</p><div class="path-grid">${careerPaths()}</div>`);
+      body += sectionHtml('Talents from your strongest planets', ex.talents);
       body += sectionHtml('Work style', para(T.WORK_STYLE[dominantEl()] + ' ' + T.WORK_STYLE[dominantMd()]) + (nh ? '' : para(houseLine(6))) + (nh ? '' : (occupants(6).length ? `<ul class="syn-list">${occupantLines(6)}</ul>` : '')) + para(houseReading('saturn', pt('saturn').house)));
       body += sectionHtml('Fields to consider', `<p class="muted">Ranked by how many chart factors point to them. Treat these as themes to explore, not a fixed list.</p><ul class="field-list">${fields.map(f => `<li><b>${esc(f.field.charAt(0).toUpperCase() + f.field.slice(1))}</b><span class="faint">${esc(f.why.join(' · '))}</span></li>`).join('')}</ul>`);
       body += sectionHtml('Employed or self-employed?', para(independenceLean()));
       body += sectionHtml('Professional strengths', `<ul class="syn-list">${aspectItems(aspectsInvolving(['sun', 'mc', 'saturn', 'mercury', 'mars', 'jupiter'], 'flow'))}</ul>`);
       body += sectionHtml('Where work gets hard', `<ul class="syn-list">${aspectItems(aspectsInvolving(['sun', 'mc', 'saturn', 'mars'], 'tension'))}</ul>`);
+      body += sectionHtml('Checklist for a job offer or business idea', ex.checks);
+      body += sectionHtml('Your role in a team', `<p>You naturally play the <b>${teamRolesFor(state.chart, state.input.mbti).slice(0, 2).map(r => r.name.toLowerCase()).join('</b> and <b>')}</b> roles. ${esc(CR.LEAD_STYLE[dominantEl()])}</p><p class="faint">Open the <b>Building a team</b> topic for who to hire or partner with.</p>`);
       timing = upcomingFor(nh ? ['sun', 'saturn'] : ['mc', 'sun', 'saturn', houseRuler(10).key]);
       body += sectionHtml('When to start', '<p>Planning a new job, business or project? Open <b>Cosmic rhythms → Best days to begin</b> and choose "Start a project" or "Sign a contract" for recommended dates and hours.</p>');
       reflect = ['Which of the suggested fields already excites you, and why?', 'Do you do your best work alone, or inside a team with clear roles?', 'What would you want to be known for in ten years?'];
+    } else if (key === 'team') {
+      const myRoles = teamRolesFor(state.chart, state.input.mbti);
+      const strong = myRoles.slice(0, 2), partly = myRoles.slice(2, 4);
+      const b = balance(), share = k => b.el[k] / b.tot;
+      const lowEls = Object.keys(b.el).filter(k => share(k) < 0.12);
+      const lowEl = lowEls.length ? lowEls : [Object.keys(b.el).sort((x, y) => b.el[x] - b.el[y])[0]];
+      const lowMd = Object.keys(b.md).sort((x, y) => b.md[x] - b.md[y])[0];
+      const t = state.input.mbti;
+      factors = [factor(`Sun in ${sgn('sun').name}`, 'sun'), factor(`Mars in ${sgn('mars').name}`, 'mars'), factor(`Saturn in ${sgn('saturn').name}`, 'saturn')];
+      if (!nh) factors.push(factor(`Groups ruler ${P(houseRuler(11).key).name}`, houseRuler(11).key));
+      body += sectionHtml('Your natural role', strong.map(r => `<p><b>${esc(r.name)}:</b> ${esc(r.does)}</p>`).join('') + `<p class="muted">Also able to act as ${partly.map(r => r.name.toLowerCase()).join(' or ')} when needed.</p>`);
+      body += sectionHtml('How you lead', para(CR.LEAD_STYLE[dominantEl()]) + para(signReading('sun', pt('sun').lon)) + (t && MB.LIFE[t] ? `<p><b>As ${esc(typeName(t))}:</b> leads best in ${esc(MB.LIFE[t].lead)}.</p>` : ''));
+      body += sectionHtml('Who to pick: what your chart is missing', `<ul class="syn-list">${lowEl.map(e => `<li><b>Low ${e}.</b> You bring ${esc(CR.ELEMENT_TEAM[dominantEl()].brings)}. Recruit ${esc(CR.ELEMENT_TEAM[e].recruit)}.</li>`).join('')}<li><b>Least ${lowMd}.</b> Recruit ${esc(CR.MODE_TEAM[lowMd].recruit)}.</li>${t && MB.LIFE[t] ? `<li><b>Personality.</b> As ${esc(t)}, balance yourself with people who prefer ${MB.DIMENSIONS.slice(1).map((d, i) => esc((t[i + 1] === d.a ? d.B : d.A).split(':')[0].toLowerCase())).join(', ')}.</li>` : ''}</ul><p class="faint">Do not hire copies of yourself: similar people agree easily but share your blind spots.</p>`);
+      body += wideSection('The eight roles a strong team needs', `<div class="table-wrap"><table class="qa roles-table"><thead><tr><th>Role</th><th>You</th><th>Look for</th><th>Ask in the interview</th></tr></thead><tbody>
+        ${myRoles.slice().sort((x, y) => CR.TEAM_ROLES.findIndex(r => r.key === x.key) - CR.TEAM_ROLES.findIndex(r => r.key === y.key)).map(r => { const rank = myRoles.findIndex(x => x.key === r.key); const st = rank < 2 ? ['ok', 'You cover this'] : rank < 4 ? ['warn', 'Partly'] : ['bad', 'Recruit']; return `<tr class="static"><td><b>${esc(r.name)}</b><br><span class="muted">${esc(r.does)}</span></td><td data-label="You: "><span class="pill ${st[0]}">${st[1]}</span></td><td data-label="Look for: ">${esc(r.signs.join(', '))} strong in the chart; ${esc(r.mbti)}</td><td data-label="Ask: ">"${esc(r.ask)}"</td></tr>`; }).join('')}
+      </tbody></table></div>`);
+      body += wideSection('Check your team', teamChecker(myRoles)).replace('class="', teamMembers().length ? 'class="' : 'class="no-print ');
+      if (!nh) body += sectionHtml('Partners and groups in your chart', para(houseLine(7)) + para(houseLine(11)) + para(rulerLine(11, 'groups and networks')));
+      body += sectionHtml('Hiring and partnering wisely', `<ul class="syn-list">${CR.HIRING.map(h => `<li>${esc(h)}</li>`).join('')}</ul>`);
+      body += sectionHtml('When to hire or sign', '<p>For a hiring day, a partnership agreement or a launch, open <b>Cosmic rhythms → Best days to begin</b> and choose "Sign a contract" or "Start a project".</p>');
+      timing = upcomingFor(nh ? ['sun', 'saturn'] : ['sun', 'saturn', houseRuler(11).key, houseRuler(7).key]);
+      reflect = ['Which role do you keep doing yourself that someone else could do better?', 'Who has worked well with you before, and which role did they play?', 'What would you need to see in a trial task before trusting someone?'];
     } else if (key === 'love') {
       const v = sgn('venus'), mo = sgn('moon');
       const ll = T.LOVE_LANGUAGE[v.element], lm = T.LOVE_LANGUAGE[mo.element];
@@ -2048,6 +2173,12 @@
       const qb = e.target.closest('[data-ask]');
       if (qb) { ask(qb.dataset.ask); return; }
       if (e.target.id === 'guide-print') printPanel();
+    });
+    panel.addEventListener('change', e => {
+      const id = e.target.dataset && e.target.dataset.team; if (!id) return;
+      state.team = e.target.checked ? [...new Set(state.team.concat(id))] : state.team.filter(x => x !== id);
+      store.set('teamMembers', state.team); renderGuide();
+      document.querySelector('.team-pick')?.scrollIntoView({ block: 'center' });
     });
   }
 
@@ -2655,6 +2786,11 @@
         zoom = tryPages(1, 0.62) || tryPages(pages - 1, 0.8);
         if (!zoom) { fill = 0.95; zoom = tryPages(pages - 1, 0.8) || 1; }
       }
+      // Keep boxes shorter than a third of a page in one piece; only long ones may continue on the next page.
+      printedHeight(zoom);
+      document.querySelectorAll('.panel:not([hidden]) :is(.card, .path-card, .area-card, .reading-item, .table-wrap)').forEach(el => {
+        el.classList.toggle('print-keep', el.getBoundingClientRect().height * zoom < PAGE_H * 0.3);
+      });
     } finally {
       root.classList.remove('print-measure'); measureSheet.disabled = true; root.style.removeProperty('--measure-w');
       window.scrollTo(0, scrollY);
@@ -2668,6 +2804,7 @@
   }
   function endPrint() {
     document.body.classList.remove('printing', ...[...document.body.classList].filter(c => c.startsWith('print-')));
+    document.querySelectorAll('.print-keep').forEach(el => el.classList.remove('print-keep'));
     document.documentElement.style.removeProperty('--print-zoom');
   }
   // Also covers Ctrl+P / the browser's own Print menu.

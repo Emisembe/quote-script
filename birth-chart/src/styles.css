@@ -608,7 +608,7 @@ tr.static { cursor: default; }
 .chip.on { background: var(--plum); border-color: var(--plum); color: var(--on-plum); }
 .chip.ghost { border-style: dashed; font-weight: 500; }
 .guide-answer { gap: 14px; }
-.guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; align-items: start; }
+.guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; align-items: start; grid-auto-flow: row dense; }
 @media (max-width: 600px) { .guide-grid { grid-template-columns: 1fr; } }
 .guide-section { display: grid; gap: 8px; }
 .guide-section p { color: var(--ink-2); }
@@ -646,6 +646,7 @@ tr.static { cursor: default; }
   .card, .area-card, .reading-item { box-shadow: none; break-inside: auto; }
   .stat, .house-row, .medal-card, .shape-btn, .nail-card, .script, .method-card, .stat-row, figure { box-shadow: none; break-inside: avoid; }
   p { orphans: 3; widows: 3; }
+  .print-keep { break-inside: avoid; }
   .shell { zoom: var(--print-zoom, 1); }
   .card { padding: 12px 14px; }
   .section { gap: 10px; }
@@ -791,3 +792,23 @@ table.qa td:first-child { width: 30%; }
 .agree p { margin-top: 4px; }
 @media (max-width: 600px) { .type-dl { grid-template-columns: 1fr; gap: 2px; } .type-dl dd { margin-bottom: 8px; } }
 @media print { .agree { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .type-card { break-inside: auto; } }
+
+/* ---------- Careers in detail and team building ---------- */
+.guide-section.wide { grid-column: 1 / -1; }
+.path-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 8px; }
+.path-card { border: 1px solid var(--line); border-left: 3px solid var(--plum); border-radius: 0 10px 10px 0; padding: 10px 12px; background: var(--surface); }
+.path-card p { margin-top: 6px; font-size: 14px; }
+.role-chips { margin: 8px 0 4px; }
+.role-chips .chip { font-weight: 500; }
+.check-list { margin: 6px 0 6px 18px; padding: 0; }
+.check-list li { margin: 5px 0; }
+.team-pick { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 8px 0; }
+.role-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.role-tile { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; font-size: 13.5px; }
+.role-tile span { color: var(--ink-2); font-size: 12.5px; }
+.role-tile.have { border-left: 3px solid var(--flow); }
+.role-tile.gap { border-left: 3px solid var(--tension); background: color-mix(in srgb, var(--tension) 6%, transparent); }
+.role-tile.gap span { color: var(--tension); font-weight: 600; }
+table.roles-table td:first-child { width: 34%; }
+@media (max-width: 700px) { .role-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media print { .path-card, .role-tile { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; } .path-grid { grid-template-columns: 1fr 1fr; } }

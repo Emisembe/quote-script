@@ -95,9 +95,11 @@
     { key: 'purpose', name: 'Life purpose and growth', icon: '☊', examples: ['What is my purpose?', 'What am I here to learn?'],
       words: ['purpose', 'meaning', 'destiny', 'growth', 'lesson', 'soul', 'spiritual', 'path', 'why am i', 'mission'] },
     { key: 'friends', name: 'Friends and community', icon: '♒', examples: ['What kind of friends suit me?', 'How do I fit into groups?'],
-      words: ['friend', 'social', 'community', 'group', 'network', 'belong', 'team'] },
+      words: ['friend', 'social', 'community', 'group', 'network', 'belong'] },
     { key: 'mind', name: 'Learning and communication', icon: '☿', examples: ['How do I learn best?', 'How do I communicate?'],
       words: ['learn', 'study', 'school', 'education', 'communicat', 'talk', 'speak', 'write', 'think', 'university', 'exam'] },
+    { key: 'team', name: 'Building a team', icon: '☌', examples: ['How do I pick a team?', 'Who should I hire or partner with?', 'What role do I play in a team?'],
+      words: ['team', 'hire', 'hiring', 'recruit', 'staff', 'employee', 'co-founder', 'cofounder', 'partner with', 'business partner', 'delegate', 'leadership', 'lead people', 'manage people', 'colleague', 'who to work with'] },
     { key: 'strengths', name: 'Strengths and challenges', icon: '△', examples: ['What are my natural talents?', 'What are my biggest challenges?'],
       words: ['strength', 'talent', 'gift', 'weakness', 'challenge', 'good at', 'struggle', 'personality', 'who am i'] }
   ];
