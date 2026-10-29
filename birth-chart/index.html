@@ -655,6 +655,106 @@ tr.static { cursor: default; }
   a.chip { display: none; }
 }
 
+/* ---------- Love & connection ---------- */
+.cn { scroll-margin-top: 70px; }
+.cn h4.sub { margin: 18px 0 8px; font-family: var(--serif); font-size: 17px; }
+.cn-who { min-width: 220px; max-width: 100%; }
+.cn .card + .card, .cn .grid-2 + .card, .cn .card + .grid-2 { margin-top: 12px; }
+.cn .grid-2 { margin-top: 12px; }
+.medal { width: 96px; height: 96px; flex: none; }
+.medal .m-ring { fill: none; stroke: var(--brass); stroke-width: 1.5; }
+.medal .m-ticks line { stroke: var(--brass); stroke-width: 1.2; }
+.medal .m-face { stroke: var(--line-strong); stroke-width: 1; }
+.medal .m-inner { fill: none; stroke: var(--ink-3); stroke-width: .8; stroke-dasharray: 2 3; }
+.medal .m-glyph { font-size: 38px; text-anchor: middle; dominant-baseline: middle; fill: var(--ink); font-family: var(--glyph); }
+.medal .m-name { font-size: 9px; letter-spacing: .14em; text-anchor: middle; fill: var(--ink-2); font-family: var(--sans); font-weight: 600; }
+.sign-card { display: flex; gap: 18px; align-items: flex-start; }
+.sign-card p { margin-top: 6px; }
+.medal-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.medal-card { text-align: center; }
+.medal-card .medal { margin: 0 auto 6px; display: block; }
+.medal-card h4 { margin: 2px 0 6px; font-size: 15px; }
+.medal-card p { font-size: 13.5px; text-align: left; }
+.magnet { width: 100%; height: auto; max-height: 180px; }
+.magnet .field { fill: none; stroke: var(--brass); stroke-width: 1.3; stroke-dasharray: 3 5; opacity: .8; }
+.magnet .pole { stroke: var(--line-strong); stroke-width: 1; }
+.magnet .pole.a { fill: var(--chart-a); } .magnet .pole.b { fill: var(--chart-b); }
+.magnet .pole-t { text-anchor: middle; font: 600 15px var(--sans); fill: #fff; }
+.magnet .pole-s { text-anchor: middle; font: 11px var(--sans); fill: #fff; opacity: .9; }
+.pol-row { display: grid; grid-template-columns: minmax(70px, 120px) 1fr; gap: 10px; align-items: center; margin-top: 10px; font-size: 13.5px; }
+.pol-row > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.polar { display: flex; height: 24px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
+.polar > div { display: flex; align-items: center; min-width: 0; overflow: hidden; }
+.polar span { font-size: 11.5px; padding: 0 6px; white-space: nowrap; color: #fff; }
+.polar .pa { background: var(--chart-a); } .polar .pb { background: var(--chart-b); justify-content: flex-end; }
+.palm-grid { align-items: start; }
+.palm-card { text-align: center; }
+.hand { width: 100%; max-width: 280px; height: auto; display: block; margin: 0 auto; }
+.hand .h-skin, .nail .h-skin { fill: var(--fire); stroke: var(--ink-3); stroke-width: 1.2; }
+.hand .pl { cursor: pointer; outline: none; }
+.hand .pl-hit { fill: none; stroke: transparent; stroke-width: 16; }
+.hand .pl-line { fill: none; stroke: var(--plum-2); stroke-width: 2.6; stroke-linecap: round; opacity: .55; transition: opacity .15s, stroke-width .15s; }
+.hand .pl:hover .pl-line, .hand .pl:focus .pl-line { opacity: .9; }
+.hand .pl.on .pl-line { stroke: var(--plum); stroke-width: 4; opacity: 1; }
+.shape-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.shape-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink); cursor: pointer; font: inherit; text-align: center; }
+.shape-btn .hand { max-width: 110px; }
+.shape-btn span { font-size: 12.5px; color: var(--ink-2); }
+.shape-btn.on { border-color: var(--plum); box-shadow: 0 0 0 2px var(--plum-tint); }
+.nail-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.nail-card { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.nail-card span { font-size: 12.5px; }
+.nail { width: 56px; height: 56px; }
+.nail .n-shape > * { fill: var(--surface); stroke: var(--plum-2); stroke-width: 2; }
+.method { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+.method-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; }
+.ico { width: 44px; height: 44px; }
+.ico path, .ico circle { fill: none; stroke: var(--plum); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.ico .ico-fill { fill: var(--plum); }
+.ico .ico-t { text-anchor: middle; font: 700 18px var(--sans); fill: var(--plum); }
+table.qa td { vertical-align: top; font-size: 13.5px; }
+.syn-list.two-col { columns: 2; column-gap: 24px; }
+.flags ol { margin: 8px 0 0 18px; padding: 0; }
+.flags li { margin: 3px 0; }
+.flags.green { border-top: 3px solid var(--flow); } .flags.red { border-top: 3px solid var(--tension); }
+.check-line { display: flex; gap: 8px; align-items: flex-start; margin-top: 6px; font-size: 14px; cursor: pointer; }
+.check-line input { margin-top: 3px; accent-color: var(--plum); }
+.script-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.script { display: flex; flex-direction: column; gap: 8px; }
+.script p { font-family: var(--serif); font-size: 15px; flex: 1; }
+.script .btn { align-self: flex-start; }
+.clock-card { text-align: center; }
+.clock { width: 100%; max-width: 260px; height: auto; }
+.clock .clk { stroke: var(--surface); stroke-width: 1.5; }
+.clock .clk.l3 { fill: var(--plum); } .clock .clk.l2 { fill: var(--plum-2); } .clock .clk.l1 { fill: var(--plum-tint); } .clock .clk.l0 { fill: var(--surface-2); }
+.clock .clk-face { fill: var(--surface); stroke: var(--line); }
+.clock .clk-n { font: 11px var(--sans); fill: var(--ink-2); text-anchor: middle; dominant-baseline: middle; }
+.clock .clk-hand { stroke: var(--brass); stroke-width: 3; stroke-linecap: round; }
+.clock .clk-dot { fill: var(--brass); }
+.clock .clk-c { font: 600 11px var(--sans); fill: var(--ink-2); text-anchor: middle; letter-spacing: .1em; text-transform: uppercase; }
+.clock .clk-c2 { font: 600 18px var(--sans); fill: var(--ink); text-anchor: middle; }
+.legend .lg-clk { display: inline-block; width: 12px; height: 12px; border: 1px solid var(--line); border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.legend .lg-clk.l3 { background: var(--plum); } .legend .lg-clk.l2 { background: var(--plum-2); } .legend .lg-clk.l1 { background: var(--plum-tint); } .legend .lg-clk.l0 { background: var(--surface-2); }
+@media (max-width: 900px) {
+  .medal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nail-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .sign-card { flex-direction: column; align-items: center; }
+  .shape-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .method, .script-grid { grid-template-columns: 1fr; }
+  .syn-list.two-col { columns: 1; }
+  .medal { width: 80px; height: 80px; }
+}
+@media (max-width: 380px) { .medal-grid { grid-template-columns: 1fr; } }
+@media print {
+  .cn { break-inside: auto; }
+  .medal-card, .shape-btn, .nail-card, .script, .flags { break-inside: avoid; }
+  .polar span, .magnet .pole-t, .magnet .pole-s { color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .polar > div, .magnet .pole, .clock .clk { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
 </style>
 </head>
 <body>
@@ -686,6 +786,7 @@ tr.static { cursor: default; }
   <nav class="tabs" role="tablist" aria-label="Chart sections">
     <button class="tab" role="tab" id="tab-chart" aria-controls="panel-chart" data-tab="chart">Chart</button>
     <button class="tab" role="tab" id="tab-guide" aria-controls="panel-guide" data-tab="guide">Life guidance</button>
+    <button class="tab" role="tab" id="tab-connect" aria-controls="panel-connect" data-tab="connect">Love &amp; connection</button>
     <button class="tab" role="tab" id="tab-rhythms" aria-controls="panel-rhythms" data-tab="rhythms">Cosmic rhythms</button>
     <button class="tab" role="tab" id="tab-compat" aria-controls="panel-compat" data-tab="compat">Compatibility</button>
     <button class="tab" role="tab" id="tab-reading" aria-controls="panel-reading" data-tab="reading">Full reading</button>
@@ -788,6 +889,7 @@ tr.static { cursor: default; }
     </section>
 
     <section class="panel" role="tabpanel" id="panel-guide" aria-labelledby="tab-guide" hidden></section>
+    <section class="panel" role="tabpanel" id="panel-connect" aria-labelledby="tab-connect" hidden></section>
     <section class="panel" role="tabpanel" id="panel-rhythms" aria-labelledby="tab-rhythms" hidden></section>
     <section class="panel" role="tabpanel" id="panel-compat" aria-labelledby="tab-compat" hidden></section>
     <section class="panel" role="tabpanel" id="panel-reading" aria-labelledby="tab-reading" hidden></section>
@@ -4040,6 +4142,247 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
 
 </script>
 <script>
+/* content-connect.js */
+/*
+ * Love & connection: how to connect with each sign, polarity, palmistry, personality
+ * types (MBTI), choosing a partner, boundaries and timing. Written for anyone, about anyone.
+ */
+(function (root) {
+  'use strict';
+
+  // By sign (zodiac order). Used for the Sun (who they are), Venus (what attracts them),
+  // Moon (what makes them feel safe) and Mars (what excites them).
+  const SIGNS = [
+    { energy: 'Bold, spontaneous, competitive and direct. Acts first, thinks later, and moves fast in attraction too.',
+      attracted: 'Confidence, a playful challenge, and someone who takes the lead without hesitating.',
+      connect: 'Be direct and decisive. Challenge them playfully, match their energy, keep things moving.',
+      avoid: 'Passivity, asking permission for everything, hesitation, being predictable.',
+      lead: 'high', needs: 'to feel they inspire you',
+      say: ['"You make me want to be bolder."', '"You\'re the most alive person I\'ve been around in a long time."'],
+      dates: ['an active date: climbing, go-karts, a hike', 'a spontaneous plan made on the day', 'a friendly competition'] },
+    { energy: 'Sensual, patient, loyal and comfort-loving. Moves slowly and deliberately and is rarely impulsive.',
+      attracted: 'Stability, quality, physical presence, and reliability shown through consistent action.',
+      connect: 'Take them somewhere genuinely nice. Be patient: they warm slowly, but their loyalty is complete once given.',
+      avoid: 'Rushing, inconsistency, cheap or low-effort plans, sudden changes of plan.',
+      lead: 'medium', needs: 'to feel safe and cherished',
+      say: ['"I feel completely at ease with you. That\'s rare for me."', '"I love just being near you, no agenda."'],
+      dates: ['a really good meal', 'a garden, market or countryside walk', 'cooking together'] },
+    { energy: 'Witty, curious, social and restless. Changes mood quickly and needs constant mental stimulation.',
+      attracted: 'Wit, intelligence, surprise, and someone who can keep up with the banter.',
+      connect: 'Be funny and surprising. Bring lots of topics and let the conversation wander.',
+      avoid: 'Getting too heavy too early, predictability, demanding deep emotional intensity before they are ready.',
+      lead: 'medium', needs: 'to feel mentally matched',
+      say: ['"Talking to you never gets boring."', '"You keep surprising me, and I like that."'],
+      dates: ['a quiz night or bookshop', 'a walk through a lively part of town', 'a talk, comedy show or festival'] },
+    { energy: 'Nurturing, intuitive, emotionally sensitive and protective of the people they love.',
+      attracted: 'Emotional safety, and someone who makes them feel protected and genuinely cared for.',
+      connect: 'Be consistent and gentle. Remember the small things they tell you and create warmth.',
+      avoid: 'Emotional games, hot-and-cold behaviour, anything that makes them feel unsafe.',
+      lead: 'high', needs: 'to feel emotionally protected',
+      say: ['"You don\'t have to be strong all the time, not with me."', '"Let me take care of you too."'],
+      dates: ['a home-cooked dinner', 'a quiet place by the water', 'something tied to a happy memory of theirs'] },
+    { energy: 'Warm, generous, loyal and proud. Shines brightest when genuinely seen and celebrated.',
+      attracted: 'Confidence, warmth, and someone secure enough to celebrate them without competing.',
+      connect: 'Give specific, genuine appreciation, not flattery. Make them feel extraordinary.',
+      avoid: 'Competing for attention, being stingy with appreciation, making them feel invisible.',
+      lead: 'medium', needs: 'to feel seen and celebrated',
+      say: ['"You light up every room, and I don\'t think you fully know it."', '"I love watching you in your element."'],
+      dates: ['a show, concert or stylish event', 'dressing up for somewhere special', 'a celebration of something they achieved'] },
+    { energy: 'Detail-oriented, analytical, quietly caring. Reserved on the surface, deeply loyal underneath.',
+      attracted: 'Competence, thoughtfulness, reliability, and someone who notices the small things.',
+      connect: 'Show that you are capable and organised. Notice details about them. Be interesting without ego.',
+      avoid: 'Sloppiness, lateness, arrogance, pushing emotional intimacy before they are ready.',
+      lead: 'medium', needs: 'to feel genuinely valued',
+      say: ['"The care you put into things is genuinely impressive."', '"I notice how much you pour into everything."'],
+      dates: ['a well-planned outing that runs on time', 'a cooking or craft class', 'a museum or a long walk with real conversation'] },
+    { energy: 'Harmonious, romantic, charming and social, and often torn between options.',
+      attracted: 'Romance, beauty, good manners, and someone who plans lovely experiences and makes decisions.',
+      connect: 'Plan beautiful dates, be gracious, and decide confidently. They are relieved when someone else chooses.',
+      avoid: 'Unresolved conflict, rudeness, pressure, careless or unattractive settings.',
+      lead: 'high', needs: 'to feel chosen and appreciated',
+      say: ['"You bring so much beauty into my life without trying."', '"Making you happy isn\'t a chore. I want to."'],
+      dates: ['an art gallery or beautiful restaurant', 'a concert or dance', 'a picnic somewhere scenic'] },
+    { energy: 'Intense, magnetic, private and fiercely loyal. Feels everything strongly and trusts very few people.',
+      attracted: 'Depth, mystery and strength: someone who is not afraid of their intensity.',
+      connect: 'Keep a little mystery early on. Be honest about your feelings without desperation, and stay steady when tested.',
+      avoid: 'Lying (they will sense it), evasiveness, shallow small talk.',
+      lead: 'high', needs: 'to feel they can trust you',
+      say: ['"I\'m not going anywhere. You can trust me."', '"I want to know all of you, not just the easy parts."'],
+      dates: ['a deep one-to-one conversation somewhere private', 'a mystery, escape room or night walk', 'a film followed by a real discussion'] },
+    { energy: 'Adventurous, philosophical, honest and freedom-loving. Lives to widen their world.',
+      attracted: 'Adventure, humour, and someone who expands their horizons without clipping their wings.',
+      connect: 'Plan experiences, not just dinners. Be honest and interesting about ideas.',
+      avoid: 'Possessiveness, boring plans, neediness, pinning them down too early.',
+      lead: 'low', needs: 'to feel free and understood',
+      say: ['"Being around you makes me want to see more of the world."', '"I love that you\'re exactly who you are."'],
+      dates: ['a day trip somewhere new', 'food from another culture', 'an outdoor adventure'] },
+    { energy: 'Ambitious, disciplined, privately warm and long-term in their thinking.',
+      attracted: 'Ambition, reliability and someone with a vision they are working towards.',
+      connect: 'Show your work ethic and long-term plans. Be reliable every single time.',
+      avoid: 'Laziness, flakiness, financial carelessness, rushing intimacy before trust is built.',
+      lead: 'medium', needs: 'to feel respected',
+      say: ['"I see everything you\'re building, and it matters."', '"You don\'t have to carry everything alone."'],
+      dates: ['a classic, well-organised evening', 'a historic place or a good bar', 'planning something ambitious together'] },
+    { energy: 'Independent, unconventional and humanitarian; detached until they decide you are worth it.',
+      attracted: 'Originality, respect for their independence, and a mind that thinks differently.',
+      connect: 'Be original, support their causes, give them space and stimulate their mind.',
+      avoid: 'Clinginess, conventional scripts, emotional pressure, asking for too much too soon.',
+      lead: 'low', needs: 'to feel understood, not pressured',
+      say: ['"You think unlike anyone I\'ve met."', '"I\'m not trying to change you. I like who you are."'],
+      dates: ['a science museum, planetarium or tech event', 'volunteering together', 'something nobody else would think of'] },
+    { energy: 'Dreamy, empathetic, creative and spiritual. Absorbs others\' feelings and needs time to recover.',
+      attracted: 'Gentle strength: someone who grounds them while honouring their depth.',
+      connect: 'Be patient and present, appreciate their creativity, create magical moments.',
+      avoid: 'Harsh criticism, coldness, being overly logical about feelings, dismissing their intuition.',
+      lead: 'high', needs: 'to feel like home to you',
+      say: ['"You feel like a place I want to stay."', '"I\'d rather be lost with you than found with anyone else."'],
+      dates: ['the sea, a lake or a river', 'live music or an art event', 'stargazing'] }
+  ];
+  const LEAD_TEXT = {
+    high: 'Responds strongly to a steady, decisive partner who takes the lead.',
+    medium: 'Likes a partner who leads with calm confidence, while sharing decisions.',
+    low: 'Wants freedom and equality more than being led. Inspire them; do not direct them.'
+  };
+
+  const POLARITY = {
+    intro: 'Polarity is the contrast between two kinds of energy. Active energy (traditionally called masculine, yang or electric) is purposeful, direct, decisive and steady under pressure. Receptive energy (feminine, yin or magnetic) is flowing, expressive, intuitive and present. Everyone has both, whatever their gender.',
+    points: [
+      'Attraction often grows from contrast: when one person holds steady and the other flows, they magnetise each other. When both bring the same energy, it can feel more like friendship.',
+      'Contrast is not a rule about roles. Many couples switch: one leads at work and the other at home, one leads in a crisis and the other in celebrations.',
+      'Active energy is not aggression. It is clarity and calm, especially when the other person is emotional.',
+      'Receptive energy is not weakness. It is openness, feeling and the ability to receive.'
+    ],
+    active: ['Purpose-driven', 'Direct', 'Decisive', 'Steady under pressure', 'Leads'],
+    receptive: ['Expressive', 'Flowing', 'Intuitive', 'Present', 'Receives']
+  };
+
+  const PALM = {
+    intro: 'Palmistry (chiromancy) is a traditional practice found in many cultures. Treat it as a fun conversation and a prompt for reflection, not as a fact about anyone.',
+    hands: 'Tradition reads the non-dominant hand as the inner self and potential, and the dominant hand as the personality shown to the world. When the two hands look very different, the person adapts strongly to their surroundings.',
+    lines: {
+      heart: { name: 'Heart line', where: 'Runs across the top of the palm, from below the little finger.', means: 'Attitude to love and emotional life: how deep, how expressive, how smooth or stormy.' },
+      head: { name: 'Head line', where: 'Runs across the middle of the palm, starting between thumb and index finger.', means: 'Thinking style: focus, memory, self-control and creativity. Long and straight suggests logic; curved suggests imagination.' },
+      life: { name: 'Life line', where: 'Arcs around the base of the thumb towards the wrist.', means: 'Vitality, energy and major life changes. Its length does not predict lifespan.' },
+      fate: { name: 'Fate line', where: 'Rises from the base of the palm towards the middle finger.', means: 'How strongly outside circumstances and career shape the life path.' },
+      sun: { name: 'Sun (Apollo) line', where: 'Rises towards the ring finger.', means: 'Talent, popularity and visible success; also called the line of success.' },
+      union: { name: 'Relationship lines', where: 'Short lines on the edge of the palm, below the little finger.', means: 'Orientation to close relationships. Several lines are read as several significant bonds.' },
+      venus: { name: 'Girdle of Venus', where: 'An arc above the heart line, under the middle and ring fingers.', means: 'Strong sense of beauty, artistic sensitivity and expressive love; easily hurt.' },
+      solomon: { name: 'Ring of Solomon', where: 'A fine curve around the base of the index finger. Rare.', means: 'Insight into people, intuition and interest in psychology.' },
+      bracelets: { name: 'Bracelet lines', where: 'Lines where the wrist meets the palm.', means: 'Traditionally linked with health, prosperity and good connections; clear lines are read as a good sign.' }
+    },
+    shapes: [
+      { el: 'earth', name: 'Earth hand', look: 'Square palm, square fingers, palm about as long as the fingers.', read: 'Practical, grounded, reliable and hands-on. Can be stubborn.' },
+      { el: 'air', name: 'Air hand', look: 'Square or rectangular palm with long fingers.', read: 'Sociable, curious and intellectual. Comfortable with ideas; can seem cool.' },
+      { el: 'water', name: 'Water hand', look: 'Long, narrow palm with long, flexible, tapering fingers.', read: 'Creative, perceptive and sympathetic. Intuitive and sometimes moody.' },
+      { el: 'fire', name: 'Fire hand', look: 'Long palm with shorter fingers.', read: 'Spontaneous, enthusiastic and bold. Can be impulsive.' }
+    ],
+    nails: [
+      { shape: 'long', name: 'Long nails', read: 'Gentle, romantic and imaginative, with an eye for detail. Can be too trusting.' },
+      { shape: 'wide', name: 'Wide nails', read: 'Direct, open-minded and a good debater; can be quick-tempered.' },
+      { shape: 'oval', name: 'Round or oval nails', read: 'Easy-going, adaptable and sociable; a natural peacekeeper.' },
+      { shape: 'triangle', name: 'Triangular nails', read: 'Creative and detail-aware; can be sensitive or stubborn.' },
+      { shape: 'almond', name: 'Almond nails', read: 'Honest, kind, imaginative and polite; impatient with unfairness.' }
+    ],
+    chinese: [
+      { el: 'Metal', read: 'Square palms and nails: rational, a natural leader, stable but emotionally reserved in love.' },
+      { el: 'Wood', read: 'Long palm and fingers, firm thumb: independent, creative and idealistic in love.' },
+      { el: 'Water', read: 'Wide, soft palm with short fingers: quick learner, adaptable, drawn to very different people.' },
+      { el: 'Fire', read: 'Long palm and fingers: emotional and quick, falls in love fast but may cool quickly.' },
+      { el: 'Earth', read: 'Thick palm, strong thumb base: wise, self-sacrificing, slow to show feelings.' }
+    ]
+  };
+
+  // Personality types (MBTI). best/good/hard are typical pairings, not rules.
+  const MBTI = {
+    INTJ: { name: 'Architect', group: 'Analyst', core: 'Strategic, independent, high standards, private.', love: 'Slow to commit, deeply loyal; shows love through plans and acts of service.', connect: 'Be direct, no games; talk ideas; respect their solitude.', hear: '"The way you think about the long game is different from anyone I know."', best: ['ENFP', 'ENTP', 'INFJ'], hard: ['ESFJ', 'ESFP'] },
+    INTP: { name: 'Logician', group: 'Analyst', core: 'Analytical, abstract, unconventional, curious.', love: 'Needs mental connection first; shows love through deep conversation and inside jokes.', connect: 'Challenge their ideas respectfully; do not push for constant contact.', hear: '"I\'ll never get bored talking to you."', best: ['ENTJ', 'ESTJ', 'ENFJ'], hard: ['ESFJ', 'ESFP'] },
+    ENTJ: { name: 'Commander', group: 'Analyst', core: 'Decisive, strategic, driven, a natural leader.', love: 'Clear about what they want; shows love by making things happen.', connect: 'Hold your own in a debate; show ambition and direction.', hear: '"You don\'t wait for things to happen, you build them."', best: ['INTP', 'ISTP', 'INFP'], hard: ['ISFP', 'ISFJ'] },
+    ENTP: { name: 'Debater', group: 'Analyst', core: 'Quick-witted, inventive, loves possibilities and debate.', love: 'Needs intellectual chemistry; gets curious about you when it is real.', connect: 'Debate them on something real; have your own passions.', hear: '"You just made me rethink that completely."', best: ['INFJ', 'INTJ', 'ENFP'], hard: ['ISFJ', 'ISTJ'] },
+    INFJ: { name: 'Advocate', group: 'Diplomat', core: 'Empathetic, visionary, private, purposeful.', love: 'Wants a rare, deep connection; gives everything once open.', connect: 'Be authentic and purposeful; ask deep questions and listen.', hear: '"I see who you really are, and I like that person."', best: ['ENTP', 'ENFP', 'INTJ'], hard: ['ESTP', 'ESFP'] },
+    INFP: { name: 'Mediator', group: 'Diplomat', core: 'Idealistic, creative, authentic, gentle.', love: 'Looks for a soulful bond; needs reassurance to open up.', connect: 'Be completely real; never dismiss their feelings.', hear: '"I don\'t want to change you. I want to understand you."', best: ['ENFJ', 'INFJ', 'ENFP'], hard: ['ESTJ', 'ENTJ'] },
+    ENFJ: { name: 'Protagonist', group: 'Diplomat', core: 'Charismatic, caring, inspiring, organised.', love: 'Devoted and generous; needs effort returned and appreciated.', connect: 'Show you are growing; appreciate their efforts specifically.', hear: '"You pour so much into others. Let me pour back into you."', best: ['INFP', 'ISFP', 'INFJ'], hard: ['ISTP', 'ESTP'] },
+    ENFP: { name: 'Campaigner', group: 'Diplomat', core: 'Enthusiastic, creative, free-spirited, warm.', love: 'Falls fast; needs freedom and a relationship that feels like an adventure.', connect: 'Be enthusiastic and spontaneous; take their dreams seriously.', hear: '"Being around you makes ordinary moments feel bigger."', best: ['INTJ', 'INFJ', 'ENFJ'], hard: ['ISTJ', 'ESTJ'] },
+    ISTJ: { name: 'Logistician', group: 'Sentinel', core: 'Dependable, thorough, private, keeps their word.', love: 'Slow to fall, unwavering once committed; shows love through reliability.', connect: 'Be consistent and keep your word; avoid drama.', hear: '"You\'re someone I can actually count on."', best: ['ESFP', 'ESTP', 'ESTJ'], hard: ['ENFP', 'INFP'] },
+    ISFJ: { name: 'Defender', group: 'Sentinel', core: 'Warm, devoted, quietly strong, remembers everything.', love: 'Nurturing; shows interest through care rather than words.', connect: 'Appreciate them out loud; be gentle and consistent.', hear: '"I notice everything you do for people. It\'s not invisible to me."', best: ['ESFP', 'ESTP', 'ESTJ'], hard: ['ENTP', 'ENFP'] },
+    ESTJ: { name: 'Executive', group: 'Sentinel', core: 'Organised, direct, traditional, committed.', love: 'Takes commitment seriously; shows love by providing stability.', connect: 'Be clear about intentions; be dependable in small things.', hear: '"You get things done while others are still talking."', best: ['ISFP', 'ISTP', 'ISTJ'], hard: ['INFP', 'ENFP'] },
+    ESFJ: { name: 'Consul', group: 'Sentinel', core: 'Warm, social, attentive, a community builder.', love: 'Very attentive; needs regular reassurance that love is returned.', connect: 'Be warm to everyone; thank them for specific things.', hear: '"You make everyone feel at home. Do people tell you that enough?"', best: ['ISFP', 'ISTP', 'ISFJ'], hard: ['INTP', 'ENTP'] },
+    ISTP: { name: 'Virtuoso', group: 'Explorer', core: 'Practical, independent, calm, hands-on.', love: 'Opens up slowly; time spent together is their love language.', connect: 'Give space; invite them into activities, not long talks.', hear: '"I like that you\'re comfortable just being."', best: ['ESTJ', 'ESFJ', 'ENTJ'], hard: ['ENFJ', 'INFJ'] },
+    ISFP: { name: 'Adventurer', group: 'Explorer', core: 'Gentle, artistic, present, private about feelings.', love: 'Shows love through thoughtful acts and shared beauty, rarely in words.', connect: 'Be non-judgemental; share experiences; appreciate their creativity.', hear: '"You see beauty in things most people walk past."', best: ['ESTJ', 'ESFJ', 'ESFP'], hard: ['ENTJ', 'INTJ'] },
+    ESTP: { name: 'Entrepreneur', group: 'Explorer', core: 'Bold, energetic, perceptive, lives in the moment.', love: 'Playful and physical; needs excitement and novelty.', connect: 'Be bold, make plans happen now, make them laugh.', hear: '"I like that you go for things, no hesitation."', best: ['ISFJ', 'ISTJ', 'ENTJ'], hard: ['INFJ', 'INFP'] },
+    ESFP: { name: 'Entertainer', group: 'Explorer', core: 'Fun, warm, spontaneous, sociable.', love: 'Affectionate and generous; needs a partner who enjoys the present.', connect: 'Be fun and warm, and show real depth underneath.', hear: '"You make ordinary moments worth remembering."', best: ['ISTJ', 'ISFJ', 'ENFP'], hard: ['INTJ', 'INTP'] }
+  };
+  function mbtiMatch(a, b) {
+    if (!MBTI[a] || !MBTI[b]) return null;
+    if (MBTI[a].best.includes(b) || MBTI[b].best.includes(a)) return { level: 'best', text: 'A classic complementary pairing: each brings what the other lacks.' };
+    if (MBTI[a].hard.includes(b) || MBTI[b].hard.includes(a)) return { level: 'hard', text: 'A more challenging pairing: different needs and pace. It can work well with patience and clear communication, and often brings the most growth.' };
+    const shared = [...a].filter((c, i) => c === b[i]).length;
+    return shared >= 2 ? { level: 'good', text: 'A workable pairing with enough in common to understand each other easily.' } : { level: 'good', text: 'A workable pairing of different styles. Talk openly about how each of you likes to plan, decide and recharge.' };
+  }
+
+  const CHOOSE = {
+    method: [
+      { k: 'Ask', t: 'The right questions, and listen to what the answers really reveal.' },
+      { k: 'Watch', t: 'Behaviour under pressure shows who someone is.' },
+      { k: 'Wait', t: 'Give it time. Character reveals itself; it does not need to be announced.' }
+    ],
+    questions: [
+      { q: 'What is your relationship like with your family?', good: 'Close with healthy boundaries; can talk about difficulties with warmth.', watch: 'Intense anger with no reflection, or a family described as perfect.' },
+      { q: 'What did your last relationship teach you?', good: 'Takes some responsibility and names what they learned about themselves.', watch: 'All the blame on the ex, or clearly not over it yet.' },
+      { q: 'How do you handle disagreements?', good: '"I need a little time to calm down, then I want to talk it through."', watch: 'Shuts down, walks out, or escalates to shouting or ultimatums.' },
+      { q: 'What does a happy relationship look like to you?', good: 'Respect, growth, communication, fun, support and safety, described realistically.', watch: 'Only about what they receive, or control described as romance.' },
+      { q: 'Where do you see yourself in three to five years?', good: 'Some direction, and goals compatible with the life you want.', watch: 'No reflection at all, or goals that clash with yours on family, place or faith.' },
+      { q: 'What makes someone a good friend?', good: 'Loyalty and honesty, backed by long-term friendships.', watch: 'No long-term friends, or "I only trust myself".' },
+      { q: 'What are you working on in yourself right now?', good: 'Names something real without shame.', watch: '"Nothing", especially when combined with defensiveness.' }
+    ],
+    watch: ['How they treat waiters, drivers and cleaners', 'How they respond to your bad news', 'How they handle frustration that is not their fault', 'Whether they show up when you are ill or struggling', 'Whether they keep small promises', 'How they talk about other people', 'How fair they are with money', 'Whether they actually listen and remember'],
+    green: ['Has their own life, friends and goals', 'Is consistent: the same person on date one and month six', 'Respects your time, space and people', 'Can receive love, not only give it', 'Speaks well of you to others', 'Apologises and changes behaviour', 'Makes hard conversations feel safe', 'Celebrates your wins without competing', 'Is kind even when tired, hungry or stressed', 'You feel like yourself around them'],
+    red: ['Love-bombing: overwhelming attention very early', 'Isolating you from friends and family', 'Lying about small things', 'Never taking responsibility', 'Using your vulnerabilities against you', 'Jealousy or possessiveness framed as love', 'Contempt: mocking, eye-rolling, making you feel small', 'Wanting to change who you fundamentally are', 'Hot-and-cold behaviour that keeps you anxious', 'You always end up apologising and walking on eggshells'],
+    truth: 'You cannot love someone into becoming ready. Become someone worth choosing, and then choose wisely.',
+    nonneg: ['Shared core values (faith, family, integrity)', 'How they treat you under stress', 'Honesty and accountability', 'Feeling safe to be yourself', 'Compatible life direction (family, location, lifestyle)', 'Commitment to their own growth', 'Mutual respect in practice'],
+    prefs: ['Height and physical type', 'Career or income level', 'Shared hobbies', 'Overlap of friends', 'Communication style (can be learned)', 'Introvert or extrovert balance', 'Tidiness and how weekends are spent']
+  };
+
+  const BOUNDARIES = {
+    principles: ['Be clear. A kind no heals faster than a vague maybe.', 'Do not ghost. One honest message is owed.', 'Do not over-explain. Say it briefly and stop.', 'Only say "maybe another time" if you mean it.', 'The more time someone has invested, the more personal the conversation should be: in person or a call rather than a text.'],
+    scripts: [
+      { when: 'Someone you barely know asks you out', say: '"Thank you for asking, I mean that. But I don\'t feel that kind of connection. I hope you find someone great."' },
+      { when: 'After one or two dates', say: '"I\'ve enjoyed spending time with you, but I don\'t feel a romantic spark, and I didn\'t want to just disappear on you."' },
+      { when: 'A friend tells you they have feelings for you', say: '"It means a lot that you trusted me with that. I don\'t feel the same way, and our friendship matters to me. I understand if you need some space."' },
+      { when: 'Ending something undefined', say: '"I owe you honesty. I\'m not in a place to give you what you deserve, and it isn\'t fair to keep going in circles."' },
+      { when: 'Someone keeps pushing after a soft no', say: '"I want to be respectful and clear: I\'m not interested romantically, and that won\'t change."' },
+      { when: 'Protecting your time', say: '"I keep my evenings for recharging, but weekends work well for me."' },
+      { when: 'Slowing the pace', say: '"I like where this is going. I just move at my own pace, and I don\'t want to rush something good."' },
+      { when: 'A behaviour that bothers you', say: '"When you do that, it doesn\'t sit right with me. I\'d rather tell you directly than let it build."' }
+    ],
+    avoid: ['"Maybe when the timing is right" (unless timing really is the only issue)', '"You\'re amazing, anyone would be lucky to have you" as a softener', '"Let\'s still hang out!" before the other person has had time to recover', 'Carrying on exactly as before after saying no']
+  };
+
+  const TIMING = {
+    slots: [
+      { from: 6, to: 11, name: 'Morning', best: 'A warm good morning or something light that makes them smile.', avoid: 'Heavy topics and serious requests.', level: 2 },
+      { from: 11, to: 14, name: 'Midday', best: 'A quick question about their day, or making plans for later.', avoid: 'Long paragraphs and several messages in a row.', level: 2 },
+      { from: 14, to: 18, name: 'Afternoon', best: 'Something light or funny; or simply let the silence breathe.', avoid: 'Anything that needs a thoughtful answer.', level: 1 },
+      { from: 18, to: 21, name: 'Evening (golden window)', best: 'Real conversations, calls, sharing something personal, making plans.', avoid: 'Pulling back just when the conversation opens up.', level: 3 },
+      { from: 21, to: 24, name: 'Late evening', best: 'Deeper, personal conversation and a warm goodnight, if you have already been talking.', avoid: 'Starting cold, or starting a conflict: emotions run hotter at night.', level: 2 },
+      { from: 0, to: 6, name: 'After midnight', best: 'Use rarely. Be sure of what a message at this hour communicates.', avoid: 'Anything you would not want read in the morning.', level: 0 }
+    ],
+    days: [
+      'Sunday: reflective and open. Good for a meaningful call or check-in.',
+      'Monday: busy reset. Keep it warm and brief.',
+      'Tuesday: settled into the week. Good for real conversation and plans.',
+      'Wednesday: mid-week sweet spot for making plans.',
+      'Thursday: best day to suggest weekend plans.',
+      'Friday: social and energetic. Good for spontaneous plans, not serious talks.',
+      'Saturday: social and active. Do something together rather than text.'
+    ],
+    replies: ['Long replies matter more than fast replies.', 'Match the other person\'s pace roughly, without turning it into a game.', 'Do not double-text into silence. One message is enough.', 'Reply when it feels right, and live a full life in between.']
+  };
+
+  root.ChartConnect = { SIGNS, LEAD_TEXT, POLARITY, PALM, MBTI, mbtiMatch, CHOOSE, BOUNDARIES, TIMING };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
 /* content-topics.js */
 /*
  * Life-topic knowledge used by the Life guidance tab: career fields, work style,
@@ -5250,6 +5593,280 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       </div>`;
   }
 
+  // ---------- Love & connection ----------
+  const CN = window.ChartConnect;
+  state.connect = { who: store.get('connectWho', 'current'), line: 'heart', shape: store.get('palmShape', ''), myType: store.get('mbtiMe', ''), theirType: store.get('mbtiThem', '') };
+
+  // --- SVG illustrations ---
+  const EL_VAR = { fire: 'var(--fire)', earth: 'var(--earth)', air: 'var(--air)', water: 'var(--water)' };
+  function medallion(signIndex, label) {
+    const sg = E.SIGNS[signIndex];
+    const ticks = Array.from({ length: 24 }, (_, i) => { const a = i * 15 * Math.PI / 180; const r1 = 54, r2 = i % 2 ? 58 : 61; return `<line x1="${f(60 + r1 * Math.cos(a))}" y1="${f(60 + r1 * Math.sin(a))}" x2="${f(60 + r2 * Math.cos(a))}" y2="${f(60 + r2 * Math.sin(a))}"/>`; }).join('');
+    return `<svg class="medal" viewBox="0 0 120 120" role="img" aria-label="${esc(sg.name)}${label ? ', ' + esc(label) : ''}">
+      <circle cx="60" cy="60" r="62" class="m-ring"/><g class="m-ticks">${ticks}</g>
+      <circle cx="60" cy="60" r="50" style="fill:${EL_VAR[sg.element]}" class="m-face"/>
+      <circle cx="60" cy="60" r="44" class="m-inner"/>
+      <text x="60" y="56" class="m-glyph">${signGlyph(sg)}</text>
+      <text x="60" y="86" class="m-name">${esc(sg.name.toUpperCase())}</text>
+    </svg>`;
+  }
+  // A right hand, palm facing you (thumb on the left). opts: palmW, palmH, fing (finger length), tip ('square'|'round'|'taper').
+  function handSVG(o, interactive) {
+    const W = 260, px = 70, py = 130, pw = o.palmW, ph = o.palmH;
+    const fw = pw * 0.2, L = o.fing;
+    const lens = [0.9, 1, 0.95, 0.74], cx = [0.13, 0.38, 0.62, 0.86];
+    const rx = o.tip === 'square' ? 5 : fw / 2;
+    const fingers = cx.map((c, i) => {
+      const w = o.tip === 'taper' ? fw * 0.86 : fw, h = L * lens[i];
+      const x = px + pw * c - w / 2, y = py - h + 8;
+      return `<rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h + 10)}" rx="${f(Math.min(rx, w / 2))}" class="h-skin"/>`;
+    }).join('');
+    const thumb = `<rect x="${f(px - 18)}" y="${f(py + ph * 0.3)}" width="${f(fw * 1.05)}" height="${f(L * 0.78)}" rx="${f(Math.min(rx + 3, fw / 2))}" class="h-skin" transform="rotate(-38 ${f(px + 4)} ${f(py + ph * 0.62)})"/>`;
+    const palm = `<rect x="${px}" y="${py}" width="${f(pw)}" height="${f(ph)}" rx="${f(o.tip === 'square' ? 12 : 24)}" class="h-skin"/>`;
+    const wrist = `<rect x="${f(px + pw * 0.12)}" y="${f(py + ph - 10)}" width="${f(pw * 0.76)}" height="46" rx="10" class="h-skin"/>`;
+    // Lines, in palm coordinates.
+    const X = t => f(px + pw * t), Y = t => f(py + ph * t);
+    const lines = interactive ? {
+      heart: `M${X(1)} ${Y(0.2)} C ${X(0.75)} ${Y(0.12)}, ${X(0.5)} ${Y(0.24)}, ${X(0.3)} ${Y(0.06)}`,
+      head: `M${X(0.02)} ${Y(0.34)} C ${X(0.3)} ${Y(0.33)}, ${X(0.6)} ${Y(0.42)}, ${X(0.92)} ${Y(0.5)}`,
+      life: `M${X(0.06)} ${Y(0.3)} C ${X(0.4)} ${Y(0.4)}, ${X(0.38)} ${Y(0.75)}, ${X(0.3)} ${Y(1)}`,
+      fate: `M${X(0.52)} ${Y(1)} C ${X(0.5)} ${Y(0.7)}, ${X(0.47)} ${Y(0.35)}, ${X(0.42)} ${Y(0.08)}`,
+      sun: `M${X(0.7)} ${Y(0.82)} C ${X(0.68)} ${Y(0.55)}, ${X(0.66)} ${Y(0.3)}, ${X(0.64)} ${Y(0.1)}`,
+      union: `M${X(1)} ${Y(0.1)} L ${X(0.9)} ${Y(0.105)} M${X(1)} ${Y(0.14)} L ${X(0.92)} ${Y(0.145)}`,
+      venus: `M${X(0.3)} ${Y(0.02)} C ${X(0.4)} ${Y(0.14)}, ${X(0.65)} ${Y(0.14)}, ${X(0.75)} ${Y(0.02)}`,
+      solomon: `M${X(0.04)} ${Y(0.06)} C ${X(0.1)} ${Y(0.12)}, ${X(0.2)} ${Y(0.12)}, ${X(0.26)} ${Y(0.03)}`,
+      bracelets: `M${X(0.2)} ${f(py + ph + 8)} L ${X(0.8)} ${f(py + ph + 8)} M${X(0.2)} ${f(py + ph + 20)} L ${X(0.8)} ${f(py + ph + 20)}`
+    } : null;
+    const lineSvg = lines ? Object.entries(lines).map(([k, d]) => `<g class="pl${state.connect.line === k ? ' on' : ''}" data-line="${k}" tabindex="0" role="button" aria-label="${esc(CN.PALM.lines[k].name)}"><path d="${d}" class="pl-hit"/><path d="${d}" class="pl-line"/></g>`).join('') : '';
+    return `<svg class="hand${interactive ? ' interactive' : ''}" viewBox="0 0 ${W} ${f(py + ph + 46)}" role="img" aria-label="Hand diagram">${thumb}${wrist}${palm}${fingers}${lineSvg}</svg>`;
+  }
+  const HAND_SHAPES = {
+    earth: { palmW: 130, palmH: 130, fing: 92, tip: 'square' },
+    air: { palmW: 124, palmH: 120, fing: 118, tip: 'round' },
+    water: { palmW: 104, palmH: 150, fing: 120, tip: 'taper' },
+    fire: { palmW: 124, palmH: 150, fing: 86, tip: 'round' }
+  };
+  function nailSVG(shape) {
+    const nail = {
+      long: '<rect x="30" y="18" width="20" height="40" rx="9"/>',
+      wide: '<rect x="22" y="30" width="36" height="26" rx="8"/>',
+      oval: '<ellipse cx="40" cy="40" rx="15" ry="18"/>',
+      triangle: '<path d="M24 58 L40 20 L56 58 Z" stroke-linejoin="round"/>',
+      almond: '<path d="M40 16 C 54 28, 54 50, 40 60 C 26 50, 26 28, 40 16 Z"/>'
+    }[shape];
+    return `<svg class="nail" viewBox="0 0 80 80" aria-hidden="true"><rect x="16" y="8" width="48" height="80" rx="22" class="h-skin"/><g class="n-shape">${nail}</g></svg>`;
+  }
+  function magnetSVG() {
+    return `<svg class="magnet" viewBox="0 0 420 170" role="img" aria-label="Two energies attracting">
+      ${[30, 55, 80].map(h => `<path d="M120 85 C 170 ${85 - h}, 250 ${85 - h}, 300 85" class="field"/><path d="M120 85 C 170 ${85 + h}, 250 ${85 + h}, 300 85" class="field"/>`).join('')}
+      <circle cx="90" cy="85" r="52" class="pole a"/><circle cx="330" cy="85" r="52" class="pole b"/>
+      <text x="90" y="80" class="pole-t">Active</text><text x="90" y="98" class="pole-s">yang · electric</text>
+      <text x="330" y="80" class="pole-t">Receptive</text><text x="330" y="98" class="pole-s">yin · magnetic</text>
+    </svg>`;
+  }
+  function clockSVG(place) {
+    const R = 96, c = 120, now = new Date();
+    let hourNow = now.getHours() + now.getMinutes() / 60;
+    try { if (place.tz) { const p = new Intl.DateTimeFormat('en-GB', { timeZone: place.tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(now).split(':'); hourNow = +p[0] + +p[1] / 60; } } catch (e) { /* fall back to device time */ }
+    const pt2 = (h, r) => { const a = (h / 24) * 2 * Math.PI - Math.PI / 2; return [c + r * Math.cos(a), c + r * Math.sin(a)]; };
+    const arc = (h1, h2, r1, r2) => { const [a, b] = pt2(h1, r2), [cc, d] = pt2(h2, r2), [e, g] = pt2(h2, r1), [h, i] = pt2(h1, r1); const large = h2 - h1 > 12 ? 1 : 0; return `M${f(a)} ${f(b)} A${r2} ${r2} 0 ${large} 1 ${f(cc)} ${f(d)} L${f(e)} ${f(g)} A${r1} ${r1} 0 ${large} 0 ${f(h)} ${f(i)} Z`; };
+    const segs = CN.TIMING.slots.map(sl => `<path d="${arc(sl.from, sl.to, 58, R)}" class="clk l${sl.level}"><title>${sl.name} (${sl.from}:00–${sl.to}:00): ${sl.best}</title></path>`).join('');
+    const nums = [0, 3, 6, 9, 12, 15, 18, 21].map(h => { const [x, y] = pt2(h, R + 14); return `<text x="${f(x)}" y="${f(y)}" class="clk-n">${h}</text>`; }).join('');
+    const [hx, hy] = pt2(hourNow, R + 2);
+    return `<svg class="clock" viewBox="0 0 240 240" role="img" aria-label="Best times of day to reach out">${segs}<circle cx="${c}" cy="${c}" r="56" class="clk-face"/>${nums}
+      <line x1="${c}" y1="${c}" x2="${f(hx)}" y2="${f(hy)}" class="clk-hand"/><circle cx="${c}" cy="${c}" r="4" class="clk-dot"/>
+      <text x="${c}" y="${c - 8}" class="clk-c">now</text><text x="${c}" y="${c + 10}" class="clk-c2">${String(Math.floor(hourNow)).padStart(2, '0')}:${String(Math.floor((hourNow % 1) * 60)).padStart(2, '0')}</text></svg>`;
+  }
+  function iconSVG(kind) {
+    const p = { Ask: '<path d="M8 10 h40 a6 6 0 0 1 6 6 v20 a6 6 0 0 1 -6 6 h-24 l-10 9 v-9 h-6 a6 6 0 0 1 -6 -6 v-20 a6 6 0 0 1 6 -6z"/><text x="30" y="34" class="ico-t">?</text>',
+      Watch: '<path d="M4 30 C 16 12, 44 12, 56 30 C 44 48, 16 48, 4 30 Z"/><circle cx="30" cy="30" r="9" class="ico-fill"/>',
+      Wait: '<path d="M16 6 h28 M16 54 h28 M18 6 C 18 22, 42 26, 42 30 C 42 34, 18 38, 18 54 M42 6 C 42 22, 18 26, 18 30 C 18 34, 42 38, 42 54"/>' }[kind];
+    return `<svg class="ico" viewBox="0 0 60 60" aria-hidden="true">${p}</svg>`;
+  }
+
+  function personChart(who) {
+    if (who === 'current') return { chart: state.chart, name: state.input.name || 'This chart' };
+    if (who === 'partner' && state.compat.B) return { chart: chartFor(state.compat.B), name: state.compat.B.name || 'Partner' };
+    if (who.startsWith('saved:')) { const sv = store.get('saved', [])[+who.slice(6)]; if (sv) return { chart: chartFor(sv), name: sv.name || 'Saved chart' }; }
+    if (who.startsWith('sign:')) return { sign: +who.slice(5) };
+    return { chart: state.chart, name: state.input.name || 'This chart' };
+  }
+
+  function heartSection() {
+    const who = state.connect.who;
+    const saved = store.get('saved', []);
+    const pc = personChart(who);
+    const options = `<option value="current" ${who === 'current' ? 'selected' : ''}>${esc(state.input.name || 'This chart')} (Chart tab)</option>
+      ${state.compat.B ? `<option value="partner" ${who === 'partner' ? 'selected' : ''}>${esc(state.compat.B.name || 'Partner')} (Compatibility, Person B)</option>` : ''}
+      ${saved.map((c, i) => `<option value="saved:${i}" ${who === 'saved:' + i ? 'selected' : ''}>${esc(c.name || 'Unnamed')} (saved)</option>`).join('')}
+      <optgroup label="Only know their Sun sign">${E.SIGNS.map((sg, i) => `<option value="sign:${i}" ${who === 'sign:' + i ? 'selected' : ''}>${sg.name}</option>`).join('')}</optgroup>`;
+    let body;
+    if (pc.sign != null) {
+      const d = CN.SIGNS[pc.sign], sg = E.SIGNS[pc.sign];
+      body = `<div class="card sign-card">${medallion(pc.sign)}<div>
+        <h3>${sg.name}</h3><p class="faint">${C.ELEMENTS[sg.element].name} · ${C.MODES[sg.mode].name}</p>
+        <p><b>Energy:</b> ${esc(d.energy)}</p><p><b>Attracted to:</b> ${esc(d.attracted)}</p><p><b>Connect by:</b> ${esc(d.connect)}</p>
+        <p><b>Avoid:</b> ${esc(d.avoid)}</p><p><b>Needs:</b> ${esc(d.needs)}. <span class="muted">${esc(CN.LEAD_TEXT[d.lead])}</span></p>
+        <p><b>What they need to hear:</b> ${d.say.map(esc).join(' ')}</p><p><b>Date ideas:</b> ${d.dates.map(esc).join('; ')}.</p>
+        <p class="note">Sun sign only gives part of the picture. With a birth date, add the person as a saved chart to read their Moon, Venus and Mars too.</p></div></div>`;
+    } else {
+      const c = pc.chart;
+      const idx = k => E.signOf(c.points.find(p => p.key === k).lon).index;
+      const roles = [
+        ['sun', 'Who they are', d => d.energy],
+        ['venus', 'What attracts them', d => d.attracted + ' ' + d.connect],
+        ['moon', 'What makes them feel safe', d => `They need ${d.needs}. ` + d.avoid.replace(/^/, 'Avoid: ')],
+        ['mars', 'What excites them', d => `Date ideas: ${d.dates.join('; ')}.`]
+      ];
+      const venus = CN.SIGNS[idx('venus')], moon = CN.SIGNS[idx('moon')], sun = CN.SIGNS[idx('sun')];
+      body = `<div class="medal-grid">${roles.map(([k, title, txt]) => `<div class="card medal-card">${medallion(idx(k), title)}<div class="eyebrow">${title}</div><h4>${P(k).name} in ${E.SIGNS[idx(k)].name}</h4><p class="muted">${esc(txt(CN.SIGNS[idx(k)]))}</p></div>`).join('')}</div>
+        <div class="grid-2">
+          <div class="card"><div class="eyebrow">What ${esc(pc.name)} needs to hear</div><ul class="syn-list" style="margin-top:6px">${moon.say.concat(venus.say).map(t => `<li>${esc(t)}</li>`).join('')}</ul><p class="faint" style="margin-top:6px">From their Moon (feeling safe) and Venus (feeling loved). Say it only if you mean it, in your own words.</p></div>
+          <div class="card"><div class="eyebrow">In short</div><p style="margin-top:6px"><b>Lead or share?</b> ${esc(CN.LEAD_TEXT[venus.lead])}</p><p style="margin-top:6px"><b>Avoid:</b> ${esc(venus.avoid)}</p><p style="margin-top:6px"><b>Who they are:</b> ${esc(sun.connect)}</p></div>
+        </div>`;
+    }
+    return `<div class="section cn" id="cn-heart">
+      <div class="section-head"><h3>How to win their heart</h3>
+        <div class="field no-print cn-who"><label for="cn-who">Read the chart of</label><select id="cn-who">${options}</select></div></div>
+      <p class="muted">Love in a chart is read from four placements: the Sun (who they are), Venus (what attracts them), the Moon (what makes them feel safe) and Mars (what excites them).</p>
+      ${body}</div>`;
+  }
+
+  // Share of fire and air (active, yang) among the main placements, in percent.
+  function yangOf(c) {
+    let act = 0, tot = 0;
+    Object.entries({ sun: 3, moon: 3, asc: 3, mercury: 2, venus: 2, mars: 2, jupiter: 1.5, saturn: 1.5 }).forEach(([k, wt]) => { const p = c.points.find(x => x.key === k); if (!p || (c.noHouses && k === 'asc')) return; const el = E.signOf(p.lon).sign.element; if (el === 'fire' || el === 'air') act += wt; tot += wt; });
+    return Math.round(act / tot * 100);
+  }
+  const polarBar = p => `<div class="pol-row"><span>${esc(p.name)}</span><div class="polar"><div class="pa" style="width:${p.y}%"><span>Active ${p.y}%</span></div><div class="pb" style="width:${100 - p.y}%"><span>Receptive ${100 - p.y}%</span></div></div></div>`;
+  const polarPair = diff => diff >= 20 ? 'Strong contrast: natural magnetism. One tends to lead and the other to flow.' : diff >= 10 ? 'Moderate contrast: some natural pull, with room to take turns.' : 'Similar energy: easy understanding, more friendship-like. Create spark by consciously taking turns to lead and to receive.';
+
+  function polaritySection() {
+    const yang = yangOf;
+    const me = { name: state.input.name || 'This chart', y: yang(state.chart) };
+    const them = state.compat.B ? { name: state.compat.B.name || 'Partner', y: yang(chartFor(state.compat.B)) } : null;
+    const bar = polarBar;
+    let pair = '';
+    if (them) {
+      const diff = Math.abs(me.y - them.y);
+      pair = `<p style="margin-top:8px"><b>Contrast between you: ${diff} points.</b> ${polarPair(diff)}</p>`;
+    }
+    return `<div class="section cn" id="cn-polarity"><h3>Polarity: the energy of attraction</h3>
+      <div class="grid-2"><div class="card">${magnetSVG()}<p class="muted" style="margin-top:6px">${esc(CN.POLARITY.intro)}</p></div>
+      <div class="card"><div class="legend" style="justify-content:flex-start"><span><i class="lg-a"></i>Active (fire, air)</span><span><i class="lg-b"></i>Receptive (earth, water)</span></div>
+        ${bar(me)}${them ? bar(them) : '<p class="faint">Add a Person B on the Compatibility tab to compare two people.</p>'}${pair}
+        <ul class="syn-list" style="margin-top:10px">${CN.POLARITY.points.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div></div></div>`;
+  }
+
+  function palmSection() {
+    const L = CN.PALM.lines[state.connect.line];
+    const dom = (() => { const b = balance(); return Object.keys(b.el).sort((x, y) => b.el[y] - b.el[x])[0]; })();
+    const sel = state.connect.shape;
+    const shape = CN.PALM.shapes.find(x => x.el === sel);
+    return `<div class="section cn" id="cn-palm"><h3>Palm reading</h3>
+      <p class="muted">${esc(CN.PALM.intro)} ${esc(CN.PALM.hands)}</p>
+      <div class="grid-2 palm-grid">
+        <div class="card palm-card">${handSVG({ palmW: 128, palmH: 140, fing: 104, tip: 'round' }, true)}<p class="faint" style="text-align:center">Tap a line on the hand.</p></div>
+        <div class="card"><div class="eyebrow">The lines</div>
+          <div class="chips no-print" style="margin:8px 0">${Object.entries(CN.PALM.lines).map(([k, v]) => `<button type="button" class="chip${k === state.connect.line ? ' on' : ''}" data-line="${k}">${esc(v.name)}</button>`).join('')}</div>
+          <h3 style="margin-top:6px">${esc(L.name)}</h3><p class="faint">${esc(L.where)}</p><p style="margin-top:6px">${esc(L.means)}</p>
+          <div class="print-only"><ul class="syn-list">${Object.values(CN.PALM.lines).map(v => `<li><b>${esc(v.name)}:</b> ${esc(v.means)}</li>`).join('')}</ul></div>
+        </div>
+      </div>
+      <h4 class="sub">Hand shape and the four elements</h4>
+      <div class="shape-grid">${CN.PALM.shapes.map(x => `<button type="button" class="shape-btn${x.el === sel ? ' on' : ''}" data-shape="${x.el}" aria-pressed="${x.el === sel}">${handSVG(HAND_SHAPES[x.el], false)}<b>${esc(x.name)}</b><span>${esc(x.look)}</span></button>`).join('')}</div>
+      <div class="card" style="margin-top:10px">${shape ? `<p><b>${esc(shape.name)}:</b> ${esc(shape.read)}</p><p class="muted" style="margin-top:6px">${shape.el === dom ? `This matches the chart's strongest element (${dom}): hand and chart tell the same story.` : `The chart's strongest element is ${dom}, while the hand shows ${shape.el}. The person may show a ${shape.el} side outwardly while being driven by ${dom} inside.`}</p>` : '<p class="muted">Choose the hand shape that looks most like the hand you are reading, and it will be compared with the strongest element in the chart.</p>'}</div>
+      <h4 class="sub">Fingernail shapes</h4>
+      <div class="nail-grid">${CN.PALM.nails.map(n => `<div class="nail-card">${nailSVG(n.shape)}<b>${esc(n.name)}</b><span class="muted">${esc(n.read)}</span></div>`).join('')}</div>
+      <h4 class="sub">The Chinese five-element hand types</h4>
+      <ul class="syn-list">${CN.PALM.chinese.map(x => `<li><b>${x.el}:</b> ${esc(x.read)}</li>`).join('')}</ul></div>`;
+  }
+
+  function mbtiSection() {
+    const types = Object.keys(CN.MBTI);
+    const opt = v => `<option value="">Choose…</option>${['Analyst', 'Diplomat', 'Sentinel', 'Explorer'].map(g => `<optgroup label="${g}s">${types.filter(t => CN.MBTI[t].group === g).map(t => `<option value="${t}" ${t === v ? 'selected' : ''}>${t} · ${CN.MBTI[t].name}</option>`).join('')}</optgroup>`).join('')}`;
+    const card = (t, who) => { const m = CN.MBTI[t]; return `<div class="card"><div class="eyebrow">${who} · ${m.group}</div><h3 style="margin:4px 0">${t} · The ${m.name}</h3><p>${esc(m.core)}</p><p class="muted" style="margin-top:6px"><b>In love:</b> ${esc(m.love)}</p><p class="muted"><b>Connect by:</b> ${esc(m.connect)}</p><p class="muted"><b>Needs to hear:</b> ${esc(m.hear)}</p><p class="faint">Natural matches: ${m.best.join(', ')} · More challenging: ${m.hard.join(', ')}</p></div>`; };
+    const a = state.connect.myType, b = state.connect.theirType;
+    const match = a && b ? CN.mbtiMatch(a, b) : null;
+    return `<div class="section cn" id="cn-mbti"><h3>Personality types (MBTI)</h3>
+      <p class="muted">The 16 Myers-Briggs types describe how someone gains energy (I/E), takes in information (S/N), decides (T/F) and organises life (J/P). It is a separate system from astrology, and a fun one to compare. A free test is at 16personalities.com.</p>
+      <div class="plan-controls no-print"><div class="field"><label for="mbti-me">Your type</label><select id="mbti-me">${opt(a)}</select></div><div class="field"><label for="mbti-them">Their type</label><select id="mbti-them">${opt(b)}</select></div></div>
+      ${match ? `<p class="note">${a} with ${b}: <b>${{ best: 'natural match', good: 'workable match', hard: 'challenging match' }[match.level]}</b>. ${esc(match.text)}</p>` : ''}
+      <div class="grid-2">${a ? card(a, 'You') : ''}${b ? card(b, 'Them') : ''}</div>
+      <p class="faint">How to bring it up: "I have a theory about what personality type you are. Want to take the test and see if I'm right?" Lead with your own result so it feels mutual.</p></div>`;
+  }
+
+  function chooseSection() {
+    const C2 = CN.CHOOSE;
+    const ticks = store.get('nonneg', {});
+    return `<div class="section cn" id="cn-choose"><h3>Choosing a partner wisely</h3>
+      <div class="method">${C2.method.map(m => `<div class="card method-card">${iconSVG(m.k)}<b>${m.k}</b><span class="muted">${esc(m.t)}</span></div>`).join('')}</div>
+      <div class="table-wrap"><table class="qa"><thead><tr><th>Ask naturally</th><th>A good sign</th><th>Watch out for</th></tr></thead><tbody>${C2.questions.map(q => `<tr class="static"><td><b>${esc(q.q)}</b></td><td>${esc(q.good)}</td><td>${esc(q.watch)}</td></tr>`).join('')}</tbody></table></div>
+      <div class="card"><div class="eyebrow">Watch, don't just ask</div><ul class="syn-list two-col" style="margin-top:6px">${C2.watch.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>
+      <div class="grid-2">
+        <div class="card flags green"><div class="eyebrow good-eyebrow">Green flags</div><ol>${C2.green.map(t => `<li>${esc(t)}</li>`).join('')}</ol></div>
+        <div class="card flags red"><div class="eyebrow bad-eyebrow">Red flags</div><ol>${C2.red.map(t => `<li>${esc(t)}</li>`).join('')}</ol><p class="note" style="margin-top:8px">${esc(C2.truth)}</p></div>
+      </div>
+      <div class="card"><div class="eyebrow">Your non-negotiables and preferences</div>
+        <p class="muted" style="margin:4px 0 8px">Tick what matters to you. Decide this before you are emotionally involved. It is saved in this browser and prints as your personal checklist.</p>
+        <div class="grid-2"><div><b>Non-negotiables</b>${C2.nonneg.map((t, i) => `<label class="check-line"><input type="checkbox" data-nn="n${i}" ${ticks['n' + i] ? 'checked' : ''}> ${esc(t)}</label>`).join('')}</div>
+        <div><b>Preferences (flexible)</b>${C2.prefs.map((t, i) => `<label class="check-line"><input type="checkbox" data-nn="p${i}" ${ticks['p' + i] ? 'checked' : ''}> ${esc(t)}</label>`).join('')}</div></div></div></div>`;
+  }
+
+  function boundarySection() {
+    const B = CN.BOUNDARIES;
+    return `<div class="section cn" id="cn-bound"><h3>Boundaries and saying no kindly</h3>
+      <div class="card"><ul class="syn-list">${B.principles.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>
+      <div class="script-grid">${B.scripts.map((x, i) => `<div class="card script"><div class="eyebrow">${esc(x.when)}</div><p>${esc(x.say)}</p><button type="button" class="btn small no-print" data-copy="${i}">Copy</button></div>`).join('')}</div>
+      <div class="card"><div class="eyebrow bad-eyebrow">Phrases that accidentally keep hopes up</div><ul class="syn-list" style="margin-top:6px">${B.avoid.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div></div>`;
+  }
+
+  function timingSection() {
+    const T2 = CN.TIMING;
+    const place = state.rhythm.place || { name: state.input.place || 'birth place', lat: state.input.lat, lon: state.input.lon, tz: state.input.tz || '' };
+    let ph = null; try { ph = E.planetaryHours(new Date(), place.lat, place.lon); } catch (e) { /* polar */ }
+    const venusHours = ph ? ph.hours.filter(h => h.ruler === 'venus' && h.end > new Date()).slice(0, 2) : [];
+    const dow = new Date().getDay();
+    return `<div class="section cn" id="cn-time"><h3>When to reach out</h3>
+      <div class="grid-2"><div class="card clock-card">${clockSVG(place)}<div class="legend" style="justify-content:center"><span><i class="lg-clk l3"></i>Best</span><span><i class="lg-clk l2"></i>Good</span><span><i class="lg-clk l1"></i>Light touch</span><span><i class="lg-clk l0"></i>Use rarely</span></div></div>
+      <div class="card"><ul class="syn-list">${T2.slots.map(sl => `<li><b>${sl.name}</b> <span class="faint">${sl.from}:00–${sl.to}:00</span><br><span class="muted">${esc(sl.best)} Avoid: ${esc(sl.avoid)}</span></li>`).join('')}</ul></div></div>
+      <div class="grid-2"><div class="card"><div class="eyebrow">Today</div><p style="margin-top:6px">${esc(T2.days[dow])}</p>
+        ${ph ? `<p class="muted" style="margin-top:6px">Today is ruled by ${P(ph.dayRuler).name}. ${ph.dayRuler === 'venus' ? 'Friday, the Venus day, is the classic day for love.' : ''} ${venusHours.length ? `Next Venus hour${venusHours.length > 1 ? 's' : ''} in ${esc(place.name)}: ${venusHours.map(h => fmtIn(h.start, place.tz, { hour: '2-digit', minute: '2-digit' })).join(' and ')}.` : ''}</p>` : ''}
+        <p class="faint" style="margin-top:6px">For dates and big conversations, see Cosmic rhythms → Best days → Romance.</p></div>
+      <div class="card"><div class="eyebrow">Replies</div><ul class="syn-list" style="margin-top:6px">${T2.replies.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div></div></div>`;
+  }
+
+  function renderConnect() {
+    const nav = [['cn-heart', 'Win their heart'], ['cn-polarity', 'Polarity'], ['cn-palm', 'Palm reading'], ['cn-mbti', 'Personality types'], ['cn-choose', 'Choosing wisely'], ['cn-bound', 'Boundaries'], ['cn-time', 'When to reach out']];
+    $('#panel-connect').innerHTML = `
+      <div class="section">
+        <div class="section-head"><div><span class="eyebrow">Love &amp; connection</span><h2>Understanding the people you connect with</h2></div><button class="btn small no-print" type="button" id="connect-print">Print this page</button></div>
+        <p class="muted">How to approach someone by their chart, the polarity behind attraction, palm reading, personality types, choosing a partner wisely, boundaries and timing. It works for anyone and any relationship. Connection is earned through presence, respect and patience: none of this replaces being genuinely yourself.</p>
+        <div class="chips no-print">${nav.map(([id, t]) => `<a class="chip" href="#${id}" data-scroll="${id}">${t}</a>`).join('')}</div>
+      </div>
+      ${heartSection()}${polaritySection()}${palmSection()}${mbtiSection()}${chooseSection()}${boundarySection()}${timingSection()}`;
+  }
+
+  function bindConnect() {
+    const panel = $('#panel-connect');
+    const rer = id => { renderConnect(); if (id) setTimeout(() => document.getElementById(id)?.scrollIntoView({ block: 'start' }), 0); };
+    panel.addEventListener('change', e => {
+      const t = e.target;
+      if (t.id === 'cn-who') { state.connect.who = t.value; store.set('connectWho', t.value); rer('cn-heart'); }
+      if (t.id === 'mbti-me') { state.connect.myType = t.value; store.set('mbtiMe', t.value); rer('cn-mbti'); }
+      if (t.id === 'mbti-them') { state.connect.theirType = t.value; store.set('mbtiThem', t.value); rer('cn-mbti'); }
+      if (t.dataset && t.dataset.nn) { const v = store.get('nonneg', {}); v[t.dataset.nn] = t.checked; store.set('nonneg', v); }
+    });
+    const pickLine = k => { state.connect.line = k; rer('cn-palm'); };
+    panel.addEventListener('click', e => {
+      const ln = e.target.closest('[data-line]'); if (ln) { pickLine(ln.dataset.line); return; }
+      const sh = e.target.closest('[data-shape]'); if (sh) { state.connect.shape = sh.dataset.shape; store.set('palmShape', sh.dataset.shape); rer('cn-palm'); return; }
+      const cp = e.target.closest('[data-copy]'); if (cp) { copyText(CN.BOUNDARIES.scripts[+cp.dataset.copy].say.replace(/^"|"$/g, ''), 'Copied'); return; }
+      if (e.target.id === 'connect-print') printPanel();
+    });
+    panel.addEventListener('keydown', e => { const ln = e.target.closest('[data-line]'); if (ln && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pickLine(ln.dataset.line); } });
+  }
+
   // ---------- Cosmic rhythms ----------
   const RH = window.ChartRhythms;
   state.rhythm = { place: null, activity: store.get('planActivity', 'start'), range: store.get('planRange', 60) };
@@ -6081,6 +6698,8 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
 
         ${compositeSection(CA, CB, nA, nB)}
 
+        ${attractionSection(CA, CB, nA, nB)}
+
         ${conflictSection(CA, CB, nA, nB, r, 'love')}
 
         <h3>Every connection between the charts</h3>
@@ -6112,6 +6731,19 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     return `<div class="area-summary card">${areas.map(a => { const b = CP.bandOf(a.score); return `<div class="bar health"><span>${esc(a.name)}</span><div class="track"><div class="fill" style="width:${a.score}%"></div><i class="healthy-line" style="left:${CP.HEALTHY}%"></i></div><span class="num">${a.score}</span><span class="pill ${b.cls}">${esc(b.name.replace(' (healthy)', ''))}</span></div>`; }).join('')}
       <p class="faint">The thin line marks the healthy level (${CP.HEALTHY}).</p></div>`;
   }
+  // Love report: polarity, how to reach each other's heart (Venus and Moon signs), and MBTI types if chosen.
+  function attractionSection(CA, CB, nA, nB) {
+    const idx = (c, k) => E.signOf(c.points.find(p => p.key === k).lon).index;
+    const yA = yangOf(CA), yB = yangOf(CB), diff = Math.abs(yA - yB);
+    const reach = (c, n, other) => { const v = CN.SIGNS[idx(c, 'venus')], m = CN.SIGNS[idx(c, 'moon')];
+      return `<div class="card"><div class="eyebrow">How ${esc(other)} reaches ${esc(n)}'s heart</div><p style="margin-top:6px"><b>Venus in ${E.SIGNS[idx(c, 'venus')].name}:</b> ${esc(v.connect)}</p><p class="muted" style="margin-top:4px"><b>Moon in ${E.SIGNS[idx(c, 'moon')].name}:</b> needs ${esc(m.needs)}. ${esc(m.avoid.replace(/^./, x => 'Avoid ' + x.toLowerCase()))}</p><p class="faint" style="margin-top:4px">Needs to hear: ${m.say.concat(v.say).slice(0, 3).map(esc).join(' ')}</p></div>`; };
+    const a = state.connect.myType, b = state.connect.theirType, mm = a && b ? CN.mbtiMatch(a, b) : null;
+    return `<h3>Attraction and personality</h3>
+      <div class="card"><div class="eyebrow">Polarity</div>${polarBar({ name: nA, y: yA })}${polarBar({ name: nB, y: yB })}<p class="muted" style="margin-top:6px"><b>Contrast ${diff} points.</b> ${polarPair(diff)}</p></div>
+      <div class="grid-2">${reach(CA, nA, nB)}${reach(CB, nB, nA)}</div>
+      ${mm ? `<p class="note">Personality types: ${a} (${CN.MBTI[a].name}) with ${b} (${CN.MBTI[b].name}), <b>${{ best: 'natural match', good: 'workable match', hard: 'challenging match' }[mm.level]}</b>. ${esc(mm.text)}</p>` : '<p class="faint no-print">Add both personality types on the Love &amp; connection tab to include them here.</p>'}`;
+  }
+
   function improvementPlan(areas, mode) {
     const CP = window.ChartCompat;
     const rows = areas.slice().sort((a, b) => a.score - b.score).map(a => {
@@ -6424,7 +7056,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
   }
 
   // ---------- tabs ----------
-  const RENDER = { rhythms: renderRhythms, guide: renderGuide, compat: renderCompat, reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
+  const RENDER = { connect: renderConnect, rhythms: renderRhythms, guide: renderGuide, compat: renderCompat, reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
 
   function showTab(tab) {
     state.tab = tab;
@@ -6736,7 +7368,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       document.querySelector('main').innerHTML = '<div class="card"><h2>The chart engine did not load</h2><p class="muted">Reload the page. If it keeps happening, the file may be incomplete: upload the full index.html again.</p></div>';
       return;
     }
-    bindWheel(); bindTabs(); bindCustomize(); bindDialog(); bindCompat(); bindGuide(); bindRhythms();
+    bindWheel(); bindTabs(); bindCustomize(); bindDialog(); bindCompat(); bindGuide(); bindRhythms(); bindConnect();
     $('main').addEventListener('click', e => { if (e.target.id === 'reading-print' || e.target.id === 'rhythms-print') printPanel(); });
     if (!window.matchMedia('(hover: hover)').matches) {
       $('#wheel-hint').textContent = 'Tap any symbol, sign or house number to read about it. Tap the centre to close.';

@@ -1086,6 +1086,280 @@
       </div>`;
   }
 
+  // ---------- Love & connection ----------
+  const CN = window.ChartConnect;
+  state.connect = { who: store.get('connectWho', 'current'), line: 'heart', shape: store.get('palmShape', ''), myType: store.get('mbtiMe', ''), theirType: store.get('mbtiThem', '') };
+
+  // --- SVG illustrations ---
+  const EL_VAR = { fire: 'var(--fire)', earth: 'var(--earth)', air: 'var(--air)', water: 'var(--water)' };
+  function medallion(signIndex, label) {
+    const sg = E.SIGNS[signIndex];
+    const ticks = Array.from({ length: 24 }, (_, i) => { const a = i * 15 * Math.PI / 180; const r1 = 54, r2 = i % 2 ? 58 : 61; return `<line x1="${f(60 + r1 * Math.cos(a))}" y1="${f(60 + r1 * Math.sin(a))}" x2="${f(60 + r2 * Math.cos(a))}" y2="${f(60 + r2 * Math.sin(a))}"/>`; }).join('');
+    return `<svg class="medal" viewBox="0 0 120 120" role="img" aria-label="${esc(sg.name)}${label ? ', ' + esc(label) : ''}">
+      <circle cx="60" cy="60" r="62" class="m-ring"/><g class="m-ticks">${ticks}</g>
+      <circle cx="60" cy="60" r="50" style="fill:${EL_VAR[sg.element]}" class="m-face"/>
+      <circle cx="60" cy="60" r="44" class="m-inner"/>
+      <text x="60" y="56" class="m-glyph">${signGlyph(sg)}</text>
+      <text x="60" y="86" class="m-name">${esc(sg.name.toUpperCase())}</text>
+    </svg>`;
+  }
+  // A right hand, palm facing you (thumb on the left). opts: palmW, palmH, fing (finger length), tip ('square'|'round'|'taper').
+  function handSVG(o, interactive) {
+    const W = 260, px = 70, py = 130, pw = o.palmW, ph = o.palmH;
+    const fw = pw * 0.2, L = o.fing;
+    const lens = [0.9, 1, 0.95, 0.74], cx = [0.13, 0.38, 0.62, 0.86];
+    const rx = o.tip === 'square' ? 5 : fw / 2;
+    const fingers = cx.map((c, i) => {
+      const w = o.tip === 'taper' ? fw * 0.86 : fw, h = L * lens[i];
+      const x = px + pw * c - w / 2, y = py - h + 8;
+      return `<rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h + 10)}" rx="${f(Math.min(rx, w / 2))}" class="h-skin"/>`;
+    }).join('');
+    const thumb = `<rect x="${f(px - 18)}" y="${f(py + ph * 0.3)}" width="${f(fw * 1.05)}" height="${f(L * 0.78)}" rx="${f(Math.min(rx + 3, fw / 2))}" class="h-skin" transform="rotate(-38 ${f(px + 4)} ${f(py + ph * 0.62)})"/>`;
+    const palm = `<rect x="${px}" y="${py}" width="${f(pw)}" height="${f(ph)}" rx="${f(o.tip === 'square' ? 12 : 24)}" class="h-skin"/>`;
+    const wrist = `<rect x="${f(px + pw * 0.12)}" y="${f(py + ph - 10)}" width="${f(pw * 0.76)}" height="46" rx="10" class="h-skin"/>`;
+    // Lines, in palm coordinates.
+    const X = t => f(px + pw * t), Y = t => f(py + ph * t);
+    const lines = interactive ? {
+      heart: `M${X(1)} ${Y(0.2)} C ${X(0.75)} ${Y(0.12)}, ${X(0.5)} ${Y(0.24)}, ${X(0.3)} ${Y(0.06)}`,
+      head: `M${X(0.02)} ${Y(0.34)} C ${X(0.3)} ${Y(0.33)}, ${X(0.6)} ${Y(0.42)}, ${X(0.92)} ${Y(0.5)}`,
+      life: `M${X(0.06)} ${Y(0.3)} C ${X(0.4)} ${Y(0.4)}, ${X(0.38)} ${Y(0.75)}, ${X(0.3)} ${Y(1)}`,
+      fate: `M${X(0.52)} ${Y(1)} C ${X(0.5)} ${Y(0.7)}, ${X(0.47)} ${Y(0.35)}, ${X(0.42)} ${Y(0.08)}`,
+      sun: `M${X(0.7)} ${Y(0.82)} C ${X(0.68)} ${Y(0.55)}, ${X(0.66)} ${Y(0.3)}, ${X(0.64)} ${Y(0.1)}`,
+      union: `M${X(1)} ${Y(0.1)} L ${X(0.9)} ${Y(0.105)} M${X(1)} ${Y(0.14)} L ${X(0.92)} ${Y(0.145)}`,
+      venus: `M${X(0.3)} ${Y(0.02)} C ${X(0.4)} ${Y(0.14)}, ${X(0.65)} ${Y(0.14)}, ${X(0.75)} ${Y(0.02)}`,
+      solomon: `M${X(0.04)} ${Y(0.06)} C ${X(0.1)} ${Y(0.12)}, ${X(0.2)} ${Y(0.12)}, ${X(0.26)} ${Y(0.03)}`,
+      bracelets: `M${X(0.2)} ${f(py + ph + 8)} L ${X(0.8)} ${f(py + ph + 8)} M${X(0.2)} ${f(py + ph + 20)} L ${X(0.8)} ${f(py + ph + 20)}`
+    } : null;
+    const lineSvg = lines ? Object.entries(lines).map(([k, d]) => `<g class="pl${state.connect.line === k ? ' on' : ''}" data-line="${k}" tabindex="0" role="button" aria-label="${esc(CN.PALM.lines[k].name)}"><path d="${d}" class="pl-hit"/><path d="${d}" class="pl-line"/></g>`).join('') : '';
+    return `<svg class="hand${interactive ? ' interactive' : ''}" viewBox="0 0 ${W} ${f(py + ph + 46)}" role="img" aria-label="Hand diagram">${thumb}${wrist}${palm}${fingers}${lineSvg}</svg>`;
+  }
+  const HAND_SHAPES = {
+    earth: { palmW: 130, palmH: 130, fing: 92, tip: 'square' },
+    air: { palmW: 124, palmH: 120, fing: 118, tip: 'round' },
+    water: { palmW: 104, palmH: 150, fing: 120, tip: 'taper' },
+    fire: { palmW: 124, palmH: 150, fing: 86, tip: 'round' }
+  };
+  function nailSVG(shape) {
+    const nail = {
+      long: '<rect x="30" y="18" width="20" height="40" rx="9"/>',
+      wide: '<rect x="22" y="30" width="36" height="26" rx="8"/>',
+      oval: '<ellipse cx="40" cy="40" rx="15" ry="18"/>',
+      triangle: '<path d="M24 58 L40 20 L56 58 Z" stroke-linejoin="round"/>',
+      almond: '<path d="M40 16 C 54 28, 54 50, 40 60 C 26 50, 26 28, 40 16 Z"/>'
+    }[shape];
+    return `<svg class="nail" viewBox="0 0 80 80" aria-hidden="true"><rect x="16" y="8" width="48" height="80" rx="22" class="h-skin"/><g class="n-shape">${nail}</g></svg>`;
+  }
+  function magnetSVG() {
+    return `<svg class="magnet" viewBox="0 0 420 170" role="img" aria-label="Two energies attracting">
+      ${[30, 55, 80].map(h => `<path d="M120 85 C 170 ${85 - h}, 250 ${85 - h}, 300 85" class="field"/><path d="M120 85 C 170 ${85 + h}, 250 ${85 + h}, 300 85" class="field"/>`).join('')}
+      <circle cx="90" cy="85" r="52" class="pole a"/><circle cx="330" cy="85" r="52" class="pole b"/>
+      <text x="90" y="80" class="pole-t">Active</text><text x="90" y="98" class="pole-s">yang · electric</text>
+      <text x="330" y="80" class="pole-t">Receptive</text><text x="330" y="98" class="pole-s">yin · magnetic</text>
+    </svg>`;
+  }
+  function clockSVG(place) {
+    const R = 96, c = 120, now = new Date();
+    let hourNow = now.getHours() + now.getMinutes() / 60;
+    try { if (place.tz) { const p = new Intl.DateTimeFormat('en-GB', { timeZone: place.tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(now).split(':'); hourNow = +p[0] + +p[1] / 60; } } catch (e) { /* fall back to device time */ }
+    const pt2 = (h, r) => { const a = (h / 24) * 2 * Math.PI - Math.PI / 2; return [c + r * Math.cos(a), c + r * Math.sin(a)]; };
+    const arc = (h1, h2, r1, r2) => { const [a, b] = pt2(h1, r2), [cc, d] = pt2(h2, r2), [e, g] = pt2(h2, r1), [h, i] = pt2(h1, r1); const large = h2 - h1 > 12 ? 1 : 0; return `M${f(a)} ${f(b)} A${r2} ${r2} 0 ${large} 1 ${f(cc)} ${f(d)} L${f(e)} ${f(g)} A${r1} ${r1} 0 ${large} 0 ${f(h)} ${f(i)} Z`; };
+    const segs = CN.TIMING.slots.map(sl => `<path d="${arc(sl.from, sl.to, 58, R)}" class="clk l${sl.level}"><title>${sl.name} (${sl.from}:00–${sl.to}:00): ${sl.best}</title></path>`).join('');
+    const nums = [0, 3, 6, 9, 12, 15, 18, 21].map(h => { const [x, y] = pt2(h, R + 14); return `<text x="${f(x)}" y="${f(y)}" class="clk-n">${h}</text>`; }).join('');
+    const [hx, hy] = pt2(hourNow, R + 2);
+    return `<svg class="clock" viewBox="0 0 240 240" role="img" aria-label="Best times of day to reach out">${segs}<circle cx="${c}" cy="${c}" r="56" class="clk-face"/>${nums}
+      <line x1="${c}" y1="${c}" x2="${f(hx)}" y2="${f(hy)}" class="clk-hand"/><circle cx="${c}" cy="${c}" r="4" class="clk-dot"/>
+      <text x="${c}" y="${c - 8}" class="clk-c">now</text><text x="${c}" y="${c + 10}" class="clk-c2">${String(Math.floor(hourNow)).padStart(2, '0')}:${String(Math.floor((hourNow % 1) * 60)).padStart(2, '0')}</text></svg>`;
+  }
+  function iconSVG(kind) {
+    const p = { Ask: '<path d="M8 10 h40 a6 6 0 0 1 6 6 v20 a6 6 0 0 1 -6 6 h-24 l-10 9 v-9 h-6 a6 6 0 0 1 -6 -6 v-20 a6 6 0 0 1 6 -6z"/><text x="30" y="34" class="ico-t">?</text>',
+      Watch: '<path d="M4 30 C 16 12, 44 12, 56 30 C 44 48, 16 48, 4 30 Z"/><circle cx="30" cy="30" r="9" class="ico-fill"/>',
+      Wait: '<path d="M16 6 h28 M16 54 h28 M18 6 C 18 22, 42 26, 42 30 C 42 34, 18 38, 18 54 M42 6 C 42 22, 18 26, 18 30 C 18 34, 42 38, 42 54"/>' }[kind];
+    return `<svg class="ico" viewBox="0 0 60 60" aria-hidden="true">${p}</svg>`;
+  }
+
+  function personChart(who) {
+    if (who === 'current') return { chart: state.chart, name: state.input.name || 'This chart' };
+    if (who === 'partner' && state.compat.B) return { chart: chartFor(state.compat.B), name: state.compat.B.name || 'Partner' };
+    if (who.startsWith('saved:')) { const sv = store.get('saved', [])[+who.slice(6)]; if (sv) return { chart: chartFor(sv), name: sv.name || 'Saved chart' }; }
+    if (who.startsWith('sign:')) return { sign: +who.slice(5) };
+    return { chart: state.chart, name: state.input.name || 'This chart' };
+  }
+
+  function heartSection() {
+    const who = state.connect.who;
+    const saved = store.get('saved', []);
+    const pc = personChart(who);
+    const options = `<option value="current" ${who === 'current' ? 'selected' : ''}>${esc(state.input.name || 'This chart')} (Chart tab)</option>
+      ${state.compat.B ? `<option value="partner" ${who === 'partner' ? 'selected' : ''}>${esc(state.compat.B.name || 'Partner')} (Compatibility, Person B)</option>` : ''}
+      ${saved.map((c, i) => `<option value="saved:${i}" ${who === 'saved:' + i ? 'selected' : ''}>${esc(c.name || 'Unnamed')} (saved)</option>`).join('')}
+      <optgroup label="Only know their Sun sign">${E.SIGNS.map((sg, i) => `<option value="sign:${i}" ${who === 'sign:' + i ? 'selected' : ''}>${sg.name}</option>`).join('')}</optgroup>`;
+    let body;
+    if (pc.sign != null) {
+      const d = CN.SIGNS[pc.sign], sg = E.SIGNS[pc.sign];
+      body = `<div class="card sign-card">${medallion(pc.sign)}<div>
+        <h3>${sg.name}</h3><p class="faint">${C.ELEMENTS[sg.element].name} · ${C.MODES[sg.mode].name}</p>
+        <p><b>Energy:</b> ${esc(d.energy)}</p><p><b>Attracted to:</b> ${esc(d.attracted)}</p><p><b>Connect by:</b> ${esc(d.connect)}</p>
+        <p><b>Avoid:</b> ${esc(d.avoid)}</p><p><b>Needs:</b> ${esc(d.needs)}. <span class="muted">${esc(CN.LEAD_TEXT[d.lead])}</span></p>
+        <p><b>What they need to hear:</b> ${d.say.map(esc).join(' ')}</p><p><b>Date ideas:</b> ${d.dates.map(esc).join('; ')}.</p>
+        <p class="note">Sun sign only gives part of the picture. With a birth date, add the person as a saved chart to read their Moon, Venus and Mars too.</p></div></div>`;
+    } else {
+      const c = pc.chart;
+      const idx = k => E.signOf(c.points.find(p => p.key === k).lon).index;
+      const roles = [
+        ['sun', 'Who they are', d => d.energy],
+        ['venus', 'What attracts them', d => d.attracted + ' ' + d.connect],
+        ['moon', 'What makes them feel safe', d => `They need ${d.needs}. ` + d.avoid.replace(/^/, 'Avoid: ')],
+        ['mars', 'What excites them', d => `Date ideas: ${d.dates.join('; ')}.`]
+      ];
+      const venus = CN.SIGNS[idx('venus')], moon = CN.SIGNS[idx('moon')], sun = CN.SIGNS[idx('sun')];
+      body = `<div class="medal-grid">${roles.map(([k, title, txt]) => `<div class="card medal-card">${medallion(idx(k), title)}<div class="eyebrow">${title}</div><h4>${P(k).name} in ${E.SIGNS[idx(k)].name}</h4><p class="muted">${esc(txt(CN.SIGNS[idx(k)]))}</p></div>`).join('')}</div>
+        <div class="grid-2">
+          <div class="card"><div class="eyebrow">What ${esc(pc.name)} needs to hear</div><ul class="syn-list" style="margin-top:6px">${moon.say.concat(venus.say).map(t => `<li>${esc(t)}</li>`).join('')}</ul><p class="faint" style="margin-top:6px">From their Moon (feeling safe) and Venus (feeling loved). Say it only if you mean it, in your own words.</p></div>
+          <div class="card"><div class="eyebrow">In short</div><p style="margin-top:6px"><b>Lead or share?</b> ${esc(CN.LEAD_TEXT[venus.lead])}</p><p style="margin-top:6px"><b>Avoid:</b> ${esc(venus.avoid)}</p><p style="margin-top:6px"><b>Who they are:</b> ${esc(sun.connect)}</p></div>
+        </div>`;
+    }
+    return `<div class="section cn" id="cn-heart">
+      <div class="section-head"><h3>How to win their heart</h3>
+        <div class="field no-print cn-who"><label for="cn-who">Read the chart of</label><select id="cn-who">${options}</select></div></div>
+      <p class="muted">Love in a chart is read from four placements: the Sun (who they are), Venus (what attracts them), the Moon (what makes them feel safe) and Mars (what excites them).</p>
+      ${body}</div>`;
+  }
+
+  // Share of fire and air (active, yang) among the main placements, in percent.
+  function yangOf(c) {
+    let act = 0, tot = 0;
+    Object.entries({ sun: 3, moon: 3, asc: 3, mercury: 2, venus: 2, mars: 2, jupiter: 1.5, saturn: 1.5 }).forEach(([k, wt]) => { const p = c.points.find(x => x.key === k); if (!p || (c.noHouses && k === 'asc')) return; const el = E.signOf(p.lon).sign.element; if (el === 'fire' || el === 'air') act += wt; tot += wt; });
+    return Math.round(act / tot * 100);
+  }
+  const polarBar = p => `<div class="pol-row"><span>${esc(p.name)}</span><div class="polar"><div class="pa" style="width:${p.y}%"><span>Active ${p.y}%</span></div><div class="pb" style="width:${100 - p.y}%"><span>Receptive ${100 - p.y}%</span></div></div></div>`;
+  const polarPair = diff => diff >= 20 ? 'Strong contrast: natural magnetism. One tends to lead and the other to flow.' : diff >= 10 ? 'Moderate contrast: some natural pull, with room to take turns.' : 'Similar energy: easy understanding, more friendship-like. Create spark by consciously taking turns to lead and to receive.';
+
+  function polaritySection() {
+    const yang = yangOf;
+    const me = { name: state.input.name || 'This chart', y: yang(state.chart) };
+    const them = state.compat.B ? { name: state.compat.B.name || 'Partner', y: yang(chartFor(state.compat.B)) } : null;
+    const bar = polarBar;
+    let pair = '';
+    if (them) {
+      const diff = Math.abs(me.y - them.y);
+      pair = `<p style="margin-top:8px"><b>Contrast between you: ${diff} points.</b> ${polarPair(diff)}</p>`;
+    }
+    return `<div class="section cn" id="cn-polarity"><h3>Polarity: the energy of attraction</h3>
+      <div class="grid-2"><div class="card">${magnetSVG()}<p class="muted" style="margin-top:6px">${esc(CN.POLARITY.intro)}</p></div>
+      <div class="card"><div class="legend" style="justify-content:flex-start"><span><i class="lg-a"></i>Active (fire, air)</span><span><i class="lg-b"></i>Receptive (earth, water)</span></div>
+        ${bar(me)}${them ? bar(them) : '<p class="faint">Add a Person B on the Compatibility tab to compare two people.</p>'}${pair}
+        <ul class="syn-list" style="margin-top:10px">${CN.POLARITY.points.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div></div></div>`;
+  }
+
+  function palmSection() {
+    const L = CN.PALM.lines[state.connect.line];
+    const dom = (() => { const b = balance(); return Object.keys(b.el).sort((x, y) => b.el[y] - b.el[x])[0]; })();
+    const sel = state.connect.shape;
+    const shape = CN.PALM.shapes.find(x => x.el === sel);
+    return `<div class="section cn" id="cn-palm"><h3>Palm reading</h3>
+      <p class="muted">${esc(CN.PALM.intro)} ${esc(CN.PALM.hands)}</p>
+      <div class="grid-2 palm-grid">
+        <div class="card palm-card">${handSVG({ palmW: 128, palmH: 140, fing: 104, tip: 'round' }, true)}<p class="faint" style="text-align:center">Tap a line on the hand.</p></div>
+        <div class="card"><div class="eyebrow">The lines</div>
+          <div class="chips no-print" style="margin:8px 0">${Object.entries(CN.PALM.lines).map(([k, v]) => `<button type="button" class="chip${k === state.connect.line ? ' on' : ''}" data-line="${k}">${esc(v.name)}</button>`).join('')}</div>
+          <h3 style="margin-top:6px">${esc(L.name)}</h3><p class="faint">${esc(L.where)}</p><p style="margin-top:6px">${esc(L.means)}</p>
+          <div class="print-only"><ul class="syn-list">${Object.values(CN.PALM.lines).map(v => `<li><b>${esc(v.name)}:</b> ${esc(v.means)}</li>`).join('')}</ul></div>
+        </div>
+      </div>
+      <h4 class="sub">Hand shape and the four elements</h4>
+      <div class="shape-grid">${CN.PALM.shapes.map(x => `<button type="button" class="shape-btn${x.el === sel ? ' on' : ''}" data-shape="${x.el}" aria-pressed="${x.el === sel}">${handSVG(HAND_SHAPES[x.el], false)}<b>${esc(x.name)}</b><span>${esc(x.look)}</span></button>`).join('')}</div>
+      <div class="card" style="margin-top:10px">${shape ? `<p><b>${esc(shape.name)}:</b> ${esc(shape.read)}</p><p class="muted" style="margin-top:6px">${shape.el === dom ? `This matches the chart's strongest element (${dom}): hand and chart tell the same story.` : `The chart's strongest element is ${dom}, while the hand shows ${shape.el}. The person may show a ${shape.el} side outwardly while being driven by ${dom} inside.`}</p>` : '<p class="muted">Choose the hand shape that looks most like the hand you are reading, and it will be compared with the strongest element in the chart.</p>'}</div>
+      <h4 class="sub">Fingernail shapes</h4>
+      <div class="nail-grid">${CN.PALM.nails.map(n => `<div class="nail-card">${nailSVG(n.shape)}<b>${esc(n.name)}</b><span class="muted">${esc(n.read)}</span></div>`).join('')}</div>
+      <h4 class="sub">The Chinese five-element hand types</h4>
+      <ul class="syn-list">${CN.PALM.chinese.map(x => `<li><b>${x.el}:</b> ${esc(x.read)}</li>`).join('')}</ul></div>`;
+  }
+
+  function mbtiSection() {
+    const types = Object.keys(CN.MBTI);
+    const opt = v => `<option value="">Choose…</option>${['Analyst', 'Diplomat', 'Sentinel', 'Explorer'].map(g => `<optgroup label="${g}s">${types.filter(t => CN.MBTI[t].group === g).map(t => `<option value="${t}" ${t === v ? 'selected' : ''}>${t} · ${CN.MBTI[t].name}</option>`).join('')}</optgroup>`).join('')}`;
+    const card = (t, who) => { const m = CN.MBTI[t]; return `<div class="card"><div class="eyebrow">${who} · ${m.group}</div><h3 style="margin:4px 0">${t} · The ${m.name}</h3><p>${esc(m.core)}</p><p class="muted" style="margin-top:6px"><b>In love:</b> ${esc(m.love)}</p><p class="muted"><b>Connect by:</b> ${esc(m.connect)}</p><p class="muted"><b>Needs to hear:</b> ${esc(m.hear)}</p><p class="faint">Natural matches: ${m.best.join(', ')} · More challenging: ${m.hard.join(', ')}</p></div>`; };
+    const a = state.connect.myType, b = state.connect.theirType;
+    const match = a && b ? CN.mbtiMatch(a, b) : null;
+    return `<div class="section cn" id="cn-mbti"><h3>Personality types (MBTI)</h3>
+      <p class="muted">The 16 Myers-Briggs types describe how someone gains energy (I/E), takes in information (S/N), decides (T/F) and organises life (J/P). It is a separate system from astrology, and a fun one to compare. A free test is at 16personalities.com.</p>
+      <div class="plan-controls no-print"><div class="field"><label for="mbti-me">Your type</label><select id="mbti-me">${opt(a)}</select></div><div class="field"><label for="mbti-them">Their type</label><select id="mbti-them">${opt(b)}</select></div></div>
+      ${match ? `<p class="note">${a} with ${b}: <b>${{ best: 'natural match', good: 'workable match', hard: 'challenging match' }[match.level]}</b>. ${esc(match.text)}</p>` : ''}
+      <div class="grid-2">${a ? card(a, 'You') : ''}${b ? card(b, 'Them') : ''}</div>
+      <p class="faint">How to bring it up: "I have a theory about what personality type you are. Want to take the test and see if I'm right?" Lead with your own result so it feels mutual.</p></div>`;
+  }
+
+  function chooseSection() {
+    const C2 = CN.CHOOSE;
+    const ticks = store.get('nonneg', {});
+    return `<div class="section cn" id="cn-choose"><h3>Choosing a partner wisely</h3>
+      <div class="method">${C2.method.map(m => `<div class="card method-card">${iconSVG(m.k)}<b>${m.k}</b><span class="muted">${esc(m.t)}</span></div>`).join('')}</div>
+      <div class="table-wrap"><table class="qa"><thead><tr><th>Ask naturally</th><th>A good sign</th><th>Watch out for</th></tr></thead><tbody>${C2.questions.map(q => `<tr class="static"><td><b>${esc(q.q)}</b></td><td>${esc(q.good)}</td><td>${esc(q.watch)}</td></tr>`).join('')}</tbody></table></div>
+      <div class="card"><div class="eyebrow">Watch, don't just ask</div><ul class="syn-list two-col" style="margin-top:6px">${C2.watch.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>
+      <div class="grid-2">
+        <div class="card flags green"><div class="eyebrow good-eyebrow">Green flags</div><ol>${C2.green.map(t => `<li>${esc(t)}</li>`).join('')}</ol></div>
+        <div class="card flags red"><div class="eyebrow bad-eyebrow">Red flags</div><ol>${C2.red.map(t => `<li>${esc(t)}</li>`).join('')}</ol><p class="note" style="margin-top:8px">${esc(C2.truth)}</p></div>
+      </div>
+      <div class="card"><div class="eyebrow">Your non-negotiables and preferences</div>
+        <p class="muted" style="margin:4px 0 8px">Tick what matters to you. Decide this before you are emotionally involved. It is saved in this browser and prints as your personal checklist.</p>
+        <div class="grid-2"><div><b>Non-negotiables</b>${C2.nonneg.map((t, i) => `<label class="check-line"><input type="checkbox" data-nn="n${i}" ${ticks['n' + i] ? 'checked' : ''}> ${esc(t)}</label>`).join('')}</div>
+        <div><b>Preferences (flexible)</b>${C2.prefs.map((t, i) => `<label class="check-line"><input type="checkbox" data-nn="p${i}" ${ticks['p' + i] ? 'checked' : ''}> ${esc(t)}</label>`).join('')}</div></div></div></div>`;
+  }
+
+  function boundarySection() {
+    const B = CN.BOUNDARIES;
+    return `<div class="section cn" id="cn-bound"><h3>Boundaries and saying no kindly</h3>
+      <div class="card"><ul class="syn-list">${B.principles.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>
+      <div class="script-grid">${B.scripts.map((x, i) => `<div class="card script"><div class="eyebrow">${esc(x.when)}</div><p>${esc(x.say)}</p><button type="button" class="btn small no-print" data-copy="${i}">Copy</button></div>`).join('')}</div>
+      <div class="card"><div class="eyebrow bad-eyebrow">Phrases that accidentally keep hopes up</div><ul class="syn-list" style="margin-top:6px">${B.avoid.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div></div>`;
+  }
+
+  function timingSection() {
+    const T2 = CN.TIMING;
+    const place = state.rhythm.place || { name: state.input.place || 'birth place', lat: state.input.lat, lon: state.input.lon, tz: state.input.tz || '' };
+    let ph = null; try { ph = E.planetaryHours(new Date(), place.lat, place.lon); } catch (e) { /* polar */ }
+    const venusHours = ph ? ph.hours.filter(h => h.ruler === 'venus' && h.end > new Date()).slice(0, 2) : [];
+    const dow = new Date().getDay();
+    return `<div class="section cn" id="cn-time"><h3>When to reach out</h3>
+      <div class="grid-2"><div class="card clock-card">${clockSVG(place)}<div class="legend" style="justify-content:center"><span><i class="lg-clk l3"></i>Best</span><span><i class="lg-clk l2"></i>Good</span><span><i class="lg-clk l1"></i>Light touch</span><span><i class="lg-clk l0"></i>Use rarely</span></div></div>
+      <div class="card"><ul class="syn-list">${T2.slots.map(sl => `<li><b>${sl.name}</b> <span class="faint">${sl.from}:00–${sl.to}:00</span><br><span class="muted">${esc(sl.best)} Avoid: ${esc(sl.avoid)}</span></li>`).join('')}</ul></div></div>
+      <div class="grid-2"><div class="card"><div class="eyebrow">Today</div><p style="margin-top:6px">${esc(T2.days[dow])}</p>
+        ${ph ? `<p class="muted" style="margin-top:6px">Today is ruled by ${P(ph.dayRuler).name}. ${ph.dayRuler === 'venus' ? 'Friday, the Venus day, is the classic day for love.' : ''} ${venusHours.length ? `Next Venus hour${venusHours.length > 1 ? 's' : ''} in ${esc(place.name)}: ${venusHours.map(h => fmtIn(h.start, place.tz, { hour: '2-digit', minute: '2-digit' })).join(' and ')}.` : ''}</p>` : ''}
+        <p class="faint" style="margin-top:6px">For dates and big conversations, see Cosmic rhythms → Best days → Romance.</p></div>
+      <div class="card"><div class="eyebrow">Replies</div><ul class="syn-list" style="margin-top:6px">${T2.replies.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div></div></div>`;
+  }
+
+  function renderConnect() {
+    const nav = [['cn-heart', 'Win their heart'], ['cn-polarity', 'Polarity'], ['cn-palm', 'Palm reading'], ['cn-mbti', 'Personality types'], ['cn-choose', 'Choosing wisely'], ['cn-bound', 'Boundaries'], ['cn-time', 'When to reach out']];
+    $('#panel-connect').innerHTML = `
+      <div class="section">
+        <div class="section-head"><div><span class="eyebrow">Love &amp; connection</span><h2>Understanding the people you connect with</h2></div><button class="btn small no-print" type="button" id="connect-print">Print this page</button></div>
+        <p class="muted">How to approach someone by their chart, the polarity behind attraction, palm reading, personality types, choosing a partner wisely, boundaries and timing. It works for anyone and any relationship. Connection is earned through presence, respect and patience: none of this replaces being genuinely yourself.</p>
+        <div class="chips no-print">${nav.map(([id, t]) => `<a class="chip" href="#${id}" data-scroll="${id}">${t}</a>`).join('')}</div>
+      </div>
+      ${heartSection()}${polaritySection()}${palmSection()}${mbtiSection()}${chooseSection()}${boundarySection()}${timingSection()}`;
+  }
+
+  function bindConnect() {
+    const panel = $('#panel-connect');
+    const rer = id => { renderConnect(); if (id) setTimeout(() => document.getElementById(id)?.scrollIntoView({ block: 'start' }), 0); };
+    panel.addEventListener('change', e => {
+      const t = e.target;
+      if (t.id === 'cn-who') { state.connect.who = t.value; store.set('connectWho', t.value); rer('cn-heart'); }
+      if (t.id === 'mbti-me') { state.connect.myType = t.value; store.set('mbtiMe', t.value); rer('cn-mbti'); }
+      if (t.id === 'mbti-them') { state.connect.theirType = t.value; store.set('mbtiThem', t.value); rer('cn-mbti'); }
+      if (t.dataset && t.dataset.nn) { const v = store.get('nonneg', {}); v[t.dataset.nn] = t.checked; store.set('nonneg', v); }
+    });
+    const pickLine = k => { state.connect.line = k; rer('cn-palm'); };
+    panel.addEventListener('click', e => {
+      const ln = e.target.closest('[data-line]'); if (ln) { pickLine(ln.dataset.line); return; }
+      const sh = e.target.closest('[data-shape]'); if (sh) { state.connect.shape = sh.dataset.shape; store.set('palmShape', sh.dataset.shape); rer('cn-palm'); return; }
+      const cp = e.target.closest('[data-copy]'); if (cp) { copyText(CN.BOUNDARIES.scripts[+cp.dataset.copy].say.replace(/^"|"$/g, ''), 'Copied'); return; }
+      if (e.target.id === 'connect-print') printPanel();
+    });
+    panel.addEventListener('keydown', e => { const ln = e.target.closest('[data-line]'); if (ln && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pickLine(ln.dataset.line); } });
+  }
+
   // ---------- Cosmic rhythms ----------
   const RH = window.ChartRhythms;
   state.rhythm = { place: null, activity: store.get('planActivity', 'start'), range: store.get('planRange', 60) };
@@ -1917,6 +2191,8 @@
 
         ${compositeSection(CA, CB, nA, nB)}
 
+        ${attractionSection(CA, CB, nA, nB)}
+
         ${conflictSection(CA, CB, nA, nB, r, 'love')}
 
         <h3>Every connection between the charts</h3>
@@ -1948,6 +2224,19 @@
     return `<div class="area-summary card">${areas.map(a => { const b = CP.bandOf(a.score); return `<div class="bar health"><span>${esc(a.name)}</span><div class="track"><div class="fill" style="width:${a.score}%"></div><i class="healthy-line" style="left:${CP.HEALTHY}%"></i></div><span class="num">${a.score}</span><span class="pill ${b.cls}">${esc(b.name.replace(' (healthy)', ''))}</span></div>`; }).join('')}
       <p class="faint">The thin line marks the healthy level (${CP.HEALTHY}).</p></div>`;
   }
+  // Love report: polarity, how to reach each other's heart (Venus and Moon signs), and MBTI types if chosen.
+  function attractionSection(CA, CB, nA, nB) {
+    const idx = (c, k) => E.signOf(c.points.find(p => p.key === k).lon).index;
+    const yA = yangOf(CA), yB = yangOf(CB), diff = Math.abs(yA - yB);
+    const reach = (c, n, other) => { const v = CN.SIGNS[idx(c, 'venus')], m = CN.SIGNS[idx(c, 'moon')];
+      return `<div class="card"><div class="eyebrow">How ${esc(other)} reaches ${esc(n)}'s heart</div><p style="margin-top:6px"><b>Venus in ${E.SIGNS[idx(c, 'venus')].name}:</b> ${esc(v.connect)}</p><p class="muted" style="margin-top:4px"><b>Moon in ${E.SIGNS[idx(c, 'moon')].name}:</b> needs ${esc(m.needs)}. ${esc(m.avoid.replace(/^./, x => 'Avoid ' + x.toLowerCase()))}</p><p class="faint" style="margin-top:4px">Needs to hear: ${m.say.concat(v.say).slice(0, 3).map(esc).join(' ')}</p></div>`; };
+    const a = state.connect.myType, b = state.connect.theirType, mm = a && b ? CN.mbtiMatch(a, b) : null;
+    return `<h3>Attraction and personality</h3>
+      <div class="card"><div class="eyebrow">Polarity</div>${polarBar({ name: nA, y: yA })}${polarBar({ name: nB, y: yB })}<p class="muted" style="margin-top:6px"><b>Contrast ${diff} points.</b> ${polarPair(diff)}</p></div>
+      <div class="grid-2">${reach(CA, nA, nB)}${reach(CB, nB, nA)}</div>
+      ${mm ? `<p class="note">Personality types: ${a} (${CN.MBTI[a].name}) with ${b} (${CN.MBTI[b].name}), <b>${{ best: 'natural match', good: 'workable match', hard: 'challenging match' }[mm.level]}</b>. ${esc(mm.text)}</p>` : '<p class="faint no-print">Add both personality types on the Love &amp; connection tab to include them here.</p>'}`;
+  }
+
   function improvementPlan(areas, mode) {
     const CP = window.ChartCompat;
     const rows = areas.slice().sort((a, b) => a.score - b.score).map(a => {
@@ -2260,7 +2549,7 @@
   }
 
   // ---------- tabs ----------
-  const RENDER = { rhythms: renderRhythms, guide: renderGuide, compat: renderCompat, reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
+  const RENDER = { connect: renderConnect, rhythms: renderRhythms, guide: renderGuide, compat: renderCompat, reading: renderReading, learn: renderLearn, data: renderData, traits: renderTraits, signature: renderSignature, big3: renderBig3, timing: () => renderTiming(false), houses: renderHouses };
 
   function showTab(tab) {
     state.tab = tab;
@@ -2572,7 +2861,7 @@
       document.querySelector('main').innerHTML = '<div class="card"><h2>The chart engine did not load</h2><p class="muted">Reload the page. If it keeps happening, the file may be incomplete: upload the full index.html again.</p></div>';
       return;
     }
-    bindWheel(); bindTabs(); bindCustomize(); bindDialog(); bindCompat(); bindGuide(); bindRhythms();
+    bindWheel(); bindTabs(); bindCustomize(); bindDialog(); bindCompat(); bindGuide(); bindRhythms(); bindConnect();
     $('main').addEventListener('click', e => { if (e.target.id === 'reading-print' || e.target.id === 'rhythms-print') printPanel(); });
     if (!window.matchMedia('(hover: hover)').matches) {
       $('#wheel-hint').textContent = 'Tap any symbol, sign or house number to read about it. Tap the centre to close.';
