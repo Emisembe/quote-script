@@ -825,6 +825,11 @@ sub("""// Desktop menu: if the Layout menu needs more than one row""", """// Sli
 
 // Desktop menu: if the Layout menu needs more than one row""")
 
+# Post thumbnails: the template's fallback branch called img.replace(url) with no
+# replacement, which turned the no-picture placeholder into the address "undefined"
+# (a broken image on the cards). Keep the address as it is instead.
+sub('''return img.replace("https://3.bp.blogspot.com/-Yw8BIuvwoSQ/VsjkCIMoltI/AAAAAAAAC4c/s55PW6xEKn0/s1600-r/nth.png");''', 'return img;', count=3)
+
 # Areas of Expertise: a seventh tile, Technology.
 sub("<!-- Sixth Ends -->", """<!-- Sixth Ends -->
 
@@ -910,7 +915,141 @@ sub("</b:section>\n</div>\n<div class='insta-wrap' id='section-6'>", f"""</b:sec
 
 sub("body#layout .office-contacts-wrap {", "body#layout .efic-feature-wrap, body#layout .efic-stats-wrap, body#layout .efic-newsletter-wrap, body#layout .foot-certs {\ndisplay: block !important;\nbackground: #fff !important;\npadding: 0 !important;\n}\nbody#layout .office-contacts-wrap {")
 
-sub("""// Desktop menu: if the Layout menu needs more than one row""", """// Message & Video (Layout > Message & Video): text gadget + video/photo card.
+sub("""// Desktop menu: if the Layout menu needs more than one row""", """// Post cards (Our Work & Insights, labels, search): each card shows its post's
+// video or first picture. A video plays inside the card, without opening the post.
+// Posts are read from the blog feed (or the post page when the feed is short);
+// pictures load at card size. A post with neither gets a clean navy card, never a
+// broken image. Cards added by "Learn More" are handled too.
+(function () {
+  var root = document.querySelector('.blog-posts');
+  if (!root || document.body.id === 'layout') { return; }
+  var YT = /(?:youtube(?:-nocookie)?\\.com\\/(?:watch\\?(?:[^#\\s"']*&(?:amp;)?)?v=|embed\\/|shorts\\/|live\\/)|youtu\\.be\\/)([A-Za-z0-9_-]{11})/;
+  var feed = null, pages = {}, playing = null;
+  function el(tag, cls) { var e = document.createElement(tag); if (cls) { e.className = cls; } return e; }
+  function key(u) { try { return new URL(u, location.href).pathname.replace(/\\/+$/, ''); } catch (e) { return ''; } }
+  function loadFeed() {
+    if (!feed) {
+      feed = fetch('/feeds/posts/default?alt=json&max-results=50', {credentials: 'same-origin'})
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          var map = {};
+          ((d && d.feed && d.feed.entry) || []).forEach(function (e) {
+            var alt = (e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0];
+            if (alt && e.content) { map[key(alt.href)] = {html: e.content.$t, thumb: e.media$thumbnail ? e.media$thumbnail.url : ''}; }
+          });
+          return map;
+        })['catch'](function () { return {}; });
+    }
+    return feed;
+  }
+  function fromPage(url) {
+    if (!pages[url]) {
+      pages[url] = fetch(url, {credentials: 'same-origin'})
+        .then(function (r) { return r.ok ? r.text() : ''; })
+        .then(function (t) {
+          var b = t && new DOMParser().parseFromString(t, 'text/html').querySelector('.post-body');
+          return b ? {html: b.innerHTML, thumb: ''} : null;
+        })['catch'](function () { return null; });
+    }
+    return pages[url];
+  }
+  // Blogger pictures come in many sizes: ask for one that fits the card.
+  function big(u) {
+    if (!/googleusercontent\\.com|bp\\.blogspot\\.com/.test(u)) { return u; }
+    return u.replace(/\\/(?:s|w)\\d+(?:-[a-z0-9-]+)?\\/(?=[^\\/]+$)/i, '/w800/').replace(/=(?:s|w)\\d+[^\\/=]*$/, '=w800');
+  }
+  // The post's first embedded video, else its first real picture, else a linked YouTube video.
+  function media(post) {
+    var doc = new DOMParser().parseFromString('<div>' + post.html + '</div>', 'text/html'), m, i;
+    var players = doc.querySelectorAll('iframe, embed, object, video');
+    for (i = 0; i < players.length; i++) {
+      var f = players[i], src = f.getAttribute('src') || f.getAttribute('data') || '', yid = f.getAttribute('youtube-src-id') || '';
+      if (/^[\\w-]{11}$/.test(yid)) { return {type: 'youtube', id: yid}; }
+      if ((m = src.match(YT))) { return {type: 'youtube', id: m[1]}; }
+      if (/^https:\\/\\/www\\.blogger\\.com\\/video\\.g\\?/.test(src)) { return {type: 'frame', src: src, thumb: post.thumb}; }
+      if (f.tagName === 'VIDEO') {
+        var s = src || ((f.querySelector('source[src]') || {}).getAttribute ? f.querySelector('source[src]').getAttribute('src') : '');
+        if (/^https?:\\/\\//.test(s)) { return {type: 'video', src: s, thumb: f.getAttribute('poster') || ''}; }
+      }
+    }
+    var imgs = doc.querySelectorAll('img[src]');
+    for (i = 0; i < imgs.length; i++) {
+      var g = imgs[i], u = g.getAttribute('src'), w = parseInt(g.getAttribute('width'), 10), h = parseInt(g.getAttribute('height'), 10);
+      if (!/^https?:\\/\\//.test(u) || w < 60 || h < 60 || /emoji|smilies|blank\\.gif|pixel|tracker/i.test(u)) { continue; }
+      return {type: 'image', src: big(u)};
+    }
+    var links = doc.querySelectorAll('a[href]');
+    for (i = 0; i < links.length; i++) {
+      if ((m = links[i].getAttribute('href').match(YT))) { return {type: 'youtube', id: m[1]}; }
+    }
+    return null;
+  }
+  function stop() {
+    if (!playing) { return; }
+    var p = playing;
+    playing = null;
+    p.box.classList.remove('pc-playing');
+    p.player.parentNode.removeChild(p.player);
+    p.close.parentNode.removeChild(p.close);
+  }
+  function play(box, m, title, button) {
+    stop();
+    var player;
+    if (m.type === 'video') {
+      player = el('video', 'pc-player');
+      player.src = m.src; player.controls = true; player.autoplay = true; player.setAttribute('playsinline', '');
+    } else {
+      player = el('iframe', 'pc-player');
+      player.src = m.type === 'youtube' ? 'https://www.youtube-nocookie.com/embed/' + m.id + '?autoplay=1&rel=0&playsinline=1' : m.src;
+      player.title = title || 'Video';
+      player.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
+      player.setAttribute('allowfullscreen', '');
+    }
+    var close = el('button', 'pc-close');
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close video');
+    close.innerHTML = '<i class="fa fa-times" aria-hidden="true"></i>';
+    close.addEventListener('click', function (e) { e.preventDefault(); stop(); button.focus(); });
+    box.appendChild(player); box.appendChild(close);
+    box.classList.add('pc-playing');
+    playing = {box: box, player: player, close: close};
+    close.focus();
+  }
+  function card(box) {
+    if (box.getAttribute('data-pc')) { return; }
+    box.setAttribute('data-pc', '1');
+    var a = box.querySelector('a.thumb'), img = a && a.querySelector('img');
+    if (!a || !img) { return; }
+    var title = ((box.querySelector('.post-title') || a).textContent || '').replace(/\\s+/g, ' ').trim();
+    var first = img.getAttribute('src') || '', backup = /^(https?:)?\\/\\//.test(first) && !/nth\\.png/.test(first) ? first : '';
+    function empty() { box.classList.add('pc-empty'); }
+    img.addEventListener('load', function () { if (img.naturalWidth > 1) { box.classList.remove('pc-empty'); } });
+    img.addEventListener('error', function () {
+      if (backup && img.getAttribute('src') !== backup) { img.src = backup; } else { empty(); }
+    });
+    if (!backup || (img.complete && !img.naturalWidth && img.getAttribute('loading') !== 'lazy')) { empty(); }
+    loadFeed().then(function (map) { return map[key(a.href)] || fromPage(a.href); }).then(function (post) {
+      var m = post && media(post);
+      if (!m) { return; }
+      var picture = m.type === 'image' ? m.src : m.type === 'youtube' ? 'https://i.ytimg.com/vi/' + m.id + '/hqdefault.jpg' : m.thumb;
+      if (picture && picture !== img.getAttribute('src')) { img.src = picture; }
+      if (m.type === 'image') { return; }
+      var b = el('button', 'pc-play');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Play video: ' + title);
+      b.innerHTML = '<i class="fa fa-play" aria-hidden="true"></i>';
+      b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); play(box, m, title, b); });
+      box.appendChild(b);
+      box.classList.add('pc-video');
+    });
+  }
+  function scan() { [].forEach.call(root.querySelectorAll('.block-image'), card); }
+  scan();
+  new MutationObserver(scan).observe(root, {childList: true, subtree: true});
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && playing) { var b = playing.box.querySelector('.pc-play'); stop(); if (b) { b.focus(); } } });
+})();
+
+// Message & Video (Layout > Message & Video): text gadget + video/photo card.
 (function () {
   var sec = document.getElementById('feature-story');
   if (!sec || document.body.id === 'layout') { return; }

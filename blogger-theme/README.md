@@ -11,11 +11,11 @@ The theme for eficc.blogspot.com, rebranded to the EFIC Brand Colour Guide v1.0.
 | `scripts/check.py` | Pre-upload audit. Everything must be proven by the original theme. |
 | `reference/proven.json` | What the original theme proves Blogger accepts, plus two documented exceptions. |
 | `scripts/preview.py` | Writes `preview/home.html` and `preview/post.html` for browser testing. |
-| `tests/` | Browser tests (Playwright): `full.js` menus and sharing, `langtest.js` languages and office cards, `slidetest.js` slideshow, `featuretest.js` Technology tile, message & video, newsletter, certifications, `statstest.js` numbers band, `contacttest.js` contact form prospect number. |
+| `tests/` | Browser tests (Playwright): `full.js` menus and sharing, `langtest.js` languages and office cards, `slidetest.js` slideshow, `featuretest.js` Technology tile, message & video, newsletter, certifications, `statstest.js` numbers band, `contacttest.js` contact form prospect number, `cardtest.js` post cards (pictures, videos playing in the card). |
 
 ```bash
 python3 scripts/build.py && python3 scripts/check.py theme-eficc.xml && python3 scripts/preview.py
-node tests/full.js && node tests/langtest.js && node tests/slidetest.js && node tests/featuretest.js && node tests/statstest.js && node tests/contacttest.js
+node tests/full.js && node tests/langtest.js && node tests/slidetest.js && node tests/featuretest.js && node tests/statstest.js && node tests/contacttest.js && node tests/cardtest.js
 ```
 
 ## Install
@@ -113,6 +113,16 @@ node tests/full.js && node tests/langtest.js && node tests/slidetest.js && node 
 - **One gadget per figure also works,** if you prefer dragging gadgets around. Use **Add a Gadget → HTML/JavaScript**, with the Title as the label and the Content as the number (optionally plus a link).
 - **Layout:** 4 figures sit in one row on computers. On tablets and phones they show 2 per row. With 5 or 6 figures, they show 3 per row on computers.
 - **Order:** on the homepage it goes Areas of Expertise → Numbers band → Message & Video.
+
+**Our Work & Insights: pictures and videos on the post cards**
+- **What each card shows:**
+  - **Video:** if a post has a video (a YouTube video, a video uploaded in Blogger, or a YouTube link), the card shows the video's picture with a gold play button. Press it and the video plays **inside the card**, without opening the post. A × button or the Esc key closes it, and starting another video stops the first one.
+  - **Picture:** otherwise, the card shows the post's first picture, filling the card. Blogger pictures are loaded at card size, so they are sharp but not heavy.
+  - **Neither:** a clean navy card with a faint EFIC behind the title, instead of a broken image.
+- **Fixed:** the broken picture with its text above an empty card. The 2016 template turned the "no picture" placeholder into the address `undefined`. The theme now leaves it alone, and the card script replaces it.
+- **Clicking the title or the card** still opens the post.
+- **Where the picture comes from:** the script reads each post from the blog feed. If your feed is set to short (**Settings → Site feed**), it reads the post page instead, so it works either way.
+- **Cards added by Learn More** are handled the same way.
 
 **Contact form: a prospect number for every message**
 - Every message sent through the contact form gets a number, for example **P-JD-20261029-143522**:

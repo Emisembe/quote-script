@@ -14,6 +14,7 @@ Each pattern below was built for a real blog (eficc.blogspot.com). It passed the
 9. Badge row (certifications, memberships, partners)
 10. Numbers band (key figures)
 11. Contact form: a reference number per message
+12. Post cards: picture or playable video from each post
 
 ---
 
@@ -200,3 +201,18 @@ Blogger's ContactForm gadget only emails the owner. It has no server-side hook, 
 - **Initials:** strip accents (`normalize('NFD')`), keep A–Z words, take up to 3. With no Latin name (empty, Chinese …), use `WEB`.
 - **Limits to tell the owner:** numbers are unique but not sequential, they aren't collected anywhere, and the email subject is Blogger's. For running numbers and a register, also post the form to a Google Apps Script web app that writes to a Sheet.
 - **Test with a stand-in** for Blogger's script: a target-phase click handler that validates, shows "Sending...", then "Message sent." and clears the form, recording the message. Assert the recorded message, the shown reference, failed-then-retry, and names (none, accents, hyphens, non-Latin).
+
+## 12. Post cards: picture or playable video from each post
+
+Old templates build index cards from `data:post.firstImageUrl` (or `thumbnailUrl`, or a placeholder), then rewrite the URL in jQuery. That breaks in three ways:
+- A one-argument `img.replace(url)` turns the placeholder into the address `undefined` (a broken image, with the alt text above an empty card). Fix it at the source: `return img;`.
+- A post with only a video gets no picture.
+- Pictures come at whatever size the post used.
+
+- **Read the post, then decide.** Fetch `/feeds/posts/default?alt=json&max-results=50` once (same origin; no JSONP needed on the live blog) and map entries by the `alternate` link's pathname. If an entry has no `content` (the feed is set to *short*), or a card is missing, `fetch()` the post page and read `.post-body`. Parse with `DOMParser` (nothing runs, nothing loads).
+- **Media order:** an embedded video wins (`iframe`/`embed`/`video`: YouTube URLs, the `youtube-src-id` attribute of videos uploaded in Blogger, `blogger.com/video.g` players, `<video src>`). Then the first real picture: skip pixels and icons (width or height under 60, `emoji`, `blank.gif`). Then a linked YouTube video.
+- **Picture size:** for `googleusercontent.com`/`bp.blogspot.com`, swap the size segment before the file name (`/s320/`, `/s72-c/`, `/w640-h400-rw/`) or the `=s…` suffix for `w800`. On `error`, fall back to the card's original picture, then to the empty state.
+- **Empty state:** a class on the card that hides the `img` (`visibility: hidden` keeps the height and hides the alt text) and paints a brand gradient with a faint wordmark.
+- **Video:** the YouTube picture (`i.ytimg.com/vi/ID/hqdefault.jpg`, which always exists), plus a `button` (`aria-label="Play video: <title>"`). On click, use `preventDefault()` and `stopPropagation()` (the card is a link). Add an `iframe` (youtube-nocookie, `autoplay=1&playsinline=1`) absolutely filling the card, plus a close button. Hide the title overlay while it plays. Allow one player at a time; Esc closes it; return focus to the play button.
+- **Later cards:** infinite-scroll "Learn More" (jquery.ias) appends `.post-grid` items, so watch `.blog-posts` with a MutationObserver and mark processed cards (`data-pc`).
+- **Test** with a fake feed and post pages routed in Playwright. Cover each media type, a short feed, a 404 on the large picture, the `undefined` src, one-at-a-time play, close/Esc/Enter, appended cards, and 320/390 px. The cards float, so screenshot a clip around them, not the wrapper (it has no height).
