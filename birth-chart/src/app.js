@@ -125,7 +125,8 @@
       `<span>${esc(dateTxt)}</span>`,
       `<span>${i.timeUnknown ? 'Time unknown (noon chart)' : esc(i.time) + ' ' + offTxt}</span>`,
       `<span>${esc(i.place || `${i.lat.toFixed(2)}°, ${i.lon.toFixed(2)}°`)}</span>`,
-      i.timeUnknown ? '' : `<span>${sysName} houses</span>`
+      i.timeUnknown ? '' : `<span>${sysName} houses</span>`,
+      i.mbti && window.ChartConnect.MBTI[i.mbti] ? `<span>${esc(i.mbti)} · ${esc(window.ChartConnect.MBTI[i.mbti].name)}</span>` : ''
     ].join('');
     document.title = (i.name ? i.name + ' · ' : '') + 'Natal Chart Studio';
     $('#example-banner').hidden = !i.example;
@@ -1049,6 +1050,7 @@
         <div class="chips">${toc}</div>
         <div class="actions no-print"><button class="btn small" type="button" id="reading-print">Print reading</button></div>
       </div>
+      ${state.input.mbti && MB.LIFE[state.input.mbti] ? `<div class="section"><h3>Personality type</h3><p class="muted">The type was entered with the birth data. It is a separate system from astrology; where both say the same thing, the reading is on firmer ground.</p>${typeProfile(state.input.mbti, state.input.name || 'This chart')}</div>` : ''}
       ${groups.map(([title, ks]) => {
         const items = ks.filter(k => keys.includes(k)).map(pt);
         const intro = title === 'The lights' ? `<div class="card"><div class="eyebrow">Sun–Moon blend</div><p style="margin-top:6px">${esc(sunMoonText())}</p></div>` : '';
@@ -1088,7 +1090,12 @@
 
   // ---------- Love & connection ----------
   const CN = window.ChartConnect;
-  state.connect = { who: store.get('connectWho', 'current'), line: 'heart', shape: store.get('palmShape', ''), myType: store.get('mbtiMe', ''), theirType: store.get('mbtiThem', '') };
+  state.connect = { who: store.get('connectWho', 'current'), line: 'heart', shape: store.get('palmShape', '') };
+  const MB = window.ChartMBTI;
+  const TYPE_GROUPS = ['Analyst', 'Diplomat', 'Sentinel', 'Explorer'];
+  // <option> list of the 16 types grouped by temperament, with the given type selected.
+  const typeOptions = (v, blank = 'Not set') => `<option value="">${blank}</option>${TYPE_GROUPS.map(g => `<optgroup label="${g}s">${Object.keys(CN.MBTI).filter(t => CN.MBTI[t].group === g).map(t => `<option value="${t}" ${t === v ? 'selected' : ''}>${t} · ${CN.MBTI[t].name}</option>`).join('')}</optgroup>`).join('')}`;
+  const typeName = t => t && CN.MBTI[t] ? `${t} (${CN.MBTI[t].name})` : '';
 
   // --- SVG illustrations ---
   const EL_VAR = { fire: 'var(--fire)', earth: 'var(--earth)', air: 'var(--air)', water: 'var(--water)' };
@@ -1277,14 +1284,13 @@
   }
 
   function mbtiSection() {
-    const types = Object.keys(CN.MBTI);
-    const opt = v => `<option value="">Choose…</option>${['Analyst', 'Diplomat', 'Sentinel', 'Explorer'].map(g => `<optgroup label="${g}s">${types.filter(t => CN.MBTI[t].group === g).map(t => `<option value="${t}" ${t === v ? 'selected' : ''}>${t} · ${CN.MBTI[t].name}</option>`).join('')}</optgroup>`).join('')}`;
+    const opt = v => typeOptions(v, 'Choose…');
     const card = (t, who) => { const m = CN.MBTI[t]; return `<div class="card"><div class="eyebrow">${who} · ${m.group}</div><h3 style="margin:4px 0">${t} · The ${m.name}</h3><p>${esc(m.core)}</p><p class="muted" style="margin-top:6px"><b>In love:</b> ${esc(m.love)}</p><p class="muted"><b>Connect by:</b> ${esc(m.connect)}</p><p class="muted"><b>Needs to hear:</b> ${esc(m.hear)}</p><p class="faint">Natural matches: ${m.best.join(', ')} · More challenging: ${m.hard.join(', ')}</p></div>`; };
-    const a = state.connect.myType, b = state.connect.theirType;
+    const a = state.input.mbti || '', b = (state.compat.B && state.compat.B.mbti) || '';
     const match = a && b ? CN.mbtiMatch(a, b) : null;
     return `<div class="section cn" id="cn-mbti"><h3>Personality types (MBTI)</h3>
       <p class="muted">The 16 Myers-Briggs types describe how someone gains energy (I/E), takes in information (S/N), decides (T/F) and organises life (J/P). It is a separate system from astrology, and a fun one to compare. A free test is at 16personalities.com.</p>
-      <div class="plan-controls no-print"><div class="field"><label for="mbti-me">Your type</label><select id="mbti-me">${opt(a)}</select></div><div class="field"><label for="mbti-them">Their type</label><select id="mbti-them">${opt(b)}</select></div></div>
+      <div class="plan-controls no-print"><div class="field"><label for="mbti-me">${esc(state.input.name || 'This chart')}</label><select id="mbti-me">${opt(a)}</select></div><div class="field"><label for="mbti-them">${esc((state.compat.B && state.compat.B.name) || 'Partner')} (Person B)</label><select id="mbti-them">${opt(b)}</select></div></div>
       ${match ? `<p class="note">${a} with ${b}: <b>${{ best: 'natural match', good: 'workable match', hard: 'challenging match' }[match.level]}</b>. ${esc(match.text)}</p>` : ''}
       <div class="grid-2">${a ? card(a, 'You') : ''}${b ? card(b, 'Them') : ''}</div>
       <p class="faint">How to bring it up: "I have a theory about what personality type you are. Want to take the test and see if I'm right?" Lead with your own result so it feels mutual.</p></div>`;
@@ -1295,7 +1301,7 @@
     const ticks = store.get('nonneg', {});
     return `<div class="section cn" id="cn-choose"><h3>Choosing a partner wisely</h3>
       <div class="method">${C2.method.map(m => `<div class="card method-card">${iconSVG(m.k)}<b>${m.k}</b><span class="muted">${esc(m.t)}</span></div>`).join('')}</div>
-      <div class="table-wrap"><table class="qa"><thead><tr><th>Ask naturally</th><th>A good sign</th><th>Watch out for</th></tr></thead><tbody>${C2.questions.map(q => `<tr class="static"><td><b>${esc(q.q)}</b></td><td>${esc(q.good)}</td><td>${esc(q.watch)}</td></tr>`).join('')}</tbody></table></div>
+      <div class="table-wrap"><table class="qa"><thead><tr><th>Ask naturally</th><th>A good sign</th><th>Watch out for</th></tr></thead><tbody>${C2.questions.map(q => `<tr class="static"><td><b>${esc(q.q)}</b></td><td data-label="Good sign: " class="good-cell">${esc(q.good)}</td><td data-label="Watch for: " class="bad-cell">${esc(q.watch)}</td></tr>`).join('')}</tbody></table></div>
       <div class="card"><div class="eyebrow">Watch, don't just ask</div><ul class="syn-list two-col" style="margin-top:6px">${C2.watch.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>
       <div class="grid-2">
         <div class="card flags green"><div class="eyebrow good-eyebrow">Green flags</div><ol>${C2.green.map(t => `<li>${esc(t)}</li>`).join('')}</ol></div>
@@ -1347,8 +1353,8 @@
     panel.addEventListener('change', e => {
       const t = e.target;
       if (t.id === 'cn-who') { state.connect.who = t.value; store.set('connectWho', t.value); rer('cn-heart'); }
-      if (t.id === 'mbti-me') { state.connect.myType = t.value; store.set('mbtiMe', t.value); rer('cn-mbti'); }
-      if (t.id === 'mbti-them') { state.connect.theirType = t.value; store.set('mbtiThem', t.value); rer('cn-mbti'); }
+      if (t.id === 'mbti-me') { state.input = { ...state.input, mbti: t.value }; store.set('input', state.input); renderHeader(); rer('cn-mbti'); }
+      if (t.id === 'mbti-them') { state.compat.B = { ...(state.compat.B || {}), mbti: t.value }; store.set('compatB', state.compat.B); rer('cn-mbti'); }
       if (t.dataset && t.dataset.nn) { const v = store.get('nonneg', {}); v[t.dataset.nn] = t.checked; store.set('nonneg', v); }
     });
     const pickLine = k => { state.connect.line = k; rer('cn-palm'); };
@@ -1851,6 +1857,41 @@
     return 'Your chart is balanced between independence and structure. A stable base plus a side project, or an autonomous role inside an organisation, often works best.';
   }
 
+  // Personality-type layer for a Life guidance answer; asks for a type when none is set.
+  function typeGuide(key) {
+    const t = state.input.mbti, Lt = t && MB.LIFE[t], Mt = t && CN.MBTI[t];
+    if (key === 'home') return '';
+    if (!Lt) return sectionHtml('Add a personality type', '<p class="muted">Add a personality type (MBTI) under <b>Edit birth data</b> and this answer gains a second layer: how the type handles this area of life, and where it agrees with the chart.</p>');
+    const title = `Personality type: ${typeName(t)}`;
+    if (key === 'career') {
+      const chartFields = careerFields().map(f => f.field);
+      const agree = chartFields.filter(f => MB.tagsOf(f).some(tg => Lt.tags.includes(tg)))
+        .filter((f, _, all) => !all.some(g => g !== f && g.toLowerCase().includes(f.toLowerCase())));
+      return sectionHtml(title, `<p><b>Fields that suit the type:</b> ${esc(Lt.career.join(', '))}.</p><p>${esc(Lt.work)}</p><p><b>Leads best in:</b> ${esc(Lt.lead)}.</p>`
+        + (agree.length ? `<div class="agree"><div class="eyebrow good-eyebrow">Where chart and type agree</div><p>${agree.map(f => `<b>${esc(f.charAt(0).toUpperCase() + f.slice(1))}</b>`).join(', ')}.</p><p class="faint">These fields come up in the chart and match the type's strengths, so they are the strongest suggestions.</p></div>`
+          : '<p class="muted">The chart and the type point in different directions. Look for roles that combine both, for example the chart\'s field done in the way the type likes to work.</p>'));
+    }
+    const parts = {
+      love: [['In love', Mt.love], ['Connect by', Mt.connect], ['Needs to hear', Mt.hear], ['Natural matches', Mt.best.map(typeName).join(', ')]],
+      money: [['Money style', Lt.money]],
+      health: [['Stress triggers', Lt.stress], ['How they recover', Lt.recover]],
+      purpose: [['Core', Mt.core], ['Growth edge', Lt.grow]],
+      friends: [['Friendship', Lt.friends], ['Communication', Lt.comm]],
+      mind: [['How they learn', Lt.learn], ['Communication', Lt.comm]],
+      strengths: [['Core', Mt.core], ['At work', Lt.work], ['Growth edge', Lt.grow]]
+    }[key] || [];
+    return parts.length ? sectionHtml(title, parts.map(([k, v]) => `<p><b>${k}:</b> ${esc(v)}</p>`).join('')) : '';
+  }
+
+  // Personality type across every area of life (Full reading).
+  function typeProfile(t, name) {
+    const Lt = MB.LIFE[t], Mt = CN.MBTI[t];
+    const rows = [['Core', Mt.core], ['Career', Lt.career.join(', ') + '. ' + Lt.work], ['Leads best in', Lt.lead], ['Money', Lt.money], ['Stress and recovery', Lt.stress + ' Recovers through: ' + Lt.recover.charAt(0).toLowerCase() + Lt.recover.slice(1)], ['Learning', Lt.learn], ['Communication', Lt.comm], ['Love', Mt.love], ['Friendship', Lt.friends], ['Growth edge', Lt.grow]];
+    return `<div class="card type-card"><div class="eyebrow">${esc(name)} · ${esc(Mt.group)}</div><h3 style="margin:4px 0 8px">${esc(typeName(t))}</h3>
+      <dl class="type-dl">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>
+      <p class="faint" style="margin-top:8px">${MB.DIMENSIONS.map((d, i) => esc(t[i] === d.a ? d.A : d.B)).join(' ')}</p></div>`;
+  }
+
   function guideTopic(key) {
     const nh = state.chart.noHouses;
     const noTime = nh ? '<p class="note">No birth time, so houses, the Midheaven and the Ascendant are left out. The answer uses planets and signs only.</p>' : '';
@@ -1953,6 +1994,7 @@
       body += sectionHtml('Balance', para(`Your strongest element is ${dominantEl()}. ${C.ELEMENTS[dominantEl()].text}`) + (lacking.length ? para(`Little ${lacking.join(' or ')} in the chart: ${lacking.map(k => C.ELEMENTS[k].text.split('.')[0].toLowerCase()).join('; ')} may need deliberate practice, or come through other people.`) : ''));
       reflect = ['Which talent do you take for granted?', 'Which tension has pushed you to grow the most?'];
     }
+    body += typeGuide(key);
     const topic = T.TOPICS.find(t => t.key === key);
     return `<div class="section guide-answer">
       <div class="print-only"><span class="eyebrow">Life guidance · ${esc(state.input.name || '')}</span></div>
@@ -2032,6 +2074,7 @@
         <div class="field"><label for="${id}-time">Time of birth</label><input type="time" id="${id}-time" value="${i.timeUnknown ? '' : esc(i.time || '')}" ${i.timeUnknown ? 'disabled' : ''}></div>
         <div class="field full"><label class="checks"><input type="checkbox" id="${id}-unknown" ${i.timeUnknown ? 'checked' : ''}> Birth time unknown</label></div>
         <div class="field full suggest"><label for="${id}-place">Place of birth</label><input type="text" id="${id}-place" value="${esc(i.place || '')}" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-places" placeholder="Start typing a city or town"><ul id="${id}-places" role="listbox" hidden></ul></div>
+        <div class="field full"><label for="${id}-mbti">Personality type (MBTI, optional)</label><select id="${id}-mbti">${typeOptions(i.mbti || '')}</select></div>
       </div>
       <details class="coords">
         <summary>Coordinates and time zone</summary>
@@ -2050,7 +2093,7 @@
     const unknown = v('unknown').checked;
     const i = {
       name: v('name').value.trim() || who, date: v('date').value, time: unknown ? '12:00' : v('time').value, timeUnknown: unknown,
-      place: v('place').value.trim(), lat: parseFloat(v('lat').value), lon: parseFloat(v('lon').value), tz: v('tz').value, utcOffset: parseFloat(v('offset').value)
+      place: v('place').value.trim(), lat: parseFloat(v('lat').value), lon: parseFloat(v('lon').value), tz: v('tz').value, utcOffset: parseFloat(v('offset').value), mbti: v('mbti').value
     };
     if (!i.date) return { error: `Enter a date of birth for ${who}.` };
     if (!unknown && !i.time) return { error: `Enter a birth time for ${who}, or tick "Birth time unknown".` };
@@ -2066,6 +2109,7 @@
     v('time').value = i.timeUnknown ? '' : (i.time || ''); v('unknown').checked = !!i.timeUnknown; v('time').disabled = !!i.timeUnknown;
     v('place').value = i.place || ''; v('lat').value = i.lat ?? ''; v('lon').value = i.lon ?? '';
     v('tz').value = TZS.includes(i.tz) ? i.tz : ''; v('offset').value = i.utcOffset ?? 0;
+    v('mbti').value = i.mbti || '';
   }
 
   function chartFor(i) {
@@ -2192,7 +2236,7 @@
 
         ${compositeSection(CA, CB, nA, nB)}
 
-        ${attractionSection(CA, CB, nA, nB)}
+        ${attractionSection(CA, CB, nA, nB, A.mbti, B.mbti)}
 
         ${conflictSection(CA, CB, nA, nB, r, 'love')}
 
@@ -2226,16 +2270,16 @@
       <p class="faint">The thin line marks the healthy level (${CP.HEALTHY}).</p></div>`;
   }
   // Love report: polarity, how to reach each other's heart (Venus and Moon signs), and MBTI types if chosen.
-  function attractionSection(CA, CB, nA, nB) {
+  function attractionSection(CA, CB, nA, nB, a, b) {
     const idx = (c, k) => E.signOf(c.points.find(p => p.key === k).lon).index;
     const yA = yangOf(CA), yB = yangOf(CB), diff = Math.abs(yA - yB);
     const reach = (c, n, other) => { const v = CN.SIGNS[idx(c, 'venus')], m = CN.SIGNS[idx(c, 'moon')];
       return `<div class="card"><div class="eyebrow">How ${esc(other)} reaches ${esc(n)}'s heart</div><p style="margin-top:6px"><b>Venus in ${E.SIGNS[idx(c, 'venus')].name}:</b> ${esc(v.connect)}</p><p class="muted" style="margin-top:4px"><b>Moon in ${E.SIGNS[idx(c, 'moon')].name}:</b> needs ${esc(m.needs)}. ${esc(m.avoid.replace(/^./, x => 'Avoid ' + x.toLowerCase()))}</p><p class="faint" style="margin-top:4px">Needs to hear: ${m.say.concat(v.say).slice(0, 3).map(esc).join(' ')}</p></div>`; };
-    const a = state.connect.myType, b = state.connect.theirType, mm = a && b ? CN.mbtiMatch(a, b) : null;
+    const mm = a && b ? CN.mbtiMatch(a, b) : null;
     return `<h3>Attraction and personality</h3>
       <div class="card"><div class="eyebrow">Polarity</div>${polarBar({ name: nA, y: yA })}${polarBar({ name: nB, y: yB })}<p class="muted" style="margin-top:6px"><b>Contrast ${diff} points.</b> ${polarPair(diff)}</p></div>
       <div class="grid-2">${reach(CA, nA, nB)}${reach(CB, nB, nA)}</div>
-      ${mm ? `<p class="note">Personality types: ${a} (${CN.MBTI[a].name}) with ${b} (${CN.MBTI[b].name}), <b>${{ best: 'natural match', good: 'workable match', hard: 'challenging match' }[mm.level]}</b>. ${esc(mm.text)}</p>` : '<p class="faint no-print">Add both personality types on the Love &amp; connection tab to include them here.</p>'}`;
+      ${mm ? `<p class="note">Personality types: ${a} (${CN.MBTI[a].name}) with ${b} (${CN.MBTI[b].name}), <b>${{ best: 'natural match', good: 'workable match', hard: 'challenging match' }[mm.level]}</b>. ${esc(mm.text)}</p>` : '<p class="faint no-print">Add a personality type for both people in the forms above to include it here.</p>'}`;
   }
 
   function improvementPlan(areas, mode) {
@@ -2315,6 +2359,20 @@
     drive: 'operations, delivery and hitting deadlines', power: 'leading teams and representing the business together',
     innovate: 'product development and new ventures', pressure: 'crisis handling and tough negotiations'
   };
+
+  // Business report: how two personality types decide, communicate and split the work.
+  function workTypesSection(a, b, nA, nB) {
+    const wp = a && b ? MB.workPair(a, b) : null;
+    if (!wp) return '<h3>Working styles</h3><p class="faint">Add a personality type (MBTI) for both people in the forms above to see how you decide, communicate and divide the work.</p>';
+    const style = (t, n) => `<div class="card"><div class="eyebrow">${esc(n)} · ${esc(typeName(t))}</div><p style="margin-top:6px">${esc(MB.LIFE[t].work)}</p><p class="muted" style="margin-top:6px"><b>Under stress:</b> ${esc(MB.LIFE[t].stress)}</p><p class="muted"><b>Communicates:</b> ${esc(MB.LIFE[t].comm)}</p></div>`;
+    return `<h3>Working styles</h3>
+      <p>${esc(wp.summary)}</p>
+      <div class="grid-2">${style(a, nA)}${style(b, nB)}</div>
+      <div class="table-wrap"><table class="qa"><thead><tr><th>Area</th><th>${esc(nA)} · ${a}</th><th>${esc(nB)} · ${b}</th><th>How to work together</th></tr></thead><tbody>
+        ${wp.dims.map((d, i) => `<tr class="static"><td><b>${esc(d.name)}</b><br><span class="pill ${d.same ? 'ok' : 'warn'}">${d.same ? 'Same' : 'Different'}</span></td><td data-label="${esc(nA)}: ">${esc(MB.DIMENSIONS[i][a[i] === MB.DIMENSIONS[i].a ? 'A' : 'B'].split(':')[0])}</td><td data-label="${esc(nB)}: ">${esc(MB.DIMENSIONS[i][b[i] === MB.DIMENSIONS[i].a ? 'A' : 'B'].split(':')[0])}</td><td data-label="Together: ">${esc(d.text)}</td></tr>`).join('')}
+      </tbody></table></div>
+      <div class="card"><div class="eyebrow">Who leads what</div><ul class="syn-list" style="margin-top:6px">${wp.lead.map(l => l.same ? `<li><b>Both</b> lean toward ${esc(l.a)}. Split it by project or client so you do not compete, and consciously cover the opposite side.</li>` : `<li><b>${esc(nA)}</b> leads ${esc(l.a)}; <b>${esc(nB)}</b> leads ${esc(l.b)}.</li>`).join('')}</ul></div>`;
+  }
 
   function renderWorkReport(A, B, CA, CB, r, nA, nB) {
     const L2 = window.ChartCompat.label;
@@ -2435,6 +2493,8 @@
 
         <h3>Agreements to make before you start</h3>
         <div class="card"><ol class="agree-list">${agreements.map(t => `<li>${esc(t)}</li>`).join('')}</ol></div>
+
+        ${workTypesSection(A.mbti, B.mbti, nA, nB)}
 
         ${conflictSection(CA, CB, nA, nB, r, 'work')}
 
@@ -2671,6 +2731,7 @@
     sel.innerHTML = `<option value="">Manual offset</option>` + TZS.map(z => `<option value="${z}">${z.replace(/_/g, ' ')}</option>`).join('');
     sel.value = TZS.includes(i.tz) ? i.tz : '';
     $('#f-offset').value = i.utcOffset;
+    $('#f-mbti').innerHTML = typeOptions(i.mbti || '');
     if (i.date) updateOffsetNote(); else $('#offset-note').textContent = 'Pick a city and the offset, including daylight saving time, is filled in for you.';
     $('#form-error').hidden = true;
     renderSaved();
@@ -2701,7 +2762,7 @@
     if (!Number.isFinite(off) || off < -14 || off > 14) return { error: 'UTC offset must be between −14 and 14 hours.' };
     const y = +date.slice(0, 4);
     if (y < 1800 || y > 2199) return { error: 'Dates between 1800 and 2199 are supported.' };
-    return { value: { name, date, time: timeUnknown ? '12:00' : time, timeUnknown, place: $('#f-place').value.trim(), lat, lon, tz: $('#f-tz').value, utcOffset: off } };
+    return { value: { name, date, time: timeUnknown ? '12:00' : time, timeUnknown, place: $('#f-place').value.trim(), lat, lon, tz: $('#f-tz').value, utcOffset: off, mbti: $('#f-mbti').value } };
   }
 
   // Place search used by every birth-place field: instant offline matches first, then

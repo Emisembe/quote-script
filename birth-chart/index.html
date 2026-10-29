@@ -121,6 +121,8 @@ p { margin: 0; }
 .faint { color: var(--ink-3); font-size: 13px; }
 
 .shell { max-width: 1180px; margin: 0 auto; display: grid; gap: 20px; }
+/* Grid items default to their content's width; let wide tables scroll inside their own box instead of stretching the page. */
+.shell > *, .panel { min-width: 0; }
 
 /* ---------- header ---------- */
 .masthead {
@@ -648,11 +650,27 @@ tr.static { cursor: default; }
   .chart-scroll { overflow: visible; }
   .chart-layout { grid-template-columns: 1fr; }
   .detail { position: static; box-shadow: none; }
-  .card, .stat, .house-row, .area-card, .reading-item, .table-wrap { box-shadow: none; break-inside: avoid; }
+  .card, .stat, .house-row, .area-card, .reading-item { box-shadow: none; break-inside: avoid; }
+  .table-wrap { box-shadow: none; } tr { break-inside: avoid; } thead { display: table-header-group; }
+  /* Long two-column card rows waste paper when a card cannot split; print them full width and let long cards flow. */
+  .grid-2.areas, .print-compat .grid-2 { display: block; }
+  .grid-2.areas > *, .print-compat .grid-2 > * { margin-top: 10px; }
+  .area-card, .print-compat .card { break-inside: auto; }
+  h3 + p, h3 + p.muted, .section-head + p { break-after: avoid; }
+  .syn-list { display: block; } .syn-list > li { margin-bottom: 7px; }
+  li { break-inside: avoid; }
   .grid-2, .grid-3 { grid-template-columns: 1fr 1fr; }
-  h2, h3 { break-after: avoid; }
+  h2, h3, h4, .section-head, .eyebrow { break-after: avoid; break-inside: avoid; }
+  /* Reserve room under a heading so it moves to the next page instead of sitting alone at the bottom. */
+  h2::after, h3::after, h4::after { content: ''; display: block; height: 120px; margin-bottom: -120px; }
   .table-wrap { overflow: visible; }
   a.chip { display: none; }
+}
+
+/* Comfortable finger-sized targets on touch screens. */
+@media (pointer: coarse) {
+  a.chip, button.chip, .btn.small { min-height: 36px; }
+  .check-line { min-height: 32px; align-items: center; }
 }
 
 /* ---------- Love & connection ---------- */
@@ -723,8 +741,8 @@ table.qa td:first-child { width: 30%; }
   table.qa tr { display: block; padding: 8px 0; border-bottom: 1px solid var(--line); }
   table.qa tr:last-child { border-bottom: 0; }
   table.qa td { display: block; width: auto !important; border: 0; padding: 3px 12px; }
-  table.qa td:nth-child(2)::before { content: "Good sign: "; font-weight: 700; color: var(--flow); }
-  table.qa td:nth-child(3)::before { content: "Watch for: "; font-weight: 700; color: var(--tension); }
+  table.qa td[data-label]::before { content: attr(data-label); font-weight: 700; color: var(--ink-2); }
+  table.qa td.good-cell::before { color: var(--flow); } table.qa td.bad-cell::before { color: var(--tension); }
 }
 .syn-list.two-col { columns: 2; column-gap: 24px; }
 .flags ol { margin: 8px 0 0 18px; padding: 0; }
@@ -767,6 +785,15 @@ table.qa td:first-child { width: 30%; }
   .polar span, .magnet .pole-t, .magnet .pole-s { color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .polar > div, .magnet .pole, .clock .clk { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* ---------- Personality types ---------- */
+.type-dl { display: grid; grid-template-columns: minmax(110px, 160px) 1fr; gap: 6px 14px; margin: 0; font-size: 14px; }
+.type-dl dt { font-weight: 700; color: var(--ink-2); }
+.type-dl dd { margin: 0; }
+.agree { margin-top: 10px; padding: 10px 12px; border-left: 3px solid var(--flow); background: color-mix(in srgb, var(--flow) 8%, transparent); border-radius: 0 8px 8px 0; }
+.agree p { margin-top: 4px; }
+@media (max-width: 600px) { .type-dl { grid-template-columns: 1fr; gap: 2px; } .type-dl dd { margin-bottom: 8px; } }
+@media print { .agree { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .type-card { break-inside: avoid; } }
 
 </style>
 </head>
@@ -961,6 +988,11 @@ table.qa td:first-child { width: 30%; }
         <input type="number" id="f-offset" step="0.25" min="-14" max="14">
       </div>
       <div class="field full"><span class="faint" id="offset-note"></span></div>
+      <div class="field full">
+        <label for="f-mbti">Personality type (MBTI, optional)</label>
+        <select id="f-mbti"></select>
+        <span class="faint">Adds personality detail to Life guidance, the Full reading and both compatibility reports. Unsure? Take the free test at 16personalities.com.</span>
+      </div>
     </div>
     <p class="form-error" id="form-error" hidden></p>
     <div class="actions">
@@ -4396,6 +4428,168 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
 
 </script>
 <script>
+/* content-mbti.js */
+/*
+ * Personality types (MBTI) across areas of life, how two types work together,
+ * and tags that let career suggestions from a type be compared with the chart.
+ * Love profiles live in content-connect.js (ChartConnect.MBTI).
+ */
+(function (root) {
+  'use strict';
+
+  const DIMENSIONS = [
+    { a: 'E', b: 'I', name: 'Energy', A: 'Extravert: recharges with people and action, thinks out loud.', B: 'Introvert: recharges alone, thinks before speaking.' },
+    { a: 'S', b: 'N', name: 'Information', A: 'Sensing: trusts facts, details and experience.', B: 'Intuition: trusts patterns, ideas and possibilities.' },
+    { a: 'T', b: 'F', name: 'Decisions', A: 'Thinking: decides by logic and consistency.', B: 'Feeling: decides by values and the effect on people.' },
+    { a: 'J', b: 'P', name: 'Lifestyle', A: 'Judging: likes plans, closure and deadlines.', B: 'Perceiving: likes options, flexibility and adapting.' }
+  ];
+
+  // Career tags, matched against the chart's career fields by keyword.
+  const TAG_WORDS = {
+    tech: /tech|\bIT\b|innovation|engineering|aviation|start-up|science/i,
+    science: /science|research|analysis|engineering|investigation|detective/i,
+    care: /care|nursing|social|childcare|healing|therapy|counselling|charity|health|medicine|nutrition|psychology/i,
+    arts: /art|design|music|film|fashion|beauty|photography|performing|craft|creative|entertainment/i,
+    business: /business|entrepreneur|sales|trade|management|finance|banking|consulting|real estate|start-up|self-employment|leadership|insurance|luxury/i,
+    people: /teaching|education|HR|diplomacy|mediation|counselling|public|community|networks|hospitality|young people/i,
+    words: /writing|journalism|media|publishing|translation|communication|marketing/i,
+    law: /law|government|politics|public service|mediation|military|security|administration/i,
+    action: /sport|fitness|emergency|military|surgery|crisis|security|competitive|travel|tourism|transport/i,
+    structure: /administration|management|editing|quality|architecture|construction|government|logistics|established/i,
+    spirit: /spiritual|religion|philosophy|healing|charity|heritage/i
+  };
+  const tagsOf = field => Object.keys(TAG_WORDS).filter(t => TAG_WORDS[t].test(field));
+
+  const LIFE = {
+    INTJ: { career: ['strategy and consulting', 'engineering and systems design', 'research and science', 'finance and investment', 'law'], tags: ['science', 'tech', 'business', 'law', 'structure'],
+      work: 'Works best alone or with a small, competent team, with a long-range goal and the freedom to design how to reach it.', lead: 'long-term strategy, systems and quality standards',
+      money: 'A planner: invests early, researches before buying and dislikes waste. Can be too private about money with a partner.',
+      stress: 'Incompetence, pointless rules, constant interruptions and being forced to improvise.', recover: 'Solitude, a hard problem to solve, and a plan put back in order.',
+      learn: 'Self-directed and conceptual: wants the theory and the why first, then masters it alone.', comm: 'Brief, direct and logical. May skip the warmth people need to hear the message.',
+      grow: 'Share the plan before it is finished, ask for input and show appreciation out loud.', friends: 'A few deep, long-term friends who enjoy ideas and do not need constant contact.' },
+    INTP: { career: ['software and data', 'science and research', 'philosophy and academia', 'engineering', 'analysis and design'], tags: ['tech', 'science', 'spirit', 'words'],
+      work: 'Needs autonomy, interesting problems and time to think. Routine and micromanagement drain them quickly.', lead: 'problem-solving, research and improving how things work',
+      money: 'Indifferent to money until it limits freedom. Benefits from automatic saving so it does not depend on attention.',
+      stress: 'Emotional pressure, small talk, rigid deadlines and being rushed to a decision.', recover: 'Time alone with a fascinating topic, a game or a project with no audience.',
+      learn: 'By questioning everything and building their own model. Bored by memorising without understanding.', comm: 'Precise, curious and full of caveats. Can sound detached when they are actually engaged.',
+      grow: 'Finish and ship things, and say what they feel as well as what they think.', friends: 'A small circle that enjoys long conversations, debates and shared interests.' },
+    ENTJ: { career: ['executive management', 'entrepreneurship', 'law', 'consulting', 'finance and investment'], tags: ['business', 'law', 'structure', 'science'],
+      work: 'Thrives in charge of something ambitious with clear goals, measurable results and capable people around them.', lead: 'direction, decisions, targets and negotiation',
+      money: 'Ambitious and strategic with money: builds income, invests and expects a return. Watch spending on status.',
+      stress: 'Inefficiency, indecision, losing control of an outcome and feeling incompetent.', recover: 'A clear win, exercise and time to reset the plan.',
+      learn: 'Fast, goal-driven and practical: learns what serves the objective, from experts and by doing.', comm: 'Direct, confident and decisive. Can steamroll quieter people without meaning to.',
+      grow: 'Listen fully before deciding, and value feelings as real information.', friends: 'Friends who are driven, honest and up for a challenge; loyal once trust is earned.' },
+    ENTP: { career: ['entrepreneurship and start-ups', 'marketing and media', 'consulting', 'law and debate', 'innovation and technology'], tags: ['business', 'tech', 'words', 'law'],
+      work: 'Thrives on new ideas, variety and challenge. Starts brilliantly and needs others to finish and maintain.', lead: 'new ideas, pitching, opportunities and solving problems in a crisis',
+      money: 'Spends on experiences and new ventures; income can be irregular. Needs a buffer and a partner or tool for the details.',
+      stress: 'Routine, rules for their own sake, detail work and people who will not engage with ideas.', recover: 'A lively conversation, a new project or a change of scene.',
+      learn: 'By debating, experimenting and jumping between topics. Learns fastest when they can argue with the material.', comm: 'Quick, witty and provocative. Plays devil\'s advocate, which others can take as an attack.',
+      grow: 'Follow through, and check whether the other person wants a debate or support.', friends: 'Many friends and wide networks; loves people who can keep up and argue back.' },
+    INFJ: { career: ['counselling and psychology', 'writing', 'education', 'healthcare', 'non-profit and social causes'], tags: ['care', 'words', 'people', 'spirit'],
+      work: 'Needs meaningful work aligned with their values, a calm environment and time to work deeply.', lead: 'vision, purpose, people development and the culture of a team',
+      money: 'Careful and values-driven: spends on meaning, not status. Can undercharge for their work.',
+      stress: 'Conflict, injustice, superficial work and too much time with people without recovery.', recover: 'Solitude, writing, nature and one honest conversation.',
+      learn: 'Through big-picture understanding and personal meaning; writes to think.', comm: 'Warm, thoughtful and insightful. Avoids conflict until they suddenly close the door.',
+      grow: 'Voice needs early instead of absorbing them, and accept imperfect people and plans.', friends: 'A few very close friends; deep conversation over large groups.' },
+    INFP: { career: ['writing and the arts', 'counselling', 'education', 'design', 'social and environmental causes'], tags: ['arts', 'words', 'care', 'spirit'],
+      work: 'Needs work that expresses their values, creative freedom and a kind atmosphere.', lead: 'creative direction, values, writing and caring for people',
+      money: 'Idealistic about money and may avoid budgets. Does best with a simple system and money tied to a meaningful goal.',
+      stress: 'Criticism of their values, harsh environments, bureaucracy and pressure to conform.', recover: 'Creative time, music, nature and quiet reflection.',
+      learn: 'When they care about the subject; through stories, imagination and personal connection.', comm: 'Gentle, sincere and expressive in writing. May hold back in person to keep the peace.',
+      grow: 'Turn ideals into small daily actions and speak up in disagreements.', friends: 'Loyal, accepting friendships with people who appreciate their inner world.' },
+    ENFJ: { career: ['teaching and training', 'HR and coaching', 'public relations', 'counselling', 'leadership in non-profits'], tags: ['people', 'care', 'words', 'business'],
+      work: 'Thrives leading and developing people towards a shared purpose, with plenty of collaboration.', lead: 'people, team morale, presentations and partnerships',
+      money: 'Generous, often spends on others. Needs to budget for themselves as carefully as they do for loved ones.',
+      stress: 'Disharmony, being unappreciated, cold environments and feeling they have let someone down.', recover: 'Time with close people, then genuine time alone without helping anyone.',
+      learn: 'In groups and through discussion; teaching others is how they master a subject.', comm: 'Warm, persuasive and encouraging. Can over-accommodate or tell people what they want to hear.',
+      grow: 'Let others solve their own problems, and look after their own needs first.', friends: 'A wide, warm circle; the organiser who keeps everyone connected.' },
+    ENFP: { career: ['marketing and creative media', 'coaching and counselling', 'entrepreneurship', 'teaching', 'journalism'], tags: ['words', 'arts', 'people', 'business', 'care'],
+      work: 'Thrives on variety, people, creativity and possibility; struggles with repetitive admin.', lead: 'brainstorming, inspiring people, networking and launches',
+      money: 'Spontaneous with money and generous. Automatic savings and a simple spending plan protect them.',
+      stress: 'Routine, micromanagement, too many details and feeling boxed in.', recover: 'Talking it out with a friend, new experiences and creative play.',
+      learn: 'By exploring, connecting ideas and doing it with others. Needs variety to stay engaged.', comm: 'Enthusiastic, expressive and encouraging. Can jump topics or promise more than they can deliver.',
+      grow: 'Finish what they start and protect focus from new ideas.', friends: 'Many friendships and easy connection; needs a few who also go deep.' },
+    ISTJ: { career: ['accounting and finance', 'law and compliance', 'administration and operations', 'engineering', 'public service'], tags: ['structure', 'business', 'law', 'science'],
+      work: 'Works best with clear expectations, proven methods, responsibility and time to do things properly.', lead: 'operations, processes, quality control and keeping commitments',
+      money: 'Disciplined saver and careful spender; plans for the long term. Can be too cautious to invest.',
+      stress: 'Chaos, broken commitments, last-minute changes and unclear instructions.', recover: 'Routine, order restored, a familiar place and quiet time.',
+      learn: 'Step by step, with facts, examples and practice. Wants to know the right way first.', comm: 'Clear, factual and reliable. May seem blunt or reserved about feelings.',
+      grow: 'Stay open to new methods, and say appreciation out loud, not only through actions.', friends: 'A few long-standing, dependable friendships built over years.' },
+    ISFJ: { career: ['nursing and healthcare', 'teaching', 'administration', 'social work', 'hospitality and customer care'], tags: ['care', 'people', 'structure'],
+      work: 'Thrives in a stable, harmonious team where their care and reliability help real people.', lead: 'client care, organisation, follow-up and team support',
+      money: 'Careful and security-minded; saves for family. Watch over-giving and saying yes to every request.',
+      stress: 'Conflict, criticism, sudden change and feeling taken for granted.', recover: 'Home, comfort, a familiar routine and someone noticing their effort.',
+      learn: 'Through practical steps, examples and a patient teacher; remembers details well.', comm: 'Kind, attentive and tactful. May hide their own needs to avoid conflict.',
+      grow: 'Say no without guilt and let others carry their share.', friends: 'Loyal, thoughtful friendships; remembers birthdays and shows up when it matters.' },
+    ESTJ: { career: ['management and operations', 'business administration', 'law enforcement and security', 'finance', 'project management'], tags: ['structure', 'business', 'law', 'action'],
+      work: 'Thrives organising people and resources towards clear goals, with rules everyone follows.', lead: 'project management, deadlines, procedures and accountability',
+      money: 'Practical and responsible: budgets, saves and expects money to be handled properly.',
+      stress: 'Disorganisation, laziness, unclear authority and rules being ignored.', recover: 'Getting things back in order, physical activity and time with family.',
+      learn: 'Through structured, practical training and clear standards; respects proven expertise.', comm: 'Direct, organised and decisive. Can come across as controlling or impatient.',
+      grow: 'Leave room for other ways of doing things and ask how people feel.', friends: 'Reliable, traditional friendships; the one who plans the gatherings.' },
+    ESFJ: { career: ['healthcare', 'teaching', 'HR and administration', 'sales and customer relations', 'events and hospitality'], tags: ['care', 'people', 'business', 'structure'],
+      work: 'Thrives in a friendly, cooperative workplace where they can help people and see the results.', lead: 'client relations, events, team harmony and practical support',
+      money: 'Organised and generous, especially with family and gifts. Plan for personal goals too.',
+      stress: 'Conflict, criticism, feeling unappreciated and cold or impersonal settings.', recover: 'Time with loved ones, appreciation and a restored routine.',
+      learn: 'In groups, with practical examples and clear steps; enjoys helping others learn too.', comm: 'Warm, friendly and supportive. Can take disagreement personally.',
+      grow: 'Separate other people\'s opinions from their own worth, and make decisions for themselves.', friends: 'A large, warm network; the host and the one who remembers everyone.' },
+    ISTP: { career: ['engineering and mechanics', 'technology and IT', 'emergency services', 'aviation and transport', 'skilled trades'], tags: ['tech', 'action', 'science'],
+      work: 'Needs hands-on problems, freedom to work their own way and minimal meetings.', lead: 'troubleshooting, technical work and acting calmly in a crisis',
+      money: 'Practical and independent; spends on tools, gear and experiences. Needs a buffer for spontaneous purchases.',
+      stress: 'Emotional demands, too many rules, meetings and being micromanaged.', recover: 'Solitude, physical activity and fixing or building something.',
+      learn: 'By doing, taking things apart and trial and error. Theory comes after experience.', comm: 'Brief, practical and calm. May seem distant when they are simply private.',
+      grow: 'Share plans and feelings with the people who depend on them, and commit for the long run.', friends: 'Easy-going friendships built around shared activities rather than talk.' },
+    ISFP: { career: ['art and design', 'music and photography', 'healthcare and therapy', 'nature and animal care', 'crafts'], tags: ['arts', 'care', 'spirit'],
+      work: 'Needs creative freedom, a kind atmosphere and work they can see and touch.', lead: 'design, presentation, craftsmanship and caring for clients',
+      money: 'Lives in the moment; spends on beauty and experiences. A simple plan for the future helps.',
+      stress: 'Harsh criticism, rigid rules, conflict and pressure to be someone they are not.', recover: 'Nature, art, music and time alone.',
+      learn: 'Hands-on and visually, at their own pace, in a supportive setting.', comm: 'Gentle, modest and sincere. Shows more through actions than words.',
+      grow: 'Plan ahead and speak up for what they want.', friends: 'A few close, accepting friends; loyal and quietly caring.' },
+    ESTP: { career: ['sales and entrepreneurship', 'sport and fitness', 'emergency services', 'marketing', 'real estate and trading'], tags: ['business', 'action', 'people'],
+      work: 'Thrives in fast-moving, practical work with risk, people and immediate results.', lead: 'sales, negotiation, action in a crisis and turning ideas into deals',
+      money: 'Bold with money; enjoys risk and quick returns. Needs limits and a long-term plan.',
+      stress: 'Boredom, long theory, being tied down and slow processes.', recover: 'Physical activity, socialising and a new challenge.',
+      learn: 'By doing, in real situations, with immediate feedback.', comm: 'Direct, energetic and persuasive. Can be blunt or impatient with long discussions.',
+      grow: 'Think through consequences, and stay with feelings and plans for the long term.', friends: 'Lively friendships built on fun and adventure; the life of the group.' },
+    ESFP: { career: ['entertainment and events', 'hospitality and tourism', 'sales', 'fitness and beauty', 'childcare and teaching'], tags: ['arts', 'people', 'action', 'care'],
+      work: 'Thrives with people, variety and energy, where their warmth and fun make a difference.', lead: 'client experience, events, morale and presentations',
+      money: 'Enjoys spending on fun and others. Automatic savings and a fun budget keep both happy.',
+      stress: 'Routine, isolation, conflict and long-term planning with no immediate result.', recover: 'Socialising, music, movement and doing something enjoyable.',
+      learn: 'By doing, with other people, in a lively and practical way.', comm: 'Warm, spontaneous and entertaining. May avoid serious or difficult conversations.',
+      grow: 'Plan for the future and face problems before they grow.', friends: 'A big, fun circle; generous and quick to include everyone.' }
+  };
+
+  // Who leads which tasks, by preference.
+  const TASKS = {
+    E: 'networking, sales and being the public face', I: 'research, deep work and writing',
+    S: 'operations, details and quality', N: 'vision, strategy and new ideas',
+    T: 'negotiation, finance and hard decisions', F: 'clients, team culture and people issues',
+    J: 'planning, deadlines and follow-through', P: 'adapting, new opportunities and problem-solving'
+  };
+
+  const WORK_DIM = [
+    { i: 0, same: 'You recharge the same way, so meeting rhythm and pace come naturally.', diff: 'One thinks out loud, the other thinks first. Send agendas before meetings and give the quieter partner time to answer.' },
+    { i: 1, same: 'You take in information the same way, so you agree easily on what matters.', diff: 'One sees details and facts, the other sees patterns and possibilities. Let the visionary set direction and the detail person test it against reality.' },
+    { i: 2, same: 'You decide the same way, so decisions are quick, but check for the blind spot you share.', diff: 'One decides by logic, the other by people and values. Ask both "does it work?" and "how will people feel?" before big decisions.' },
+    { i: 3, same: 'You share a working rhythm: both plan ahead, or both stay flexible. Make sure someone owns deadlines.', diff: 'One wants plans and closure, the other wants options. Agree which decisions are fixed and where flexibility is welcome.' }
+  ];
+
+  function workPair(a, b) {
+    if (!LIFE[a] || !LIFE[b]) return null;
+    const dims = WORK_DIM.map(d => ({ name: DIMENSIONS[d.i].name, same: a[d.i] === b[d.i], text: a[d.i] === b[d.i] ? d.same : d.diff }));
+    const lead = [0, 1, 2, 3].map(i => ({ dim: DIMENSIONS[i].name, a: TASKS[a[i]], b: TASKS[b[i]], same: a[i] === b[i] }));
+    const shared = dims.filter(d => d.same).length;
+    const summary = shared >= 3 ? 'Very similar working styles: easy agreement, but you share blind spots. Bring in an outside view for big decisions.'
+      : shared === 2 ? 'A balanced pairing: enough in common to agree easily and enough difference to cover each other\'s gaps.'
+      : 'Very different working styles: you cover each other\'s blind spots well if you agree clear roles and respect each other\'s way of working.';
+    return { dims, lead, summary };
+  }
+
+  root.ChartMBTI = { DIMENSIONS, LIFE, TASKS, workPair, tagsOf };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
 /* content-topics.js */
 /*
  * Life-topic knowledge used by the Life guidance tab: career fields, work style,
@@ -4645,7 +4839,8 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       `<span>${esc(dateTxt)}</span>`,
       `<span>${i.timeUnknown ? 'Time unknown (noon chart)' : esc(i.time) + ' ' + offTxt}</span>`,
       `<span>${esc(i.place || `${i.lat.toFixed(2)}°, ${i.lon.toFixed(2)}°`)}</span>`,
-      i.timeUnknown ? '' : `<span>${sysName} houses</span>`
+      i.timeUnknown ? '' : `<span>${sysName} houses</span>`,
+      i.mbti && window.ChartConnect.MBTI[i.mbti] ? `<span>${esc(i.mbti)} · ${esc(window.ChartConnect.MBTI[i.mbti].name)}</span>` : ''
     ].join('');
     document.title = (i.name ? i.name + ' · ' : '') + 'Natal Chart Studio';
     $('#example-banner').hidden = !i.example;
@@ -5569,6 +5764,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
         <div class="chips">${toc}</div>
         <div class="actions no-print"><button class="btn small" type="button" id="reading-print">Print reading</button></div>
       </div>
+      ${state.input.mbti && MB.LIFE[state.input.mbti] ? `<div class="section"><h3>Personality type</h3><p class="muted">The type was entered with the birth data. It is a separate system from astrology; where both say the same thing, the reading is on firmer ground.</p>${typeProfile(state.input.mbti, state.input.name || 'This chart')}</div>` : ''}
       ${groups.map(([title, ks]) => {
         const items = ks.filter(k => keys.includes(k)).map(pt);
         const intro = title === 'The lights' ? `<div class="card"><div class="eyebrow">Sun–Moon blend</div><p style="margin-top:6px">${esc(sunMoonText())}</p></div>` : '';
@@ -5608,7 +5804,12 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
 
   // ---------- Love & connection ----------
   const CN = window.ChartConnect;
-  state.connect = { who: store.get('connectWho', 'current'), line: 'heart', shape: store.get('palmShape', ''), myType: store.get('mbtiMe', ''), theirType: store.get('mbtiThem', '') };
+  state.connect = { who: store.get('connectWho', 'current'), line: 'heart', shape: store.get('palmShape', '') };
+  const MB = window.ChartMBTI;
+  const TYPE_GROUPS = ['Analyst', 'Diplomat', 'Sentinel', 'Explorer'];
+  // <option> list of the 16 types grouped by temperament, with the given type selected.
+  const typeOptions = (v, blank = 'Not set') => `<option value="">${blank}</option>${TYPE_GROUPS.map(g => `<optgroup label="${g}s">${Object.keys(CN.MBTI).filter(t => CN.MBTI[t].group === g).map(t => `<option value="${t}" ${t === v ? 'selected' : ''}>${t} · ${CN.MBTI[t].name}</option>`).join('')}</optgroup>`).join('')}`;
+  const typeName = t => t && CN.MBTI[t] ? `${t} (${CN.MBTI[t].name})` : '';
 
   // --- SVG illustrations ---
   const EL_VAR = { fire: 'var(--fire)', earth: 'var(--earth)', air: 'var(--air)', water: 'var(--water)' };
@@ -5797,14 +5998,13 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
   }
 
   function mbtiSection() {
-    const types = Object.keys(CN.MBTI);
-    const opt = v => `<option value="">Choose…</option>${['Analyst', 'Diplomat', 'Sentinel', 'Explorer'].map(g => `<optgroup label="${g}s">${types.filter(t => CN.MBTI[t].group === g).map(t => `<option value="${t}" ${t === v ? 'selected' : ''}>${t} · ${CN.MBTI[t].name}</option>`).join('')}</optgroup>`).join('')}`;
+    const opt = v => typeOptions(v, 'Choose…');
     const card = (t, who) => { const m = CN.MBTI[t]; return `<div class="card"><div class="eyebrow">${who} · ${m.group}</div><h3 style="margin:4px 0">${t} · The ${m.name}</h3><p>${esc(m.core)}</p><p class="muted" style="margin-top:6px"><b>In love:</b> ${esc(m.love)}</p><p class="muted"><b>Connect by:</b> ${esc(m.connect)}</p><p class="muted"><b>Needs to hear:</b> ${esc(m.hear)}</p><p class="faint">Natural matches: ${m.best.join(', ')} · More challenging: ${m.hard.join(', ')}</p></div>`; };
-    const a = state.connect.myType, b = state.connect.theirType;
+    const a = state.input.mbti || '', b = (state.compat.B && state.compat.B.mbti) || '';
     const match = a && b ? CN.mbtiMatch(a, b) : null;
     return `<div class="section cn" id="cn-mbti"><h3>Personality types (MBTI)</h3>
       <p class="muted">The 16 Myers-Briggs types describe how someone gains energy (I/E), takes in information (S/N), decides (T/F) and organises life (J/P). It is a separate system from astrology, and a fun one to compare. A free test is at 16personalities.com.</p>
-      <div class="plan-controls no-print"><div class="field"><label for="mbti-me">Your type</label><select id="mbti-me">${opt(a)}</select></div><div class="field"><label for="mbti-them">Their type</label><select id="mbti-them">${opt(b)}</select></div></div>
+      <div class="plan-controls no-print"><div class="field"><label for="mbti-me">${esc(state.input.name || 'This chart')}</label><select id="mbti-me">${opt(a)}</select></div><div class="field"><label for="mbti-them">${esc((state.compat.B && state.compat.B.name) || 'Partner')} (Person B)</label><select id="mbti-them">${opt(b)}</select></div></div>
       ${match ? `<p class="note">${a} with ${b}: <b>${{ best: 'natural match', good: 'workable match', hard: 'challenging match' }[match.level]}</b>. ${esc(match.text)}</p>` : ''}
       <div class="grid-2">${a ? card(a, 'You') : ''}${b ? card(b, 'Them') : ''}</div>
       <p class="faint">How to bring it up: "I have a theory about what personality type you are. Want to take the test and see if I'm right?" Lead with your own result so it feels mutual.</p></div>`;
@@ -5815,7 +6015,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     const ticks = store.get('nonneg', {});
     return `<div class="section cn" id="cn-choose"><h3>Choosing a partner wisely</h3>
       <div class="method">${C2.method.map(m => `<div class="card method-card">${iconSVG(m.k)}<b>${m.k}</b><span class="muted">${esc(m.t)}</span></div>`).join('')}</div>
-      <div class="table-wrap"><table class="qa"><thead><tr><th>Ask naturally</th><th>A good sign</th><th>Watch out for</th></tr></thead><tbody>${C2.questions.map(q => `<tr class="static"><td><b>${esc(q.q)}</b></td><td>${esc(q.good)}</td><td>${esc(q.watch)}</td></tr>`).join('')}</tbody></table></div>
+      <div class="table-wrap"><table class="qa"><thead><tr><th>Ask naturally</th><th>A good sign</th><th>Watch out for</th></tr></thead><tbody>${C2.questions.map(q => `<tr class="static"><td><b>${esc(q.q)}</b></td><td data-label="Good sign: " class="good-cell">${esc(q.good)}</td><td data-label="Watch for: " class="bad-cell">${esc(q.watch)}</td></tr>`).join('')}</tbody></table></div>
       <div class="card"><div class="eyebrow">Watch, don't just ask</div><ul class="syn-list two-col" style="margin-top:6px">${C2.watch.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>
       <div class="grid-2">
         <div class="card flags green"><div class="eyebrow good-eyebrow">Green flags</div><ol>${C2.green.map(t => `<li>${esc(t)}</li>`).join('')}</ol></div>
@@ -5867,8 +6067,8 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     panel.addEventListener('change', e => {
       const t = e.target;
       if (t.id === 'cn-who') { state.connect.who = t.value; store.set('connectWho', t.value); rer('cn-heart'); }
-      if (t.id === 'mbti-me') { state.connect.myType = t.value; store.set('mbtiMe', t.value); rer('cn-mbti'); }
-      if (t.id === 'mbti-them') { state.connect.theirType = t.value; store.set('mbtiThem', t.value); rer('cn-mbti'); }
+      if (t.id === 'mbti-me') { state.input = { ...state.input, mbti: t.value }; store.set('input', state.input); renderHeader(); rer('cn-mbti'); }
+      if (t.id === 'mbti-them') { state.compat.B = { ...(state.compat.B || {}), mbti: t.value }; store.set('compatB', state.compat.B); rer('cn-mbti'); }
       if (t.dataset && t.dataset.nn) { const v = store.get('nonneg', {}); v[t.dataset.nn] = t.checked; store.set('nonneg', v); }
     });
     const pickLine = k => { state.connect.line = k; rer('cn-palm'); };
@@ -6371,6 +6571,41 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     return 'Your chart is balanced between independence and structure. A stable base plus a side project, or an autonomous role inside an organisation, often works best.';
   }
 
+  // Personality-type layer for a Life guidance answer; asks for a type when none is set.
+  function typeGuide(key) {
+    const t = state.input.mbti, Lt = t && MB.LIFE[t], Mt = t && CN.MBTI[t];
+    if (key === 'home') return '';
+    if (!Lt) return sectionHtml('Add a personality type', '<p class="muted">Add a personality type (MBTI) under <b>Edit birth data</b> and this answer gains a second layer: how the type handles this area of life, and where it agrees with the chart.</p>');
+    const title = `Personality type: ${typeName(t)}`;
+    if (key === 'career') {
+      const chartFields = careerFields().map(f => f.field);
+      const agree = chartFields.filter(f => MB.tagsOf(f).some(tg => Lt.tags.includes(tg)))
+        .filter((f, _, all) => !all.some(g => g !== f && g.toLowerCase().includes(f.toLowerCase())));
+      return sectionHtml(title, `<p><b>Fields that suit the type:</b> ${esc(Lt.career.join(', '))}.</p><p>${esc(Lt.work)}</p><p><b>Leads best in:</b> ${esc(Lt.lead)}.</p>`
+        + (agree.length ? `<div class="agree"><div class="eyebrow good-eyebrow">Where chart and type agree</div><p>${agree.map(f => `<b>${esc(f.charAt(0).toUpperCase() + f.slice(1))}</b>`).join(', ')}.</p><p class="faint">These fields come up in the chart and match the type's strengths, so they are the strongest suggestions.</p></div>`
+          : '<p class="muted">The chart and the type point in different directions. Look for roles that combine both, for example the chart\'s field done in the way the type likes to work.</p>'));
+    }
+    const parts = {
+      love: [['In love', Mt.love], ['Connect by', Mt.connect], ['Needs to hear', Mt.hear], ['Natural matches', Mt.best.map(typeName).join(', ')]],
+      money: [['Money style', Lt.money]],
+      health: [['Stress triggers', Lt.stress], ['How they recover', Lt.recover]],
+      purpose: [['Core', Mt.core], ['Growth edge', Lt.grow]],
+      friends: [['Friendship', Lt.friends], ['Communication', Lt.comm]],
+      mind: [['How they learn', Lt.learn], ['Communication', Lt.comm]],
+      strengths: [['Core', Mt.core], ['At work', Lt.work], ['Growth edge', Lt.grow]]
+    }[key] || [];
+    return parts.length ? sectionHtml(title, parts.map(([k, v]) => `<p><b>${k}:</b> ${esc(v)}</p>`).join('')) : '';
+  }
+
+  // Personality type across every area of life (Full reading).
+  function typeProfile(t, name) {
+    const Lt = MB.LIFE[t], Mt = CN.MBTI[t];
+    const rows = [['Core', Mt.core], ['Career', Lt.career.join(', ') + '. ' + Lt.work], ['Leads best in', Lt.lead], ['Money', Lt.money], ['Stress and recovery', Lt.stress + ' Recovers through: ' + Lt.recover.charAt(0).toLowerCase() + Lt.recover.slice(1)], ['Learning', Lt.learn], ['Communication', Lt.comm], ['Love', Mt.love], ['Friendship', Lt.friends], ['Growth edge', Lt.grow]];
+    return `<div class="card type-card"><div class="eyebrow">${esc(name)} · ${esc(Mt.group)}</div><h3 style="margin:4px 0 8px">${esc(typeName(t))}</h3>
+      <dl class="type-dl">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>
+      <p class="faint" style="margin-top:8px">${MB.DIMENSIONS.map((d, i) => esc(t[i] === d.a ? d.A : d.B)).join(' ')}</p></div>`;
+  }
+
   function guideTopic(key) {
     const nh = state.chart.noHouses;
     const noTime = nh ? '<p class="note">No birth time, so houses, the Midheaven and the Ascendant are left out. The answer uses planets and signs only.</p>' : '';
@@ -6473,6 +6708,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       body += sectionHtml('Balance', para(`Your strongest element is ${dominantEl()}. ${C.ELEMENTS[dominantEl()].text}`) + (lacking.length ? para(`Little ${lacking.join(' or ')} in the chart: ${lacking.map(k => C.ELEMENTS[k].text.split('.')[0].toLowerCase()).join('; ')} may need deliberate practice, or come through other people.`) : ''));
       reflect = ['Which talent do you take for granted?', 'Which tension has pushed you to grow the most?'];
     }
+    body += typeGuide(key);
     const topic = T.TOPICS.find(t => t.key === key);
     return `<div class="section guide-answer">
       <div class="print-only"><span class="eyebrow">Life guidance · ${esc(state.input.name || '')}</span></div>
@@ -6552,6 +6788,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
         <div class="field"><label for="${id}-time">Time of birth</label><input type="time" id="${id}-time" value="${i.timeUnknown ? '' : esc(i.time || '')}" ${i.timeUnknown ? 'disabled' : ''}></div>
         <div class="field full"><label class="checks"><input type="checkbox" id="${id}-unknown" ${i.timeUnknown ? 'checked' : ''}> Birth time unknown</label></div>
         <div class="field full suggest"><label for="${id}-place">Place of birth</label><input type="text" id="${id}-place" value="${esc(i.place || '')}" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="${id}-places" placeholder="Start typing a city or town"><ul id="${id}-places" role="listbox" hidden></ul></div>
+        <div class="field full"><label for="${id}-mbti">Personality type (MBTI, optional)</label><select id="${id}-mbti">${typeOptions(i.mbti || '')}</select></div>
       </div>
       <details class="coords">
         <summary>Coordinates and time zone</summary>
@@ -6570,7 +6807,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     const unknown = v('unknown').checked;
     const i = {
       name: v('name').value.trim() || who, date: v('date').value, time: unknown ? '12:00' : v('time').value, timeUnknown: unknown,
-      place: v('place').value.trim(), lat: parseFloat(v('lat').value), lon: parseFloat(v('lon').value), tz: v('tz').value, utcOffset: parseFloat(v('offset').value)
+      place: v('place').value.trim(), lat: parseFloat(v('lat').value), lon: parseFloat(v('lon').value), tz: v('tz').value, utcOffset: parseFloat(v('offset').value), mbti: v('mbti').value
     };
     if (!i.date) return { error: `Enter a date of birth for ${who}.` };
     if (!unknown && !i.time) return { error: `Enter a birth time for ${who}, or tick "Birth time unknown".` };
@@ -6586,6 +6823,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     v('time').value = i.timeUnknown ? '' : (i.time || ''); v('unknown').checked = !!i.timeUnknown; v('time').disabled = !!i.timeUnknown;
     v('place').value = i.place || ''; v('lat').value = i.lat ?? ''; v('lon').value = i.lon ?? '';
     v('tz').value = TZS.includes(i.tz) ? i.tz : ''; v('offset').value = i.utcOffset ?? 0;
+    v('mbti').value = i.mbti || '';
   }
 
   function chartFor(i) {
@@ -6712,7 +6950,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
 
         ${compositeSection(CA, CB, nA, nB)}
 
-        ${attractionSection(CA, CB, nA, nB)}
+        ${attractionSection(CA, CB, nA, nB, A.mbti, B.mbti)}
 
         ${conflictSection(CA, CB, nA, nB, r, 'love')}
 
@@ -6746,16 +6984,16 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
       <p class="faint">The thin line marks the healthy level (${CP.HEALTHY}).</p></div>`;
   }
   // Love report: polarity, how to reach each other's heart (Venus and Moon signs), and MBTI types if chosen.
-  function attractionSection(CA, CB, nA, nB) {
+  function attractionSection(CA, CB, nA, nB, a, b) {
     const idx = (c, k) => E.signOf(c.points.find(p => p.key === k).lon).index;
     const yA = yangOf(CA), yB = yangOf(CB), diff = Math.abs(yA - yB);
     const reach = (c, n, other) => { const v = CN.SIGNS[idx(c, 'venus')], m = CN.SIGNS[idx(c, 'moon')];
       return `<div class="card"><div class="eyebrow">How ${esc(other)} reaches ${esc(n)}'s heart</div><p style="margin-top:6px"><b>Venus in ${E.SIGNS[idx(c, 'venus')].name}:</b> ${esc(v.connect)}</p><p class="muted" style="margin-top:4px"><b>Moon in ${E.SIGNS[idx(c, 'moon')].name}:</b> needs ${esc(m.needs)}. ${esc(m.avoid.replace(/^./, x => 'Avoid ' + x.toLowerCase()))}</p><p class="faint" style="margin-top:4px">Needs to hear: ${m.say.concat(v.say).slice(0, 3).map(esc).join(' ')}</p></div>`; };
-    const a = state.connect.myType, b = state.connect.theirType, mm = a && b ? CN.mbtiMatch(a, b) : null;
+    const mm = a && b ? CN.mbtiMatch(a, b) : null;
     return `<h3>Attraction and personality</h3>
       <div class="card"><div class="eyebrow">Polarity</div>${polarBar({ name: nA, y: yA })}${polarBar({ name: nB, y: yB })}<p class="muted" style="margin-top:6px"><b>Contrast ${diff} points.</b> ${polarPair(diff)}</p></div>
       <div class="grid-2">${reach(CA, nA, nB)}${reach(CB, nB, nA)}</div>
-      ${mm ? `<p class="note">Personality types: ${a} (${CN.MBTI[a].name}) with ${b} (${CN.MBTI[b].name}), <b>${{ best: 'natural match', good: 'workable match', hard: 'challenging match' }[mm.level]}</b>. ${esc(mm.text)}</p>` : '<p class="faint no-print">Add both personality types on the Love &amp; connection tab to include them here.</p>'}`;
+      ${mm ? `<p class="note">Personality types: ${a} (${CN.MBTI[a].name}) with ${b} (${CN.MBTI[b].name}), <b>${{ best: 'natural match', good: 'workable match', hard: 'challenging match' }[mm.level]}</b>. ${esc(mm.text)}</p>` : '<p class="faint no-print">Add a personality type for both people in the forms above to include it here.</p>'}`;
   }
 
   function improvementPlan(areas, mode) {
@@ -6835,6 +7073,20 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     drive: 'operations, delivery and hitting deadlines', power: 'leading teams and representing the business together',
     innovate: 'product development and new ventures', pressure: 'crisis handling and tough negotiations'
   };
+
+  // Business report: how two personality types decide, communicate and split the work.
+  function workTypesSection(a, b, nA, nB) {
+    const wp = a && b ? MB.workPair(a, b) : null;
+    if (!wp) return '<h3>Working styles</h3><p class="faint">Add a personality type (MBTI) for both people in the forms above to see how you decide, communicate and divide the work.</p>';
+    const style = (t, n) => `<div class="card"><div class="eyebrow">${esc(n)} · ${esc(typeName(t))}</div><p style="margin-top:6px">${esc(MB.LIFE[t].work)}</p><p class="muted" style="margin-top:6px"><b>Under stress:</b> ${esc(MB.LIFE[t].stress)}</p><p class="muted"><b>Communicates:</b> ${esc(MB.LIFE[t].comm)}</p></div>`;
+    return `<h3>Working styles</h3>
+      <p>${esc(wp.summary)}</p>
+      <div class="grid-2">${style(a, nA)}${style(b, nB)}</div>
+      <div class="table-wrap"><table class="qa"><thead><tr><th>Area</th><th>${esc(nA)} · ${a}</th><th>${esc(nB)} · ${b}</th><th>How to work together</th></tr></thead><tbody>
+        ${wp.dims.map((d, i) => `<tr class="static"><td><b>${esc(d.name)}</b><br><span class="pill ${d.same ? 'ok' : 'warn'}">${d.same ? 'Same' : 'Different'}</span></td><td data-label="${esc(nA)}: ">${esc(MB.DIMENSIONS[i][a[i] === MB.DIMENSIONS[i].a ? 'A' : 'B'].split(':')[0])}</td><td data-label="${esc(nB)}: ">${esc(MB.DIMENSIONS[i][b[i] === MB.DIMENSIONS[i].a ? 'A' : 'B'].split(':')[0])}</td><td data-label="Together: ">${esc(d.text)}</td></tr>`).join('')}
+      </tbody></table></div>
+      <div class="card"><div class="eyebrow">Who leads what</div><ul class="syn-list" style="margin-top:6px">${wp.lead.map(l => l.same ? `<li><b>Both</b> lean toward ${esc(l.a)}. Split it by project or client so you do not compete, and consciously cover the opposite side.</li>` : `<li><b>${esc(nA)}</b> leads ${esc(l.a)}; <b>${esc(nB)}</b> leads ${esc(l.b)}.</li>`).join('')}</ul></div>`;
+  }
 
   function renderWorkReport(A, B, CA, CB, r, nA, nB) {
     const L2 = window.ChartCompat.label;
@@ -6955,6 +7207,8 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
 
         <h3>Agreements to make before you start</h3>
         <div class="card"><ol class="agree-list">${agreements.map(t => `<li>${esc(t)}</li>`).join('')}</ol></div>
+
+        ${workTypesSection(A.mbti, B.mbti, nA, nB)}
 
         ${conflictSection(CA, CB, nA, nB, r, 'work')}
 
@@ -7191,6 +7445,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     sel.innerHTML = `<option value="">Manual offset</option>` + TZS.map(z => `<option value="${z}">${z.replace(/_/g, ' ')}</option>`).join('');
     sel.value = TZS.includes(i.tz) ? i.tz : '';
     $('#f-offset').value = i.utcOffset;
+    $('#f-mbti').innerHTML = typeOptions(i.mbti || '');
     if (i.date) updateOffsetNote(); else $('#offset-note').textContent = 'Pick a city and the offset, including daylight saving time, is filled in for you.';
     $('#form-error').hidden = true;
     renderSaved();
@@ -7221,7 +7476,7 @@ Auckland|New Zealand|-36.8485|174.7633|Pacific/Auckland`;
     if (!Number.isFinite(off) || off < -14 || off > 14) return { error: 'UTC offset must be between −14 and 14 hours.' };
     const y = +date.slice(0, 4);
     if (y < 1800 || y > 2199) return { error: 'Dates between 1800 and 2199 are supported.' };
-    return { value: { name, date, time: timeUnknown ? '12:00' : time, timeUnknown, place: $('#f-place').value.trim(), lat, lon, tz: $('#f-tz').value, utcOffset: off } };
+    return { value: { name, date, time: timeUnknown ? '12:00' : time, timeUnknown, place: $('#f-place').value.trim(), lat, lon, tz: $('#f-tz').value, utcOffset: off, mbti: $('#f-mbti').value } };
   }
 
   // Place search used by every birth-place field: instant offline matches first, then

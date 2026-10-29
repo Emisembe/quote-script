@@ -111,6 +111,8 @@ p { margin: 0; }
 .faint { color: var(--ink-3); font-size: 13px; }
 
 .shell { max-width: 1180px; margin: 0 auto; display: grid; gap: 20px; }
+/* Grid items default to their content's width; let wide tables scroll inside their own box instead of stretching the page. */
+.shell > *, .panel { min-width: 0; }
 
 /* ---------- header ---------- */
 .masthead {
@@ -638,11 +640,27 @@ tr.static { cursor: default; }
   .chart-scroll { overflow: visible; }
   .chart-layout { grid-template-columns: 1fr; }
   .detail { position: static; box-shadow: none; }
-  .card, .stat, .house-row, .area-card, .reading-item, .table-wrap { box-shadow: none; break-inside: avoid; }
+  .card, .stat, .house-row, .area-card, .reading-item { box-shadow: none; break-inside: avoid; }
+  .table-wrap { box-shadow: none; } tr { break-inside: avoid; } thead { display: table-header-group; }
+  /* Long two-column card rows waste paper when a card cannot split; print them full width and let long cards flow. */
+  .grid-2.areas, .print-compat .grid-2 { display: block; }
+  .grid-2.areas > *, .print-compat .grid-2 > * { margin-top: 10px; }
+  .area-card, .print-compat .card { break-inside: auto; }
+  h3 + p, h3 + p.muted, .section-head + p { break-after: avoid; }
+  .syn-list { display: block; } .syn-list > li { margin-bottom: 7px; }
+  li { break-inside: avoid; }
   .grid-2, .grid-3 { grid-template-columns: 1fr 1fr; }
-  h2, h3 { break-after: avoid; }
+  h2, h3, h4, .section-head, .eyebrow { break-after: avoid; break-inside: avoid; }
+  /* Reserve room under a heading so it moves to the next page instead of sitting alone at the bottom. */
+  h2::after, h3::after, h4::after { content: ''; display: block; height: 120px; margin-bottom: -120px; }
   .table-wrap { overflow: visible; }
   a.chip { display: none; }
+}
+
+/* Comfortable finger-sized targets on touch screens. */
+@media (pointer: coarse) {
+  a.chip, button.chip, .btn.small { min-height: 36px; }
+  .check-line { min-height: 32px; align-items: center; }
 }
 
 /* ---------- Love & connection ---------- */
@@ -713,8 +731,8 @@ table.qa td:first-child { width: 30%; }
   table.qa tr { display: block; padding: 8px 0; border-bottom: 1px solid var(--line); }
   table.qa tr:last-child { border-bottom: 0; }
   table.qa td { display: block; width: auto !important; border: 0; padding: 3px 12px; }
-  table.qa td:nth-child(2)::before { content: "Good sign: "; font-weight: 700; color: var(--flow); }
-  table.qa td:nth-child(3)::before { content: "Watch for: "; font-weight: 700; color: var(--tension); }
+  table.qa td[data-label]::before { content: attr(data-label); font-weight: 700; color: var(--ink-2); }
+  table.qa td.good-cell::before { color: var(--flow); } table.qa td.bad-cell::before { color: var(--tension); }
 }
 .syn-list.two-col { columns: 2; column-gap: 24px; }
 .flags ol { margin: 8px 0 0 18px; padding: 0; }
@@ -757,3 +775,12 @@ table.qa td:first-child { width: 30%; }
   .polar span, .magnet .pole-t, .magnet .pole-s { color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .polar > div, .magnet .pole, .clock .clk { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* ---------- Personality types ---------- */
+.type-dl { display: grid; grid-template-columns: minmax(110px, 160px) 1fr; gap: 6px 14px; margin: 0; font-size: 14px; }
+.type-dl dt { font-weight: 700; color: var(--ink-2); }
+.type-dl dd { margin: 0; }
+.agree { margin-top: 10px; padding: 10px 12px; border-left: 3px solid var(--flow); background: color-mix(in srgb, var(--flow) 8%, transparent); border-radius: 0 8px 8px 0; }
+.agree p { margin-top: 4px; }
+@media (max-width: 600px) { .type-dl { grid-template-columns: 1fr; gap: 2px; } .type-dl dd { margin-bottom: 8px; } }
+@media print { .agree { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .type-card { break-inside: avoid; } }
