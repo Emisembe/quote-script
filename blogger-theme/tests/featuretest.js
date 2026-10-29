@@ -76,10 +76,10 @@ const VARIANTS = {
   // 3. Message & Video block
   {
     const {c, p, errs} = await open(1440);
-    const f = await p.evaluate(() => ({after: document.getElementById('section-2').nextElementSibling.className, kicker: (document.querySelector('.ef-kicker') || {}).textContent,
+    const f = await p.evaluate(() => ({after: (n => n && /efic-stats-wrap/.test(n.className) ? n.nextElementSibling : n)(document.getElementById('section-2').nextElementSibling).className, kicker: (document.querySelector('.ef-kicker') || {}).textContent,
       head: (document.querySelector('.ef-headline') || {}).textContent, mk: (document.querySelector('.ef-media-kicker') || {}).textContent, mt: (document.querySelector('.ef-media-title') || {}).textContent,
       img: (document.querySelector('.ef-media-img') || {}).src, section: getComputedStyle(document.getElementById('feature-story')).display}));
-    ok(/efic-feature-wrap has-feature/.test(f.after) && f.section === 'none', 'sits right under "Our Areas of Expertise"');
+    ok(/efic-feature-wrap has-feature/.test(f.after) && f.section === 'none', 'sits right under "Our Areas of Expertise" (after the Numbers band, when it has figures)');
     ok(f.kicker === 'Who we are' && f.head === 'Driving Efficacy & Effective Solutions' && f.mk === 'See how we work' && f.mt === 'EFIC in action' && /i\.ytimg\.com\/vi\/2bjBiOVQrUs\//.test(f.img), 'text side and video card built from the two gadgets ' + JSON.stringify(f));
     const tx = await box(p, '.ef-text'), md = await box(p, '.ef-media');
     ok(tx.r < md.l && md.t < tx.b, 'desktop: text on the left, video card on the right');

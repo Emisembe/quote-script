@@ -11,11 +11,11 @@ The theme for eficc.blogspot.com, rebranded to the EFIC Brand Colour Guide v1.0.
 | `scripts/check.py` | Pre-upload audit. Everything must be proven by the original theme. |
 | `reference/proven.json` | What the original theme proves Blogger accepts, plus two documented exceptions. |
 | `scripts/preview.py` | Writes `preview/home.html` and `preview/post.html` for browser testing. |
-| `tests/` | Browser tests (Playwright): `full.js` menus and sharing, `langtest.js` languages and office cards, `slidetest.js` slideshow, `featuretest.js` Technology tile, message & video, newsletter, certifications. |
+| `tests/` | Browser tests (Playwright): `full.js` menus and sharing, `langtest.js` languages and office cards, `slidetest.js` slideshow, `featuretest.js` Technology tile, message & video, newsletter, certifications, `statstest.js` numbers band. |
 
 ```bash
 python3 scripts/build.py && python3 scripts/check.py theme-eficc.xml && python3 scripts/preview.py
-node tests/full.js && node tests/langtest.js && node tests/slidetest.js && node tests/featuretest.js
+node tests/full.js && node tests/langtest.js && node tests/slidetest.js && node tests/featuretest.js && node tests/statstest.js
 ```
 
 ## Install
@@ -95,6 +95,15 @@ node tests/full.js && node tests/langtest.js && node tests/slidetest.js && node 
 **Areas of Expertise: Technology**
 - A seventh tile, *Technology* (digital tools, data and automation), links to Our Services like the others. With seven tiles, the last row is centred.
 - To change its wording, edit the `Seventh` tile in `scripts/build.py` and rebuild.
+
+**Numbers band (homepage, under Areas of Expertise)**
+- A navy band with big white numbers and gold labels, for example **1,165** *Projects Executed*. The numbers are still (no counting animation).
+- **Layout → Numbers band (homepage)** has one gadget per figure: *Projects Executed*, *Global Presence*, *Happy Clients* and *Recognitions*.
+- **To fill in a figure:** click **Edit** on the gadget. The gadget **Title** is the label. In **Content**, replace `[type the number, e.g. 250+]` with the number, typed exactly as it should look (`1,165`, `286+`, `98%`, `24/7`). Then click **Save**.
+- **The band ships without numbers,** so no made-up figures appear on your site. A figure only shows once its number is typed in, and the band stays hidden until at least one is. Use real figures you can back up.
+- **More or fewer figures:** add a figure with **Add a Gadget → HTML/JavaScript** (Title = label, Content = number), or delete a gadget to remove one. Drag gadgets to change the order.
+- **Layout:** 4 figures sit in one row on computers. On tablets and phones they show 2 per row. With 5 or 6 figures, they show 3 per row on computers.
+- **Order:** on the homepage it goes Areas of Expertise → Numbers band → Message & Video.
 
 **Message & Video (homepage, under Areas of Expertise)**
 - **Layout → Message & Video (homepage)**. Two gadgets:

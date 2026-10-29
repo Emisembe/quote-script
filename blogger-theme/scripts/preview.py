@@ -188,6 +188,10 @@ def render(page):
                     "https://www.youtube.com/watch?v=2bjBiOVQrUs</div></div>"
                     "<div class='widget Text' id='Text2'><h2 class='title'>Now serving Mombasa</h2><div class='widget-content'>"
                     "Our new branch opens on 1 November (sample slide)</div></div>")
+        if sid == 'stats' and page != 'layout':
+            # Preview only: figures typed in the way an owner would (sample numbers).
+            for figure in ['1,165', '286+', '2,568', '185+']:
+                out = out.replace('[type the number, e.g. 250+]', figure, 1)
         if sid == 'footer-certifications' and page != 'layout':
             # Preview only: badges added the way an owner would (Image gadgets, one text badge).
             out += ''.join(f"<div class='widget Image' id='Image{9 + n}'><h2>{t}</h2><div class='widget-content'><a href='#'>"

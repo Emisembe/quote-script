@@ -884,7 +884,42 @@ resub(r"(<b:section class='foot-bar-social blue' id='Footer social widget'.*?</b
 </b:section>
 </div>
 """)
-sub("body#layout .office-contacts-wrap {", "body#layout .efic-feature-wrap, body#layout .efic-newsletter-wrap, body#layout .foot-certs {\ndisplay: block !important;\nbackground: #fff !important;\npadding: 0 !important;\n}\nbody#layout .office-contacts-wrap {")
+# Numbers band (homepage): one HTML gadget per figure, Title = label, Content = number.
+# Shipped with a placeholder instead of figures, so nothing untrue goes live: a
+# gadget only shows once its number is typed in. Moved under the expertise tiles.
+sub("</b:section>\n</div>\n<div class='insta-wrap' id='section-6'>", f"""</b:section>
+</div>
+<div class='efic-stats-wrap'>
+<b:section class='efic-stats-section' id='stats' name='Numbers band (homepage)' showaddelement='yes'>
+  <b:widget id='HTML13' locked='false' title='Projects Executed' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[[type the number, e.g. 250+]]]></b:widget-setting>
+    </b:widget-settings>
+    {GADGET_MAIN}
+  </b:widget>
+  <b:widget id='HTML14' locked='false' title='Global Presence' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[[type the number, e.g. 250+]]]></b:widget-setting>
+    </b:widget-settings>
+    {GADGET_MAIN}
+  </b:widget>
+  <b:widget id='HTML15' locked='false' title='Happy Clients' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[[type the number, e.g. 250+]]]></b:widget-setting>
+    </b:widget-settings>
+    {GADGET_MAIN}
+  </b:widget>
+  <b:widget id='HTML16' locked='false' title='Recognitions' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[[type the number, e.g. 250+]]]></b:widget-setting>
+    </b:widget-settings>
+    {GADGET_MAIN}
+  </b:widget>
+</b:section>
+</div>
+<div class='insta-wrap' id='section-6'>""")
+
+sub("body#layout .office-contacts-wrap {", "body#layout .efic-feature-wrap, body#layout .efic-stats-wrap, body#layout .efic-newsletter-wrap, body#layout .foot-certs {\ndisplay: block !important;\nbackground: #fff !important;\npadding: 0 !important;\n}\nbody#layout .office-contacts-wrap {")
 
 sub("""// Desktop menu: if the Layout menu needs more than one row""", """// Message & Video (Layout > Message & Video): text gadget + video/photo card.
 (function () {
@@ -973,6 +1008,36 @@ sub("""// Desktop menu: if the Layout menu needs more than one row""", """// Mes
   sec.style.display = 'none';
   wrap.appendChild(root);
   wrap.className += ' has-feature';
+  if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(wrap, anchor.nextSibling); }
+})();
+
+// Numbers band (Layout > Numbers band): one gadget per figure. Title = the label,
+// first line of the content = the number. Gadgets still holding the [placeholder]
+// (or no digit) are skipped; with none left the band stays hidden.
+(function () {
+  var sec = document.getElementById('stats');
+  if (!sec || document.body.id === 'layout') { return; }
+  var wrap = sec.parentNode, anchor = document.getElementById('section-2');
+  var ws = sec.querySelectorAll('.widget'), list = document.createElement('ul');
+  list.className = 'efic-stats';
+  for (var i = 0; i < ws.length; i++) {
+    var w = ws[i], box = w.querySelector('.widget-content') || w, h = w.querySelector('h2');
+    var html = box.innerHTML.replace(/<br\\s*\\/?>/gi, '\\n').replace(/<\\/(p|div|li|h[1-6])>/gi, '\\n');
+    var ls = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html').body.textContent.split('\\n')
+      .map(function (l) { return l.replace(/\\s+/g, ' ').trim(); }).filter(Boolean);
+    var value = ls[0] || '', label = (h ? h.textContent.trim() : '') || ls[1] || '';
+    if (!/\\d/.test(value) || /[\\[\\]]/.test(value) || value.length > 16) { continue; }
+    var li = document.createElement('li'), n = document.createElement('span'), l = document.createElement('span');
+    n.className = 'es-number'; n.textContent = value;
+    l.className = 'es-label'; l.textContent = label;
+    li.appendChild(n); if (label) { li.appendChild(l); }
+    list.appendChild(li);
+  }
+  if (!list.children.length) { return; }
+  list.className += ' es-count-' + Math.min(list.children.length, 6);
+  sec.style.display = 'none';
+  wrap.appendChild(list);
+  wrap.className += ' has-stats';
   if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(wrap, anchor.nextSibling); }
 })();
 

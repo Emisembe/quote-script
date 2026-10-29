@@ -3495,6 +3495,60 @@ html.ef-noscroll, html.ef-noscroll body { overflow: hidden; }
   .ef-media-kicker { font-size: 12px; }
 }
 
+/* ---------- Numbers band (Layout > Numbers band; homepage) ---------- */
+.efic-stats-wrap { display: none; }
+#outer-wrapper.home .efic-stats-wrap.has-stats { display: block; background: #14213D; padding: 72px 0; }
+.efic-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1170px;
+  margin: 0 auto !important;
+  padding: 0 24px !important;
+  list-style: none;
+  box-sizing: border-box;
+}
+.efic-stats li {
+  flex: 0 0 25%;
+  min-width: 0;
+  margin: 0;
+  padding: 12px 16px;
+  list-style: none;
+  text-align: center;
+  box-sizing: border-box;
+}
+.efic-stats.es-count-3 li { flex-basis: 33.333%; }
+.efic-stats.es-count-2 li { flex-basis: 50%; max-width: 360px; }
+.efic-stats.es-count-1 li { flex-basis: 100%; }
+.efic-stats.es-count-5 li, .efic-stats.es-count-6 li { flex-basis: 33.333%; }
+.efic-stats li:before { display: none; }
+.es-number {
+  display: block;
+  color: #FFFFFF;
+  font: 800 46px/1.1 'Montserrat', 'Arial Black', Arial, sans-serif;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+.es-label {
+  display: block;
+  margin-top: 18px;
+  color: #E7B165;
+  font: 500 17px/1.4 'Montserrat', Arial, sans-serif;
+  overflow-wrap: anywhere;
+}
+@media only screen and (max-width: 900px) {
+  #outer-wrapper.home .efic-stats-wrap.has-stats { padding: 56px 0; }
+  .efic-stats li, .efic-stats.es-count-3 li, .efic-stats.es-count-5 li, .efic-stats.es-count-6 li { flex-basis: 50%; padding: 16px 12px; }
+  .efic-stats.es-count-1 li { flex-basis: 100%; }
+  .es-number { font-size: 38px; }
+}
+@media only screen and (max-width: 480px) {
+  .efic-stats { padding: 0 8px !important; }
+  .efic-stats li { padding: 14px 6px; }
+  .es-number { font-size: 30px; }
+  .es-label { margin-top: 10px; font-size: 14px; }
+}
+
 /* ---------- Newsletter sign-up (Layout > Newsletter sign-up; every page) ---------- */
 .efic-newsletter-wrap { display: none; }
 .efic-newsletter-wrap.has-newsletter { display: block; background: #14213D; padding: 52px 0; }
@@ -3575,7 +3629,7 @@ a.cert-badge:hover, a.cert-badge:focus-visible { transform: translateY(-2px); bo
   .cert-badge img { max-height: 48px; max-width: 110px; }
 }
 @media print {
-  .efic-feature-wrap, .efic-newsletter-wrap, .foot-certs { display: none !important; }
+  .efic-feature-wrap, .efic-stats-wrap, .efic-newsletter-wrap, .foot-certs { display: none !important; }
 }
 html.efic-rtl .ef-text, html.efic-rtl .efic-newsletter, html.efic-rtl .en-consent { direction: rtl; text-align: right; }
 html.efic-rtl .ef-kicker:before { margin: 0 0 4px 12px; }
@@ -3603,7 +3657,7 @@ display: block !important;
 padding: 0 !important;
 background: #fff !important;
 }
-body#layout .efic-feature-wrap, body#layout .efic-newsletter-wrap, body#layout .foot-certs {
+body#layout .efic-feature-wrap, body#layout .efic-stats-wrap, body#layout .efic-newsletter-wrap, body#layout .foot-certs {
 display: block !important;
 background: #fff !important;
 padding: 0 !important;
@@ -5989,6 +6043,74 @@ https://www.youtube.com/watch?v=2bjBiOVQrUs]]></b:widget-setting>
   </b:widget>
 </b:section>
 </div>
+<div class='efic-stats-wrap'>
+<b:section class='efic-stats-section' id='stats' name='Numbers band (homepage)' showaddelement='yes'>
+  <b:widget id='HTML13' locked='false' title='Projects Executed' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[[type the number, e.g. 250+]]]></b:widget-setting>
+    </b:widget-settings>
+    <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+  </b:widget>
+  <b:widget id='HTML14' locked='false' title='Global Presence' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[[type the number, e.g. 250+]]]></b:widget-setting>
+    </b:widget-settings>
+    <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+  </b:widget>
+  <b:widget id='HTML15' locked='false' title='Happy Clients' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[[type the number, e.g. 250+]]]></b:widget-setting>
+    </b:widget-settings>
+    <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+  </b:widget>
+  <b:widget id='HTML16' locked='false' title='Recognitions' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[[type the number, e.g. 250+]]]></b:widget-setting>
+    </b:widget-settings>
+    <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+  </b:widget>
+</b:section>
+</div>
 <div class='insta-wrap' id='section-6'>
 <div class='contact-title'>
 <h4>Get in Touch</h4>
@@ -7399,6 +7521,36 @@ article {
   sec.style.display = 'none';
   wrap.appendChild(root);
   wrap.className += ' has-feature';
+  if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(wrap, anchor.nextSibling); }
+})();
+
+// Numbers band (Layout > Numbers band): one gadget per figure. Title = the label,
+// first line of the content = the number. Gadgets still holding the [placeholder]
+// (or no digit) are skipped; with none left the band stays hidden.
+(function () {
+  var sec = document.getElementById('stats');
+  if (!sec || document.body.id === 'layout') { return; }
+  var wrap = sec.parentNode, anchor = document.getElementById('section-2');
+  var ws = sec.querySelectorAll('.widget'), list = document.createElement('ul');
+  list.className = 'efic-stats';
+  for (var i = 0; i < ws.length; i++) {
+    var w = ws[i], box = w.querySelector('.widget-content') || w, h = w.querySelector('h2');
+    var html = box.innerHTML.replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|li|h[1-6])>/gi, '\n');
+    var ls = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html').body.textContent.split('\n')
+      .map(function (l) { return l.replace(/\s+/g, ' ').trim(); }).filter(Boolean);
+    var value = ls[0] || '', label = (h ? h.textContent.trim() : '') || ls[1] || '';
+    if (!/\d/.test(value) || /[\[\]]/.test(value) || value.length > 16) { continue; }
+    var li = document.createElement('li'), n = document.createElement('span'), l = document.createElement('span');
+    n.className = 'es-number'; n.textContent = value;
+    l.className = 'es-label'; l.textContent = label;
+    li.appendChild(n); if (label) { li.appendChild(l); }
+    list.appendChild(li);
+  }
+  if (!list.children.length) { return; }
+  list.className += ' es-count-' + Math.min(list.children.length, 6);
+  sec.style.display = 'none';
+  wrap.appendChild(list);
+  wrap.className += ' has-stats';
   if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(wrap, anchor.nextSibling); }
 })();
 

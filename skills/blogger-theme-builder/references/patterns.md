@@ -12,6 +12,7 @@ Each pattern below was built for a real blog (eficc.blogspot.com). It passed the
 7. Message & video block (text + card with a video pop-up)
 8. Newsletter sign-up without Blogger's retired Follow by Email
 9. Badge row (certifications, memberships, partners)
+10. Numbers band (key figures)
 
 ---
 
@@ -176,3 +177,12 @@ Blogger's *Follow by Email* gadget (FeedBurner) stopped sending emails in July 2
 - **Rendering:** logos on white rounded tiles (most certificate logos assume a white background), centred and wrapping. Captions go under the tiles, links open in a new tab, and a short uppercase heading goes above the row. The heading and row exist only when there is at least one badge.
 - **Remind the owner:** ISO and accreditation marks have usage rules (for example, a consultancy that helps clients get certified is not itself certified).
 
+## 10. Numbers band (key figures)
+
+A full-width band of big numbers with a label under each (*1,165 Projects Executed*, *286+ Global Presence*).
+
+- **The section:** one HTML gadget per figure. The gadget **title** is the label, and the **first content line** is the number, typed exactly as it should look (`1,165`, `286+`, `98%`). With no title, the second line is used as the label. More figures: **Add a Gadget**; order: drag.
+- **Ship placeholders, not figures.** Figures are claims, like badges. Ship the gadgets with the owner's labels and the content `[type the number, e.g. 250+]`. The script skips any figure that still has a `[`, has no digit, or is longer than 16 characters (a sentence, not a number). The band appears only when at least one real figure exists. So uploading the theme never publishes made-up numbers, and the owner only edits the ready-made gadgets. The preview injects sample numbers (preview-only).
+- **Rendering:** a `ul` of `li` > number + label spans, built with `textContent`. Use the brand's dark colour for the band, white numbers and accent-coloured labels (an accent on a dark background is fine; never accent text on white). Lay it out with flex-wrap: 4 per row on desktop, a class `es-count-N` for 3/5/6 (3 per row) or 1–2, and 2 per row below 900 px. Use `overflow-wrap: anywhere` so `2,568,000+` can't overflow at 320 px.
+- **Still numbers by default.** A count-up animation is optional. If you add one, honour `prefers-reduced-motion` and keep the final text in the HTML, so screen readers and translation see the real figure.
+- **Homepage only,** moved under the anchor block like section 7. When two scripts insert after the same anchor, the one that runs **last** ends up **first**, so order the scripts deliberately and update the other block's placement test.

@@ -3435,6 +3435,60 @@ html.ef-noscroll, html.ef-noscroll body { overflow: hidden; }
   .ef-media-kicker { font-size: 12px; }
 }
 
+/* ---------- Numbers band (Layout > Numbers band; homepage) ---------- */
+.efic-stats-wrap { display: none; }
+#outer-wrapper.home .efic-stats-wrap.has-stats { display: block; background: #14213D; padding: 72px 0; }
+.efic-stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1170px;
+  margin: 0 auto !important;
+  padding: 0 24px !important;
+  list-style: none;
+  box-sizing: border-box;
+}
+.efic-stats li {
+  flex: 0 0 25%;
+  min-width: 0;
+  margin: 0;
+  padding: 12px 16px;
+  list-style: none;
+  text-align: center;
+  box-sizing: border-box;
+}
+.efic-stats.es-count-3 li { flex-basis: 33.333%; }
+.efic-stats.es-count-2 li { flex-basis: 50%; max-width: 360px; }
+.efic-stats.es-count-1 li { flex-basis: 100%; }
+.efic-stats.es-count-5 li, .efic-stats.es-count-6 li { flex-basis: 33.333%; }
+.efic-stats li:before { display: none; }
+.es-number {
+  display: block;
+  color: #FFFFFF;
+  font: 800 46px/1.1 'Montserrat', 'Arial Black', Arial, sans-serif;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+.es-label {
+  display: block;
+  margin-top: 18px;
+  color: #E7B165;
+  font: 500 17px/1.4 'Montserrat', Arial, sans-serif;
+  overflow-wrap: anywhere;
+}
+@media only screen and (max-width: 900px) {
+  #outer-wrapper.home .efic-stats-wrap.has-stats { padding: 56px 0; }
+  .efic-stats li, .efic-stats.es-count-3 li, .efic-stats.es-count-5 li, .efic-stats.es-count-6 li { flex-basis: 50%; padding: 16px 12px; }
+  .efic-stats.es-count-1 li { flex-basis: 100%; }
+  .es-number { font-size: 38px; }
+}
+@media only screen and (max-width: 480px) {
+  .efic-stats { padding: 0 8px !important; }
+  .efic-stats li { padding: 14px 6px; }
+  .es-number { font-size: 30px; }
+  .es-label { margin-top: 10px; font-size: 14px; }
+}
+
 /* ---------- Newsletter sign-up (Layout > Newsletter sign-up; every page) ---------- */
 .efic-newsletter-wrap { display: none; }
 .efic-newsletter-wrap.has-newsletter { display: block; background: #14213D; padding: 52px 0; }
@@ -3515,7 +3569,7 @@ a.cert-badge:hover, a.cert-badge:focus-visible { transform: translateY(-2px); bo
   .cert-badge img { max-height: 48px; max-width: 110px; }
 }
 @media print {
-  .efic-feature-wrap, .efic-newsletter-wrap, .foot-certs { display: none !important; }
+  .efic-feature-wrap, .efic-stats-wrap, .efic-newsletter-wrap, .foot-certs { display: none !important; }
 }
 html.efic-rtl .ef-text, html.efic-rtl .efic-newsletter, html.efic-rtl .en-consent { direction: rtl; text-align: right; }
 html.efic-rtl .ef-kicker:before { margin: 0 0 4px 12px; }
@@ -3689,6 +3743,9 @@ height: 100%;
 <div class='section efic-feature-section' id='feature-story' data-section-name='Message &amp;amp; Video (homepage)'><div id='HTML10' class='widget HTML'><h2 class='title'>Who we are</h2><div class='widget-content'>Driving Efficacy &amp; Effective Solutions<br/>
 EFIC Consultancy Ltd helps organisations improve quality, compliance, logistics and business processes, with practical advice that turns into measurable results.</div></div><div id='HTML11' class='widget HTML'><h2 class='title'>EFIC in action</h2><div class='widget-content'>See how we work<br/>
 https://www.youtube.com/watch?v=2bjBiOVQrUs</div></div></div>
+</div>
+<div class='efic-stats-wrap'>
+<div class='section efic-stats-section' id='stats' data-section-name='Numbers band (homepage)'><div id='HTML13' class='widget HTML'><h2 class='title'>Projects Executed</h2><div class='widget-content'>1,165</div></div><div id='HTML14' class='widget HTML'><h2 class='title'>Global Presence</h2><div class='widget-content'>286+</div></div><div id='HTML15' class='widget HTML'><h2 class='title'>Happy Clients</h2><div class='widget-content'>2,568</div></div><div id='HTML16' class='widget HTML'><h2 class='title'>Recognitions</h2><div class='widget-content'>185+</div></div></div>
 </div>
 <div class='insta-wrap' id='section-6'>
 <div class='contact-title'>
@@ -4540,6 +4597,36 @@ $("#related-posts").each(function(){var g=$(this),e=g.text(),r=3;relatedPost(g,e
   sec.style.display = 'none';
   wrap.appendChild(root);
   wrap.className += ' has-feature';
+  if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(wrap, anchor.nextSibling); }
+})();
+
+// Numbers band (Layout > Numbers band): one gadget per figure. Title = the label,
+// first line of the content = the number. Gadgets still holding the [placeholder]
+// (or no digit) are skipped; with none left the band stays hidden.
+(function () {
+  var sec = document.getElementById('stats');
+  if (!sec || document.body.id === 'layout') { return; }
+  var wrap = sec.parentNode, anchor = document.getElementById('section-2');
+  var ws = sec.querySelectorAll('.widget'), list = document.createElement('ul');
+  list.className = 'efic-stats';
+  for (var i = 0; i < ws.length; i++) {
+    var w = ws[i], box = w.querySelector('.widget-content') || w, h = w.querySelector('h2');
+    var html = box.innerHTML.replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|li|h[1-6])>/gi, '\n');
+    var ls = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html').body.textContent.split('\n')
+      .map(function (l) { return l.replace(/\s+/g, ' ').trim(); }).filter(Boolean);
+    var value = ls[0] || '', label = (h ? h.textContent.trim() : '') || ls[1] || '';
+    if (!/\d/.test(value) || /[\[\]]/.test(value) || value.length > 16) { continue; }
+    var li = document.createElement('li'), n = document.createElement('span'), l = document.createElement('span');
+    n.className = 'es-number'; n.textContent = value;
+    l.className = 'es-label'; l.textContent = label;
+    li.appendChild(n); if (label) { li.appendChild(l); }
+    list.appendChild(li);
+  }
+  if (!list.children.length) { return; }
+  list.className += ' es-count-' + Math.min(list.children.length, 6);
+  sec.style.display = 'none';
+  wrap.appendChild(list);
+  wrap.className += ' has-stats';
   if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(wrap, anchor.nextSibling); }
 })();
 
