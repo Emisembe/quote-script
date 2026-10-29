@@ -544,7 +544,7 @@ tr.static { cursor: default; }
 .mode-seg { margin: 4px 0; }
 .mode-seg button { padding: 8px 16px; font-size: 14px; }
 .advice { border-left: 3px solid var(--chart-a); padding-left: 10px; }
-.duo-chart { display: grid; gap: 10px; }
+.duo-chart { display: grid; gap: 10px; margin-top: 12px; }
 .duo-row { display: grid; grid-template-columns: 120px 1fr 130px; gap: 10px; align-items: center; }
 .duo-label { display: grid; line-height: 1.2; font-size: 14px; }
 .duo-label small { color: var(--ink-3); font-size: 12px; }
@@ -552,7 +552,7 @@ tr.static { cursor: default; }
 .duo { height: 14px; border-radius: 0 4px 4px 0; min-width: 2px; position: relative; }
 .duo.a { background: var(--chart-a); }
 .duo.b { background: var(--chart-b); }
-.duo span { position: absolute; left: calc(100% + 6px); top: -2px; font: 11px var(--mono); color: var(--ink-2); white-space: nowrap; }
+.duo span { position: absolute; left: calc(100% + 4px); top: -2px; font: 11px var(--mono); color: var(--ink-2); white-space: nowrap; background: var(--surface); padding: 0 2px; z-index: 1; }
 .duo-lead { font-size: 13px; font-weight: 650; color: var(--ink-2); line-height: 1.25; overflow-wrap: anywhere; }
 .duo-bars { padding-right: 40px; }
 .agree-list { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
@@ -565,10 +565,15 @@ tr.static { cursor: default; }
 /* health scale + improvement plan */
 .score-scale { display: grid; gap: 10px; }
 .scale-wrap { position: relative; padding: 26px 0 30px; }
-.scale { display: flex; gap: 2px; border-radius: 8px; overflow: hidden; }
+.scale { display: flex; gap: 0; border-radius: 8px; overflow: hidden; }
+/* Gaps drawn as borders inside the blocks, so 50 sits exactly at 50% of the bar. */
+.scale-seg + .scale-seg { border-left: 2px solid var(--surface); }
 .scale-seg { display: grid; gap: 1px; padding: 6px 6px 6px 9px; font-size: 11.5px; line-height: 1.2; min-width: 0; }
 .scale-seg b { font-family: var(--mono); font-size: 11px; }
-.scale-seg span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scale-seg span { overflow-wrap: anywhere; }
+/* Marker lines pass behind the labels instead of through them. */
+.scale-seg b, .scale-seg span { position: relative; z-index: 1; background: inherit; justify-self: start; padding-right: 2px; }
+.scale-seg { background-clip: padding-box; }
 .scale-seg.bad { background: color-mix(in srgb, var(--tension) 18%, var(--surface)); color: var(--ink); }
 .scale-seg.warn { background: color-mix(in srgb, var(--brass) 16%, var(--surface)); color: var(--ink); }
 .scale-seg.ok { background: color-mix(in srgb, var(--flow) 18%, var(--surface)); color: var(--ink); }
@@ -630,10 +635,19 @@ tr.static { cursor: default; }
   /* Plain block flow: Chrome can push a whole grid item to the next page, leaving a blank one. */
   .shell, main, .panel { display: block; max-width: none; }
   .shell > * + * { margin-top: 10px; }
-  .actions, .tabs, .example-banner, .no-print, #sheet, .toast, dialog, .wheel-tools, .customize, .legend { display: none !important; }
+  .actions, .tabs, .example-banner, .no-print, #sheet, .toast, dialog, .wheel-tools, .customize { display: none !important; }
+  /* Print colours even when the browser's "Background graphics" option is off: bars, badges and keys carry meaning. */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* Colour keys explain the charts on paper too. */
+  .legend { display: flex !important; }
+  .legend i, .legend .lg-a, .legend .lg-b, .legend .lg-clk { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .print-only { display: block; }
   body.print-compat .masthead { display: none !important; }
   .guide-grid { grid-template-columns: 1fr 1fr; }
+  /* Set just before printing (fitPrint): a grid or row whose boxes are too tall to stay whole
+     prints as plain flow, because a box split across pages inside a grid can be overprinted. */
+  .print-flow { display: block !important; }
+  .print-flow > * + * { margin-top: 10px; }
   .note-page { break-inside: auto; }
   .duo-row { break-inside: avoid; }
   .plan-row, .score-scale { break-inside: avoid; }
@@ -810,5 +824,6 @@ table.qa td:first-child { width: 30%; }
 .role-tile.gap { border-left: 3px solid var(--tension); background: color-mix(in srgb, var(--tension) 6%, transparent); }
 .role-tile.gap span { color: var(--tension); font-weight: 600; }
 table.roles-table td:first-child { width: 34%; }
+table.roles-table td:nth-child(2) { white-space: nowrap; }
 @media (max-width: 700px) { .role-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media print { .path-card, .role-tile { break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; } .path-grid { grid-template-columns: 1fr 1fr; } }

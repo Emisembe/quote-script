@@ -151,26 +151,41 @@
   }
 
   // Push glyphs apart so they never overlap; returns display longitude per key.
+  // Close points are merged into clusters that are spaced evenly around their average,
+  // and clusters that then touch are merged again until every gap is at least minGap.
   function spread(items, minGap) {
     const n = items.length;
     if (n < 2) return Object.fromEntries(items.map(p => [p.key, p.lon]));
     minGap = Math.min(minGap, 360 / n);
     const sorted = items.slice().sort((a, b) => a.lon - b.lon);
-    const pos = sorted.map(p => p.lon);
-    for (let iter = 0; iter < 200; iter++) {
-      let moved = false;
-      for (let i = 0; i < n; i++) {
-        const j = (i + 1) % n;
-        const gap = E.norm(pos[j] - pos[i]);
-        if (gap < minGap - 0.01) {
-          const push = (minGap - gap) / 2;
-          pos[i] = E.norm(pos[i] - push); pos[j] = E.norm(pos[j] + push);
-          moved = true;
+    // Start just after the widest empty arc, so no cluster wraps past 0°.
+    let first = 0, widest = -1;
+    sorted.forEach((p, i) => { const g = E.norm(sorted[(i + 1) % n].lon - p.lon) || 360; if (g > widest) { widest = g; first = (i + 1) % n; } });
+    const seq = sorted.slice(first).concat(sorted.slice(0, first));
+    const base = seq[0].lon;
+    const x = seq.map(p => E.norm(p.lon - base));
+    let clusters = x.map((v, i) => ({ start: i, len: 1, center: v }));
+    const lo = c => c.center - (c.len - 1) / 2 * minGap, hi = c => c.center + (c.len - 1) / 2 * minGap;
+    for (let merged = true; merged;) {
+      merged = false;
+      for (let c = 0; c < clusters.length - 1; c++) {
+        const A = clusters[c], B = clusters[c + 1];
+        if (lo(B) - hi(A) < minGap - 1e-6) {
+          const len = A.len + B.len;
+          let sum = 0; for (let i = A.start; i < A.start + len; i++) sum += x[i];
+          clusters.splice(c, 2, { start: A.start, len, center: sum / len });
+          merged = true; break;
         }
       }
-      if (!moved) break;
     }
-    return Object.fromEntries(sorted.map((p, i) => [p.key, pos[i]]));
+    const pos = [];
+    clusters.forEach(C => { for (let k = 0; k < C.len; k++) pos[C.start + k] = C.center + (k - (C.len - 1) / 2) * minGap; });
+    // Crowded all the way round: space evenly, as close to the true positions as possible.
+    if (pos[0] + 360 - pos[n - 1] < minGap - 1e-6) {
+      const step = 360 / n, c0 = x.reduce((a, v, i) => a + v - i * step, 0) / n;
+      x.forEach((v, i) => { pos[i] = c0 + i * step; });
+    }
+    return Object.fromEntries(seq.map((p, i) => [p.key, E.norm(pos[i] + base)]));
   }
 
   function aspectTone(asp) { return asp.major ? asp.tone : 'adjust'; }
@@ -2027,7 +2042,7 @@
       body += sectionHtml('How you lead', para(CR.LEAD_STYLE[dominantEl()]) + para(signReading('sun', pt('sun').lon)) + (t && MB.LIFE[t] ? `<p><b>As ${esc(typeName(t))}:</b> leads best in ${esc(MB.LIFE[t].lead)}.</p>` : ''));
       body += sectionHtml('Who to pick: what your chart is missing', `<ul class="syn-list">${lowEl.map(e => `<li><b>Low ${e}.</b> You bring ${esc(CR.ELEMENT_TEAM[dominantEl()].brings)}. Recruit ${esc(CR.ELEMENT_TEAM[e].recruit)}.</li>`).join('')}<li><b>Least ${lowMd}.</b> Recruit ${esc(CR.MODE_TEAM[lowMd].recruit)}.</li>${t && MB.LIFE[t] ? `<li><b>Personality.</b> As ${esc(t)}, balance yourself with people who prefer ${MB.DIMENSIONS.slice(1).map((d, i) => esc((t[i + 1] === d.a ? d.B : d.A).split(':')[0].toLowerCase())).join(', ')}.</li>` : ''}</ul><p class="faint">Do not hire copies of yourself: similar people agree easily but share your blind spots.</p>`);
       body += wideSection('The eight roles a strong team needs', `<div class="table-wrap"><table class="qa roles-table"><thead><tr><th>Role</th><th>You</th><th>Look for</th><th>Ask in the interview</th></tr></thead><tbody>
-        ${myRoles.slice().sort((x, y) => CR.TEAM_ROLES.findIndex(r => r.key === x.key) - CR.TEAM_ROLES.findIndex(r => r.key === y.key)).map(r => { const rank = myRoles.findIndex(x => x.key === r.key); const st = rank < 2 ? ['ok', 'You cover this'] : rank < 4 ? ['warn', 'Partly'] : ['bad', 'Recruit']; return `<tr class="static"><td><b>${esc(r.name)}</b><br><span class="muted">${esc(r.does)}</span></td><td data-label="You: "><span class="pill ${st[0]}">${st[1]}</span></td><td data-label="Look for: ">${esc(r.signs.join(', '))} strong in the chart; ${esc(r.mbti)}</td><td data-label="Ask: ">"${esc(r.ask)}"</td></tr>`; }).join('')}
+        ${myRoles.slice().sort((x, y) => CR.TEAM_ROLES.findIndex(r => r.key === x.key) - CR.TEAM_ROLES.findIndex(r => r.key === y.key)).map(r => { const rank = myRoles.findIndex(x => x.key === r.key); const st = rank < 2 ? ['ok', 'Covered'] : rank < 4 ? ['warn', 'Partly'] : ['bad', 'Recruit']; return `<tr class="static"><td><b>${esc(r.name)}</b><br><span class="muted">${esc(r.does)}</span></td><td data-label="You: "><span class="pill ${st[0]}">${st[1]}</span></td><td data-label="Look for: ">${esc(r.signs.join(', '))} strong in the chart; ${esc(r.mbti)}</td><td data-label="Ask: ">"${esc(r.ask)}"</td></tr>`; }).join('')}
       </tbody></table></div>`);
       body += wideSection('Check your team', teamChecker(myRoles)).replace('class="', teamMembers().length ? 'class="' : 'class="no-print ');
       if (!nh) body += sectionHtml('Partners and groups in your chart', para(houseLine(7)) + para(houseLine(11)) + para(rulerLine(11, 'groups and networks')));
@@ -2383,7 +2398,7 @@
   // Health scale and improvement plan, shared by the love and work reports.
   function scoreScale(overall) {
     const CP = window.ChartCompat;
-    const segs = CP.BANDS.slice().reverse().map(b => `<div class="scale-seg ${b.cls}" style="flex:${b.max - b.min + 1}"><b>${b.min}–${b.max}</b><span>${esc(b.name)}</span></div>`).join('');
+    const segs = CP.BANDS.slice().reverse().map(b => `<div class="scale-seg ${b.cls}" style="flex:none;box-sizing:border-box;width:${(b.max === 100 ? 100 : b.max + 1) - b.min}%"><b>${b.min}–${b.max}</b><span>${esc(b.name)}</span></div>`).join('');
     return `<div class="card score-scale">
       <div class="eyebrow">How to read the scores</div>
       <div class="scale-wrap">
@@ -2761,6 +2776,22 @@
     document.documentElement.style.setProperty('--measure-w', (PAGE_W / s) + 'px');
     return $('.shell').getBoundingClientRect().height * s;
   }
+  // Pieces the printer will not split: kept boxes, list items, table rows, headings, drawings.
+  const ATOMS = '.print-keep, li, tr, h1, h2, h3, h4, svg, .stat, .duo-row, .plan-row, .score-scale, .bar';
+  // Printed height including the gaps left when an unsplittable piece is pushed to the next page.
+  function paginatedHeight(s) {
+    const total = printedHeight(s), top0 = $('.shell').getBoundingClientRect().top;
+    const atoms = [...document.querySelectorAll(`.shell :is(${ATOMS})`)].filter(el => !el.parentElement.closest(ATOMS))
+      .map(el => el.getBoundingClientRect()).filter(r => r.height > 0)
+      .map(r => [(r.top - top0) * s, (r.bottom - top0) * s]).sort((a, b) => a[0] - b[0]);
+    let shift = 0, end = total;
+    atoms.forEach(([t0, b0]) => {
+      const t = t0 + shift, b = b0 + shift;
+      if (b - t < PAGE_H && Math.floor(t / PAGE_H) !== Math.floor((b - 0.5) / PAGE_H)) shift += Math.ceil(t / PAGE_H) * PAGE_H - t;
+      end = Math.max(end, b0 + shift);
+    });
+    return Math.max(end, total + shift);
+  }
   // Choose a scale that fills whole pages: one page when that stays readable, otherwise one
   // page fewer when only a little spills over. Never below a readable size.
   function fitPrint() {
@@ -2771,26 +2802,40 @@
     const scrollY = window.scrollY;
     let zoom = 1;
     try {
-      const h = printedHeight(1);
+      // Layouts with a box taller than a third of a page print as plain flow (see .print-flow).
+      document.querySelectorAll('.print-flow, .print-keep').forEach(el => el.classList.remove('print-flow', 'print-keep'));
+      printedHeight(1);
+      const limit = PAGE_H * 0.3;
+      const scope = [$('.masthead'), document.querySelector('.panel:not([hidden])')].filter(Boolean);
+      const layouts = [];
+      scope.forEach(root => [root, ...root.querySelectorAll('*')].forEach(el => {
+        if (el instanceof SVGElement || el.closest('svg, table')) return;
+        if (/grid|flex/.test(getComputedStyle(el).display) && el.children.length) layouts.push(el);
+      }));
+      layouts.forEach(el => { if ([...el.children].some(k => k.getBoundingClientRect().height > limit)) el.classList.add('print-flow'); });
+      // Keep short boxes in one piece; only long ones may continue on the next page. Every box
+      // in a layout that still has columns is short, so whole rows move to the next page.
+      printedHeight(1);
+      document.querySelectorAll('.panel:not([hidden]) :is(.card, .path-card, .area-card, .reading-item, .table-wrap)').forEach(el => {
+        el.classList.toggle('print-keep', el.getBoundingClientRect().height < limit);
+      });
+      layouts.filter(el => !el.classList.contains('print-flow')).forEach(el => [...el.children].forEach(k => k.classList.add('print-keep')));
+      const h = paginatedHeight(1);
       const pages = Math.ceil(h / (PAGE_H * 0.97));
       if (pages > 1) {
-        // Page breaks add white space, so aim below a full page: cautiously first, then closer.
-        let fill = 0.88;
-        const target = n => n * PAGE_H * (n === 1 ? 0.95 : fill);
+        // Two estimates must both agree it fits: the simulated page breaks (catches pieces pushed
+        // to a new page) and the raw height with a margin (catches the browser's extra spacing).
+        const fits = (sc, n) => paginatedHeight(sc) <= n * PAGE_H * 0.96 && printedHeight(sc) <= n * PAGE_H * (n === 1 ? 0.95 : 0.88);
         const tryPages = (n, minS) => {
-          if (printedHeight(minS) > target(n)) return 0;
+          if (!fits(minS, n)) return 0;
           let lo = minS, hi = 1;
-          for (let i = 0; i < 7; i++) { const mid = (lo + hi) / 2; if (printedHeight(mid) <= target(n)) lo = mid; else hi = mid; }
+          for (let i = 0; i < 7; i++) { const mid = (lo + hi) / 2; if (fits(mid, n)) lo = mid; else hi = mid; }
           return lo;
         };
         zoom = tryPages(1, 0.62) || tryPages(pages - 1, 0.8);
-        if (!zoom) { fill = 0.95; zoom = tryPages(pages - 1, 0.8) || 1; }
+        if (!zoom) zoom = 1;
       }
-      // Keep boxes shorter than a third of a page in one piece; only long ones may continue on the next page.
-      printedHeight(zoom);
-      document.querySelectorAll('.panel:not([hidden]) :is(.card, .path-card, .area-card, .reading-item, .table-wrap)').forEach(el => {
-        el.classList.toggle('print-keep', el.getBoundingClientRect().height * zoom < PAGE_H * 0.3);
-      });
+
     } finally {
       root.classList.remove('print-measure'); measureSheet.disabled = true; root.style.removeProperty('--measure-w');
       window.scrollTo(0, scrollY);
@@ -2804,7 +2849,7 @@
   }
   function endPrint() {
     document.body.classList.remove('printing', ...[...document.body.classList].filter(c => c.startsWith('print-')));
-    document.querySelectorAll('.print-keep').forEach(el => el.classList.remove('print-keep'));
+    document.querySelectorAll('.print-keep, .print-flow').forEach(el => el.classList.remove('print-keep', 'print-flow'));
     document.documentElement.style.removeProperty('--print-zoom');
   }
   // Also covers Ctrl+P / the browser's own Print menu.

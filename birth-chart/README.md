@@ -66,6 +66,10 @@ Everything is drawn as text and SVG, with no bitmap images, so printed pages and
 
 While measuring, boxes shorter than a third of a page are marked to stay whole; longer cards may continue onto the next page, so a long card never leaves a blank gap. Small items (list entries, table rows, stats, badges) stay whole, headings stay with their content, and the page layout prints as plain block flow because Chrome can push a whole grid item to the next page. On-screen hints are hidden from print.
 
+**Never overprinted.** Just before printing, every grid and row layout is checked: if any box in it is taller than a third of a page, that layout prints as plain top-to-bottom flow, because a box split across pages inside a grid can be drawn over by the next boxes. Layouts whose boxes are all short keep their columns and move to the next page as whole rows. The fit estimate simulates page breaks (pieces pushed to the next page) and must agree with a raw-height check before the content is scaled. Colour keys print, and colours print even with the browser's "Background graphics" option switched off.
+
+**Print audit.** Every tab, every Life guidance topic and both compatibility reports were printed for two charts (46 PDFs) and each page was checked for overlapping text lines and blank pages: none remain.
+
 Typical results: Chart, Big three, Characteristics, Signature and a Life guidance answer on 1 page; the compatibility report on 14 pages (was 19).
 
 ## Love & connection
