@@ -39,7 +39,17 @@ MBTI is a separate system from astrology and is presented as a second angle, not
 
 ## Printing
 
-Everything is drawn as text and SVG, with no bitmap images, so printed pages and PDFs stay sharp at 300 dpi and above. Print rules keep headings with their content, keep list items whole, and print the compatibility report full width to avoid half-empty pages.
+Everything is drawn as text and SVG, with no bitmap images, so printed pages and PDFs stay sharp at 300 dpi and above.
+
+**Fit to page.** Just before printing (from a Print button or the browser's own Print / Ctrl+P), the app lays the page out at A4 width with the print styles, measures it and picks a scale:
+
+- if the content fits on **one page** at 62% or more, it is scaled to one page;
+- otherwise, if it fits on **one page fewer** at 80% or more, it is scaled to fill whole pages;
+- otherwise it prints at full size.
+
+Cards may continue onto the next page, so a long card never leaves a blank gap; small items (list entries, table rows, stats, badges) stay whole, headings stay with their content, and the page layout prints as plain block flow because Chrome can push a whole grid item to the next page. On-screen hints are hidden from print.
+
+Typical results: Chart, Big three, Characteristics, Signature and a Life guidance answer on 1 page; the compatibility report on 14 pages (was 19).
 
 ## Love & connection
 

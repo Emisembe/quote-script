@@ -1861,7 +1861,7 @@
   function typeGuide(key) {
     const t = state.input.mbti, Lt = t && MB.LIFE[t], Mt = t && CN.MBTI[t];
     if (key === 'home') return '';
-    if (!Lt) return sectionHtml('Add a personality type', '<p class="muted">Add a personality type (MBTI) under <b>Edit birth data</b> and this answer gains a second layer: how the type handles this area of life, and where it agrees with the chart.</p>');
+    if (!Lt) return sectionHtml('Add a personality type', '<p class="muted">Add a personality type (MBTI) under <b>Edit birth data</b> and this answer gains a second layer: how the type handles this area of life, and where it agrees with the chart.</p>').replace('class="', 'class="no-print ');
     const title = `Personality type: ${typeName(t)}`;
     if (key === 'career') {
       const chartFields = careerFields().map(f => f.field);
@@ -2363,7 +2363,7 @@
   // Business report: how two personality types decide, communicate and split the work.
   function workTypesSection(a, b, nA, nB) {
     const wp = a && b ? MB.workPair(a, b) : null;
-    if (!wp) return '<h3>Working styles</h3><p class="faint">Add a personality type (MBTI) for both people in the forms above to see how you decide, communicate and divide the work.</p>';
+    if (!wp) return '<h3 class="no-print">Working styles</h3><p class="faint no-print">Add a personality type (MBTI) for both people in the forms above to see how you decide, communicate and divide the work.</p>';
     const style = (t, n) => `<div class="card"><div class="eyebrow">${esc(n)} · ${esc(typeName(t))}</div><p style="margin-top:6px">${esc(MB.LIFE[t].work)}</p><p class="muted" style="margin-top:6px"><b>Under stress:</b> ${esc(MB.LIFE[t].stress)}</p><p class="muted"><b>Communicates:</b> ${esc(MB.LIFE[t].comm)}</p></div>`;
     return `<h3>Working styles</h3>
       <p>${esc(wp.summary)}</p>
@@ -2601,12 +2601,83 @@
   }
 
   // Printing shows only the current tab's content, in light colours.
+  // ---------- printing ----------
+  // A4 content area with 14 mm margins, in CSS pixels.
+  const PAGE_W = 688, PAGE_H = 1017;
+  let measureSheet = null;
+  // Copy every @media print rule into a stylesheet scoped to html.print-measure, so the
+  // page can be laid out exactly as it will print and measured before the dialog opens.
+  function buildMeasureSheet() {
+    const out = [];
+    const scope = sel => sel.split(',').map(x => {
+      x = x.trim();
+      if (x.startsWith(':root')) return 'html.print-measure' + x.slice(5);
+      if (x.startsWith('html')) return 'html.print-measure' + x.slice(4);
+      return 'html.print-measure ' + x;
+    }).join(', ');
+    const walk = rules => { for (const r of rules) {
+      if (r.media && /print/.test(r.media.mediaText)) { for (const inner of r.cssRules) if (inner.selectorText) out.push(`${scope(inner.selectorText)} { ${inner.style.cssText} }`); }
+    } };
+    for (const sh of document.styleSheets) { try { walk(sh.cssRules); } catch (e) { /* cross-origin sheet */ } }
+    out.push(`html.print-measure body { width: var(--measure-w) !important; margin: 0 !important; }`);
+    measureSheet = document.createElement('style');
+    measureSheet.textContent = out.join('\n');
+    measureSheet.disabled = true;
+    document.head.appendChild(measureSheet);
+  }
+  // Height in printed pixels when the content is scaled by s (scaling also widens each line).
+  function printedHeight(s) {
+    document.documentElement.style.setProperty('--measure-w', (PAGE_W / s) + 'px');
+    return $('.shell').getBoundingClientRect().height * s;
+  }
+  // Choose a scale that fills whole pages: one page when that stays readable, otherwise one
+  // page fewer when only a little spills over. Never below a readable size.
+  function fitPrint() {
+    const root = document.documentElement;
+    root.style.removeProperty('--print-zoom');
+    if (!measureSheet) buildMeasureSheet();
+    measureSheet.disabled = false; root.classList.add('print-measure');
+    const scrollY = window.scrollY;
+    let zoom = 1;
+    try {
+      const h = printedHeight(1);
+      const pages = Math.ceil(h / (PAGE_H * 0.97));
+      if (pages > 1) {
+        // Page breaks add white space, so aim below a full page: cautiously first, then closer.
+        let fill = 0.88;
+        const target = n => n * PAGE_H * (n === 1 ? 0.95 : fill);
+        const tryPages = (n, minS) => {
+          if (printedHeight(minS) > target(n)) return 0;
+          let lo = minS, hi = 1;
+          for (let i = 0; i < 7; i++) { const mid = (lo + hi) / 2; if (printedHeight(mid) <= target(n)) lo = mid; else hi = mid; }
+          return lo;
+        };
+        zoom = tryPages(1, 0.62) || tryPages(pages - 1, 0.8);
+        if (!zoom) { fill = 0.95; zoom = tryPages(pages - 1, 0.8) || 1; }
+      }
+    } finally {
+      root.classList.remove('print-measure'); measureSheet.disabled = true; root.style.removeProperty('--measure-w');
+      window.scrollTo(0, scrollY);
+    }
+    if (zoom < 1) root.style.setProperty('--print-zoom', zoom.toFixed(3));
+    return zoom;
+  }
+  function startPrint() {
+    if (!document.body.classList.contains('printing')) document.body.classList.add('printing', 'print-' + state.tab);
+    try { fitPrint(); } catch (e) { /* print without scaling */ }
+  }
+  function endPrint() {
+    document.body.classList.remove('printing', ...[...document.body.classList].filter(c => c.startsWith('print-')));
+    document.documentElement.style.removeProperty('--print-zoom');
+  }
+  // Also covers Ctrl+P / the browser's own Print menu.
+  window.addEventListener('beforeprint', startPrint);
+  window.addEventListener('afterprint', endPrint);
+
   function printPanel() {
-    document.body.classList.add('printing', 'print-' + state.tab);
-    const done = () => { document.body.classList.remove('printing', 'print-' + state.tab); window.removeEventListener('afterprint', done); };
-    window.addEventListener('afterprint', done);
+    startPrint();
     try { window.print(); } catch (e) { /* print unavailable in this viewer */ }
-    setTimeout(done, 1500);
+    setTimeout(() => { if (!matchMedia('print').matches) endPrint(); }, 1500);
   }
 
   // ---------- tabs ----------

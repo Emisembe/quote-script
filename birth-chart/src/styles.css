@@ -627,12 +627,14 @@ tr.static { cursor: default; }
   }
   @page { margin: 14mm; }
   body { padding: 0; font-size: 11pt; background: #fff; }
-  .shell { max-width: none; gap: 10px; }
+  /* Plain block flow: Chrome can push a whole grid item to the next page, leaving a blank one. */
+  .shell, main, .panel { display: block; max-width: none; }
+  .shell > * + * { margin-top: 10px; }
   .actions, .tabs, .example-banner, .no-print, #sheet, .toast, dialog, .wheel-tools, .customize, .legend { display: none !important; }
   .print-only { display: block; }
   body.print-compat .masthead { display: none !important; }
   .guide-grid { grid-template-columns: 1fr 1fr; }
-  .note-page { break-inside: avoid; }
+  .note-page { break-inside: auto; }
   .duo-row { break-inside: avoid; }
   .plan-row, .score-scale { break-inside: avoid; }
   .print-only.review { display: block; }
@@ -640,19 +642,24 @@ tr.static { cursor: default; }
   .chart-scroll { overflow: visible; }
   .chart-layout { grid-template-columns: 1fr; }
   .detail { position: static; box-shadow: none; }
-  .card, .stat, .house-row, .area-card, .reading-item { box-shadow: none; break-inside: avoid; }
+  /* Cards may continue on the next page (no blank gaps); small items stay whole. */
+  .card, .area-card, .reading-item { box-shadow: none; break-inside: auto; }
+  .stat, .house-row, .medal-card, .shape-btn, .nail-card, .script, .method-card, .stat-row, figure { box-shadow: none; break-inside: avoid; }
+  p { orphans: 3; widows: 3; }
+  .shell { zoom: var(--print-zoom, 1); }
+  .card { padding: 12px 14px; }
+  .section { gap: 10px; }
   .table-wrap { box-shadow: none; } tr { break-inside: avoid; } thead { display: table-header-group; }
   /* Long two-column card rows waste paper when a card cannot split; print them full width and let long cards flow. */
   .grid-2.areas, .print-compat .grid-2 { display: block; }
   .grid-2.areas > *, .print-compat .grid-2 > * { margin-top: 10px; }
-  .area-card, .print-compat .card { break-inside: auto; }
   h3 + p, h3 + p.muted, .section-head + p { break-after: avoid; }
   .syn-list { display: block; } .syn-list > li { margin-bottom: 7px; }
   li { break-inside: avoid; }
   .grid-2, .grid-3 { grid-template-columns: 1fr 1fr; }
   h2, h3, h4, .section-head, .eyebrow { break-after: avoid; break-inside: avoid; }
   /* Reserve room under a heading so it moves to the next page instead of sitting alone at the bottom. */
-  h2::after, h3::after, h4::after { content: ''; display: block; height: 120px; margin-bottom: -120px; }
+  h2::after, h3::after, h4::after { content: ''; display: block; height: 80px; margin-bottom: -80px; }
   .table-wrap { overflow: visible; }
   a.chip { display: none; }
 }
@@ -783,4 +790,4 @@ table.qa td:first-child { width: 30%; }
 .agree { margin-top: 10px; padding: 10px 12px; border-left: 3px solid var(--flow); background: color-mix(in srgb, var(--flow) 8%, transparent); border-radius: 0 8px 8px 0; }
 .agree p { margin-top: 4px; }
 @media (max-width: 600px) { .type-dl { grid-template-columns: 1fr; gap: 2px; } .type-dl dd { margin-bottom: 8px; } }
-@media print { .agree { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .type-card { break-inside: avoid; } }
+@media print { .agree { -webkit-print-color-adjust: exact; print-color-adjust: exact; } .type-card { break-inside: auto; } }
