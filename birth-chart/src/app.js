@@ -1105,7 +1105,7 @@
   }
   // A right hand, palm facing you (thumb on the left). opts: palmW, palmH, fing (finger length), tip ('square'|'round'|'taper').
   function handSVG(o, interactive) {
-    const W = 260, px = 70, py = 130, pw = o.palmW, ph = o.palmH;
+    const px = 70, py = 130, pw = o.palmW, ph = o.palmH;
     const fw = pw * 0.2, L = o.fing;
     const lens = [0.9, 1, 0.95, 0.74], cx = [0.13, 0.38, 0.62, 0.86];
     const rx = o.tip === 'square' ? 5 : fw / 2;
@@ -1131,7 +1131,8 @@
       bracelets: `M${X(0.2)} ${f(py + ph + 8)} L ${X(0.8)} ${f(py + ph + 8)} M${X(0.2)} ${f(py + ph + 20)} L ${X(0.8)} ${f(py + ph + 20)}`
     } : null;
     const lineSvg = lines ? Object.entries(lines).map(([k, d]) => `<g class="pl${state.connect.line === k ? ' on' : ''}" data-line="${k}" tabindex="0" role="button" aria-label="${esc(CN.PALM.lines[k].name)}"><path d="${d}" class="pl-hit"/><path d="${d}" class="pl-line"/></g>`).join('') : '';
-    return `<svg class="hand${interactive ? ' interactive' : ''}" viewBox="0 0 ${W} ${f(py + ph + 46)}" role="img" aria-label="Hand diagram">${thumb}${wrist}${palm}${fingers}${lineSvg}</svg>`;
+    const top = py - L + 2;
+    return `<svg class="hand${interactive ? ' interactive' : ''}" viewBox="${px - 58} ${f(top)} ${f(pw + 70)} ${f(py + ph + 40 - top)}" role="img" aria-label="Hand diagram">${thumb}${wrist}${fingers}${palm}${lineSvg}</svg>`;
   }
   const HAND_SHAPES = {
     earth: { palmW: 130, palmH: 130, fing: 92, tip: 'square' },
@@ -1165,9 +1166,9 @@
     const arc = (h1, h2, r1, r2) => { const [a, b] = pt2(h1, r2), [cc, d] = pt2(h2, r2), [e, g] = pt2(h2, r1), [h, i] = pt2(h1, r1); const large = h2 - h1 > 12 ? 1 : 0; return `M${f(a)} ${f(b)} A${r2} ${r2} 0 ${large} 1 ${f(cc)} ${f(d)} L${f(e)} ${f(g)} A${r1} ${r1} 0 ${large} 0 ${f(h)} ${f(i)} Z`; };
     const segs = CN.TIMING.slots.map(sl => `<path d="${arc(sl.from, sl.to, 58, R)}" class="clk l${sl.level}"><title>${sl.name} (${sl.from}:00–${sl.to}:00): ${sl.best}</title></path>`).join('');
     const nums = [0, 3, 6, 9, 12, 15, 18, 21].map(h => { const [x, y] = pt2(h, R + 14); return `<text x="${f(x)}" y="${f(y)}" class="clk-n">${h}</text>`; }).join('');
-    const [hx, hy] = pt2(hourNow, R + 2);
+    const [hx, hy] = pt2(hourNow, R + 4), [h0x, h0y] = pt2(hourNow, 58);
     return `<svg class="clock" viewBox="0 0 240 240" role="img" aria-label="Best times of day to reach out">${segs}<circle cx="${c}" cy="${c}" r="56" class="clk-face"/>${nums}
-      <line x1="${c}" y1="${c}" x2="${f(hx)}" y2="${f(hy)}" class="clk-hand"/><circle cx="${c}" cy="${c}" r="4" class="clk-dot"/>
+      <line x1="${f(h0x)}" y1="${f(h0y)}" x2="${f(hx)}" y2="${f(hy)}" class="clk-hand"/><circle cx="${f(hx)}" cy="${f(hy)}" r="4" class="clk-dot"/>
       <text x="${c}" y="${c - 8}" class="clk-c">now</text><text x="${c}" y="${c + 10}" class="clk-c2">${String(Math.floor(hourNow)).padStart(2, '0')}:${String(Math.floor((hourNow % 1) * 60)).padStart(2, '0')}</text></svg>`;
   }
   function iconSVG(kind) {
@@ -1231,7 +1232,7 @@
     Object.entries({ sun: 3, moon: 3, asc: 3, mercury: 2, venus: 2, mars: 2, jupiter: 1.5, saturn: 1.5 }).forEach(([k, wt]) => { const p = c.points.find(x => x.key === k); if (!p || (c.noHouses && k === 'asc')) return; const el = E.signOf(p.lon).sign.element; if (el === 'fire' || el === 'air') act += wt; tot += wt; });
     return Math.round(act / tot * 100);
   }
-  const polarBar = p => `<div class="pol-row"><span>${esc(p.name)}</span><div class="polar"><div class="pa" style="width:${p.y}%"><span>Active ${p.y}%</span></div><div class="pb" style="width:${100 - p.y}%"><span>Receptive ${100 - p.y}%</span></div></div></div>`;
+  const polarBar = p => `<div class="pol-row"><span>${esc(p.name)}</span><div class="polar"><div class="pa" style="width:${p.y}%" title="Active ${p.y}%">${p.y >= 28 ? `<span>Active ${p.y}%</span>` : p.y >= 12 ? `<span>${p.y}%</span>` : ''}</div><div class="pb" style="width:${100 - p.y}%" title="Receptive ${100 - p.y}%">${100 - p.y >= 28 ? `<span>Receptive ${100 - p.y}%</span>` : 100 - p.y >= 12 ? `<span>${100 - p.y}%</span>` : ''}</div></div></div>`;
   const polarPair = diff => diff >= 20 ? 'Strong contrast: natural magnetism. One tends to lead and the other to flow.' : diff >= 10 ? 'Moderate contrast: some natural pull, with room to take turns.' : 'Similar energy: easy understanding, more friendship-like. Create spark by consciously taking turns to lead and to receive.';
 
   function polaritySection() {

@@ -651,6 +651,8 @@ tr.static { cursor: default; }
 .cn-who { min-width: 220px; max-width: 100%; }
 .cn .card + .card, .cn .grid-2 + .card, .cn .card + .grid-2 { margin-top: 12px; }
 .cn .grid-2 { margin-top: 12px; }
+.cn .grid-2 > .card, .cn .medal-grid > .card, .cn .method > .card, .cn .script-grid > .card { margin-top: 0; }
+.cn .medal-grid, .cn .grid-2 { align-items: stretch; }
 .medal { width: 96px; height: 96px; flex: none; }
 .medal .m-ring { fill: none; stroke: var(--brass); stroke-width: 1.5; }
 .medal .m-ticks line { stroke: var(--brass); stroke-width: 1.2; }
@@ -679,7 +681,7 @@ tr.static { cursor: default; }
 .polar .pa { background: var(--chart-a); } .polar .pb { background: var(--chart-b); justify-content: flex-end; }
 .palm-grid { align-items: start; }
 .palm-card { text-align: center; }
-.hand { width: 100%; max-width: 280px; height: auto; display: block; margin: 0 auto; }
+.hand { width: 100%; max-width: 240px; height: auto; display: block; margin: 0 auto; }
 .hand .h-skin, .nail .h-skin { fill: var(--fire); stroke: var(--ink-3); stroke-width: 1.2; }
 .hand .pl { cursor: pointer; outline: none; }
 .hand .pl-hit { fill: none; stroke: transparent; stroke-width: 16; }
@@ -688,7 +690,7 @@ tr.static { cursor: default; }
 .hand .pl.on .pl-line { stroke: var(--plum); stroke-width: 4; opacity: 1; }
 .shape-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .shape-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink); cursor: pointer; font: inherit; text-align: center; }
-.shape-btn .hand { max-width: 110px; }
+.shape-btn .hand { max-width: 90px; height: 120px; }
 .shape-btn span { font-size: 12.5px; color: var(--ink-2); }
 .shape-btn.on { border-color: var(--plum); box-shadow: 0 0 0 2px var(--plum-tint); }
 .nail-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
@@ -702,7 +704,18 @@ tr.static { cursor: default; }
 .ico path, .ico circle { fill: none; stroke: var(--plum); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .ico .ico-fill { fill: var(--plum); }
 .ico .ico-t { text-anchor: middle; font: 700 18px var(--sans); fill: var(--plum); }
-table.qa td { vertical-align: top; font-size: 13.5px; }
+table.qa td, table.qa th { vertical-align: top; white-space: normal; }
+table.qa td { font-size: 13.5px; }
+table.qa td:first-child { width: 30%; }
+@media (max-width: 600px) {
+  table.qa, table.qa tbody { display: block; }
+  table.qa thead { display: none; }
+  table.qa tr { display: block; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  table.qa tr:last-child { border-bottom: 0; }
+  table.qa td { display: block; width: auto !important; border: 0; padding: 3px 12px; }
+  table.qa td:nth-child(2)::before { content: "Good sign: "; font-weight: 700; color: var(--flow); }
+  table.qa td:nth-child(3)::before { content: "Watch for: "; font-weight: 700; color: var(--tension); }
+}
 .syn-list.two-col { columns: 2; column-gap: 24px; }
 .flags ol { margin: 8px 0 0 18px; padding: 0; }
 .flags li { margin: 3px 0; }
