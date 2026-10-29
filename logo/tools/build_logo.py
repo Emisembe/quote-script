@@ -256,6 +256,9 @@ MASTER_PAGES = [
     ('icon', 'navy-bg'),
 ]
 
+ALL_CW = ['navy-bg', 'positive', 'reverse', 'white', 'navy', 'black']
+PROJECTS = {'primary': ALL_CW, 'horizontal': ALL_CW, 'wordmark': ALL_CW, 'icon': ['navy-bg']}
+
 
 def esc(s):
     return s.replace('&', '&amp;').replace('<', '&lt;').replace('"', '&quot;')
@@ -279,12 +282,15 @@ def live_parts(mark, cw, indent):
     return out
 
 
-def master_svg():
+def master_svg(spec=None, title='EFIC Consultancy Ltd logo master', doc_id='efic-logo-master',
+               note='logo master', fonts='the fonts folder'):
+    """An Inkscape project with one page and one layer per (version, colourway) in spec."""
+    spec = spec or MASTER_PAGES
     gap = 120
     pages, x, y, rowh, col = [], 0.0, 0.0, 0.0, 0
     cols = {'primary': 3, 'horizontal': 2, 'wordmark': 3, 'icon': 1}
     last = None
-    for name, cwname in MASTER_PAGES:
+    for name, cwname in spec:
         mark = MARKS[name]
         cw = COLOURWAYS[cwname]
         x0, y0, x1, y1 = padded(mark, X * (2 if cw['bg'] else 1))
@@ -298,15 +304,15 @@ def master_svg():
         last = name
     W0, H0 = pages[0][4], pages[0][5]
     out = ['<?xml version="1.0" encoding="UTF-8" standalone="no"?>',
-           '<!-- EFIC Consultancy Ltd: logo master. Open in Inkscape 1.2 or newer.',
-           '     Install the fonts in the fonts folder first (see README.md). -->',
+           '<!-- EFIC Consultancy Ltd: %s. Open in Inkscape 1.2 or newer.' % note,
+           '     Install the fonts in %s first (see README.md). -->' % fonts,
            '<svg xmlns="http://www.w3.org/2000/svg"',
            '     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"',
            '     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"',
            '     xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"',
-           '     width="%spx" height="%spx" viewBox="0 0 %s %s" version="1.1" id="efic-logo-master">' % (
-               num(W0), num(H0), num(W0), num(H0)),
-           '  <title>EFIC Consultancy Ltd logo master</title>',
+           '     width="%spx" height="%spx" viewBox="0 0 %s %s" version="1.1" id="%s">' % (
+               num(W0), num(H0), num(W0), num(H0), doc_id),
+           '  <title>%s</title>' % esc(title),
            '  <sodipodi:namedview id="namedview" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1"',
            '     inkscape:pagecheckerboard="true" inkscape:deskcolor="#d1d1d1" inkscape:document-units="px">']
     for i, (name, cwname, x, y, w, h, *_r) in enumerate(pages):
@@ -322,8 +328,10 @@ def master_svg():
         mark, cw = MARKS[name], COLOURWAYS[cwname]
         if getattr(mark, 'square', False):
             cw = dict(cw, bg=NAVY)
-        out.append('  <g inkscape:groupmode="layer" id="layer-%s-%s" inkscape:label="%02d %s - %s">' % (
-            name, cwname, i + 1, MARKS[name].title, cw['label']))
+        label = '%s - %s' % (MARKS[name].title, cw['label'])
+        if len(pages) > 1:
+            label = '%02d %s' % (i + 1, label)
+        out.append('  <g inkscape:groupmode="layer" id="layer-%s-%s" inkscape:label="%s">' % (name, cwname, esc(label)))
         out.append('    <g transform="translate(%s,%s)">' % (num(x - x0), num(y - y0)))
         if cw['bg']:
             out.append('      <rect x="%s" y="%s" width="%s" height="%s" style="fill:url(#%s)" inkscape:label="Background" sodipodi:insensitive="true"/>' % (
@@ -376,6 +384,13 @@ def out(rel):
 def main():
     master, pages = master_svg()
     write('efic-logo-master.svg', master)
+    # one Inkscape project per version, so each can be opened and edited on its own
+    for name, cws in PROJECTS.items():
+        for cwname in cws:
+            title = '%s - %s' % (MARKS[name].title, COLOURWAYS[cwname]['label'])
+            doc_id = 'efic-%s-%s' % (name, cwname) if name != 'icon' else 'efic-icon'
+            svg, _ = master_svg([(name, cwname)], 'EFIC ' + title, doc_id, 'Inkscape project', '../fonts')
+            write('inkscape/%s.svg' % doc_id, svg)
 
     svgs = {}
     sets = {

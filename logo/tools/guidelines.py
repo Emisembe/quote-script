@@ -54,7 +54,7 @@ def page(svgs, icon_svg, marks, X):
         ('Email signature', 'email/email-signature-white.png'),
         ('Letters, invoices, Word, PowerPoint', 'png/primary/efic-primary-positive-1000px.png'),
         ('Printer, sign-maker, embroidery, merchandise', 'pdf/ or svg/ (vector, any size)'),
-        ('Edit or make a new version', 'efic-logo-master.svg in Inkscape'),
+        ('Edit a version in Inkscape', 'inkscape/ (one file per version)'),
     ]
 
     sheets = []

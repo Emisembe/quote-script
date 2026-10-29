@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- EFIC Consultancy Ltd: Inkscape project. Open in Inkscape 1.2 or newer.
+     Install the fonts in ../fonts first (see README.md). -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+     xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+     width="1534.29px" height="325.09px" viewBox="0 0 1534.29 325.09" version="1.1" id="efic-horizontal-black">
+  <title>EFIC Horizontal logo - One colour: black</title>
+  <sodipodi:namedview id="namedview" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1"
+     inkscape:pagecheckerboard="true" inkscape:deskcolor="#d1d1d1" inkscape:document-units="px">
+    <inkscape:page x="0" y="0" width="1534.29" height="325.09" id="page-horizontal-black" inkscape:label="Horizontal logo - One colour: black"/>
+  </sodipodi:namedview>
+  <defs id="defs">
+    <linearGradient id="efic-navy" inkscape:swatch="solid" osb:paint="solid" inkscape:label="EFIC Navy"><stop offset="0" style="stop-color:#14213D;stop-opacity:1"/></linearGradient>
+    <linearGradient id="efic-gold" inkscape:swatch="solid" osb:paint="solid" inkscape:label="EFIC Gold"><stop offset="0" style="stop-color:#E7B165;stop-opacity:1"/></linearGradient>
+    <linearGradient id="efic-white" inkscape:swatch="solid" osb:paint="solid" inkscape:label="EFIC White"><stop offset="0" style="stop-color:#FFFFFF;stop-opacity:1"/></linearGradient>
+    <linearGradient id="efic-black" inkscape:swatch="solid" osb:paint="solid" inkscape:label="EFIC Black"><stop offset="0" style="stop-color:#000000;stop-opacity:1"/></linearGradient>
+  </defs>
+  <g inkscape:groupmode="layer" id="layer-horizontal-black" inkscape:label="Horizontal logo - One colour: black">
+    <g transform="translate(46.66,46.65)">
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:900;font-style:normal;font-size:316px;line-height:1;letter-spacing:1.6px;-inkscape-font-specification:'Source Sans 3 Heavy';text-anchor:middle;text-align:center;fill:url(#efic-black)" x="295.5" y="209.2" inkscape:label="EFIC">EFIC</text>
+      <rect x="654.82" y="0.01" width="10" height="212.98" rx="5" style="fill:url(#efic-black)" inkscape:label="Gold rule"/>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:108px;line-height:1;letter-spacing:1.13px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-black)" x="788.49" y="78.2" inkscape:label="Efic">Efic</text>
+      <text xml:space="preserve" style="font-family:'Source Sans 3';font-weight:400;font-style:normal;font-size:108px;line-height:1;letter-spacing:1.13px;-inkscape-font-specification:'Source Sans 3';text-anchor:middle;text-align:center;fill:url(#efic-black)" x="1079.57" y="209.2" inkscape:label="Consultancy Ltd">Consultancy Ltd</text>
+    </g>
+  </g>
+</svg>
