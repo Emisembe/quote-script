@@ -112,7 +112,7 @@ p { margin: 0; }
 
 .shell { max-width: 1180px; margin: 0 auto; display: grid; gap: 20px; }
 /* Grid items default to their content's width; let wide tables scroll inside their own box instead of stretching the page. */
-.shell > *, .panel { min-width: 0; }
+.shell > *, .panel, .section > *, .grid-2 > *, .guide-grid > * { min-width: 0; }
 
 /* ---------- header ---------- */
 .masthead {
