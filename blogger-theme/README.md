@@ -11,11 +11,11 @@ The theme for eficc.blogspot.com, rebranded to the EFIC Brand Colour Guide v1.0.
 | `scripts/check.py` | Pre-upload audit. Everything must be proven by the original theme. |
 | `reference/proven.json` | What the original theme proves Blogger accepts, plus two documented exceptions. |
 | `scripts/preview.py` | Writes `preview/home.html` and `preview/post.html` for browser testing. |
-| `tests/` | Browser tests (Playwright): `full.js` menus and sharing, `langtest.js` languages and office cards, `slidetest.js` slideshow, `featuretest.js` Technology tile, message & video, newsletter, certifications, `statstest.js` numbers band. |
+| `tests/` | Browser tests (Playwright): `full.js` menus and sharing, `langtest.js` languages and office cards, `slidetest.js` slideshow, `featuretest.js` Technology tile, message & video, newsletter, certifications, `statstest.js` numbers band, `contacttest.js` contact form prospect number. |
 
 ```bash
 python3 scripts/build.py && python3 scripts/check.py theme-eficc.xml && python3 scripts/preview.py
-node tests/full.js && node tests/langtest.js && node tests/slidetest.js && node tests/featuretest.js && node tests/statstest.js
+node tests/full.js && node tests/langtest.js && node tests/slidetest.js && node tests/featuretest.js && node tests/statstest.js && node tests/contacttest.js
 ```
 
 ## Install
@@ -98,12 +98,35 @@ node tests/full.js && node tests/langtest.js && node tests/slidetest.js && node 
 
 **Numbers band (homepage, under Areas of Expertise)**
 - A navy band with big white numbers and gold labels, for example **1,165** *Projects Executed*. The numbers are still (no counting animation).
-- **Layout → Numbers band (homepage)** has one gadget per figure: *Projects Executed*, *Global Presence*, *Happy Clients* and *Recognitions*.
-- **To fill in a figure:** click **Edit** on the gadget. The gadget **Title** is the label. In **Content**, replace `[type the number, e.g. 250+]` with the number, typed exactly as it should look (`1,165`, `286+`, `98%`, `24/7`). Then click **Save**.
-- **The band ships without numbers,** so no made-up figures appear on your site. A figure only shows once its number is typed in, and the band stays hidden until at least one is. Use real figures you can back up.
-- **More or fewer figures:** add a figure with **Add a Gadget → HTML/JavaScript** (Title = label, Content = number), or delete a gadget to remove one. Drag gadgets to change the order.
+- **All figures are in one gadget.** Go to **Layout → Numbers band (homepage) → Key figures → Edit**. Each figure is one line: **number | label | link**.
+  ```
+  1,165 | Projects Executed
+  286+ | Global Presence
+  2,568 | Happy Clients | /p/our-clients.html
+  185+ | Recognitions | https://www.linkedin.com/company/efic-consultancy-ltd/
+  ```
+  - **The number** is typed exactly as it should look (`1,165`, `286+`, `98%`, `24/7`).
+  - **The link is optional.** With one, the whole figure is clickable: a page on your blog (`/p/...`) opens in the same tab, and another website opens in a new tab.
+  - **Add or remove a figure** by adding or deleting a line. **Change the order** by moving lines.
+  - Lines starting with `#` are notes for you and never show.
+- **It ships without numbers.** Each line says `[number]`, so no made-up figures appear on your site. A figure only shows once its number is typed in, and the band stays hidden until at least one is. Use real figures you can back up.
+- **One gadget per figure also works,** if you prefer dragging gadgets around. Use **Add a Gadget → HTML/JavaScript**, with the Title as the label and the Content as the number (optionally plus a link).
 - **Layout:** 4 figures sit in one row on computers. On tablets and phones they show 2 per row. With 5 or 6 figures, they show 3 per row on computers.
 - **Order:** on the homepage it goes Areas of Expertise → Numbers band → Message & Video.
+
+**Contact form: a prospect number for every message**
+- Every message sent through the contact form gets a number, for example **P-JD-20261029-143522**:
+  - `P` for prospect
+  - the sender's initials (`WEB` if they gave no name)
+  - the date and time the visitor pressed Send
+- **In your email:** the number is the first line of the message Blogger sends you (`Prospect no.: P-JD-20261029-143522`). To find a conversation later, search your inbox for the number.
+- **For the visitor:** under "Message sent." they see *Your reference: P-JD-20261029-143522. Please quote it when you contact us.*
+- **If sending fails** and they press Send again, the message keeps the same number and never gets a second one.
+- **Limits:**
+  - Blogger's contact form only emails you, and can't store anything or count. So the numbers are unique but not running numbers (P-0001, P-0002). They also aren't collected in a list for you.
+  - For running numbers and a prospect register, the form can send each message to a Google Sheet as well, through Google Apps Script. That's a separate small project.
+  - The email subject is set by Blogger and can't include the number.
+- **Check it once live:** send yourself a test message and look for the number in the email.
 
 **Message & Video (homepage, under Areas of Expertise)**
 - **Layout → Message & Video (homepage)**. Two gadgets:

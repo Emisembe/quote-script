@@ -500,6 +500,11 @@ div#sora_blogger_cntct_form span.send-bg:hover:before, div#sora_blogger_cntct_fo
   background: #14213D;
   border: 1px solid #E7B165;
   color: #FFFFFF;
+  height: auto;
+  min-height: 35px;
+  padding: 7px 12px;
+  line-height: 1.5;
+  box-sizing: border-box;
 }
 .map-me #map iframe { border: 1px solid #E8E5DC !important; }
 
@@ -1050,6 +1055,10 @@ html.ef-noscroll, html.ef-noscroll body { overflow: hidden; }
 .efic-stats.es-count-1 li { flex-basis: 100%; }
 .efic-stats.es-count-5 li, .efic-stats.es-count-6 li { flex-basis: 33.333%; }
 .efic-stats li:before { display: none; }
+.es-link { display: block; margin: -8px; padding: 8px; border-radius: 6px; color: inherit; text-decoration: none; transition: background-color .2s ease; }
+.es-link:hover { background: rgba(255, 255, 255, 0.06); }
+.es-link:hover .es-label { text-decoration: underline; text-underline-offset: 4px; }
+.es-link:focus-visible { outline: 2px solid #E7B165; outline-offset: 2px; }
 .es-number {
   display: block;
   color: #FFFFFF;
@@ -1076,6 +1085,9 @@ html.ef-noscroll, html.ef-noscroll body { overflow: hidden; }
   .es-number { font-size: 30px; }
   .es-label { margin-top: 10px; font-size: 14px; }
 }
+
+/* ---------- Contact form: prospect number shown after sending ---------- */
+.cf-ref { clear: both; margin: 6px 0 2px; color: #E7B165; font-size: 14px; font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
 
 /* ---------- Newsletter sign-up (Layout > Newsletter sign-up; every page) ---------- */
 .efic-newsletter-wrap { display: none; }

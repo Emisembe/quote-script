@@ -13,6 +13,7 @@ Each pattern below was built for a real blog (eficc.blogspot.com). It passed the
 8. Newsletter sign-up without Blogger's retired Follow by Email
 9. Badge row (certifications, memberships, partners)
 10. Numbers band (key figures)
+11. Contact form: a reference number per message
 
 ---
 
@@ -181,8 +182,21 @@ Blogger's *Follow by Email* gadget (FeedBurner) stopped sending emails in July 2
 
 A full-width band of big numbers with a label under each (*1,165 Projects Executed*, *286+ Global Presence*).
 
-- **The section:** one HTML gadget per figure. The gadget **title** is the label, and the **first content line** is the number, typed exactly as it should look (`1,165`, `286+`, `98%`). With no title, the second line is used as the label. More figures: **Add a Gadget**; order: drag.
-- **Ship placeholders, not figures.** Figures are claims, like badges. Ship the gadgets with the owner's labels and the content `[type the number, e.g. 250+]`. The script skips any figure that still has a `[`, has no digit, or is longer than 16 characters (a sentence, not a number). The band appears only when at least one real figure exists. So uploading the theme never publishes made-up numbers, and the owner only edits the ready-made gadgets. The preview injects sample numbers (preview-only).
+- **The section:** ship **one** HTML gadget, *Key figures*, with one figure per line: `number | label | link`. One Edit box for all figures beats four gadgets (the owner asked for this after trying one gadget per figure). Lines starting with `#` are notes (put the format and an example there). Also accept one gadget per figure (title = label, first line = number, a link in the content) for owners who add gadgets.
+- **Parse lines from the HTML gadget:** `<br>`, block ends **and** raw new lines (the HTML box keeps plain new lines), then `textContent`.
+- **Ship placeholders, not figures.** Figures are claims, like badges. Ship `[number] | Projects Executed` lines. Skip any figure whose number has a `[`, has no digit, or is longer than 16 characters (a sentence, not a number). The band appears only when at least one real figure exists, so uploading the theme never publishes made-up numbers. The preview injects sample numbers (preview-only).
+- **Links:** accept only `http(s)://`, `/…` or `#…` (never `javascript:`). Wrap the figure in an `a`; other sites open in a new tab with `rel=noopener`. Underline the label on hover and give it a visible focus outline.
 - **Rendering:** a `ul` of `li` > number + label spans, built with `textContent`. Use the brand's dark colour for the band, white numbers and accent-coloured labels (an accent on a dark background is fine; never accent text on white). Lay it out with flex-wrap: 4 per row on desktop, a class `es-count-N` for 3/5/6 (3 per row) or 1–2, and 2 per row below 900 px. Use `overflow-wrap: anywhere` so `2,568,000+` can't overflow at 320 px.
 - **Still numbers by default.** A count-up animation is optional. If you add one, honour `prefers-reduced-motion` and keep the final text in the HTML, so screen readers and translation see the real figure.
 - **Homepage only,** moved under the anchor block like section 7. When two scripts insert after the same anchor, the one that runs **last** ends up **first**, so order the scripts deliberately and update the other block's placement test.
+
+## 11. Contact form: a reference number per message
+
+Blogger's ContactForm gadget only emails the owner. It has no server-side hook, no storage and no counter, but a script can still stamp each message.
+
+- **How:** a `click` listener on `document` in the **capture** phase runs before Blogger's own handler on the Send button (`#ContactForm1_contact-form-submit`). It puts `Prospect no.: P-<initials>-<YYYYMMDD>-<HHMMSS>` plus a blank line at the top of the textarea, so it's in the email Blogger sends.
+- **Only when Blogger will accept the form** (message not empty, email has an `@`). Otherwise leave the text untouched. On a retry, reuse the number already at the top, so there's never a second line.
+- **Show the visitor:** watch `#ContactForm1_contact-form-success-message` with a MutationObserver. When it holds text that isn't "Sending..." and the error box is empty, append *Your reference: …* inside it. The template's success box has a fixed `height: 35px`; make it `height: auto` or the line spills out.
+- **Initials:** strip accents (`normalize('NFD')`), keep A–Z words, take up to 3. With no Latin name (empty, Chinese …), use `WEB`.
+- **Limits to tell the owner:** numbers are unique but not sequential, they aren't collected anywhere, and the email subject is Blogger's. For running numbers and a register, also post the form to a Google Apps Script web app that writes to a Sheet.
+- **Test with a stand-in** for Blogger's script: a target-phase click handler that validates, shows "Sending...", then "Message sent." and clears the form, recording the message. Assert the recorded message, the shown reference, failed-then-retry, and names (none, accents, hyphens, non-Latin).

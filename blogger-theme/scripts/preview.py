@@ -102,8 +102,10 @@ def sections(page):
                           "<p></p><span class='name-bg'>Your Name</span><br/><input class='contact-form-name' id='ContactForm1_contact-form-name' type='text'/>"
                           "<p></p><span class='email-bg'>Your Email*</span><br/><input class='contact-form-email' id='ContactForm1_contact-form-email' type='text'/>"
                           "<p></p><span class='message-bg'>Your Message*</span><br/><textarea class='contact-form-email-message' id='ContactForm1_contact-form-email-message' rows='5'></textarea>"
-                          "<p></p><span class='send-bg'><input class='contact-form-button contact-form-button-submit' type='button' value='Send'/></span>"
+                          "<p></p><span class='send-bg'><input class='contact-form-button contact-form-button-submit' id='ContactForm1_contact-form-submit' type='button' value='Send'/></span>"
                           "<span class='clear-bg'><input class='contact-form-button contact-form-button-submit clear-button' type='reset' value='Clear'/></span>"
+                          "<p></p><div style='max-width: 100%; text-align: center; width: 100%;'><div class='contact-form-error-message' id='ContactForm1_contact-form-error-message'></div>"
+                          "<div class='contact-form-success-message' id='ContactForm1_contact-form-success-message'></div></div>"
                           '</form></div></div></div>',
         'LinkList250': social([('facebook', '#'), ('LinkedIn', 'https://www.linkedin.com/company/efic-consultancy-ltd/'),
                                         ('youtube', 'https://youtube.com/'), ('WhatsApp', 'https://wa.me/'),
@@ -191,7 +193,7 @@ def render(page):
         if sid == 'stats' and page != 'layout':
             # Preview only: figures typed in the way an owner would (sample numbers).
             for figure in ['1,165', '286+', '2,568', '185+']:
-                out = out.replace('[type the number, e.g. 250+]', figure, 1)
+                out = out.replace('[number]', figure, 1)
         if sid == 'footer-certifications' and page != 'layout':
             # Preview only: badges added the way an owner would (Image gadgets, one text badge).
             out += ''.join(f"<div class='widget Image' id='Image{9 + n}'><h2>{t}</h2><div class='widget-content'><a href='#'>"

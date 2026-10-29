@@ -884,34 +884,23 @@ resub(r"(<b:section class='foot-bar-social blue' id='Footer social widget'.*?</b
 </b:section>
 </div>
 """)
-# Numbers band (homepage): one HTML gadget per figure, Title = label, Content = number.
-# Shipped with a placeholder instead of figures, so nothing untrue goes live: a
-# gadget only shows once its number is typed in. Moved under the expertise tiles.
+# Numbers band (homepage): one HTML gadget, one figure per line:
+#   number | label | link (optional). Lines starting with # are notes.
+# Shipped with [number] placeholders instead of figures, so nothing untrue goes
+# live: a line only shows once its number is typed in. One gadget per figure
+# (Title = label, Content = number) also works. Moved under the expertise tiles.
 sub("</b:section>\n</div>\n<div class='insta-wrap' id='section-6'>", f"""</b:section>
 </div>
 <div class='efic-stats-wrap'>
 <b:section class='efic-stats-section' id='stats' name='Numbers band (homepage)' showaddelement='yes'>
-  <b:widget id='HTML13' locked='false' title='Projects Executed' type='HTML'>
+  <b:widget id='HTML13' locked='false' title='Key figures' type='HTML'>
     <b:widget-settings>
-      <b:widget-setting name='content'><![CDATA[[type the number, e.g. 250+]]]></b:widget-setting>
-    </b:widget-settings>
-    {GADGET_MAIN}
-  </b:widget>
-  <b:widget id='HTML14' locked='false' title='Global Presence' type='HTML'>
-    <b:widget-settings>
-      <b:widget-setting name='content'><![CDATA[[type the number, e.g. 250+]]]></b:widget-setting>
-    </b:widget-settings>
-    {GADGET_MAIN}
-  </b:widget>
-  <b:widget id='HTML15' locked='false' title='Happy Clients' type='HTML'>
-    <b:widget-settings>
-      <b:widget-setting name='content'><![CDATA[[type the number, e.g. 250+]]]></b:widget-setting>
-    </b:widget-settings>
-    {GADGET_MAIN}
-  </b:widget>
-  <b:widget id='HTML16' locked='false' title='Recognitions' type='HTML'>
-    <b:widget-settings>
-      <b:widget-setting name='content'><![CDATA[[type the number, e.g. 250+]]]></b:widget-setting>
+      <b:widget-setting name='content'><![CDATA[# One figure per line:  number | label | link (optional)<br/>
+# Example:  250+ | Happy Clients | /p/our-clients.html<br/>
+[number] | Projects Executed<br/>
+[number] | Global Presence<br/>
+[number] | Happy Clients<br/>
+[number] | Recognitions]]></b:widget-setting>
     </b:widget-settings>
     {GADGET_MAIN}
   </b:widget>
@@ -1011,34 +1000,97 @@ sub("""// Desktop menu: if the Layout menu needs more than one row""", """// Mes
   if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(wrap, anchor.nextSibling); }
 })();
 
-// Numbers band (Layout > Numbers band): one gadget per figure. Title = the label,
-// first line of the content = the number. Gadgets still holding the [placeholder]
-// (or no digit) are skipped; with none left the band stays hidden.
+// Numbers band (Layout > Numbers band). One gadget, one figure per line:
+// "number | label | link". Or one gadget per figure: Title = label, first line =
+// number, an optional link. Lines with a [placeholder], no digit or a long text
+// in the number are skipped; with no figures left the band stays hidden.
 (function () {
   var sec = document.getElementById('stats');
   if (!sec || document.body.id === 'layout') { return; }
   var wrap = sec.parentNode, anchor = document.getElementById('section-2');
-  var ws = sec.querySelectorAll('.widget'), list = document.createElement('ul');
-  list.className = 'efic-stats';
+  var ws = sec.querySelectorAll('.widget'), list = document.createElement('ul'), figures = [];
+  function lines(box) {
+    var html = box.innerHTML.replace(/<br\\s*\\/?>/gi, '\\n').replace(/<\\/(p|div|li|h[1-6])>/gi, '\\n');
+    return new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html').body.textContent.split('\\n')
+      .map(function (l) { return l.replace(/\\s+/g, ' ').trim(); }).filter(Boolean);
+  }
+  function link(u) {
+    u = (u || '').trim();
+    return /^(https?:\\/\\/|\\/|#)\\S*$/i.test(u) ? u : '';
+  }
   for (var i = 0; i < ws.length; i++) {
     var w = ws[i], box = w.querySelector('.widget-content') || w, h = w.querySelector('h2');
-    var html = box.innerHTML.replace(/<br\\s*\\/?>/gi, '\\n').replace(/<\\/(p|div|li|h[1-6])>/gi, '\\n');
-    var ls = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html').body.textContent.split('\\n')
-      .map(function (l) { return l.replace(/\\s+/g, ' ').trim(); }).filter(Boolean);
-    var value = ls[0] || '', label = (h ? h.textContent.trim() : '') || ls[1] || '';
-    if (!/\\d/.test(value) || /[\\[\\]]/.test(value) || value.length > 16) { continue; }
-    var li = document.createElement('li'), n = document.createElement('span'), l = document.createElement('span');
-    n.className = 'es-number'; n.textContent = value;
-    l.className = 'es-label'; l.textContent = label;
-    li.appendChild(n); if (label) { li.appendChild(l); }
-    list.appendChild(li);
+    var ls = lines(box).filter(function (l) { return l.charAt(0) !== '#'; }), a = box.querySelector('a[href]');
+    if (ls.some(function (l) { return l.indexOf('|') > -1; })) {
+      ls.forEach(function (l) {
+        var p = l.split('|');
+        if (p.length > 1) { figures.push({value: p[0].trim(), label: p[1].trim(), href: link(p[2])}); }
+      });
+    } else {
+      var urls = ls.filter(function (l) { return link(l) && /^https?:|^\\//i.test(l); });
+      var words = ls.filter(function (l) { return urls.indexOf(l) < 0; });
+      figures.push({value: words[0] || '', label: (h ? h.textContent.trim() : '') || words[1] || '',
+        href: a ? link(a.getAttribute('href')) : link(urls[0])});
+    }
   }
+  figures.forEach(function (f) {
+    if (!/\\d/.test(f.value) || /[\\[\\]]/.test(f.value) || f.value.length > 16) { return; }
+    var li = document.createElement('li'), holder = li, n = document.createElement('span'), l = document.createElement('span');
+    if (f.href) {
+      holder = document.createElement('a');
+      holder.className = 'es-link';
+      holder.href = f.href;
+      if (holder.host && holder.host !== location.host) { holder.target = '_blank'; holder.rel = 'noopener'; }
+      li.appendChild(holder);
+    }
+    n.className = 'es-number'; n.textContent = f.value;
+    l.className = 'es-label'; l.textContent = f.label;
+    holder.appendChild(n); if (f.label) { holder.appendChild(l); }
+    list.appendChild(li);
+  });
   if (!list.children.length) { return; }
-  list.className += ' es-count-' + Math.min(list.children.length, 6);
+  list.className = 'efic-stats es-count-' + Math.min(list.children.length, 6);
   sec.style.display = 'none';
   wrap.appendChild(list);
   wrap.className += ' has-stats';
   if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(wrap, anchor.nextSibling); }
+})();
+
+// Contact form: every message gets a prospect number, P-<initials>-<date>-<time>,
+// for example P-JD-20261029-143522. It becomes the first line of the message that
+// Blogger emails you, and the visitor sees it under "Message sent". Blogger's own
+// script sends the form; this runs just before it (capture phase on the click).
+(function () {
+  var id = function (s) { return document.getElementById('ContactForm1_contact-form-' + s); };
+  var btn = id('submit'), msg = id('email-message'), name = id('name'), email = id('email'), done = id('success-message'), err = id('error-message');
+  if (!btn || !msg || !done || document.body.id === 'layout') { return; }
+  var LINE = /^Prospect no\\.: (P-[A-Z]{1,3}-\\d{8}-\\d{6})\\s*/, pending = '';
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function initials(s) {
+    var ws = (s || '').normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/[^A-Za-z\\s]/g, ' ').split(/\\s+/).filter(Boolean);
+    return ws.length ? ws.slice(0, 3).map(function (w) { return w.charAt(0); }).join('').toUpperCase() : 'WEB';
+  }
+  function number() {
+    var d = new Date();
+    return 'P-' + initials(name && name.value) + '-' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) +
+      '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+  }
+  document.addEventListener('click', function (e) {
+    if (e.target !== btn) { return; }
+    var m = msg.value.match(LINE), text = msg.value.replace(LINE, '');
+    if (!text.trim() || (email && !/\\S@\\S/.test(email.value))) { return; }   // Blogger refuses these anyway
+    pending = m ? m[1] : number();                                            // a retry keeps its number
+    msg.value = 'Prospect no.: ' + pending + '\\n\\n' + text;
+  }, true);
+  new MutationObserver(function () {
+    var t = done.textContent.trim();
+    if (!pending || !t || /\\.\\.\\.|\\u2026/.test(t) || (err && err.textContent.trim()) || done.querySelector('.cf-ref')) { return; }
+    var p = document.createElement('p');
+    p.className = 'cf-ref';
+    p.textContent = 'Your reference: ' + pending + '. Please quote it when you contact us.';
+    (done.firstElementChild || done).appendChild(p);
+    pending = '';
+  }).observe(done, {childList: true, subtree: true, characterData: true});
 })();
 
 // Newsletter sign-up (Layout > Newsletter sign-up). The gadget holds the text, an

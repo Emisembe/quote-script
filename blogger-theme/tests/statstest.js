@@ -8,14 +8,20 @@ const R = []; const ok = (c, m) => R.push((c ? 'PASS ' : 'FAIL ') + m);
 const HOME = fs.readFileSync(PV + 'home.html', 'utf8'), POST = fs.readFileSync(PV + 'post.html', 'utf8');
 const W = (id, title, content) => `<div id='${id}' class='widget HTML'><h2 class='title'>${title}</h2><div class='widget-content'>${content}</div></div>`;
 const VARIANTS = {
-  // as shipped: every gadget still holds the placeholder
-  shipped: h => h.replace(/1,165|286\+|2,568|185\+/g, '[type the number, e.g. 250+]'),
+  // as shipped: every line still holds the [number] placeholder
+  shipped: h => h.replace(/1,165|286\+|2,568|185\+/g, '[number]'),
   // one figure filled in, three still placeholders
-  oneFilled: h => h.replace(/286\+|2,568|185\+/g, '[type the number, e.g. 250+]'),
-  // a fifth figure added with Add a Gadget, typed with a <script> and two lines
-  fifth: h => h.replace(/(id='stats'[^>]*>)/, '$1' + W('HTML40', 'Years of Experience', '15+<br>since 2011')).replace("<h2 class='title'>Happy Clients</h2><div class='widget-content'>2,568", "<h2 class='title'></h2><div class='widget-content'>2,568<br>&lt;img src=x onerror=alert(1)&gt;"),
-  // the label typed as the second line instead of the title
-  noTitle: h => h.replace("<h2 class='title'>Recognitions</h2><div class='widget-content'>185+", "<h2 class='title'></h2><div class='widget-content'>185+<br>Awards"),
+  oneFilled: h => h.replace(/286\+|2,568|185\+/g, '[number]'),
+  // links on three lines: a page, an outside site, and an unsafe one that must be ignored
+  links: h => h.replace('2,568 | Happy Clients', '2,568 | Happy Clients | /p/our-clients.html')
+    .replace('185+ | Recognitions', '185+ | Recognitions | https://www.linkedin.com/company/efic-consultancy-ltd/')
+    .replace('286+ | Global Presence', '286+ | Global Presence | javascript:alert(1)'),
+  // a fifth figure as its own gadget (Add a Gadget): Title = label, number, a link
+  fifth: h => h.replace(/(id='stats'[^>]*>)/, '$1' + W('HTML40', 'Years of Experience', '15+<br><a href="/p/about.html">About us</a>')),
+  // typed HTML in a label, and a label left empty
+  injected: h => h.replace('2,568 | Happy Clients', '2,568 | &lt;img src=x onerror=alert(1)&gt;').replace('185+ | Recognitions', '185+ |'),
+  // figures typed without <br>, just on new lines (how the HTML gadget box keeps them)
+  plainLines: h => h.replace(/<br\/>\n(\d|\[)/g, '\n$1'),
 };
 
 (async () => {
@@ -93,19 +99,40 @@ const VARIANTS = {
     await c.close();
   }
 
-  // 4. Fifth figure (Add a Gadget), typed HTML stays text, label from the second line
+  // 4. Links, a fifth figure as its own gadget, typed HTML, long text, plain new lines
   {
-    const {c, p, errs, dialogs} = await open(1440, {variants: ['fifth', 'noTitle']});
+    const {c, p, errs} = await open(1440, {variants: ['links']});
+    const l = await p.evaluate(() => [...document.querySelectorAll('.efic-stats li')].map(li => { const a = li.querySelector('a'); return a ? [a.getAttribute('href'), a.target || '', a.rel || ''] : null; }));
+    ok(l[2] && l[2][0] === '/p/our-clients.html' && !l[2][1], 'a link on a line makes that figure clickable (own page: same tab)');
+    ok(l[3] && /linkedin\.com/.test(l[3][0]) && l[3][1] === '_blank' && l[3][2] === 'noopener', 'an outside link opens in a new tab');
+    ok(l[1] === null && l[0] === null, 'an unsafe link (javascript:) is ignored, the figure still shows');
+    await p.hover('.es-link');
+    ok(await p.evaluate(() => getComputedStyle(document.querySelector('.es-link .es-label')).textDecorationLine === 'underline'), 'hovering a linked figure underlines its label');
+    ok(!errs.length, 'no JS errors with links');
+    await p.locator('.efic-stats-wrap').screenshot({path: S + '/shots/stats-links.png'});
+    await c.close();
+  }
+  {
+    const {c, p} = await open(1440, {variants: ['fifth']});
     const it = await items(p);
-    ok(it.length === 5 && it[0].n === '15+' && it[0].l === 'Years of Experience', 'a fifth gadget adds a fifth figure (first line = number)');
+    const a = await p.evaluate(() => { const x = document.querySelector('.efic-stats li a'); return x && x.getAttribute('href'); });
+    ok(it.length === 5 && it[0].n === '15+' && it[0].l === 'Years of Experience' && a === '/p/about.html', 'one gadget per figure still works (Title = label, link in the content)');
     ok(rows(it) === 2, '5 figures: 3 + 2 rows, centred');
-    ok(!dialogs.length && !(await p.$('.efic-stats img')) && !errs.length && it.some(i => i.l === '<img src=x onerror=alert(1)>'), 'typed HTML is shown as text and never runs');
-    const long = await open(1440, {variants: [h => h.replace('2,568', 'Over two thousand five hundred')]});
-    ok((await items(long.p)).length === 3, 'a line that is not a number (too long) is skipped, not squeezed into the band');
-    await long.c.close();
-    ok(it.some(i => i.n === '185+' && i.l === 'Awards'), 'no title: the second line becomes the label');
     await p.locator('.efic-stats-wrap').screenshot({path: S + '/shots/stats-five.png'});
     await c.close();
+  }
+  {
+    const {c, p, errs, dialogs} = await open(1440, {variants: ['injected']});
+    const it = await items(p);
+    ok(!dialogs.length && !(await p.$('.efic-stats img')) && !errs.length && it.some(i => i.l === '<img src=x onerror=alert(1)>'), 'typed HTML is shown as text and never runs');
+    ok(it.some(i => i.n === '185+' && i.l === ''), 'a figure with no label still shows its number');
+    await c.close();
+    const long = await open(1440, {variants: [h => h.replace('2,568 | Happy', 'Over two thousand five hundred | Happy')]});
+    ok((await items(long.p)).length === 3, 'a number that is really a sentence is skipped, not squeezed into the band');
+    await long.c.close();
+    const plain = await open(1440, {variants: ['plainLines']});
+    ok((await items(plain.p)).length === 4, 'figures typed on new lines without <br> work too');
+    await plain.c.close();
   }
 
   // 5. Posts and pages: not shown (homepage only)
@@ -121,8 +148,8 @@ const VARIANTS = {
     await p.goto('file://' + PV + 'layout.html', {waitUntil: 'networkidle'});
     const l = await p.evaluate(() => { const s = document.getElementById('stats'); return s && {vis: s.offsetHeight > 0, head: s.querySelector('h4').textContent, add: !!s.querySelector('.add_widget'),
       gadgets: [...s.querySelectorAll('.layout-title')].map(t => t.textContent)}; });
-    ok(l && l.vis && l.add && l.head === 'Numbers band (homepage)' && l.gadgets.join(' | ') === 'Projects Executed | Global Presence | Happy Clients | Recognitions',
-      'Layout shows "Numbers band (homepage)" with its four gadgets and Add a Gadget ' + JSON.stringify(l));
+    ok(l && l.vis && l.add && l.head === 'Numbers band (homepage)' && l.gadgets.join(' | ') === 'Key figures',
+      'Layout shows "Numbers band (homepage)" with its one Key figures gadget and Add a Gadget ' + JSON.stringify(l));
     await c.close();
   }
   await b.close();

@@ -2912,6 +2912,11 @@ div#sora_blogger_cntct_form span.send-bg:hover:before, div#sora_blogger_cntct_fo
   background: #14213D;
   border: 1px solid #E7B165;
   color: #FFFFFF;
+  height: auto;
+  min-height: 35px;
+  padding: 7px 12px;
+  line-height: 1.5;
+  box-sizing: border-box;
 }
 .map-me #map iframe { border: 1px solid #E8E5DC !important; }
 
@@ -3462,6 +3467,10 @@ html.ef-noscroll, html.ef-noscroll body { overflow: hidden; }
 .efic-stats.es-count-1 li { flex-basis: 100%; }
 .efic-stats.es-count-5 li, .efic-stats.es-count-6 li { flex-basis: 33.333%; }
 .efic-stats li:before { display: none; }
+.es-link { display: block; margin: -8px; padding: 8px; border-radius: 6px; color: inherit; text-decoration: none; transition: background-color .2s ease; }
+.es-link:hover { background: rgba(255, 255, 255, 0.06); }
+.es-link:hover .es-label { text-decoration: underline; text-underline-offset: 4px; }
+.es-link:focus-visible { outline: 2px solid #E7B165; outline-offset: 2px; }
 .es-number {
   display: block;
   color: #FFFFFF;
@@ -3488,6 +3497,9 @@ html.ef-noscroll, html.ef-noscroll body { overflow: hidden; }
   .es-number { font-size: 30px; }
   .es-label { margin-top: 10px; font-size: 14px; }
 }
+
+/* ---------- Contact form: prospect number shown after sending ---------- */
+.cf-ref { clear: both; margin: 6px 0 2px; color: #E7B165; font-size: 14px; font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
 
 /* ---------- Newsletter sign-up (Layout > Newsletter sign-up; every page) ---------- */
 .efic-newsletter-wrap { display: none; }
@@ -3966,7 +3978,12 @@ EFIC Consultancy Ltd helps organisations improve quality, compliance, logistics 
 https://www.youtube.com/watch?v=2bjBiOVQrUs</div></div></div>
 </div>
 <div class='efic-stats-wrap'>
-<div class='section efic-stats-section' id='stats' data-section-name='Numbers band (homepage)'><div id='HTML13' class='widget HTML'><h2 class='title'>Projects Executed</h2><div class='widget-content'>1,165</div></div><div id='HTML14' class='widget HTML'><h2 class='title'>Global Presence</h2><div class='widget-content'>286+</div></div><div id='HTML15' class='widget HTML'><h2 class='title'>Happy Clients</h2><div class='widget-content'>2,568</div></div><div id='HTML16' class='widget HTML'><h2 class='title'>Recognitions</h2><div class='widget-content'>185+</div></div></div>
+<div class='section efic-stats-section' id='stats' data-section-name='Numbers band (homepage)'><div id='HTML13' class='widget HTML'><h2 class='title'>Key figures</h2><div class='widget-content'># One figure per line:  number | label | link (optional)<br/>
+# Example:  250+ | Happy Clients | /p/our-clients.html<br/>
+1,165 | Projects Executed<br/>
+286+ | Global Presence<br/>
+2,568 | Happy Clients<br/>
+185+ | Recognitions</div></div></div>
 </div>
 <div class='insta-wrap' id='section-6'>
 <div class='contact-title'>
@@ -3982,7 +3999,7 @@ WhatsApp: 🇩🇪 +49 123 3547892</div></div><div class='widget Text' id='Text1
  <div style='clear:both'></div>
 <div class='row' id='sora_blogger_cntct_form'>
 <div class='wrap-me'>
-<div class='section sora-contact-widget' id='Contact Widget' data-section-name='Contact Form Widget'><div id='ContactForm1' class='widget ContactForm'><div class='contact-form-widget'><div class='form'><form name='contact-form'><p></p><span class='name-bg'>Your Name</span><br/><input class='contact-form-name' id='ContactForm1_contact-form-name' type='text'/><p></p><span class='email-bg'>Your Email*</span><br/><input class='contact-form-email' id='ContactForm1_contact-form-email' type='text'/><p></p><span class='message-bg'>Your Message*</span><br/><textarea class='contact-form-email-message' id='ContactForm1_contact-form-email-message' rows='5'></textarea><p></p><span class='send-bg'><input class='contact-form-button contact-form-button-submit' type='button' value='Send'/></span><span class='clear-bg'><input class='contact-form-button contact-form-button-submit clear-button' type='reset' value='Clear'/></span></form></div></div></div></div>
+<div class='section sora-contact-widget' id='Contact Widget' data-section-name='Contact Form Widget'><div id='ContactForm1' class='widget ContactForm'><div class='contact-form-widget'><div class='form'><form name='contact-form'><p></p><span class='name-bg'>Your Name</span><br/><input class='contact-form-name' id='ContactForm1_contact-form-name' type='text'/><p></p><span class='email-bg'>Your Email*</span><br/><input class='contact-form-email' id='ContactForm1_contact-form-email' type='text'/><p></p><span class='message-bg'>Your Message*</span><br/><textarea class='contact-form-email-message' id='ContactForm1_contact-form-email-message' rows='5'></textarea><p></p><span class='send-bg'><input class='contact-form-button contact-form-button-submit' id='ContactForm1_contact-form-submit' type='button' value='Send'/></span><span class='clear-bg'><input class='contact-form-button contact-form-button-submit clear-button' type='reset' value='Clear'/></span><p></p><div style='max-width: 100%; text-align: center; width: 100%;'><div class='contact-form-error-message' id='ContactForm1_contact-form-error-message'></div><div class='contact-form-success-message' id='ContactForm1_contact-form-success-message'></div></div></form></div></div></div></div>
 <br/>
 </div><div class='map-me'>
  <div id='map'>
@@ -4821,34 +4838,97 @@ $("#related-posts").each(function(){var g=$(this),e=g.text(),r=3;relatedPost(g,e
   if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(wrap, anchor.nextSibling); }
 })();
 
-// Numbers band (Layout > Numbers band): one gadget per figure. Title = the label,
-// first line of the content = the number. Gadgets still holding the [placeholder]
-// (or no digit) are skipped; with none left the band stays hidden.
+// Numbers band (Layout > Numbers band). One gadget, one figure per line:
+// "number | label | link". Or one gadget per figure: Title = label, first line =
+// number, an optional link. Lines with a [placeholder], no digit or a long text
+// in the number are skipped; with no figures left the band stays hidden.
 (function () {
   var sec = document.getElementById('stats');
   if (!sec || document.body.id === 'layout') { return; }
   var wrap = sec.parentNode, anchor = document.getElementById('section-2');
-  var ws = sec.querySelectorAll('.widget'), list = document.createElement('ul');
-  list.className = 'efic-stats';
+  var ws = sec.querySelectorAll('.widget'), list = document.createElement('ul'), figures = [];
+  function lines(box) {
+    var html = box.innerHTML.replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|li|h[1-6])>/gi, '\n');
+    return new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html').body.textContent.split('\n')
+      .map(function (l) { return l.replace(/\s+/g, ' ').trim(); }).filter(Boolean);
+  }
+  function link(u) {
+    u = (u || '').trim();
+    return /^(https?:\/\/|\/|#)\S*$/i.test(u) ? u : '';
+  }
   for (var i = 0; i < ws.length; i++) {
     var w = ws[i], box = w.querySelector('.widget-content') || w, h = w.querySelector('h2');
-    var html = box.innerHTML.replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|li|h[1-6])>/gi, '\n');
-    var ls = new DOMParser().parseFromString('<div>' + html + '</div>', 'text/html').body.textContent.split('\n')
-      .map(function (l) { return l.replace(/\s+/g, ' ').trim(); }).filter(Boolean);
-    var value = ls[0] || '', label = (h ? h.textContent.trim() : '') || ls[1] || '';
-    if (!/\d/.test(value) || /[\[\]]/.test(value) || value.length > 16) { continue; }
-    var li = document.createElement('li'), n = document.createElement('span'), l = document.createElement('span');
-    n.className = 'es-number'; n.textContent = value;
-    l.className = 'es-label'; l.textContent = label;
-    li.appendChild(n); if (label) { li.appendChild(l); }
-    list.appendChild(li);
+    var ls = lines(box).filter(function (l) { return l.charAt(0) !== '#'; }), a = box.querySelector('a[href]');
+    if (ls.some(function (l) { return l.indexOf('|') > -1; })) {
+      ls.forEach(function (l) {
+        var p = l.split('|');
+        if (p.length > 1) { figures.push({value: p[0].trim(), label: p[1].trim(), href: link(p[2])}); }
+      });
+    } else {
+      var urls = ls.filter(function (l) { return link(l) && /^https?:|^\//i.test(l); });
+      var words = ls.filter(function (l) { return urls.indexOf(l) < 0; });
+      figures.push({value: words[0] || '', label: (h ? h.textContent.trim() : '') || words[1] || '',
+        href: a ? link(a.getAttribute('href')) : link(urls[0])});
+    }
   }
+  figures.forEach(function (f) {
+    if (!/\d/.test(f.value) || /[\[\]]/.test(f.value) || f.value.length > 16) { return; }
+    var li = document.createElement('li'), holder = li, n = document.createElement('span'), l = document.createElement('span');
+    if (f.href) {
+      holder = document.createElement('a');
+      holder.className = 'es-link';
+      holder.href = f.href;
+      if (holder.host && holder.host !== location.host) { holder.target = '_blank'; holder.rel = 'noopener'; }
+      li.appendChild(holder);
+    }
+    n.className = 'es-number'; n.textContent = f.value;
+    l.className = 'es-label'; l.textContent = f.label;
+    holder.appendChild(n); if (f.label) { holder.appendChild(l); }
+    list.appendChild(li);
+  });
   if (!list.children.length) { return; }
-  list.className += ' es-count-' + Math.min(list.children.length, 6);
+  list.className = 'efic-stats es-count-' + Math.min(list.children.length, 6);
   sec.style.display = 'none';
   wrap.appendChild(list);
   wrap.className += ' has-stats';
   if (anchor && anchor.parentNode) { anchor.parentNode.insertBefore(wrap, anchor.nextSibling); }
+})();
+
+// Contact form: every message gets a prospect number, P-<initials>-<date>-<time>,
+// for example P-JD-20261029-143522. It becomes the first line of the message that
+// Blogger emails you, and the visitor sees it under "Message sent". Blogger's own
+// script sends the form; this runs just before it (capture phase on the click).
+(function () {
+  var id = function (s) { return document.getElementById('ContactForm1_contact-form-' + s); };
+  var btn = id('submit'), msg = id('email-message'), name = id('name'), email = id('email'), done = id('success-message'), err = id('error-message');
+  if (!btn || !msg || !done || document.body.id === 'layout') { return; }
+  var LINE = /^Prospect no\.: (P-[A-Z]{1,3}-\d{8}-\d{6})\s*/, pending = '';
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function initials(s) {
+    var ws = (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Za-z\s]/g, ' ').split(/\s+/).filter(Boolean);
+    return ws.length ? ws.slice(0, 3).map(function (w) { return w.charAt(0); }).join('').toUpperCase() : 'WEB';
+  }
+  function number() {
+    var d = new Date();
+    return 'P-' + initials(name && name.value) + '-' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) +
+      '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+  }
+  document.addEventListener('click', function (e) {
+    if (e.target !== btn) { return; }
+    var m = msg.value.match(LINE), text = msg.value.replace(LINE, '');
+    if (!text.trim() || (email && !/\S@\S/.test(email.value))) { return; }   // Blogger refuses these anyway
+    pending = m ? m[1] : number();                                            // a retry keeps its number
+    msg.value = 'Prospect no.: ' + pending + '\n\n' + text;
+  }, true);
+  new MutationObserver(function () {
+    var t = done.textContent.trim();
+    if (!pending || !t || /\.\.\.|\u2026/.test(t) || (err && err.textContent.trim()) || done.querySelector('.cf-ref')) { return; }
+    var p = document.createElement('p');
+    p.className = 'cf-ref';
+    p.textContent = 'Your reference: ' + pending + '. Please quote it when you contact us.';
+    (done.firstElementChild || done).appendChild(p);
+    pending = '';
+  }).observe(done, {childList: true, subtree: true, characterData: true});
 })();
 
 // Newsletter sign-up (Layout > Newsletter sign-up). The gadget holds the text, an
