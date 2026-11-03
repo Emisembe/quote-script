@@ -68,7 +68,8 @@ telegram: @night_shop
 email: orders@example.com
 google_sheet: https://script.google.com/macros/s/…/exec
 place_order: yes
-paypal:
+paypal: yourpaypalme_name
+payment: Bank transfer, PayPal, Cash on delivery
 bank: Sparkasse, IBAN DE00 0000 0000 0000 0000 00
 shipping: 4,90
 free_shipping_over: 50
@@ -93,8 +94,9 @@ banner_image:
 | `email` | Adds "Send order by email" (opens the buyer's email app) |
 | `google_sheet` | The link of your order inbox (section 7). Every order is then saved in the sheet |
 | `place_order` | `yes` shows "Place order (we confirm by email)", which sends straight to the sheet. `no` hides it but still records WhatsApp/Telegram orders |
-| `paypal` | Your PayPal business email. Adds "Pay with PayPal" |
-| `bank` | Shown after ordering, with the order number as the payment reference |
+| `paypal` | Your **PayPal.Me name** (the part after `paypal.me/`). Buyers who choose PayPal get a "Pay now with PayPal" button with the amount filled in. Works with any PayPal account. (A PayPal email instead uses PayPal's older cart page, which needs a verified business account and often shows "Things don't appear to be working".) |
+| `payment` | The answers to "How will you pay?" at checkout, in your own words. "Bank transfer" shows your bank details after ordering; "PayPal" shows the PayPal button; anything else (Cash on delivery, Cash on pickup…) is just noted on the order. Empty = Bank transfer and/or PayPal if `bank`/`paypal` are filled in |
+| `bank` | Shown after ordering when the buyer chose bank transfer, with the order number as the payment reference |
 | `shipping` | Shipping fee for countries without their own fee |
 | `free_shipping_over` | Order value from which shipping is free |
 | `ship_to` | One line per country you deliver to: `Country (fee) = city, city`. The fee and the city list are optional. The buyer can still pick "Other city…". No `ship_to` lines = every country in the world |
@@ -183,19 +185,27 @@ Send order: Zahlungspflichtig bestellen
 | **Send order on WhatsApp** | WhatsApp opens with the full order typed in; the buyer presses Send |
 | **Send order on Telegram** | Telegram can't type a message for the buyer, so the order is **copied** and your Telegram chat opens; the buyer pastes and sends. The thank-you screen shows the order with a "Copy order again" button |
 | **Send order by email** | The buyer's email app opens with the order |
-| **Pay with PayPal** | PayPal opens with the products and shipping; check in PayPal that the money arrived |
 | **Place order** (needs the sheet) | Sent straight to your sheet; you and the buyer get an email |
 
-Each order has a number like **#O261103-AB12**. Ask buyers to use it as the bank transfer reference.
+Then the buyer answers **"How will you pay?"** (your `payment` list). Bank transfer → your bank details
+on the thank-you screen and in the buyer's email. PayPal → a blue "Pay now with PayPal (34,80 €)"
+button that opens your PayPal.Me with the amount; check in PayPal that the money arrived before you ship.
+
+Each order has a number like **#O261103-AB12**. Ask buyers to use it as the payment reference.
 Checkout asks for name, phone, email, street, postcode, city and country, plus an optional note.
 
 ## 7. Saving every order in a Google Sheet
 
 You can't paste a normal Sheet link into the shop: a sheet can't receive orders by itself. A small
-script (`apps-script/Code.gs`) acts as the sheet's "inbox". Set it up once (about 5 minutes):
+script acts as the sheet's "inbox". **Where is it?** In the kit zip, folder `apps-script`, file `Code.gs`
+(Claude also sends it as its own file, already filled in with your blog address and email).
+
+**Paste the whole file, unchanged.** It is about 430 lines long. If you only have a short version
+(for example one an AI "tidied up"), orders fail with "Sorry, the order could not be sent", because
+the part that receives orders (`doPost`) is missing. Set it up once (about 5 minutes):
 
 1. Open **sheets.new** and name the sheet, e.g. "Night Shop orders".
-2. **Extensions → Apps Script.** Delete what's there and paste all of `Code.gs`.
+2. **Extensions → Apps Script.** Select everything in the editor (Ctrl+A), delete it, and paste all of `Code.gs`.
 3. At the top, change `BLOG_URL` to your blog address, e.g. `https://yourshop.blogspot.com`.
    Optional: `OWNER_EMAIL` (where order emails go), `EMAIL_OWNER_FOR_CHAT_ORDERS: true` (also email
    you WhatsApp/Telegram orders). Save (disk icon).
@@ -207,6 +217,11 @@ script (`apps-script/Code.gs`) acts as the sheet's "inbox". Set it up once (abou
 6. Blogger: Layout → Shop settings → `google_sheet: ` + paste the URL → Save.
 7. Place a test order. A new row appears in **Orders** (one row per order) and **Order lines** (one
    row per product).
+
+**Replacing an older script:** paste the new file over everything, Save, run **setup** again (tabs with
+old columns are renamed "Orders (old …)", nothing is deleted), then **Deploy → Manage deployments →
+pencil → Version: New version → Deploy**. Without the new version, the shop keeps talking to the old
+script.
 
 What you get: every order, whichever way the buyer ordered. WhatsApp/Telegram/email/PayPal orders get
 the status "Sent via WhatsApp – check the chat", so you can see who started an order but didn't send
@@ -250,11 +265,16 @@ Impressum and Widerruf at all.
 | Problem | Fix |
 |---|---|
 | Checkout says "Online ordering is not available yet" | Shop settings has no `whatsapp`, `telegram`, `email`, `paypal` or `google_sheet` value |
+| "Sorry, the order could not be sent" (Place order) | The script in the sheet is incomplete or the newest version isn't deployed: section 7, "Replacing an older script". If the message shows a reason in brackets (e.g. "Product not found"), see the next rows |
+| PayPal shows "Things don't appear to be working" | You entered a PayPal email: use your PayPal.Me name in `paypal:` instead |
+| A word appears in English in another language | A line in **Shop words** overrides it (e.g. `Add to cart: Add to cart`). Delete that line |
+| "Search This Blog", "Blog Archive", "Report Abuse", "Home" boxes appear on product pages | Gadgets from your old Blogger theme that Blogger moved into the new sidebar. Layout → sidebar → open each → Remove (keep any you want) |
+| Reviews or the sidebar stretch across the whole screen, "0 comments" not turned into Reviews | The product post has an extra `</div>`. The theme now repairs the page, but open the post in HTML view and remove the stray `</div>` |
 | A product shows no price | The product block is missing, or not at the very top, or `data-price` has a typo. Check in HTML view |
 | Sheet gets nothing | `google_sheet` link must end in `/exec`; deployment access must be **Anyone**; after code changes deploy a **New version** |
 | Sheet says "Product not found" | Blog feed must be **Full**, and the blog must be public |
 | Settings gone after updating the theme | Paste the copy you saved in step 2 of section 2 |
-| Phones show a plain Blogger look | Theme → Mobile settings → **Desktop** |
+| Phones show a plain Blogger look, or the shop hangs on a phone | Theme → ▾ → Mobile settings → **Desktop** ("Mobile" gives phones Blogger's own simple theme without the shop) |
 | "Could not restore theme" | Use Edit HTML (section 2, step 3) and send Claude a screenshot of the message |
 
 ## 11. How we make changes together

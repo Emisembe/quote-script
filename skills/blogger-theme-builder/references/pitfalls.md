@@ -64,9 +64,21 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 → `data:blog.url == data:blog.homepageUrl` fails when the URL has `?fbclid=…` (Facebook/Instagram), `?m=1`, or UTM parameters.
 → Add a second condition, `data:blog.canonicalUrl == data:blog.homepageUrl`, as a separate `<b:if>` that emits the same `<style>`. That avoids needing an `or` operator if the reference doesn't use one.
 
-**Mobile visitors get Blogger's basic mobile theme**
+**Mobile visitors get Blogger's basic mobile theme** (owners describe it as "the site hangs on mobile" or "the shop is gone on my phone")
 → Legacy-engine custom themes default to Blogger's mobile template.
 → Tell the user: **Theme → ▾ → Mobile settings → Desktop**. A v3 theme can declare `b:responsive='true'` instead, but only if the reference proves it.
+
+**Old theme's gadgets appear in the new sidebar** ("Search This Blog", "Blog Archive", "Report Abuse", a Pages gadget showing "Home")
+→ On Restore, Blogger moves the blog's existing gadgets that the new theme doesn't define into a section that accepts gadgets (often the `preferred='yes'` one). They render with Blogger's default markup.
+→ Tell the owner to remove the unwanted ones in Layout; style `.widget` generically so leftovers still look acceptable.
+
+**One post breaks the page layout** (sidebar or comments stretch across the screen, page-level JS can't find elements)
+→ The post's HTML closes more `<div>`s than it opens, which closes the theme's wrappers early.
+→ Ask for the post HTML and remove the stray `</div>`. In shop themes, shop.js moves `.shop-reviews` back into `.shop-item` and the sidebar back into `.main-grid`, and logs a console warning.
+
+**Default gadget text overrides a feature**
+→ A default like `Add to cart: Add to cart` in a "words" gadget overrode every translation.
+→ Ship defaults that are harmless or that show the feature (e.g. `[de] Send order: Zahlungspflichtig bestellen`), never identity mappings.
 
 **Re-uploading resets gadget content**
 → Restoring a theme can overwrite gadget text and links the user already edited.

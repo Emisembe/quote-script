@@ -70,13 +70,17 @@ Never add "verified buyer" claims the shop can't check.
 | **Telegram** (`telegram:` @username) | none | Same as WhatsApp | Telegram links can't prefill a message to a person, so the order is copied to the clipboard and the buyer pastes it; the done screen shows the text and a copy button |
 | **Email** (`email:`) | none | Fallback | Opens the buyer's mail app (fails on PCs without one) |
 | **Apps Script inbox** (`order_endpoint:`) | 5 min (see §4) | Anyone who wants a real order list, confirmation emails and server-checked totals | Redeploy a new version after code changes; the blog's feed must be public and **Full** |
-| **PayPal** (`paypal:` business email) | PayPal business account | Paying online immediately | Classic cart form. Check that the payment arrived in PayPal before shipping; there's no automatic stock update |
+| **PayPal** (`paypal:` PayPal.Me name) | any PayPal account | Paying online immediately | A payment choice, not an order channel: the thank-you screen and buyer email get a PayPal.Me button with the amount (`paypal.com/paypalme/NAME/34.80EUR`). A PayPal *email* falls back to the classic `cgi-bin/webscr` cart, which often fails with "Things don't appear to be working" unless the account is a verified business account. Check the payment arrived before shipping |
 | **Bank transfer** (`bank:` text) | none | Shown after the order with the order number as reference | Manual matching |
 
 Order of preference when unsure: Apps Script inbox (+ bank/PayPal for payment) → WhatsApp/Telegram → email.
 With `google_sheet:` set, **every** order is recorded, including WhatsApp/Telegram/email/PayPal ones (sent
 in the background, status "Sent via WhatsApp – check the chat"). `place_order: no` hides the direct
 button but keeps the recording.
+
+Checkout asks two separate questions: **how to order** (Place order, WhatsApp, Telegram, email) and
+**how to pay** (`payment:` list, e.g. Bank transfer, PayPal, Cash on delivery). The payment is in the
+message, the sheet ("Payment" column) and the emails; bank details are shown only for bank transfer.
 
 Checkout asks for street, postcode, city and country. `ship_to:` lines limit the countries, give each a
 fee and a city list (with "Other city…"); without them every country is listed in the shop language.
@@ -98,6 +102,12 @@ without notice, and orders are lost silently.
 6. Optional Telegram alerts: create a bot with @BotFather, put the token in `TELEGRAM_BOT_TOKEN`, send
    your bot "/start", run **telegramFindChatId**, copy the id into `TELEGRAM_CHAT_ID`, redeploy.
 7. Test with a real order. After any code change: Manage deployments → Edit → **New version**.
+
+Lessons from the first live install: owners paste shortened versions of Code.gs (an AI "tidied" it and
+dropped `doPost`), so tell them to paste the **whole file** and redeploy a **New version**; a
+`BLOG_URL` with a trailing slash is normalised by `blog_()`; tabs with other columns are moved aside as
+"(old …)" by `sheet_()`. When the inbox answers with HTML instead of JSON, shop.js logs a console hint and
+shows the generic error; a JSON error is shown in brackets.
 
 What it does: re-reads every price and stock value from the post's public feed (cached 10 minutes),
 ignoring the prices the browser sent; refuses sold-out and unknown products; writes one row per order

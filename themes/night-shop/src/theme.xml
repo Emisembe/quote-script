@@ -570,6 +570,7 @@ telegram:
 email:
 google_sheet:
 paypal:
+payment: Bank transfer, PayPal, Cash on delivery
 shipping: 4,90
 free_shipping_over: 50
 tax_note: Incl. VAT, plus shipping
@@ -588,7 +589,7 @@ banner_image:]]></b:widget-setting>
     </b:widget>
     <b:widget id='HTML92' locked='false' title='Shop words (optional translations)' type='HTML'>
       <b:widget-settings>
-        <b:widget-setting name='content'><![CDATA[Add to cart: Add to cart]]></b:widget-setting>
+        <b:widget-setting name='content'><![CDATA[[de] Send order: Zahlungspflichtig bestellen]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
         <div class='shop-words'><data:content/></div>

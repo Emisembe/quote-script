@@ -14,7 +14,8 @@ telegram: @my_shop
 email: orders@example.com
 google_sheet:
 place_order: yes
-paypal:
+paypal: yourpaypalme_name
+payment: Bank transfer, PayPal, Cash on delivery
 bank: My Bank, IBAN DE00 0000 0000 0000 0000 00
 shipping: 4,90
 free_shipping_over: 50
@@ -33,6 +34,10 @@ banner_image:
     languages         languages in the header picker; leave empty for no picker
     whatsapp/telegram  order + "Ask" buttons; telegram is the @username
     google_sheet      the /exec link of the Apps Script order inbox (also accepted: order_endpoint)
+    paypal            your PayPal.Me name (paypal.me/NAME): the buyer gets a "Pay now with PayPal" button with the
+                      amount filled in. A PayPal email instead uses the older PayPal cart (needs a business account)
+    payment           the answers to "How will you pay?" (any wording; Bank transfer shows your bank details,
+                      PayPal shows the PayPal button). Empty = Bank transfer/PayPal if bank/paypal are set
     place_order       "no" hides the direct "Place order" button but still records chat orders in the sheet
     ship_to           one line per country: Country (fee) = city, city, ...  Fee and cities are optional.
                       No ship_to lines = every country, free-text city, the general "shipping" fee.

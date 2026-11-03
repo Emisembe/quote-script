@@ -17,7 +17,7 @@
  *   After ANY code change: Deploy -> Manage deployments -> Edit (pencil) -> Version: New version -> Deploy.
  */
 var SETTINGS = {
-  BLOG_URL: 'https://YOURBLOG.blogspot.com', // the shop's address, no trailing slash
+  BLOG_URL: 'https://YOURBLOG.blogspot.com', // the shop's address
   OWNER_EMAIL: '',                          // where new orders are sent (blank = the Google account running this)
   EMAIL_BUYER: true,                        // send the buyer a confirmation for direct orders
   EMAIL_OWNER_FOR_CHAT_ORDERS: false,       // also email you WhatsApp/Telegram/email/PayPal orders (they reach you in the chat anyway)
@@ -30,7 +30,7 @@ var SETTINGS = {
   COLOR_ACCENT: '#FF3300'
 };
 
-var ORDER_HEADERS = ['Order ID', 'Received', 'Status', 'Method', 'Name', 'Phone', 'Email', 'Street', 'Postcode', 'City',
+var ORDER_HEADERS = ['Order ID', 'Received', 'Status', 'Method', 'Payment', 'Name', 'Phone', 'Email', 'Street', 'Postcode', 'City',
                      'Country', 'Note', 'Items', 'Subtotal', 'Shipping', 'Total', 'Currency', 'Language', 'Page'];
 var LINE_HEADERS = ['Order ID', 'Received', 'Product', 'Options', 'Qty', 'Price', 'Line total', 'Post ID', 'Link'];
 var METHOD_NAMES = { order: 'Website', whatsapp: 'WhatsApp', telegram: 'Telegram', email: 'Email', paypal: 'PayPal' };
@@ -68,7 +68,7 @@ function doPost(e) {
     var book = SpreadsheetApp.getActiveSpreadsheet();
     var orders = sheet_(book, 'Orders', ORDER_HEADERS);
     // A leading apostrophe keeps phone numbers and postcodes as text (no lost leading zeros).
-    orders.appendRow([id, now, status, METHOD_NAMES[method], text_(c.name), "'" + c.phone, text_(c.email),
+    orders.appendRow([id, now, status, METHOD_NAMES[method], text_(c.payment), text_(c.name), "'" + c.phone, text_(c.email),
                       text_(c.street || c.address), "'" + (c.postcode || ''), text_(c.city), text_(c.country), text_(c.note),
                       text_(summary), sub, ship, total, shop.currency, text_(order.lang), text_(order.page)]);
     var linesSheet = sheet_(book, 'Order lines', LINE_HEADERS);
@@ -110,6 +110,11 @@ function doGet() {
   return reply_({ ok: true, shop: shopSettings_().name });
 }
 
+/** The blog address from SETTINGS, without a trailing slash. */
+function blog_() {
+  return String(SETTINGS.BLOG_URL || '').trim().replace(/\/+$/, '');
+}
+
 function reply_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
@@ -122,6 +127,18 @@ function text_(v) {
 
 function sheet_(book, name, headers) {
   var sheet = book.getSheetByName(name) || book.insertSheet(name);
+  if (sheet.getLastRow() > 0) {
+    // A tab made by an older or different script: fix an empty one, move a used one aside as "(old)".
+    var first = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0].map(String);
+    if (first.join('|') !== headers.join('|')) {
+      if (sheet.getLastRow() === 1) {
+        sheet.clear();
+      } else {
+        sheet.setName(name + ' (old ' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm') + ')');
+        sheet = book.insertSheet(name);
+      }
+    }
+  }
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(headers);
     sheet.setFrozenRows(1);
@@ -140,7 +157,7 @@ function shopSettings_() {
   if (!raw) {
     raw = { lines: [] };
     try {
-      var html = UrlFetchApp.fetch(SETTINGS.BLOG_URL + '/', { muteHttpExceptions: true }).getContentText();
+      var html = UrlFetchApp.fetch(blog_() + '/', { muteHttpExceptions: true }).getContentText();
       var m = /class=["']shop-settings["'][^>]*>([\s\S]*?)<\/div>/i.exec(html);
       if (m) {
         var text = m[1].replace(/<br\s*\/?>|<\/p>|<\/div>|<\/li>/gi, '\n').replace(/<[^>]+>/g, '')
@@ -172,6 +189,7 @@ function shopSettings_() {
     whatsapp: (s.whatsapp || '').replace(/[^\d]/g, ''),
     telegram: (s.telegram || '').replace(/^https?:\/\/(www\.)?t\.me\//i, '').replace(/^@/, ''),
     email: s.email || '',
+    paypalMe: /@/.test(s.paypal || '') ? '' : (s.paypal || '').replace(/^https?:\/\/(www\.)?(paypal\.me|paypal\.com\/paypalme)\//i, '').split(/[/?#\s]/)[0],
     labelPrices: /^(yes|true|on|1|ja|oui)$/i.test(s.label_prices || '')
   };
 }
@@ -187,7 +205,7 @@ function productById_(postId) {
   var cache = CacheService.getScriptCache();
   var hit = cache.get('p' + postId);
   if (hit) return JSON.parse(hit);
-  var res = UrlFetchApp.fetch(SETTINGS.BLOG_URL + '/feeds/posts/default/' + postId + '?alt=json', { muteHttpExceptions: true });
+  var res = UrlFetchApp.fetch(blog_() + '/feeds/posts/default/' + postId + '?alt=json', { muteHttpExceptions: true });
   if (res.getResponseCode() !== 200) return null;
   var entry = JSON.parse(res.getContentText()).entry;
   var html = (entry.content && entry.content.$t) || '';
@@ -247,15 +265,20 @@ function plainText_(o) {
   o.lines.forEach(function (l) {
     out.push(l.qty + ' x ' + l.title + (l.chosen.length ? ' (' + l.chosen.join(', ') + ')' : '') + ' = ' + money_(l.total, cur));
   });
-  out.push('', 'Subtotal: ' + money_(o.sub, cur), 'Shipping: ' + money_(o.ship, cur), 'Total: ' + money_(o.total, cur), '',
+  out.push('', 'Subtotal: ' + money_(o.sub, cur), 'Shipping: ' + money_(o.ship, cur), 'Total: ' + money_(o.total, cur));
+  if (c.payment) out.push('Payment: ' + c.payment);
+  out.push('',
            c.name, c.phone, c.email || '', c.street || c.address || '', (c.postcode || '') + ' ' + (c.city || ''), c.country || '');
   if (c.note) out.push('', 'Note: ' + c.note);
-  if (o.shop.bank) out.push('', 'Bank transfer: ' + o.shop.bank, 'Reference: ' + o.id);
+  if (o.shop.bank && payBank_(c.payment)) out.push('', 'Bank transfer: ' + o.shop.bank, 'Reference: ' + o.id);
   return out.join('\n');
 }
 
+function payBank_(payment) { return !payment || /bank|transfer|überweis|virement/i.test(payment); }
+function payPal_(payment) { return /paypal/i.test(payment || ''); }
+
 function brand_(o) {
-  return { name: o.shop.name, dark: SETTINGS.COLOR_DARK, accent: SETTINGS.COLOR_ACCENT, site: SETTINGS.BLOG_URL };
+  return { name: o.shop.name, dark: SETTINGS.COLOR_DARK, accent: SETTINGS.COLOR_ACCENT, site: blog_() };
 }
 
 function wrapEmail_(inner, b) {
@@ -324,6 +347,19 @@ function address_(c) {
   return [c.street || c.address, ((c.postcode || '') + ' ' + (c.city || '')).trim(), c.country].filter(Boolean).join(', ');
 }
 
+function payment_(o, b) {
+  var pay = o.customer.payment || '';
+  if (payPal_(pay) && o.shop.paypalMe) {
+    var link = 'https://www.paypal.com/paypalme/' + encodeURIComponent(o.shop.paypalMe) + '/' + o.total.toFixed(2) + o.shop.currency;
+    return section_('Payment', b) + '<p style="font-size:14px;color:#444444;line-height:1.7;margin:0;">Please pay ' + esc_(money_(o.total, o.shop.currency)) +
+      ' with PayPal and add your order number <strong>' + esc_(o.id) + '</strong> as a note.</p>' + button_(link, 'Pay now with PayPal', b);
+  }
+  if (o.shop.bank && payBank_(pay)) {
+    return section_('Payment', b) + detailsTable_([['Bank transfer', o.shop.bank], ['Amount', money_(o.total, o.shop.currency)], ['Reference', o.id]], b);
+  }
+  return pay ? section_('Payment', b) + detailsTable_([['Payment', pay]], b) : '';
+}
+
 function ownerEmail_(o) {
   var b = brand_(o), c = o.customer;
   var phone = String(c.phone || '').replace(/[^\d+]/g, '');
@@ -334,7 +370,8 @@ function ownerEmail_(o) {
     (o.method === 'order' ? '' : '<p style="font-size:13px;color:#7A5800;background:#FFF3CD;padding:10px 12px;margin:10px 0 0;">The buyer was sent to ' +
       esc_(METHOD_NAMES[o.method]) + ' to finish the order. Check that the message arrived.</p>') +
     section_('Products', b) + itemsTable_(o, b) +
-    section_('Customer', b) + detailsTable_([['Name', c.name], ['Phone', c.phone], ['Email', c.email], ['Address', address_(c)], ['Note', c.note]], b) +
+    section_('Customer', b) + detailsTable_([['Name', c.name], ['Phone', c.phone], ['Email', c.email], ['Address', address_(c)],
+      ['Payment', c.payment], ['Note', c.note]], b) +
     (wa ? button_(wa, 'Reply on WhatsApp', b) : (c.email ? button_('mailto:' + c.email + '?subject=' + encodeURIComponent('Your order #' + o.id), 'Reply by email', b) : '')) +
     '</div>';
   return wrapEmail_(banner_('New order', money_(o.total, o.shop.currency), b, false) + body, b);
@@ -349,7 +386,7 @@ function buyerEmail_(o) {
     '<p style="font-size:15px;color:#222222;line-height:1.7;margin:0 0 14px;">Hello ' + esc_(c.name) + ',</p>' +
     '<p style="font-size:15px;color:#222222;line-height:1.7;margin:0 0 14px;">thank you for your order. We have received it and will confirm it personally, usually within one working day.</p>' +
     section_('Your order #' + o.id, b) + itemsTable_(o, b) +
-    (o.shop.bank ? section_('Payment', b) + detailsTable_([['Bank transfer', o.shop.bank], ['Reference', o.id]], b) : '') +
+    payment_(o, b) +
     section_('Delivery to', b) + detailsTable_([['Name', c.name], ['Address', address_(c)], ['Phone', c.phone]], b) +
     (contact.length ? '<p style="font-size:14px;color:#444444;line-height:1.7;margin:18px 0 0;text-align:center;">Questions? ' +
       contact.map(function (x) { return '<a href="' + esc_(x[1]) + '" style="color:' + b.accent + ';font-weight:700;text-decoration:none;">' + x[0] + '</a>'; }).join(' &nbsp;·&nbsp; ') + '</p>' : '') +
@@ -377,7 +414,7 @@ function setup() {
   sheet_(book, 'Order lines', LINE_HEADERS);
   var shop = shopSettings_();
   MailApp.sendEmail({ to: SETTINGS.OWNER_EMAIL || Session.getEffectiveUser().getEmail(),
-    subject: '✅ ' + shop.name + ' order inbox is ready', body: 'Orders from ' + SETTINGS.BLOG_URL + ' will arrive in this sheet: ' + book.getUrl() });
+    subject: '✅ ' + shop.name + ' order inbox is ready', body: 'Orders from ' + blog_() + ' will arrive in this sheet: ' + book.getUrl() });
   Logger.log('Shop settings read from the blog: ' + JSON.stringify(shop));
 }
 

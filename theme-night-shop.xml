@@ -1120,6 +1120,10 @@ body .shop-reviews .comment-thread ol { list-style: none; margin: 0; padding: 0;
   .shop-row { grid-template-columns: 1fr; gap: 0; }
 }
 
+/* PayPal button on the thank-you screen */
+.shop-btn-paypal { background: #0070ba; border-color: #0070ba; color: #fff; text-decoration: none; }
+.shop-done + .shop-order-no + .shop-btn-paypal, form > .shop-btn-paypal { margin-top: 4px; }
+
 .shop-admin { display: none; }
 body#layout .shop-admin { display: block; }
 
@@ -1253,6 +1257,17 @@ body#layout .promo { display: block; }
 }
 /* "Powered by Blogger" is removed from the theme; this hides it if Blogger ever adds it back */
 body .widget.Attribution { display: none; }
+
+/* header: menu words never break inside a word; a long blog title gives way first */
+@media (min-width: 1024px) {
+  .site-nav li a, .header-cta .widget-content a { white-space: nowrap; }
+  .shop .brand-section { flex: 1 1 auto; min-width: 0; }
+  .shop .brand-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .shop .brand-name { font-size: 22px; }
+  .shop .site-nav ul { gap: 4px 16px; }
+}
 ]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
 <style type='text/css'>.hero, .topics, .promo { display: block; }</style>
@@ -2549,6 +2564,7 @@ telegram:
 email:
 google_sheet:
 paypal:
+payment: Bank transfer, PayPal, Cash on delivery
 shipping: 4,90
 free_shipping_over: 50
 tax_note: Incl. VAT, plus shipping
@@ -2567,7 +2583,7 @@ banner_image:]]></b:widget-setting>
     </b:widget>
     <b:widget id='HTML92' locked='false' title='Shop words (optional translations)' type='HTML'>
       <b:widget-settings>
-        <b:widget-setting name='content'><![CDATA[Add to cart: Add to cart]]></b:widget-setting>
+        <b:widget-setting name='content'><![CDATA[[de] Send order: Zahlungspflichtig bestellen]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
         <div class='shop-words'><data:content/></div>
@@ -2827,7 +2843,10 @@ banner_image:]]></b:widget-setting>
       'Back to home': 'Zur Startseite', 'Search': 'Suchen', 'Skip to content': 'Zum Inhalt springen',
       'Open menu': 'Menü öffnen', 'Features': 'Merkmale', 'Size guide': 'Größentabelle', 'Details': 'Details',
       'The page you were looking for has moved or no longer exists.': 'Die gesuchte Seite wurde verschoben oder existiert nicht mehr.',
-      'No posts found here yet.': 'Hier gibt es noch keine Produkte.'
+      'No posts found here yet.': 'Hier gibt es noch keine Produkte.',
+      'How will you pay?': 'Wie möchten Sie bezahlen?', 'Payment': 'Zahlung', 'Cash on delivery': 'Barzahlung bei Lieferung',
+      'Cash on pickup': 'Barzahlung bei Abholung', 'Pay now with PayPal': 'Jetzt mit PayPal bezahlen',
+      'Size': 'Größe', 'Colour': 'Farbe', 'Color': 'Farbe'
     },
     fr: {
       'Add to cart': 'Ajouter au panier', 'Choose options': 'Choisir les options', 'Out of stock': 'Épuisé', 'Sale': 'Promo',
@@ -2870,7 +2889,10 @@ banner_image:]]></b:widget-setting>
       'Back to home': 'Retour à l’accueil', 'Search': 'Rechercher', 'Skip to content': 'Aller au contenu',
       'Open menu': 'Ouvrir le menu', 'Features': 'Caractéristiques', 'Size guide': 'Guide des tailles', 'Details': 'Détails',
       'The page you were looking for has moved or no longer exists.': 'La page que vous cherchez a été déplacée ou n’existe plus.',
-      'No posts found here yet.': 'Aucun produit pour le moment.'
+      'No posts found here yet.': 'Aucun produit pour le moment.',
+      'How will you pay?': 'Comment voulez-vous payer ?', 'Payment': 'Paiement', 'Cash on delivery': 'Paiement à la livraison',
+      'Cash on pickup': 'Paiement au retrait', 'Pay now with PayPal': 'Payer maintenant avec PayPal',
+      'Size': 'Taille', 'Colour': 'Couleur', 'Color': 'Couleur'
     }
   };
 
@@ -2902,7 +2924,9 @@ banner_image:]]></b:widget-setting>
     email: S.email || '',
     endpoint: /^https:\/\//.test(S.order_endpoint || '') ? S.order_endpoint : '',
     placeOrder: S.place_order === undefined ? true : on(S.place_order),
-    paypal: S.paypal || '',
+    // "paypal: yourname" (or a paypal.me link) = PayPal.Me with the amount filled in; an email = classic PayPal cart.
+    paypalMe: /@/.test(S.paypal || '') ? '' : (S.paypal || '').replace(/^https?:\/\/(www\.)?(paypal\.me|paypal\.com\/paypalme)\//i, '').split(/[/?#\s]/)[0],
+    paypalEmail: /@/.test(S.paypal || '') ? S.paypal.trim() : '',
     bank: S.bank || '',
     shipping: parseNumber(S.shipping) || 0,
     freeOver: parseNumber(S.free_shipping_over) || 0,
@@ -2910,6 +2934,15 @@ banner_image:]]></b:widget-setting>
     defaultCountry: S.default_country || '',
     labelPrices: on(S.label_prices) // also read SpotCommerce-style labels: _39 -49 !0
   };
+
+  // How the buyer pays: "payment: Bank transfer, PayPal, Cash on delivery". Without it: what the settings allow.
+  CFG.payments = list(S.payment || S.payments);
+  if (!CFG.payments.length) {
+    if (CFG.bank) CFG.payments.push('Bank transfer');
+    if (CFG.paypalMe || CFG.paypalEmail) CFG.payments.push('PayPal');
+  }
+  var isPayPal = function (p) { return /paypal/i.test(p || ''); };
+  var isBank = function (p) { return /bank|transfer|überweis|virement/i.test(p || ''); };
 
   // ship_to: Germany = Berlin, Hamburg     ship_to: Austria (9,90) = Vienna     ship_to: Switzerland (14)
   var SHIP_TO = SHIP_LINES.map(function (line) {
@@ -3145,6 +3178,16 @@ banner_image:]]></b:widget-setting>
   function enhanceItem() {
     var item = doc.querySelector('.shop-item');
     if (!item) return;
+    // A post whose HTML closes more <div>s than it opens pushes the reviews and the sidebar out of the page
+    // frame. Put them back and tell the owner in the console.
+    var reviews = doc.querySelector('.shop-reviews');
+    var grid = doc.querySelector('.main-grid');
+    var side = doc.querySelector('aside.sidebar');
+    if ((reviews && !item.contains(reviews)) || (grid && side && !grid.contains(side))) {
+      if (reviews && !item.contains(reviews)) item.appendChild(reviews);
+      if (grid && side && !grid.contains(side)) grid.appendChild(side);
+      console.warn('[shop] This post has an extra closing tag (</div>) in its HTML. The page was repaired; please check the post in HTML view.');
+    }
     var body = item.querySelector('.post-body') || item;
     var p = productFrom(body, labelsOf(item));
     var slot = item.querySelector('.shop-buy');
@@ -3490,8 +3533,8 @@ banner_image:]]></b:widget-setting>
     if (CFG.endpoint && CFG.placeOrder) m.push(['order', t('Place order (we confirm by email)')]);
     if (CFG.whatsapp) m.push(['whatsapp', t('Send order on WhatsApp')]);
     if (CFG.telegram) m.push(['telegram', t('Send order on Telegram')]);
-    if (CFG.paypal) m.push(['paypal', t('Pay with PayPal')]);
     if (CFG.email) m.push(['email', t('Send order by email')]);
+    if (!m.length && (CFG.paypalMe || CFG.paypalEmail)) m.push(['paypal', t('Pay with PayPal')]);
     return m;
   }
 
@@ -3578,7 +3621,7 @@ banner_image:]]></b:widget-setting>
     var ways = methods();
     if (!ways.length) {
       panel.appendChild(el('p', { 'class': 'shop-msg', text: t('Online ordering is not available yet. Please contact us.') }));
-      panel.appendChild(el('p', { 'class': 'shop-note', text: 'Shop owner: Layout › Shop settings › add whatsapp, telegram, email, paypal or order_endpoint.' }));
+      panel.appendChild(el('p', { 'class': 'shop-note', text: 'Shop owner: Layout › Shop settings › add whatsapp, telegram, email, paypal or google_sheet.' }));
       return;
     }
     var form = el('form', { 'class': 'shop-form', novalidate: 'novalidate' }, [
@@ -3601,6 +3644,15 @@ banner_image:]]></b:widget-setting>
         el('input', { type: 'radio', name: 'method', value: m[0], checked: n === 0 ? 'checked' : false }), ' ' + m[1]]));
     });
     form.appendChild(fs);
+    var pays = CFG.payments.filter(function () { return ways[0][0] !== 'paypal'; });
+    if (pays.length) {
+      var pfs = el('fieldset', { 'class': 'shop-methods shop-payments' }, [el('legend', { text: t('How will you pay?') })]);
+      pays.forEach(function (pay, n) {
+        pfs.appendChild(el('label', { 'class': 'shop-method' }, [
+          el('input', { type: 'radio', name: 'payment', value: pay, checked: n === 0 ? 'checked' : false }), ' ' + t(pay)]));
+      });
+      form.appendChild(pfs);
+    }
     form.appendChild(sumBox);
     var msg = el('p', { 'class': 'shop-msg', role: 'status' });
     var submit = el('button', { type: 'submit', 'class': 'shop-btn shop-btn-big', text: t('Send order') });
@@ -3622,6 +3674,7 @@ banner_image:]]></b:widget-setting>
       var data = { country: chosenCountry, city: city.trim() };
       ['name', 'phone', 'email', 'street', 'postcode', 'note'].forEach(function (k) { data[k] = form.elements[k].value.trim(); });
       data.address = data.street + ', ' + data.postcode + ' ' + data.city + ', ' + data.country;
+      data.payment = form.elements.payment ? form.elements.payment.value : (form.elements.method.value === 'paypal' ? 'PayPal' : '');
       submitOrder(form.elements.method.value, data, msg, submit);
     });
     panel.appendChild(form);
@@ -3635,8 +3688,8 @@ banner_image:]]></b:widget-setting>
       Math.random().toString(36).slice(2, 6).toUpperCase();
   }
 
-  // The order as a message for WhatsApp, Telegram and email.
-  function orderText(id, c) {
+  // The order as a message for WhatsApp, Telegram and email (plain: no *bold* markers, for email).
+  function orderText(id, c, plain) {
     var tt = totals(c.country);
     var rule = '────────────────';
     var lines = ['🛍️ ' + t('New order').toUpperCase() + ' #' + id, CFG.shop, rule];
@@ -3648,11 +3701,14 @@ banner_image:]]></b:widget-setting>
     });
     lines.push(rule, t('Subtotal') + ': ' + money(tt.sub));
     if (tt.hasFee) lines.push(t('Shipping') + (c.country ? ' (' + c.country + ')' : '') + ': ' + (tt.ship ? money(tt.ship) : t('Free')));
-    lines.push('*' + t('Total') + ': ' + money(tt.total) + '*', rule, '👤 ' + c.name, '📞 ' + c.phone);
+    var star = plain ? '' : '*';
+    lines.push(star + t('Total') + ': ' + money(tt.total) + star);
+    if (c.payment) lines.push('💳 ' + t('Payment') + ': ' + t(c.payment));
+    lines.push(rule, '👤 ' + c.name, '📞 ' + c.phone);
     if (c.email) lines.push('✉️ ' + c.email);
     lines.push('📍 ' + c.street, '    ' + c.postcode + ' ' + c.city, '    ' + c.country);
     if (c.note) lines.push('📝 ' + c.note);
-    if (CFG.bank) lines.push(rule, t('Bank transfer') + ': ' + CFG.bank, t('Reference') + ': ' + id);
+    if (CFG.bank && (isBank(c.payment) || !CFG.payments.length)) lines.push(rule, t('Bank transfer') + ': ' + CFG.bank, t('Reference') + ': ' + id);
     return lines.join('\n');
   }
 
@@ -3674,57 +3730,70 @@ banner_image:]]></b:widget-setting>
   function submitOrder(method, customer, msg, button) {
     var id = orderId();
     var text = orderText(id, customer);
+    var after = { payment: customer.payment, total: totals(customer.country).total, lines: cart.slice(), ship: totals(customer.country).ship };
     if (method !== 'order') logOrder(id, method, customer);
     if (method === 'whatsapp') {
       window.open('https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
-      return done(id, t('WhatsApp opened with your order. Press send there to complete it.'), false);
+      return done(id, t('WhatsApp opened with your order. Press send there to complete it.'), false, '', after);
     }
     if (method === 'telegram') {
       // Telegram links can't fill in a message for a person, so the order goes via the clipboard.
       copyText(text);
       window.open('https://t.me/' + CFG.telegram, '_blank', 'noopener');
-      return done(id, t('Your order is copied. In Telegram, paste it into the chat and send it.'), false, text);
+      return done(id, t('Your order is copied. In Telegram, paste it into the chat and send it.'), false, text, after);
     }
     if (method === 'email') {
       location.href = 'mailto:' + CFG.email + '?subject=' + encodeURIComponent(t('Order') + ' #' + id + ' — ' + CFG.shop) +
-        '&body=' + encodeURIComponent(text);
-      return done(id, t('Your email app opened with the order. Press send there to complete it.'), false);
+        '&body=' + encodeURIComponent(orderText(id, customer, true));
+      return done(id, t('Your email app opened with the order. Press send there to complete it.'), false, '', after);
     }
-    if (method === 'paypal') return paypal(id, customer);
+    if (method === 'paypal') return done(id, t('Pay now with PayPal'), false, '', after);
     // Apps Script endpoint: text/plain keeps it a "simple" request, so no CORS preflight.
     button.disabled = true;
     msg.textContent = t('Sending…');
     fetch(CFG.endpoint, { method: 'POST', body: payload(id, 'order', customer) })
-      .then(function (r) { return r.json(); })
-      .then(function (res) {
-        if (!res || !res.ok) throw new Error(res && res.error || 'failed');
-        done(res.orderId || id, t('Thank you! Your order was received. Total') + ': ' + money(res.total), true);
+      .then(function (r) { return r.text(); })
+      .then(function (body) {
+        var res;
+        try { res = JSON.parse(body); } catch (e) {
+          // An HTML page instead of JSON: the script is incomplete or its newest version isn't deployed.
+          console.warn('[shop] The order inbox (google_sheet) did not answer with JSON. Paste the whole Code.gs and deploy a New version.');
+          throw new Error('');
+        }
+        if (!res.ok) throw new Error(res.error || '');
+        after.total = res.total;
+        done(res.orderId || id, t('Thank you! Your order was received. Total') + ': ' + money(res.total), true, '', after);
       })
-      .catch(function () {
+      .catch(function (err) {
         button.disabled = false;
-        msg.textContent = t('Sorry, the order could not be sent.') + (methods().length > 1 ? ' ' + t('Please choose another way to order.') : '');
+        var why = err && err.message && !/fetch|network|load/i.test(err.message) ? ' (' + err.message + ')' : '';
+        msg.textContent = t('Sorry, the order could not be sent.') + why + (methods().length > 1 ? ' ' + t('Please choose another way to order.') : '');
       });
   }
 
-  function paypal(id, customer) {
-    var f = el('form', { method: 'post', action: 'https://www.paypal.com/cgi-bin/webscr', target: '_top' });
+  function payPalButton(id, after) {
+    var label = t('Pay now with PayPal') + ' (' + money(after.total) + ')';
+    if (CFG.paypalMe) {
+      return el('a', { 'class': 'shop-btn shop-btn-big shop-btn-paypal', target: '_blank', rel: 'noopener',
+        href: 'https://www.paypal.com/paypalme/' + encodeURIComponent(CFG.paypalMe) + '/' + after.total.toFixed(2) + CFG.currency, text: label });
+    }
+    var f = el('form', { method: 'post', action: 'https://www.paypal.com/cgi-bin/webscr', target: '_blank' });
     var add = function (k, v) { f.appendChild(el('input', { type: 'hidden', name: k, value: String(v) })); };
-    add('cmd', '_cart'); add('upload', '1'); add('business', CFG.paypal);
+    add('cmd', '_cart'); add('upload', '1'); add('business', CFG.paypalEmail);
     add('currency_code', CFG.currency); add('invoice', id); add('charset', 'utf-8');
     add('return', location.href.split('#')[0]);
-    cart.forEach(function (l, n) {
+    after.lines.forEach(function (l, n) {
       add('item_name_' + (n + 1), (l.title + (l.chosen.length ? ' (' + l.chosen.join(', ') + ')' : '')).slice(0, 127));
       add('amount_' + (n + 1), l.price.toFixed(2));
       add('quantity_' + (n + 1), l.qty);
     });
-    var tt = totals(customer.country);
-    if (tt.ship) add('handling_cart', tt.ship.toFixed(2));
-    doc.body.appendChild(f);
-    cart = []; save();
-    f.submit();
+    if (after.ship) add('handling_cart', after.ship.toFixed(2));
+    f.appendChild(el('button', { type: 'submit', 'class': 'shop-btn shop-btn-big shop-btn-paypal', text: label }));
+    return f;
   }
 
-  function done(id, text, clear, copyable) {
+  function done(id, text, clear, copyable, after) {
+    after = after || {};
     header(t('Thank you'), 'done');
     panel.appendChild(el('p', { 'class': 'shop-done', text: text }));
     panel.appendChild(el('p', { 'class': 'shop-order-no' }, [t('Order number') + ': ', el('strong', { text: '#' + id })]));
@@ -3737,7 +3806,10 @@ banner_image:]]></b:widget-setting>
       panel.appendChild(el('div', { 'class': 'shop-ask' }, [again,
         el('a', { 'class': 'shop-btn shop-btn-tg', href: 'https://t.me/' + CFG.telegram, target: '_blank', rel: 'noopener' }, [svg(ICONS.telegram), ' ' + t('Open Telegram')])]));
     }
-    if (CFG.bank) panel.appendChild(el('p', { 'class': 'shop-note', text: t('Bank transfer') + ': ' + CFG.bank + ' — ' + t('Reference') + ': #' + id }));
+    if (isPayPal(after.payment) && (CFG.paypalMe || CFG.paypalEmail)) panel.appendChild(payPalButton(id, after));
+    if (CFG.bank && (isBank(after.payment) || !CFG.payments.length)) {
+      panel.appendChild(el('p', { 'class': 'shop-note', text: t('Bank transfer') + ': ' + CFG.bank + ' — ' + t('Reference') + ': #' + id }));
+    }
     if (clear) { cart = []; save(); }
     else panel.appendChild(el('button', { type: 'button', 'class': 'shop-btn', text: t('Clear cart'), onclick: function () { cart = []; save(); closeDrawer(); } }));
   }

@@ -1118,6 +1118,10 @@ body .shop-reviews .comment-thread ol { list-style: none; margin: 0; padding: 0;
   .shop-row { grid-template-columns: 1fr; gap: 0; }
 }
 
+/* PayPal button on the thank-you screen */
+.shop-btn-paypal { background: #0070ba; border-color: #0070ba; color: #fff; text-decoration: none; }
+.shop-done + .shop-order-no + .shop-btn-paypal, form > .shop-btn-paypal { margin-top: 4px; }
+
 .shop-admin { display: none; }
 body#layout .shop-admin { display: block; }
 
@@ -1251,3 +1255,14 @@ body#layout .promo { display: block; }
 }
 /* "Powered by Blogger" is removed from the theme; this hides it if Blogger ever adds it back */
 body .widget.Attribution { display: none; }
+
+/* header: menu words never break inside a word; a long blog title gives way first */
+@media (min-width: 1024px) {
+  .site-nav li a, .header-cta .widget-content a { white-space: nowrap; }
+  .shop .brand-section { flex: 1 1 auto; min-width: 0; }
+  .shop .brand-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .shop .brand-name { font-size: 22px; }
+  .shop .site-nav ul { gap: 4px 16px; }
+}

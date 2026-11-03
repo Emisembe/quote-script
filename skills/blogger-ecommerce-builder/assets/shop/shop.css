@@ -175,3 +175,7 @@ body .shop-reviews .comment-thread ol { list-style: none; margin: 0; padding: 0;
   .post-body .photo-grid.cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .shop-row { grid-template-columns: 1fr; gap: 0; }
 }
+
+/* PayPal button on the thank-you screen */
+.shop-btn-paypal { background: #0070ba; border-color: #0070ba; color: #fff; text-decoration: none; }
+.shop-done + .shop-order-no + .shop-btn-paypal, form > .shop-btn-paypal { margin-top: 4px; }
