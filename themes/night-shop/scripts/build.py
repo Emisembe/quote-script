@@ -21,7 +21,6 @@ INCLUDABLES = {
     '@@HTML_MAIN@@': 'includables/html-main.xml',
     '@@LABEL_MAIN@@': 'includables/label-main.xml',
     '@@POPULARPOSTS_MAIN@@': 'includables/popularposts-main.xml',
-    '@@ATTRIBUTION_MAIN@@': 'includables/attribution-main.xml',
     '@@BLOG_COMMENTS@@': 'includables/blog-comments.xml',
 }
 

@@ -55,6 +55,9 @@ Products are posts with a product block at the top of the body:
 ```
 
 Labels stay categories. SpotCommerce price labels (`_39`, `-49`, `!0`) work with `label_prices: yes`.
+`data-video` adds YouTube videos to the gallery, and description classes (`photo-grid`, `feature-list`,
+`size-table`, `note-box`, `two-cols`, `data-lang` blocks) lay out rich posts. Hand the owner the ready-made
+posts in `assets/samples/` and the page templates in `assets/pages/`.
 Full reference and the owner's step-by-step instructions are in `references/products-and-orders.md` §1–2.
 
 Why this format: data attributes survive Blogger's editor, the block is in `data:post.body` on list
@@ -71,6 +74,13 @@ VAT note) are in `references/products-and-orders.md` §3–6.
 
 Never: put secret payment keys in the theme; use Blogger's contact-form endpoint for orders; trust
 browser-computed totals without a server check or a manual check by the owner.
+
+### Languages
+`language:` sets the default, `languages: en, de, fr` adds a header picker (German and French are built
+in; any other language comes from the Shop words gadget, `[es] Add to cart: Añadir al carrito`). Owner
+content switches with `data-lang` blocks; fixed theme words use `data-i18n`, `data-i18n-placeholder` and
+`data-i18n-label` attributes. Gadget titles and menu links typed in English are translated when the
+pack or Shop words know them.
 
 ## 4. Audit
 

@@ -10,8 +10,10 @@
 <Variable name="shop.tile" description="Product photo background" type="color" default="#EBE2D9" value="#EBE2D9"/>
 
 
-<!-- 2. Cart button: put it in the header markup (not inside a gadget, so it is on every page). -->
-<a aria-label='Cart' class='cart-button' data-cart-open='' href='#cart'>
+<!-- 2. Language picker + cart button: put them in the header markup (not inside a gadget, so they are on every page).
+        Mark fixed theme words for translation: data-i18n (text), data-i18n-placeholder, data-i18n-label (aria-label). -->
+<div class='lang-switch' data-lang-switch='' hidden='hidden'/>
+<a aria-label='Cart' class='cart-button' data-cart-open='' data-i18n-label='' href='#cart'>
   <svg aria-hidden='true' height='22' viewBox='0 0 24 24' width='22'><path d='M6 6h15l-1.5 9h-12z' fill='none' stroke='currentColor' stroke-width='2'/><circle cx='9' cy='20' fill='currentColor' r='1.5'/><circle cx='18' cy='20' fill='currentColor' r='1.5'/><path d='M6 6L5 2H2' fill='none' stroke='currentColor' stroke-width='2'/></svg>
   <span data-cart-count='' hidden='hidden'>0</span>
 </a>
@@ -24,10 +26,13 @@
     <b:widget id='HTML91' locked='true' title='Shop settings' type='HTML'>
       <b:widget-settings>
         <b:widget-setting name='content'><![CDATA[currency: EUR
+language: en
+languages: en, de, fr
 shipping: 0
 whatsapp:
+telegram:
 email:
-order_endpoint:]]></b:widget-setting>
+google_sheet:]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
         <div class='shop-settings'><data:content/></div>

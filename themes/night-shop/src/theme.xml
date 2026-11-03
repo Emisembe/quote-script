@@ -27,12 +27,13 @@ Page not found - <data:blog.title/>
 </b:if>
 </head>
 <body expr:class='&quot;rm shop pt-&quot; + data:blog.pageType'>
-<a class='skip-link' href='#content'>Skip to content</a>
+<a class='skip-link' data-i18n='' href='#content'>Skip to content</a>
 
 <!-- ================= Header ================= -->
 <header class='site-header' id='site-header'>
   <div class='container header-inner'>
-<a aria-label='Cart' class='cart-button' data-cart-open='' href='#cart'>
+<div class='lang-switch' data-lang-switch='' hidden='hidden'/>
+<a aria-label='Cart' class='cart-button' data-cart-open='' data-i18n-label='' href='#cart'>
   <svg aria-hidden='true' height='22' viewBox='0 0 24 24' width='22'><path d='M6 6h15l-1.5 9h-12z' fill='none' stroke='currentColor' stroke-width='2'/><circle cx='9' cy='20' fill='currentColor' r='1.5'/><circle cx='18' cy='20' fill='currentColor' r='1.5'/><path d='M6 6L5 2H2' fill='none' stroke='currentColor' stroke-width='2'/></svg>
   <span data-cart-count='' hidden='hidden'>0</span>
 </a>
@@ -66,7 +67,7 @@ Page not found - <data:blog.title/>
       </b:widget>
     </b:section>
 
-    <button aria-controls='site-nav' aria-expanded='false' aria-label='Open menu' class='nav-toggle' id='nav-toggle' type='button'>
+    <button aria-controls='site-nav' aria-expanded='false' aria-label='Open menu' class='nav-toggle' data-i18n-label='' id='nav-toggle' type='button'>
       <svg aria-hidden='true' class='icon-menu' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='3' x2='21' y1='6' y2='6'/><line x1='3' x2='21' y1='12' y2='12'/><line x1='3' x2='21' y1='18' y2='18'/></svg>
       <svg aria-hidden='true' class='icon-close' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='18' x2='6' y1='6' y2='18'/><line x1='6' x2='18' y1='6' y2='18'/></svg>
     </button>
@@ -107,7 +108,9 @@ Page not found - <data:blog.title/>
       <b:section class='hero-main' id='hero-main' showaddelement='yes'>
         <b:widget id='HTML3' locked='false' title='New collection' type='HTML'>
           <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[<p>Fresh styles for every day and every night out. Pick your size, add to cart and order in under a minute, online or on WhatsApp.</p>]]></b:widget-setting>
+            <b:widget-setting name='content'><![CDATA[<p data-lang="en">Fresh styles for every day and every night out. Pick your size, add to cart and order in under a minute, online, on WhatsApp or Telegram.</p>
+<p data-lang="de">Neue Styles für jeden Tag und jede Nacht. Größe wählen, in den Warenkorb legen und in einer Minute bestellen: online, per WhatsApp oder Telegram.</p>
+<p data-lang="fr">De nouveaux styles pour chaque jour et chaque soirée. Choisissez votre taille et commandez en une minute : en ligne, sur WhatsApp ou Telegram.</p>]]></b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
             <div class='hero-copy'>
@@ -133,10 +136,20 @@ Page not found - <data:blog.title/>
       <b:section class='hero-side' id='hero-side' showaddelement='yes'>
         <b:widget id='HTML5' locked='false' title='Why shop with us' type='HTML'>
           <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[<ul>
+            <b:widget-setting name='content'><![CDATA[<ul data-lang="en">
 <li><strong>Free shipping</strong> on orders from 50 &euro;</li>
-<li><strong>Order your way</strong>: online checkout or WhatsApp</li>
+<li><strong>Order your way</strong>: online, WhatsApp or Telegram</li>
 <li><strong>Personal service</strong>: we confirm every order</li>
+</ul>
+<ul data-lang="de">
+<li><strong>Versandkostenfrei</strong> ab 50 &euro;</li>
+<li><strong>Bestellen, wie Sie möchten</strong>: online, WhatsApp oder Telegram</li>
+<li><strong>Persönlicher Service</strong>: wir bestätigen jede Bestellung</li>
+</ul>
+<ul data-lang="fr">
+<li><strong>Livraison gratuite</strong> dès 50 &euro;</li>
+<li><strong>Commandez comme vous voulez</strong> : en ligne, WhatsApp ou Telegram</li>
+<li><strong>Service personnel</strong> : nous confirmons chaque commande</li>
 </ul>]]></b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
@@ -234,8 +247,8 @@ Page not found - <data:blog.title/>
               </div>
             <b:else/>
               <div class='empty-state'>
-                <p>No posts found here yet.</p>
-                <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+                <p data-i18n=''>No posts found here yet.</p>
+                <a class='btn btn-primary' data-i18n='' expr:href='data:blog.homepageUrl'>Back to home</a>
               </div>
             </b:if>
             <b:if cond='data:newerPageUrl'>
@@ -390,10 +403,10 @@ Page not found - <data:blog.title/>
           <b:includable id='rmItemPager'>
             <nav aria-label='More posts' class='blog-pager-nav'>
               <b:if cond='data:newerPageUrl'>
-                <a class='btn btn-outline newer' expr:href='data:newerPageUrl' expr:title='data:newerPageTitle'>&#8592; Newer post</a>
+                <a class='btn btn-outline newer' expr:href='data:newerPageUrl' expr:title='data:newerPageTitle'>&#8592; <span data-i18n=''>Newer post</span></a>
               </b:if>
               <b:if cond='data:olderPageUrl'>
-                <a class='btn btn-outline older' expr:href='data:olderPageUrl' expr:title='data:olderPageTitle'>Older post &#8594;</a>
+                <a class='btn btn-outline older' expr:href='data:olderPageUrl' expr:title='data:olderPageTitle'><span data-i18n=''>Older post</span> &#8594;</a>
               </b:if>
             </nav>
           </b:includable>
@@ -401,17 +414,17 @@ Page not found - <data:blog.title/>
           <b:includable id='rmListPager'>
             <nav aria-label='Pages' class='blog-pager-nav'>
               <b:if cond='data:newerPageUrl'>
-                <a class='btn btn-outline newer' expr:href='data:newerPageUrl'>&#8592; Newer posts</a>
+                <a class='btn btn-outline newer' expr:href='data:newerPageUrl'>&#8592; <span data-i18n=''>Newer posts</span></a>
               </b:if>
               <b:if cond='data:olderPageUrl'>
-                <a class='btn btn-primary older' expr:href='data:olderPageUrl'>Older posts &#8594;</a>
+                <a class='btn btn-primary older' expr:href='data:olderPageUrl'><span data-i18n=''>Older posts</span> &#8594;</a>
               </b:if>
             </nav>
           </b:includable>
 
           <b:includable id='rmSearchForm'>
             <form action='/search' class='search-form' method='get' role='search'>
-              <input aria-label='Search this site' name='q' placeholder='Search products...' type='search'/>
+              <input aria-label='Search' data-i18n-label='' data-i18n-placeholder='' name='q' placeholder='Search products...' type='search'/>
               <button aria-label='Search' type='submit'>
                 <svg aria-hidden='true' fill='none' height='20' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='20'><circle cx='11' cy='11' r='8'/><line x1='21' x2='16.65' y1='21' y2='16.65'/></svg>
               </button>
@@ -421,10 +434,10 @@ Page not found - <data:blog.title/>
           <b:includable id='rmNotFound'>
             <div class='not-found'>
               <p class='not-found-code'>404</p>
-              <h1>Page not found</h1>
-              <p>The page you were looking for has moved or no longer exists.</p>
+              <h1 data-i18n=''>Page not found</h1>
+              <p data-i18n=''>The page you were looking for has moved or no longer exists.</p>
               <b:include name='rmSearchForm'/>
-              <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+              <a class='btn btn-primary' data-i18n='' expr:href='data:blog.homepageUrl'>Back to home</a>
             </div>
           </b:includable>
 
@@ -466,7 +479,9 @@ Page not found - <data:blog.title/>
     <b:section class='promo-section' id='promo-widgets' showaddelement='yes'>
       <b:widget id='HTML10' locked='false' title='Order directly' type='HTML'>
         <b:widget-settings>
-          <b:widget-setting name='content'><![CDATA[<p>Questions about a size or colour? Message us and we answer the same day. You can also place your whole order on WhatsApp.</p>
+          <b:widget-setting name='content'><![CDATA[<p data-lang="en">Questions about a size or colour? Message us and we answer the same day. You can also place your whole order on WhatsApp or Telegram.</p>
+<p data-lang="de">Fragen zu Größe oder Farbe? Schreiben Sie uns, wir antworten noch am selben Tag. Sie können auch direkt per WhatsApp oder Telegram bestellen.</p>
+<p data-lang="fr">Une question sur une taille ou une couleur ? Écrivez-nous, nous répondons le jour même. Vous pouvez aussi commander sur WhatsApp ou Telegram.</p>
 <p><a href="/p/contact.html">Contact us</a></p>]]></b:widget-setting>
         </b:widget-settings>
         @@HTML_MAIN@@
@@ -502,7 +517,9 @@ Page not found - <data:blog.title/>
       <b:section class='footer-col' id='footer-about' preferred='yes'>
         <b:widget id='HTML6' locked='false' title='About the shop' type='HTML'>
           <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[<p>Hand-picked clothing and accessories, shipped quickly and packed with care. Every order is confirmed personally.</p>]]></b:widget-setting>
+            <b:widget-setting name='content'><![CDATA[<p data-lang="en">Hand-picked clothing and accessories, shipped quickly and packed with care. Every order is confirmed personally.</p>
+<p data-lang="de">Ausgewählte Mode und Accessoires, schnell verschickt und sorgfältig verpackt. Jede Bestellung bestätigen wir persönlich.</p>
+<p data-lang="fr">Vêtements et accessoires choisis avec soin, expédiés rapidement. Chaque commande est confirmée personnellement.</p>]]></b:widget-setting>
           </b:widget-settings>
           @@HTML_MAIN@@
         </b:widget>
@@ -536,14 +553,6 @@ Page not found - <data:blog.title/>
     </div>
     <div class='footer-bottom'>
       <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/></p>
-      <b:section class='footer-credit' id='footer-credit' maxwidgets='1' showaddelement='no'>
-        <b:widget id='Attribution1' locked='false' title='' type='Attribution'>
-          <b:widget-settings>
-            <b:widget-setting name='copyright'/>
-          </b:widget-settings>
-          @@ATTRIBUTION_MAIN@@
-        </b:widget>
-      </b:section>
     </div>
   </div>
 </footer>
@@ -554,15 +563,22 @@ Page not found - <data:blog.title/>
       <b:widget-settings>
         <b:widget-setting name='content'><![CDATA[currency: EUR
 locale: de-DE
+language: en
+languages: en, de, fr
 whatsapp:
+telegram:
 email:
-order_endpoint:
+google_sheet:
 paypal:
 shipping: 4,90
 free_shipping_over: 50
 tax_note: Incl. VAT, plus shipping
 bank:
 label_prices: yes
+default_country: DE
+ship_to: Germany = Berlin, Hamburg, Munich, Frankfurt, Cologne
+ship_to: Austria (9,90)
+ship_to: Switzerland (14,90)
 hero_image:
 banner_image:]]></b:widget-setting>
       </b:widget-settings>

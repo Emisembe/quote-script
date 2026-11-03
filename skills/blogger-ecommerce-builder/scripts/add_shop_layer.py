@@ -56,7 +56,7 @@ edits = [
      lambda m: m.group(1) + includables.strip() + m.group(1) + m.group(2)),
     ("header has <div class='container header-inner'>",
      re.compile(r"(<div class='container header-inner'>\n)"),
-     lambda m: m.group(1) + re.search(r"<a aria-label='Cart'.*?</a>", snip, re.S).group(0) + '\n'),
+     lambda m: m.group(1) + re.search(r"<div class='lang-switch'.*?</a>", snip, re.S).group(0) + '\n'),
     ('theme script holds @@THEME_JS@@',
      re.compile(r"(<script type='text/javascript'>\s*//<!\[CDATA\[\s*@@THEME_JS@@\s*//\]\]>\s*</script>\n)"),
      lambda m: (re.search(r"<div class='shop-admin'>.*?\n</div>", snip, re.S).group(0) + '\n' + m.group(1) +
