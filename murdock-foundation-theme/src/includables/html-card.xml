@@ -1,0 +1,11 @@
+<b:includable id='main'>
+  <div class='side-card side-card-accent'>
+    <b:if cond='data:title != &quot;&quot;'>
+      <h2 class='card-title'><data:title/></h2>
+    </b:if>
+    <div class='widget-content'>
+      <data:content/>
+    </div>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>

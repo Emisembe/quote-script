@@ -1,0 +1,16 @@
+<b:includable id='main'>
+  <div class='not-found'>
+    <p aria-hidden='true' class='not-found-code'>404</p>
+    <b:if cond='data:title != &quot;&quot;'>
+      <h1 class='section-title'><data:title/></h1>
+    </b:if>
+    <div class='section-lead'>
+      <data:content/>
+    </div>
+    <form action='/search' class='search-form' method='get' role='search'>
+      <input aria-label='Search this site' name='q' placeholder='Search the site...' type='search'/>
+      <button aria-label='Search' type='submit'><i aria-hidden='true' class='fa fa-search'/></button>
+    </form>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>

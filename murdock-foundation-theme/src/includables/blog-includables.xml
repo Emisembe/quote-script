@@ -1,0 +1,148 @@
+<b:includable id='main' var='top'>
+  <b:if cond='data:blog.pageType == &quot;item&quot;'>
+    <b:loop values='data:posts' var='post'>
+      <b:include data='post' name='mefSingle'/>
+    </b:loop>
+    <b:include name='mefItemPager'/>
+  <b:else/>
+    <b:if cond='data:blog.pageType == &quot;static_page&quot;'>
+      <b:loop values='data:posts' var='post'>
+        <b:include data='post' name='mefSingle'/>
+      </b:loop>
+    <b:else/>
+      <b:if cond='data:blog.pageType != &quot;error_page&quot;'>
+        <b:include name='mefList'/>
+      </b:if>
+    </b:if>
+  </b:if>
+</b:includable>
+
+<b:includable id='mefList'>
+  <b:if cond='data:numPosts != 0'>
+    <div class='post-grid'>
+      <b:loop values='data:posts' var='post'>
+        <b:include data='post' name='mefCard'/>
+      </b:loop>
+    </div>
+  <b:else/>
+    <div class='empty-state'>
+      <p>No stories found here yet.</p>
+      <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to the homepage</a>
+    </div>
+  </b:if>
+  <nav aria-label='More stories' class='list-pager'>
+    <b:if cond='data:newerPageUrl'>
+      <a class='btn btn-outline' expr:href='data:newerPageUrl'>&#8592; Newer stories</a>
+    </b:if>
+    <b:if cond='data:olderPageUrl'>
+      <a class='btn btn-primary' expr:href='data:olderPageUrl'>Older stories &#8594;</a>
+    </b:if>
+  </nav>
+  <p class='all-stories home-only'><a class='btn btn-outline' href='/search'>See all news and stories</a></p>
+</b:includable>
+
+<b:includable id='mefCard' var='post'>
+  <article class='post-card'>
+    <a aria-hidden='true' class='post-card-media' expr:href='data:post.url' tabindex='-1'>
+      <b:if cond='data:post.firstImageUrl'>
+        <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
+      <b:else/>
+        <b:if cond='data:post.thumbnailUrl'>
+          <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
+        <b:else/>
+          <span class='post-card-placeholder'><i aria-hidden='true' class='fa fa-newspaper-o'/></span>
+        </b:if>
+      </b:if>
+    </a>
+    <div class='post-card-body'>
+      <b:if cond='data:post.labels'>
+        <div class='post-card-labels'>
+          <b:loop values='data:post.labels' var='label'>
+            <a class='badge' expr:href='data:blog.homepageUrl + &quot;search/label/&quot; + data:label.name'><data:label.name/></a>
+          </b:loop>
+        </div>
+      </b:if>
+      <h3 class='post-card-title'>
+        <a expr:href='data:post.url'><b:if cond='data:post.title'><data:post.title/><b:else/>Untitled story</b:if></a>
+      </h3>
+      <p class='post-card-meta'>
+        <time class='js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time>
+      </p>
+      <p class='post-card-excerpt'/>
+      <template class='js-excerpt'><data:post.body/></template>
+      <a class='text-link' expr:href='data:post.url'>Read story</a>
+    </div>
+  </article>
+</b:includable>
+
+<b:includable id='mefSingle' var='post'>
+  <article class='post-single'>
+    <a expr:name='data:post.id'/>
+    <header class='post-head'>
+      <b:if cond='data:blog.pageType == &quot;item&quot;'>
+        <b:if cond='data:post.labels'>
+          <div class='post-labels'>
+            <b:loop values='data:post.labels' var='label'>
+              <a class='badge' expr:href='data:blog.homepageUrl + &quot;search/label/&quot; + data:label.name' rel='tag'><data:label.name/></a>
+            </b:loop>
+          </div>
+        </b:if>
+      </b:if>
+      <b:if cond='data:post.title'>
+        <h1 class='post-title'><data:post.title/></h1>
+      </b:if>
+      <b:if cond='data:blog.pageType == &quot;item&quot;'>
+        <p class='post-meta'>
+          <b:if cond='data:post.authorProfileUrl'>
+            <a class='post-author' expr:href='data:post.authorProfileUrl' rel='author'><data:post.author/></a>
+          <b:else/>
+            <span class='post-author'><data:post.author/></span>
+          </b:if>
+          <span aria-hidden='true' class='sep'>&#183;</span>
+          <time class='js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time>
+          <b:include data='post' name='postQuickEdit'/>
+        </p>
+      </b:if>
+    </header>
+    <div class='post-body' expr:id='&quot;post-body-&quot; + data:post.id'>
+      <data:post.body/>
+    </div>
+    <b:if cond='data:blog.pageType == &quot;item&quot;'>
+      <div class='post-share'>
+        <span class='post-share-label'>Share this story</span>
+        <a class='share-facebook' expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-facebook'/> Facebook</a>
+        <a class='share-whatsapp' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-whatsapp'/> WhatsApp</a>
+        <a class='share-linkedin' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-linkedin'/> LinkedIn</a>
+        <a class='share-x' expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-twitter'/> X</a>
+        <button class='share-copy' expr:data-copy-url='data:post.url' type='button'><i aria-hidden='true' class='fa fa-link'/> Copy link</button>
+      </div>
+      <b:if cond='data:post.labels'>
+        <section class='related' expr:data-url='data:post.url' hidden='hidden'>
+          <b:loop values='data:post.labels' var='label'>
+            <span class='related-label' expr:data-label='data:label.name'/>
+          </b:loop>
+          <h2 class='related-title'>More stories like this</h2>
+          <div class='related-grid'/>
+        </section>
+      </b:if>
+      <div class='post-cta'>
+        <p><strong>Want to support this work?</strong> Volunteer, partner with us or donate.</p>
+        <a class='btn btn-accent' href='/#get-involved'>Get involved</a>
+      </div>
+    </b:if>
+    <div class='post-comments'>
+      <b:include data='post' name='comment_picker'/>
+    </div>
+  </article>
+</b:includable>
+
+<b:includable id='mefItemPager'>
+  <nav aria-label='More stories' class='item-pager'>
+    <b:if cond='data:newerPageUrl'>
+      <a class='item-pager-link newer' expr:href='data:newerPageUrl'><span>&#8592; Newer</span><b:if cond='data:newerPageTitle'><strong><data:newerPageTitle/></strong></b:if></a>
+    </b:if>
+    <b:if cond='data:olderPageUrl'>
+      <a class='item-pager-link older' expr:href='data:olderPageUrl'><span>Older &#8594;</span><b:if cond='data:olderPageTitle'><strong><data:olderPageTitle/></strong></b:if></a>
+    </b:if>
+  </nav>
+</b:includable>

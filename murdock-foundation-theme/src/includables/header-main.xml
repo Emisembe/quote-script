@@ -1,0 +1,9 @@
+<b:includable id='main'>
+  <a class='brand' expr:href='data:blog.homepageUrl'>
+    <b:if cond='data:useImage'>
+      <img class='brand-logo' expr:alt='data:title' expr:src='data:sourceUrl'/>
+    <b:else/>
+      <span class='brand-name'><data:title/></span>
+    </b:if>
+  </a>
+</b:includable>

@@ -1,0 +1,9 @@
+<b:includable id='main'>
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='section-title'><data:title/></h2>
+  </b:if>
+  <div class='section-lead'>
+    <data:content/>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>

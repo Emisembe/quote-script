@@ -1,0 +1,723 @@
+{
+  "_about": "Facts taken from the Murdock Emisembe Foundation's own theme backup (theme-5504181476546189159.xml, Areda-based, accepted by Blogger). scripts/check.py only allows what is listed here, plus 'extra' entries (each needs a reason).",
+  "html_attributes": [
+    "b:version",
+    "class",
+    "expr:dir",
+    "lang"
+  ],
+  "b_tags": [
+    "b:else",
+    "b:if",
+    "b:includable",
+    "b:include",
+    "b:loop",
+    "b:section",
+    "b:skin",
+    "b:template-skin",
+    "b:widget",
+    "b:widget-setting",
+    "b:widget-settings",
+    "b:with"
+  ],
+  "data_tags": [
+    "data:adCode",
+    "data:adEnd",
+    "data:adStart",
+    "data:backgroundPositionStyleStr",
+    "data:backlink.adminClass",
+    "data:backlink.author",
+    "data:backlink.deleteUrl",
+    "data:backlink.snippet",
+    "data:backlink.timestamp",
+    "data:backlink.title",
+    "data:backlink.url",
+    "data:blog.blogId",
+    "data:blog.enabledCommentProfileImages",
+    "data:blog.homepageUrl",
+    "data:blog.languageDirection",
+    "data:blog.metaDescription",
+    "data:blog.pageName",
+    "data:blog.pageTitle",
+    "data:blog.pageType",
+    "data:blog.postImageUrl",
+    "data:blog.title",
+    "data:blog.url",
+    "data:blogCommentMessage",
+    "data:blogTeamBlogMessage",
+    "data:caption",
+    "data:comment.adminClass",
+    "data:comment.anchorName",
+    "data:comment.author",
+    "data:comment.authorAvatarImage",
+    "data:comment.authorClass",
+    "data:comment.authorUrl",
+    "data:comment.body",
+    "data:comment.cmtBodyIdPostfix",
+    "data:comment.deleteUrl",
+    "data:comment.favicon",
+    "data:comment.isDeleted",
+    "data:comment.timestamp",
+    "data:comment.url",
+    "data:commentPostedByMsg",
+    "data:content",
+    "data:defaultAdEnd",
+    "data:defaultAdStart",
+    "data:description",
+    "data:desktopLinkMsg",
+    "data:desktopLinkUrl",
+    "data:f.feedType",
+    "data:f.mimeType",
+    "data:f.name",
+    "data:f.url",
+    "data:feedLinks",
+    "data:feedLinksMsg",
+    "data:height",
+    "data:homeMsg",
+    "data:image",
+    "data:imagePlacement",
+    "data:label.isLast",
+    "data:label.name",
+    "data:layout",
+    "data:link",
+    "data:link.name",
+    "data:link.target",
+    "data:links",
+    "data:mobile",
+    "data:mobileLinkMsg",
+    "data:mobileLinkUrl",
+    "data:navMessage",
+    "data:newerPageTitle",
+    "data:newerPageUrl",
+    "data:numPosts",
+    "data:olderPageTitle",
+    "data:olderPageUrl",
+    "data:pageLanguage",
+    "data:post.addCommentOnclick",
+    "data:post.addCommentUrl",
+    "data:post.adminClass",
+    "data:post.allowComments",
+    "data:post.allowIframeComments",
+    "data:post.allowNewComments",
+    "data:post.appRpcRelayPath",
+    "data:post.author",
+    "data:post.authorLabel",
+    "data:post.authorProfileUrl",
+    "data:post.avatarIndentClass",
+    "data:post.backlinks",
+    "data:post.backlinksLabel",
+    "data:post.body",
+    "data:post.canonicalUrl",
+    "data:post.cmtfpIframe",
+    "data:post.commentConfig",
+    "data:post.commentFormIframeSrc",
+    "data:post.commentHtml",
+    "data:post.commentJso",
+    "data:post.commentLabelFull",
+    "data:post.commentMsgs",
+    "data:post.commentPagingRequired",
+    "data:post.commentRangeText",
+    "data:post.commentSource",
+    "data:post.commentSrc",
+    "data:post.comments",
+    "data:post.communityId",
+    "data:post.createLinkLabel",
+    "data:post.createLinkUrl",
+    "data:post.dateHeader",
+    "data:post.dummyTag",
+    "data:post.editUrl",
+    "data:post.embedCommentForm",
+    "data:post.featuredImage",
+    "data:post.featuredImage.isResizable",
+    "data:post.feedLinks",
+    "data:post.firstImageUrl",
+    "data:post.forceIframeComments",
+    "data:post.friendConnectJs",
+    "data:post.hasJumpLink",
+    "data:post.hasNewerLinks",
+    "data:post.hasOlderLinks",
+    "data:post.href",
+    "data:post.id",
+    "data:post.iframeCommentSrc",
+    "data:post.includeAd",
+    "data:post.isDateStart",
+    "data:post.isFirstPost",
+    "data:post.jumpText",
+    "data:post.labels",
+    "data:post.link",
+    "data:post.newLinkClass",
+    "data:post.newerLinkText",
+    "data:post.newerLinkUrl",
+    "data:post.newestLinkText",
+    "data:post.newestLinkUrl",
+    "data:post.noNewCommentsText",
+    "data:post.numBacklinks",
+    "data:post.numComments",
+    "data:post.oldLinkClass",
+    "data:post.olderLinkText",
+    "data:post.olderLinkUrl",
+    "data:post.oldestLinkText",
+    "data:post.oldestLinkUrl",
+    "data:post.sharePostUrl",
+    "data:post.showBacklinks",
+    "data:post.showThreadedComments",
+    "data:post.snippet",
+    "data:post.thumbnail",
+    "data:post.thumbnailUrl",
+    "data:post.timestamp",
+    "data:post.timestampISO8601",
+    "data:post.timestampLabel",
+    "data:post.title",
+    "data:post.url",
+    "data:postCommentMsg",
+    "data:postFirstImage",
+    "data:postSummary",
+    "data:postTitle",
+    "data:postUrl",
+    "data:posts",
+    "data:shareMsg",
+    "data:showCmtPopup",
+    "data:showFirstImage",
+    "data:showPostTitle",
+    "data:showSnippet",
+    "data:showSnippets",
+    "data:showThumbnails",
+    "data:sourceUrl",
+    "data:title",
+    "data:top.blogThisMsg",
+    "data:top.blogspotReviews",
+    "data:top.deleteBacklinkMsg",
+    "data:top.deleteCommentMsg",
+    "data:top.dummyBootstrap",
+    "data:top.editPostMsg",
+    "data:top.emailThisMsg",
+    "data:top.languageCode",
+    "data:top.shareToFacebookMsg",
+    "data:top.shareToOrkutMsg",
+    "data:top.shareToTwitterMsg",
+    "data:top.showAuthor",
+    "data:top.showBlogThisButton",
+    "data:top.showDummy",
+    "data:top.showEmailButton",
+    "data:top.showFacebookButton",
+    "data:top.showMobileShare",
+    "data:top.showOrkutButton",
+    "data:top.showStars",
+    "data:top.showTimestamp",
+    "data:top.showTwitterButton",
+    "data:top.timestampLabel",
+    "data:useImage",
+    "data:widget.instanceId",
+    "data:width",
+    "data:widthStyleStr"
+  ],
+  "section_attributes": [
+    "class",
+    "id",
+    "maxwidgets",
+    "showaddelement"
+  ],
+  "widget_attributes": [
+    "id",
+    "locked",
+    "title",
+    "type",
+    "version"
+  ],
+  "widget_types": {
+    "AdSense": {
+      "versions": [
+        ""
+      ],
+      "settings": [],
+      "blank_ok": [],
+      "values": {}
+    },
+    "Blog": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "authorLabel",
+        "commentLabel",
+        "postLabelsLabel",
+        "postLocationLabel",
+        "postsPerAd",
+        "reactionsLabel",
+        "showAuthor",
+        "showAuthorProfile",
+        "showBacklinks",
+        "showCommentLink",
+        "showDateHeader",
+        "showInlineAds",
+        "showLabels",
+        "showLocation",
+        "showReactions",
+        "showShareButtons",
+        "showTimestamp",
+        "style.layout",
+        "style.unittype",
+        "timestampLabel"
+      ],
+      "blank_ok": [
+        "reactionsLabel"
+      ],
+      "values": {
+        "authorLabel": [
+          "\u0391\u03bd\u03b1\u03c1\u03c4\u03ae\u03b8\u03b7\u03ba\u03b5 \u03b1\u03c0\u03cc"
+        ],
+        "commentLabel": [
+          "\u03c3\u03c7\u03cc\u03bb\u03b9\u03b1"
+        ],
+        "postLabelsLabel": [
+          "\u0395\u03c4\u03b9\u03ba\u03ad\u03c4\u03b5\u03c2"
+        ],
+        "postLocationLabel": [
+          "\u03a4\u03cc\u03c0\u03bf\u03c2:"
+        ],
+        "postsPerAd": [
+          "1"
+        ],
+        "showAuthor": [
+          "true"
+        ],
+        "showAuthorProfile": [
+          "false"
+        ],
+        "showBacklinks": [
+          "false"
+        ],
+        "showCommentLink": [
+          "true"
+        ],
+        "showDateHeader": [
+          "true"
+        ],
+        "showInlineAds": [
+          "false"
+        ],
+        "showLabels": [
+          "true"
+        ],
+        "showLocation": [
+          "false"
+        ],
+        "showReactions": [
+          "false"
+        ],
+        "showShareButtons": [
+          "true"
+        ],
+        "showTimestamp": [
+          "true"
+        ],
+        "style.layout": [
+          "1x1"
+        ],
+        "style.unittype": [
+          "TextAndImage"
+        ],
+        "timestampLabel": [
+          "\u03c3\u03c4\u03b9\u03c2"
+        ]
+      }
+    },
+    "ContactForm": {
+      "versions": [
+        "1"
+      ],
+      "settings": [],
+      "blank_ok": [],
+      "values": {}
+    },
+    "FeaturedPost": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "postId",
+        "showFirstImage",
+        "showPostTitle",
+        "showSnippet",
+        "useMostRecentPost"
+      ],
+      "blank_ok": [],
+      "values": {
+        "postId": [
+          "8874159289466447992"
+        ],
+        "showFirstImage": [
+          "true"
+        ],
+        "showPostTitle": [
+          "true"
+        ],
+        "showSnippet": [
+          "true"
+        ],
+        "useMostRecentPost": [
+          "false"
+        ]
+      }
+    },
+    "HTML": {
+      "versions": [
+        "",
+        "1"
+      ],
+      "settings": [
+        "content"
+      ],
+      "blank_ok": [
+        "content"
+      ],
+      "values": {}
+    },
+    "Header": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "displayHeight",
+        "displayUrl",
+        "displayWidth",
+        "imagePlacement",
+        "sectionWidth",
+        "shrinkToFit",
+        "useImage"
+      ],
+      "blank_ok": [],
+      "values": {
+        "displayHeight": [
+          "80"
+        ],
+        "displayUrl": [
+          "https://blogger.googleusercontent.com/img/a/AVvXsEjV4DVXUJOudgX-F9ndHHHTYFSEuA2re1_XD8f-VenxfIJhH4dYPObe25uoHJf3VgjDiSvFMGHHX0e_TRa_1j_YAqB71Xj2QS1nIiFBeFWIKRLTHzUnzeJErdQX9c6Vl38uv3CryyS4IglY2C8R9bEbime-nFUq4vuYrZmX9DwpLYxEO0YXecbFhAUy=s330"
+        ],
+        "displayWidth": [
+          "330"
+        ],
+        "imagePlacement": [
+          "REPLACE"
+        ],
+        "sectionWidth": [
+          "150"
+        ],
+        "shrinkToFit": [
+          "false"
+        ],
+        "useImage": [
+          "true"
+        ]
+      }
+    },
+    "Image": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "caption",
+        "displayHeight",
+        "displayUrl",
+        "displayWidth",
+        "link",
+        "sectionWidth",
+        "shrinkToFit"
+      ],
+      "blank_ok": [
+        "caption",
+        "link"
+      ],
+      "values": {
+        "caption": [
+          "...",
+          "<div class='fa-icon-wrap'>  <a class='link-page-url' href='YOUR POST URL'><i class=\"fa fa-link\" aria-hidden=\"true\"></i></a>  <a class='link-image-url' href='https://2.bp.blogspot.com/--2oMZlaDJzM/WVdoFb4LuTI/AAAAAAAABKs/cVQlHySwTSQnmR9XQV1ejSrjSmnwSYHTACK4BGAYYCw/s1600/3.jpg'><i class=\"fa fa-picture-o\" aria-hidden=\"true\"></i></a>  </div>",
+          "<div class='fa-icon-wrap'>  <a class='link-page-url' href='YOUR POST URL'><i class=\"fa fa-link\" aria-hidden=\"true\"></i></a>  <a class='link-image-url' href='https://3.bp.blogspot.com/-2EUpZR8no68/WVdn8vvj48I/AAAAAAAABKk/2tbEJJ1fs6ILWsVy4XPrug-oOyuA6TbDgCK4BGAYYCw/s1600/2.jpg'><i class=\"fa fa-picture-o\" aria-hidden=\"true\"></i></a>  </div>",
+          "<div class='fa-icon-wrap'>  <a class='link-page-url' href='YOUR POST URL'><i class=\"fa fa-link\" aria-hidden=\"true\"></i></a>  <a class='link-image-url' href='https://3.bp.blogspot.com/-4GDFXBQOIRk/WVdohHn9GkI/AAAAAAAABLE/AyeZEeHRs98Qkw5iaDdDKrNO0q-Zii4EwCK4BGAYYCw/s1600/6.jpg'><i class=\"fa fa-picture-o\" aria-hidden=\"true\"></i></a>  </div>",
+          "<div class='fa-icon-wrap'>  <a class='link-page-url' href='YOUR POST URL'><i class=\"fa fa-link\" aria-hidden=\"true\"></i></a>  <a class='link-image-url' href='https://3.bp.blogspot.com/-Ehftk1szRFM/WVd93OHR3UI/AAAAAAAABNQ/-lHc2Edw9IYxC8qniNw6-e08zd0XO2Q-ACK4BGAYYCw/s1600/5.jpg'><i class=\"fa fa-picture-o\" aria-hidden=\"true\"></i></a>  </div>",
+          "<div class='fa-icon-wrap'>  <a class='link-page-url' href='YOUR POST URL'><i class=\"fa fa-link\" aria-hidden=\"true\"></i></a>  <a class='link-image-url' href='https://3.bp.blogspot.com/-kydunJCn5VI/WVdntSAMVmI/AAAAAAAABKc/OVQ3n7RWdJw95eyvPGQWI_AE1yIA0ymIwCK4BGAYYCw/s1600/1.jpg'><i class=\"fa fa-picture-o\" aria-hidden=\"true\"></i></a>  </div>",
+          "<div class='fa-icon-wrap'>  <a class='link-page-url' href='YOUR POST URL'><i class=\"fa fa-link\" aria-hidden=\"true\"></i></a>  <a class='link-image-url' href='https://4.bp.blogspot.com/-HjsKtYeQqoE/WVdoPQfZGwI/AAAAAAAABK0/QnPR5MbRMiotC1LHuEMtbdXQe5llJQjXACK4BGAYYCw/s1600/4.jpg'><i class=\"fa fa-picture-o\" aria-hidden=\"true\"></i></a>  </div>",
+          "<h3 class='name'> Onesmas Gathuku</h3> <h6 class='activity'>- Finance Analyst -</h6> <p class='text'> Onesmas, the accounting student-turned-master, guides the organization's finances, taxes, and operational strategies with expertise and flair.</p> <div class='fa-icon-wrap'>  <a class='facebook' href='#'><i class='fa fa-facebook'></i></a>  <a class='twitter' href='#'><i class='fa fa-twitter'></i></a>  <a class='instagram' href='#'><i class='fa fa-instagram'></i></a>  </div>",
+          "<h3 class='name'>Jayne Kabosa</h3> <h6 class='activity'>- Board Member -</h6> <p class='text'>Etiam tempus est finibus augue consequat, a egestas est fringilla. Donec aliquam rhoncus diam, nec euismod elit feugiat id.</p> <div class='fa-icon-wrap'>  <a class='facebook' href='#'><i class='fa fa-facebook'></i></a>  <a class='twitter' href='#'><i class='fa fa-twitter'></i></a>  <a class='instagram' href='#'><i class='fa fa-instagram'></i></a>  </div>",
+          "<h3 class='name'>Murdock Emisembe</h3> <h6 class='activity'>- Project Manager -</h6> <p class='text'>Murdock Emisembe, M.A. in Labour Policies & Globalization from Hochschule f\u00fcr Wirtschaft und Recht Berlin. Experienced in Quality Assurance, HR & Business Services. Proficient in Microsoft Office, Tableau, Looker Studio & Google Analytics.</p> <div class='fa-icon-wrap'>  <a class='facebook' href='#'><i class='fa fa-facebook'></i></a>  <a class='twitter' href='#'><i class='fa fa-twitter'></i></a>  <a class='instagram' href='#'><i class='fa fa-instagram'></i></a>  </div>"
+        ],
+        "displayHeight": [
+          "1067",
+          "150",
+          "600",
+          "772",
+          "800",
+          "853"
+        ],
+        "displayUrl": [
+          "https://blogger.googleusercontent.com/img/a/AVvXsEgJ7kEiNFAJEetz-5X1tvoaQgmnEGb5KeZllW1Ri5B-eNibRWedqXICrmWa5mPsmP2l-OYQh2O4dbdYXZ71-qjhgb7jFdzsM8OgAIzBV54tUz98E6a0M3ShF9_iaUPvl_qhx21qK6POSWFUjFUkUa_jkI4Iz4SV8xKMZXZPJLw2ayVRPQqnq3UT93Zc=s800",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEgKGAmhlrb8gUK-VzCCzx-5XoL4oTBCRjQujrZQCmXSOwfec5Rif81D9P0OqcPT5ilnBNWB690b0iYyM2CMubUnfbqUsZ7yrztBEhlTYj1EjRjSI0fX4t32hJhusi6q60B0yRwsYnWlGxinMlsdVLrl2Hc8lGg4QrZ-i0C9O_2Rg4j6d5_74zovkDoU=s1600",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEh8Uoz8GZBAsXVR3bVnF8U9bDIBBjfTFJg7POK-W7LzUvMduU8TaxqlB0VK1R2uU9PRmreAGKQPKo_PDla-DErXPT52rmQICY4dCGyQiwI36_AbWQziuQLJvb78Oiy1Ly3J2bRzByhCQmoCI1F0RH3jDGd_HSmMEjK_XA_BrGv7IStGuuwJSSegC-n2=s1600",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEhPBZEc7PkE6f_a9oCzfR9sMO5-Laitn39g9w8dTfPlt0574fSKJ5XsIUbeCWWPR_QBpFFU3sWld4ZREyMLkc9z2tktRtgzyUvdXnqHX7yufm6f6OALk1oYh1pjnsaYXXXwFZDELi6T2duekrYc9RjrUHG5yaPrIAxCnlNt_hk_QAsDyzZt9eqFNy0D=s1600",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEhU4JYvKNUN6pElDMDyKOAEFIuz61w6p83_A1lYPU6Chb4wA-eIZW2LNmeCk4vEcYVuXNLJzEcjP1uWF2JqAeHF44Plzczu9HDJOXNH5UjRd7Rbk-1r9OJDLQtyWxynBV0QLHoZ1CwQGvGEHzKhFv8tw5Dc9W0hUs3VikqY9zPIh0N04t2q-5g_7RzV=s800",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEhexns-fN3FqTIp7P0BZiySyfMdYxYixYgJS0qNpd-zbFJHVpxrMp-J8mbOkaQhYmVAS_rn-rQJR0fdKx7U4He-F1-yh56A4yWsi6-yMfRLbcxrQOhTlOHKO8TS3CMpxqxniEXlzu966OVT6K-1F1myY8NVESloCdx47RhRTJY3ZZyygyOwrpw4jTrQ=s800",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEhlFumtFaXcGsHbpX0YxIn8_syz5Bkakm46kpWDEkx0BwA0Y3M4DLePS1eo-KqV-OkLV4-g3LqVCBrOOaUe-7ckdUOyrbTXdt98xqbAA8yacmk8Ip8dH-VymLPGLNSu7Ne1ZNmTSoNlgw0NhQ0_9wVOxZWT6q7NLKFFCUTKPnFxLJubc0nLDNrpZv8Q=s150",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEhq8_aF4mwcLlqNSQarFVg5yLZzIgZRE6BkDPldQu4D-wcgk9lbhVPFmmZZRaJlzJfW0f1oqKX2rTEAXknE8SbgRqEFqJPqZaDkD6Oahzp1zYjSL2gA0lBqqpMJV_XZsc2mVHgWVy7xrtbaJ1H4uutjDdlGkXX66DddTC6cswhWXXBuAu-W8WMcB9Ss=s150",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEhqp0cWtqLrwegBaaKIdjXb9YPhcUYGccX33xx5NCl6VHZ7U-gvS4ajmjmwtaJBZpS6tx_KUNsHiTM4RvdoKHzXJwSQjVZM_hcJFc37qgXrCRI-91xSlX0La6Loj6h-bfq5m622tadLPAS6x4iP9vykpK_w_j64ZC0ngMKZi-t2IHAL4SgXqxXbp5UH=s772",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEiQJtyOOxW_tmMuESlzRlgYcLecfb-Umvfnwz-aSbKa07r2ZXTycDmkDJD9tqw50KHOS9fO5RhVWEuha8UiLK2pfBewsgjX5VkGbGYFJlJJ3prN-r1dmvmF62g1p6YL4hSeImvtqLsvipW3YmnfgEyTlDYNn9SPxR7JDGjU1ijoU0fpSHwAYclP49Rx=s150",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEiQe00-BXrfJxkl0vadyRj0boNUl1xvUbR2wpgt4t5pqvKGfwoKqMJLMiA_VcDqW49Zp6AF92zNmx37yhwRQ51z3ae6G0rw38GeWUfZRBZfn5V2wsZgmp3rlBNrYO6-m7wuYw4kTCClaykldISNWp8XJ0cJ_WKUfIxGJUVtSwa3A5D5Qbv0a3PDqoX3=s1600",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEibhme80YERiLiQS4Ijpa6SgxjdEyCsRI5B6ifmxR2lA2CiNnZz82I6G-LLDDJfN2bvbrxdq6Qnc_bSFD3n4-jn1n_Rh9U6MJymeKI3ZYh5RUPxl1D3fMiweoT468Uyp1YMTfd3veFRRCUgmpDPwZxo1fJnv2Ld1BMTtdB6em7cAAHw5XsCpjmin_DW=s800",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEinnc0dQgWMTCcT5mod6W95E_Imzppu13FBg6KTPgnvKAENcdscAPUKKa4zjKeaVBWnDmhHODrvGbeWuauGmaEU2i3vLrzRCnJeN_3RzArjvbCjup1AbVwA41jmYtJcFHGs98JhKcAuuEzcc0rrjU1Wvm_VWp7rw7EMhWNkgRB6Hn_6Q6kJ5vSQtpPt=s1600",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEisfqMflZfzURpoBP4jHs-OMrOZnwk52l2aL4ho8eqZIZTbQ1DpzQq_K1pe280Cudh9bf2IJJAoJVaoLmucMl9RdFeBK1fM2DRmPcberURwj7BqKTZRlapKvxTO1CbnfFxCOChXfY93y5NQBCivbooXi6-0XXmRwoh1uqvHJwjeiTRTb2JI7H2dTbVR9lo=s600",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEj8EKm9I77myzQ9xdRPD-UtWVmgC9T1MUxQaePqwP6U_n-Ae_LeigsVCUr5pu3lzgUj6ZUqFGs11gtfpzSFZ4DDJiSajUwlDenljigz6k0rsA1SEVYuyXkqVfvMz2rGzE9L2ivwtF6zcgYW6W7W1JmysXVnEtPA8ish_PEdR58ntVE_XNkwhB_FRu1M=s800",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEjNRU3zUnHav_dg2Q0FOX7JOKd7yZFHeag0r78zt0y9Uu4LbwyjWKUwvRW9TeyTCSklslGp2u5ceRZHvMM0I__x3eRF-ubt-UpeprrvaBrHJmUrKpSxyFBjUyC4a5xGrQ-OCRka-xGIIskCV6Mq4dWdoPxTH8Ty2Paf7PPyDSp0-ak37HoIdy1X_SJg=s150",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEjZfQjcDJxd5oqiq-Gq9bJyDl6lv6E0QJU5rDFH0uyPiWn4s1820q0Bu66XsBBtomCUraqEf1d18I72BI3UgZFm458U3tqm0bC9uiZkpAPWBHefD52rXaYNz-_DU1P_D-zI74RWbXsecAzz1sOFn0aGHDt_tHrPUulTWsaDPW-0oH8n7siRmSB9KA-w=s150",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEj_sXb48EOQwSK9_-pK-JLu9SIoVeXo8LVCzLFXUJc1Knl0eJrGggP5CQlJr0_9LoRER7af1OgBYmYCnNdjRf3cS0GI9-lrN0H_dtyxUooI3JLSwwDVpO_hcJotIkhNrT9I9x5k7ShTzdg_MSP19qM2aRIGDLzjVL674vpMtyflSCX0iQorxCIaW-jv=s800",
+          "https://blogger.googleusercontent.com/img/a/AVvXsEjb3ibGZXPrYscNJA5Vuz7ANuq7JYfVlo06_7bJAxyuj-JVgLnW5BohzJgqPmEfFu82ZJB8TZ33wBccIs7puU4Ug0uiobLBYLcSydBkl2k5gY5wzIYGM32BYPgpDSEo0qDRACjD6s70y1_fNkZguiXxtH2bcQZY3ibnsW2qeqae-AmnkY8BGC4v2WKC=s150",
+          "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgN5JzRFrq5zx6rAgyNePCwcHiRBtDLGqQwR8u0C8ZMdzYvr8WhvT4OWG8XMKUusyjia18tdGgW2Zn2awrCt0SAmuqiuXxlafInTnvaZgNTAzy6OS2P6__RBoK0V3VfqsTMGxKo9TjH7YPk/s1600/fashion.jpg",
+          "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgv8KU8beu-7J8hFaQRH4ZL9F9Od0TFnPayEc-yzN19yaTgnQUwWb7sLziJ6f8cZVr7FIN1zKHL1uciuF3SXYmPdcPggj1G5TIIBelbHpY6O31nUf92mRObipyQwBZhnBqWB5Pp9m68ipLQ/s1600/contact.jpeg",
+          "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhCuHm3QvjmXpTG3u_YgxWXqWQo9sdpIAiQRg7k7Qc4hMGCzDa_np7_DcqZrD9QmL4zFnwAwYs-Dw33K1HrYr0Jm-D_mKTf6uSOdubV3NU9tKS_tWkt6AWNSEy_ecsOP_OPBRvwC90uCE3y/s1600/bg-blog.jpg",
+          "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhXSQbZF3T3Q8gpOtNkYtIWqMRviuDOx_4aDFA1dRrh72zzfI7EytbDIt1-XmJgctqIGcEarQAZfztaK49KT6epieBfS0K77U1bNLtyK3P8eRDkfQ6LA4u2a95EMcTspmP7lBu2CiuMSOZF/s853/girl-6-compressor.jpg",
+          "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEipzH2dX7fCjJB9dJK4umKrcHt66dMgBVgaUPBmtMcDc3zexytpdPpSQ8c2bUO0uc0RyY76B75VMNL2nqYII1eo7ez3WE1UqYPuJlJz3O7Hjb6R0g6jmM8kUmrqkNOtimPd76_ufVcY12Rp/s1600/bg-image.jpg"
+        ],
+        "displayWidth": [
+          "1280",
+          "150",
+          "1600",
+          "600",
+          "772",
+          "800",
+          "853"
+        ],
+        "link": [
+          "...",
+          "https://www.murdockemisembefoundation.org/"
+        ],
+        "sectionWidth": [
+          "150",
+          "293"
+        ],
+        "shrinkToFit": [
+          "false"
+        ]
+      }
+    },
+    "LinkList": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "link-0",
+        "link-1",
+        "link-2",
+        "link-3",
+        "link-4",
+        "link-5",
+        "link-6",
+        "link-7",
+        "link-8",
+        "link-9",
+        "sorting",
+        "text-0",
+        "text-1",
+        "text-2",
+        "text-3",
+        "text-4",
+        "text-5",
+        "text-6",
+        "text-7",
+        "text-8",
+        "text-9"
+      ],
+      "blank_ok": [],
+      "values": {
+        "link-0": [
+          "/",
+          "http://fbtemplates.net"
+        ],
+        "link-1": [
+          "/search?max-results=5",
+          "<a href=\"!\"><i class=\"fa fa-calendar\" aria-hidden=\"true\"></i> Upcoming Events</a>"
+        ],
+        "link-2": [
+          "#",
+          "https://themeforest.net/item/brand-mag-responsive-blogger-newsmagazine/11447278?ref=fbtemplates"
+        ],
+        "link-3": [
+          "#",
+          "https://themeforest.net/item/bcorporate-responsive-blogger-template/7873461?ref=fbtemplates"
+        ],
+        "link-4": [
+          "https://themeforest.net/item/xpress-news-responsive-blogger-magazine/6539139?ref=fbtemplates",
+          "https://www.murdockemisembefoundation.org/p/calender.html"
+        ],
+        "link-5": [
+          "https://themeforest.net/item/newspepper-responsive-blogger-magazine/14951862?ref=fbtemplates",
+          "https://www.murdockemisembefoundation.org/p/blog-page.html"
+        ],
+        "link-6": [
+          "#"
+        ],
+        "link-7": [
+          "https://"
+        ],
+        "link-8": [
+          "/404"
+        ],
+        "link-9": [
+          "https://www.youtube.com/channel/UCbptIql_tryAanQtVLZq47A"
+        ],
+        "sorting": [
+          "NONE"
+        ],
+        "text-0": [
+          "<a href=\"!\"><i class=\"fa fa-sign-in\" aria-hidden=\"true\"></i> Become a Volunteer</a>",
+          "Home"
+        ],
+        "text-1": [
+          "<a href=\"!\"><i class=\"fa fa-globe\" aria-hidden=\"true\"></i> Our Model</a>",
+          "News and Stories"
+        ],
+        "text-2": [
+          "<a href=\"!\"><i class=\"fa fa-university\" aria-hidden=\"true\"></i> Advertise With Us</a>",
+          "Projects"
+        ],
+        "text-3": [
+          "<a href=\"!\"><i class=\"fa fa-calendar\" aria-hidden=\"true\"></i> Upcoming Events</a>",
+          "About Us"
+        ],
+        "text-4": [
+          "<a href=\"!\"><i class=\"fa fa-database\" aria-hidden=\"true\"></i> Data Protection</a>",
+          "_Calender"
+        ],
+        "text-5": [
+          "<a href=\"!\"><i class=\"fa fa-shopping-cart\" aria-hidden=\"true\"></i> Buy Our Magazine</a>",
+          "_Appointments"
+        ],
+        "text-6": [
+          "_Submenu"
+        ],
+        "text-7": [
+          "_Submenu"
+        ],
+        "text-8": [
+          "Contact"
+        ],
+        "text-9": [
+          "The Emisembe Report"
+        ]
+      }
+    },
+    "Navbar": {
+      "versions": [
+        "1"
+      ],
+      "settings": [],
+      "blank_ok": [],
+      "values": {}
+    },
+    "PopularPosts": {
+      "versions": [
+        "1"
+      ],
+      "settings": [
+        "numItemsToShow",
+        "showSnippets",
+        "showThumbnails",
+        "timeRange"
+      ],
+      "blank_ok": [],
+      "values": {
+        "numItemsToShow": [
+          "3"
+        ],
+        "showSnippets": [
+          "false"
+        ],
+        "showThumbnails": [
+          "true"
+        ],
+        "timeRange": [
+          "LAST_YEAR"
+        ]
+      }
+    },
+    "Translate": {
+      "versions": [
+        ""
+      ],
+      "settings": [
+        "displayMode"
+      ],
+      "blank_ok": [],
+      "values": {
+        "displayMode": [
+          "VERTICAL"
+        ]
+      }
+    }
+  },
+  "builtin_includes": [
+    "all-head-content",
+    "google-analytics",
+    "quickedit"
+  ],
+  "extra": {
+    "data_tags": {
+      "data:blog.canonicalUrl": "Standard legacy page global; used as the second homepage check so ?fbclid=/?m=1 visits still get the homepage. Proven by the skill starter theme, uploaded to a real legacy-engine blog in 2026."
+    },
+    "setting_values": {
+      "boolean settings may be true or false": [
+        "true",
+        "false"
+      ]
+    },
+    "banned_strings": [
+      "YOUR_",
+      "YOUR DESCRIPTION",
+      "YOUR POST URL",
+      "soratemplates",
+      "themeforest",
+      "fbtemplates",
+      "Areda",
+      "Lorem ipsum",
+      "Etiam tempus",
+      "Sarah Doe",
+      "Client Name",
+      "google-plus",
+      "html5shim"
+    ],
+    "notes": "Anything allowed beyond the reference export goes here with a reason. banned_strings lists demo leftovers found in the original Areda template.",
+    "free_text_settings": {
+      "_reason": "Settings whose value is the gadget owner's own text or links, not an option from a fixed list. Any non-blank value is valid, so the proven-value rule does not apply to them.",
+      "settings": [
+        "content",
+        "caption",
+        "link",
+        "displayUrl",
+        "postId",
+        "commentLabel",
+        "authorLabel",
+        "postLocationLabel",
+        "timestampLabel",
+        "postLabelsLabel",
+        "reactionsLabel",
+        "text-0",
+        "text-1",
+        "text-2",
+        "text-3",
+        "text-4",
+        "text-5",
+        "text-6",
+        "text-7",
+        "text-8",
+        "text-9",
+        "link-0",
+        "link-1",
+        "link-2",
+        "link-3",
+        "link-4",
+        "link-5",
+        "link-6",
+        "link-7",
+        "link-8",
+        "link-9"
+      ]
+    }
+  }
+}

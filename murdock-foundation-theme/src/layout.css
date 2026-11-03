@@ -1,0 +1,13 @@
+/* Theme > Layout editor */
+body#layout { width: 900px; font-family: Arial, sans-serif; }
+body#layout .container { max-width: none; padding: 0 10px; }
+body#layout .site-header, body#layout .band, body#layout .page-hero, body#layout .site-footer,
+body#layout .footer-bottom { position: static; display: block; padding: 6px 0; margin: 0 0 8px; background: none; }
+body#layout .home-only, body#layout .not-home, body#layout .error-only, body#layout .bg-source,
+body#layout .navbar-hidden, body#layout .sidebar, body#layout .hero, body#layout .nav-drawer { display: block; }
+body#layout .hero-images, body#layout .hero-images .widget, body#layout .hero-shade { position: static; opacity: 1; }
+body#layout .header-inner, body#layout .split, body#layout .main-grid, body#layout .contact-grid,
+body#layout .footer-grid, body#layout .footer-bottom-inner { display: block; }
+body#layout .nav-toggle, body#layout .skip-link, body#layout .hero-controls, body#layout .copyright,
+body#layout .back-to-top, body#layout .lightbox, body#layout .hero-shade, body#layout .sr-only { display: none; }
+body#layout .section { margin: 0 0 6px; }

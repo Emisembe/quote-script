@@ -1,0 +1,5 @@
+dist/
+preview/*.html
+preview/img/
+preview/vendor/
+__pycache__/

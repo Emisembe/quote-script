@@ -1,0 +1,12 @@
+<b:includable id='main'>
+  <figure class='gallery-item'>
+    <a class='gallery-link' expr:href='data:sourceUrl' expr:title='data:title'>
+      <img expr:alt='data:title' expr:height='data:height' expr:id='data:widget.instanceId + &quot;_img&quot;' expr:src='data:sourceUrl' expr:width='data:width' loading='lazy'/>
+      <span aria-hidden='true' class='gallery-zoom'><i class='fa fa-search-plus'/></span>
+    </a>
+    <b:if cond='data:caption'>
+      <figcaption class='img-caption'><data:caption/></figcaption>
+    </b:if>
+  </figure>
+  <b:include name='quickedit'/>
+</b:includable>

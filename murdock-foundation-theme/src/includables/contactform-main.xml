@@ -1,0 +1,24 @@
+<b:includable id='main'>
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='card-title'><data:title/></h2>
+  </b:if>
+  <div class='contact-form-widget'>
+    <form class='contact-form' name='contact-form'>
+      <label class='field'>
+        <span>Your name</span>
+        <input autocomplete='name' class='form-control' expr:id='data:widget.instanceId + &quot;_contact-form-name&quot;' name='name' required='required' size='30' type='text'/>
+      </label>
+      <label class='field'>
+        <span>Your email</span>
+        <input autocomplete='email' class='form-control' expr:id='data:widget.instanceId + &quot;_contact-form-email&quot;' name='email' required='required' size='30' type='email'/>
+      </label>
+      <label class='field'>
+        <span>How can we help?</span>
+        <textarea class='form-control' cols='25' expr:id='data:widget.instanceId + &quot;_contact-form-email-message&quot;' name='email-message' required='required' rows='6'/>
+      </label>
+      <input class='btn btn-primary contact-button' expr:id='data:widget.instanceId + &quot;_contact-form-submit&quot;' type='submit' value='Send message'/>
+      <p aria-live='polite' class='contact-form-error-message' expr:id='data:widget.instanceId + &quot;_contact-form-error-message&quot;'/>
+      <p aria-live='polite' class='contact-form-success-message' expr:id='data:widget.instanceId + &quot;_contact-form-success-message&quot;'/>
+    </form>
+  </div>
+</b:includable>

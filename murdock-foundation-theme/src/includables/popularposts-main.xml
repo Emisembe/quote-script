@@ -1,0 +1,22 @@
+<b:includable id='main'>
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='card-title'><data:title/></h2>
+  </b:if>
+  <ul class='mini-posts'>
+    <b:loop values='data:posts' var='post'>
+      <li>
+        <b:if cond='data:showThumbnails'>
+          <b:if cond='data:post.thumbnail'>
+            <a class='mini-thumb' expr:href='data:post.href' tabindex='-1'><img alt='' class='js-resize-square' expr:src='data:post.thumbnail' loading='lazy'/></a>
+          </b:if>
+        </b:if>
+        <div class='mini-body'>
+          <a class='mini-title' expr:href='data:post.href'><data:post.title/></a>
+          <b:if cond='data:showSnippets'>
+            <p class='mini-snippet'><data:post.snippet/></p>
+          </b:if>
+        </div>
+      </li>
+    </b:loop>
+  </ul>
+</b:includable>

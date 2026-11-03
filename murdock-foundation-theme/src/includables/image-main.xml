@@ -1,0 +1,13 @@
+<b:includable id='main'>
+  <figure class='img-gadget'>
+    <b:if cond='data:link'>
+      <a expr:href='data:link'><img expr:alt='data:title' expr:height='data:height' expr:id='data:widget.instanceId + &quot;_img&quot;' expr:src='data:sourceUrl' expr:width='data:width' loading='lazy'/></a>
+    <b:else/>
+      <img expr:alt='data:title' expr:height='data:height' expr:id='data:widget.instanceId + &quot;_img&quot;' expr:src='data:sourceUrl' expr:width='data:width' loading='lazy'/>
+    </b:if>
+    <b:if cond='data:caption'>
+      <figcaption class='img-caption'><data:caption/></figcaption>
+    </b:if>
+  </figure>
+  <b:include name='quickedit'/>
+</b:includable>

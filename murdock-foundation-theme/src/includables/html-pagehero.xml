@@ -1,0 +1,12 @@
+<b:includable id='main'>
+  <div class='page-hero-copy'>
+    <b:if cond='data:blog.pageName != &quot;&quot;'>
+      <p class='eyebrow'><data:title/></p>
+      <h1 class='page-title'><data:blog.pageName/></h1>
+    <b:else/>
+      <h1 class='page-title'><data:title/></h1>
+      <p class='page-lead'><data:content/></p>
+    </b:if>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>
