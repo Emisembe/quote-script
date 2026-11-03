@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Emisembe Writer – Google Docs Add-on – Complete Guide</title></head>
+<body>
+
+<h1>Emisembe Writer for Google Docs – Complete Guide</h1>
+<p><b>Version:</b> November 2026 &nbsp;·&nbsp; <b>For:</b> Murdock Emisembe (personal use)</p>
+<p>This guide explains, step by step, how to install and use <b>Emisembe Writer</b> inside Google Docs. Emisembe Writer is a sidebar that can <b>paraphrase</b>, <b>humanise</b> and <b>check the grammar</b> of your text in <b>English and German</b>, at any language level from <b>A1 to C2</b>, and it can write in <b>your own voice</b>.</p>
+
+<h2>Contents</h2>
+<ol>
+<li>What the add-on does</li>
+<li>What you need before you start</li>
+<li>Part A – Get a free Gemini key (5 minutes)</li>
+<li>Part B – Install the add-on in a Google Doc (10 minutes)</li>
+<li>Part C – First start and permissions</li>
+<li>Part D – Settings explained</li>
+<li>Part E – How to use each tool</li>
+<li>Part F – Language levels A1 to C2</li>
+<li>Part G – Setting up "My voice"</li>
+<li>Part H – Switching AI engines (Gemini, Claude, Offline)</li>
+<li>Part I – Using the add-on in other documents</li>
+<li>Part J – Updating to a new version</li>
+<li>Part K – Troubleshooting</li>
+<li>Part L – Privacy and costs</li>
+<li>Quick reference card</li>
+</ol>
+
+<h2>1. What the add-on does</h2>
+<p>The add-on opens as a panel (a "sidebar") on the right side of your Google Doc. You select text in your document, choose what you want to do, and the result appears in the sidebar. With one click you can put the result back into the document.</p>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><th>Tool</th><th>What it does</th></tr>
+<tr><td><b>Paraphrase</b></td><td>Rewrites your text in other words. 8 styles: Standard, Fluency, Formal / Business, Friendly, Simple, Academic, Shorter, Longer. You choose how much it should change (Light, Medium, Strong).</td></tr>
+<tr><td><b>Humanise</b></td><td>Makes text sound like a real person wrote it: varied sentence length, plain words, no stock phrases or clichés. It keeps all your facts.</td></tr>
+<tr><td><b>Grammar</b></td><td>Finds spelling, grammar, punctuation and word-choice errors. Every error is underlined, with an explanation. You can apply fixes one by one or all at once.</td></tr>
+<tr><td><b>Level (A1–C2)</b></td><td>Makes the result fit a language level, for example simple A2 English or advanced C1 German. "Keep my level" leaves the level as it is.</td></tr>
+<tr><td><b>Output language</b></td><td>Same language, English or Deutsch. If you choose the other language, the tool translates and rewrites in one step.</td></tr>
+<tr><td><b>My voice</b></td><td>Writes the result in your personal style: direct, warm and structured. Works in English and German.</td></tr>
+</table>
+
+<h2>2. What you need before you start</h2>
+<ul>
+<li>A <b>Google account</b> (the one you use for Google Docs).</li>
+<li>A <b>Google Doc</b> where you want to use the tool. Tip: create a new doc called <b>"Writer – Template"</b>. You can copy it later for new work (see Part I).</li>
+<li>The <b>4 files</b> of the add-on: <b>Code.gs</b>, <b>WriterCore.gs</b>, <b>Sidebar.html</b>, <b>appsscript.json</b>. They are also inside the project zip, in the folders <i>writer/google-docs/</i> and <i>writer/core/</i> (writer-core.js = WriterCore.gs).</li>
+<li><b>For Grammar:</b> nothing else. Grammar works for free with LanguageTool, without any key.</li>
+<li><b>For Paraphrase and Humanise:</b> one AI engine. The easiest is a <b>free Gemini key</b> (Part A). Later you can use Claude (paid) or your own offline AI (Part H).</li>
+</ul>
+
+<h2>3. Part A – Get a free Gemini key</h2>
+<p>A "key" is like a password that lets the add-on use Google's AI for you. It is free; you only need your Google account.</p>
+<ol>
+<li>Open <b>https://aistudio.google.com</b> in your browser.</li>
+<li>Sign in with your Google account and accept the terms if asked.</li>
+<li>Click <b>"Get API key"</b> (on the left side or at the top).</li>
+<li>Click <b>"Create API key"</b>. If it asks for a project, let it create one for you.</li>
+<li>A long code appears, usually starting with <b>AIza…</b>. Click <b>Copy</b>.</li>
+<li>Keep this key private. Do not post it or send it to other people. If someone gets it, delete it in AI Studio and create a new one.</li>
+</ol>
+<p><b>Important:</b> On the free tier, Google may use your text to improve its products. Do not use the free Gemini engine for private documents (for example legal papers, medical or personal details). For those, use Claude or the offline engine.</p>
+
+<h2>4. Part B – Install the add-on in a Google Doc</h2>
+<p>You only do this once per document (or once in your template document).</p>
+
+<h3>Step 1 – Open Apps Script</h3>
+<ol>
+<li>Open your Google Doc (for example "Writer – Template").</li>
+<li>In the menu at the top, click <b>Extensions → Apps Script</b>. A new tab opens with the script editor.</li>
+<li>At the top left you see <b>"Untitled project"</b>. Click it and rename it to <b>Emisembe Writer</b>, then click <b>Rename</b>. (This name appears later in your Extensions menu.)</li>
+</ol>
+
+<h3>Step 2 – Add the file Code.gs</h3>
+<ol>
+<li>On the left, under <b>Files</b>, you already see a file called <b>Code.gs</b>. Click it.</li>
+<li>Select everything in the editor (<b>Ctrl+A</b>) and delete it.</li>
+<li>Open the file <b>Code.gs</b> from this project (with Notepad, or by opening it on your computer), copy everything (<b>Ctrl+A</b>, <b>Ctrl+C</b>) and paste it into the editor (<b>Ctrl+V</b>).</li>
+<li>Click the <b>Save</b> icon (or press <b>Ctrl+S</b>).</li>
+</ol>
+
+<h3>Step 3 – Add the file WriterCore</h3>
+<ol>
+<li>Next to <b>Files</b>, click the <b>+</b> button and choose <b>Script</b>.</li>
+<li>Type the name <b>WriterCore</b> and press Enter (Apps Script adds ".gs" by itself).</li>
+<li>Delete the small example code inside it.</li>
+<li>Copy everything from <b>WriterCore.gs</b> (this is the same as <i>writer-core.js</i>) and paste it. Save.</li>
+</ol>
+
+<h3>Step 4 – Add the file Sidebar</h3>
+<ol>
+<li>Click <b>+</b> next to <b>Files</b> and choose <b>HTML</b>.</li>
+<li>Type the name <b>Sidebar</b> exactly like this (capital S, no ".html") and press Enter.</li>
+<li>Delete the example code inside it.</li>
+<li>Copy everything from <b>Sidebar.html</b> and paste it. Save.</li>
+</ol>
+
+<h3>Step 5 – Replace appsscript.json</h3>
+<ol>
+<li>On the far left, click the <b>gear icon (Project Settings)</b>.</li>
+<li>Tick the box <b>"Show 'appsscript.json' manifest file in editor"</b>.</li>
+<li>Click the <b>&lt; &gt; (Editor)</b> icon on the far left to go back to the files.</li>
+<li>Click the new file <b>appsscript.json</b>, delete everything inside, paste the content of <b>appsscript.json</b> from this project, and save.</li>
+</ol>
+
+<p><b>Check:</b> On the left you should now see 4 files: <b>appsscript.json</b>, <b>Code.gs</b>, <b>WriterCore.gs</b>, <b>Sidebar.html</b>. The names must be exactly like this.</p>
+
+<h2>5. Part C – First start and permissions</h2>
+<ol>
+<li>Go back to the tab with your Google Doc and <b>reload the page</b> (press <b>F5</b>).</li>
+<li>Wait a few seconds. Click <b>Extensions → Emisembe Writer → Open Writer</b>.</li>
+<li>The first time, Google shows <b>"Authorization required"</b>. Click <b>Continue</b> (or <b>Review permissions</b>) and choose your Google account.</li>
+<li>You will probably see <b>"Google hasn't verified this app"</b>. This is normal, because you made this script yourself. Click <b>Advanced</b>, then <b>Go to Emisembe Writer (unsafe)</b>.</li>
+<li>Google shows what the script may do: see and edit the current document, show a sidebar, and connect to external services (the AI). Click <b>Allow</b>.</li>
+<li>Click <b>Extensions → Emisembe Writer → Open Writer</b> again. The sidebar opens on the right.</li>
+</ol>
+<p><b>Why these permissions?</b> The script only works with the document you have open ("current document only"). It connects to the AI service you choose (Gemini, Claude) and to LanguageTool for grammar. It does not read your other files.</p>
+
+<h3>Add your Gemini key</h3>
+<ol>
+<li>In the sidebar, at the bottom, click <b>⚙ Settings</b>.</li>
+<li>Under <b>AI engine → Use</b>, choose <b>Google Gemini — free tier</b>.</li>
+<li>Paste your key into <b>Gemini key</b>.</li>
+<li>Click <b>Find models</b>. The list fills with the models your key can use. Choose a "flash" model (fast). If you are not sure, keep <b>gemini-2.5-flash</b> or the first one in the list.</li>
+<li>Click <b>Save</b>. At the bottom of the sidebar you now see <b>"Gemini · (model name)"</b>.</li>
+</ol>
+
+<h2>6. Part D – Settings explained</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><th>Setting</th><th>What it means</th><th>Recommended</th></tr>
+<tr><td><b>Use (AI engine)</b></td><td>Which AI does Paraphrase and Humanise (and Grammar, if you choose "AI engine above").</td><td>Gemini now. Claude when you can afford it.</td></tr>
+<tr><td><b>Gemini key / Gemini model</b></td><td>Your free key, and which Gemini model to use. "Find models" asks Google which models your key can use.</td><td>A "flash" model.</td></tr>
+<tr><td><b>Claude key / Claude model</b></td><td>Your paid Claude key. Opus 5.5 = best quality, Sonnet 5.5 = cheaper, Haiku 5.5 = cheapest.</td><td>Opus 5.5 for important texts, Haiku 5.5 to save money.</td></tr>
+<tr><td><b>Ollama address / Offline model</b></td><td>Only for the offline engine on your own PC (see Part H).</td><td>http://localhost:11434 and gemma3:4b</td></tr>
+<tr><td><b>Checker (Grammar)</b></td><td><b>LanguageTool online</b>: free, no key, very fast, but the explanations are not adapted to your level. <b>AI engine above</b>: uses your AI, and explains each error in simple words for your level.</td><td>LanguageTool for quick checks; AI for learning.</td></tr>
+<tr><td><b>Explanations in</b></td><td>Language of the grammar explanations (English or Deutsch).</td><td>Your choice.</td></tr>
+<tr><td><b>English spelling</b></td><td>American (color, organize) or British (colour, organise).</td><td>British for Europe, American for US.</td></tr>
+<tr><td><b>How I write</b></td><td>Your voice profile, used when "My voice" is on.</td><td>See Part G.</td></tr>
+<tr><td><b>Samples of my writing</b></td><td>Real texts you wrote. The AI copies the style, not the content.</td><td>Add 3–6 real emails (English and German).</td></tr>
+</table>
+<p>Settings and keys are saved in <b>your own Google account</b> only. Other people who open the document do not see your key.</p>
+
+<h2>7. Part E – How to use each tool</h2>
+
+<h3>The basic workflow (for all tools)</h3>
+<ol>
+<li><b>Select</b> the text in your document with the mouse.</li>
+<li>In the sidebar, click <b>↓ Get selected text</b>. The text appears in the box. (You can also type or paste text directly into the box.)</li>
+<li>Choose the tool at the top: <b>Paraphrase</b>, <b>Humanise</b> or <b>Grammar</b>.</li>
+<li>Choose the options (Style, Level, Output, Change, My voice).</li>
+<li>Click the big button (<b>Rephrase</b>, <b>Humanise</b> or <b>Check grammar</b>). Wait a few seconds.</li>
+<li>Read the result. Changed words are highlighted in yellow.</li>
+<li>Click <b>Replace selection</b> to put the result in place of the selected text, or <b>Insert below</b> to add it under the selected text (your original stays). <b>Copy</b> copies the result so you can paste it anywhere.</li>
+</ol>
+<p><b>Tip:</b> Before you click "Replace selection", make sure the same text is still selected in the document. If you clicked somewhere else, select it again. If you are unsure, use <b>Insert below</b> – it never deletes anything. And remember: <b>Ctrl+Z</b> in Google Docs undoes a replacement.</p>
+
+<h3>Paraphrase</h3>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><th>Style</th><th>Use it for</th></tr>
+<tr><td>Standard</td><td>New wording, same tone and meaning.</td></tr>
+<tr><td>Fluency</td><td>Fix awkward sentences, make it read smoothly, change as little as possible.</td></tr>
+<tr><td>Formal / Business</td><td>Emails to companies, offices (Behörden), customers, applications.</td></tr>
+<tr><td>Friendly</td><td>Warm messages to colleagues and friends.</td></tr>
+<tr><td>Simple</td><td>Make text easy to understand (short sentences, common words).</td></tr>
+<tr><td>Academic</td><td>Reports, essays, research texts.</td></tr>
+<tr><td>Shorter</td><td>Cut the text by about 30–50%, keep all important points.</td></tr>
+<tr><td>Longer</td><td>Explain the same points more fully (no new facts are added).</td></tr>
+</table>
+<p><b>Change:</b> <i>Light</i> keeps most of your words. <i>Medium</i> rephrases freely. <i>Strong</i> may rebuild whole sentences.</p>
+<p><b>Rough drafts and voice notes:</b> If your text is spoken-style (like a voice message without punctuation), Paraphrase turns it into clean written text. Fluency + Light is good for this.</p>
+
+<h3>Humanise</h3>
+<p>Use Humanise when a text sounds stiff, robotic or "too perfect". It varies sentence length, uses contractions in English (I'm, don't), removes phrases like "I hope this message finds you well" or "in today's fast-paced world", and keeps every fact, name and number. Combine it with <b>My voice</b> to make it sound like you.</p>
+<p><b>Honest note:</b> Humanise makes text more natural, but nobody can guarantee that "AI detectors" will not flag it. Detectors are unreliable.</p>
+
+<h3>Grammar</h3>
+<ol>
+<li>Choose <b>Grammar</b> at the top. Under <b>Text language</b> choose Auto-detect, English or Deutsch.</li>
+<li>Choose the <b>Level</b>: it decides how simple the explanations are (only with the AI checker).</li>
+<li>Click <b>Check grammar</b>.</li>
+<li>Errors are underlined in red. Below the text, every error has a card: the wrong words (crossed out), the correction (green) and an explanation.</li>
+<li>Click <b>Apply</b> to fix one error, or <b>Ignore</b> if you want to keep it. <b>Apply all</b> fixes everything at once. Fixed parts turn green.</li>
+<li>Click <b>Replace selection</b> to put the corrected text into your document.</li>
+</ol>
+
+<h3>Translating while rewriting</h3>
+<p>Set <b>Output</b> to <b>English</b> or <b>Deutsch</b>. Example: write a rough English note, choose Paraphrase + Formal + Output Deutsch + Level B2, and you get a clean, formal German version.</p>
+
+<h2>8. Part F – Language levels A1 to C2</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><th>Level</th><th>What the result looks like</th><th>German specifics</th></tr>
+<tr><td><b>A1</b> Beginner</td><td>Very short sentences (5–10 words), only very common words, one idea per sentence.</td><td>Main clauses only, Präsens, no Genitiv, no Konjunktiv, no Passiv.</td></tr>
+<tr><td><b>A2</b> Elementary</td><td>Short clear sentences, everyday words, simple connectors (and, but, because).</td><td>Simple "weil/dass/wenn" clauses, Präsens and Perfekt.</td></tr>
+<tr><td><b>B1</b> Intermediate</td><td>Clear, straightforward text, some linking words (however, although).</td><td>Subordinate and relative clauses, simple Konjunktiv II (würde, hätte).</td></tr>
+<tr><td><b>B2</b> Upper intermediate</td><td>Natural and fluent, good vocabulary, some common idioms.</td><td>Passiv, Konjunktiv II, common Nomen-Verb-Verbindungen.</td></tr>
+<tr><td><b>C1</b> Advanced</td><td>Precise, well-structured, complex sentences where useful.</td><td>Nominalstil where it fits, Konjunktiv I for reported speech.</td></tr>
+<tr><td><b>C2</b> Mastery</td><td>Near-native, nuanced, stylistically refined.</td><td>Full range of educated native German.</td></tr>
+<tr><td><b>Keep my level</b></td><td>The result stays at about the same level as your original.</td><td>–</td></tr>
+</table>
+<p>The levels follow the official CEFR descriptions. They are a strong guide for the AI, not a certified test result.</p>
+
+<h2>9. Part G – Setting up "My voice"</h2>
+<p>When <b>My voice</b> is ticked, the AI writes like you. Your profile is already filled in with your style: <i>Direct. Warm. Unfiltered.</i> – structure first, a warm opener, candid questions, signposting ("The point is…", "In my view…"), respectful framing ("I stand to be corrected"), at most one proverb, and none of the typical AI phrases.</p>
+<h3>Make it better</h3>
+<ol>
+<li>Open <b>⚙ Settings → My voice</b>.</li>
+<li>In <b>Samples of my writing</b>, paste 3 to 6 real texts you wrote yourself: emails, messages, a short letter. Use <b>both English and German</b> texts, so it learns your German voice too.</li>
+<li>Remove anything very private from the samples (names, addresses, case numbers).</li>
+<li>Lines that start with <b>#</b> are notes for you – they are never sent to the AI.</li>
+<li>You can also edit <b>How I write</b>. Write simple rules, one per line, for example: "I always end emails with a clear next step."</li>
+<li>Click <b>Save</b>.</li>
+</ol>
+<p><b>Note:</b> A single setting can hold about 8,500 characters, so keep samples short and typical.</p>
+
+<h2>10. Part H – Switching AI engines</h2>
+
+<h3>Gemini (free) – what you use now</h3>
+<p>Free with daily limits. If you see "You reached the Gemini free limit", wait a few minutes (per-minute limit) or until tomorrow (daily limit), or choose a lighter model with <b>Find models</b>.</p>
+
+<h3>Claude (paid) – when you can afford it</h3>
+<ol>
+<li>Open <b>https://console.anthropic.com</b> and create an account.</li>
+<li>Go to <b>Billing</b> and add credit (for example $5 – that is enough for hundreds of paragraphs).</li>
+<li>Set a <b>monthly spending limit</b> in the console, so you can never spend more than you want.</li>
+<li>Go to <b>API Keys → Create Key</b> and copy the key (starts with <b>sk-ant-</b>).</li>
+<li>In the sidebar: <b>⚙ Settings → Use: Claude</b>, paste the key, choose the model, <b>Save</b>.</li>
+</ol>
+<p>Approximate cost per paragraph (~150 words): Opus 5.5 about 1–2 US cents, Sonnet 5.5 under 1 cent, Haiku 5.5 a fraction of a cent (prices as of late 2026 – check the console).</p>
+
+<h3>Offline AI on your PC (experimental in Google Docs)</h3>
+<ol>
+<li>First set up Ollama on your PC with the desktop guide ("Emisembe Writer – Desktop App – Complete Guide"). You need about 8 GB free disk space.</li>
+<li>In the sidebar: <b>⚙ Settings → Use: Offline AI on my PC (Ollama)</b>.</li>
+<li>Check <b>Ollama address</b> (http://localhost:11434) and <b>Offline model</b> (for example gemma3:4b).</li>
+<li>Click <b>Test connection</b>. If Chrome asks <i>"allow access to devices on your local network"</i>, click <b>Allow</b>.</li>
+<li>If you see "✓ Connected", click <b>Save</b> and use the tools as normal (it is slower than the cloud).</li>
+<li>If it says "Not reachable", Chrome is probably blocking Google Docs from talking to your PC. In that case, use the <b>desktop app</b> for offline work and copy the result into Google Docs.</li>
+</ol>
+
+<h2>11. Part I – Using the add-on in other documents</h2>
+<p>The script belongs to the document where you installed it. Ways to use it in more documents:</p>
+<ul>
+<li><b>Template (easiest):</b> Install it in "Writer – Template". For new work, open the template and click <b>File → Make a copy</b>. The copy has the sidebar too. Your settings and keys are already saved in your account.</li>
+<li><b>Existing document:</b> Open the template with the sidebar, paste your text there, edit it, then copy it back. Or use the desktop app with copy and paste.</li>
+<li><b>Real add-on for all documents:</b> possible later, but it needs a Google Cloud project and a review by Google. Ask Claude for help when you want this.</li>
+</ul>
+
+<h2>12. Part J – Updating to a new version</h2>
+<ol>
+<li>Open the document → <b>Extensions → Apps Script</b>.</li>
+<li>For each changed file, select all, delete and paste the new content. Save.</li>
+<li>Reload the document (F5). Your settings and keys stay saved.</li>
+</ol>
+
+<h2>13. Part K – Troubleshooting</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><th>Problem / message</th><th>What to do</th></tr>
+<tr><td>No "Emisembe Writer" in the Extensions menu</td><td>Reload the document (F5) and wait 5–10 seconds. Check that the project is saved and Code.gs contains the code.</td></tr>
+<tr><td>"Script function not found" or blank sidebar</td><td>A file name is wrong. Names must be exactly: Code.gs, WriterCore.gs, Sidebar.html, appsscript.json. Check that every file was saved.</td></tr>
+<tr><td>"WriterCore is not defined"</td><td>The WriterCore file is missing or empty. Add it again (Part B, Step 3).</td></tr>
+<tr><td>"Nothing selected"</td><td>Select text in the document first, then click "Get selected text".</td></tr>
+<tr><td>"Add your free Gemini key in Settings first"</td><td>Open ⚙ Settings, paste the key, Save (Part C).</td></tr>
+<tr><td>"Your Gemini key was rejected"</td><td>The key is wrong or deleted. Copy it again from AI Studio, or create a new one.</td></tr>
+<tr><td>"This Gemini model is not available for your key"</td><td>⚙ Settings → Find models → choose another model → Save.</td></tr>
+<tr><td>"You reached the Gemini free limit"</td><td>Wait a few minutes or until tomorrow, or use a lighter model.</td></tr>
+<tr><td>"Your Claude API key was rejected" / "no credit left"</td><td>Check the key, or add credit in the Anthropic console.</td></tr>
+<tr><td>"The AI declined to work on this text"</td><td>The AI's safety filter stopped. Rephrase the text, or try a different engine.</td></tr>
+<tr><td>"Could not reach the offline AI"</td><td>Start Ollama on your PC, run setup-windows.bat once, allow local network access in Chrome – or use the desktop app.</td></tr>
+<tr><td>"Replace selection" replaced the wrong text</td><td>Press Ctrl+Z in the document. Select the right text again and click Replace selection. Or use Insert below.</td></tr>
+<tr><td>Formatting (bold, links) lost after replacing</td><td>Normal: replaced text gets plain formatting. Use Insert below if you need to keep the original formatting, then copy the parts you want.</td></tr>
+<tr><td>"Cut off: the text was too long"</td><td>Work on smaller parts (a few paragraphs at a time).</td></tr>
+</table>
+
+<h2>14. Part L – Privacy and costs</h2>
+<ul>
+<li><b>Gemini free tier:</b> free; your text is sent to Google and may be used to improve Google's products.</li>
+<li><b>Claude:</b> paid per use; your text is sent to Anthropic to be processed.</li>
+<li><b>LanguageTool online:</b> free; your text is sent to languagetool.org.</li>
+<li><b>Offline (Ollama):</b> free; your text stays on your PC.</li>
+<li>Your keys are stored in your Google account's private script settings, not in the document.</li>
+</ul>
+
+<h2>Quick reference card</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><td><b>Open</b></td><td>Extensions → Emisembe Writer → Open Writer</td></tr>
+<tr><td><b>Work</b></td><td>Select text → Get selected text → choose tool + options → Rephrase / Humanise / Check grammar</td></tr>
+<tr><td><b>Put back</b></td><td>Replace selection (or Insert below) · Ctrl+Z to undo</td></tr>
+<tr><td><b>Free grammar</b></td><td>Settings → Checker → LanguageTool online</td></tr>
+<tr><td><b>Free AI</b></td><td>Settings → Use: Google Gemini → paste key → Find models → Save</td></tr>
+<tr><td><b>Your style</b></td><td>Tick "My voice" · edit it in Settings → My voice</td></tr>
+<tr><td><b>Translate</b></td><td>Output → English or Deutsch</td></tr>
+<tr><td><b>New document</b></td><td>Open "Writer – Template" → File → Make a copy</td></tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Emisembe Writer – Desktop App – Complete Guide</title></head>
+<body>
+
+<h1>Emisembe Writer Desktop App – Complete Guide</h1>
+<p><b>Version:</b> November 2026 &nbsp;·&nbsp; <b>For:</b> Murdock Emisembe (personal use) &nbsp;·&nbsp; <b>PC:</b> Windows 11, Intel i5-1135G7, 32 GB RAM</p>
+<p>This guide explains how to set up and use the <b>Emisembe Writer desktop app</b> on your Windows PC. The app opens in your browser (Chrome or Edge) and can <b>paraphrase</b>, <b>humanise</b> and <b>check grammar</b> in <b>English and German</b>, from level <b>A1 to C2</b>, in <b>your own voice</b>. It works with free cloud AI, paid cloud AI, or <b>completely offline</b> on your own computer.</p>
+
+<h2>Contents</h2>
+<ol>
+<li>What the desktop app is</li>
+<li>Three ways to run it – which one for you?</li>
+<li>Step 1 – Download and unzip the project</li>
+<li>Step 2 – Quick start with free cloud AI (no disk space needed)</li>
+<li>Step 3 – Free up disk space (for offline use)</li>
+<li>Step 4 – Set up offline AI with Ollama</li>
+<li>Step 5 (optional) – Offline grammar with LanguageTool</li>
+<li>The screen explained</li>
+<li>How to use each tool</li>
+<li>Settings explained</li>
+<li>History, shortcuts and handy buttons</li>
+<li>Tips for the best results</li>
+<li>Troubleshooting</li>
+<li>Privacy, security and costs</li>
+<li>Updating, moving and uninstalling</li>
+<li>Quick reference card</li>
+</ol>
+
+<h2>1. What the desktop app is</h2>
+<p>The desktop app is a single web page (<b>index.html</b>) that you open from a folder on your PC. You do not need to install it. It has two panels: <b>your text</b> on the left and the <b>result</b> on the right.</p>
+<ul>
+<li><b>Paraphrase</b> – 8 styles (Standard, Fluency, Formal / Business, Friendly, Simple, Academic, Shorter, Longer) and 3 change amounts (Light, Medium, Strong).</li>
+<li><b>Humanise</b> – makes text sound natural and personal, removes stock phrases and clichés.</li>
+<li><b>Grammar check</b> – underlines errors with explanations at your level. Apply fixes one by one or all at once.</li>
+<li><b>Level</b> – Keep, A1, A2, B1, B2, C1, C2.</li>
+<li><b>Output</b> – Same language, English or Deutsch (translate and rewrite in one step).</li>
+<li><b>My voice</b> – rewrites in your personal style, in English and German.</li>
+<li><b>History</b> – your last 30 results are saved on your PC.</li>
+</ul>
+<p>It works with any text: Google Docs, Word, emails, WhatsApp messages, applications – copy in, fix, copy out.</p>
+
+<h2>2. Three ways to run it – which one for you?</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><th>Engine</th><th>Cost</th><th>Internet</th><th>Disk space</th><th>Speed on your PC</th><th>Quality</th></tr>
+<tr><td><b>Google Gemini</b> (free tier)</td><td>Free, daily limits</td><td>Yes</td><td>None</td><td>Fast (a few seconds)</td><td>Very good</td></tr>
+<tr><td><b>Claude</b> (paid)</td><td>~1–2 cents per paragraph (Opus 5.5)</td><td>Yes</td><td>None</td><td>Fast</td><td>Best</td></tr>
+<tr><td><b>Offline – Ollama</b></td><td>Free, no limits</td><td>No</td><td>About 8 GB</td><td>Slower (10–30 seconds per paragraph)</td><td>Good</td></tr>
+</table>
+<p><b>Recommendation for you right now:</b> start with <b>Gemini</b> (Step 2) – it works today without freeing space. Set up <b>offline</b> later, when you have freed up disk space (Steps 3 and 4). You can switch at any time.</p>
+
+<h2>3. Step 1 – Download and unzip the project</h2>
+<ol>
+<li>Save the file <b>Emisembe-Writer.zip</b> to your PC, for example into <b>Documents</b>.</li>
+<li>Right-click the zip → <b>Extract All…</b> → <b>Extract</b>.</li>
+<li>You now have a folder <b>writer</b> with these folders inside: <b>app</b>, <b>core</b>, <b>google-docs</b>, <b>guides</b>, <b>tests</b>.</li>
+<li><b>Important:</b> keep this structure. The app (<i>app/index.html</i>) needs the file <i>core/writer-core.js</i> next to it. Do not move index.html out of the folder on its own.</li>
+<li>Tip: right-click <b>app/start-writer.bat</b> → <b>Show more options → Send to → Desktop (create shortcut)</b>. Now you can start the app from your desktop.</li>
+</ol>
+
+<h2>4. Step 2 – Quick start with free cloud AI</h2>
+<h3>2a – Get a free Gemini key</h3>
+<ol>
+<li>Open <b>https://aistudio.google.com</b> and sign in with your Google account.</li>
+<li>Click <b>Get API key → Create API key</b>.</li>
+<li>Copy the key (it usually starts with <b>AIza…</b>). Keep it private.</li>
+</ol>
+<h3>2b – Connect the app</h3>
+<ol>
+<li>Double-click <b>app/start-writer.bat</b> (or open <b>app/index.html</b> in Chrome or Edge).</li>
+<li>Click <b>Settings</b> (top right).</li>
+<li>Under <b>Engine</b>, choose <b>Cloud: Google Gemini</b>.</li>
+<li>Paste your key into <b>Gemini key</b>.</li>
+<li>Click <b>Find models</b> and choose a "flash" model (for example gemini-2.5-flash).</li>
+<li>Click <b>Save</b>. The status at the top right turns green: <b>"Cloud · gemini-…"</b>.</li>
+</ol>
+<p>You are ready. Paste text on the left and press <b>Ctrl+Enter</b>.</p>
+<p><b>Privacy note:</b> On the free tier, Google may use your text to improve its products. For private documents, use Claude or the offline engine.</p>
+
+<h3>2c – Later: Claude (paid, best quality)</h3>
+<ol>
+<li>Open <b>https://console.anthropic.com</b>, create an account, add credit under <b>Billing</b> (for example $5), and set a monthly spending limit.</li>
+<li><b>API Keys → Create Key</b>, copy the key (starts with <b>sk-ant-</b>).</li>
+<li>In the app: <b>Settings → Engine → Cloud: Claude</b>, paste the key, choose the model (Opus 5.5 best, Sonnet 5.5 cheaper, Haiku 5.5 cheapest), <b>Save</b>.</li>
+</ol>
+
+<h2>5. Step 3 – Free up disk space (for offline use)</h2>
+<p>Your C: drive shows <b>473 of 477 GB used</b> – only about 4 GB free. The offline setup needs <b>at least 8 GB</b> (Ollama about 2 GB + the AI model about 3.3 GB + room to work). About <b>20 GB free</b> is comfortable, and Windows also runs better with more free space.</p>
+<h3>Where to find space</h3>
+<ol>
+<li><b>Storage overview:</b> Start → <b>Settings → System → Storage</b>. Windows shows what uses the most space.</li>
+<li><b>Temporary files:</b> in Storage, click <b>Temporary files</b>, tick the items (not "Downloads" unless you checked it), click <b>Remove files</b>.</li>
+<li><b>Cleanup recommendations:</b> in Storage, click <b>Cleanup recommendations</b> – large files, unused apps, files synced to the cloud.</li>
+<li><b>Downloads folder:</b> open it, sort by <b>Size</b>, delete what you no longer need (old installers, videos, zips).</li>
+<li><b>Recycle Bin:</b> right-click → <b>Empty Recycle Bin</b>.</li>
+<li><b>Apps:</b> Settings → <b>Apps → Installed apps</b>, sort by size, uninstall what you do not use (games, old programs).</li>
+<li><b>Videos and photos:</b> move them to an external drive or Google Drive (then delete them from the PC).</li>
+<li><b>Camtasia / video projects:</b> old project and recording files can be very large – archive them to an external drive.</li>
+</ol>
+<p><b>Alternative:</b> keep the AI models on an external drive (see Section 15, "Move the models").</p>
+
+<h2>6. Step 4 – Set up offline AI with Ollama</h2>
+<p><b>Ollama</b> is a free program that runs AI models on your own PC. Nothing you write leaves your computer.</p>
+<h3>4a – Run the setup file</h3>
+<ol>
+<li>Open the folder <b>writer/app</b>.</li>
+<li>Double-click <b>setup-windows.bat</b>. A black window opens.</li>
+<li>It checks your free disk space. If there are less than 8 GB, it stops and tells you – free up more space first (Step 3).</li>
+<li>If Ollama is not installed, it opens the download page <b>https://ollama.com/download</b>. Download <b>Ollama for Windows</b>, install it (Next → Install), then double-click <b>setup-windows.bat</b> again.</li>
+<li>The setup allows the app to talk to Ollama, then downloads the model <b>gemma3:4b</b> (about 3.3 GB). This can take 5–30 minutes depending on your internet.</li>
+<li>When it says <b>"Almost done!"</b>, press any key to close the window.</li>
+</ol>
+<h3>4b – Restart Ollama (required once)</h3>
+<ol>
+<li>Look at the bottom right of the screen, near the clock. Click the small arrow <b>^</b> if needed.</li>
+<li>Right-click the <b>llama icon</b> → <b>Quit Ollama</b>.</li>
+<li>Open the Start menu, type <b>Ollama</b>, and start it again.</li>
+</ol>
+<h3>4c – Switch the app to offline</h3>
+<ol>
+<li>Start the app (<b>start-writer.bat</b>).</li>
+<li><b>Settings → Engine → Offline: Ollama on this PC</b>.</li>
+<li><b>Offline model:</b> choose <b>gemma3:4b</b> (click <b>Refresh</b> if the list is empty).</li>
+<li><b>Save</b>. The status at the top right shows a green dot: <b>"Offline · gemma3:4b"</b>.</li>
+</ol>
+<p><b>Speed:</b> your PC runs the model on the processor (the MX450 graphics card is too small to help much). Expect about 10–30 seconds per paragraph. The first request after starting can take longer, because the model is loaded into memory. The text appears word by word while it is written – you can click <b>Stop</b> at any time.</p>
+<h3>Better quality (optional, slower)</h3>
+<p>With 32 GB RAM you can also run a bigger model. Open the Start menu, type <b>cmd</b>, open <b>Command Prompt</b>, and type:</p>
+<p><code>ollama pull gemma3:12b</code></p>
+<p>It needs about 8 GB more disk space and is about 3 times slower. Choose it in <b>Settings → Offline model</b>. You can switch between the models at any time: 4b for quick work, 12b for important texts.</p>
+
+<h2>7. Step 5 (optional) – Offline grammar with LanguageTool</h2>
+<p><b>LanguageTool</b> is a dedicated grammar checker for English and German. It is very fast and fully offline. Its explanations are not adapted to your level (the AI checker does that).</p>
+<ol>
+<li>Install <b>Java</b> (version 17 or newer) from <b>https://adoptium.net</b> (choose "Temurin", Windows, .msi installer).</li>
+<li>Download <b>https://languagetool.org/download/LanguageTool-stable.zip</b> (about 250 MB).</li>
+<li>Unzip it <b>into the folder writer/app</b>. You get a folder like <b>LanguageTool-6.x</b> inside <i>app</i>.</li>
+<li>Double-click <b>start-languagetool.bat</b>. A window opens and says it is starting on port 8081. <b>Keep this window open</b> while you work; close it to stop LanguageTool.</li>
+<li>In the app: <b>Settings → Checker → LanguageTool on this PC</b> → <b>Save</b>.</li>
+</ol>
+<p>Without installing anything, you can also choose <b>LanguageTool online</b> (free, but the text is sent to languagetool.org).</p>
+
+<h2>8. The screen explained</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><th>Part</th><th>What it is</th></tr>
+<tr><td><b>Status pill</b> (top right)</td><td>Shows the active engine. Green dot = ready. Red dot = something is missing (no key, Ollama not running, model not installed).</td></tr>
+<tr><td><b>History / Settings</b></td><td>Your last results, and all options.</td></tr>
+<tr><td><b>Tabs</b>: Paraphrase · Humanise · Grammar check</td><td>Choose the tool.</td></tr>
+<tr><td><b>Style</b></td><td>Only for Paraphrase: the 8 styles.</td></tr>
+<tr><td><b>Level</b></td><td>Keep · A1 · A2 · B1 · B2 · C1 · C2.</td></tr>
+<tr><td><b>Output</b> (Text in Grammar mode)</td><td>Same / English / Deutsch. In Grammar mode: Auto / English / Deutsch (the language of your text).</td></tr>
+<tr><td><b>Change</b> slider</td><td>Light · Medium · Strong – how much the wording may change.</td></tr>
+<tr><td><b>My voice</b> switch</td><td>On = write in your personal style.</td></tr>
+<tr><td><b>Your text</b> (left)</td><td>Type or paste here. <b>Paste</b> and <b>Clear</b> buttons at the top. Word count at the bottom. Your text is kept if you close the app.</td></tr>
+<tr><td><b>Rephrase / Humanise / Check</b> button</td><td>Starts the tool (or press <b>Ctrl+Enter</b>). <b>Stop</b> appears while it is working.</td></tr>
+<tr><td><b>Result</b> (right)</td><td>The new text. Yellow = changed words (switch off with <b>Show changes</b>). In Grammar mode: red underlines and a list of corrections.</td></tr>
+<tr><td><b>Use as input</b></td><td>Moves the result to the left side, so you can run another tool on it.</td></tr>
+<tr><td><b>Copy</b></td><td>Copies the result. Paste it anywhere with Ctrl+V.</td></tr>
+</table>
+
+<h2>9. How to use each tool</h2>
+<h3>Paraphrase</h3>
+<ol>
+<li>Paste your text on the left.</li>
+<li>Click the <b>Paraphrase</b> tab, choose a <b>Style</b>, a <b>Level</b>, the <b>Output</b> language and the <b>Change</b> amount. Switch on <b>My voice</b> if you want it to sound like you.</li>
+<li>Press <b>Ctrl+Enter</b> (or click <b>Rephrase</b>).</li>
+<li>Read the result. Not happy? Change an option and run again, or click <b>Use as input</b> and run another style on top.</li>
+<li>Click <b>Copy</b> and paste the result where you need it.</li>
+</ol>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><th>Style</th><th>Best for</th></tr>
+<tr><td>Standard</td><td>Same message in fresh words.</td></tr>
+<tr><td>Fluency</td><td>Fix awkward or spoken-style sentences with minimal changes.</td></tr>
+<tr><td>Formal / Business</td><td>Emails to companies, offices, customers, applications.</td></tr>
+<tr><td>Friendly</td><td>Warm messages to colleagues and friends.</td></tr>
+<tr><td>Simple</td><td>Easy-to-understand text, short sentences.</td></tr>
+<tr><td>Academic</td><td>Reports, essays, research.</td></tr>
+<tr><td>Shorter</td><td>About 30–50% shorter, same points.</td></tr>
+<tr><td>Longer</td><td>Fuller explanation of the same points (no new facts).</td></tr>
+</table>
+
+<h3>Humanise</h3>
+<p>Use it when text sounds stiff or "too perfect". It mixes short and long sentences, uses natural words and contractions, and removes stock phrases like "I hope this message finds you well". It keeps every fact, name and number. Best together with <b>My voice</b>.</p>
+<p><b>Honest note:</b> no tool can guarantee that "AI detectors" will not flag a text; detectors are unreliable.</p>
+
+<h3>Grammar check</h3>
+<ol>
+<li>Click the <b>Grammar check</b> tab. Choose the <b>Text</b> language (Auto, English, Deutsch) and the <b>Level</b> for the explanations.</li>
+<li>Press <b>Ctrl+Enter</b> (or click <b>Check</b>).</li>
+<li>Errors are underlined in red. Click an underline to jump to its card in the list below.</li>
+<li>Each card shows the error (crossed out), the correction (green) and an explanation. Click <b>Apply</b> to fix it, or <b>Ignore</b> to keep it.</li>
+<li><b>Apply all</b> fixes everything at once. Fixed parts turn green.</li>
+<li>Click <b>Copy</b> to copy the corrected text.</li>
+</ol>
+
+<h3>Translate while rewriting</h3>
+<p>Set <b>Output</b> to <b>English</b> or <b>Deutsch</b>. Example: a rough English note → Paraphrase · Formal · Output Deutsch · B2 → a clean, formal German email. (Change highlighting is switched off when the language changes, because every word is new.)</p>
+
+<h3>Language levels</h3>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><th>Level</th><th>Result</th></tr>
+<tr><td>A1</td><td>Very short sentences, very common words. German: main clauses, Präsens, no Genitiv/Konjunktiv/Passiv.</td></tr>
+<tr><td>A2</td><td>Short clear sentences, everyday words. German: simple weil/dass/wenn clauses, Perfekt.</td></tr>
+<tr><td>B1</td><td>Clear and straightforward, some linking words. German: subordinate clauses, simple Konjunktiv II.</td></tr>
+<tr><td>B2</td><td>Natural and fluent, wider vocabulary. German: Passiv, Konjunktiv II.</td></tr>
+<tr><td>C1</td><td>Precise and well-structured, complex sentences. German: Nominalstil, Konjunktiv I.</td></tr>
+<tr><td>C2</td><td>Near-native and refined.</td></tr>
+<tr><td>Keep</td><td>Same level as your original.</td></tr>
+</table>
+
+<h2>10. Settings explained</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><th>Setting</th><th>Meaning</th></tr>
+<tr><td><b>Engine</b></td><td>Offline (Ollama), Cloud: Google Gemini, or Cloud: Claude.</td></tr>
+<tr><td><b>Offline model / Refresh</b></td><td>Models installed in Ollama. Refresh reloads the list.</td></tr>
+<tr><td><b>Ollama address</b></td><td>Normally http://localhost:11434 – do not change it unless you know why.</td></tr>
+<tr><td><b>Gemini key / Gemini model / Find models</b></td><td>Your free key, and the model. Find models asks Google which models your key may use.</td></tr>
+<tr><td><b>Claude API key / Claude model</b></td><td>Your paid key, and Opus 5.5 / Sonnet 5.5 / Haiku 5.5.</td></tr>
+<tr><td><b>Checker</b></td><td>Grammar engine: the AI engine (explains at your level), LanguageTool on this PC (offline), or LanguageTool online.</td></tr>
+<tr><td><b>LanguageTool address</b></td><td>Normally http://localhost:8081.</td></tr>
+<tr><td><b>Explanations in</b></td><td>English or Deutsch.</td></tr>
+<tr><td><b>English spelling</b></td><td>American (color) or British (colour).</td></tr>
+<tr><td><b>How I write</b></td><td>Your voice profile for "My voice".</td></tr>
+<tr><td><b>Samples of my real writing</b></td><td>3–6 real texts of yours (English and German). Lines starting with # are notes and are not sent.</td></tr>
+<tr><td><b>Reset voice to default</b></td><td>Brings back the original voice profile and samples.</td></tr>
+<tr><td><b>Switch light/dark</b></td><td>Changes the colour theme.</td></tr>
+</table>
+<p>All settings and keys are stored in <b>this browser on this PC only</b>. If you open the app in a different browser, you need to enter them again.</p>
+
+<h2>11. History, shortcuts and handy buttons</h2>
+<ul>
+<li><b>Ctrl+Enter</b> – run the current tool.</li>
+<li><b>History</b> – shows your last 30 results with date and options. Click one to load it back. <b>Clear history</b> deletes them.</li>
+<li><b>Use as input</b> – chain tools, for example Grammar → Apply all → Use as input → Humanise with My voice.</li>
+<li><b>Stop</b> – cancels a slow offline run.</li>
+<li>Your draft on the left is saved automatically; it is still there after you close and reopen the app.</li>
+</ul>
+
+<h2>12. Tips for the best results</h2>
+<ul>
+<li>Work on <b>a few paragraphs at a time</b>, especially offline. It is faster and better.</li>
+<li>For rough voice-note style drafts: <b>Paraphrase · Fluency · Light</b> first, then <b>Humanise + My voice</b>.</li>
+<li>For applications and official letters: <b>Paraphrase · Formal · B2 or C1 · My voice</b>, then a final <b>Grammar check</b>.</li>
+<li>For German learners or simple messages: choose <b>A2 or B1</b>.</li>
+<li>Add <b>real German samples</b> to My voice – it then sounds like you in German too.</li>
+<li>Always read the result before you send it. The AI keeps facts and numbers, but you are the final check.</li>
+</ul>
+
+<h2>13. Troubleshooting</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><th>Problem / message</th><th>What to do</th></tr>
+<tr><td>"Could not load core/writer-core.js"</td><td>The folder structure was changed. Keep <i>writer/app/index.html</i> and <i>writer/core/writer-core.js</i> in their folders (unzip again if needed).</td></tr>
+<tr><td>Status: "Offline · Ollama not running"</td><td>Start Ollama from the Start menu. Check for the llama icon near the clock.</td></tr>
+<tr><td>"Cannot reach Ollama" although it is running</td><td>Run <b>setup-windows.bat</b> once, then <b>quit and restart Ollama</b> (Step 4b). This allows the app to connect.</td></tr>
+<tr><td>Status: "not installed" / "The model … is not installed"</td><td>Open Command Prompt and run <code>ollama pull gemma3:4b</code>, or choose an installed model in Settings.</td></tr>
+<tr><td>Offline is very slow</td><td>Normal on a laptop without a strong graphics card. Use shorter texts, the 4b model, close other heavy programs, or use Gemini for long texts.</td></tr>
+<tr><td>setup-windows.bat says "not enough space"</td><td>Free up space (Step 3). You need at least 8 GB.</td></tr>
+<tr><td>"Add your free Gemini key in Settings first"</td><td>Settings → Engine: Gemini → paste key → Save.</td></tr>
+<tr><td>"Your Gemini key was rejected" / "model not available"</td><td>Copy the key again from AI Studio. Click Find models and choose another model.</td></tr>
+<tr><td>"You reached the Gemini free limit"</td><td>Wait a few minutes or until tomorrow, use a lighter model, or switch to offline.</td></tr>
+<tr><td>"Your Claude API key was rejected" / "no credit left"</td><td>Check the key or add credit at console.anthropic.com.</td></tr>
+<tr><td>"The AI declined to work on this text"</td><td>Rephrase the text slightly, or use another engine.</td></tr>
+<tr><td>"Cannot reach LanguageTool"</td><td>Start <b>start-languagetool.bat</b> and keep its window open, or choose LanguageTool online / AI in Settings.</td></tr>
+<tr><td>"Java is not installed"</td><td>Install Java 17+ from adoptium.net, then start LanguageTool again.</td></tr>
+<tr><td>The Paste button does not work</td><td>Click in the left box and press <b>Ctrl+V</b>.</td></tr>
+<tr><td>Settings or history are gone</td><td>They are stored in the browser. Clearing browser data or using another browser starts fresh.</td></tr>
+<tr><td>The result has an extra line like "Here is the text:"</td><td>Small offline models sometimes add it; the app removes most of these. Delete it by hand or run again.</td></tr>
+</table>
+
+<h2>14. Privacy, security and costs</h2>
+<ul>
+<li><b>Offline (Ollama) and LanguageTool on this PC:</b> free; your text never leaves your computer.</li>
+<li><b>Gemini free tier:</b> free; text goes to Google and may be used to improve its products.</li>
+<li><b>Claude:</b> paid per use (about 1–2 cents per paragraph with Opus 5.5, less with Sonnet or Haiku); text goes to Anthropic to be processed. Set a monthly spending limit in the console.</li>
+<li><b>LanguageTool online:</b> free; text goes to languagetool.org.</li>
+<li><b>Your keys</b> are stored only in this browser on your PC.</li>
+<li><b>About the setup setting:</b> setup-windows.bat sets <code>OLLAMA_ORIGINS=*</code> so the app (opened as a local file) can talk to Ollama. While Ollama runs, web pages in your browser could also send requests to it – they can use your model, but they cannot read your files. To undo it, open Command Prompt, run <code>setx OLLAMA_ORIGINS ""</code>, and restart Ollama.</li>
+</ul>
+
+<h2>15. Updating, moving and uninstalling</h2>
+<h3>Update the app</h3>
+<p>Unzip the new version over the old folder (replace files). Your settings, keys and history stay, because they are stored in the browser – as long as the folder path stays the same.</p>
+<h3>Move the models to another drive</h3>
+<ol>
+<li>Quit Ollama.</li>
+<li>Open Command Prompt and run (example for drive D): <code>setx OLLAMA_MODELS "D:\ollama-models"</code></li>
+<li>Start Ollama again and download the model again: <code>ollama pull gemma3:4b</code></li>
+<li>Delete the old models folder: <i>C:\Users\(your name)\.ollama\models</i></li>
+</ol>
+<h3>Remove a model</h3>
+<p><code>ollama rm gemma3:12b</code> (frees its disk space).</p>
+<h3>Uninstall everything</h3>
+<ul>
+<li>Ollama: Settings → Apps → Installed apps → Ollama → Uninstall.</li>
+<li>Delete the <b>writer</b> folder.</li>
+<li>Optional: <code>setx OLLAMA_ORIGINS ""</code></li>
+</ul>
+
+<h2>Quick reference card</h2>
+<table border="1" cellpadding="6" cellspacing="0">
+<tr><td><b>Start</b></td><td>Double-click writer/app/start-writer.bat</td></tr>
+<tr><td><b>Run</b></td><td>Paste text → choose tab + options → Ctrl+Enter</td></tr>
+<tr><td><b>Free cloud AI</b></td><td>Settings → Engine: Gemini → key → Find models → Save</td></tr>
+<tr><td><b>Offline</b></td><td>setup-windows.bat → restart Ollama → Settings → Engine: Offline</td></tr>
+<tr><td><b>Grammar</b></td><td>Grammar check tab → Check → Apply / Apply all → Copy</td></tr>
+<tr><td><b>Your style</b></td><td>My voice switch · Settings → My voice</td></tr>
+<tr><td><b>Translate</b></td><td>Output → English / Deutsch</td></tr>
+<tr><td><b>Chain tools</b></td><td>Use as input</td></tr>
+<tr><td><b>Bigger model</b></td><td>ollama pull gemma3:12b</td></tr>
+</table>
+
+</body>
+</html>

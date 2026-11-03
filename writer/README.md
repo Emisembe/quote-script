@@ -140,6 +140,7 @@ writer/
   google-docs/Code.gs     add-on server code (Docs selection, Gemini, Claude, LanguageTool)
   google-docs/Sidebar.html  add-on sidebar UI
   google-docs/appsscript.json  add-on manifest (permissions)
+  guides/                 detailed step-by-step guides (open in a browser, or see the Google Docs copies)
   tests/core.test.js      unit tests:  node --test writer/tests/core.test.js
 ```
 
