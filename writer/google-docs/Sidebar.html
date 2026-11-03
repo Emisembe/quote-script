@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<style>
+  :root { --ink:#1f2328; --muted:#646a73; --line:#e3e1da; --bg:#f6f5f1; --accent:#1d5c63; --chg:#fff1b8;
+          --err:#c0392b; --err-soft:#fde8e6; --ok:#237a3b; --ok-soft:#e3f4e7; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; padding: 10px 12px 16px; font: 13px/1.45 Roboto, Arial, sans-serif; color: var(--ink); background: #fff; }
+  button, select, input, textarea { font: inherit; color: inherit; }
+  .tabs { display: flex; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+  .tab { flex: 1; border: 0; background: none; padding: 7px 2px; font-weight: 700; color: var(--muted); border-bottom: 3px solid transparent; cursor: pointer; }
+  .tab.on { color: var(--accent); border-bottom-color: var(--accent); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; margin-bottom: 8px; }
+  .grid label { display: flex; flex-direction: column; font-size: 11px; color: var(--muted); gap: 2px; }
+  select, input[type=text], input[type=password], textarea { width: 100%; padding: 5px 6px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+  textarea { resize: vertical; }
+  #text { min-height: 110px; }
+  .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 6px 0; }
+  .btn { border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+  .btn:hover { border-color: var(--accent); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; flex: 1; }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .muted { color: var(--muted); font-size: 12px; }
+  .spacer { flex: 1; }
+  #out { border: 1px solid var(--line); border-radius: 8px; padding: 8px; min-height: 60px; white-space: pre-wrap; background: var(--bg); }
+  #out .chg { background: var(--chg); border-radius: 2px; }
+  #out mark { background: var(--err-soft); border-bottom: 2px solid var(--err); color: inherit; }
+  #out .fixed { background: var(--ok-soft); border-bottom: 2px solid var(--ok); }
+  .issue { border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; margin: 6px 0; }
+  .tag { font-size: 10px; text-transform: uppercase; font-weight: 700; color: var(--accent); }
+  .from { text-decoration: line-through; color: var(--err); }
+  .to { color: var(--ok); font-weight: 700; }
+  .issue p { margin: 3px 0 5px; color: var(--muted); }
+  .error { background: var(--err-soft); color: var(--err); padding: 8px; border-radius: 8px; white-space: pre-wrap; margin: 6px 0; }
+  h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .5px; color: var(--accent); margin: 14px 0 6px; }
+  .field { margin: 6px 0; }
+  .field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+  .spin { width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; display: inline-block; animation: s .8s linear infinite; vertical-align: -2px; }
+  @keyframes s { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div id="main">
+  <div class="tabs">
+    <button class="tab" data-mode="paraphrase">Paraphrase</button>
+    <button class="tab" data-mode="humanise">Humanise</button>
+    <button class="tab" data-mode="grammar">Grammar</button>
+  </div>
+
+  <div class="grid">
+    <label id="styleBox">Style <select id="style"></select></label>
+    <label>Level
+      <select id="level">
+        <option value="auto">Keep my level</option>
+        <option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option>
+      </select>
+    </label>
+    <label><span id="langLabel">Output</span>
+      <select id="outLang"><option value="same">Same language</option><option value="en">English</option><option value="de">Deutsch</option></select>
+    </label>
+    <label id="strengthBox">Change
+      <select id="strength"><option value="1">Light</option><option value="2">Medium</option><option value="3">Strong</option></select>
+    </label>
+  </div>
+  <label class="row" id="voiceBox" style="cursor:pointer"><input type="checkbox" id="voice"> <b>My voice</b> <span class="muted">(Settings → My voice)</span></label>
+
+  <div class="row">
+    <button class="btn" id="getSel">↓ Get selected text</button>
+    <span class="spacer"></span>
+    <span class="muted" id="count"></span>
+  </div>
+  <textarea id="text" placeholder="Select text in your document and click “Get selected text”, or type here."></textarea>
+  <div class="row"><button class="btn primary" id="run">Rephrase</button></div>
+
+  <div id="errBox" class="error" hidden></div>
+  <div id="resultBox" hidden>
+    <div class="row"><b id="resTitle">Result</b><span class="spacer"></span><button class="btn" id="applyAll" hidden>Apply all</button></div>
+    <div id="out"></div>
+    <div id="issues"></div>
+    <div class="row">
+      <button class="btn" id="replace">Replace selection</button>
+      <button class="btn" id="insert">Insert below</button>
+      <button class="btn" id="copy">Copy</button>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:14px"><button class="btn" id="openSettings">⚙ Settings</button><span class="spacer"></span><span class="muted" id="engineNote"></span></div>
+</div>
+
+<div id="settings" hidden>
+  <div class="row"><b>Settings</b><span class="spacer"></span><button class="btn" id="closeSettings">Back</button></div>
+  <h3>Claude</h3>
+  <div class="field"><label>API key <span id="keyState"></span></label><input type="password" id="apiKey" placeholder="sk-ant-… (leave empty to keep current)"></div>
+  <div class="field"><label>Model</label>
+    <select id="model">
+      <option value="claude-opus-5-5">Claude Opus 5.5 (best quality)</option>
+      <option value="claude-sonnet-5-5">Claude Sonnet 5.5 (cheaper)</option>
+      <option value="claude-haiku-5-5">Claude Haiku 5.5 (cheapest)</option>
+    </select>
+  </div>
+  <h3>Grammar</h3>
+  <div class="field"><label>Checker</label>
+    <select id="grammarEngine">
+      <option value="ai">Claude (explains at your level)</option>
+      <option value="languagetool">LanguageTool online (free)</option>
+    </select>
+  </div>
+  <div class="field"><label>Explanations in</label><select id="explainLang"><option value="en">English</option><option value="de">Deutsch</option></select></div>
+  <div class="field"><label>English spelling</label><select id="enVariant"><option value="en-US">American</option><option value="en-GB">British</option></select></div>
+  <h3>My voice</h3>
+  <div class="field"><label>How I write</label><textarea id="voiceProfile" rows="10"></textarea></div>
+  <div class="field"><label>Samples of my writing (lines starting with # are not sent)</label><textarea id="voiceSamples" rows="8"></textarea></div>
+  <div class="row"><button class="btn primary" id="saveSettings">Save</button></div>
+  <p class="muted">Settings and your key are saved to your own Google account only.</p>
+</div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var state = { mode: 'paraphrase', style: 'standard', level: 'auto', outLang: 'same', strength: '2', voice: false };
+  try { Object.assign(state, JSON.parse(localStorage.getItem('ew.sidebar') || '{}')); } catch (e) {}
+  function persist() { try { localStorage.setItem('ew.sidebar', JSON.stringify(state)); } catch (e) {} }
+  var settings = null, last = null, grammar = null;
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function words(s) { var m = String(s).trim().match(/\S+/g); return m ? m.length : 0; }
+  function busy(btn, on, label) { btn.disabled = on; btn.innerHTML = on ? '<span class="spin"></span> ' + label : label; }
+  function showErr(e) { $('errBox').textContent = (e && e.message) || String(e); $('errBox').hidden = false; }
+  function call(fn, args, ok) {
+    $('errBox').hidden = true;
+    var r = google.script.run.withSuccessHandler(ok).withFailureHandler(function (e) { showErr(e); restore(); });
+    r[fn].apply(r, args || []);
+  }
+  function restore() { busy($('run'), false, runLabel()); busy($('getSel'), false, '↓ Get selected text'); }
+  function runLabel() { return state.mode === 'grammar' ? 'Check grammar' : state.mode === 'humanise' ? 'Humanise' : 'Rephrase'; }
+
+  function sync() {
+    document.querySelectorAll('.tab').forEach(function (t) { t.classList.toggle('on', t.dataset.mode === state.mode); });
+    var g = state.mode === 'grammar';
+    $('styleBox').hidden = state.mode !== 'paraphrase';
+    $('strengthBox').hidden = g; $('voiceBox').hidden = g;
+    $('langLabel').textContent = g ? 'Text language' : 'Output';
+    $('outLang').options[0].textContent = g ? 'Auto-detect' : 'Same language';
+    ['style', 'level', 'outLang', 'strength'].forEach(function (k) { $(k).value = state[k]; });
+    $('voice').checked = !!state.voice;
+    $('run').textContent = runLabel();
+    $('resTitle').textContent = g ? 'Corrections' : 'Result';
+  }
+  document.querySelectorAll('.tab').forEach(function (t) {
+    t.onclick = function () { state.mode = t.dataset.mode; persist(); sync(); $('resultBox').hidden = true; };
+  });
+  ['style', 'level', 'outLang', 'strength'].forEach(function (k) { $(k).onchange = function () { state[k] = this.value; persist(); }; });
+  $('voice').onchange = function () { state.voice = this.checked; persist(); };
+  $('text').oninput = function () { $('count').textContent = words(this.value) + ' words'; };
+
+  $('getSel').onclick = function () {
+    busy($('getSel'), true, 'Reading…');
+    call('getSelectionText', [], function (r) {
+      restore();
+      if (!r.text) { showErr('Nothing selected. Highlight some text in your document first.'); return; }
+      $('text').value = r.text; $('text').oninput.call($('text'));
+    });
+  };
+
+  $('run').onclick = function () {
+    var text = $('text').value;
+    if (!text.trim()) { $('getSel').onclick(); return; }
+    busy($('run'), true, 'Working…');
+    call('runTool', [{ mode: state.mode, style: state.style, strength: state.strength, level: state.level, outLang: state.outLang, voice: state.voice, text: text }], function (r) {
+      restore(); $('resultBox').hidden = false;
+      if (r.kind === 'grammar') { last = null; grammar = { text: r.text, issues: r.issues }; renderGrammar(); }
+      else { grammar = null; last = r.output; renderRewrite(r.segments); }
+    });
+  };
+
+  function renderRewrite(segs) {
+    $('out').innerHTML = segs.map(function (s) { return s.changed ? '<span class="chg">' + esc(s.text) + '</span>' : esc(s.text); }).join('');
+    $('issues').innerHTML = ''; $('applyAll').hidden = true;
+  }
+
+  // Same logic as WriterCore.applyIssue, done here so clicks are instant.
+  function applyIssue(i) {
+    var it = grammar.issues[i];
+    if (!it || it.offset < 0 || it.applied) return;
+    grammar.text = grammar.text.slice(0, it.offset) + it.replacement + grammar.text.slice(it.offset + it.length);
+    var delta = it.replacement.length - it.length;
+    grammar.issues.forEach(function (x, j) { if (j !== i && x.offset > it.offset) x.offset += delta; });
+    it.applied = true; it.length = it.replacement.length;
+  }
+
+  function renderGrammar() {
+    var g = grammar, html = '', pos = 0;
+    g.issues.map(function (it, i) { return { it: it, i: i }; })
+      .filter(function (x) { return x.it.offset >= 0 && !x.it.ignored; })
+      .sort(function (a, b) { return a.it.offset - b.it.offset; })
+      .forEach(function (x) {
+        if (x.it.offset < pos) return;
+        html += esc(g.text.slice(pos, x.it.offset));
+        var seg = esc(g.text.substr(x.it.offset, x.it.length));
+        html += x.it.applied ? '<span class="fixed">' + seg + '</span>' : '<mark title="' + esc(x.it.explanation) + '">' + seg + '</mark>';
+        pos = x.it.offset + x.it.length;
+      });
+    $('out').innerHTML = html + esc(g.text.slice(pos));
+    var open = 0;
+    $('issues').innerHTML = g.issues.map(function (it, i) {
+      if (it.applied || it.ignored) return '';
+      open++;
+      return '<div class="issue"><span class="tag">' + esc(it.type) + '</span><br><span class="from">' + esc(it.original) + '</span> → <span class="to">' +
+        esc(it.replacement || '(remove)') + '</span>' + (it.explanation ? '<p>' + esc(it.explanation) + '</p>' : '') +
+        (it.offset >= 0 ? '<button class="btn" data-a="' + i + '">Apply</button> ' : '<span class="muted">Fix by hand. </span>') +
+        '<button class="btn" data-x="' + i + '">Ignore</button></div>';
+    }).join('') || '<p class="muted">' + (g.issues.length ? 'All done.' : 'No errors found. 👍') + '</p>';
+    $('applyAll').hidden = !open;
+  }
+  $('issues').onclick = function (e) {
+    var a = e.target.getAttribute('data-a'), x = e.target.getAttribute('data-x');
+    if (a !== null) { applyIssue(Number(a)); renderGrammar(); }
+    if (x !== null) { grammar.issues[Number(x)].ignored = true; renderGrammar(); }
+  };
+  $('applyAll').onclick = function () {
+    for (var i = grammar.issues.length - 1; i >= 0; i--) if (!grammar.issues[i].ignored) applyIssue(i);
+    renderGrammar();
+  };
+
+  function output() { return grammar ? grammar.text : last; }
+  $('replace').onclick = function () {
+    var t = output(); if (!t) return;
+    call('replaceSelection', [t], function () { $('text').value = t; $('text').oninput.call($('text')); });
+  };
+  $('insert').onclick = function () { var t = output(); if (t) call('insertBelow', [t], function () {}); };
+  $('copy').onclick = function () {
+    var ta = document.createElement('textarea'); ta.value = output() || ''; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); ta.remove(); $('copy').textContent = 'Copied ✓'; setTimeout(function () { $('copy').textContent = 'Copy'; }, 1300);
+  };
+
+  // ---------------------------------------------------------------- settings
+  function fillSettings(s) {
+    settings = s;
+    if (!$('style').options.length) {
+      s.styles.forEach(function (o) { var el = document.createElement('option'); el.value = o.value; el.textContent = o.label; $('style').appendChild(el); });
+      sync();
+    }
+    $('keyState').textContent = s.hasKey ? '(saved ✓)' : '(not set)';
+    ['model', 'grammarEngine', 'explainLang', 'enVariant', 'voiceProfile', 'voiceSamples'].forEach(function (k) { $(k).value = s[k]; });
+    var names = { 'claude-opus-5-5': 'Opus 5.5', 'claude-sonnet-5-5': 'Sonnet 5.5', 'claude-haiku-5-5': 'Haiku 5.5' };
+    $('engineNote').textContent = s.hasKey ? 'Claude ' + names[s.model] : 'Add your API key';
+  }
+  $('openSettings').onclick = function () { $('main').hidden = true; $('settings').hidden = false; };
+  $('closeSettings').onclick = function () { $('settings').hidden = true; $('main').hidden = false; };
+  $('saveSettings').onclick = function () {
+    var s = { apiKey: $('apiKey').value };
+    ['model', 'grammarEngine', 'explainLang', 'enVariant', 'voiceProfile', 'voiceSamples'].forEach(function (k) { s[k] = $(k).value; });
+    busy($('saveSettings'), true, 'Saving…');
+    google.script.run.withSuccessHandler(function (r) {
+      busy($('saveSettings'), false, 'Save'); $('apiKey').value = ''; fillSettings(r); $('closeSettings').onclick();
+    }).withFailureHandler(function (e) { busy($('saveSettings'), false, 'Save'); alert(e.message); }).saveSettings(s);
+  };
+
+  sync();
+  google.script.run.withSuccessHandler(fillSettings).withFailureHandler(showErr).getSettings();
+  google.script.run.withSuccessHandler(function (r) { if (r.text) { $('text').value = r.text; $('text').oninput.call($('text')); } }).getSelectionText();
+})();
+</script>
+</body>
+</html>

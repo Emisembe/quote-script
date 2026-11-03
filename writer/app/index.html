@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emisembe Writer</title>
+<style>
+  :root {
+    --bg: #f6f5f1;
+    --panel: #ffffff;
+    --ink: #1f2328;
+    --muted: #646a73;
+    --line: #e3e1da;
+    --accent: #1d5c63;
+    --accent-ink: #ffffff;
+    --accent-soft: #e2efee;
+    --chg: #fff1b8;
+    --chg-ink: #6b4e00;
+    --err: #c0392b;
+    --err-soft: #fde8e6;
+    --ok: #237a3b;
+    --ok-soft: #e3f4e7;
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.05);
+    --radius: 12px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15181b; --panel: #1d2125; --ink: #e8e9ea; --muted: #9aa1a9; --line: #30363c;
+      --accent: #5fb3ad; --accent-ink: #0d1b1c; --accent-soft: #1f3534;
+      --chg: #4a3d0f; --chg-ink: #ffe39a; --err: #ff7b6b; --err-soft: #3a2220; --ok: #6fd08a; --ok-soft: #1d3324;
+      --shadow: none; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15181b; --panel: #1d2125; --ink: #e8e9ea; --muted: #9aa1a9; --line: #30363c;
+    --accent: #5fb3ad; --accent-ink: #0d1b1c; --accent-soft: #1f3534;
+    --chg: #4a3d0f; --chg-ink: #ffe39a; --err: #ff7b6b; --err-soft: #3a2220; --ok: #6fd08a; --ok-soft: #1d3324;
+    --shadow: none; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 15px/1.5 "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    display: flex; flex-direction: column;
+  }
+  button, select, input, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  header {
+    display: flex; align-items: center; gap: 12px; padding: 10px 20px;
+    border-bottom: 1px solid var(--line); background: var(--panel);
+  }
+  .brand { font-weight: 700; font-size: 17px; letter-spacing: .2px; display: flex; align-items: center; gap: 8px; }
+  .brand .dot { width: 22px; height: 22px; border-radius: 6px; background: var(--accent); color: var(--accent-ink);
+                display: grid; place-items: center; font-size: 13px; }
+  .spacer { flex: 1; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+          border: 1px solid var(--line); font-size: 13px; color: var(--muted); background: var(--bg); }
+  .pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); display: inline-block; }
+  .pill.ok i { background: var(--ok); } .pill.bad i { background: var(--err); }
+  .icon-btn { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 6px 10px; }
+  .icon-btn:hover { border-color: var(--accent); }
+
+  .modes { display: flex; gap: 4px; padding: 12px 20px 0; flex-wrap: wrap; }
+  .mode {
+    border: 0; background: transparent; padding: 8px 14px; border-radius: 10px 10px 0 0;
+    font-weight: 600; color: var(--muted); border-bottom: 3px solid transparent;
+  }
+  .mode[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+  .controls {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 10px 20px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .ctl { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+  .ctl select { padding: 5px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--panel); }
+  .seg button { border: 0; background: transparent; padding: 5px 9px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  .switch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+  .switch input { appearance: none; width: 36px; height: 20px; border-radius: 20px; background: var(--line);
+                  position: relative; margin: 0; transition: background .15s; cursor: pointer; }
+  .switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+                         border-radius: 50%; background: #fff; transition: left .15s; }
+  .switch input:checked { background: var(--accent); }
+  .switch input:checked::after { left: 18px; }
+  .switch b { color: var(--ink); }
+  input[type="range"] { accent-color: var(--accent); width: 90px; }
+
+  main { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px 20px 20px; min-height: 0; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+           display: flex; flex-direction: column; min-height: 420px; overflow: hidden; }
+  .panel-head { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--line);
+                font-size: 13px; color: var(--muted); }
+  .panel-head strong { color: var(--ink); font-size: 14px; }
+  textarea#input { flex: 1; border: 0; resize: none; padding: 16px; outline: none; background: transparent; font-size: 16px; line-height: 1.65; }
+  .panel-foot { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+  .muted { color: var(--muted); font-size: 13px; }
+  .btn { border: 1px solid var(--line); background: var(--panel); border-radius: 9px; padding: 7px 12px; font-size: 14px; }
+  .btn:hover { border-color: var(--accent); }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; padding: 8px 20px; }
+  .btn.primary:disabled { opacity: .55; cursor: wait; }
+  .btn.small { padding: 4px 9px; font-size: 13px; }
+  .kbd { font-size: 11px; opacity: .8; font-weight: 500; }
+
+  #out { flex: 1; padding: 16px; overflow: auto; white-space: pre-wrap; font-size: 16px; line-height: 1.65; }
+  #out .chg { background: var(--chg); color: var(--chg-ink); border-radius: 3px; }
+  #out .placeholder { color: var(--muted); white-space: normal; }
+  #out mark.iss { background: var(--err-soft); color: inherit; border-bottom: 2px solid var(--err); cursor: pointer; border-radius: 2px; }
+  #out mark.iss.active { outline: 2px solid var(--err); }
+  #out .fixed { background: var(--ok-soft); border-bottom: 2px solid var(--ok); border-radius: 2px; }
+  .issues { border-top: 1px solid var(--line); max-height: 45%; overflow: auto; padding: 8px 10px; display: none; }
+  .issues.show { display: block; }
+  .issue { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin: 6px 0; font-size: 14px; }
+  .issue.active { border-color: var(--err); }
+  .issue .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .tag { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; padding: 1px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+  .from { text-decoration: line-through; color: var(--err); }
+  .to { color: var(--ok); font-weight: 700; }
+  .issue p { margin: 4px 0 6px; color: var(--muted); }
+  .error-box { margin: 0 14px 12px; padding: 10px 12px; border-radius: 10px; background: var(--err-soft); color: var(--err); font-size: 14px; display: none; white-space: pre-wrap; }
+  .error-box.show { display: block; }
+  .spinner { width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; display: inline-block; animation: spin .8s linear infinite; vertical-align: -2px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  dialog { border: 1px solid var(--line); border-radius: 14px; padding: 0; width: min(720px, calc(100vw - 32px));
+           background: var(--panel); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+  dialog::backdrop { background: rgba(0,0,0,.35); }
+  .dlg-head { display: flex; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+  .dlg-head h2 { margin: 0; font-size: 17px; }
+  .dlg-body { padding: 8px 18px 18px; max-height: 70vh; overflow: auto; }
+  .dlg-body h3 { font-size: 14px; margin: 18px 0 8px; color: var(--accent); text-transform: uppercase; letter-spacing: .6px; }
+  .field { display: grid; grid-template-columns: 170px 1fr; gap: 6px 12px; align-items: center; margin: 8px 0; font-size: 14px; }
+  .field input, .field select, .field textarea { width: 100%; padding: 7px 9px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); }
+  .field textarea { min-height: 120px; resize: vertical; font-size: 13px; line-height: 1.45; }
+  .field .hint { grid-column: 2; font-size: 12px; color: var(--muted); margin-top: -2px; }
+  .field.full { grid-template-columns: 1fr; }
+  .field.full .hint { grid-column: 1; }
+  .dlg-foot { display: flex; gap: 8px; justify-content: flex-end; padding: 12px 18px; border-top: 1px solid var(--line); }
+  .hist-item { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin: 8px 0; cursor: pointer; font-size: 14px; }
+  .hist-item:hover { border-color: var(--accent); }
+  .hist-item .muted { display: block; }
+
+  @media (max-width: 860px) {
+    main { grid-template-columns: 1fr; padding: 12px 16px 16px; }
+    header, .modes, .controls { padding-left: 16px; padding-right: 16px; }
+    .field { grid-template-columns: 1fr; }
+    .field .hint { grid-column: 1; }
+    .pill .long { display: none; }
+    header { flex-wrap: wrap; gap: 8px; }
+    header .spacer { display: none; }
+    .brand { flex: 1 0 100%; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="dot" aria-hidden="true">E</span>Emisembe Writer</div>
+  <div class="spacer"></div>
+  <span id="status" class="pill" title="Which AI engine is active"><i></i><span id="statusText">Checking…</span></span>
+  <button class="icon-btn" id="histBtn" title="History">History</button>
+  <button class="icon-btn" id="setBtn" title="Settings">Settings</button>
+</header>
+
+<nav class="modes" role="tablist" aria-label="Tool">
+  <button class="mode" role="tab" data-mode="paraphrase">Paraphrase</button>
+  <button class="mode" role="tab" data-mode="humanise">Humanise</button>
+  <button class="mode" role="tab" data-mode="grammar">Grammar check</button>
+</nav>
+
+<section class="controls" aria-label="Options">
+  <label class="ctl" id="styleCtl">Style
+    <select id="style"></select>
+  </label>
+  <div class="ctl">Level
+    <div class="seg" id="level" role="group" aria-label="Language level"></div>
+  </div>
+  <div class="ctl"><span id="langLabel">Output</span>
+    <div class="seg" id="outLang" role="group" aria-label="Language">
+      <button data-v="same">Same</button><button data-v="en">English</button><button data-v="de">Deutsch</button>
+    </div>
+  </div>
+  <label class="ctl" id="strengthCtl">Change
+    <input type="range" id="strength" min="1" max="3" step="1">
+    <span id="strengthText"></span>
+  </label>
+  <label class="switch" id="voiceCtl" title="Rewrite in your own personal voice (Settings → My voice)">
+    <input type="checkbox" id="voice"> <b>My voice</b>
+  </label>
+</section>
+
+<main>
+  <section class="panel" aria-label="Your text">
+    <div class="panel-head"><strong>Your text</strong><span class="spacer"></span>
+      <button class="btn small" id="pasteBtn">Paste</button>
+      <button class="btn small" id="clearBtn">Clear</button>
+    </div>
+    <textarea id="input" spellcheck="false" placeholder="Type or paste your text here (English or German)…"></textarea>
+    <div class="panel-foot">
+      <span class="muted" id="inCount">0 words</span>
+      <span class="spacer"></span>
+      <button class="btn" id="cancelBtn" hidden>Stop</button>
+      <button class="btn primary" id="runBtn">Rephrase <span class="kbd">Ctrl+Enter</span></button>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Result">
+    <div class="panel-head"><strong id="outTitle">Result</strong><span class="spacer"></span>
+      <label class="switch" id="diffCtl" style="font-size:13px"><input type="checkbox" id="showDiff" checked> Show changes</label>
+      <button class="btn small" id="applyAllBtn" hidden>Apply all</button>
+    </div>
+    <div id="out"><div class="placeholder">Your result appears here.</div></div>
+    <div class="error-box" id="err" role="alert"></div>
+    <div class="issues" id="issues"></div>
+    <div class="panel-foot">
+      <span class="muted" id="outCount"></span>
+      <span class="spacer"></span>
+      <button class="btn" id="useBtn" disabled title="Move the result to the left side to keep editing">Use as input</button>
+      <button class="btn" id="copyBtn" disabled>Copy</button>
+    </div>
+  </section>
+</main>
+
+<dialog id="settings">
+  <div class="dlg-head"><h2>Settings</h2><span class="spacer"></span><button class="icon-btn" data-close>Close</button></div>
+  <div class="dlg-body">
+    <h3>AI engine</h3>
+    <div class="field"><label for="s-engine">Engine</label>
+      <select id="s-engine">
+        <option value="ollama">Offline: Ollama on this PC (free, private)</option>
+        <option value="claude">Cloud: Claude (best quality, needs internet and an API key)</option>
+      </select>
+    </div>
+    <div id="ollamaFields">
+      <div class="field"><label for="s-ollamaModel">Offline model</label>
+        <div style="display:flex;gap:6px">
+          <select id="s-ollamaModel" style="flex:1"></select>
+          <button class="btn small" id="refreshModels" type="button">Refresh</button>
+        </div>
+        <span class="hint">Models installed in Ollama. Recommended: gemma3:4b (fast) or gemma3:12b (better, slower). Install one with: <code>ollama pull gemma3:4b</code></span>
+      </div>
+      <div class="field"><label for="s-ollamaUrl">Ollama address</label>
+        <input id="s-ollamaUrl" placeholder="http://localhost:11434">
+      </div>
+    </div>
+    <div id="claudeFields">
+      <div class="field"><label for="s-apiKey">Claude API key</label>
+        <input id="s-apiKey" type="password" placeholder="sk-ant-…" autocomplete="off">
+        <span class="hint">Get one at console.anthropic.com. It is stored only in this browser on this PC.</span>
+      </div>
+      <div class="field"><label for="s-claudeModel">Claude model</label>
+        <select id="s-claudeModel">
+          <option value="claude-opus-5-5">Claude Opus 5.5 (best quality)</option>
+          <option value="claude-sonnet-5-5">Claude Sonnet 5.5 (very good, cheaper)</option>
+          <option value="claude-haiku-5-5">Claude Haiku 5.5 (fastest, cheapest)</option>
+        </select>
+      </div>
+    </div>
+
+    <h3>Grammar check</h3>
+    <div class="field"><label for="s-grammarEngine">Checker</label>
+      <select id="s-grammarEngine">
+        <option value="ai">AI engine above (explains at your level)</option>
+        <option value="lt-local">LanguageTool on this PC (offline, very fast)</option>
+        <option value="lt-online">LanguageTool online (free, sends text to languagetool.org)</option>
+      </select>
+    </div>
+    <div class="field"><label for="s-ltUrl">LanguageTool address</label>
+      <input id="s-ltUrl" placeholder="http://localhost:8081">
+      <span class="hint">Only for "LanguageTool on this PC". Start it with start-languagetool.bat.</span>
+    </div>
+    <div class="field"><label for="s-explainLang">Explanations in</label>
+      <select id="s-explainLang"><option value="en">English</option><option value="de">Deutsch</option></select>
+    </div>
+
+    <h3>Language</h3>
+    <div class="field"><label for="s-enVariant">English spelling</label>
+      <select id="s-enVariant"><option value="en-US">American (color)</option><option value="en-GB">British (colour)</option></select>
+    </div>
+
+    <h3>My voice</h3>
+    <div class="field full"><label for="s-voiceProfile">How I write (used when "My voice" is on, in English and German)</label>
+      <textarea id="s-voiceProfile" rows="10"></textarea>
+    </div>
+    <div class="field full"><label for="s-voiceSamples">Samples of my real writing</label>
+      <textarea id="s-voiceSamples" rows="8"></textarea>
+      <span class="hint">Paste a few of your own emails or messages, in English and German. Lines starting with # are notes and are not sent.</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn small" id="resetVoice" type="button">Reset voice to default</button>
+      <button class="btn small" id="themeBtn" type="button">Switch light/dark</button>
+    </div>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="saveSettings">Save</button>
+  </div>
+</dialog>
+
+<dialog id="history">
+  <div class="dlg-head"><h2>History</h2><span class="spacer"></span><button class="icon-btn" data-close>Close</button></div>
+  <div class="dlg-body" id="histList"></div>
+  <div class="dlg-foot"><button class="btn" id="clearHist">Clear history</button></div>
+</dialog>
+
+<script src="../core/writer-core.js"></script>
+<script>
+(function () {
+  'use strict';
+  var C = window.WriterCore;
+  if (!C) {
+    document.body.innerHTML = '<p style="padding:20px">Could not load <b>core/writer-core.js</b>. Keep the "writer" folder structure as it is: writer/app/index.html and writer/core/writer-core.js.</p>';
+    return;
+  }
+
+  // ---------------------------------------------------------------- storage
+  var KEY = 'emisembe-writer.settings', HKEY = 'emisembe-writer.history';
+  function load(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* private mode */ } }
+
+  var DEFAULTS = {
+    engine: 'ollama', ollamaUrl: 'http://localhost:11434', ollamaModel: 'gemma3:4b',
+    apiKey: '', claudeModel: 'claude-opus-5-5',
+    grammarEngine: 'ai', ltUrl: 'http://localhost:8081', explainLang: 'en', enVariant: 'en-US',
+    voiceProfile: C.DEFAULT_VOICE, voiceSamples: C.DEFAULT_SAMPLES,
+    mode: 'paraphrase', style: 'standard', level: 'auto', outLang: 'same', strength: 2, voice: false,
+    theme: '', draft: ''
+  };
+  var S = Object.assign({}, DEFAULTS, load(KEY, {}));
+  function persist() { save(KEY, S); }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var input = $('input'), out = $('out'), err = $('err'), issuesBox = $('issues');
+  if (S.theme) document.documentElement.setAttribute('data-theme', S.theme);
+
+  // ---------------------------------------------------------------- controls
+  Object.keys(C.STYLES).forEach(function (k) {
+    var o = document.createElement('option'); o.value = k; o.textContent = C.STYLES[k].label; $('style').appendChild(o);
+  });
+  ['auto'].concat(C.LEVELS).forEach(function (l) {
+    var b = document.createElement('button'); b.dataset.v = l; b.textContent = l === 'auto' ? 'Keep' : l;
+    b.title = l === 'auto' ? 'Keep the level of my text' : 'CEFR level ' + l;
+    $('level').appendChild(b);
+  });
+  var STRENGTH_TXT = { 1: 'Light', 2: 'Medium', 3: 'Strong' };
+
+  function syncControls() {
+    document.querySelectorAll('.mode').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.mode === S.mode)); });
+    var g = S.mode === 'grammar';
+    $('styleCtl').hidden = S.mode !== 'paraphrase';
+    $('strengthCtl').hidden = g;
+    $('voiceCtl').hidden = g;
+    $('diffCtl').hidden = g;
+    $('langLabel').textContent = g ? 'Text' : 'Output';
+    $('outLang').querySelector('[data-v="same"]').textContent = g ? 'Auto' : 'Same';
+    $('style').value = S.style;
+    $('strength').value = S.strength; $('strengthText').textContent = STRENGTH_TXT[S.strength];
+    $('voice').checked = !!S.voice;
+    $('level').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.v === S.level)); });
+    $('outLang').querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.v === S.outLang)); });
+    $('runBtn').firstChild.nodeValue = (g ? 'Check' : S.mode === 'humanise' ? 'Humanise' : 'Rephrase') + ' ';
+    $('outTitle').textContent = g ? 'Corrections' : 'Result';
+  }
+
+  document.querySelectorAll('.mode').forEach(function (b) {
+    b.addEventListener('click', function () { S.mode = b.dataset.mode; persist(); syncControls(); resetOutput(); });
+  });
+  $('level').addEventListener('click', function (e) { var v = e.target.dataset && e.target.dataset.v; if (v) { S.level = v; persist(); syncControls(); } });
+  $('outLang').addEventListener('click', function (e) { var v = e.target.dataset && e.target.dataset.v; if (v) { S.outLang = v; persist(); syncControls(); } });
+  $('style').addEventListener('change', function () { S.style = this.value; persist(); });
+  $('strength').addEventListener('input', function () { S.strength = Number(this.value); persist(); syncControls(); });
+  $('voice').addEventListener('change', function () { S.voice = this.checked; persist(); });
+
+  // ---------------------------------------------------------------- input
+  input.value = S.draft || '';
+  var draftTimer;
+  function updateCount() { $('inCount').textContent = C.wordCount(input.value) + ' words'; }
+  input.addEventListener('input', function () {
+    updateCount(); clearTimeout(draftTimer);
+    draftTimer = setTimeout(function () { S.draft = input.value; persist(); }, 400);
+  });
+  updateCount();
+  $('clearBtn').addEventListener('click', function () { input.value = ''; S.draft = ''; persist(); updateCount(); input.focus(); });
+  $('pasteBtn').addEventListener('click', function () {
+    if (!navigator.clipboard || !navigator.clipboard.readText) { input.focus(); return; }
+    navigator.clipboard.readText().then(function (t) { input.value = t; S.draft = t; persist(); updateCount(); })
+      .catch(function () { showError('Your browser blocked pasting. Click in the box and press Ctrl+V instead.'); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); run(); }
+  });
+
+  // ---------------------------------------------------------------- helpers
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function showError(msg) { err.textContent = msg; err.classList.add('show'); }
+  function hideError() { err.classList.remove('show'); }
+  function resetOutput() {
+    result = null; grammar = null; hideError();
+    out.innerHTML = '<div class="placeholder">Your result appears here.</div>';
+    issuesBox.classList.remove('show'); issuesBox.innerHTML = '';
+    $('applyAllBtn').hidden = true; $('copyBtn').disabled = true; $('useBtn').disabled = true; $('outCount').textContent = '';
+  }
+
+  // ---------------------------------------------------------------- engines
+  var controller = null;
+
+  function ollamaBase() { return (S.ollamaUrl || DEFAULTS.ollamaUrl).replace(/\/+$/, ''); }
+
+  function netError(what, url, e) {
+    if (e && e.name === 'AbortError') return new Error('Stopped.');
+    return new Error('Cannot reach ' + what + ' at ' + url + '.\n' +
+      (what === 'Ollama'
+        ? 'Check that Ollama is running (look for the llama icon near the clock) and that you ran setup-windows.bat once, then restarted Ollama.'
+        : what === 'LanguageTool'
+          ? 'Start it with start-languagetool.bat, or pick another checker in Settings.'
+          : 'Check your internet connection.'));
+  }
+
+  async function callOllama(p, onDelta, signal) {
+    var url = ollamaBase() + '/api/chat';
+    var body = {
+      model: S.ollamaModel || DEFAULTS.ollamaModel,
+      messages: [{ role: 'system', content: p.system }, { role: 'user', content: p.user }],
+      stream: true,
+      keep_alive: '15m',
+      options: { temperature: p.schema ? 0.1 : 0.7, num_ctx: 8192 }
+    };
+    if (p.schema) body.format = p.schema;
+    if (/^(qwen3|deepseek-r1)/i.test(body.model)) body.think = false;
+    var res;
+    try {
+      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: signal });
+    } catch (e) { throw netError('Ollama', ollamaBase(), e); }
+    if (!res.ok) {
+      var t = await res.text();
+      if (res.status === 404 && /not found/i.test(t)) {
+        throw new Error('The model "' + body.model + '" is not installed. Open a terminal and run:\nollama pull ' + body.model + '\nor pick an installed model in Settings.');
+      }
+      throw new Error('Ollama error ' + res.status + ': ' + t.slice(0, 300));
+    }
+    var reader = res.body.getReader(), dec = new TextDecoder(), buf = '', full = '';
+    try {
+      for (;;) {
+        var r = await reader.read();
+        if (r.done) break;
+        buf += dec.decode(r.value, { stream: true });
+        var lines = buf.split('\n'); buf = lines.pop();
+        for (var i = 0; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          var j = JSON.parse(lines[i]);
+          if (j.error) throw new Error('Ollama: ' + j.error);
+          if (j.message && j.message.content) { full += j.message.content; if (onDelta) onDelta(full); }
+        }
+      }
+    } catch (e) { if (e.name === 'AbortError') throw new Error('Stopped.'); throw e; }
+    return full;
+  }
+
+  async function callClaude(p, onDelta, signal) {
+    if (!S.apiKey) throw new Error('Add your Claude API key in Settings first (or switch to the offline engine).');
+    var model = S.claudeModel || DEFAULTS.claudeModel;
+    var body = {
+      model: model,
+      max_tokens: 16000,
+      system: p.system,
+      messages: [{ role: 'user', content: p.user }],
+      output_config: { effort: 'low' }
+    };
+    if (p.schema) body.output_config.format = { type: 'json_schema', schema: p.schema };
+    var headers = {
+      'content-type': 'application/json',
+      'x-api-key': S.apiKey.trim(),
+      'anthropic-version': '2026-10-21',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    };
+    // Opus/Sonnet: if a safety classifier declines, retry on Anthropic's recommended fallback model.
+    if (model !== 'claude-haiku-5-5') {
+      headers['anthropic-beta'] = 'server-side-fallback-2026-07-01';
+      body.fallbacks = 'default';
+    }
+    var res;
+    try {
+      res = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: headers, body: JSON.stringify(body), signal: signal });
+    } catch (e) { throw netError('Claude', 'api.anthropic.com', e); }
+    var data = await res.json().catch(function () { return {}; });
+    if (!res.ok) {
+      var msg = data.error && data.error.message ? data.error.message : 'HTTP ' + res.status;
+      if (res.status === 401) msg = 'Your Claude API key was rejected. Check it in Settings.';
+      else if (res.status === 429 || res.status === 529) msg = 'Claude is busy or you hit a rate limit. Wait a moment and try again.';
+      else if (res.status === 400 && /credit/i.test(msg)) msg = 'Your Anthropic account has no credit left. Add credit at console.anthropic.com.';
+      throw new Error(msg);
+    }
+    if (data.stop_reason === 'refusal') {
+      throw new Error('The AI declined to work on this text. Try rephrasing it or use the offline engine.');
+    }
+    var text = (data.content || []).filter(function (b) { return b.type === 'text'; }).map(function (b) { return b.text; }).join('');
+    if (data.stop_reason === 'max_tokens') text += '\n\n[The text was too long and the result was cut off. Try a shorter part.]';
+    if (onDelta) onDelta(text);
+    return text;
+  }
+
+  function callAI(p, onDelta, signal) {
+    return S.engine === 'claude' ? callClaude(p, onDelta, signal) : callOllama(p, onDelta, signal);
+  }
+
+  async function callLanguageTool(text, signal) {
+    var online = S.grammarEngine === 'lt-online';
+    var base = online ? 'https://api.languagetool.org' : (S.ltUrl || DEFAULTS.ltUrl).replace(/\/+$/, '');
+    var lang = S.outLang === 'en' ? S.enVariant : S.outLang === 'de' ? 'de-DE' : 'auto';
+    var params = new URLSearchParams({ text: text, language: lang });
+    if (lang === 'auto') params.set('preferredVariants', S.enVariant + ',de-DE');
+    var res;
+    try {
+      res = await fetch(base + '/v2/check', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params, signal: signal });
+    } catch (e) { throw netError('LanguageTool', base, e); }
+    if (!res.ok) throw new Error('LanguageTool error ' + res.status + ': ' + (await res.text()).slice(0, 300));
+    var data = await res.json();
+    return C.fromLanguageTool(text, data.matches);
+  }
+
+  // ---------------------------------------------------------------- run
+  var result = null;   // { input, output }
+  var grammar = null;  // { text, issues }
+
+  function setBusy(b) {
+    $('runBtn').disabled = b; $('cancelBtn').hidden = !b;
+    if (b) { out.innerHTML = '<div class="placeholder"><span class="spinner"></span> Working… ' +
+      (S.engine === 'ollama' ? '(offline models can take a little while on a laptop)' : '') + '</div>'; }
+  }
+
+  async function run() {
+    var text = input.value.trim();
+    if (!text || controller) return;
+    hideError(); issuesBox.classList.remove('show');
+    controller = new AbortController();
+    setBusy(true);
+    try {
+      if (S.mode === 'grammar') await runGrammar(text, controller.signal);
+      else await runRewrite(text, controller.signal);
+    } catch (e) {
+      out.innerHTML = '<div class="placeholder">No result.</div>';
+      showError(e.message || String(e));
+    } finally {
+      controller = null; setBusy(false);
+      if (!result && !grammar) $('copyBtn').disabled = true;
+    }
+  }
+  $('runBtn').addEventListener('click', run);
+  $('cancelBtn').addEventListener('click', function () { if (controller) controller.abort(); });
+
+  async function runRewrite(text, signal) {
+    result = null; grammar = null;
+    var p = C.buildRewrite({
+      mode: S.mode, style: S.style, strength: S.strength, level: S.level, outLang: S.outLang,
+      enVariant: S.enVariant, voice: S.voice, voiceProfile: S.voiceProfile, voiceSamples: S.voiceSamples, text: text
+    });
+    var raw = await callAI(p, function (partial) {
+      out.textContent = C.cleanOutput(partial) || '…';
+    }, signal);
+    var clean = C.cleanOutput(raw);
+    if (!clean) throw new Error('The AI returned an empty result. Try again.');
+    result = { input: text, output: clean };
+    renderRewrite();
+    addHistory({ mode: S.mode, input: text, output: clean, opts: optsSummary() });
+  }
+
+  function renderRewrite() {
+    if (!result) return;
+    var sameLang = S.outLang === 'same';
+    if ($('showDiff').checked && sameLang) {
+      out.innerHTML = C.diffWords(result.input, result.output).map(function (s) {
+        return s.changed ? '<span class="chg">' + esc(s.text) + '</span>' : esc(s.text);
+      }).join('');
+    } else {
+      out.textContent = result.output;
+    }
+    $('outCount').textContent = C.wordCount(result.output) + ' words';
+    $('copyBtn').disabled = false; $('useBtn').disabled = false; $('applyAllBtn').hidden = true;
+  }
+  $('showDiff').addEventListener('change', renderRewrite);
+
+  async function runGrammar(text, signal) {
+    result = null; grammar = null;
+    var issues;
+    if (S.grammarEngine === 'ai') {
+      var p = C.buildGrammar({ level: S.level, explainLang: S.explainLang, enVariant: S.enVariant, text: text });
+      var raw = await callAI(p, function (partial) {
+        out.innerHTML = '<div class="placeholder"><span class="spinner"></span> Checking… ' + partial.length + ' characters received</div>';
+      }, signal);
+      var data = C.parseJson(raw);
+      issues = C.locateIssues(text, data.issues || []);
+    } else {
+      issues = await callLanguageTool(text, signal);
+    }
+    grammar = { text: text, issues: issues };
+    renderGrammar();
+    addHistory({ mode: 'grammar', input: text, output: issues.length + ' issue(s) found', opts: optsSummary() });
+  }
+
+  function renderGrammar(activeIdx) {
+    if (!grammar) return;
+    var g = grammar, html = '', pos = 0;
+    var located = g.issues.map(function (it, i) { return { it: it, i: i }; })
+      .filter(function (x) { return x.it.offset >= 0 && !x.it.ignored; })
+      .sort(function (a, b) { return a.it.offset - b.it.offset; });
+    located.forEach(function (x) {
+      if (x.it.offset < pos) return;
+      html += esc(g.text.slice(pos, x.it.offset));
+      var seg = g.text.substr(x.it.offset, x.it.length);
+      html += x.it.applied
+        ? '<span class="fixed">' + esc(seg) + '</span>'
+        : '<mark class="iss' + (x.i === activeIdx ? ' active' : '') + '" data-i="' + x.i + '" title="' + esc(x.it.explanation) + '">' + esc(seg) + '</mark>';
+      pos = x.it.offset + x.it.length;
+    });
+    html += esc(g.text.slice(pos));
+    out.innerHTML = html;
+
+    var open = g.issues.filter(function (it) { return !it.applied && !it.ignored; });
+    var cards = g.issues.map(function (it, i) {
+      if (it.applied || it.ignored) return '';
+      return '<div class="issue' + (i === activeIdx ? ' active' : '') + '" id="issue-' + i + '">' +
+        '<div class="row"><span class="tag">' + esc(it.type) + '</span>' +
+        '<span class="from">' + esc(it.original) + '</span> → <span class="to">' + esc(it.replacement || '(remove)') + '</span></div>' +
+        (it.explanation ? '<p>' + esc(it.explanation) + '</p>' : '') +
+        '<div class="row">' + (it.offset >= 0 ? '<button class="btn small" data-apply="' + i + '">Apply</button>' : '<span class="muted">Not found in text, fix by hand</span>') +
+        '<button class="btn small" data-ignore="' + i + '">Ignore</button></div></div>';
+    }).join('');
+    issuesBox.innerHTML = open.length
+      ? '<div class="muted" style="padding:2px 4px">' + open.length + ' issue' + (open.length > 1 ? 's' : '') + ' to review' +
+        (S.grammarEngine !== 'ai' ? ' · LanguageTool explanations are not level-adapted' : '') + '</div>' + cards
+      : '<div class="muted" style="padding:6px 4px">No open issues. ' + (g.issues.length ? 'All done.' : 'Looks good!') + '</div>';
+    issuesBox.classList.add('show');
+    $('applyAllBtn').hidden = !open.some(function (it) { return it.offset >= 0; });
+    $('outCount').textContent = C.wordCount(g.text) + ' words';
+    $('copyBtn').disabled = false; $('useBtn').disabled = false;
+  }
+
+  out.addEventListener('click', function (e) {
+    var m = e.target.closest && e.target.closest('mark.iss');
+    if (!m) return;
+    var i = Number(m.dataset.i);
+    renderGrammar(i);
+    var card = $('issue-' + i); if (card) card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  });
+  issuesBox.addEventListener('click', function (e) {
+    var a = e.target.dataset && e.target.dataset.apply, ig = e.target.dataset && e.target.dataset.ignore;
+    if (a != null) { var st = C.applyIssue(grammar.text, grammar.issues, Number(a)); grammar.text = st.text; grammar.issues = st.issues; renderGrammar(); }
+    if (ig != null) { grammar.issues[Number(ig)].ignored = true; renderGrammar(); }
+  });
+  $('applyAllBtn').addEventListener('click', function () {
+    if (!grammar) return;
+    var open = grammar.issues.map(function (it) { var c = Object.assign({}, it); if (c.ignored) c.offset = -1; return c; });
+    var st = C.applyAll(grammar.text, open);
+    grammar.text = st.text;
+    grammar.issues = st.issues.map(function (it, i) { if (grammar.issues[i].ignored) { it.ignored = true; } return it; });
+    renderGrammar();
+  });
+
+  function currentOutput() { return grammar ? grammar.text : result ? result.output : ''; }
+  $('copyBtn').addEventListener('click', function () {
+    var t = currentOutput(); if (!t) return;
+    var done = function () { var b = $('copyBtn'); b.textContent = 'Copied ✓'; setTimeout(function () { b.textContent = 'Copy'; }, 1400); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, fallbackCopy);
+    else fallbackCopy();
+    function fallbackCopy() { var ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); done(); }
+  });
+  $('useBtn').addEventListener('click', function () {
+    var t = currentOutput(); if (!t) return;
+    input.value = t; S.draft = t; persist(); updateCount(); resetOutput(); input.focus();
+  });
+
+  // ---------------------------------------------------------------- history
+  function optsSummary() {
+    var lvl = S.level === 'auto' ? 'same level' : S.level;
+    var lang = { same: '', en: ' · → English', de: ' · → Deutsch' }[S.outLang];
+    if (S.mode === 'grammar') return 'Grammar · ' + (S.grammarEngine === 'ai' ? 'AI' : 'LanguageTool');
+    return (S.mode === 'humanise' ? 'Humanise' : C.STYLES[S.style].label) + ' · ' + lvl + lang + (S.voice ? ' · my voice' : '');
+  }
+  function addHistory(item) {
+    var h = load(HKEY, []);
+    item.time = Date.now();
+    h.unshift(item); save(HKEY, h.slice(0, 30));
+  }
+  function renderHistory() {
+    var h = load(HKEY, []);
+    $('histList').innerHTML = h.length ? h.map(function (it, i) {
+      return '<div class="hist-item" data-h="' + i + '"><span class="muted">' + new Date(it.time).toLocaleString() + ' · ' + esc(it.opts || it.mode) + '</span>' +
+        esc(String(it.output).slice(0, 220)) + (String(it.output).length > 220 ? '…' : '') + '</div>';
+    }).join('') : '<p class="muted">Nothing yet.</p>';
+  }
+  $('histBtn').addEventListener('click', function () { renderHistory(); $('history').showModal(); });
+  $('histList').addEventListener('click', function (e) {
+    var el = e.target.closest('.hist-item'); if (!el) return;
+    var it = load(HKEY, [])[Number(el.dataset.h)]; if (!it) return;
+    input.value = it.input; updateCount();
+    if (it.mode !== 'grammar') {
+      S.mode = it.mode; syncControls();
+      result = { input: it.input, output: it.output }; grammar = null; hideError();
+      issuesBox.classList.remove('show'); renderRewrite();
+    }
+    $('history').close();
+  });
+  $('clearHist').addEventListener('click', function () { save(HKEY, []); renderHistory(); });
+
+  // ---------------------------------------------------------------- settings
+  var F = ['engine', 'ollamaUrl', 'ollamaModel', 'apiKey', 'claudeModel', 'grammarEngine', 'ltUrl', 'explainLang', 'enVariant', 'voiceProfile', 'voiceSamples'];
+  function engineFields() {
+    var e = $('s-engine').value;
+    $('ollamaFields').hidden = e !== 'ollama'; $('claudeFields').hidden = e !== 'claude';
+  }
+  $('s-engine').addEventListener('change', engineFields);
+
+  async function fillModels(selected) {
+    var sel = $('s-ollamaModel'); var url = ($('s-ollamaUrl').value || DEFAULTS.ollamaUrl).replace(/\/+$/, '');
+    var names = [];
+    try {
+      var r = await fetch(url + '/api/tags'); var d = await r.json();
+      names = (d.models || []).map(function (m) { return m.name; });
+    } catch (e) { /* not running */ }
+    if (selected && names.indexOf(selected) === -1) names.unshift(selected);
+    if (!names.length) names = [DEFAULTS.ollamaModel];
+    sel.innerHTML = names.map(function (n) { return '<option>' + esc(n) + '</option>'; }).join('');
+    sel.value = selected || names[0];
+    return names;
+  }
+  $('refreshModels').addEventListener('click', function () { fillModels($('s-ollamaModel').value); });
+
+  $('setBtn').addEventListener('click', function () {
+    F.forEach(function (k) { if (k !== 'ollamaModel') $('s-' + k).value = S[k]; });
+    engineFields(); fillModels(S.ollamaModel);
+    $('settings').showModal();
+  });
+  $('saveSettings').addEventListener('click', function () {
+    F.forEach(function (k) { S[k] = $('s-' + k).value; });
+    S.apiKey = S.apiKey.trim();
+    persist(); $('settings').close(); checkStatus();
+  });
+  $('resetVoice').addEventListener('click', function () {
+    $('s-voiceProfile').value = C.DEFAULT_VOICE; $('s-voiceSamples').value = C.DEFAULT_SAMPLES;
+  });
+  $('themeBtn').addEventListener('click', function () {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+      (!document.documentElement.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+    S.theme = dark ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', S.theme); persist();
+  });
+  document.querySelectorAll('[data-close]').forEach(function (b) {
+    b.addEventListener('click', function () { b.closest('dialog').close(); });
+  });
+
+  // ---------------------------------------------------------------- status
+  async function checkStatus() {
+    var pill = $('status'), txt = $('statusText');
+    pill.className = 'pill';
+    if (S.engine === 'claude') {
+      var names = { 'claude-opus-5-5': 'Opus 5.5', 'claude-sonnet-5-5': 'Sonnet 5.5', 'claude-haiku-5-5': 'Haiku 5.5' };
+      pill.classList.add(S.apiKey ? 'ok' : 'bad');
+      txt.innerHTML = 'Cloud · ' + esc(names[S.claudeModel] || S.claudeModel) + (S.apiKey ? '' : ' <span class="long">· add API key</span>');
+      return;
+    }
+    txt.textContent = 'Offline · checking…';
+    try {
+      var r = await fetch(ollamaBase() + '/api/tags'); var d = await r.json();
+      var have = (d.models || []).map(function (m) { return m.name; });
+      var ok = have.indexOf(S.ollamaModel) !== -1 || have.indexOf(S.ollamaModel + ':latest') !== -1;
+      pill.classList.add(ok ? 'ok' : 'bad');
+      txt.innerHTML = 'Offline · ' + esc(S.ollamaModel) + (ok ? '' : ' <span class="long">· not installed</span>');
+    } catch (e) {
+      pill.classList.add('bad');
+      txt.innerHTML = 'Offline · <span class="long">Ollama </span>not running';
+    }
+  }
+
+  syncControls();
+  checkStatus();
+})();
+</script>
+</body>
+</html>
