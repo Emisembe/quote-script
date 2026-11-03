@@ -232,7 +232,8 @@
     <div class="field"><label for="s-engine">Engine</label>
       <select id="s-engine">
         <option value="ollama">Offline: Ollama on this PC (free, private)</option>
-        <option value="claude">Cloud: Claude (best quality, needs internet and an API key)</option>
+        <option value="gemini">Cloud: Google Gemini (free tier, needs internet and a free key)</option>
+        <option value="claude">Cloud: Claude (best quality, paid, needs an API key)</option>
       </select>
     </div>
     <div id="ollamaFields">
@@ -245,6 +246,19 @@
       </div>
       <div class="field"><label for="s-ollamaUrl">Ollama address</label>
         <input id="s-ollamaUrl" placeholder="http://localhost:11434">
+      </div>
+    </div>
+    <div id="geminiFields">
+      <div class="field"><label for="s-geminiKey">Gemini key</label>
+        <input id="s-geminiKey" type="password" placeholder="Paste your free key" autocomplete="off">
+        <span class="hint">Free key: aistudio.google.com → "Get API key". Stored only in this browser. On the free tier Google may use your text to improve its products, so don't use it for private documents.</span>
+      </div>
+      <div class="field"><label for="s-geminiModel">Gemini model</label>
+        <div style="display:flex;gap:6px">
+          <select id="s-geminiModel" style="flex:1"></select>
+          <button class="btn small" id="findGemini" type="button">Find models</button>
+        </div>
+        <span class="hint">Click "Find models" to see which models your key can use.</span>
       </div>
     </div>
     <div id="claudeFields">
@@ -325,6 +339,7 @@
   var DEFAULTS = {
     engine: 'ollama', ollamaUrl: 'http://localhost:11434', ollamaModel: 'gemma3:4b',
     apiKey: '', claudeModel: 'claude-opus-5-5',
+    geminiKey: '', geminiModel: 'gemini-2.5-flash',
     grammarEngine: 'ai', ltUrl: 'http://localhost:8081', explainLang: 'en', enVariant: 'en-US',
     voiceProfile: C.DEFAULT_VOICE, voiceSamples: C.DEFAULT_SAMPLES,
     mode: 'paraphrase', style: 'standard', level: 'auto', outLang: 'same', strength: 2, voice: false,
@@ -503,8 +518,54 @@
     return text;
   }
 
+  var GEMINI = 'https://generativelanguage.googleapis.com/v1beta/';
+  function geminiError(code, data) {
+    var msg = data && data.error && data.error.message ? data.error.message : 'HTTP ' + code;
+    if (code === 400 && /api key/i.test(msg)) return 'Your Gemini key was rejected. Check it in Settings.';
+    if (code === 403) return 'Your Gemini key is not allowed to use this. Create a new key at aistudio.google.com.';
+    if (code === 404) return 'This Gemini model is not available for your key. In Settings, click "Find models" and pick another one.';
+    if (code === 429) return 'You reached the Gemini free limit (per minute or per day). Wait a bit and try again, or try a lighter model.';
+    if (code >= 500) return 'Gemini is busy right now. Try again in a moment.';
+    return 'Gemini: ' + msg;
+  }
+
+  async function callGemini(p, onDelta, signal) {
+    if (!S.geminiKey) throw new Error('Add your free Gemini key in Settings first. Get one at aistudio.google.com → "Get API key".');
+    var model = S.geminiModel || DEFAULTS.geminiModel;
+    var body = {
+      systemInstruction: { parts: [{ text: p.system }] },
+      contents: [{ role: 'user', parts: [{ text: p.user }] }],
+      generationConfig: {}
+    };
+    if (p.schema) body.generationConfig.responseMimeType = 'application/json';
+    var res;
+    try {
+      res = await fetch(GEMINI + 'models/' + encodeURIComponent(model) + ':generateContent', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': S.geminiKey.trim() },
+        body: JSON.stringify(body), signal: signal
+      });
+    } catch (e) { throw netError('Gemini', 'generativelanguage.googleapis.com', e); }
+    var data = await res.json().catch(function () { return {}; });
+    if (!res.ok) throw new Error(geminiError(res.status, data));
+    if (data.promptFeedback && data.promptFeedback.blockReason) {
+      throw new Error('Gemini declined to work on this text (' + data.promptFeedback.blockReason + '). Try rephrasing it.');
+    }
+    var cand = data.candidates && data.candidates[0];
+    if (!cand) throw new Error('Gemini returned no answer. Try again.');
+    var text = ((cand.content && cand.content.parts) || []).filter(function (x) { return !x.thought; })
+      .map(function (x) { return x.text || ''; }).join('');
+    if (!text && cand.finishReason && cand.finishReason !== 'STOP') {
+      throw new Error('Gemini stopped without an answer (' + cand.finishReason + '). Try rephrasing the text.');
+    }
+    if (cand.finishReason === 'MAX_TOKENS') text += '\n\n[The text was too long and the result was cut off. Try a shorter part.]';
+    if (onDelta) onDelta(text);
+    return text;
+  }
+
   function callAI(p, onDelta, signal) {
-    return S.engine === 'claude' ? callClaude(p, onDelta, signal) : callOllama(p, onDelta, signal);
+    if (S.engine === 'claude') return callClaude(p, onDelta, signal);
+    if (S.engine === 'gemini') return callGemini(p, onDelta, signal);
+    return callOllama(p, onDelta, signal);
   }
 
   async function callLanguageTool(text, signal) {
@@ -707,11 +768,38 @@
   $('clearHist').addEventListener('click', function () { save(HKEY, []); renderHistory(); });
 
   // ---------------------------------------------------------------- settings
-  var F = ['engine', 'ollamaUrl', 'ollamaModel', 'apiKey', 'claudeModel', 'grammarEngine', 'ltUrl', 'explainLang', 'enVariant', 'voiceProfile', 'voiceSamples'];
+  var F = ['engine', 'ollamaUrl', 'ollamaModel', 'apiKey', 'claudeModel', 'geminiKey', 'geminiModel', 'grammarEngine', 'ltUrl', 'explainLang', 'enVariant', 'voiceProfile', 'voiceSamples'];
   function engineFields() {
     var e = $('s-engine').value;
-    $('ollamaFields').hidden = e !== 'ollama'; $('claudeFields').hidden = e !== 'claude';
+    $('ollamaFields').hidden = e !== 'ollama'; $('claudeFields').hidden = e !== 'claude'; $('geminiFields').hidden = e !== 'gemini';
   }
+  function setGeminiModels(list, selected) {
+    var sel = $('s-geminiModel'), seen = {};
+    sel.innerHTML = '';
+    list.concat(selected ? [selected] : []).forEach(function (m) {
+      if (!m || seen[m]) return; seen[m] = 1;
+      var o = document.createElement('option'); o.value = m; o.textContent = m; sel.appendChild(o);
+    });
+    if (selected) sel.value = selected;
+  }
+  $('findGemini').addEventListener('click', async function () {
+    var key = ($('s-geminiKey').value || '').trim();
+    if (!key) { alert('Paste your Gemini key first.'); return; }
+    var btn = this; btn.disabled = true; btn.textContent = '…';
+    try {
+      var r = await fetch(GEMINI + 'models?pageSize=200', { headers: { 'x-goog-api-key': key } });
+      var d = await r.json().catch(function () { return {}; });
+      if (!r.ok) throw new Error(geminiError(r.status, d));
+      var list = (d.models || []).filter(function (m) {
+        return (m.supportedGenerationMethods || []).indexOf('generateContent') !== -1 &&
+          /gemini/i.test(m.name) && !/(embedding|image|tts|audio|live|vision)/i.test(m.name);
+      }).map(function (m) { return String(m.name).replace(/^models\//, ''); });
+      if (!list.length) throw new Error('No text models found for this key.');
+      var cur = $('s-geminiModel').value;
+      setGeminiModels(list, list.indexOf(cur) !== -1 ? cur : list[0]);
+    } catch (e) { alert(e.message); }
+    finally { btn.disabled = false; btn.textContent = 'Find models'; }
+  });
   $('s-engine').addEventListener('change', engineFields);
 
   async function fillModels(selected) {
@@ -730,13 +818,14 @@
   $('refreshModels').addEventListener('click', function () { fillModels($('s-ollamaModel').value); });
 
   $('setBtn').addEventListener('click', function () {
-    F.forEach(function (k) { if (k !== 'ollamaModel') $('s-' + k).value = S[k]; });
+    setGeminiModels([S.geminiModel], S.geminiModel);
+    F.forEach(function (k) { if (k !== 'ollamaModel' && k !== 'geminiModel') $('s-' + k).value = S[k]; });
     engineFields(); fillModels(S.ollamaModel);
     $('settings').showModal();
   });
   $('saveSettings').addEventListener('click', function () {
     F.forEach(function (k) { S[k] = $('s-' + k).value; });
-    S.apiKey = S.apiKey.trim();
+    S.apiKey = S.apiKey.trim(); S.geminiKey = S.geminiKey.trim();
     persist(); $('settings').close(); checkStatus();
   });
   $('resetVoice').addEventListener('click', function () {
@@ -755,6 +844,11 @@
   async function checkStatus() {
     var pill = $('status'), txt = $('statusText');
     pill.className = 'pill';
+    if (S.engine === 'gemini') {
+      pill.classList.add(S.geminiKey ? 'ok' : 'bad');
+      txt.innerHTML = 'Cloud · ' + esc(S.geminiModel) + (S.geminiKey ? '' : ' <span class="long">· add free key</span>');
+      return;
+    }
     if (S.engine === 'claude') {
       var names = { 'claude-opus-5-5': 'Opus 5.5', 'claude-sonnet-5-5': 'Sonnet 5.5', 'claude-haiku-5-5': 'Haiku 5.5' };
       pill.classList.add(S.apiKey ? 'ok' : 'bad');

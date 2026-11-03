@@ -7,12 +7,21 @@
  *   Sidebar.html   (the sidebar UI)
  *   appsscript.json
  *
- * The AI runs in the cloud (Claude). Apps Script runs on Google's servers, so it
- * cannot reach Ollama on your PC — use the desktop app for offline work.
+ * AI engines (pick one in the sidebar's Settings):
+ *   gemini  — Google Gemini API, has a free tier (free key from aistudio.google.com)
+ *   claude  — Anthropic Claude API, pay per use (key from console.anthropic.com)
+ *   ollama  — offline AI on your own PC. Apps Script runs on Google's servers and
+ *             cannot reach your PC, so for this engine the SIDEBAR (which runs in
+ *             your browser) talks to Ollama directly; this file only builds the
+ *             prompt (preparePrompt) and processes the answer (finishResult).
+ * Grammar can also use LanguageTool online, which is free and needs no key.
  */
 
-var API_URL = 'https://api.anthropic.com/v1/messages';
-var MODELS = ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5'];
+var CLAUDE_URL = 'https://api.anthropic.com/v1/messages';
+var CLAUDE_MODELS = ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5'];
+var GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/';
+var GEMINI_DEFAULT = 'gemini-2.5-flash';
+var ENGINES = ['gemini', 'claude', 'ollama'];
 
 // ----------------------------------------------------------------- menu
 function onOpen(e) {
@@ -37,10 +46,16 @@ function props_() {
 
 function getSettings() {
   var p = props_();
+  var hasClaude = !!p.getProperty('apiKey');
   return {
-    hasKey: !!p.getProperty('apiKey'),
-    model: p.getProperty('model') || MODELS[0],
-    grammarEngine: p.getProperty('grammarEngine') || 'ai',
+    engine: p.getProperty('engine') || (hasClaude ? 'claude' : 'gemini'),
+    hasKey: hasClaude,
+    model: p.getProperty('model') || CLAUDE_MODELS[0],
+    hasGeminiKey: !!p.getProperty('geminiKey'),
+    geminiModel: p.getProperty('geminiModel') || GEMINI_DEFAULT,
+    ollamaUrl: p.getProperty('ollamaUrl') || 'http://localhost:11434',
+    ollamaModel: p.getProperty('ollamaModel') || 'gemma3:4b',
+    grammarEngine: p.getProperty('grammarEngine') || 'languagetool',
     explainLang: p.getProperty('explainLang') || 'en',
     enVariant: p.getProperty('enVariant') || 'en-US',
     voiceProfile: p.getProperty('voiceProfile') || WriterCore.DEFAULT_VOICE,
@@ -52,14 +67,36 @@ function getSettings() {
 function saveSettings(s) {
   var p = props_();
   if (s.apiKey && String(s.apiKey).trim()) p.setProperty('apiKey', String(s.apiKey).trim());
-  if (s.removeKey) p.deleteProperty('apiKey');
-  if (MODELS.indexOf(s.model) !== -1) p.setProperty('model', s.model);
-  ['grammarEngine', 'explainLang', 'enVariant'].forEach(function (k) { if (s[k]) p.setProperty(k, s[k]); });
+  if (s.geminiKey && String(s.geminiKey).trim()) p.setProperty('geminiKey', String(s.geminiKey).trim());
+  if (s.removeKeys) { p.deleteProperty('apiKey'); p.deleteProperty('geminiKey'); }
+  if (ENGINES.indexOf(s.engine) !== -1) p.setProperty('engine', s.engine);
+  if (CLAUDE_MODELS.indexOf(s.model) !== -1) p.setProperty('model', s.model);
+  ['geminiModel', 'ollamaUrl', 'ollamaModel', 'grammarEngine', 'explainLang', 'enVariant'].forEach(function (k) {
+    if (s[k] && String(s[k]).trim()) p.setProperty(k, String(s[k]).trim());
+  });
   // A single user property can hold about 9 KB.
   ['voiceProfile', 'voiceSamples'].forEach(function (k) {
     if (typeof s[k] === 'string') p.setProperty(k, s[k].slice(0, 8500));
   });
   return getSettings();
+}
+
+/** Lists the Gemini models this key may use for text generation (for the Settings dropdown). */
+function listGeminiModels(keyFromForm) {
+  var key = (keyFromForm && String(keyFromForm).trim()) || props_().getProperty('geminiKey');
+  if (!key) throw new Error('Paste your Gemini key first.');
+  var resp = UrlFetchApp.fetch(GEMINI_BASE + 'models?pageSize=200', {
+    headers: { 'x-goog-api-key': key }, muteHttpExceptions: true
+  });
+  var data = {};
+  try { data = JSON.parse(resp.getContentText()); } catch (e) { /* keep empty */ }
+  if (resp.getResponseCode() !== 200) throw new Error(geminiError_(resp.getResponseCode(), data));
+  return (data.models || [])
+    .filter(function (m) {
+      return (m.supportedGenerationMethods || []).indexOf('generateContent') !== -1 &&
+             /gemini/i.test(m.name) && !/(embedding|image|tts|audio|live|vision)/i.test(m.name);
+    })
+    .map(function (m) { return String(m.name).replace(/^models\//, ''); });
 }
 
 // ----------------------------------------------------------------- document
@@ -165,11 +202,11 @@ function insertBelow(newText) {
   return 'inserted';
 }
 
-// ----------------------------------------------------------------- AI
+// ----------------------------------------------------------------- AI engines
 function callClaude_(p) {
   var key = props_().getProperty('apiKey');
-  if (!key) throw new Error('Add your Claude API key in Settings (⚙) first.');
-  var model = props_().getProperty('model') || MODELS[0];
+  if (!key) throw new Error('Add your Claude API key in Settings (⚙) first, or switch the AI engine to Gemini (free).');
+  var model = props_().getProperty('model') || CLAUDE_MODELS[0];
   var body = {
     model: model,
     max_tokens: 16000,
@@ -184,7 +221,7 @@ function callClaude_(p) {
     headers['anthropic-beta'] = 'server-side-fallback-2026-07-01';
     body.fallbacks = 'default';
   }
-  var resp = UrlFetchApp.fetch(API_URL, {
+  var resp = UrlFetchApp.fetch(CLAUDE_URL, {
     method: 'post', contentType: 'application/json', headers: headers,
     payload: JSON.stringify(body), muteHttpExceptions: true
   });
@@ -195,6 +232,7 @@ function callClaude_(p) {
     var msg = data.error && data.error.message ? data.error.message : 'HTTP ' + code;
     if (code === 401) msg = 'Your Claude API key was rejected. Check it in Settings.';
     else if (code === 429 || code === 529) msg = 'Claude is busy or you hit a rate limit. Wait a moment and try again.';
+    else if (code === 400 && /credit/i.test(msg)) msg = 'Your Anthropic account has no credit left. Add credit at console.anthropic.com, or switch to Gemini (free).';
     throw new Error(msg);
   }
   if (data.stop_reason === 'refusal') throw new Error('The AI declined to work on this text. Try rephrasing it.');
@@ -202,6 +240,55 @@ function callClaude_(p) {
     .map(function (b) { return b.text; }).join('');
   if (data.stop_reason === 'max_tokens') text += '\n\n[Cut off: the text was too long. Try a shorter part.]';
   return text;
+}
+
+function geminiError_(code, data) {
+  var msg = data && data.error && data.error.message ? data.error.message : 'HTTP ' + code;
+  if (code === 400 && /api key/i.test(msg)) return 'Your Gemini key was rejected. Check it in Settings.';
+  if (code === 403) return 'Your Gemini key is not allowed to use this. Create a new key at aistudio.google.com.';
+  if (code === 404) return 'This Gemini model is not available for your key. In Settings, click "Find models" and pick another one.';
+  if (code === 429) return 'You reached the Gemini free limit (per minute or per day). Wait a bit and try again, or try a lighter model.';
+  if (code >= 500) return 'Gemini is busy right now. Try again in a moment.';
+  return 'Gemini: ' + msg;
+}
+
+function callGemini_(p) {
+  var key = props_().getProperty('geminiKey');
+  if (!key) throw new Error('Add your free Gemini key in Settings (⚙) first. Get one at aistudio.google.com → "Get API key".');
+  var model = props_().getProperty('geminiModel') || GEMINI_DEFAULT;
+  var body = {
+    systemInstruction: { parts: [{ text: p.system }] },
+    contents: [{ role: 'user', parts: [{ text: p.user }] }],
+    generationConfig: {}
+  };
+  if (p.schema) body.generationConfig.responseMimeType = 'application/json';
+  var resp = UrlFetchApp.fetch(GEMINI_BASE + 'models/' + encodeURIComponent(model) + ':generateContent', {
+    method: 'post', contentType: 'application/json', headers: { 'x-goog-api-key': key },
+    payload: JSON.stringify(body), muteHttpExceptions: true
+  });
+  var code = resp.getResponseCode();
+  var data = {};
+  try { data = JSON.parse(resp.getContentText()); } catch (e) { /* keep empty */ }
+  if (code !== 200) throw new Error(geminiError_(code, data));
+  if (data.promptFeedback && data.promptFeedback.blockReason) {
+    throw new Error('Gemini declined to work on this text (' + data.promptFeedback.blockReason + '). Try rephrasing it.');
+  }
+  var cand = data.candidates && data.candidates[0];
+  if (!cand) throw new Error('Gemini returned no answer. Try again.');
+  var text = ((cand.content && cand.content.parts) || [])
+    .filter(function (part) { return !part.thought; })
+    .map(function (part) { return part.text || ''; }).join('');
+  if (!text && cand.finishReason && cand.finishReason !== 'STOP') {
+    throw new Error('Gemini stopped without an answer (' + cand.finishReason + '). Try rephrasing the text.');
+  }
+  if (cand.finishReason === 'MAX_TOKENS') text += '\n\n[Cut off: the text was too long. Try a shorter part.]';
+  return text;
+}
+
+function callAI_(p, engine) {
+  if (engine === 'claude') return callClaude_(p);
+  if (engine === 'gemini') return callGemini_(p);
+  throw new Error('The offline engine runs from the sidebar, not the server.');
 }
 
 function callLanguageTool_(text, outLang, enVariant) {
@@ -215,35 +302,52 @@ function callLanguageTool_(text, outLang, enVariant) {
   return WriterCore.fromLanguageTool(text, JSON.parse(resp.getContentText()).matches);
 }
 
-/**
- * Main entry from the sidebar.
- * opts: { mode, style, strength, level, outLang, voice, text }
- * Returns { kind: 'rewrite', output, segments } or { kind: 'grammar', text, issues }.
- */
-function runTool(opts) {
-  var s = getSettings();
+// ----------------------------------------------------------------- tool entry points
+function cleanText_(opts) {
   var text = String(opts.text || '').trim();
   if (!text) throw new Error('There is no text. Select text in your document first, or type it in the box.');
+  return text;
+}
+
+/** Builds the prompt for the chosen tool. Used by runTool, and by the sidebar for the offline engine. */
+function preparePrompt(opts) {
+  var s = getSettings();
+  var text = cleanText_(opts);
   if (opts.mode === 'grammar') {
-    var issues;
-    if (s.grammarEngine === 'languagetool') {
-      issues = callLanguageTool_(text, opts.outLang, s.enVariant);
-    } else {
-      var g = WriterCore.buildGrammar({ level: opts.level, explainLang: s.explainLang, enVariant: s.enVariant, text: text });
-      var data = WriterCore.parseJson(callClaude_(g));
-      issues = WriterCore.locateIssues(text, data.issues || []);
-    }
-    return { kind: 'grammar', text: text, issues: issues };
+    return WriterCore.buildGrammar({ level: opts.level, explainLang: s.explainLang, enVariant: s.enVariant, text: text });
   }
-  var p = WriterCore.buildRewrite({
+  return WriterCore.buildRewrite({
     mode: opts.mode, style: opts.style, strength: Number(opts.strength) || 2, level: opts.level,
     outLang: opts.outLang, enVariant: s.enVariant, voice: !!opts.voice,
     voiceProfile: s.voiceProfile, voiceSamples: s.voiceSamples, text: text
   });
-  var out = WriterCore.cleanOutput(callClaude_(p));
+}
+
+/** Turns the raw AI answer into what the sidebar shows. */
+function finishResult(opts, raw) {
+  var text = cleanText_(opts);
+  if (opts.mode === 'grammar') {
+    var data = WriterCore.parseJson(raw);
+    return { kind: 'grammar', text: text, issues: WriterCore.locateIssues(text, data.issues || []) };
+  }
+  var out = WriterCore.cleanOutput(raw);
   if (!out) throw new Error('The AI returned an empty result. Try again.');
   return {
     kind: 'rewrite', output: out,
     segments: opts.outLang === 'same' ? WriterCore.diffWords(text, out) : [{ text: out, changed: false }]
   };
+}
+
+/**
+ * Main entry from the sidebar for the cloud engines and LanguageTool.
+ * opts: { mode, style, strength, level, outLang, voice, text }
+ * Returns { kind: 'rewrite', output, segments } or { kind: 'grammar', text, issues }.
+ */
+function runTool(opts) {
+  var s = getSettings();
+  var text = cleanText_(opts);
+  if (opts.mode === 'grammar' && s.grammarEngine === 'languagetool') {
+    return { kind: 'grammar', text: text, issues: callLanguageTool_(text, opts.outLang, s.enVariant) };
+  }
+  return finishResult(opts, callAI_(preparePrompt(opts), s.engine));
 }

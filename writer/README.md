@@ -8,9 +8,21 @@ It comes in two versions that use the same "brain" (`core/writer-core.js`):
 | | Desktop app (`app/`) | Google Docs add-on (`google-docs/`) |
 |---|---|---|
 | Where | Your browser, on your PC | Sidebar inside Google Docs |
-| AI engine | **Offline** (Ollama, free, private) **or** Cloud (Claude) | Cloud (Claude) |
-| Grammar | AI, LanguageTool offline, or LanguageTool online | Claude or LanguageTool online |
-| Internet needed | No (offline engine) | Yes |
+| AI engine | Offline (Ollama) · Gemini (free tier) · Claude (paid) | Gemini (free tier) · Claude (paid) · Offline (Ollama, experimental) |
+| Grammar | AI, LanguageTool offline, or LanguageTool online | LanguageTool online (free, no key) or AI |
+| Internet needed | No (offline engine) | Yes (Google Docs itself is online) |
+
+### Which AI engine?
+
+| Engine | Cost | What you need |
+|---|---|---|
+| **Google Gemini** | Free, with daily limits | A free key from <https://aistudio.google.com> → "Get API key" (just a Google account) |
+| **Claude** | Pay per use (see Costs) | A key from <https://console.anthropic.com> with credit |
+| **Offline (Ollama)** | Free | Ollama on your PC + about 8 GB free disk (see below) |
+
+You can switch engines at any time in **Settings**. Everything else (levels, My voice, languages) works the same.
+On Gemini's free tier, Google may use your text to improve its products, so don't use it for private documents.
+If a Gemini model stops working, click **Find models** in Settings and pick another one.
 
 ---
 
@@ -62,15 +74,15 @@ LanguageTool is a dedicated grammar checker for English and German. It is very f
 3. Double-click **`app/start-languagetool.bat`** and keep that window open.
 4. In Writer, go to **Settings → Checker → LanguageTool on this PC**.
 
-### Optional: cloud quality in the desktop app
+### Use the desktop app without Ollama (no disk space needed)
 
-Go to **Settings → Engine → Cloud: Claude**, then paste an API key from <https://console.anthropic.com>. The key stays in this browser on your PC only.
+Go to **Settings → Engine** and pick **Cloud: Google Gemini** (free key) or **Cloud: Claude** (paid key), then paste the key. Keys stay in this browser on your PC only.
 
 ---
 
 ## Google Docs add-on — setup
 
-The add-on runs on Google's servers, so it uses the **cloud** engine (Claude) and needs an API key.
+The sidebar works without any key for **grammar checking** (LanguageTool online). For Paraphrase and Humanise, pick an AI engine in **⚙ Settings**: Gemini (free key), Claude (paid key) or Offline.
 
 1. Open a Google Doc → **Extensions → Apps Script**.
 2. In the editor, create these files and paste the contents:
@@ -80,7 +92,9 @@ The add-on runs on Google's servers, so it uses the **cloud** engine (Claude) an
    - Click **Project Settings (⚙)**, tick **"Show appsscript.json"**, then replace its content with ← `google-docs/appsscript.json`
 3. Click **Save**, then reload the Google Doc.
 4. Open **Extensions → Emisembe Writer → Open Writer**. Google asks for permission the first time; allow it.
-5. In the sidebar, go to **⚙ Settings**, paste your Claude API key, and click Save.
+5. In the sidebar, open **⚙ Settings**, choose the AI engine, paste its key (Gemini or Claude), and click **Save**.
+
+**Offline AI in Google Docs (experimental):** choose **Offline AI on my PC (Ollama)**. The sidebar runs in your browser, so it can talk to Ollama on your PC directly. Click **Test connection** to check. Chrome may ask you to allow access to devices on your local network: click **Allow**. Chrome might still block Google Docs from reaching your PC. If it does, use the desktop app for offline work.
 
 **Using it:** select text in the document → **Get selected text** → choose your options → **Rephrase / Check grammar** → **Replace selection** (or **Insert below**).
 
@@ -93,7 +107,7 @@ The add-on runs on Google's servers, so it uses the **cloud** engine (Claude) an
 
 ## Costs (cloud only)
 
-The offline engine is free. With Claude you pay per use; there's no subscription and no daily limit. Rough cost for one rewrite of a ~150-word paragraph:
+The offline engine and Gemini's free tier cost nothing. With Claude you pay per use; there's no subscription and no daily limit. Rough cost for one rewrite of a ~150-word paragraph:
 
 | Model | Approx. cost per rewrite |
 |---|---|
@@ -123,7 +137,7 @@ writer/
   app/setup-windows.bat   one-time offline setup (Ollama + model)
   app/start-writer.bat    opens the app
   app/start-languagetool.bat  optional offline grammar server
-  google-docs/Code.gs     add-on server code (Docs selection, Claude, LanguageTool)
+  google-docs/Code.gs     add-on server code (Docs selection, Gemini, Claude, LanguageTool)
   google-docs/Sidebar.html  add-on sidebar UI
   google-docs/appsscript.json  add-on manifest (permissions)
   tests/core.test.js      unit tests:  node --test writer/tests/core.test.js
