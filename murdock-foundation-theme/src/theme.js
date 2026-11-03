@@ -28,10 +28,42 @@
       .replace(/=w\d+-h\d+(-[a-z0-9]+)*$/i, '=' + size);
   }
   var youtubeThumb = /^(https?:\/\/(img\.youtube\.com|i\.ytimg\.com)\/vi\/[^/]+\/)[a-z]*default\.jpg$/i;
+  // Card and gallery photos: a sharp, UNCROPPED copy (posters keep their text)
   $all('img.js-resize').forEach(function (img) {
     var src = img.getAttribute('src') || '';
-    var out = youtubeThumb.test(src) ? src.replace(youtubeThumb, '$1hqdefault.jpg') : sized(src, 'w720-h405-c');
+    var out = youtubeThumb.test(src) ? src.replace(youtubeThumb, '$1hqdefault.jpg') : sized(src, 's900');
     if (out !== src) img.setAttribute('src', out);
+  });
+  $all('.gallery-link img').forEach(function (img) {
+    var src = img.getAttribute('src') || '';
+    var out = sized(src, 's1000');
+    if (out !== src) img.setAttribute('src', out);
+  });
+
+  // Photo frames: fill the frame with a blurred copy of the picture behind it
+  function fillFrame(frame) {
+    var img = frame.querySelector('img');
+    var src = img && img.getAttribute('src');
+    if (src) frame.style.backgroundImage = 'url("' + src.replace(/"/g, '%22') + '")';
+  }
+  $all('.fit-frame').forEach(fillFrame);
+
+  // Photos inside a post: Blogger inserts them small (s320/s400). Load a large copy
+  // and show it across the column; originals smaller than ~60% of it keep their size.
+  $all('.post-body img').forEach(function (img) {
+    var src = img.getAttribute('src') || '';
+    var w = parseInt(img.getAttribute('width'), 10);
+    if (!googleImage.test(src) || (w && w < 120)) return;  // icons, emoji, tracking pixels
+    img.classList.add('post-photo');
+    img.removeAttribute('width');
+    img.removeAttribute('height');
+    var big = sized(src, 's1600');
+    if (big !== src) img.setAttribute('src', big);
+    var check = function () {
+      var col = img.parentNode && img.closest('.post-body');
+      if (col && img.naturalWidth && img.naturalWidth < col.clientWidth * 0.6) img.classList.add('is-small');
+    };
+    if (img.complete) check(); else img.addEventListener('load', check);
   });
   $all('img.js-resize-square').forEach(function (img) {
     var src = img.getAttribute('src') || '';
@@ -123,11 +155,28 @@
       }
     });
     if (desktop) {
-      var onChange = function () { if (desktop.matches) setMenu(false); };
+      var onChange = function () { fitNav(); if (desktop.matches && !root.classList.contains('nav-collapse')) setMenu(false); };
       if (desktop.addEventListener) desktop.addEventListener('change', onChange);
       else if (desktop.addListener) desktop.addListener(onChange);
     }
   }
+
+  // Wide screens show the menu in the header, but only if it fits next to the logo
+  // (long menus or wide logos). Otherwise keep the hamburger, as on phones.
+  function fitNav() {
+    var inner = header && $('.header-inner', header);
+    if (!inner) return;
+    root.classList.remove('nav-collapse');
+    if (!desktop || !desktop.matches) return;
+    if (inner.scrollWidth > inner.clientWidth + 1) root.classList.add('nav-collapse');
+    else if (header.classList.contains('nav-open')) setMenu(false);
+  }
+  fitNav();
+  var fitTimer = null;
+  window.addEventListener('resize', function () { clearTimeout(fitTimer); fitTimer = setTimeout(fitNav, 120); });
+  if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(fitNav);
+  var logo = $('.brand img');
+  if (logo && !logo.complete) logo.addEventListener('load', fitNav);
 
   // Header shadow and back-to-top button
   var backTop = $('#back-to-top');
@@ -257,15 +306,18 @@
           card.href = link.href;
           var thumb = entry.media$thumbnail && entry.media$thumbnail.url;
           if (thumb) {
+            var frame = el('span', 'fit-frame');
             var img = el('img');
-            img.src = sized(thumb, 'w480-h270-c');
+            img.src = sized(thumb, 's600');
             img.alt = '';
             img.loading = 'lazy';
-            card.appendChild(img);
+            frame.appendChild(img);
+            card.appendChild(frame);
+            fillFrame(frame);
           } else {
             card.appendChild(el('span', 'related-ph'));
           }
-          card.appendChild(el('span', '', entry.title ? entry.title.$t : 'Story'));
+          card.appendChild(el('span', 'related-name', entry.title ? entry.title.$t : 'Story'));
           grid.appendChild(card);
           count++;
         });

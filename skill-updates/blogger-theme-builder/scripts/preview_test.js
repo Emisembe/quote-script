@@ -14,6 +14,12 @@ const ok = (cond, label, detail) => { results.push((cond ? 'ok    ' : 'FAIL  ') 
   for (const page of ['home', 'post', 'label', 'search', '404']) {
     for (const width of [1440, 1024, 820, 390, 320]) {
       const ctx = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 1, ignoreHTTPSErrors: true });
+      // Blogger-hosted photos used in sample posts are served from the local placeholders
+      await ctx.route('**/blogger.googleusercontent.com/**', route => {
+        const m = route.request().url().match(/\/(ph-\d+)\//);
+        const file = require('path').join(__dirname, '..', 'preview', 'img', (m ? m[1] : 'ph-1') + '.svg');
+        route.fulfill({ status: 200, contentType: 'image/svg+xml', body: fs.readFileSync(file) });
+      });
       const p = await ctx.newPage();
       const errors = [];
       p.on('pageerror', e => errors.push(e.message));
@@ -27,6 +33,36 @@ const ok = (cond, label, detail) => { results.push((cond ? 'ok    ' : 'FAIL  ') 
       const h1 = await p.evaluate(() => [...document.querySelectorAll('h1')].filter(h => h.offsetParent !== null || h.classList.contains('sr-only')).filter(h => getComputedStyle(h).display !== 'none' && h.closest('[style*="display: none"]') === null).map(h => h.textContent.trim()));
       const visibleH1 = await p.evaluate(() => [...document.querySelectorAll('h1')].filter(h => { let e = h; while (e) { if (getComputedStyle(e).display === 'none') return false; e = e.parentElement; } return true; }).length);
       ok(visibleH1 === 1, `${page}@${width}: exactly one h1`, `found ${visibleH1}`);
+      if (width >= 1100) {
+        const wrap = await p.evaluate(() => {
+          const inner = document.querySelector('.header-inner');
+          const tall = [...document.querySelectorAll('.menu > li > a, .header-cta .btn')].filter(a => a.offsetParent && a.getBoundingClientRect().height > 50).map(a => a.textContent.trim());
+          return { overflow: inner.scrollWidth > inner.clientWidth + 1, tall };
+        });
+        ok(!wrap.overflow && wrap.tall.length === 0, `${page}@${width}: header menu fits on one line`, JSON.stringify(wrap));
+        if (page === 'home') {
+          // A longer menu (like the live site: 9 items and a wide logo) must switch to the hamburger, not wrap
+          const res = await p.evaluate(async () => {
+            const menu = document.querySelector('.menu');
+            ['Contact', 'The Emisembe Report', 'Volunteer opportunities'].forEach(t => { const li = document.createElement('li'); li.innerHTML = '<a href="#">' + t + '</a>'; menu.appendChild(li); });
+            window.dispatchEvent(new Event('resize'));
+            await new Promise(r => setTimeout(r, 300));
+            const inner = document.querySelector('.header-inner');
+            return { collapsed: document.documentElement.classList.contains('nav-collapse'), overflow: inner.scrollWidth > inner.clientWidth + 1,
+                     toggle: getComputedStyle(document.getElementById('nav-toggle')).display };
+          });
+          ok(res.collapsed ? res.toggle !== 'none' && !res.overflow : !res.overflow, `home@${width}: long menu collapses to the hamburger instead of wrapping`, JSON.stringify(res));
+          if (width === 1440) await p.screenshot({ path: `${out}/long-menu-1440.png`, clip: { x: 0, y: 0, width: 1440, height: 120 } });
+          await p.reload({ waitUntil: 'networkidle' });
+          await p.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 400) { window.scrollTo({ top: y, behavior: 'instant' }); await new Promise(r => setTimeout(r, 110)); } window.scrollTo({ top: 0, behavior: 'instant' }); });
+          await p.waitForTimeout(600);
+        }
+      }
+      // Photos are never cropped: every framed image uses object-fit: contain and fits inside its frame
+      const crop = await p.evaluate(() => [...document.querySelectorAll('.fit-frame img, .post-body img.post-photo')]
+        .filter(i => i.offsetParent && getComputedStyle(i).objectFit !== 'contain' && !i.classList.contains('post-photo'))
+        .map(i => i.className || i.src.slice(-30)));
+      ok(crop.length === 0, `${page}@${width}: framed photos show the whole picture`, crop.join(', '));
       if ([1440, 820, 390].includes(width)) {
         await p.screenshot({ path: `${out}/${page}-${width}.png`, fullPage: true });
       }
@@ -93,6 +129,8 @@ const ok = (cond, label, detail) => { results.push((cond ? 'ok    ' : 'FAIL  ') 
         await p.waitForTimeout(500);
         const rel = await p.evaluate(() => ({ hidden: document.querySelector('.related').hidden, n: document.querySelectorAll('.related-card').length }));
         ok(!rel.hidden && rel.n === 3, 'related stories load (current post excluded)', JSON.stringify(rel));
+        const photo = await p.evaluate(() => { const i = document.querySelector('.post-body img.post-photo'); const c = document.querySelector('.post-body'); return i ? [Math.round(i.getBoundingClientRect().width), c.clientWidth, i.getAttribute('src')] : null; });
+        ok(photo && photo[0] >= photo[1] - 2 && /\/s1600\//.test(photo[2]), 'photos in a post fill the column width (large copy loaded)', JSON.stringify(photo));
       }
       await ctx.close();
     }

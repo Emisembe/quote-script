@@ -251,7 +251,7 @@ POSTS = [
 BODY = ('<p>Our team spent the week in the community, listening first and then explaining, step by step, '
         'how people can protect their rights at work and at home. Many of the questions were about land, '
         'tenancy and family matters.</p><div class="separator" style="clear:both;text-align:center">'
-        '<a href="#" style="margin-left:1em;margin-right:1em"><img src="{img}" width="640" height="400"></a></div>'
+        '<a href="#" style="clear:left;float:left;margin-bottom:1em;margin-right:1em"><img src="{gimg}" width="400" height="250" border="0"></a></div>'
         '<h2>What we learned</h2><p>People want clear, practical advice. That is why every clinic now ends with a '
         'short session on where to go next.</p><ul><li>Bring any documents you have</li><li>Ask questions early</li>'
         '<li>Follow up with our team on WhatsApp</li></ul><blockquote>Justice should not depend on what you can afford.'
@@ -261,10 +261,10 @@ BODY = ('<p>Our team spent the week in the community, listening first and then e
 def posts(n=7):
     out = []
     for i, (title, labels) in enumerate(POSTS[:n]):
-        img = placeholder(60 + i, f'Story photo {i + 1}', 1280, 800)
+        img = placeholder(60 + i, f'Story photo {i + 1}', *((800, 1100) if i == 1 else (1280, 800)))  # one portrait poster
         slug = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')
         out.append({
-            'id': str(1000 + i), 'title': title, 'url': f'{HOME}2026/10/{slug}.html', 'body': BODY.format(img=img),
+            'id': str(1000 + i), 'title': title, 'url': f'{HOME}2026/10/{slug}.html', 'body': BODY.format(gimg='https://blogger.googleusercontent.com/img/b/preview/' + img.split('/')[-1].replace('.svg', '') + '/s400/photo.jpg'),
             'firstImageUrl': img if i != 3 else '', 'thumbnailUrl': '',
             'timestamp': '9:00 AM', 'timestampISO8601': f'2026-10-{28 - i:02d}T09:00:00+03:00',
             'author': 'Murdock Emisembe', 'authorProfileUrl': '#', 'labels': [{'name': l, 'isLast': j == len(labels) - 1} for j, l in enumerate(labels)],

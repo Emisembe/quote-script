@@ -43,7 +43,7 @@
 
 <b:includable id='mefCard' var='post'>
   <article class='post-card'>
-    <a aria-hidden='true' class='post-card-media' expr:href='data:post.url' tabindex='-1'>
+    <a aria-hidden='true' class='post-card-media fit-frame' expr:href='data:post.url' tabindex='-1'>
       <b:if cond='data:post.firstImageUrl'>
         <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
       <b:else/>

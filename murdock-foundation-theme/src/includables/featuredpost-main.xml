@@ -7,7 +7,7 @@
 <b:includable id='content'>
   <div class='featured-post'>
     <b:if cond='data:showFirstImage and data:postFirstImage != &quot;&quot;'>
-      <a class='featured-media' expr:href='data:postUrl'><img alt='' class='js-resize' expr:src='data:postFirstImage' loading='lazy'/></a>
+      <a class='featured-media fit-frame' expr:href='data:postUrl'><img alt='' class='js-resize' expr:src='data:postFirstImage' loading='lazy'/></a>
     </b:if>
     <b:if cond='data:showPostTitle and data:postTitle != &quot;&quot;'>
       <h3 class='featured-title'><a expr:href='data:postUrl'><data:postTitle/></a></h3>

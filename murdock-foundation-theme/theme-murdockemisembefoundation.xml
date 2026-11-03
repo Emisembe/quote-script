@@ -115,7 +115,7 @@ body .widget li { margin: 0; padding: 0; }
 /* ---------- Buttons ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 46px; padding: 10px 22px; border-radius: 999px;
+  min-height: 46px; padding: 10px 22px; border-radius: 999px; white-space: nowrap;
   font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 600; line-height: 1.2;
   border: 2px solid transparent; cursor: pointer; text-align: center;
   transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
@@ -152,7 +152,7 @@ body .widget li { margin: 0; padding: 0; }
 .header-inner { display: flex; align-items: center; gap: 16px; min-height: 76px; }
 .brand-section { flex: 0 0 auto; }
 .brand { display: flex; align-items: center; }
-.brand-logo { display: block; height: 52px; width: auto; max-width: 220px; object-fit: contain; }
+.brand-logo { display: block; height: 56px; width: auto; max-width: min(240px, 58vw); object-fit: contain; object-position: left center; }
 .brand-name { font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-size: 22px; color: $(heading.color); font-weight: 700; }
 
 .nav-toggle {
@@ -180,7 +180,7 @@ body .widget li { margin: 0; padding: 0; }
 .nav-open .nav-drawer { visibility: visible; opacity: 1; transform: none; transition: opacity .2s ease, transform .2s ease; }
 .menu > li { border-bottom: 1px solid #DCE5EB; }
 .menu a {
-  display: block; padding: 14px 4px; color: $(heading.color); font-weight: 600; font-size: 17px;
+  display: block; padding: 14px 4px; color: $(heading.color); font-weight: 600; font-size: 17px; white-space: nowrap;
 }
 .menu a:hover, .menu a.is-current { color: $(primary.color); }
 .menu .has-sub { position: relative; }
@@ -197,31 +197,31 @@ body .widget li { margin: 0; padding: 0; }
 .header-cta .btn { width: 100%; min-height: 50px; font-size: 16px; }
 
 @media (min-width: 1100px) {
-  .nav-toggle { display: none; }
-  .nav-drawer {
+  html:not(.nav-collapse) .nav-toggle { display: none; }
+  html:not(.nav-collapse) .nav-drawer {
     position: static; display: flex; align-items: center; gap: 22px; margin-left: auto;
     padding: 0; border: 0; overflow: visible; background: transparent;
     visibility: visible; opacity: 1; transform: none; transition: none;
   }
-  .menu { display: flex; align-items: center; gap: 4px; }
-  .menu > li { border: 0; position: relative; }
-  .menu > li > a { padding: 10px 12px; font-size: 15px; border-radius: 8px; }
-  .menu > li > a:hover { background: #EEF4F7; }
-  .menu .has-sub > a { padding-right: 26px; }
-  .menu .sub-toggle { top: 7px; right: 2px; width: 24px; height: 28px; }
-  .menu .submenu {
+  html:not(.nav-collapse) .menu { display: flex; align-items: center; gap: 4px; }
+  html:not(.nav-collapse) .menu > li { border: 0; position: relative; }
+  html:not(.nav-collapse) .menu > li > a { padding: 10px 11px; font-size: 15px; border-radius: 8px; }
+  html:not(.nav-collapse) .menu > li > a:hover { background: #EEF4F7; }
+  html:not(.nav-collapse) .menu .has-sub > a { padding-right: 26px; }
+  html:not(.nav-collapse) .menu .sub-toggle { top: 7px; right: 2px; width: 24px; height: 28px; }
+  html:not(.nav-collapse) .menu .submenu {
     display: block; position: absolute; left: 0; top: 100%; min-width: 220px; padding: 8px;
     background: #FFFFFF; border-radius: 12px; box-shadow: 0 2px 4px rgba(15, 37, 51, 0.08), 0 18px 40px rgba(15, 37, 51, 0.14);
     opacity: 0; visibility: hidden; transform: translateY(6px);
     transition: opacity .18s ease, transform .18s ease, visibility 0s linear .18s;
   }
-  .menu .has-sub:hover > .submenu, .menu .has-sub:focus-within > .submenu, .menu .has-sub.sub-open > .submenu {
+  html:not(.nav-collapse) .menu .has-sub:hover > .submenu, html:not(.nav-collapse) .menu .has-sub:focus-within > .submenu, html:not(.nav-collapse) .menu .has-sub.sub-open > .submenu {
     opacity: 1; visibility: visible; transform: none; transition: opacity .18s ease, transform .18s ease;
   }
-  .menu .submenu a { padding: 9px 12px; border-radius: 8px; font-size: 15px; }
-  .menu .submenu a:hover { background: #EEF4F7; }
-  .header-cta { margin: 0; }
-  .header-cta .btn { width: auto; min-height: 44px; font-size: 15px; padding: 10px 24px; }
+  html:not(.nav-collapse) .menu .submenu a { padding: 9px 12px; border-radius: 8px; font-size: 15px; }
+  html:not(.nav-collapse) .menu .submenu a:hover { background: #EEF4F7; }
+  html:not(.nav-collapse) .header-cta { margin: 0; }
+  html:not(.nav-collapse) .header-cta .btn { width: auto; min-height: 44px; font-size: 15px; padding: 10px 24px; }
 }
 
 /* ---------- Hero slider ---------- */
@@ -336,26 +336,30 @@ body .section-intro { max-width: 720px; margin: 0 auto 48px; text-align: center;
 .card-grid p { color: #5B6B76; font-size: 16px; }
 .card-grid p:last-child { margin-bottom: 0; }
 
+/* Photo frames: the whole picture stays visible (posters keep their text), centred
+   over a blurred copy of itself so the frame is always filled. JS copies the
+   image into the frame's background-image; without JS the frame is plain blue. */
+.fit-frame { position: relative; display: block; overflow: hidden; background-color: $(primary.deep.color); background-size: cover; background-position: center; }
+.fit-frame::before {
+  content: ''; position: absolute; inset: -30px; background-image: inherit; background-size: cover; background-position: center;
+  filter: blur(22px) saturate(1.15) brightness(0.72); transform: scale(1.08);
+}
+.fit-frame img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; }
+
 /* Projects gallery */
-.gallery { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-@media (min-width: 900px) {
-  .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 240px; gap: 18px; }
-  .gallery .widget:nth-child(6n+1) { grid-row: span 2; }
-}
-.gallery-item { margin: 0; height: 100%; }
-.gallery-link {
-  position: relative; display: block; height: 100%; min-height: 160px; border-radius: 14px;
-  overflow: hidden; background: #DCE5EB;
-}
-.gallery-link img { display: block; width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4 / 3; transition: transform .6s ease; }
-@media (min-width: 900px) { .gallery-link img { aspect-ratio: auto; } }
-.gallery-link::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(11, 51, 73, 0.65), rgba(11, 51, 73, 0) 60%); opacity: 0; transition: opacity .3s ease; }
+.gallery { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 480px) { .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; } }
+.gallery-item { margin: 0; }
+.gallery-link { aspect-ratio: 4 / 3; border-radius: 14px; box-shadow: 0 1px 2px rgba(15, 37, 51, 0.06), 0 8px 24px rgba(15, 37, 51, 0.08); }
+.gallery-link img { transition: transform .6s ease; }
+.gallery-link::after { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(0deg, rgba(11, 51, 73, 0.55), rgba(11, 51, 73, 0) 50%); opacity: 0; transition: opacity .3s ease; }
 .gallery-zoom {
-  position: absolute; right: 14px; bottom: 14px; z-index: 1; width: 42px; height: 42px; border-radius: 50%;
+  position: absolute; right: 14px; bottom: 14px; z-index: 2; width: 42px; height: 42px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center; background: #FFFFFF; color: $(primary.color);
   opacity: 0; transform: translateY(8px); transition: opacity .3s ease, transform .3s ease;
 }
-.gallery-link:hover img, .gallery-link:focus-visible img { transform: scale(1.05); }
+.gallery-link:hover img, .gallery-link:focus-visible img { transform: scale(1.03); }
 .gallery-link:hover::after, .gallery-link:hover .gallery-zoom,
 .gallery-link:focus-visible::after, .gallery-link:focus-visible .gallery-zoom { opacity: 1; transform: none; }
 .gallery .img-caption { font-size: 14px; color: #5B6B76; padding-top: 8px; }
@@ -382,10 +386,11 @@ body .section-intro { max-width: 720px; margin: 0 auto 48px; text-align: center;
   border-radius: 14px; overflow: hidden; transition: transform .25s ease, box-shadow .25s ease;
 }
 .post-card:hover { transform: translateY(-4px); box-shadow: 0 2px 4px rgba(15, 37, 51, 0.08), 0 18px 40px rgba(15, 37, 51, 0.14); }
-.post-card-media { display: block; aspect-ratio: 16 / 9; background: linear-gradient(135deg, $(primary.color), $(primary.deep.color)); overflow: hidden; }
-.post-card-media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s ease; }
-.post-card:hover .post-card-media img { transform: scale(1.04); }
-.post-card-placeholder { display: flex; align-items: center; justify-content: center; height: 100%; color: rgba(255, 255, 255, 0.7); font-size: 40px; }
+.post-card-media { aspect-ratio: 16 / 10; background-image: linear-gradient(135deg, $(primary.color), $(primary.deep.color)); }
+.post-card-media img { transition: transform .6s ease; }
+.post-card:hover .post-card-media img { transform: scale(1.03); }
+@media (max-width: 639px) { .post-card-media { aspect-ratio: 4 / 3; } }
+.post-card-placeholder { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; height: 100%; color: rgba(255, 255, 255, 0.7); font-size: 40px; }
 .post-card-body { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 22px 24px 26px; flex: 1; }
 .post-card-labels .badge:nth-child(n+2) { display: none; }
 .post-card-title { font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-size: 22px; line-height: 1.25; margin: 4px 0 0; }
@@ -426,6 +431,14 @@ body .section-intro { max-width: 720px; margin: 0 auto 48px; text-align: center;
 .post-body a { text-decoration: underline; text-decoration-color: rgba(20, 84, 116, 0.35); text-underline-offset: 3px; }
 .post-body a:hover { text-decoration-color: $(accent.color); }
 .post-body img { border-radius: 10px; }
+/* Photos in posts: Blogger inserts them small (s320/s400) and floated; show them
+   full width and sharp (JS swaps in a large copy). Small originals stay their size. */
+.post-body .separator, .post-body .tr-caption-container { clear: both; float: none !important; margin: 1.6em auto !important; text-align: center; }
+.post-body .separator a, .post-body .tr-caption-container a { display: block; float: none !important; margin-left: 0 !important; margin-right: 0 !important; }
+.post-body img.post-photo { display: block; width: 100%; height: auto; max-width: 100%; margin: 0 auto; box-shadow: 0 1px 2px rgba(15, 37, 51, 0.06), 0 8px 24px rgba(15, 37, 51, 0.08); background: #EEF4F7; }
+.post-body img.post-photo.is-small { width: auto; }
+.post-body .tr-caption-container { width: 100% !important; }
+.post-body .tr-caption { padding-top: 8px; font-size: 14px; color: #5B6B76; }
 .post-body blockquote {
   margin: 1.5em 0; padding: 18px 24px; border-left: 4px solid $(accent.color);
   background: $(sand.color); border-radius: 0 10px 10px 0; font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-size: 21px; color: $(heading.color);
@@ -437,9 +450,6 @@ body .widget .post-body ul, body .widget .post-body ol { margin: 0 0 1.2em; padd
 body .widget .post-body ul { list-style: disc; }
 body .widget .post-body ol { list-style: decimal; }
 body .widget .post-body li { margin: .3em 0; padding: 0; }
-@media (max-width: 600px) {
-  .post-body .separator a { float: none !important; margin-left: 0 !important; margin-right: 0 !important; }
-}
 .post-share { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 40px 0 0; padding: 22px 0; border-top: 1px solid #DCE5EB; border-bottom: 1px solid #DCE5EB; }
 .post-share-label { width: 100%; font-weight: 700; color: $(heading.color); font-size: 15px; }
 .post-share a, .post-share button {
@@ -456,8 +466,8 @@ body .widget .post-body li { margin: .3em 0; padding: 0; }
 @media (min-width: 640px) { .related-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .related-card { display: block; border-radius: 12px; overflow: hidden; background: #FFFFFF; border: 1px solid #DCE5EB; color: $(heading.color); transition: box-shadow .25s ease, transform .25s ease; }
 .related-card:hover { box-shadow: 0 1px 2px rgba(15, 37, 51, 0.06), 0 8px 24px rgba(15, 37, 51, 0.08); transform: translateY(-3px); color: $(primary.color); }
-.related-card img, .related-card .related-ph { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: linear-gradient(135deg, $(primary.color), $(primary.deep.color)); }
-.related-card span { display: block; padding: 12px 14px 14px; font-weight: 600; font-size: 15px; line-height: 1.4; }
+.related-card .fit-frame, .related-card .related-ph { display: block; width: 100%; aspect-ratio: 16 / 10; background-image: linear-gradient(135deg, $(primary.color), $(primary.deep.color)); }
+.related-card .related-name { display: block; padding: 12px 14px 14px; font-weight: 600; font-size: 15px; line-height: 1.4; }
 .post-cta {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;
   margin-top: 44px; padding: 24px 28px; border-radius: 14px; background: $(sand.color);
@@ -499,7 +509,7 @@ body .mini-posts li:first-child { border-top: 0; padding-top: 0; }
 .mini-title { font-weight: 600; color: $(heading.color); line-height: 1.4; font-size: 15px; }
 .mini-title:hover { color: $(primary.color); }
 .mini-snippet { margin: 4px 0 0; font-size: 14px; color: #5B6B76; }
-.featured-media img { display: block; width: 100%; border-radius: 10px; aspect-ratio: 16 / 9; object-fit: cover; margin-bottom: 12px; }
+.featured-media { border-radius: 10px; aspect-ratio: 16 / 10; margin-bottom: 12px; }
 .featured-title { font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-size: 19px; margin-bottom: 8px; }
 .featured-title a { color: $(heading.color); }
 .featured-snippet { font-size: 15px; color: #5B6B76; margin-bottom: 8px; }
@@ -600,7 +610,9 @@ body .footer-col li { padding: 5px 0; }
 .copyright { margin: 0; }
 .footer-credit p, .footer-credit .widget-content { margin: 0; }
 .footer-translate { margin-left: auto; }
-.footer-translate .goog-te-gadget { color: rgba(255, 255, 255, 0.7) !important; font-size: 12px; }
+.footer-translate .title, .footer-translate h2 { display: none; }
+.footer-translate .goog-te-gadget { color: rgba(255, 255, 255, 0.6) !important; font-size: 12px; font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; }
+.footer-translate .goog-te-gadget a, .footer-translate .goog-te-gadget span { color: rgba(255, 255, 255, 0.6) !important; }
 .footer-translate select { padding: 6px 8px; border-radius: 8px; border: 0; color: $(heading.color); }
 @media (max-width: 767px) {
   .footer-bottom-inner { flex-direction: column; text-align: center; }
@@ -1162,7 +1174,7 @@ body#layout .section { margin: 0 0 6px; }
 </b:widget-settings>
 <b:includable id='main'>
   <figure class='gallery-item'>
-    <a class='gallery-link' expr:href='data:sourceUrl' expr:title='data:title'>
+    <a class='gallery-link fit-frame' expr:href='data:sourceUrl' expr:title='data:title'>
       <img expr:alt='data:title' expr:height='data:height' expr:id='data:widget.instanceId + &quot;_img&quot;' expr:src='data:sourceUrl' expr:width='data:width' loading='lazy'/>
       <span aria-hidden='true' class='gallery-zoom'><i class='fa fa-search-plus'/></span>
     </a>
@@ -1185,7 +1197,7 @@ body#layout .section { margin: 0 0 6px; }
 </b:widget-settings>
 <b:includable id='main'>
   <figure class='gallery-item'>
-    <a class='gallery-link' expr:href='data:sourceUrl' expr:title='data:title'>
+    <a class='gallery-link fit-frame' expr:href='data:sourceUrl' expr:title='data:title'>
       <img expr:alt='data:title' expr:height='data:height' expr:id='data:widget.instanceId + &quot;_img&quot;' expr:src='data:sourceUrl' expr:width='data:width' loading='lazy'/>
       <span aria-hidden='true' class='gallery-zoom'><i class='fa fa-search-plus'/></span>
     </a>
@@ -1208,7 +1220,7 @@ body#layout .section { margin: 0 0 6px; }
 </b:widget-settings>
 <b:includable id='main'>
   <figure class='gallery-item'>
-    <a class='gallery-link' expr:href='data:sourceUrl' expr:title='data:title'>
+    <a class='gallery-link fit-frame' expr:href='data:sourceUrl' expr:title='data:title'>
       <img expr:alt='data:title' expr:height='data:height' expr:id='data:widget.instanceId + &quot;_img&quot;' expr:src='data:sourceUrl' expr:width='data:width' loading='lazy'/>
       <span aria-hidden='true' class='gallery-zoom'><i class='fa fa-search-plus'/></span>
     </a>
@@ -1231,7 +1243,7 @@ body#layout .section { margin: 0 0 6px; }
 </b:widget-settings>
 <b:includable id='main'>
   <figure class='gallery-item'>
-    <a class='gallery-link' expr:href='data:sourceUrl' expr:title='data:title'>
+    <a class='gallery-link fit-frame' expr:href='data:sourceUrl' expr:title='data:title'>
       <img expr:alt='data:title' expr:height='data:height' expr:id='data:widget.instanceId + &quot;_img&quot;' expr:src='data:sourceUrl' expr:width='data:width' loading='lazy'/>
       <span aria-hidden='true' class='gallery-zoom'><i class='fa fa-search-plus'/></span>
     </a>
@@ -1254,7 +1266,7 @@ body#layout .section { margin: 0 0 6px; }
 </b:widget-settings>
 <b:includable id='main'>
   <figure class='gallery-item'>
-    <a class='gallery-link' expr:href='data:sourceUrl' expr:title='data:title'>
+    <a class='gallery-link fit-frame' expr:href='data:sourceUrl' expr:title='data:title'>
       <img expr:alt='data:title' expr:height='data:height' expr:id='data:widget.instanceId + &quot;_img&quot;' expr:src='data:sourceUrl' expr:width='data:width' loading='lazy'/>
       <span aria-hidden='true' class='gallery-zoom'><i class='fa fa-search-plus'/></span>
     </a>
@@ -1277,7 +1289,7 @@ body#layout .section { margin: 0 0 6px; }
 </b:widget-settings>
 <b:includable id='main'>
   <figure class='gallery-item'>
-    <a class='gallery-link' expr:href='data:sourceUrl' expr:title='data:title'>
+    <a class='gallery-link fit-frame' expr:href='data:sourceUrl' expr:title='data:title'>
       <img expr:alt='data:title' expr:height='data:height' expr:id='data:widget.instanceId + &quot;_img&quot;' expr:src='data:sourceUrl' expr:width='data:width' loading='lazy'/>
       <span aria-hidden='true' class='gallery-zoom'><i class='fa fa-search-plus'/></span>
     </a>
@@ -1482,7 +1494,7 @@ body#layout .section { margin: 0 0 6px; }
 
 <b:includable id='mefCard' var='post'>
   <article class='post-card'>
-    <a aria-hidden='true' class='post-card-media' expr:href='data:post.url' tabindex='-1'>
+    <a aria-hidden='true' class='post-card-media fit-frame' expr:href='data:post.url' tabindex='-1'>
       <b:if cond='data:post.firstImageUrl'>
         <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
       <b:else/>
@@ -2160,7 +2172,7 @@ body#layout .section { margin: 0 0 6px; }
 <b:includable id='content'>
   <div class='featured-post'>
     <b:if cond='data:showFirstImage and data:postFirstImage != &quot;&quot;'>
-      <a class='featured-media' expr:href='data:postUrl'><img alt='' class='js-resize' expr:src='data:postFirstImage' loading='lazy'/></a>
+      <a class='featured-media fit-frame' expr:href='data:postUrl'><img alt='' class='js-resize' expr:src='data:postFirstImage' loading='lazy'/></a>
     </b:if>
     <b:if cond='data:showPostTitle and data:postTitle != &quot;&quot;'>
       <h3 class='featured-title'><a expr:href='data:postUrl'><data:postTitle/></a></h3>
@@ -2799,10 +2811,42 @@ body#layout .section { margin: 0 0 6px; }
       .replace(/=w\d+-h\d+(-[a-z0-9]+)*$/i, '=' + size);
   }
   var youtubeThumb = /^(https?:\/\/(img\.youtube\.com|i\.ytimg\.com)\/vi\/[^/]+\/)[a-z]*default\.jpg$/i;
+  // Card and gallery photos: a sharp, UNCROPPED copy (posters keep their text)
   $all('img.js-resize').forEach(function (img) {
     var src = img.getAttribute('src') || '';
-    var out = youtubeThumb.test(src) ? src.replace(youtubeThumb, '$1hqdefault.jpg') : sized(src, 'w720-h405-c');
+    var out = youtubeThumb.test(src) ? src.replace(youtubeThumb, '$1hqdefault.jpg') : sized(src, 's900');
     if (out !== src) img.setAttribute('src', out);
+  });
+  $all('.gallery-link img').forEach(function (img) {
+    var src = img.getAttribute('src') || '';
+    var out = sized(src, 's1000');
+    if (out !== src) img.setAttribute('src', out);
+  });
+
+  // Photo frames: fill the frame with a blurred copy of the picture behind it
+  function fillFrame(frame) {
+    var img = frame.querySelector('img');
+    var src = img && img.getAttribute('src');
+    if (src) frame.style.backgroundImage = 'url("' + src.replace(/"/g, '%22') + '")';
+  }
+  $all('.fit-frame').forEach(fillFrame);
+
+  // Photos inside a post: Blogger inserts them small (s320/s400). Load a large copy
+  // and show it across the column; originals smaller than ~60% of it keep their size.
+  $all('.post-body img').forEach(function (img) {
+    var src = img.getAttribute('src') || '';
+    var w = parseInt(img.getAttribute('width'), 10);
+    if (!googleImage.test(src) || (w && w < 120)) return;  // icons, emoji, tracking pixels
+    img.classList.add('post-photo');
+    img.removeAttribute('width');
+    img.removeAttribute('height');
+    var big = sized(src, 's1600');
+    if (big !== src) img.setAttribute('src', big);
+    var check = function () {
+      var col = img.parentNode && img.closest('.post-body');
+      if (col && img.naturalWidth && img.naturalWidth < col.clientWidth * 0.6) img.classList.add('is-small');
+    };
+    if (img.complete) check(); else img.addEventListener('load', check);
   });
   $all('img.js-resize-square').forEach(function (img) {
     var src = img.getAttribute('src') || '';
@@ -2894,11 +2938,28 @@ body#layout .section { margin: 0 0 6px; }
       }
     });
     if (desktop) {
-      var onChange = function () { if (desktop.matches) setMenu(false); };
+      var onChange = function () { fitNav(); if (desktop.matches && !root.classList.contains('nav-collapse')) setMenu(false); };
       if (desktop.addEventListener) desktop.addEventListener('change', onChange);
       else if (desktop.addListener) desktop.addListener(onChange);
     }
   }
+
+  // Wide screens show the menu in the header, but only if it fits next to the logo
+  // (long menus or wide logos). Otherwise keep the hamburger, as on phones.
+  function fitNav() {
+    var inner = header && $('.header-inner', header);
+    if (!inner) return;
+    root.classList.remove('nav-collapse');
+    if (!desktop || !desktop.matches) return;
+    if (inner.scrollWidth > inner.clientWidth + 1) root.classList.add('nav-collapse');
+    else if (header.classList.contains('nav-open')) setMenu(false);
+  }
+  fitNav();
+  var fitTimer = null;
+  window.addEventListener('resize', function () { clearTimeout(fitTimer); fitTimer = setTimeout(fitNav, 120); });
+  if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(fitNav);
+  var logo = $('.brand img');
+  if (logo && !logo.complete) logo.addEventListener('load', fitNav);
 
   // Header shadow and back-to-top button
   var backTop = $('#back-to-top');
@@ -3028,15 +3089,18 @@ body#layout .section { margin: 0 0 6px; }
           card.href = link.href;
           var thumb = entry.media$thumbnail && entry.media$thumbnail.url;
           if (thumb) {
+            var frame = el('span', 'fit-frame');
             var img = el('img');
-            img.src = sized(thumb, 'w480-h270-c');
+            img.src = sized(thumb, 's600');
             img.alt = '';
             img.loading = 'lazy';
-            card.appendChild(img);
+            frame.appendChild(img);
+            card.appendChild(frame);
+            fillFrame(frame);
           } else {
             card.appendChild(el('span', 'related-ph'));
           }
-          card.appendChild(el('span', '', entry.title ? entry.title.$t : 'Story'));
+          card.appendChild(el('span', 'related-name', entry.title ? entry.title.$t : 'Story'));
           grid.appendChild(card);
           count++;
         });
