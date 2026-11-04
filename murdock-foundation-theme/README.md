@@ -25,6 +25,7 @@ leftovers. Every gadget the foundation already had keeps its ID and pictures.
 |---|---|---|
 | Header | **HTML29** (Donate button) | A real donation link (M-Pesa Paybill page, PayPal, bank details page). It points to the *Get involved* section for now. |
 | Get involved | **HTML14** | The same donation link on the *Donate* button. |
+| Every page | **Quick contact buttons** (HTML30) | The floating WhatsApp, Telegram and Call buttons. Use a Telegram username link (`https://t.me/yourname`) if you have one; the default `https://t.me/+254705782994` only works if your Telegram privacy lets people find you by number. |
 | Footer | **Social Footer** | Facebook, X and Instagram addresses. Icons left as `#` stay hidden until a real link is added. |
 | Team | **Murdock Emisembe / Onesmas Gathuku / Jayne Kabosa** | Personal social links (hidden while `#`). Check Jayne's bio. |
 | Who we are | **HTML25** | Review the mission text (written from the site's own programme list). |

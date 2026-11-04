@@ -159,6 +159,17 @@ const ok = (cond, label, detail) => { results.push((cond ? 'ok    ' : 'FAIL  ') 
         await Promise.all([p.waitForNavigation({ waitUntil: 'networkidle' }), p.evaluate(() => document.querySelector('.footer-langs [data-lang="en"]').click())]);
         ok(await p.evaluate(() => !/googtrans=\/en\/[a-z]/.test(document.cookie) && document.documentElement.dir === 'ltr' && document.querySelector('.footer-langs .is-active').getAttribute('data-lang') === 'en'), `English restores the original page (${width})`);
       }
+      // Quick contact buttons: WhatsApp, Telegram, phone; never on top of the back-to-top button
+      const fc = await p.evaluate(async () => {
+        window.scrollTo({ top: 1500, behavior: 'instant' }); await new Promise(r => setTimeout(r, 300));
+        const links = [...document.querySelectorAll('#float-contact a')].filter(a => getComputedStyle(a).display !== 'none');
+        const b = document.getElementById('back-to-top').getBoundingClientRect();
+        const hit = links.some(a => { const r = a.getBoundingClientRect(); return !(r.right <= b.left || r.left >= b.right || r.bottom <= b.top || r.top >= b.bottom); });
+        const kinds = links.map(a => a.getAttribute('href').startsWith('tel:') ? 'phone' : /t\.me/.test(a.href) ? 'telegram' : /whatsapp/.test(a.href) ? 'whatsapp' : 'other');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        return { kinds: kinds.join(','), hit };
+      });
+      ok(fc.kinds === 'whatsapp,telegram,phone' && !fc.hit, `${page}@${width}: quick contact buttons (WhatsApp, Telegram, Call)`, JSON.stringify(fc));
       if (page === 'post' && width === 1440) {
         await p.waitForTimeout(500);
         const rel = await p.evaluate(() => ({ hidden: document.querySelector('.related').hidden, n: document.querySelectorAll('.related-card').length }));

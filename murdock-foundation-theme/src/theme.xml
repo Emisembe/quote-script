@@ -436,7 +436,7 @@ Page not found | <data:blog.title/>
 <b:widget id='HTML14' locked='false' title='There are numerous ways you can help our cause. Especially with your time, but also financially.' type='HTML' version='1'>
 <b:widget-settings>
   <b:widget-setting name='content'><![CDATA[<p>Volunteer your time, share your skills, or support our programmes financially. Get in touch and we will tell you how you can help.</p>
-<p class="btn-row"><a class="btn btn-accent" href="#contact">Donate</a> <a class="btn btn-light" href="#contact">Become a volunteer</a> <a class="btn btn-light" href="https://api.whatsapp.com/send?phone=254705782994"><i class="fa fa-whatsapp" aria-hidden="true"></i> WhatsApp us</a></p>]]></b:widget-setting>
+<p class="btn-row"><a class="btn btn-accent" href="#contact">Donate</a> <a class="btn btn-light" href="#contact">Become a volunteer</a> <a class="btn btn-light" href="https://api.whatsapp.com/send?phone=254705782994"><i class="fa fa-whatsapp" aria-hidden="true"></i> WhatsApp us</a> <a class="btn btn-light" href="https://t.me/+254705782994"><i class="fa fa-telegram" aria-hidden="true"></i> Telegram</a> <a class="btn btn-light" href="tel:+254705782994"><i class="fa fa-phone" aria-hidden="true"></i> Call us</a></p>]]></b:widget-setting>
 </b:widget-settings>
 @@HTML_BAND@@
 </b:widget>
@@ -731,6 +731,8 @@ Page not found | <data:blog.title/>
   <b:widget-setting name='content'><![CDATA[<p>Need legal advice, want to volunteer or partner with us? Send us a message and our team will get back to you.</p>
 <ul class="contact-list">
 <li><i class="fa fa-whatsapp" aria-hidden="true"></i> <a href="https://api.whatsapp.com/send?phone=254705782994">+254 705 782 994</a> (WhatsApp)</li>
+<li><i class="fa fa-telegram" aria-hidden="true"></i> <a href="https://t.me/+254705782994">Message us on Telegram</a></li>
+<li><i class="fa fa-phone" aria-hidden="true"></i> <a href="tel:+254705782994">Call +254 705 782 994</a></li>
 <li><i class="fa fa-youtube-play" aria-hidden="true"></i> <a href="https://www.youtube.com/channel/UCbptIql_tryAanQtVLZq47A">The Emisembe Report</a></li>
 <li><i class="fa fa-calendar" aria-hidden="true"></i> <a href="/p/blog-page.html">Book an appointment</a></li>
 </ul>]]></b:widget-setting>
@@ -785,7 +787,9 @@ Page not found | <data:blog.title/>
 <a class="twitter" href="#" aria-label="X (Twitter)"><i class="fa fa-twitter" aria-hidden="true"></i></a>
 <a class="instagram" href="#" aria-label="Instagram"><i class="fa fa-instagram" aria-hidden="true"></i></a>
 <a class="youtube" href="https://www.youtube.com/channel/UCbptIql_tryAanQtVLZq47A" aria-label="YouTube"><i class="fa fa-youtube-play" aria-hidden="true"></i></a>
-<a class="whatsapp" href="https://api.whatsapp.com/send?phone=254705782994" aria-label="WhatsApp"><i class="fa fa-whatsapp" aria-hidden="true"></i></a>]]></b:widget-setting>
+<a class="whatsapp" href="https://api.whatsapp.com/send?phone=254705782994" aria-label="WhatsApp"><i class="fa fa-whatsapp" aria-hidden="true"></i></a>
+<a class="telegram" href="https://t.me/+254705782994" aria-label="Telegram"><i class="fa fa-telegram" aria-hidden="true"></i></a>
+<a class="phone" href="tel:+254705782994" aria-label="Call us"><i class="fa fa-phone" aria-hidden="true"></i></a>]]></b:widget-setting>
 </b:widget-settings>
 @@HTML_SOCIAL@@
 </b:widget>
@@ -876,6 +880,17 @@ Page not found | <data:blog.title/>
     </div>
   </div>
 </footer>
+
+<b:section class='float-contact notranslate' id='float-contact' maxwidgets='1' showaddelement='no'>
+<b:widget id='HTML30' locked='false' title='Quick contact buttons' type='HTML'>
+<b:widget-settings>
+  <b:widget-setting name='content'><![CDATA[<a href="https://api.whatsapp.com/send?phone=254705782994" aria-label="WhatsApp"><i class="fa fa-whatsapp" aria-hidden="true"></i><span>WhatsApp</span></a>
+<a href="https://t.me/+254705782994" aria-label="Telegram"><i class="fa fa-telegram" aria-hidden="true"></i><span>Telegram</span></a>
+<a href="tel:+254705782994" aria-label="Call us"><i class="fa fa-phone" aria-hidden="true"></i><span>Call us</span></a>]]></b:widget-setting>
+</b:widget-settings>
+@@HTML_FLOAT@@
+</b:widget>
+</b:section>
 
 <a aria-label='Back to top' class='back-to-top' href='#top' id='back-to-top'><i aria-hidden='true' class='fa fa-angle-up'/></a>
 

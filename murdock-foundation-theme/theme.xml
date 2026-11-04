@@ -517,6 +517,7 @@ body .widget .post-body li { margin: .3em 0; padding: 0; }
 }
 .post-share a:hover, .post-share button:hover { background: $(primary.color); border-color: $(primary.color); color: #FFFFFF; }
 .post-share .share-whatsapp:hover { background: #128C4B; border-color: #128C4B; }
+.post-share .share-telegram:hover { background: #1E88C7; border-color: #1E88C7; }
 .related { margin-top: 44px; }
 .related-label { display: none; }
 .related-title { font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-size: 26px; }
@@ -685,6 +686,34 @@ body .footer-col li { padding: 5px 0; }
 .back-to-top.is-visible { opacity: 1; visibility: visible; transform: none; transition: opacity .25s ease, transform .25s ease; }
 .back-to-top:hover { color: $(heading.color); background: #9BCB5A; }
 
+/* ---------- Quick contact buttons (gadget HTML30, edit in Layout) ----------
+   Each link's colour follows its address: WhatsApp, Telegram (t.me) or phone (tel:).
+   A link left as "#" is hidden. */
+.float-contact { position: fixed; left: 16px; bottom: 18px; z-index: 90; }
+.float-buttons { display: flex; flex-direction: column; gap: 10px; }
+.float-buttons a {
+  display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; border-radius: 50%;
+  background: $(primary.color); color: #FFFFFF; font-size: 24px; box-shadow: 0 2px 4px rgba(15, 37, 51, 0.08), 0 18px 40px rgba(15, 37, 51, 0.14);
+  transition: transform .2s ease;
+}
+.float-buttons a:hover { transform: scale(1.08); color: #FFFFFF; }
+.float-buttons a[href*="whatsapp"], .float-buttons a[href*="wa.me"] { background: #1FA855; }
+.float-buttons a[href*="t.me"], .float-buttons a[href*="telegram"] { background: #229ED9; }
+.float-buttons a[href^="tel:"] { background: $(primary.color); font-size: 22px; }
+.float-buttons a span { display: none; }
+.float-buttons a[href="#"], .float-buttons a[href=""] { display: none; }
+html.no-scroll .float-contact { display: none; }
+@media (max-width: 767px) {
+  .float-contact { left: 12px; bottom: 12px; }
+  .float-buttons { flex-direction: row; }
+  .float-buttons a { width: 46px; height: 46px; font-size: 22px; }
+  .back-to-top { right: 12px; bottom: 12px; }
+  .site-footer { padding-bottom: 72px; }
+}
+html[dir="rtl"] .float-contact { left: auto; right: 16px; }
+html[dir="rtl"] .back-to-top { right: auto; left: 18px; }
+.site-footer .social a[href^="tel:"]:hover { background: $(accent.color); }
+
 /* ---------- Lightbox ---------- */
 .lightbox {
   position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center;
@@ -747,6 +776,7 @@ body#layout .hero-slides .widget { opacity: 1; visibility: visible; transform: n
 body#layout .nav-drawer { position: static; display: block; visibility: visible; opacity: 1; transform: none; }
 body#layout .nav-toggle, body#layout .skip-link, body#layout .hero-controls, body#layout .copyright,
 body#layout .back-to-top, body#layout .lightbox { display: none; }
+body#layout .float-contact { position: static; }
 body#layout .container { max-width: none; padding: 0; }
 body#layout .band, body#layout .page-hero { padding: 10px 0; }
 body#layout .band-photo::before, body#layout .page-hero::before { display: none; }
@@ -767,6 +797,7 @@ body#layout .footer-grid, body#layout .footer-bottom-inner { display: block; }
 body#layout .nav-toggle, body#layout .skip-link, body#layout .hero-controls, body#layout .copyright,
 body#layout .back-to-top, body#layout .lightbox, body#layout .hero-shade, body#layout .sr-only { display: none; }
 body#layout .section { margin: 0 0 6px; }
+body#layout .float-contact { position: static; display: block; }
 ]]></b:template-skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
 <style type='text/css'>.home-only { display: block; } .not-home { display: none; } .news .main-grid { display: block; } .news .post-card:nth-child(n+7), .news .list-pager { display: none; } @media (min-width: 1000px) { .news .post-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } } @media (max-width: 639px) { .news .post-card:nth-child(n+4) { display: none; } }</style>
@@ -1405,7 +1436,7 @@ body#layout .section { margin: 0 0 6px; }
 <b:widget id='HTML14' locked='false' title='There are numerous ways you can help our cause. Especially with your time, but also financially.' type='HTML' version='1'>
 <b:widget-settings>
   <b:widget-setting name='content'><![CDATA[<p>Volunteer your time, share your skills, or support our programmes financially. Get in touch and we will tell you how you can help.</p>
-<p class="btn-row"><a class="btn btn-accent" href="#contact">Donate</a> <a class="btn btn-light" href="#contact">Become a volunteer</a> <a class="btn btn-light" href="https://api.whatsapp.com/send?phone=254705782994"><i class="fa fa-whatsapp" aria-hidden="true"></i> WhatsApp us</a></p>]]></b:widget-setting>
+<p class="btn-row"><a class="btn btn-accent" href="#contact">Donate</a> <a class="btn btn-light" href="#contact">Become a volunteer</a> <a class="btn btn-light" href="https://api.whatsapp.com/send?phone=254705782994"><i class="fa fa-whatsapp" aria-hidden="true"></i> WhatsApp us</a> <a class="btn btn-light" href="https://t.me/+254705782994"><i class="fa fa-telegram" aria-hidden="true"></i> Telegram</a> <a class="btn btn-light" href="tel:+254705782994"><i class="fa fa-phone" aria-hidden="true"></i> Call us</a></p>]]></b:widget-setting>
 </b:widget-settings>
 <b:includable id='main'>
   <b:if cond='data:title != &quot;&quot;'>
@@ -1631,6 +1662,7 @@ body#layout .section { margin: 0 0 6px; }
         <span class='post-share-label'>Share this story</span>
         <a class='share-facebook' expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-facebook'/> Facebook</a>
         <a class='share-whatsapp' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-whatsapp'/> WhatsApp</a>
+        <a class='share-telegram' expr:href='&quot;https://t.me/share/url?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-telegram'/> Telegram</a>
         <a class='share-linkedin' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-linkedin'/> LinkedIn</a>
         <a class='share-x' expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-twitter'/> X</a>
         <button class='share-copy' expr:data-copy-url='data:post.url' type='button'><i aria-hidden='true' class='fa fa-link'/> Copy link</button>
@@ -2583,6 +2615,8 @@ body#layout .section { margin: 0 0 6px; }
   <b:widget-setting name='content'><![CDATA[<p>Need legal advice, want to volunteer or partner with us? Send us a message and our team will get back to you.</p>
 <ul class="contact-list">
 <li><i class="fa fa-whatsapp" aria-hidden="true"></i> <a href="https://api.whatsapp.com/send?phone=254705782994">+254 705 782 994</a> (WhatsApp)</li>
+<li><i class="fa fa-telegram" aria-hidden="true"></i> <a href="https://t.me/+254705782994">Message us on Telegram</a></li>
+<li><i class="fa fa-phone" aria-hidden="true"></i> <a href="tel:+254705782994">Call +254 705 782 994</a></li>
 <li><i class="fa fa-youtube-play" aria-hidden="true"></i> <a href="https://www.youtube.com/channel/UCbptIql_tryAanQtVLZq47A">The Emisembe Report</a></li>
 <li><i class="fa fa-calendar" aria-hidden="true"></i> <a href="/p/blog-page.html">Book an appointment</a></li>
 </ul>]]></b:widget-setting>
@@ -2696,7 +2730,9 @@ body#layout .section { margin: 0 0 6px; }
 <a class="twitter" href="#" aria-label="X (Twitter)"><i class="fa fa-twitter" aria-hidden="true"></i></a>
 <a class="instagram" href="#" aria-label="Instagram"><i class="fa fa-instagram" aria-hidden="true"></i></a>
 <a class="youtube" href="https://www.youtube.com/channel/UCbptIql_tryAanQtVLZq47A" aria-label="YouTube"><i class="fa fa-youtube-play" aria-hidden="true"></i></a>
-<a class="whatsapp" href="https://api.whatsapp.com/send?phone=254705782994" aria-label="WhatsApp"><i class="fa fa-whatsapp" aria-hidden="true"></i></a>]]></b:widget-setting>
+<a class="whatsapp" href="https://api.whatsapp.com/send?phone=254705782994" aria-label="WhatsApp"><i class="fa fa-whatsapp" aria-hidden="true"></i></a>
+<a class="telegram" href="https://t.me/+254705782994" aria-label="Telegram"><i class="fa fa-telegram" aria-hidden="true"></i></a>
+<a class="phone" href="tel:+254705782994" aria-label="Call us"><i class="fa fa-phone" aria-hidden="true"></i></a>]]></b:widget-setting>
 </b:widget-settings>
 <b:includable id='main'>
   <div class='social'>
@@ -2849,6 +2885,22 @@ body#layout .section { margin: 0 0 6px; }
     </div>
   </div>
 </footer>
+
+<b:section class='float-contact notranslate' id='float-contact' maxwidgets='1' showaddelement='no'>
+<b:widget id='HTML30' locked='false' title='Quick contact buttons' type='HTML'>
+<b:widget-settings>
+  <b:widget-setting name='content'><![CDATA[<a href="https://api.whatsapp.com/send?phone=254705782994" aria-label="WhatsApp"><i class="fa fa-whatsapp" aria-hidden="true"></i><span>WhatsApp</span></a>
+<a href="https://t.me/+254705782994" aria-label="Telegram"><i class="fa fa-telegram" aria-hidden="true"></i><span>Telegram</span></a>
+<a href="tel:+254705782994" aria-label="Call us"><i class="fa fa-phone" aria-hidden="true"></i><span>Call us</span></a>]]></b:widget-setting>
+</b:widget-settings>
+<b:includable id='main'>
+  <div class='float-buttons'>
+    <data:content/>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>
+</b:widget>
+</b:section>
 
 <a aria-label='Back to top' class='back-to-top' href='#top' id='back-to-top'><i aria-hidden='true' class='fa fa-angle-up'/></a>
 

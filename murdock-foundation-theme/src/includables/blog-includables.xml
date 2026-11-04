@@ -112,6 +112,7 @@
         <span class='post-share-label'>Share this story</span>
         <a class='share-facebook' expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-facebook'/> Facebook</a>
         <a class='share-whatsapp' expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-whatsapp'/> WhatsApp</a>
+        <a class='share-telegram' expr:href='&quot;https://t.me/share/url?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-telegram'/> Telegram</a>
         <a class='share-linkedin' expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-linkedin'/> LinkedIn</a>
         <a class='share-x' expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'><i aria-hidden='true' class='fa fa-twitter'/> X</a>
         <button class='share-copy' expr:data-copy-url='data:post.url' type='button'><i aria-hidden='true' class='fa fa-link'/> Copy link</button>

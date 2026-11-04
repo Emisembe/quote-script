@@ -12,3 +12,4 @@ body#layout .footer-grid, body#layout .footer-bottom-inner { display: block; }
 body#layout .nav-toggle, body#layout .skip-link, body#layout .hero-controls, body#layout .copyright,
 body#layout .back-to-top, body#layout .lightbox, body#layout .hero-shade, body#layout .sr-only { display: none; }
 body#layout .section { margin: 0 0 6px; }
+body#layout .float-contact { position: static; display: block; }

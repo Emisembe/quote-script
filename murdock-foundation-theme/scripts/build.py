@@ -29,6 +29,7 @@ INCLUDABLES = {
     '@@HTML_CARD@@': 'includables/html-card.xml',
     '@@HTML_FOOTER@@': 'includables/html-footer.xml',
     '@@HTML_SOCIAL@@': 'includables/html-social.xml',
+    '@@HTML_FLOAT@@': 'includables/html-float.xml',
     '@@IMAGE_MAIN@@': 'includables/image-main.xml',
     '@@IMAGE_EAGER@@': 'includables/image-eager.xml',
     '@@IMAGE_GALLERY@@': 'includables/image-gallery.xml',

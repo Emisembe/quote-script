@@ -1,0 +1,6 @@
+<b:includable id='main'>
+  <div class='float-buttons'>
+    <data:content/>
+  </div>
+  <b:include name='quickedit'/>
+</b:includable>
