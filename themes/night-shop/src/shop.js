@@ -95,6 +95,11 @@
       '2–4 working days': '2–4 Werktage', '3–5 working days': '3–5 Werktage', '4–7 working days': '4–7 Werktage',
       'By appointment': 'Nach Absprache', 'Pickup in Berlin': 'Abholung in Berlin',
       '14-day returns': '14 Tage Widerruf', 'Personal service': 'Persönlicher Service', 'Fast shipping': 'Schneller Versand',
+      'Free shipping from 50 €': 'Kostenloser Versand ab 50 €', 'Order easily on WhatsApp or Telegram': 'Einfach per WhatsApp oder Telegram bestellen',
+      'New arrivals every week': 'Jede Woche neue Stücke', 'Delivered in 2–4 working days': 'Lieferung in 2–4 Werktagen',
+      'Easy and personal': 'Einfach und persönlich', 'Secure payment': 'Sichere Zahlung', 'PayPal or bank transfer': 'PayPal oder Überweisung',
+      'We answer within a day': 'Antwort innerhalb eines Tages', 'We accept': 'Wir akzeptieren', 'Bank transfer': 'Überweisung',
+      'Cash on delivery': 'Nachnahme', 'Close': 'Schließen', 'Previous': 'Zurück', 'Next': 'Weiter',
       'Talk to us': 'Sprechen Sie mit uns', 'Call us': 'Rufen Sie uns an', 'Zoom video call': 'Zoom-Videoanruf',
       'Google Meet video call': 'Google-Meet-Videoanruf', 'Microsoft Teams call': 'Microsoft-Teams-Anruf',
       'Chat on WhatsApp': 'Per WhatsApp schreiben', 'Chat on Telegram': 'Per Telegram schreiben', 'Email us': 'E-Mail schreiben',
@@ -156,6 +161,11 @@
       '2–4 working days': '2 à 4 jours ouvrés', '3–5 working days': '3 à 5 jours ouvrés', '4–7 working days': '4 à 7 jours ouvrés',
       'By appointment': 'Sur rendez-vous', 'Pickup in Berlin': 'Retrait à Berlin',
       '14-day returns': 'Retour sous 14 jours', 'Personal service': 'Service personnel', 'Fast shipping': 'Expédition rapide',
+      'Free shipping from 50 €': 'Livraison offerte dès 50 €', 'Order easily on WhatsApp or Telegram': 'Commandez facilement sur WhatsApp ou Telegram',
+      'New arrivals every week': 'Des nouveautés chaque semaine', 'Delivered in 2–4 working days': 'Livré en 2 à 4 jours ouvrés',
+      'Easy and personal': 'Simple et personnel', 'Secure payment': 'Paiement sécurisé', 'PayPal or bank transfer': 'PayPal ou virement',
+      'We answer within a day': 'Réponse sous 24 heures', 'We accept': 'Nous acceptons', 'Bank transfer': 'Virement bancaire',
+      'Cash on delivery': 'Paiement à la livraison', 'Close': 'Fermer', 'Previous': 'Précédent', 'Next': 'Suivant',
       'Talk to us': 'Parlez-nous', 'Call us': 'Appelez-nous', 'Zoom video call': 'Appel vidéo Zoom',
       'Google Meet video call': 'Appel vidéo Google Meet', 'Microsoft Teams call': 'Appel Microsoft Teams',
       'Chat on WhatsApp': 'Écrire sur WhatsApp', 'Chat on Telegram': 'Écrire sur Telegram', 'Email us': 'Écrivez-nous',
@@ -725,7 +735,20 @@
     clock: 'M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z',
     download: 'M12 3v12M7 10l5 5 5-5M5 21h14',
     mail: 'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM22 6l-10 7L2 6',
-    share: 'M12 3v12M7.5 7.5 12 3l4.5 4.5M5 13v7h14v-7'
+    share: 'M12 3v12M7.5 7.5 12 3l4.5 4.5M5 13v7h14v-7',
+    // trust row icons (stroke)
+    truck: 'M1 5h13v10H1zM14 8h4l3 3.5V15h-7M7.5 17.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM19.5 17.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z',
+    'return': 'M9 14 4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3',
+    lock: 'M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4',
+    shield: 'M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5zM9 12l2 2 4-4',
+    chat: 'M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z',
+    card: 'M2 5h20v14H2zM2 10h20M6 15h4',
+    gift: 'M3 8h18v4H3zM5 12h14v9H5zM12 8v13M12 8S10.5 3 8 4s-1 4 4 4zM12 8s1.5-5 4-4 1 4-4 4z',
+    star: 'm12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z',
+    leaf: 'M5 21c0-9 5-15 16-16-1 11-7 16-16 16zM5 21l8-8',
+    heart: 'M12 21s-8-5.3-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.7-8 11-8 11z',
+    box: 'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',
+    check: 'M20 6 9 17l-5-5'
   };
 
   function enhanceShare(item) {
@@ -1352,6 +1375,87 @@
     if (target && target.offsetParent !== null) setTimeout(function () { target.scrollIntoView(); }, 0);
   }
 
+  // ------------------------------------------------------------ announcement bar
+  // A gadget wrapped in <div class='shop-announce'> above the header, one message per line:
+  //   Free shipping from 50 € | /p/shipping.html        (the link is optional)
+  // Several lines take turns every 5 seconds (paused while the mouse is over it). The × hides it for this visit.
+  function renderAnnounce() {
+    each(doc.querySelectorAll('.shop-announce'), function (box) {
+      var bar = box.closest('.announce') || box;
+      var msgs = gadgetLinesOf(box).map(function (line) {
+        var parts = line.split('|').map(function (x) { return x.trim(); });
+        return parts[0] ? { text: parts[0], link: /^(https:\/\/|\/)/.test(parts[1] || '') ? parts[1] : '' } : null;
+      }).filter(Boolean);
+      var key = 'shop-announce-closed:' + msgs.map(function (m) { return m.text; }).join('|');
+      var closed = false;
+      try { closed = sessionStorage.getItem(key) === '1'; } catch (e) { /* private mode */ }
+      if (!msgs.length || closed) { bar.hidden = true; return; }
+      box.textContent = '';
+      box.classList.add('is-ready');
+      var slides = msgs.map(function (m, i) {
+        var inner = m.link ? el('a', { href: m.link, text: t(m.text) }) : el('span', { text: t(m.text) });
+        return el('p', { 'class': 'shop-announce-msg' + (i ? '' : ' is-on'), 'aria-hidden': i ? 'true' : 'false' }, [inner]);
+      });
+      var track = el('div', { 'class': 'shop-announce-track' }, slides);
+      box.appendChild(track);
+      var at = 0, paused = false;
+      function show(n) {
+        slides[at].classList.remove('is-on'); slides[at].setAttribute('aria-hidden', 'true');
+        at = (n + slides.length) % slides.length;
+        slides[at].classList.add('is-on'); slides[at].setAttribute('aria-hidden', 'false');
+      }
+      if (slides.length > 1) {
+        box.insertBefore(el('button', { type: 'button', 'class': 'shop-announce-nav is-prev', 'aria-label': t('Previous'), text: '‹', onclick: function () { show(at - 1); } }), track);
+        box.appendChild(el('button', { type: 'button', 'class': 'shop-announce-nav is-next', 'aria-label': t('Next'), text: '›', onclick: function () { show(at + 1); } }));
+        box.addEventListener('mouseenter', function () { paused = true; });
+        box.addEventListener('mouseleave', function () { paused = false; });
+        box.addEventListener('focusin', function () { paused = true; });
+        box.addEventListener('focusout', function () { paused = false; });
+        var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!still) setInterval(function () { if (!paused && !doc.hidden) show(at + 1); }, 5000);
+      }
+      box.appendChild(el('button', { type: 'button', 'class': 'shop-announce-close', 'aria-label': t('Close'), text: '×', onclick: function () {
+        bar.hidden = true;
+        try { sessionStorage.setItem(key, '1'); } catch (e) { /* fine */ }
+      } }));
+    });
+  }
+
+  // ------------------------------------------------------------ trust row
+  // A gadget wrapped in <div class='shop-trust'>, one promise per line:
+  //   truck | Free shipping from 50 € | Delivered in 2–4 working days | /p/delivery.html
+  //   pay: PayPal, Bank transfer, Cash on delivery        (payment badges under the row)
+  // Icons: truck, return, lock, shield, chat, card, gift, star, leaf, heart, box, check, clock, phone, mail.
+  function renderTrust() {
+    each(doc.querySelectorAll('.shop-trust'), function (box) {
+      var items = [], pays = [];
+      gadgetLinesOf(box).forEach(function (line) {
+        var pm = /^\s*(pay|payment|payments)\s*:\s*(.+)$/i.exec(line);
+        if (pm) { pays = list(pm[2]); return; }
+        var parts = line.split('|').map(function (x) { return x.trim(); });
+        if (parts.length < 2 || !parts[1]) return;
+        items.push({ icon: ICONS[parts[0].toLowerCase()] ? parts[0].toLowerCase() : 'check', title: parts[1], text: parts[2] || '',
+                     link: /^(https:\/\/|\/)/.test(parts[3] || '') ? parts[3] : '' });
+      });
+      if (!items.length && !pays.length) return;
+      box.textContent = '';
+      box.classList.add('is-ready');
+      if (items.length) {
+        var grid = el('ul', { 'class': 'shop-trust-list' });
+        items.forEach(function (it) {
+          var body = [el('span', { 'class': 'shop-trust-icon' }, [svg(ICONS[it.icon], 'stroke')]),
+            el('span', { 'class': 'shop-trust-text' }, [el('strong', { text: t(it.title) }), it.text ? el('span', { text: t(it.text) }) : null])];
+          grid.appendChild(el('li', { 'class': 'shop-trust-item' }, [it.link ? el('a', { href: it.link }, body) : el('div', {}, body)]));
+        });
+        box.appendChild(grid);
+      }
+      if (pays.length) {
+        box.appendChild(el('p', { 'class': 'shop-trust-pay' }, [el('span', { 'class': 'shop-trust-pay-label', text: t('We accept') + ':' })]
+          .concat(pays.map(function (x) { return el('span', { 'class': 'shop-pay-badge', text: t(x) }); }))));
+      }
+    });
+  }
+
   // ------------------------------------------------------------ logo rows
   // Partners on the homepage, accreditation symbols in the footer: a gadget wrapped in
   // <div class='shop-logos'>, one logo per line:  Name | logo image link | website (optional).
@@ -1430,6 +1534,8 @@
     enhanceItem();
     renderContact();
     renderLogos();
+    renderAnnounce();
+    renderTrust();
     jumpToLanguageAnchor();
     renderCount();
     window.addEventListener('storage', function (e) {

@@ -18,6 +18,9 @@ is the "Night Shop: complete setup guide" document.
 5c. Our partners and accreditation symbols
 5d. Delivery partners, delivery time and weight
 5e. Digital products (download link after payment)
+5f. Logo and browser icon
+5g. Announcement bar
+5h. Trust row above the footer
 6. How orders reach you
 7. Saving every order in a Google Sheet
 8. Reviews
@@ -47,7 +50,7 @@ Uploading a theme puts every gadget back to the theme's default text. So **save 
 2. **Copy your settings:** Layout → **Shop settings** (bottom of the page) → Edit → select all text →
    copy it into a note. Do the same for **Shop words**, the **menu** gadget, and any gadget you changed
    (hero text, "Why shop with us", "Order directly", "Talk to us", **Delivery options**, "Our partners",
-   "Certified & accredited", footer texts).
+   "Certified & accredited", **Announcement bar**, the trust row, footer texts).
 3. **Upload:** Theme → ▾ → **Restore** → upload `theme-night-shop.xml`.
    If it only says "Could not restore theme": Theme → ▾ → **Edit HTML**, select everything, paste the
    whole file, Save. That screen names the exact problem; send Claude a screenshot.
@@ -287,6 +290,53 @@ This needs the newest `Code.gs` (section 7) and running **setup** once more (it 
 permission to watch the Status column). Honest limit: a Drive link can be passed on. For valuable files,
 make a separate copy and link per buyer.
 
+## 5f. Logo and browser icon
+
+**Logo:** Layout → **Header** (top) → Edit → Image → upload your logo → choose
+- **"Instead of title and description"**: only the logo shows. Best for a wide logo with your name in it
+  (PNG with a transparent background, about 440 × 88 px; it shows at most 44 px high, 36 px on phones).
+- **"Behind title and description"**: a small square logo shows next to the shop name (about 200 × 200 px).
+
+Save. Remove the image the same way to go back to the text name.
+
+**Browser icon (favicon):** Settings → **Favicon** → upload a square image (at least 48 × 48 px, under
+100 KB). It shows in the browser tab and in Google search results. The theme also colours the phone's
+browser bar black to match the header.
+
+## 5g. Announcement bar
+
+The thin coloured bar above the header, on every page. Edit it in **Layout → Announcement bar** (top of
+the page), one message per line, with an optional link after `|`:
+
+```
+Free shipping from 50 € | /p/shipping.html
+Order easily on WhatsApp or Telegram
+New arrivals every week
+```
+
+With several lines the messages take turns every 5 seconds; ‹ › let visitors step through them, and ×
+hides the bar until they close the browser. One line = one fixed message. Empty gadget = no bar.
+Translations: Shop words, e.g. `[de] New arrivals every week: Jede Woche neue Stücke`. Its colour is the
+theme's accent colour (Theme → Customise).
+
+## 5h. Trust row above the footer
+
+Four short promises with icons above the footer on every page, plus "We accept" payment badges. Edit it in
+**Layout → Trust row** (the gadget just above the footer; its title is not shown on the site), one promise per line:
+
+```
+truck | Free shipping from 50 € | Delivered in 2–4 working days | /p/delivery.html
+return | 14-day returns | Easy and personal | /p/returns.html
+lock | Secure payment | PayPal or bank transfer
+chat | Personal service | We answer within a day | /p/contact.html
+pay: PayPal, Bank transfer, Cash on delivery
+```
+
+`icon | title | small text | link (optional)`. Icons: `truck`, `return`, `lock`, `shield`, `chat`,
+`card`, `gift`, `star`, `leaf`, `heart`, `box`, `check`, `clock`, `phone`, `mail`. Three to four promises
+look best; on phones they show two per row. Only promise what you really do: change "50 €" if your
+`free_shipping_over` is different.
+
 ## 6. How orders reach you
 
 | The buyer picks | What happens |
@@ -381,6 +431,8 @@ Impressum and Widerruf at all.
 | "Sorry, the order could not be sent" (Place order) | The script in the sheet is incomplete or the newest version isn't deployed: section 7, "Replacing an older script". If the message shows a reason in brackets (e.g. "Product not found"), see the next rows |
 | "Ask on WhatsApp" / "Ask on Telegram" missing on product pages | Your `whatsapp:`/`telegram:` lines are empty (a theme upload resets Shop settings). Paste them back into Shop settings, or keep `whatsapp:`/`telegram:` lines in the "Talk to us" gadget: the buttons use those too |
 | A delivery option doesn't appear at checkout | Its country (5th part) isn't spelled like the `ship_to` country, or the parcel is heavier than its last weight step |
+| The announcement bar is gone for me | You pressed × : it stays hidden until the browser is closed. Other visitors still see it |
+| Logo is missing in the header | Layout → Header → the image must be set to "Instead of title" or "Behind title"; very wide logos are scaled down to fit |
 | "Missing link: …" in Downloads sent | Paste the Drive link into the Downloads tab, then set Status to Paid again |
 | Download email not sent when setting Paid | Run **setup** once after pasting the new Code.gs (it creates the trigger), and type exactly `Paid` |
 | PayPal shows "Things don't appear to be working" | You entered a PayPal email: use your PayPal.Me name in `paypal:` instead |

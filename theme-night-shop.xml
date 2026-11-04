@@ -3,6 +3,7 @@
 <html b:version='2' expr:dir='data:blog.languageDirection' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
 <head>
 <meta content='width=device-width, initial-scale=1' name='viewport'/>
+<meta content='#111111' name='theme-color'/>
 <b:include data='blog' name='all-head-content'/>
 <title>
 <b:if cond='data:blog.pageType == &quot;index&quot;'>
@@ -1171,6 +1172,33 @@ body .shop-reviews .comment-thread ol { list-style: none; margin: 0; padding: 0;
 .shop-logo-name { display: inline-block; padding: 8px 14px; border: 1px solid #d6d6d6; border-radius: 999px; font-size: .85rem; font-weight: 600; color: #444; }
 @media (max-width: 480px) { .shop-logo-list { gap: 14px 22px; } .shop-logo img { max-height: 44px; max-width: 110px; } }
 
+/* announcement bar (gadget with <div class="shop-announce">, above the header) */
+.shop-announce:not(.is-ready) { white-space: pre-line; }
+.shop-announce.is-ready { position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 38px; padding: 0 40px; }
+.shop-announce-track { display: grid; flex: 0 1 auto; min-width: 0; text-align: center; }
+.shop-announce-msg { grid-area: 1 / 1; margin: 0; padding: 9px 0; font-size: .85rem; font-weight: 600; letter-spacing: .02em; line-height: 1.35; opacity: 0; visibility: hidden; transition: opacity .4s ease, visibility .4s; }
+.shop-announce-msg.is-on { opacity: 1; visibility: visible; }
+.shop-announce-msg a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.shop-announce button { background: none; border: 0; color: inherit; font: inherit; cursor: pointer; line-height: 1; padding: 6px 8px; opacity: .8; }
+.shop-announce button:hover, .shop-announce button:focus-visible { opacity: 1; }
+.shop-announce-nav { font-size: 1.2rem; }
+.shop-announce-close { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 1.3rem; }
+@media (max-width: 480px) { .shop-announce.is-ready { padding: 0 32px 0 4px; gap: 0; } .shop-announce-msg { font-size: .8rem; } }
+
+/* trust row (gadget with <div class="shop-trust">, above the footer) */
+.shop-trust:not(.is-ready) { white-space: pre-line; }
+.shop-trust-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px 24px; }
+.shop-trust-item > a, .shop-trust-item > div { display: flex; align-items: flex-start; gap: 14px; color: inherit; text-decoration: none; }
+.shop-trust-item > a:hover strong { color: $(shop.accent); }
+.shop-trust-icon { flex: 0 0 46px; width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fff; color: $(shop.accent); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.shop-trust-icon svg { width: 22px; height: 22px; }
+.shop-trust-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding-top: 3px; }
+.shop-trust-text strong { font-size: .98rem; line-height: 1.3; }
+.shop-trust-text span { font-size: .87rem; color: #666; line-height: 1.4; }
+.shop-trust-pay { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin: 22px 0 0; font-size: .85rem; color: #666; }
+.shop-pay-badge { display: inline-block; padding: 5px 12px; border: 1px solid #d9d9d9; border-radius: 6px; background: #fff; color: #333; font-weight: 600; font-size: .8rem; }
+@media (max-width: 600px) { .shop-trust-list { grid-template-columns: 1fr 1fr; gap: 16px 14px; } .shop-trust-item > a, .shop-trust-item > div { flex-direction: column; align-items: center; text-align: center; gap: 8px; } .shop-trust-text { padding-top: 0; } }
+
 .shop-admin { display: none; }
 body#layout .shop-admin { display: block; }
 
@@ -1339,6 +1367,24 @@ body#layout .talk { display: block; }
 .site-footer .footer-badges .shop-logo-name { color: #E6E1DB; border-color: rgba(255,255,255,0.28); }
 .site-footer .footer-badges .widget-content li { margin: 0; }
 body#layout .partners, body#layout .footer-badges { display: block; }
+
+/* Announcement bar (above the sticky header, scrolls away) */
+.announce { background: $(accent.color); color: #fff; }
+.announce .widget { margin: 0; }
+.announce .shop-announce:not(.is-ready) { padding: 9px 16px; text-align: center; font-size: 14px; }
+.announce[hidden] { display: none; }
+
+/* Trust row above the footer */
+.trust { background: #f7f5f2; border-top: 1px solid #e8e3dc; }
+.trust .container { padding-top: 34px; padding-bottom: 34px; }
+.trust .widget { margin: 0; }
+
+/* Logo from Layout > Header (image instead of / behind the title) */
+.shop .brand-mark.brand-mark-img { display: block; width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: transparent; }
+.shop .brand-mark.brand-mark-img img { object-fit: contain; }
+.brand-logo img { max-width: 220px; height: auto; object-fit: contain; }
+@media (max-width: 600px) { .brand-logo img { max-height: 36px; max-width: 150px; } .shop .brand-mark.brand-mark-img { width: 36px; height: 36px; } }
+body#layout .announce, body#layout .trust { display: block; }
 ]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
 <style type='text/css'>.hero, .talk, .topics, .promo, .partners { display: block; }</style>
@@ -1349,6 +1395,23 @@ body#layout .partners, body#layout .footer-badges { display: block; }
 </head>
 <body expr:class='&quot;rm shop pt-&quot; + data:blog.pageType'>
 <a class='skip-link' data-i18n='' href='#content'>Skip to content</a>
+
+<!-- ================= Announcement bar (every page; empty gadget = no bar) ================= -->
+<div class='announce' id='announce'>
+  <b:section class='announce-section' id='announce-widgets' maxwidgets='1' showaddelement='no'>
+    <b:widget id='HTML14' locked='false' title='Announcement bar' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[Free shipping from 50 € | /p/shipping.html
+Order easily on WhatsApp or Telegram
+New arrivals every week]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-announce'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</div>
 
 <!-- ================= Header ================= -->
 <header class='site-header' id='site-header'>
@@ -1366,7 +1429,7 @@ body#layout .partners, body#layout .footer-badges { display: block; }
               <b:if cond='data:imagePlacement == &quot;REPLACE&quot;'>
                 <span class='brand-logo'><img expr:alt='data:title' expr:src='data:sourceUrl'/></span>
               <b:else/>
-                <span aria-hidden='true' class='brand-mark'><img alt='' expr:src='data:sourceUrl'/></span>
+                <span aria-hidden='true' class='brand-mark brand-mark-img'><img alt='' expr:src='data:sourceUrl'/></span>
                 <span class='brand-text'>
                   <span class='brand-name'><data:title/></span>
                   <b:if cond='data:description != &quot;&quot;'>
@@ -2590,6 +2653,27 @@ Green Courier | | /p/delivery.html]]></b:widget-setting>
 
 </main>
 
+<!-- ================= Trust row (every page, above the footer) ================= -->
+<section class='trust' id='trust'>
+  <div class='container'>
+    <b:section class='trust-section' id='trust-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML15' locked='false' title='Trust row' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[truck | Free shipping from 50 € | Delivered in 2–4 working days | /p/delivery.html
+return | 14-day returns | Easy and personal | /p/returns.html
+lock | Secure payment | PayPal or bank transfer
+chat | Personal service | We answer within a day | /p/contact.html
+pay: PayPal, Bank transfer, Cash on delivery]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='shop-trust'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
 <!-- ================= Footer ================= -->
 <footer class='site-footer' id='contact'>
   <div class='container'>
@@ -2986,6 +3070,11 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:
       '2–4 working days': '2–4 Werktage', '3–5 working days': '3–5 Werktage', '4–7 working days': '4–7 Werktage',
       'By appointment': 'Nach Absprache', 'Pickup in Berlin': 'Abholung in Berlin',
       '14-day returns': '14 Tage Widerruf', 'Personal service': 'Persönlicher Service', 'Fast shipping': 'Schneller Versand',
+      'Free shipping from 50 €': 'Kostenloser Versand ab 50 €', 'Order easily on WhatsApp or Telegram': 'Einfach per WhatsApp oder Telegram bestellen',
+      'New arrivals every week': 'Jede Woche neue Stücke', 'Delivered in 2–4 working days': 'Lieferung in 2–4 Werktagen',
+      'Easy and personal': 'Einfach und persönlich', 'Secure payment': 'Sichere Zahlung', 'PayPal or bank transfer': 'PayPal oder Überweisung',
+      'We answer within a day': 'Antwort innerhalb eines Tages', 'We accept': 'Wir akzeptieren', 'Bank transfer': 'Überweisung',
+      'Cash on delivery': 'Nachnahme', 'Close': 'Schließen', 'Previous': 'Zurück', 'Next': 'Weiter',
       'Talk to us': 'Sprechen Sie mit uns', 'Call us': 'Rufen Sie uns an', 'Zoom video call': 'Zoom-Videoanruf',
       'Google Meet video call': 'Google-Meet-Videoanruf', 'Microsoft Teams call': 'Microsoft-Teams-Anruf',
       'Chat on WhatsApp': 'Per WhatsApp schreiben', 'Chat on Telegram': 'Per Telegram schreiben', 'Email us': 'E-Mail schreiben',
@@ -3047,6 +3136,11 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:
       '2–4 working days': '2 à 4 jours ouvrés', '3–5 working days': '3 à 5 jours ouvrés', '4–7 working days': '4 à 7 jours ouvrés',
       'By appointment': 'Sur rendez-vous', 'Pickup in Berlin': 'Retrait à Berlin',
       '14-day returns': 'Retour sous 14 jours', 'Personal service': 'Service personnel', 'Fast shipping': 'Expédition rapide',
+      'Free shipping from 50 €': 'Livraison offerte dès 50 €', 'Order easily on WhatsApp or Telegram': 'Commandez facilement sur WhatsApp ou Telegram',
+      'New arrivals every week': 'Des nouveautés chaque semaine', 'Delivered in 2–4 working days': 'Livré en 2 à 4 jours ouvrés',
+      'Easy and personal': 'Simple et personnel', 'Secure payment': 'Paiement sécurisé', 'PayPal or bank transfer': 'PayPal ou virement',
+      'We answer within a day': 'Réponse sous 24 heures', 'We accept': 'Nous acceptons', 'Bank transfer': 'Virement bancaire',
+      'Cash on delivery': 'Paiement à la livraison', 'Close': 'Fermer', 'Previous': 'Précédent', 'Next': 'Suivant',
       'Talk to us': 'Parlez-nous', 'Call us': 'Appelez-nous', 'Zoom video call': 'Appel vidéo Zoom',
       'Google Meet video call': 'Appel vidéo Google Meet', 'Microsoft Teams call': 'Appel Microsoft Teams',
       'Chat on WhatsApp': 'Écrire sur WhatsApp', 'Chat on Telegram': 'Écrire sur Telegram', 'Email us': 'Écrivez-nous',
@@ -3616,7 +3710,20 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:
     clock: 'M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z',
     download: 'M12 3v12M7 10l5 5 5-5M5 21h14',
     mail: 'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM22 6l-10 7L2 6',
-    share: 'M12 3v12M7.5 7.5 12 3l4.5 4.5M5 13v7h14v-7'
+    share: 'M12 3v12M7.5 7.5 12 3l4.5 4.5M5 13v7h14v-7',
+    // trust row icons (stroke)
+    truck: 'M1 5h13v10H1zM14 8h4l3 3.5V15h-7M7.5 17.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM19.5 17.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z',
+    'return': 'M9 14 4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3',
+    lock: 'M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4',
+    shield: 'M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5zM9 12l2 2 4-4',
+    chat: 'M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z',
+    card: 'M2 5h20v14H2zM2 10h20M6 15h4',
+    gift: 'M3 8h18v4H3zM5 12h14v9H5zM12 8v13M12 8S10.5 3 8 4s-1 4 4 4zM12 8s1.5-5 4-4 1 4-4 4z',
+    star: 'm12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z',
+    leaf: 'M5 21c0-9 5-15 16-16-1 11-7 16-16 16zM5 21l8-8',
+    heart: 'M12 21s-8-5.3-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.7-8 11-8 11z',
+    box: 'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',
+    check: 'M20 6 9 17l-5-5'
   };
 
   function enhanceShare(item) {
@@ -4243,6 +4350,87 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:
     if (target && target.offsetParent !== null) setTimeout(function () { target.scrollIntoView(); }, 0);
   }
 
+  // ------------------------------------------------------------ announcement bar
+  // A gadget wrapped in <div class='shop-announce'> above the header, one message per line:
+  //   Free shipping from 50 € | /p/shipping.html        (the link is optional)
+  // Several lines take turns every 5 seconds (paused while the mouse is over it). The × hides it for this visit.
+  function renderAnnounce() {
+    each(doc.querySelectorAll('.shop-announce'), function (box) {
+      var bar = box.closest('.announce') || box;
+      var msgs = gadgetLinesOf(box).map(function (line) {
+        var parts = line.split('|').map(function (x) { return x.trim(); });
+        return parts[0] ? { text: parts[0], link: /^(https:\/\/|\/)/.test(parts[1] || '') ? parts[1] : '' } : null;
+      }).filter(Boolean);
+      var key = 'shop-announce-closed:' + msgs.map(function (m) { return m.text; }).join('|');
+      var closed = false;
+      try { closed = sessionStorage.getItem(key) === '1'; } catch (e) { /* private mode */ }
+      if (!msgs.length || closed) { bar.hidden = true; return; }
+      box.textContent = '';
+      box.classList.add('is-ready');
+      var slides = msgs.map(function (m, i) {
+        var inner = m.link ? el('a', { href: m.link, text: t(m.text) }) : el('span', { text: t(m.text) });
+        return el('p', { 'class': 'shop-announce-msg' + (i ? '' : ' is-on'), 'aria-hidden': i ? 'true' : 'false' }, [inner]);
+      });
+      var track = el('div', { 'class': 'shop-announce-track' }, slides);
+      box.appendChild(track);
+      var at = 0, paused = false;
+      function show(n) {
+        slides[at].classList.remove('is-on'); slides[at].setAttribute('aria-hidden', 'true');
+        at = (n + slides.length) % slides.length;
+        slides[at].classList.add('is-on'); slides[at].setAttribute('aria-hidden', 'false');
+      }
+      if (slides.length > 1) {
+        box.insertBefore(el('button', { type: 'button', 'class': 'shop-announce-nav is-prev', 'aria-label': t('Previous'), text: '‹', onclick: function () { show(at - 1); } }), track);
+        box.appendChild(el('button', { type: 'button', 'class': 'shop-announce-nav is-next', 'aria-label': t('Next'), text: '›', onclick: function () { show(at + 1); } }));
+        box.addEventListener('mouseenter', function () { paused = true; });
+        box.addEventListener('mouseleave', function () { paused = false; });
+        box.addEventListener('focusin', function () { paused = true; });
+        box.addEventListener('focusout', function () { paused = false; });
+        var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!still) setInterval(function () { if (!paused && !doc.hidden) show(at + 1); }, 5000);
+      }
+      box.appendChild(el('button', { type: 'button', 'class': 'shop-announce-close', 'aria-label': t('Close'), text: '×', onclick: function () {
+        bar.hidden = true;
+        try { sessionStorage.setItem(key, '1'); } catch (e) { /* fine */ }
+      } }));
+    });
+  }
+
+  // ------------------------------------------------------------ trust row
+  // A gadget wrapped in <div class='shop-trust'>, one promise per line:
+  //   truck | Free shipping from 50 € | Delivered in 2–4 working days | /p/delivery.html
+  //   pay: PayPal, Bank transfer, Cash on delivery        (payment badges under the row)
+  // Icons: truck, return, lock, shield, chat, card, gift, star, leaf, heart, box, check, clock, phone, mail.
+  function renderTrust() {
+    each(doc.querySelectorAll('.shop-trust'), function (box) {
+      var items = [], pays = [];
+      gadgetLinesOf(box).forEach(function (line) {
+        var pm = /^\s*(pay|payment|payments)\s*:\s*(.+)$/i.exec(line);
+        if (pm) { pays = list(pm[2]); return; }
+        var parts = line.split('|').map(function (x) { return x.trim(); });
+        if (parts.length < 2 || !parts[1]) return;
+        items.push({ icon: ICONS[parts[0].toLowerCase()] ? parts[0].toLowerCase() : 'check', title: parts[1], text: parts[2] || '',
+                     link: /^(https:\/\/|\/)/.test(parts[3] || '') ? parts[3] : '' });
+      });
+      if (!items.length && !pays.length) return;
+      box.textContent = '';
+      box.classList.add('is-ready');
+      if (items.length) {
+        var grid = el('ul', { 'class': 'shop-trust-list' });
+        items.forEach(function (it) {
+          var body = [el('span', { 'class': 'shop-trust-icon' }, [svg(ICONS[it.icon], 'stroke')]),
+            el('span', { 'class': 'shop-trust-text' }, [el('strong', { text: t(it.title) }), it.text ? el('span', { text: t(it.text) }) : null])];
+          grid.appendChild(el('li', { 'class': 'shop-trust-item' }, [it.link ? el('a', { href: it.link }, body) : el('div', {}, body)]));
+        });
+        box.appendChild(grid);
+      }
+      if (pays.length) {
+        box.appendChild(el('p', { 'class': 'shop-trust-pay' }, [el('span', { 'class': 'shop-trust-pay-label', text: t('We accept') + ':' })]
+          .concat(pays.map(function (x) { return el('span', { 'class': 'shop-pay-badge', text: t(x) }); }))));
+      }
+    });
+  }
+
   // ------------------------------------------------------------ logo rows
   // Partners on the homepage, accreditation symbols in the footer: a gadget wrapped in
   // <div class='shop-logos'>, one logo per line:  Name | logo image link | website (optional).
@@ -4321,6 +4509,8 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:
     enhanceItem();
     renderContact();
     renderLogos();
+    renderAnnounce();
+    renderTrust();
     jumpToLanguageAnchor();
     renderCount();
     window.addEventListener('storage', function (e) {

@@ -115,3 +115,39 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:
 <div class="product" data-price="12,90" data-digital="yes">Price: 12,90 EUR (digital download)</div>
 <div class="product" data-price="64,90" data-weight="0.8" data-dimensions="38 x 30 x 12 cm">Price: 64,90 EUR</div>
 -->
+
+
+<!-- 9. Announcement bar: its own section BEFORE the header (unconditional, so it shows on every page).
+        One message per line, optional link after |. Empty gadget = no bar. -->
+<div class='announce' id='announce'>
+  <b:section class='announce-section' id='announce-widgets' maxwidgets='1' showaddelement='no'>
+    <b:widget id='HTML14' locked='false' title='Announcement bar' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[Free shipping from 50 € | /p/shipping.html
+Order easily on WhatsApp or Telegram]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-announce'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</div>
+<!-- skin.css: .announce { background: $(accent.color); color: #fff; } .announce[hidden] { display: none; } -->
+
+
+<!-- 10. Trust row above the footer: icon | title | small text | link, and "pay:" for payment badges. -->
+<b:widget id='HTML15' locked='false' title='Trust row' type='HTML'>
+  <b:widget-settings>
+    <b:widget-setting name='content'><![CDATA[truck | Free shipping from 50 € | Delivered in 2–4 working days | /p/delivery.html
+return | 14-day returns | Easy and personal | /p/returns.html
+lock | Secure payment | PayPal or bank transfer
+chat | Personal service | We answer within a day | /p/contact.html
+pay: PayPal, Bank transfer, Cash on delivery]]></b:widget-setting>
+  </b:widget-settings>
+  <b:includable id='main'>
+    <div class='shop-trust'><data:content/></div>
+    <b:include name='quickedit'/>
+  </b:includable>
+</b:widget>
+

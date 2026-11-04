@@ -172,6 +172,18 @@ Night Shop has two: **Our partners** on the homepage (HTML12) and **Certified & 
 (HTML13). Only show seals the owner really holds and is allowed to display (Trusted Shops, IHK, etc.
 have usage rules), and link each to its certificate page where one exists.
 
+### 4e. Announcement bar, trust row, logo
+
+- **Announcement bar:** a gadget wrapped in `<div class='shop-announce'>`, placed in its own unconditional
+  section before the header (Night Shop: HTML14), one message per line, optional `| link`. Several lines
+  rotate every 5 s (paused on hover/focus, off with prefers-reduced-motion), ‹ › step, × hides it for the
+  session (sessionStorage, keyed by the text, so a new message shows again). Empty gadget hides the bar.
+- **Trust row:** `<div class='shop-trust'>` above the footer (HTML15): `icon | title | text | link`, and
+  `pay: …` for payment badges. Unknown icon names fall back to a tick. Keep it to promises the owner keeps.
+- **Logo/favicon:** the Header widget's image branches render the logo; CSS caps its height (44 px, 36 px
+  on phones). The favicon is set in Blogger Settings → Favicon and is output by `all-head-content`.
+  `<meta name='theme-color'>` colours the phone browser bar.
+
 ## 5. Payments
 
 - Never put **secret** keys (`sk_live_…`, API secrets) in a theme. Everyone can read the XML.
