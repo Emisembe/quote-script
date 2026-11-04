@@ -151,6 +151,14 @@ check('var(--' not in skin and not re.search(r'^\s*--[\w-]+\s*:', skin, flags=re
       'skin has no CSS custom properties (the original skin used none)')
 
 
+sys.path.insert(0, str(ROOT / 'scripts'))
+from css_features import css_features  # noqa: E402
+if 'css_features' in REF:
+    allowed_css = set(REF['css_features']) | set(REF['extra'].get('css_features', {}).get('features', []))
+    unproven_css = sorted(css_features(skin) - allowed_css)
+    check(not unproven_css, 'skin uses only CSS features this blog has accepted (backup + live versions)', ', '.join(unproven_css))
+
+
 def brace_balance(css):
     css = re.sub(r'/\*.*?\*/', '', css, flags=re.S)
     depth = low = 0
@@ -188,6 +196,11 @@ check(not uses_url_home or "data:blog.canonicalUrl == data:blog.homepageUrl" in 
 check(bool(re.search(r'body \.widget ul', skin)),
       "skin resets beat Blogger's injected widget stylesheet (body-prefixed selectors)")
 
+code_blocks = [skin] + [el.text or '' for el in root.iter('{http://www.w3.org/1999/xhtml}style')] + \
+    [el.text or '' for el in root.iter('{http://www.w3.org/1999/xhtml}script')]
+non_ascii = sorted({ch for block in code_blocks for ch in block if ord(ch) > 127})
+check(not non_ascii, 'CSS and JavaScript are ASCII-only (Blogger rewrites other characters as &#NNN; on save)',
+      ' '.join(f'{ch!r} U+{ord(ch):04X}' for ch in non_ascii))
 scripts = re.findall(r'//<!\[CDATA\[(.*?)//\]\]>', text, flags=re.S)
 node = shutil.which('node')
 if node:

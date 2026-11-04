@@ -152,7 +152,8 @@ body .widget li { margin: 0; padding: 0; }
 .header-inner { display: flex; align-items: center; gap: 16px; min-height: 76px; }
 .brand-section { flex: 0 0 auto; }
 .brand { display: flex; align-items: center; }
-.brand-logo { display: block; height: 56px; width: auto; max-width: min(240px, 58vw); object-fit: contain; object-position: left center; }
+.brand-logo { display: block; height: 56px; width: auto; max-width: 240px; object-fit: contain; object-position: left center; }
+@media (max-width: 420px) { .brand-logo { max-width: 200px; height: 48px; } }
 .brand-name { font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-size: 22px; color: $(heading.color); font-weight: 700; }
 
 .nav-toggle {
@@ -337,12 +338,12 @@ body .section-intro { max-width: 720px; margin: 0 auto 48px; text-align: center;
 .card-grid p:last-child { margin-bottom: 0; }
 
 /* Photo frames: the whole picture stays visible (posters keep their text), centred
-   over a blurred copy of itself so the frame is always filled. JS copies the
-   image into the frame's background-image; without JS the frame is plain blue. */
-.fit-frame { position: relative; display: block; overflow: hidden; background-color: $(primary.deep.color); background-size: cover; background-position: center; }
-.fit-frame::before {
-  content: ''; position: absolute; inset: -30px; background-image: inherit; background-size: cover; background-position: center;
-  filter: blur(22px) saturate(1.15) brightness(0.72); transform: scale(1.08);
+   over a darkened, enlarged copy of itself so the frame is always filled. JS adds the
+   copy; without JS the frame is plain blue. */
+.fit-frame { position: relative; display: block; overflow: hidden; background-color: $(primary.deep.color); }
+.fit-blur {
+  position: absolute; top: -30px; right: -30px; bottom: -30px; left: -30px;
+  background-size: cover; background-position: center; transform: scale(1.25);
 }
 .fit-frame img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; }
 
@@ -2823,11 +2824,15 @@ body#layout .section { margin: 0 0 6px; }
     if (out !== src) img.setAttribute('src', out);
   });
 
-  // Photo frames: fill the frame with a blurred copy of the picture behind it
+  // Photo frames: fill the frame with a darkened, enlarged copy of the picture behind it
   function fillFrame(frame) {
     var img = frame.querySelector('img');
     var src = img && img.getAttribute('src');
-    if (src) frame.style.backgroundImage = 'url("' + src.replace(/"/g, '%22') + '")';
+    if (!src || frame.querySelector('.fit-blur')) return;
+    var blur = el('span', 'fit-blur');
+    blur.setAttribute('aria-hidden', 'true');
+    blur.style.backgroundImage = 'linear-gradient(rgba(11, 51, 73, 0.66), rgba(11, 51, 73, 0.66)), url("' + src.replace(/"/g, '%22') + '")';
+    frame.insertBefore(blur, frame.firstChild);
   }
   $all('.fit-frame').forEach(fillFrame);
 
@@ -3007,10 +3012,10 @@ body#layout .section { margin: 0 0 6px; }
     var pause = function () { clearInterval(timer); timer = null; };
 
     if (controls && slides.length > 1) {
-      var prev = el('button', 'hero-arrow', '‹');
+      var prev = el('button', 'hero-arrow', '\u2039');
       prev.type = 'button';
       prev.setAttribute('aria-label', 'Previous slide');
-      var next = el('button', 'hero-arrow', '›');
+      var next = el('button', 'hero-arrow', '\u203A');
       next.type = 'button';
       next.setAttribute('aria-label', 'Next slide');
       var dotWrap = el('div', 'hero-dots');
@@ -3056,7 +3061,7 @@ body#layout .section { margin: 0 0 6px; }
     holder.appendChild(tpl.content ? tpl.content.cloneNode(true) : doc.createTextNode(tpl.textContent));
     $all('script, style, noscript, iframe, .separator', holder).forEach(function (n) { n.parentNode.removeChild(n); });
     var text = (holder.textContent || '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
-    if (text.length > 150) text = text.slice(0, 150).replace(/\s+\S*$/, '') + '…';
+    if (text.length > 150) text = text.slice(0, 150).replace(/\s+\S*$/, '') + '\u2026';
     out.textContent = text;
     tpl.parentNode.removeChild(tpl);
   });

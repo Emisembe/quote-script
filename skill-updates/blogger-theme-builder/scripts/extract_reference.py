@@ -13,11 +13,13 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from css_features import css_features, skin_of  # noqa: E402
+
 B = '{http://www.google.com/2005/gml/b}'
 EXPR = '{http://www.google.com/2005/gml/expr}'
 
-DEFAULT_BANNED = ['YOUR_', 'YOUR DESCRIPTION', 'YOUR POST URL', 'soratemplates', 'themeforest', 'fbtemplates',
-                  'Lorem ipsum', 'google-plus', 'html5shim']
+DEFAULT_BANNED = ['YOUR_', 'YOUR DESCRIPTION', 'soratemplates']
 
 
 def short(tag):
@@ -61,17 +63,12 @@ def extract(text):
             'values': {k: sorted(v) for k, v in sorted(d['values'].items())}}
         for t, d in sorted(types.items())
     }
+    ref['css_features'] = sorted(css_features(skin_of(text)))
     defined = {inc.get('id') for inc in root.iter(B + 'includable')}
     ref['builtin_includes'] = sorted({i.get('name') for i in root.iter(B + 'include')} - defined)
     ref['extra'] = {
         'data_tags': {},
         'setting_values': {'boolean settings may be true or false': ['true', 'false']},
-        'free_text_settings': {
-            '_reason': "Settings whose value is the gadget owner's own text or links. Any non-blank value is valid.",
-            'settings': ['content', 'caption', 'link', 'displayUrl', 'postId', 'commentLabel', 'authorLabel',
-                         'postLocationLabel', 'timestampLabel', 'postLabelsLabel', 'reactionsLabel']
-                        + [f'text-{i}' for i in range(10)] + [f'link-{i}' for i in range(10)],
-        },
         'banned_strings': DEFAULT_BANNED,
         'notes': ('Anything allowed beyond the reference export goes here with a reason. '
                   'Add names/addresses of other blogs found in the reference to banned_strings.'),

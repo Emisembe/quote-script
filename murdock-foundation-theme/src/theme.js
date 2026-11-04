@@ -40,11 +40,15 @@
     if (out !== src) img.setAttribute('src', out);
   });
 
-  // Photo frames: fill the frame with a blurred copy of the picture behind it
+  // Photo frames: fill the frame with a darkened, enlarged copy of the picture behind it
   function fillFrame(frame) {
     var img = frame.querySelector('img');
     var src = img && img.getAttribute('src');
-    if (src) frame.style.backgroundImage = 'url("' + src.replace(/"/g, '%22') + '")';
+    if (!src || frame.querySelector('.fit-blur')) return;
+    var blur = el('span', 'fit-blur');
+    blur.setAttribute('aria-hidden', 'true');
+    blur.style.backgroundImage = 'linear-gradient(rgba(11, 51, 73, 0.66), rgba(11, 51, 73, 0.66)), url("' + src.replace(/"/g, '%22') + '")';
+    frame.insertBefore(blur, frame.firstChild);
   }
   $all('.fit-frame').forEach(fillFrame);
 
@@ -224,10 +228,10 @@
     var pause = function () { clearInterval(timer); timer = null; };
 
     if (controls && slides.length > 1) {
-      var prev = el('button', 'hero-arrow', '‹');
+      var prev = el('button', 'hero-arrow', '\u2039');
       prev.type = 'button';
       prev.setAttribute('aria-label', 'Previous slide');
-      var next = el('button', 'hero-arrow', '›');
+      var next = el('button', 'hero-arrow', '\u203A');
       next.type = 'button';
       next.setAttribute('aria-label', 'Next slide');
       var dotWrap = el('div', 'hero-dots');
@@ -273,7 +277,7 @@
     holder.appendChild(tpl.content ? tpl.content.cloneNode(true) : doc.createTextNode(tpl.textContent));
     $all('script, style, noscript, iframe, .separator', holder).forEach(function (n) { n.parentNode.removeChild(n); });
     var text = (holder.textContent || '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
-    if (text.length > 150) text = text.slice(0, 150).replace(/\s+\S*$/, '') + '…';
+    if (text.length > 150) text = text.slice(0, 150).replace(/\s+\S*$/, '') + '\u2026';
     out.textContent = text;
     tpl.parentNode.removeChild(tpl);
   });

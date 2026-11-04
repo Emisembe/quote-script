@@ -131,7 +131,8 @@ body .widget li { margin: 0; padding: 0; }
 .header-inner { display: flex; align-items: center; gap: 16px; min-height: var(--header-h); }
 .brand-section { flex: 0 0 auto; }
 .brand { display: flex; align-items: center; }
-.brand-logo { display: block; height: 56px; width: auto; max-width: min(240px, 58vw); object-fit: contain; object-position: left center; }
+.brand-logo { display: block; height: 56px; width: auto; max-width: 240px; object-fit: contain; object-position: left center; }
+@media (max-width: 420px) { .brand-logo { max-width: 200px; height: 48px; } }
 .brand-name { font-family: var(--serif); font-size: 22px; color: var(--ink); font-weight: 700; }
 
 .nav-toggle {
@@ -316,12 +317,12 @@ body .section-intro { max-width: 720px; margin: 0 auto 48px; text-align: center;
 .card-grid p:last-child { margin-bottom: 0; }
 
 /* Photo frames: the whole picture stays visible (posters keep their text), centred
-   over a blurred copy of itself so the frame is always filled. JS copies the
-   image into the frame's background-image; without JS the frame is plain blue. */
-.fit-frame { position: relative; display: block; overflow: hidden; background-color: var(--blue-deep); background-size: cover; background-position: center; }
-.fit-frame::before {
-  content: ''; position: absolute; inset: -30px; background-image: inherit; background-size: cover; background-position: center;
-  filter: blur(22px) saturate(1.15) brightness(0.72); transform: scale(1.08);
+   over a darkened, enlarged copy of itself so the frame is always filled. JS adds the
+   copy; without JS the frame is plain blue. */
+.fit-frame { position: relative; display: block; overflow: hidden; background-color: var(--blue-deep); }
+.fit-blur {
+  position: absolute; top: -30px; right: -30px; bottom: -30px; left: -30px;
+  background-size: cover; background-position: center; transform: scale(1.25);
 }
 .fit-frame img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; }
 

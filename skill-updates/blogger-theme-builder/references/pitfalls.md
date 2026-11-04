@@ -23,6 +23,11 @@ Each entry: **symptom → cause → fix**. All were hit on real blogs.
 → Blogger's catch-all message; it never says why.
 → First, check the file is really XML. Its first line must be `<?xml version="1.0" encoding="UTF-8" ?>`. Right-clicking a GitHub file and choosing "Save link as" saves GitHub's HTML page instead; use the attachment or GitHub's **Raw** button. Second, have the user paste the file into **Theme → Edit HTML** and save. That screen reports the precise error.
 
+**First version restored fine, the next one "Could not restore theme"**
+→ Seen on a live NGO blog: version 1 went live, version 2 (only CSS/JS changes) was refused with the generic message. Blogger processes the skin CSS, and the new version had introduced CSS never used on that blog (`background-image: inherit` on a pseudo-element, `filter: blur()`, negative `inset`) plus non-ASCII characters in the script.
+→ Treat every version Blogger accepted as extra proof. `check.py` now compares the skin's CSS features (properties, functions, pseudo-classes, at-rules, `inherit`-style keywords) with `proven.json → css_features` (from the backup) plus `extra.css_features` (from versions that went live). Anything else fails until it is proven, or until the user pastes it in Edit HTML and Blogger accepts it. Do the same effect with proven parts (e.g. a JS-created element with an inline gradient + image instead of a blurred pseudo-element).
+→ CSS and JavaScript must be ASCII-only: write `'\u2039'`, not `‹` (Blogger rewrites other characters as `&#NNN;` on save, which breaks code). Some writing tools silently turn escapes back into characters, so `check.py` checks the built file.
+
 **Unverified engine features**
 → The first rebuild used Layouts v3 features (`b:layoutsVersion='3'`, version-2 widgets, `b:eval`, `b:template-skin`, `data:view.*`, `data:posts.empty`, `resizeImage`, widgets without includables relying on Blogger's defaults). None could be checked offline, and the upload failed.
 → Use only what the reference theme proves (`reference/proven.json`). A legacy reference proves the legacy engine; a v3 export proves v3.

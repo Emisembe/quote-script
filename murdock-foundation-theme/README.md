@@ -12,6 +12,8 @@ leftovers. Every gadget the foundation already had keeps its ID and pictures.
 2. **Theme** → ▾ → **Restore** → **Upload** → choose `theme-murdockemisembefoundation.xml`.
    - If Blogger only says *"Could not restore theme"*: **Theme** → ▾ → **Edit HTML**,
      select everything, paste the whole file, **Save**. That screen names the exact problem.
+   - Still failing? Copy the exact message from Edit HTML (or a screenshot) and send it.
+     The upload page never says why; Edit HTML does.
 3. **Theme** → ▾ → **Mobile settings** → choose **Desktop**, so phones get this
    responsive theme instead of Blogger's basic mobile theme.
 4. Live check (2 minutes): homepage, one post, a label page, search, a missing page

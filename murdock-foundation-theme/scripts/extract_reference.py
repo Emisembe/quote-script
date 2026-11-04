@@ -13,6 +13,9 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from css_features import css_features, skin_of  # noqa: E402
+
 B = '{http://www.google.com/2005/gml/b}'
 EXPR = '{http://www.google.com/2005/gml/expr}'
 
@@ -60,6 +63,7 @@ def extract(text):
             'values': {k: sorted(v) for k, v in sorted(d['values'].items())}}
         for t, d in sorted(types.items())
     }
+    ref['css_features'] = sorted(css_features(skin_of(text)))
     defined = {inc.get('id') for inc in root.iter(B + 'includable')}
     ref['builtin_includes'] = sorted({i.get('name') for i in root.iter(B + 'include')} - defined)
     ref['extra'] = {
