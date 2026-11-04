@@ -78,6 +78,10 @@ With `google_sheet:` set, **every** order is recorded, including WhatsApp/Telegr
 in the background, status "Sent via WhatsApp – check the chat"). `place_order: no` hides the direct
 button but keeps the recording.
 
+Order numbers: first product's initials + date + time to the second (`SST-261104-153012`); shop.js adds
+`-2` for a same-second repeat on one device, and Code.gs `uniqueId_()` adds `-2`, `-3` … against the Orders
+tab, so numbers never repeat in the sheet.
+
 Checkout asks two separate questions: **how to order** (Place order, WhatsApp, Telegram, email) and
 **how to pay** (`payment:` list, e.g. Bank transfer, PayPal, Cash on delivery). The payment is in the
 message, the sheet ("Payment" column) and the emails; bank details are shown only for bank transfer.

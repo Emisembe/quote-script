@@ -5,7 +5,8 @@ how to order (online, WhatsApp, Telegram, email or PayPal), and every order can 
 Google Sheet.
 
 This guide is kept up to date with every change to the theme. The newest version is always in this
-folder (`themes/night-shop/GUIDE.md`).
+folder (`themes/night-shop/GUIDE.md`). The complete click-by-click version, with every code block to copy,
+is the "Night Shop: complete setup guide" document.
 
 ## Contents
 1. What's in the folder
@@ -191,7 +192,10 @@ Then the buyer answers **"How will you pay?"** (your `payment` list). Bank trans
 on the thank-you screen and in the buyer's email. PayPal → a blue "Pay now with PayPal (34,80 €)"
 button that opens your PayPal.Me with the amount; check in PayPal that the money arrived before you ship.
 
-Each order has a number like **#O261103-AB12**. Ask buyers to use it as the payment reference.
+Each order has a number made of the first product's initials, the date and the time to the second,
+e.g. **BRA-261104-153012** ("Bra", 4 Nov 2026, 15:30:12) or **SST-…** for "Sportiva Swing Tee". A second
+order with the same number gets **-2** (same phone, same second), and the Google Sheet adds -2, -3 … to any
+number it already has, so no two rows share a number. Ask buyers to use it as the payment reference.
 Checkout asks for name, phone, email, street, postcode, city and country, plus an optional note.
 
 ## 7. Saving every order in a Google Sheet

@@ -57,7 +57,6 @@ function doPost(e) {
     var fee = shippingFor_(shop, c.country);
     var ship = fee && !(shop.freeOver && sub >= shop.freeOver) ? fee : 0;
     var total = sub + ship;
-    var id = /^O\d{6}-[A-Z0-9]{4}$/.test(order.orderId) ? order.orderId : 'O' + Date.now();
     var now = new Date();
     var status = method === 'order' ? 'New' : 'Sent via ' + METHOD_NAMES[method] + ' – check the chat';
     var summary = lines.map(function (l) {
@@ -67,6 +66,7 @@ function doPost(e) {
     lock.waitLock(20000);
     var book = SpreadsheetApp.getActiveSpreadsheet();
     var orders = sheet_(book, 'Orders', ORDER_HEADERS);
+    var id = uniqueId_(orders, order.orderId, now);
     // A leading apostrophe keeps phone numbers and postcodes as text (no lost leading zeros).
     orders.appendRow([id, now, status, METHOD_NAMES[method], text_(c.payment), text_(c.name), "'" + c.phone, text_(c.email),
                       text_(c.street || c.address), "'" + (c.postcode || ''), text_(c.city), text_(c.country), text_(c.note),
@@ -104,6 +104,22 @@ function doPost(e) {
   } finally {
     try { lock.releaseLock(); } catch (x) {}
   }
+}
+
+/**
+ * Order number from the shop: product initials + date + time to the second (BRA-261104-153012).
+ * Anything else gets one made here; a number already in the sheet gets -2, -3 ….
+ */
+function uniqueId_(orders, wanted, now) {
+  var id = /^[A-Z0-9]{1,4}-\d{6}-\d{6}(-\d{1,3})?$/.test(wanted || '') || /^O\d{6}-[A-Z0-9]{4}$/.test(wanted || '') ? wanted
+    : 'NS-' + Utilities.formatDate(now, Session.getScriptTimeZone(), 'yyMMdd-HHmmss');
+  var used = {};
+  if (orders.getLastRow() > 1) {
+    orders.getRange(2, 1, orders.getLastRow() - 1, 1).getValues().forEach(function (r) { used[String(r[0])] = true; });
+  }
+  var base = /^[A-Z0-9]{1,4}-\d{6}-\d{6}-\d+$/.test(id) ? id.replace(/-\d+$/, '') : id;
+  for (var n = 2; used[id]; n++) id = base + '-' + n;
+  return id;
 }
 
 function doGet() {

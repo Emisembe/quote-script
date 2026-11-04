@@ -3681,11 +3681,25 @@ banner_image:]]></b:widget-setting>
     form.elements.name.focus();
   }
 
+  // Order number = product initials + date + time to the second: "Sportiva Swing Tee" at 15:30:12 on
+  // 4 Nov 2026 -> SST-261104-153012 (one-word names use their first 3 letters: BRA-…). A second order from
+  // this device in the same second gets -2; the Google Sheet also adds -2, -3 … if a number already exists.
+  function initials(title) {
+    var plain = String(title || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'SS').toUpperCase();
+    var words = plain.split(/[^A-Z0-9]+/).filter(Boolean);
+    if (!words.length) return 'NS';
+    return (words.length > 1 ? words.map(function (w) { return w.charAt(0); }).join('') : words[0]).slice(0, 3);
+  }
+
   function orderId() {
     var d = new Date();
     var pad = function (n) { return (n < 10 ? '0' : '') + n; };
-    return 'O' + String(d.getFullYear()).slice(2) + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' +
-      Math.random().toString(36).slice(2, 6).toUpperCase();
+    var id = initials(cart[0] && cart[0].title) + '-' + String(d.getFullYear()).slice(2) + pad(d.getMonth() + 1) +
+      pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+    var last = String(store('shop-last-order') || '');
+    if (last === id || last.indexOf(id + '-') === 0) id += '-' + ((parseInt(last.slice(id.length + 1), 10) || 1) + 1);
+    store('shop-last-order', id);
+    return id;
   }
 
   // The order as a message for WhatsApp, Telegram and email (plain: no *bold* markers, for email).
