@@ -21,6 +21,7 @@ is the "Night Shop: complete setup guide" document.
 5f. Logo and browser icon
 5g. Announcement bar
 5h. Trust row above the footer
+5i. Team page (photos, names, phone numbers, social icons)
 6. How orders reach you
 7. Saving every order in a Google Sheet
 8. Reviews
@@ -254,6 +255,19 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany
 | 4. Info page | Optional link to the partner's part of your Delivery partners page |
 | 5. Countries | Optional. The country names from your `ship_to` lines. Empty = all countries |
 
+**Adding more delivery partners:** add one more line in Layout → Delivery options and Save. There is no
+limit; each line becomes one choice at checkout, in the same order as the lines. For example:
+
+```
+GLS | 4,49 up to 2 kg; 5,99 up to 5 kg; 8,99 up to 20 kg | 2–3 working days | /p/delivery.html#gls | Germany
+DPD | 5,20 up to 3 kg; 7,90 up to 10 kg | 1–2 working days | /p/delivery.html#dpd | Germany, Austria
+Local courier (Berlin) | 7,50 | Same day if ordered by 12:00 | /p/delivery.html#courier | Germany
+```
+
+Then copy one partner block on the Delivery partners page (from `<div class="product-section" id="…">`
+to its `</div>`), change the id to match the link (`id="gls"`, German `id="gls-de"`) and fill in the
+details. To remove a partner, delete its line. Take the prices from the carrier's current price list.
+
 Good to know:
 - When Delivery options has lines, they set the shipping price. `ship_to` still decides which countries
   and cities can be chosen; its fees in brackets are no longer used. Empty Delivery options = old behaviour.
@@ -337,6 +351,33 @@ pay: PayPal, Bank transfer, Cash on delivery
 look best; on phones they show two per row. Only promise what you really do: change "50 €" if your
 `free_shipping_over` is different.
 
+## 5i. Team page (photos, names, phone numbers, social icons)
+
+A page with one card per person: round photo, name, job, a short text, a phone number people can tap to
+call, and round buttons for WhatsApp, Telegram, email, Instagram, Facebook, LinkedIn, TikTok, X and YouTube.
+The template is `pages/team.html`; create it like the footer pages (section 9) with the short title `team`,
+then rename it "Our team". The footer's Customer service list already links to `/p/team.html`.
+
+Each person is one block. Copy a whole block to add someone, delete one to remove them:
+
+```html
+<div class="team-member" data-phone="+49 157 0000001" data-email="anna@yourshop.de"
+     data-whatsapp="+49 157 0000001" data-instagram="https://www.instagram.com/yourshop">
+<img src="PASTE_PHOTO_LINK_1" alt="Anna Becker">
+<h3>Anna Becker</h3>
+<p class="team-role">Founder &amp; buyer</p>
+<p class="team-bio">Picks every piece by hand and checks it before it goes online.</p>
+</div>
+```
+
+- **Photo:** square, at least 300 × 300 px. Upload it in a draft post, copy its
+  `https://blogger.googleusercontent.com/…` address into `src="…"`. Don't publish the draft.
+- **Buttons:** only the `data-…` parts you fill in appear. `data-whatsapp` is a number with country code,
+  `data-telegram` an @username, the social ones the full `https://` link.
+- **Languages:** the template has each job and text twice, with `data-lang="en"` and `data-lang="de"`.
+- **Privacy (GDPR):** ask each person in writing before showing their photo, phone number or private
+  accounts. A shop phone number or a shared shop email is often the better choice.
+
 ## 6. How orders reach you
 
 | The buyer picks | What happens |
@@ -408,11 +449,11 @@ buyers don't need a Google account. Moderate comments in **Comments** in Blogger
 
 ## 9. Footer pages (Shipping, Delivery partners, Returns, Contact, Impressum, Privacy)
 
-The footer already links to `/p/shipping.html`, `/p/delivery.html`, `/p/returns.html`, `/p/contact.html`,
+The footer already links to `/p/shipping.html`, `/p/delivery.html`, `/p/team.html`, `/p/returns.html`, `/p/contact.html`,
 `/p/impressum.html` and `/p/privacy.html`. Create each page once:
 
 1. **Pages → New page.**
-2. Title: the **short name first**: `shipping` (then `delivery`, `returns`, `contact`, `impressum`, `privacy`).
+2. Title: the **short name first**: `shipping` (then `delivery`, `team`, `returns`, `contact`, `impressum`, `privacy`).
    Blogger makes the page address from the first title.
 3. HTML view → paste the matching file from `pages/` → replace everything in `[square brackets]`.
 4. **Publish.** Then change the title to the nice name ("Shipping & delivery", "Returns (Widerruf)" …)

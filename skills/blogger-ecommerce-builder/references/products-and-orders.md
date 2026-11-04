@@ -184,6 +184,16 @@ have usage rules), and link each to its certificate page where one exists.
   on phones). The favicon is set in Blogger Settings → Favicon and is output by `all-head-content`.
   `<meta name='theme-color'>` colours the phone browser bar.
 
+### 4f. Team page
+
+`assets/pages/team.html`: a `<div class="team">` grid of `<div class="team-member">` cards (img, h3, `.team-role`,
+`.team-bio`). shop.js turns `data-phone` into a tap-to-call line and `data-email`, `data-whatsapp`,
+`data-telegram`, `data-instagram`, `data-facebook`, `data-linkedin`, `data-tiktok`, `data-x`, `data-youtube`
+into round icon links with an accessible name ("Anna – Instagram"); only https/mailto links render. Remind
+the owner to get written consent for staff photos and private numbers.
+
+More delivery partners = more lines in the `.shop-delivery` gadget; give each an anchor on the delivery page.
+
 ## 5. Payments
 
 - Never put **secret** keys (`sk_live_…`, API secrets) in a theme. Everyone can read the XML.

@@ -100,6 +100,7 @@
       'Easy and personal': 'Einfach und persönlich', 'Secure payment': 'Sichere Zahlung', 'PayPal or bank transfer': 'PayPal oder Überweisung',
       'We answer within a day': 'Antwort innerhalb eines Tages', 'We accept': 'Wir akzeptieren', 'Bank transfer': 'Überweisung',
       'Cash on delivery': 'Nachnahme', 'Close': 'Schließen', 'Previous': 'Zurück', 'Next': 'Weiter',
+      'Our team': 'Unser Team', 'Delivery partners': 'Versandpartner',
       'Talk to us': 'Sprechen Sie mit uns', 'Call us': 'Rufen Sie uns an', 'Zoom video call': 'Zoom-Videoanruf',
       'Google Meet video call': 'Google-Meet-Videoanruf', 'Microsoft Teams call': 'Microsoft-Teams-Anruf',
       'Chat on WhatsApp': 'Per WhatsApp schreiben', 'Chat on Telegram': 'Per Telegram schreiben', 'Email us': 'E-Mail schreiben',
@@ -166,6 +167,7 @@
       'Easy and personal': 'Simple et personnel', 'Secure payment': 'Paiement sécurisé', 'PayPal or bank transfer': 'PayPal ou virement',
       'We answer within a day': 'Réponse sous 24 heures', 'We accept': 'Nous acceptons', 'Bank transfer': 'Virement bancaire',
       'Cash on delivery': 'Paiement à la livraison', 'Close': 'Fermer', 'Previous': 'Précédent', 'Next': 'Suivant',
+      'Our team': 'Notre équipe', 'Delivery partners': 'Partenaires de livraison',
       'Talk to us': 'Parlez-nous', 'Call us': 'Appelez-nous', 'Zoom video call': 'Appel vidéo Zoom',
       'Google Meet video call': 'Appel vidéo Google Meet', 'Microsoft Teams call': 'Appel Microsoft Teams',
       'Chat on WhatsApp': 'Écrire sur WhatsApp', 'Chat on Telegram': 'Écrire sur Telegram', 'Email us': 'Écrivez-nous',
@@ -748,7 +750,12 @@
     leaf: 'M5 21c0-9 5-15 16-16-1 11-7 16-16 16zM5 21l8-8',
     heart: 'M12 21s-8-5.3-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.7-8 11-8 11z',
     box: 'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',
-    check: 'M20 6 9 17l-5-5'
+    check: 'M20 6 9 17l-5-5',
+    // team page social icons
+    instagram: 'M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zM16 11.4A4 4 0 1 1 12.6 8 4 4 0 0 1 16 11.4zM17.5 6.5h.01',
+    linkedin: 'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 6V21h-4v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V21H9z',
+    tiktok: 'M16.6 2c.3 2.4 1.7 3.9 4.1 4.1v3.1a7.3 7.3 0 0 1-4-1.2v6.6c0 3.9-2.9 6.4-6.3 6.4A6.2 6.2 0 0 1 4 14.8c0-3.8 3.4-6.6 7.3-6v3.3c-1.8-.4-3.9.6-3.9 2.8 0 1.6 1.3 2.9 2.9 2.9 1.8 0 2.9-1.2 2.9-3.1V2z',
+    youtube: 'M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.8 15.1V8.9l5.7 3.1z'
   };
 
   function enhanceShare(item) {
@@ -1456,6 +1463,42 @@
     });
   }
 
+  // ------------------------------------------------------------ team page
+  // <div class="team"><div class="team-member" data-phone="+49 …" data-email="…" data-whatsapp="+49 …"
+  //   data-telegram="@name" data-instagram="https://…" data-facebook data-linkedin data-tiktok data-x data-youtube>
+  //   <img src="…" alt="Name"><h3>Name</h3><p class="team-role">Role</p><p class="team-bio">…</p></div></div>
+  // The data-… values become a phone line and a row of round icon buttons. Only https links are used.
+  var TEAM_LINKS = [
+    ['whatsapp', 'WhatsApp', false, function (v) { return 'https://wa.me/' + v.replace(/[^\d]/g, ''); }],
+    ['telegram', 'Telegram', false, function (v) { return 'https://t.me/' + v.replace(/^@|^https?:\/\/t\.me\//, ''); }],
+    ['email', 'Email', true, function (v) { return /^[^@\s]+@[^@\s]+$/.test(v) ? 'mailto:' + v : ''; }, 'mail'],
+    ['instagram', 'Instagram', true], ['facebook', 'Facebook', false], ['linkedin', 'LinkedIn', false],
+    ['tiktok', 'TikTok', false], ['x', 'X', false], ['youtube', 'YouTube', false]
+  ];
+  function renderTeam() {
+    each(doc.querySelectorAll('.team-member'), function (card) {
+      if (card.querySelector('.team-links')) return;
+      var nameNode = card.querySelector('h2, h3, h4');
+      var who = nameNode ? nameNode.textContent.trim() : '';
+      var phone = (card.getAttribute('data-phone') || '').trim();
+      var box = el('div', { 'class': 'team-links' });
+      if (phone) {
+        box.appendChild(el('a', { 'class': 'team-phone', href: 'tel:' + phone.replace(/[^\d+]/g, '') }, [svg(ICONS.phone, 'stroke'), ' ' + phone]));
+      }
+      var row = el('div', { 'class': 'team-social' });
+      TEAM_LINKS.forEach(function (d) {
+        var v = (card.getAttribute('data-' + d[0]) || '').trim();
+        if (!v) return;
+        var href = d[3] ? d[3](v) : v;
+        if (!/^(https:\/\/|mailto:)/.test(href)) return;
+        row.appendChild(el('a', { 'class': 'team-net team-net-' + d[0], href: href, target: /^https/.test(href) ? '_blank' : false, rel: 'noopener',
+          'aria-label': (who ? who + ' – ' : '') + d[1], title: d[1] }, [svg(ICONS[d[4] || d[0]], d[2] ? 'stroke' : null)]));
+      });
+      if (row.children.length) box.appendChild(row);
+      if (box.children.length) card.appendChild(box);
+    });
+  }
+
   // ------------------------------------------------------------ logo rows
   // Partners on the homepage, accreditation symbols in the footer: a gadget wrapped in
   // <div class='shop-logos'>, one logo per line:  Name | logo image link | website (optional).
@@ -1536,6 +1579,7 @@
     renderLogos();
     renderAnnounce();
     renderTrust();
+    renderTeam();
     jumpToLanguageAnchor();
     renderCount();
     window.addEventListener('storage', function (e) {

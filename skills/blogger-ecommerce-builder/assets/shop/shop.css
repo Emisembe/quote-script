@@ -253,3 +253,29 @@ body .shop-reviews .comment-thread ol { list-style: none; margin: 0; padding: 0;
 .shop-trust-pay { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin: 22px 0 0; font-size: .85rem; color: #666; }
 .shop-pay-badge { display: inline-block; padding: 5px 12px; border: 1px solid #d9d9d9; border-radius: 6px; background: #fff; color: #333; font-weight: 600; font-size: .8rem; }
 @media (max-width: 600px) { .shop-trust-list { grid-template-columns: 1fr 1fr; gap: 16px 14px; } .shop-trust-item > a, .shop-trust-item > div { flex-direction: column; align-items: center; text-align: center; gap: 8px; } .shop-trust-text { padding-top: 0; } }
+
+/* team page (<div class="team"> with <div class="team-member"> cards) */
+.team { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 24px; margin: 24px 0; }
+.team-member { background: #fff; border: 1px solid #e6e6e6; border-radius: 14px; padding: 24px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.team-member img { width: 132px !important; height: 132px !important; max-width: none; border-radius: 50%; object-fit: cover; margin: 0 0 14px !important; padding: 0 !important; border: 4px solid #f2f2f2 !important; box-shadow: none !important; background: #eee; }
+.team-member .separator, .team-member > a:first-child { margin: 0 !important; padding: 0 !important; }
+.team-member h2, .team-member h3, .team-member h4 { margin: 0 0 4px !important; font-size: 1.15rem; line-height: 1.3; }
+.team-role { margin: 0 0 10px !important; color: $(shop.accent); font-weight: 700; font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; }
+.team-bio { margin: 0 0 12px !important; color: #555; font-size: .92rem; line-height: 1.55; }
+.team-links { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 6px; }
+.team-phone { display: inline-flex; align-items: center; gap: 6px; color: #222 !important; font-weight: 600; text-decoration: none !important; font-size: .95rem; }
+.team-phone svg { width: 16px; height: 16px; color: $(shop.accent); }
+.team-social { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.team-net { width: 38px; height: 38px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #f1f1f1; color: #333 !important; transition: background .15s ease, color .15s ease, transform .15s ease; }
+.team-net svg { width: 18px; height: 18px; }
+.team-net:hover, .team-net:focus-visible { transform: translateY(-2px); color: #fff !important; }
+.team-net-whatsapp:hover, .team-net-whatsapp:focus-visible { background: #25d366; }
+.team-net-telegram:hover, .team-net-telegram:focus-visible { background: #229ed9; }
+.team-net-email:hover, .team-net-email:focus-visible { background: #444; }
+.team-net-instagram:hover, .team-net-instagram:focus-visible { background: #d6249f; }
+.team-net-facebook:hover, .team-net-facebook:focus-visible { background: #1877f2; }
+.team-net-linkedin:hover, .team-net-linkedin:focus-visible { background: #0a66c2; }
+.team-net-tiktok:hover, .team-net-tiktok:focus-visible, .team-net-x:hover, .team-net-x:focus-visible { background: #111; }
+.team-net-youtube:hover, .team-net-youtube:focus-visible { background: #ff0000; }
+.team-intro { max-width: 680px; margin: 0 auto 8px; text-align: center; color: #555; }
+@media (max-width: 480px) { .team { grid-template-columns: 1fr; } }

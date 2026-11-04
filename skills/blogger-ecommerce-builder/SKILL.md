@@ -93,7 +93,8 @@ Only https/tel/mailto links render. Snippet 5 in `theme-snippets.xml`.
 - `<div class='shop-trust'>` gadget above the footer: `icon | title | text | link` + `pay: PayPal, Bank transfer`.
 - Logo: keep the Header widget's `data:useImage` / `data:imagePlacement` branches (both proven) and size the
   image in CSS; a favicon comes from Blogger Settings via `all-head-content`.
-Details: `references/products-and-orders.md` §2, §4b–4e. Snippets 6–10 in `theme-snippets.xml`.
+- Team page template `assets/pages/team.html` (`.team-member` cards with data-phone/-email/-whatsapp/-instagram …).
+Details: `references/products-and-orders.md` §2, §4b–4f. Snippets 6–10 in `theme-snippets.xml`.
 
 ### Languages
 `language:` sets the default, `languages: en, de, fr` adds a header picker (German and French are built

@@ -614,6 +614,7 @@ pay: PayPal, Bank transfer, Cash on delivery]]></b:widget-setting>
             <b:widget-setting name='content'><![CDATA[<ul>
 <li><a href="/p/shipping.html">Shipping &amp; delivery</a></li>
 <li><a href="/p/delivery.html">Delivery partners</a></li>
+<li><a href="/p/team.html">Our team</a></li>
 <li><a href="/p/returns.html">Returns (Widerruf)</a></li>
 <li><a href="/p/contact.html">Contact</a></li>
 <li><a href="/p/impressum.html">Impressum</a></li>
