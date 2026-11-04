@@ -14,10 +14,14 @@ is the "Night Shop: complete setup guide" document.
 3. Shop settings: every line explained
 4. Adding a product
 5. Languages
+5b. Call and video buttons ("Talk to us")
+5c. Our partners and accreditation symbols
+5d. Delivery partners, delivery time and weight
+5e. Digital products (download link after payment)
 6. How orders reach you
 7. Saving every order in a Google Sheet
 8. Reviews
-9. Footer pages (Shipping, Returns, Contact, Impressum, Privacy)
+9. Footer pages (Shipping, Delivery partners, Returns, Contact, Impressum, Privacy)
 10. Troubleshooting
 11. How we make changes together
 12. Ideas for next steps
@@ -29,8 +33,8 @@ is the "Night Shop: complete setup guide" document.
 | File | What it's for |
 |---|---|
 | `theme-night-shop.xml` (in the main folder) | The theme you upload to Blogger |
-| `samples/` | Six ready-made product posts to copy |
-| `pages/` | Templates for the footer pages |
+| `samples/` | Seven ready-made product posts to copy (07 = digital download) |
+| `pages/` | Templates for the footer pages, including `delivery.html` (Delivery partners) |
 | `apps-script/Code.gs` | The Google Sheet order inbox |
 | `GUIDE.md` | This guide |
 | `src/`, `scripts/`, `preview/` | The theme's source; Claude edits these and builds `theme-night-shop.xml` |
@@ -42,7 +46,8 @@ Uploading a theme puts every gadget back to the theme's default text. So **save 
 1. **Back up:** Theme → ▾ (next to Customise) → **Backup** → Download. Keep the file.
 2. **Copy your settings:** Layout → **Shop settings** (bottom of the page) → Edit → select all text →
    copy it into a note. Do the same for **Shop words**, the **menu** gadget, and any gadget you changed
-   (hero text, "Why shop with us", "Order directly", footer texts).
+   (hero text, "Why shop with us", "Order directly", "Talk to us", **Delivery options**, "Our partners",
+   "Certified & accredited", footer texts).
 3. **Upload:** Theme → ▾ → **Restore** → upload `theme-night-shop.xml`.
    If it only says "Could not restore theme": Theme → ▾ → **Edit HTML**, select everything, paste the
    whole file, Save. That screen names the exact problem; send Claude a screenshot.
@@ -129,6 +134,14 @@ banner_image:
 | `data-sku` | Your article number (optional) |
 | `data-options` | Choices the buyer must make, groups separated by `|` |
 | `data-video` | YouTube link(s), shown in the gallery after the photos |
+| `data-weight` | Shipping weight of one piece: `0.8` (kg) or `400 g`. Shown on the product page and used for the delivery price (section 5d) |
+| `data-dimensions` | Size, e.g. `38 x 30 x 12 cm`. Shown on the product page |
+| `data-digital` | `yes` for a download (e-book, template …): no address or shipping at checkout (section 5e) |
+
+**Weight and size: you enter them, not the buyer.** Weigh each product once, packed if you can, and
+write it into the block. The checkout adds up the weights of everything in the cart and picks the right
+price step. Buyers never type measurements: they can't know them, and a price based on what they type
+could be cheated.
 
 4. Write the description. You can use these building blocks (copy them from `samples/`):
 
@@ -148,9 +161,10 @@ banner_image:
 6. If you use **Insert jump break**, keep the product block above it.
 7. **Publish.** To change a price or stock later: edit the post → HTML view → change the number.
 
-**The six samples:** `01` T-shirt with sizes and a size chart · `02` sneakers with video and details
+**The seven samples:** `01` T-shirt with sizes and a size chart · `02` sneakers with video and details
 table · `03` sale item with lifestyle photo grid · `04` sold out · `05` bag with photo-and-text block ·
-`06` product in three languages.
+`06` product in three languages · `07` digital download (e-book). Samples 01–06 now include
+`data-weight`, and 02 and 05 `data-dimensions`.
 
 ## 5. Languages
 
@@ -196,6 +210,83 @@ meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00
 stays the same (your personal room or a recurring meeting). Your own times in German or French: Shop
 words, e.g. `[de] Wed 17:00–19:00: Mi 17:00–19:00 Uhr`.
 
+## 5c. Our partners and accreditation symbols
+
+Two logo rows, both edited in **Layout**:
+- **Our partners**: on the homepage, under "Shop by category".
+- **Certified & accredited**: in the footer on every page, above the © line.
+
+One logo per line: `Name | logo picture link | website (optional)`
+
+```
+Atelier Nord | https://blogger.googleusercontent.com/img/…/atelier-logo.png | https://atelier-nord.de
+Trusted Shops | https://…/trusted-shops-seal.png | https://www.trustedshops.de/bewertung/info_XXXX.html
+14-day returns | | /p/returns.html
+```
+
+**Getting a logo picture link:** create a draft post, upload the logo (PNG with a transparent background,
+about 300 px wide), switch to HTML view and copy the `https://blogger.googleusercontent.com/…` address.
+Don't publish the draft. Without a picture link the name shows as a neat round badge. Logos show grey and
+turn colourful on mouse-over. Only show seals and memberships you really hold, and link them to the
+certificate page; most seal providers have rules for how their logo may be used.
+
+## 5d. Delivery partners, delivery time and weight
+
+At checkout the buyer chooses how the parcel travels (DHL, Hermes, pickup …) and sees the price,
+the estimated delivery time and an "About DHL Parcel" link for each option. Edit the options in
+**Layout → Delivery options** (bottom of the page, next to Shop settings), one option per line:
+
+```
+DHL Parcel | 4,90 up to 2 kg; 6,99 up to 5 kg; 10,49 up to 10 kg; 16,49 up to 31,5 kg | 2–4 working days | /p/delivery.html#dhl | Germany
+Hermes | 4,50 up to 5 kg; 6,95 up to 10 kg | 3–5 working days | /p/delivery.html#hermes | Germany
+DHL International | 14,90 up to 5 kg; 24,90 up to 20 kg | 4–7 working days | /p/delivery.html#dhl-international | Austria, Switzerland
+Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany
+```
+
+| Part | Meaning |
+|---|---|
+| 1. Name | What the buyer sees, e.g. `DHL Parcel` |
+| 2. Price | One price (`4,90`, `0` = free) **or** weight steps: `4,90 up to 2 kg; 6,99 up to 5 kg`. A parcel heavier than the last step hides the option |
+| 3. Delivery time | Free text: `2–4 working days`, `By appointment` |
+| 4. Info page | Optional link to the partner's part of your Delivery partners page |
+| 5. Countries | Optional. The country names from your `ship_to` lines. Empty = all countries |
+
+Good to know:
+- When Delivery options has lines, they set the shipping price. `ship_to` still decides which countries
+  and cities can be chosen; its fees in brackets are no longer used. Empty Delivery options = old behaviour.
+- `free_shipping_over` still makes every option free above that amount. Delete the line if you don't want that.
+- The order message, the sheet (columns **Delivery**, **Delivery time**, **Weight (kg)**) and the emails
+  show the chosen option. The sheet recalculates the price from your posts, so it can't be cheated.
+- German/French names of options and times go into Shop words: `[de] By appointment: Nach Absprache`.
+
+**The Delivery partners page** (explains each partner): create it like the other footer pages (section 9)
+with the short title `delivery` and paste `pages/delivery.html`. Each partner has a marker
+(`id="dhl"`, German `id="dhl-de"`), which the 4th part of the option line jumps to. The footer's
+"Customer service" list links to it.
+
+## 5e. Digital products (download link after payment)
+
+1. Upload your file to **Google Drive** → right-click → **Share** → General access: **Anyone with the
+   link** → **Copy link**.
+2. Create the product like any other, with `data-digital="yes"` in the product block
+   (`samples/07-digital-download.html`):
+   ```html
+   <div class="product" data-price="12,90" data-digital="yes">Price: 12,90 EUR (digital download)</div>
+   ```
+   The card gets a "Digital" badge. At checkout a cart with only digital products asks for name, phone
+   and **email** (required), no address, no shipping. A mixed cart asks for the address as usual.
+3. **In your order sheet, tab "Downloads":** the first order of the product adds a row for it
+   (Product | Post ID | Download link | Message to the buyer). Paste the Drive link into **Download link**
+   once. "Message" is optional, e.g. a password or "Open with Adobe Reader".
+4. **When the money has arrived:** in **Orders**, set the order's **Status** to `Paid`. Within seconds the
+   buyer gets an email with a big Download button, and **Downloads sent** shows the date.
+   If the link is missing you see "Missing link: (product)": add it, then set Status to Paid again.
+   To send again: click the order's row → menu **Shop → Send download links for the selected order**.
+
+This needs the newest `Code.gs` (section 7) and running **setup** once more (it asks for one extra
+permission to watch the Status column). Honest limit: a Drive link can be passed on. For valuable files,
+make a separate copy and link per buyer.
+
 ## 6. How orders reach you
 
 | The buyer picks | What happens |
@@ -221,7 +312,7 @@ You can't paste a normal Sheet link into the shop: a sheet can't receive orders 
 script acts as the sheet's "inbox". **Where is it?** In the kit zip, folder `apps-script`, file `Code.gs`
 (Claude also sends it as its own file, already filled in with your blog address and email).
 
-**Paste the whole file, unchanged.** It is about 430 lines long. If you only have a short version
+**Paste the whole file, unchanged.** It is about 650 lines long. If you only have a short version
 (for example one an AI "tidied up"), orders fail with "Sorry, the order could not be sent", because
 the part that receives orders (`doPost`) is missing. Set it up once (about 5 minutes):
 
@@ -232,15 +323,16 @@ the part that receives orders (`doPost`) is missing. Set it up once (about 5 min
    you WhatsApp/Telegram orders). Save (disk icon).
 4. Choose **setup** in the function list next to Run, press **Run**, and allow the permissions
    ("Advanced → Go to … (unsafe)" is normal for your own script). You get a test email, and the tabs
-   **Orders** and **Order lines** appear.
+   **Orders**, **Order lines** and **Downloads** appear.
 5. **Deploy → New deployment** → gear icon → **Web app** → Execute as **Me** → Who has access
    **Anyone** → Deploy. Copy the **Web app URL** (ends in `/exec`).
 6. Blogger: Layout → Shop settings → `google_sheet: ` + paste the URL → Save.
 7. Place a test order. A new row appears in **Orders** (one row per order) and **Order lines** (one
    row per product).
 
-**Replacing an older script:** paste the new file over everything, Save, run **setup** again (tabs with
-old columns are renamed "Orders (old …)", nothing is deleted), then **Deploy → Manage deployments →
+**Replacing an older script:** paste the new file over everything, Save, run **setup** again (new
+columns are added at the end of your tabs and your orders stay; tabs from a completely different script
+are renamed "Orders (old …)", nothing is deleted), then **Deploy → Manage deployments →
 pencil → Version: New version → Deploy**. Without the new version, the shop keeps talking to the old
 script.
 
@@ -264,13 +356,13 @@ Reviews are Blogger comments under each product. A comment that starts with `★
 and Google can show it in search results. Set **Settings → Comments → Who can comment → Anyone** so
 buyers don't need a Google account. Moderate comments in **Comments** in Blogger.
 
-## 9. Footer pages (Shipping, Returns, Contact, Impressum, Privacy)
+## 9. Footer pages (Shipping, Delivery partners, Returns, Contact, Impressum, Privacy)
 
-The footer already links to `/p/shipping.html`, `/p/returns.html`, `/p/contact.html`,
+The footer already links to `/p/shipping.html`, `/p/delivery.html`, `/p/returns.html`, `/p/contact.html`,
 `/p/impressum.html` and `/p/privacy.html`. Create each page once:
 
 1. **Pages → New page.**
-2. Title: the **short name first**: `shipping` (then `returns`, `contact`, `impressum`, `privacy`).
+2. Title: the **short name first**: `shipping` (then `delivery`, `returns`, `contact`, `impressum`, `privacy`).
    Blogger makes the page address from the first title.
 3. HTML view → paste the matching file from `pages/` → replace everything in `[square brackets]`.
 4. **Publish.** Then change the title to the nice name ("Shipping & delivery", "Returns (Widerruf)" …)
@@ -287,6 +379,10 @@ Impressum and Widerruf at all.
 |---|---|
 | Checkout says "Online ordering is not available yet" | Shop settings has no `whatsapp`, `telegram`, `email`, `paypal` or `google_sheet` value |
 | "Sorry, the order could not be sent" (Place order) | The script in the sheet is incomplete or the newest version isn't deployed: section 7, "Replacing an older script". If the message shows a reason in brackets (e.g. "Product not found"), see the next rows |
+| "Ask on WhatsApp" / "Ask on Telegram" missing on product pages | Your `whatsapp:`/`telegram:` lines are empty (a theme upload resets Shop settings). Paste them back into Shop settings, or keep `whatsapp:`/`telegram:` lines in the "Talk to us" gadget: the buttons use those too |
+| A delivery option doesn't appear at checkout | Its country (5th part) isn't spelled like the `ship_to` country, or the parcel is heavier than its last weight step |
+| "Missing link: …" in Downloads sent | Paste the Drive link into the Downloads tab, then set Status to Paid again |
+| Download email not sent when setting Paid | Run **setup** once after pasting the new Code.gs (it creates the trigger), and type exactly `Paid` |
 | PayPal shows "Things don't appear to be working" | You entered a PayPal email: use your PayPal.Me name in `paypal:` instead |
 | A word appears in English in another language | A line in **Shop words** overrides it (e.g. `Add to cart: Add to cart`). Delete that line |
 | "Search This Blog", "Blog Archive", "Report Abuse", "Home" boxes appear on product pages | Gadgets from your old Blogger theme that Blogger moved into the new sidebar. Layout → sidebar → open each → Remove (keep any you want) |
@@ -317,4 +413,5 @@ Keep the newest `theme-night-shop.xml` and your backup files. To undo an update,
 - **Filters** on category pages: price range, size, in stock only.
 - **Wishlist** and **recently viewed** products.
 - **"New" badge** for products from the last 14 days.
-- **Pickup point / local delivery** option with its own fee.
+- **Parcel labels:** a button in the sheet that creates a DHL label from the order row.
+- **One download link per buyer** (copies made automatically in Drive) for valuable files.

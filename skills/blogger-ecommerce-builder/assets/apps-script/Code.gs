@@ -6,12 +6,17 @@
  *     whichever way the buyer ordered: the shop's own Place order button, WhatsApp, Telegram, email or PayPal.
  *   - Direct orders: branded HTML emails to you and to the buyer.
  *   - Optional: an instant Telegram message to you for every order (see TELEGRAM_* below).
+ *   - Digital products: put each product's download link in the "Downloads" tab once. When you set an order's
+ *     Status to "Paid", the buyer gets the download links by email (or use the menu Shop -> Send download links).
+ *   - Delivery partners: the buyer's choice (DHL, pickup …) and the parcel weight are checked against the blog's
+ *     "Delivery options" gadget, so the shipping fee can't be changed in the browser either.
  *   - The browser's prices are never trusted: every price is re-read from the public Blogger feed of that post,
  *     and shipping, bank details and shop name are read from the blog's own "Shop settings" gadget.
  *
  * Setup (5 minutes) — full steps with pictures-free wording in the theme's GUIDE.md
  *   1. sheets.new -> Extensions -> Apps Script -> paste this file -> fill in SETTINGS -> Save.
- *   2. Run "setup" once (Run button) and allow the permissions. It creates the tabs and sends you a test email.
+ *   2. Run "setup" once (Run button) and allow the permissions. It creates the tabs, switches on the
+ *      "Paid -> send download links" trigger and sends you a test email. (Run it again after updating this file.)
  *   3. Deploy -> New deployment -> type "Web app" -> Execute as: Me, Who has access: Anyone -> Deploy.
  *   4. Copy the /exec URL into the blog: Layout -> Shop settings ->  google_sheet: https://script.google.com/macros/s/.../exec
  *   After ANY code change: Deploy -> Manage deployments -> Edit (pencil) -> Version: New version -> Deploy.
@@ -30,9 +35,13 @@ var SETTINGS = {
   COLOR_ACCENT: '#FF3300'
 };
 
+// New columns are only ever added at the end, so an existing sheet is extended instead of replaced.
 var ORDER_HEADERS = ['Order ID', 'Received', 'Status', 'Method', 'Payment', 'Name', 'Phone', 'Email', 'Street', 'Postcode', 'City',
-                     'Country', 'Note', 'Items', 'Subtotal', 'Shipping', 'Total', 'Currency', 'Language', 'Page'];
-var LINE_HEADERS = ['Order ID', 'Received', 'Product', 'Options', 'Qty', 'Price', 'Line total', 'Post ID', 'Link'];
+                     'Country', 'Note', 'Items', 'Subtotal', 'Shipping', 'Total', 'Currency', 'Language', 'Page',
+                     'Delivery', 'Delivery time', 'Weight (kg)', 'Downloads sent'];
+var LINE_HEADERS = ['Order ID', 'Received', 'Product', 'Options', 'Qty', 'Price', 'Line total', 'Post ID', 'Link', 'Type'];
+var DOWNLOAD_HEADERS = ['Product', 'Post ID', 'Download link', 'Message to the buyer (optional)'];
+var PAID = /^(paid|bezahlt|payé|paye|pagado)$/i;
 var METHOD_NAMES = { order: 'Website', whatsapp: 'WhatsApp', telegram: 'Telegram', email: 'Email', paypal: 'PayPal' };
 
 function doPost(e) {
@@ -41,7 +50,7 @@ function doPost(e) {
     var order = JSON.parse(e.postData.contents);
     var method = METHOD_NAMES[order.method] ? order.method : 'order';
     var c = order.customer || {};
-    if (!c.name || !c.phone || !(c.street || c.address)) return reply_({ ok: false, error: 'missing customer details' });
+    if (!c.name || !c.phone) return reply_({ ok: false, error: 'missing customer details' });
     if (!order.items || !order.items.length || order.items.length > 50) return reply_({ ok: false, error: 'empty cart' });
 
     var shop = shopSettings_();
@@ -51,16 +60,36 @@ function doPost(e) {
       if (!isNaN(product.stock) && product.stock <= 0) throw new Error('Out of stock: ' + product.title);
       var qty = Math.max(1, Math.min(99, parseInt(item.qty, 10) || 1));
       return { id: String(item.id), title: product.title, chosen: (item.chosen || []).map(String).slice(0, 6),
-               qty: qty, price: product.price, total: product.price * qty, url: product.url };
+               qty: qty, price: product.price, total: product.price * qty, url: product.url,
+               digital: !!product.digital, weight: product.weight || 0 };
     });
+    var physical = lines.some(function (l) { return !l.digital; });
+    var digital = lines.some(function (l) { return l.digital; });
+    if (physical && !(c.street || c.address)) return reply_({ ok: false, error: 'missing delivery address' });
+    if (digital && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email || '')) return reply_({ ok: false, error: 'email needed for the download link' });
     var sub = lines.reduce(function (s, l) { return s + l.total; }, 0);
-    var fee = shippingFor_(shop, c.country);
+    var weight = lines.reduce(function (s, l) { return s + (l.digital ? 0 : l.weight * l.qty); }, 0);
+    var fee = 0, option = null;
+    if (physical && shop.delivery.length) {
+      var opts = deliveriesFor_(shop, c.country, weight);
+      // The buyer's choice, checked for this weight; the first option that fits otherwise.
+      // A country written differently on the blog (e.g. "Deutschland") falls back to the chosen option's name.
+      var want = String(c.country || '').toLowerCase();
+      var known = shop.delivery.some(function (d) { return d.countries.some(function (n) { return n.toLowerCase() === want; }); });
+      option = opts.filter(function (d) { return d.name === c.delivery; })[0] ||
+        (known ? null : shop.delivery.filter(function (d) { return d.name === c.delivery && !isNaN(feeFor_(d, weight)); })[0]) || opts[0];
+      if (!option) return reply_({ ok: false, error: 'no delivery option for ' + (c.country || 'this country') + ' at ' + weight + ' kg' });
+      fee = feeFor_(option, weight);
+    } else if (physical) {
+      fee = shippingFor_(shop, c.country);
+    }
     var ship = fee && !(shop.freeOver && sub >= shop.freeOver) ? fee : 0;
-    var total = sub + ship;
+    sub = Math.round(sub * 100) / 100;
+    var total = Math.round((sub + ship) * 100) / 100;
     var now = new Date();
     var status = method === 'order' ? 'New' : 'Sent via ' + METHOD_NAMES[method] + ' – check the chat';
     var summary = lines.map(function (l) {
-      return l.qty + ' x ' + l.title + (l.chosen.length ? ' (' + l.chosen.join(', ') + ')' : '') + ' @ ' + l.price.toFixed(2);
+      return l.qty + ' x ' + l.title + (l.chosen.length ? ' (' + l.chosen.join(', ') + ')' : '') + (l.digital ? ' [digital]' : '') + ' @ ' + l.price.toFixed(2);
     }).join('\n');
 
     lock.waitLock(20000);
@@ -70,14 +99,18 @@ function doPost(e) {
     // A leading apostrophe keeps phone numbers and postcodes as text (no lost leading zeros).
     orders.appendRow([id, now, status, METHOD_NAMES[method], text_(c.payment), text_(c.name), "'" + c.phone, text_(c.email),
                       text_(c.street || c.address), "'" + (c.postcode || ''), text_(c.city), text_(c.country), text_(c.note),
-                      text_(summary), sub, ship, total, shop.currency, text_(order.lang), text_(order.page)]);
+                      text_(summary), sub, ship, total, shop.currency, text_(order.lang), text_(order.page),
+                      option ? text_(option.name) : '', option ? text_(option.time) : '', physical && weight ? Math.round(weight * 1000) / 1000 : '',
+                      digital ? '' : 'n/a']);
     var linesSheet = sheet_(book, 'Order lines', LINE_HEADERS);
     linesSheet.getRange(linesSheet.getLastRow() + 1, 1, lines.length, LINE_HEADERS.length).setValues(lines.map(function (l) {
-      return [id, now, text_(l.title), text_(l.chosen.join(', ')), l.qty, l.price, l.total, "'" + l.id, l.url];
+      return [id, now, text_(l.title), text_(l.chosen.join(', ')), l.qty, l.price, l.total, "'" + l.id, l.url, l.digital ? 'Digital' : 'Physical'];
     }));
+    if (digital) downloadRows_(book, lines);
     lock.releaseLock();
 
-    var o = { id: id, method: method, customer: c, lines: lines, sub: sub, ship: ship, total: total, shop: shop };
+    var o = { id: id, method: method, customer: c, lines: lines, sub: sub, ship: ship, total: total, shop: shop,
+              option: option, weight: weight, physical: physical, digital: digital };
     if (method === 'order' || SETTINGS.EMAIL_OWNER_FOR_CHAT_ORDERS) {
       MailApp.sendEmail({
         to: SETTINGS.OWNER_EMAIL || Session.getEffectiveUser().getEmail(),
@@ -146,6 +179,14 @@ function sheet_(book, name, headers) {
   if (sheet.getLastRow() > 0) {
     // A tab made by an older or different script: fix an empty one, move a used one aside as "(old)".
     var first = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 1)).getValues()[0].map(String);
+    while (first.length && first[first.length - 1] === '') first.pop();
+    if (first.length < headers.length && first.join('|') === headers.slice(0, first.length).join('|')) {
+      // An older version of this script: add the new columns at the end and keep every order.
+      var extra = headers.slice(first.length);
+      sheet.getRange(1, first.length + 1, 1, extra.length).setValues([extra])
+        .setFontWeight('bold').setBackground('#111111').setFontColor('#ffffff');
+      first = headers.slice();
+    }
     if (first.join('|') !== headers.join('|')) {
       if (sheet.getLastRow() === 1) {
         sheet.clear();
@@ -168,20 +209,17 @@ function sheet_(book, name, headers) {
 /** The blog's "Shop settings" gadget, read from the homepage (cached 10 minutes). */
 function shopSettings_() {
   var cache = CacheService.getScriptCache();
-  var hit = cache.get('shop-settings');
+  var hit = cache.get('shop-settings-3');
   var raw = hit ? JSON.parse(hit) : null;
   if (!raw) {
-    raw = { lines: [] };
+    raw = { lines: [], delivery: [], contact: [] };
     try {
       var html = UrlFetchApp.fetch(blog_() + '/', { muteHttpExceptions: true }).getContentText();
-      var m = /class=["']shop-settings["'][^>]*>([\s\S]*?)<\/div>/i.exec(html);
-      if (m) {
-        var text = m[1].replace(/<br\s*\/?>|<\/p>|<\/div>|<\/li>/gi, '\n').replace(/<[^>]+>/g, '')
-          .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
-        raw.lines = text.split(/\r?\n/);
-      }
+      raw.lines = gadget_(html, 'shop-settings');
+      raw.delivery = gadget_(html, 'shop-delivery');
+      raw.contact = gadget_(html, 'shop-contact');
     } catch (x) { /* fall back to SETTINGS */ }
-    cache.put('shop-settings', JSON.stringify(raw), 600);
+    cache.put('shop-settings-3', JSON.stringify(raw), 600);
   }
   var s = {}, shipTo = [];
   raw.lines.forEach(function (line) {
@@ -195,12 +233,18 @@ function shopSettings_() {
       s[key] = m[2];
     }
   });
+  // WhatsApp/Telegram from the "Talk to us" gadget when Shop settings has none.
+  (raw.contact || []).forEach(function (line) {
+    var m = /^\s*(whatsapp|telegram)\s*:\s*([^|]+)/i.exec(line);
+    if (m && !s[m[1].toLowerCase()]) s[m[1].toLowerCase()] = m[2].trim();
+  });
   return {
     name: s.shop_name || SETTINGS.SHOP_NAME,
     currency: (s.currency || SETTINGS.CURRENCY).toUpperCase(),
     shipping: num_(s.shipping) || 0,
     freeOver: num_(s.free_shipping_over) || 0,
     shipTo: shipTo,
+    delivery: deliveryOptions_(raw.delivery || []),
     bank: s.bank || '',
     whatsapp: (s.whatsapp || '').replace(/[^\d]/g, ''),
     telegram: (s.telegram || '').replace(/^https?:\/\/(www\.)?t\.me\//i, '').replace(/^@/, ''),
@@ -208,6 +252,45 @@ function shopSettings_() {
     paypalMe: /@/.test(s.paypal || '') ? '' : (s.paypal || '').replace(/^https?:\/\/(www\.)?(paypal\.me|paypal\.com\/paypalme)\//i, '').split(/[/?#\s]/)[0],
     labelPrices: /^(yes|true|on|1|ja|oui)$/i.test(s.label_prices || '')
   };
+}
+
+/** The text lines of the gadget whose box has this class (e.g. <div class='shop-settings'>…</div>). */
+function gadget_(html, cls) {
+  var m = new RegExp('class=["\']' + cls + '["\'][^>]*>([\\s\\S]*?)<\\/div>', 'i').exec(html);
+  if (!m) return [];
+  return m[1].replace(/<br\s*\/?>|<\/p>|<\/div>|<\/li>/gi, '\n').replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/&#39;/g, "'").replace(/&quot;/g, '"').split(/\r?\n/);
+}
+
+/** Same rules as shop.js: "DHL | 4,90 up to 2 kg; 6,99 up to 5 kg | 2–4 working days | /p/delivery.html | Germany, Austria". */
+function deliveryOptions_(lines) {
+  return lines.map(function (line) {
+    var parts = line.split('|').map(function (x) { return x.trim(); });
+    if (parts.length < 2 || !parts[0]) return null;
+    var tiers = parts[1].split(';').map(function (seg) {
+      var m = /^\s*([\d.,]+)\s*(?:€|eur|chf|\$|£)?\s*(?:(?:up to|bis|jusqu'?à|max\.?|<=?)\s*([\d.,]+)\s*kg)?\s*$/i.exec(seg);
+      return m ? { fee: num_(m[1]), max: m[2] ? num_(m[2]) : Infinity } : null;
+    }).filter(function (x) { return x && !isNaN(x.fee); });
+    if (!tiers.length) return null;
+    var countries = [];
+    parts.slice(3).forEach(function (x) {
+      if (x && !/^(https:\/\/|\/)/.test(x)) countries = x.split(',').map(function (c) { return c.trim(); }).filter(Boolean);
+    });
+    return { name: parts[0], tiers: tiers, time: parts[2] || '', countries: countries };
+  }).filter(Boolean);
+}
+
+function feeFor_(option, weight) {
+  for (var i = 0; i < option.tiers.length; i++) if (weight <= option.tiers[i].max) return option.tiers[i].fee;
+  return NaN;
+}
+
+function deliveriesFor_(shop, country, weight) {
+  return shop.delivery.filter(function (d) {
+    var want = String(country || '').toLowerCase();
+    return (!d.countries.length || !want || d.countries.some(function (n) { return n.toLowerCase() === want || n.length === 2; })) &&
+      !isNaN(feeFor_(d, weight));
+  });
 }
 
 function shippingFor_(shop, country) {
@@ -220,17 +303,20 @@ function productById_(postId) {
   if (!/^\d+$/.test(postId)) return null;
   var cache = CacheService.getScriptCache();
   var hit = cache.get('p' + postId);
-  if (hit) return JSON.parse(hit);
+  if (hit) { var p = JSON.parse(hit); if (p.price === null) p.price = NaN; if (p.stock === null) p.stock = NaN; return p; }
   var res = UrlFetchApp.fetch(blog_() + '/feeds/posts/default/' + postId + '?alt=json', { muteHttpExceptions: true });
   if (res.getResponseCode() !== 200) return null;
   var entry = JSON.parse(res.getContentText()).entry;
   var html = (entry.content && entry.content.$t) || '';
   var link = (entry.link || []).filter(function (l) { return l.rel === 'alternate'; })[0];
-  var product = { title: entry.title.$t, price: NaN, stock: NaN, url: link ? link.href : '' };
+  var product = { title: entry.title.$t, price: NaN, stock: NaN, url: link ? link.href : '', digital: false, weight: 0 };
   var tag = /<[a-z]+\b[^>]*class=["'][^"']*\bproduct\b[^"']*["'][^>]*>/i.exec(html);
   if (tag) {
     product.price = num_(attr_(tag[0], 'data-price'));
     product.stock = num_(attr_(tag[0], 'data-stock'));
+    product.digital = /^(yes|true|1|digital|ja|oui)$/i.test(attr_(tag[0], 'data-digital').trim());
+    var w = attr_(tag[0], 'data-weight'), kg = num_(w);
+    product.weight = isNaN(kg) || kg < 0 ? 0 : (/\d\s*g\b/i.test(w) && !/kg/i.test(w) ? kg / 1000 : kg);
   }
   if (isNaN(product.price) && shopSettings_().labelPrices) {
     (entry.category || []).forEach(function (cat) {
@@ -281,10 +367,13 @@ function plainText_(o) {
   o.lines.forEach(function (l) {
     out.push(l.qty + ' x ' + l.title + (l.chosen.length ? ' (' + l.chosen.join(', ') + ')' : '') + ' = ' + money_(l.total, cur));
   });
-  out.push('', 'Subtotal: ' + money_(o.sub, cur), 'Shipping: ' + money_(o.ship, cur), 'Total: ' + money_(o.total, cur));
+  out.push('', 'Subtotal: ' + money_(o.sub, cur), 'Shipping' + (o.option ? ' (' + o.option.name + ')' : '') + ': ' + money_(o.ship, cur), 'Total: ' + money_(o.total, cur));
   if (c.payment) out.push('Payment: ' + c.payment);
-  out.push('',
-           c.name, c.phone, c.email || '', c.street || c.address || '', (c.postcode || '') + ' ' + (c.city || ''), c.country || '');
+  if (o.option) out.push('Delivery: ' + o.option.name + (o.option.time ? ' · ' + o.option.time : ''));
+  if (o.physical && o.weight) out.push('Parcel weight: ' + (Math.round(o.weight * 1000) / 1000) + ' kg');
+  if (o.digital) out.push('Digital products: the download link is emailed after payment.');
+  out.push('', c.name, c.phone, c.email || '');
+  if (o.physical) out.push(c.street || c.address || '', (c.postcode || '') + ' ' + (c.city || ''), c.country || '');
   if (c.note) out.push('', 'Note: ' + c.note);
   if (o.shop.bank && payBank_(c.payment)) out.push('', 'Bank transfer: ' + o.shop.bank, 'Reference: ' + o.id);
   return out.join('\n');
@@ -334,7 +423,8 @@ function itemsTable_(o, b) {
   var td = 'padding:10px 8px;border-bottom:1px solid #ECECEE;font-size:14px;color:#222222;vertical-align:top;';
   var rows = o.lines.map(function (l) {
     return '<tr><td style="' + td + '"><a href="' + esc_(l.url) + '" style="color:#222222;font-weight:700;text-decoration:none;">' + esc_(l.title) + '</a>' +
-      (l.chosen.length ? '<br><span style="font-size:12px;color:#777777;">' + esc_(l.chosen.join(' · ')) + '</span>' : '') + '</td>' +
+      (l.chosen.length ? '<br><span style="font-size:12px;color:#777777;">' + esc_(l.chosen.join(' · ')) + '</span>' : '') +
+      (l.digital ? '<br><span style="font-size:12px;color:#2f6f5e;font-weight:700;">Digital download</span>' : '') + '</td>' +
       '<td style="' + td + 'text-align:center;white-space:nowrap;">' + l.qty + ' ×</td>' +
       '<td style="' + td + 'text-align:right;white-space:nowrap;">' + esc_(money_(l.total, cur)) + '</td></tr>';
   }).join('');
@@ -343,7 +433,9 @@ function itemsTable_(o, b) {
       '</td><td style="padding:6px 8px;text-align:right;white-space:nowrap;font-size:' + (strong ? '16px;font-weight:700;color:' + b.accent : '14px;color:#222222') + ';">' + esc_(value) + '</td></tr>';
   };
   return '<table role="presentation" style="width:100%;border-collapse:collapse;margin-bottom:8px;">' + rows +
-    sum('Subtotal', money_(o.sub, cur)) + sum('Shipping', o.ship ? money_(o.ship, cur) : 'Free') + sum('Total', money_(o.total, cur), true) + '</table>';
+    sum('Subtotal', money_(o.sub, cur)) +
+    (o.physical === false ? '' : sum('Shipping' + (o.option ? ' · ' + o.option.name : ''), o.ship ? money_(o.ship, cur) : 'Free')) +
+    sum('Total', money_(o.total, cur), true) + '</table>';
 }
 
 function detailsTable_(pairs, b) {
@@ -386,8 +478,11 @@ function ownerEmail_(o) {
     (o.method === 'order' ? '' : '<p style="font-size:13px;color:#7A5800;background:#FFF3CD;padding:10px 12px;margin:10px 0 0;">The buyer was sent to ' +
       esc_(METHOD_NAMES[o.method]) + ' to finish the order. Check that the message arrived.</p>') +
     section_('Products', b) + itemsTable_(o, b) +
-    section_('Customer', b) + detailsTable_([['Name', c.name], ['Phone', c.phone], ['Email', c.email], ['Address', address_(c)],
-      ['Payment', c.payment], ['Note', c.note]], b) +
+    section_('Customer', b) + detailsTable_([['Name', c.name], ['Phone', c.phone], ['Email', c.email], ['Address', o.physical ? address_(c) : ''],
+      ['Payment', c.payment], ['Delivery', o.option ? o.option.name + (o.option.time ? ' · ' + o.option.time : '') : ''],
+      ['Parcel weight', o.physical && o.weight ? (Math.round(o.weight * 1000) / 1000) + ' kg' : ''], ['Note', c.note]], b) +
+    (o.digital ? '<p style="font-size:13px;color:#1f4d40;background:#EEF6F3;padding:10px 12px;margin:10px 0 0;">Digital products: once paid, set the Status of order ' +
+      esc_(o.id) + ' to <strong>Paid</strong> in the sheet and the download links go to ' + esc_(c.email) + ' automatically.</p>' : '') +
     (wa ? button_(wa, 'Reply on WhatsApp', b) : (c.email ? button_('mailto:' + c.email + '?subject=' + encodeURIComponent('Your order #' + o.id), 'Reply by email', b) : '')) +
     '</div>';
   return wrapEmail_(banner_('New order', money_(o.total, o.shop.currency), b, false) + body, b);
@@ -403,11 +498,117 @@ function buyerEmail_(o) {
     '<p style="font-size:15px;color:#222222;line-height:1.7;margin:0 0 14px;">thank you for your order. We have received it and will confirm it personally, usually within one working day.</p>' +
     section_('Your order #' + o.id, b) + itemsTable_(o, b) +
     payment_(o, b) +
-    section_('Delivery to', b) + detailsTable_([['Name', c.name], ['Address', address_(c)], ['Phone', c.phone]], b) +
+    (o.physical ? section_('Delivery to', b) + detailsTable_([['Name', c.name], ['Address', address_(c)], ['Phone', c.phone],
+      ['Delivery', o.option ? o.option.name : ''], ['Estimated delivery', o.option ? o.option.time : '']], b) : '') +
+    (o.digital ? section_('Your download', b) + '<p style="font-size:14px;color:#444444;line-height:1.7;margin:0;">We send the download link to <strong>' +
+      esc_(c.email) + '</strong> as soon as your payment has arrived.</p>' : '') +
     (contact.length ? '<p style="font-size:14px;color:#444444;line-height:1.7;margin:18px 0 0;text-align:center;">Questions? ' +
       contact.map(function (x) { return '<a href="' + esc_(x[1]) + '" style="color:' + b.accent + ';font-weight:700;text-decoration:none;">' + x[0] + '</a>'; }).join(' &nbsp;·&nbsp; ') + '</p>' : '') +
     '</div>';
   return wrapEmail_(banner_('Thank you', 'Order received', b, true) + body, b);
+}
+
+// ---------------------------------------------------------------- digital products
+
+/** Adds a row to "Downloads" for each digital product that has none yet, so you only paste the link. */
+function downloadRows_(book, lines) {
+  var sheet = sheet_(book, 'Downloads', DOWNLOAD_HEADERS);
+  var known = downloadMap_(sheet);
+  lines.forEach(function (l) {
+    if (!l.digital || known[l.id]) return;
+    sheet.appendRow([text_(l.title), "'" + l.id, '', '']);
+    known[l.id] = { link: '' };
+  });
+}
+
+/** Post ID -> { link, message } from the "Downloads" tab. */
+function downloadMap_(sheet) {
+  var map = {};
+  if (sheet.getLastRow() < 2) return map;
+  sheet.getRange(2, 1, sheet.getLastRow() - 1, 4).getValues().forEach(function (r) {
+    var id = String(r[1]).replace(/\D/g, '');
+    if (id) map[id] = { title: String(r[0]), link: String(r[2]).trim(), message: String(r[3]).trim() };
+  });
+  return map;
+}
+
+/**
+ * Emails the download links of one order (its row in "Orders"). Returns a short result text.
+ * Called when you set Status to "Paid", or from the menu Shop -> Send download links.
+ */
+function sendDownloads_(row, force) {
+  var book = SpreadsheetApp.getActiveSpreadsheet();
+  var orders = sheet_(book, 'Orders', ORDER_HEADERS);
+  var col = function (name) { return ORDER_HEADERS.indexOf(name); };
+  var r = orders.getRange(row, 1, 1, ORDER_HEADERS.length).getValues()[0];
+  var id = String(r[col('Order ID')]), email = String(r[col('Email')]).trim(), sentCell = orders.getRange(row, col('Downloads sent') + 1);
+  if (!id) return 'No order in row ' + row + '.';
+  if (/^n\/a$/i.test(String(r[col('Downloads sent')]))) return 'Order ' + id + ' has no digital products.';
+  if (r[col('Downloads sent')] instanceof Date && !force) return 'The links for order ' + id + ' were already sent on ' + r[col('Downloads sent')] + '.';
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { sentCell.setValue('No email address'); return 'Order ' + id + ' has no valid email address.'; }
+
+  var lineSheet = sheet_(book, 'Order lines', LINE_HEADERS);
+  var items = lineSheet.getLastRow() < 2 ? [] : lineSheet.getRange(2, 1, lineSheet.getLastRow() - 1, LINE_HEADERS.length).getValues()
+    .filter(function (l) { return String(l[0]) === id && l[9] === 'Digital'; })
+    .map(function (l) { return { title: String(l[2]), postId: String(l[7]).replace(/\D/g, ''), url: String(l[8]) }; });
+  if (!items.length) { sentCell.setValue('n/a'); return 'Order ' + id + ' has no digital products.'; }
+  var links = downloadMap_(sheet_(book, 'Downloads', DOWNLOAD_HEADERS));
+  var missing = items.filter(function (it) { return !/^https:\/\//.test((links[it.postId] || {}).link || ''); });
+  if (missing.length) {
+    sentCell.setValue('Missing link: ' + missing.map(function (m) { return m.title; }).join(', '));
+    return 'Add the download link (https://…) for ' + missing.map(function (m) { return m.title; }).join(', ') + ' in the "Downloads" tab, then try again.';
+  }
+
+  var shop = shopSettings_();
+  var b = { name: shop.name, dark: SETTINGS.COLOR_DARK, accent: SETTINGS.COLOR_ACCENT, site: blog_() };
+  var name = String(r[col('Name')]);
+  var body = '<div class="email-body" style="padding:26px 32px;">' +
+    '<p style="font-size:15px;color:#222222;line-height:1.7;margin:0 0 14px;">Hello ' + esc_(name) + ',</p>' +
+    '<p style="font-size:15px;color:#222222;line-height:1.7;margin:0 0 6px;">thank you, your payment for order <strong>#' + esc_(id) +
+    '</strong> has arrived. Here is your download:</p>' +
+    items.map(function (it) {
+      var d = links[it.postId];
+      return section_(it.title, b) + (d.message ? '<p style="font-size:14px;color:#444444;line-height:1.7;margin:0;">' + esc_(d.message) + '</p>' : '') +
+        button_(d.link, 'Download ' + it.title, b) +
+        '<p style="font-size:12px;color:#777777;text-align:center;margin:4px 0 0;word-break:break-all;">' + esc_(d.link) + '</p>';
+    }).join('') +
+    '<p style="font-size:13px;color:#666666;line-height:1.7;margin:22px 0 0;">Please keep this email. If a link does not open, just reply to it.</p>' +
+    '</div>';
+  var text = 'Hello ' + name + ',\n\nyour payment for order #' + id + ' has arrived. Your download:\n\n' +
+    items.map(function (it) { return it.title + ': ' + links[it.postId].link + (links[it.postId].message ? '\n' + links[it.postId].message : ''); }).join('\n\n');
+  MailApp.sendEmail({ to: email, subject: shop.name + ': your download for order #' + id, body: text,
+    htmlBody: wrapEmail_(banner_('Payment received', 'Your download', b, true) + body, b), name: shop.name,
+    replyTo: SETTINGS.OWNER_EMAIL || undefined });
+  sentCell.setValue(new Date());
+  return 'Download links for order ' + id + ' sent to ' + email + '.';
+}
+
+/** Installable "on edit" trigger (made by setup): Status set to Paid -> send the download links. */
+function onOrderEdit(e) {
+  if (!e || !e.range) return;
+  var sheet = e.range.getSheet();
+  if (sheet.getName() !== 'Orders' || e.range.getRow() < 2 || e.range.getColumn() !== ORDER_HEADERS.indexOf('Status') + 1) return;
+  for (var i = 0; i < e.range.getNumRows(); i++) {
+    var row = e.range.getRow() + i;
+    if (PAID.test(String(sheet.getRange(row, e.range.getColumn()).getValue()).trim())) {
+      try { sendDownloads_(row, false); } catch (err) { sheet.getRange(row, ORDER_HEADERS.indexOf('Downloads sent') + 1).setValue('Error: ' + err.message); }
+    }
+  }
+}
+
+/** Adds the "Shop" menu to the sheet. */
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('Shop')
+    .addItem('Send download links for the selected order', 'menuSendDownloads')
+    .addToUi();
+}
+
+function menuSendDownloads() {
+  var sheet = SpreadsheetApp.getActiveSheet(), ui = SpreadsheetApp.getUi();
+  if (sheet.getName() !== 'Orders') { ui.alert('Click a row in the "Orders" tab first.'); return; }
+  var row = sheet.getActiveRange().getRow();
+  if (row < 2) { ui.alert('Click the row of the order first.'); return; }
+  ui.alert(sendDownloads_(row, true));
 }
 
 /** Instant alert in Telegram (optional). */
@@ -428,6 +629,9 @@ function setup() {
   var book = SpreadsheetApp.getActiveSpreadsheet();
   sheet_(book, 'Orders', ORDER_HEADERS);
   sheet_(book, 'Order lines', LINE_HEADERS);
+  sheet_(book, 'Downloads', DOWNLOAD_HEADERS);
+  var has = ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === 'onOrderEdit'; });
+  if (!has) ScriptApp.newTrigger('onOrderEdit').forSpreadsheet(book).onEdit().create();
   var shop = shopSettings_();
   MailApp.sendEmail({ to: SETTINGS.OWNER_EMAIL || Session.getEffectiveUser().getEmail(),
     subject: '✅ ' + shop.name + ' order inbox is ready', body: 'Orders from ' + blog_() + ' will arrive in this sheet: ' + book.getUrl() });

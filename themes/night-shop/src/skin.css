@@ -1143,6 +1143,32 @@ body .shop-reviews .comment-thread ol { list-style: none; margin: 0; padding: 0;
 .shop-contact-time svg { width: 14px; height: 14px; flex: 0 0 14px; }
 @media (max-width: 480px) { .shop-contact-card { padding: 14px; } }
 
+/* digital products, weight and size */
+.shop-badge-digital { background: #2f6f5e; }
+.shop-badge:not(.shop-badge-low):not(.shop-badge-digital) ~ .shop-badge-digital { top: 42px; }
+.shop-digital-note { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 12px; padding: 10px 12px; background: #eef6f3; border: 1px solid #cfe5dc; border-radius: 6px; color: #234; font-size: .9rem; }
+.shop-digital-note svg { width: 18px; height: 18px; flex: 0 0 18px; margin-top: 1px; color: #2f6f5e; }
+.shop-facts { font-size: .9rem; color: #555; margin: 0 0 12px; }
+
+/* delivery partners at checkout (gadget with <div class="shop-delivery">) */
+.shop-delivery:not(.is-ready) { white-space: pre-line; }
+.shop-deliveries .shop-delivery-opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-top: 1px solid #eee; font-weight: 400; }
+.shop-deliveries legend + .shop-delivery-opt { border-top: 0; }
+.shop-deliveries input[type="radio"] { flex: 0 0 18px; margin-top: 2px; }
+.shop-delivery-text { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.shop-delivery-head { display: flex; justify-content: space-between; gap: 10px; }
+.shop-delivery-fee { font-weight: 700; white-space: nowrap; }
+.shop-delivery-info { font-size: .85rem; color: $(shop.accent); }
+
+/* partner logos and accreditation symbols (gadget with <div class="shop-logos">) */
+.shop-logos:not(.is-ready) { white-space: pre-line; }
+.shop-logo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 34px; }
+.shop-logo a, .shop-logo > span { display: flex; align-items: center; justify-content: center; text-decoration: none; }
+.shop-logo img { display: block; max-height: 56px; max-width: 150px; width: auto; height: auto; object-fit: contain; filter: grayscale(1); opacity: .75; transition: filter .2s ease, opacity .2s ease; }
+.shop-logo a:hover img, .shop-logo a:focus-visible img { filter: none; opacity: 1; }
+.shop-logo-name { display: inline-block; padding: 8px 14px; border: 1px solid #d6d6d6; border-radius: 999px; font-size: .85rem; font-weight: 600; color: #444; }
+@media (max-width: 480px) { .shop-logo-list { gap: 14px 22px; } .shop-logo img { max-height: 44px; max-width: 110px; } }
+
 .shop-admin { display: none; }
 body#layout .shop-admin { display: block; }
 
@@ -1298,3 +1324,16 @@ body .widget.Attribution { display: none; }
   .talk .widget > h2.title, .talk .shop-contact-intro { text-align: center; }
 }
 body#layout .talk { display: block; }
+
+/* Our partners (homepage) and accreditation symbols (footer) */
+.partners { display: none; background: #ffffff; border-top: 1px solid #ece8e2; }
+.partners .container { padding-top: 44px; padding-bottom: 48px; text-align: center; }
+.partners .widget > h2.title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 22px; letter-spacing: 0.06em; color: #6b6b6b; margin: 0 0 22px; }
+.footer-badges { border-top: 1px solid rgba(255,255,255,0.12); padding: 22px 0 6px; }
+.footer-badges .widget { margin: 0; text-align: center; }
+.footer-badges .widget > h2.title { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; margin: 0 0 14px; opacity: .7; }
+.site-footer .footer-badges .shop-logo img { filter: grayscale(1) brightness(1.6); opacity: .8; }
+.site-footer .footer-badges .shop-logo a:hover img { filter: none; opacity: 1; }
+.site-footer .footer-badges .shop-logo-name { color: var(--rm-on-dark); border-color: rgba(255,255,255,0.28); }
+.site-footer .footer-badges .widget-content li { margin: 0; }
+body#layout .partners, body#layout .footer-badges { display: block; }

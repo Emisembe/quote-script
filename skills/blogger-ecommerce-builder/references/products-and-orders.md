@@ -36,6 +36,13 @@
 | `data-sku` | no | Article number, used in structured data and the order |
 | `data-options` | no | `Name: a, b, c` groups separated by `|`. The buyer must choose one per group |
 | `data-video` | no | YouTube link(s), comma-separated. Shown in the gallery after the photos (played from youtube-nocookie.com) |
+| `data-digital` | no | `yes` = digital product (e-book, template, course). No address or shipping at checkout, email required, "Digital" badge; the download link is emailed after payment (§4b) |
+| `data-weight` | no | Shipping weight of one piece, in kg (`0.4`) or grams (`400 g`). Shown on the product page; summed for weight-based delivery prices |
+| `data-dimensions` | no | Size as plain text (`38 x 30 x 12 cm`). Shown on the product page |
+
+**Who enters weight and size? The owner, never the buyer.** The buyer can't know a parcel's weight, and a
+price that depends on what the buyer types can be gamed. The owner weighs each product once (packed, if
+possible), writes it into the block, and the checkout adds it up.
 
 **SpotCommerce labels** (`_39` price, `-49` old price, `!0` stock) still work when Shop settings has
 `label_prices: yes`. The block wins when both exist.
@@ -99,7 +106,8 @@ without notice, and orders are lost silently.
 1. Open **sheets.new**, then **Extensions → Apps Script**, paste `Code.gs` and set `BLOG_URL` (and
    `OWNER_EMAIL` if orders should go to another address). Shipping, currency, bank details and shop name
    are read from the blog's own Shop settings gadget, so there is one place to edit them.
-2. Run **setup** once and allow the permissions: it creates **Orders** and **Order lines** and emails a test.
+2. Run **setup** once and allow the permissions: it creates **Orders**, **Order lines** and **Downloads**,
+   switches on the "Paid → send download links" trigger and emails a test.
 3. **Deploy → New deployment → Web app**, Execute as **Me**, access **Anyone**.
 4. Put the `/exec` URL in Shop settings: `google_sheet: https://script.google.com/macros/s/…/exec`.
 5. Blogger: **Settings → Site feed → Allow blog feed: Full** (the script reads prices from the feed).
@@ -121,6 +129,48 @@ WhatsApp" button) and the buyer (with bank details if set); stores customer text
 `=IMPORTXML(…)` can't run as a formula. The browser sends `text/plain` JSON, which avoids a CORS preflight and lets it read the reply.
 Limits: MailApp sends about 100 emails/day on a free account (each order uses 2). There's no stock decrement.
 The owner updates `data-stock` by hand.
+
+### 4b. Digital products and download links
+
+1. The product block gets `data-digital="yes"` (sample `assets/samples/07-digital-download.html`).
+2. The owner uploads the file to Google Drive → Share → "Anyone with the link" → copies the link.
+3. The first order of that product adds a row to the **Downloads** tab (Product | Post ID | Download link |
+   Message). The owner pastes the link there once (or adds the row by hand: the Post ID is in Order lines).
+4. When the money arrives, the owner sets the order's **Status** to `Paid` (also `Bezahlt`, `Payé`). The
+   installable trigger `onOrderEdit` (made by `setup`) emails the buyer a branded download email and writes
+   the date into **Downloads sent**. Missing links show "Missing link: …" in that cell instead.
+   Sheet menu **Shop → Send download links for the selected order** re-sends by hand.
+Updating from an older Code.gs: paste the new file, **run setup again** (new permission for the trigger),
+redeploy a New version. New columns are added at the end of existing tabs; old orders stay.
+Honest limits: a Drive link can be forwarded. For valuable files, use one link per buyer or a service
+that expires links.
+
+### 4c. Delivery partners and weight
+
+A gadget wrapped in `<div class='shop-delivery'>` (Night Shop: Layout → **Delivery options**, HTML93),
+one option per line:
+
+```
+DHL Parcel | 4,90 up to 2 kg; 6,99 up to 5 kg; 10,49 up to 10 kg | 2–4 working days | /p/delivery.html#dhl | Germany
+Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany
+```
+
+name | price (flat, or weight steps "price up to N kg" separated by `;`) | delivery time | page link
+(optional) | countries (optional; the names used in `ship_to`, or codes like DE). When options exist, they
+decide the shipping fee; `ship_to` keeps deciding which countries and cities are offered. The checkout
+shows the options for the buyer's country and parcel weight with fee, time and an "About …" link; an option
+whose largest step is lighter than the parcel is hidden. `free_shipping_over` still applies. Code.gs reads
+the same gadget and recomputes the fee from the feed weights, so it can't be changed in the browser.
+The page template `assets/pages/delivery.html` explains each partner; ids per language (`dhl`, `dhl-de`):
+shop.js scrolls to `#dhl-de` when the page is read in German.
+
+### 4d. Logos: partners and accreditation
+
+A gadget wrapped in `<div class='shop-logos'>` becomes a logo row, one logo per line:
+`Name | https://logo-image.png | https://website (optional)`. No image = the name as a pill badge.
+Night Shop has two: **Our partners** on the homepage (HTML12) and **Certified & accredited** in the footer
+(HTML13). Only show seals the owner really holds and is allowed to display (Trusted Shops, IHK, etc.
+have usage rules), and link each to its certificate page where one exists.
 
 ## 5. Payments
 

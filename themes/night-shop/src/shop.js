@@ -85,6 +85,16 @@
       'Share': 'Teilen', 'Copy link': 'Link kopieren', 'Link copied': 'Link kopiert', 'Share on': 'Teilen auf',
       'Reviews': 'Bewertungen', 'Write a review': 'Bewertung schreiben', 'review': 'Bewertung', 'reviews': 'Bewertungen',
       'Rated': 'Bewertet mit', 'out of 5': 'von 5', 'based on': 'aus',
+      'Digital': 'Digital', 'Digital download': 'Digitaler Download', 'Weight': 'Gewicht', 'Dimensions': 'Maße',
+      'Digital download – the link is sent by email after payment.': 'Digitaler Download – den Link erhalten Sie nach der Zahlung per E-Mail.',
+      'Digital products: the download link is sent to your email after payment.': 'Digitale Produkte: Den Download-Link senden wir Ihnen nach der Zahlung per E-Mail.',
+      'The download link is sent to your email after payment.': 'Den Download-Link senden wir Ihnen nach der Zahlung per E-Mail.',
+      'Download link to': 'Download-Link an', 'Delivery': 'Lieferung', 'About': 'Mehr über', 'Parcel weight': 'Paketgewicht',
+      'No delivery option for this country. Please contact us.': 'Für dieses Land gibt es keine Versandart. Bitte kontaktieren Sie uns.',
+      'Our partners': 'Unsere Partner', 'Certified & accredited': 'Zertifiziert & akkreditiert',
+      '2–4 working days': '2–4 Werktage', '3–5 working days': '3–5 Werktage', '4–7 working days': '4–7 Werktage',
+      'By appointment': 'Nach Absprache', 'Pickup in Berlin': 'Abholung in Berlin',
+      '14-day returns': '14 Tage Widerruf', 'Personal service': 'Persönlicher Service', 'Fast shipping': 'Schneller Versand',
       'Talk to us': 'Sprechen Sie mit uns', 'Call us': 'Rufen Sie uns an', 'Zoom video call': 'Zoom-Videoanruf',
       'Google Meet video call': 'Google-Meet-Videoanruf', 'Microsoft Teams call': 'Microsoft-Teams-Anruf',
       'Chat on WhatsApp': 'Per WhatsApp schreiben', 'Chat on Telegram': 'Per Telegram schreiben', 'Email us': 'E-Mail schreiben',
@@ -136,6 +146,16 @@
       'Share': 'Partager', 'Copy link': 'Copier le lien', 'Link copied': 'Lien copié', 'Share on': 'Partager sur',
       'Reviews': 'Avis', 'Write a review': 'Écrire un avis', 'review': 'avis', 'reviews': 'avis',
       'Rated': 'Noté', 'out of 5': 'sur 5', 'based on': 'sur',
+      'Digital': 'Numérique', 'Digital download': 'Téléchargement numérique', 'Weight': 'Poids', 'Dimensions': 'Dimensions',
+      'Digital download – the link is sent by email after payment.': 'Téléchargement numérique – le lien est envoyé par e-mail après le paiement.',
+      'Digital products: the download link is sent to your email after payment.': 'Produits numériques : le lien de téléchargement est envoyé par e-mail après le paiement.',
+      'The download link is sent to your email after payment.': 'Le lien de téléchargement vous est envoyé par e-mail après le paiement.',
+      'Download link to': 'Lien de téléchargement à', 'Delivery': 'Livraison', 'About': 'À propos de', 'Parcel weight': 'Poids du colis',
+      'No delivery option for this country. Please contact us.': 'Aucune livraison prévue pour ce pays. Contactez-nous.',
+      'Our partners': 'Nos partenaires', 'Certified & accredited': 'Certifié et accrédité',
+      '2–4 working days': '2 à 4 jours ouvrés', '3–5 working days': '3 à 5 jours ouvrés', '4–7 working days': '4 à 7 jours ouvrés',
+      'By appointment': 'Sur rendez-vous', 'Pickup in Berlin': 'Retrait à Berlin',
+      '14-day returns': 'Retour sous 14 jours', 'Personal service': 'Service personnel', 'Fast shipping': 'Expédition rapide',
       'Talk to us': 'Parlez-nous', 'Call us': 'Appelez-nous', 'Zoom video call': 'Appel vidéo Zoom',
       'Google Meet video call': 'Appel vidéo Google Meet', 'Microsoft Teams call': 'Appel Microsoft Teams',
       'Chat on WhatsApp': 'Écrire sur WhatsApp', 'Chat on Telegram': 'Écrire sur Telegram', 'Email us': 'Écrivez-nous',
@@ -209,6 +229,61 @@
   var isPayPal = function (p) { return /paypal/i.test(p || ''); };
   var isBank = function (p) { return /bank|transfer|überweis|virement/i.test(p || ''); };
 
+  // "Ask on WhatsApp/Telegram" also work when only the "Talk to us" gadget has the number or name.
+  gadgetLines('.shop-contact').forEach(function (line) {
+    var m = /^\s*(whatsapp|telegram)\s*:\s*([^|]+)/i.exec(line);
+    if (!m) return;
+    var v = m[2].trim();
+    if (/whatsapp/i.test(m[1]) && !CFG.whatsapp) CFG.whatsapp = v.replace(/[^\d]/g, '');
+    if (/telegram/i.test(m[1]) && !CFG.telegram) CFG.telegram = v.replace(/^https?:\/\/(www\.)?t\.me\//i, '').replace(/^@/, '').replace(/[^\w]/g, '');
+  });
+
+  // Delivery partners: a gadget wrapped in <div class='shop-delivery'>, one option per line:
+  //   DHL Parcel | 4,90 up to 2 kg; 6,99 up to 5 kg | 2–4 working days | /p/delivery.html#dhl | Germany
+  //   Pickup in Berlin | 0 | By appointment
+  // = name | fee (flat, or weight steps) | delivery time | info page (optional) | countries (optional, else all).
+  // When this gadget has options, they decide the shipping fee (ship_to fees are not used).
+  var DELIVERY = gadgetLines('.shop-delivery').map(function (line) {
+    var parts = line.split('|').map(function (x) { return x.trim(); });
+    if (parts.length < 2 || !parts[0]) return null;
+    var tiers = parseTiers(parts[1]);
+    if (!tiers.length) return null;
+    var opt = { name: parts[0], tiers: tiers, time: parts[2] || '', link: '', countries: [] };
+    parts.slice(3).forEach(function (x) {
+      if (/^(https:\/\/|\/)/.test(x)) opt.link = x;
+      else if (x) opt.countries = list(x);
+    });
+    return opt;
+  }).filter(Boolean);
+
+  // "4,90" or "4,90 up to 2 kg; 6,99 up to 5 kg" (also "bis", "jusqu'à", "<=").
+  function parseTiers(text) {
+    return String(text || '').split(';').map(function (seg) {
+      var m = /^\s*([\d.,]+)\s*(?:€|eur|chf|\$|£)?\s*(?:(?:up to|bis|jusqu'?à|max\.?|<=?)\s*([\d.,]+)\s*kg)?\s*$/i.exec(seg);
+      return m ? { fee: parseNumber(m[1]), max: m[2] ? parseNumber(m[2]) : Infinity } : null;
+    }).filter(function (x) { return x && !isNaN(x.fee); });
+  }
+  // Country names compare without case; a two-letter code (DE, AT) also matches the country's name.
+  function inList(names, country) {
+    var want = String(country).toLowerCase();
+    return names.some(function (n) {
+      if (n.toLowerCase() === want) return true;
+      if (!/^[A-Z]{2}$/i.test(n)) return false;
+      try {
+        return [LANG, 'en'].some(function (l) { return new Intl.DisplayNames([l], { type: 'region' }).of(n.toUpperCase()).toLowerCase() === want; });
+      } catch (e) { return false; }
+    });
+  }
+  function feeFor(opt, weight) {
+    for (var i = 0; i < opt.tiers.length; i++) if (weight <= opt.tiers[i].max) return opt.tiers[i].fee;
+    return NaN; // heavier than the largest step: this option can't carry the parcel
+  }
+  function deliveriesFor(country, weight) {
+    return DELIVERY.filter(function (o) {
+      return (!o.countries.length || !country || inList(o.countries, country)) && !isNaN(feeFor(o, weight));
+    });
+  }
+
   // ship_to: Germany = Berlin, Hamburg     ship_to: Austria (9,90) = Vienna     ship_to: Switzerland (14)
   var SHIP_TO = SHIP_LINES.map(function (line) {
     var m = /^([^=(]+?)\s*(?:\(([^)]*)\))?\s*(?:=\s*(.*))?$/.exec(line);
@@ -236,6 +311,18 @@
     fmt = { format: function (n) { return CFG.currency + ' ' + n.toFixed(2); } };
   }
   function money(n) { return fmt.format(Math.round(n * 100) / 100); }
+
+  // data-weight is in kg; "400 g" also works.
+  function parseWeight(v) {
+    var n = parseNumber(v);
+    if (isNaN(n) || n < 0) return 0;
+    return /\d\s*g\b/i.test(String(v)) && !/kg/i.test(String(v)) ? n / 1000 : n;
+  }
+  function fmtKg(w) {
+    var nf;
+    try { nf = new Intl.NumberFormat(CFG.locale, { maximumFractionDigits: 2 }); } catch (e) { nf = { format: String }; }
+    return w < 1 ? nf.format(Math.round(w * 1000)) + ' g' : nf.format(Math.round(w * 100) / 100) + ' kg';
+  }
 
   function el(tag, attrs, children) {
     var node = doc.createElement(tag);
@@ -317,7 +404,7 @@
   }
 
   function productFrom(root, labels) {
-    var p = { price: NaN, oldPrice: NaN, stock: NaN, sku: '', options: [], videos: [] };
+    var p = { price: NaN, oldPrice: NaN, stock: NaN, sku: '', options: [], videos: [], digital: false, weight: 0, dimensions: '' };
     var block = root && root.querySelector ? root.querySelector('.product[data-price]') : null;
     if (block) {
       p.price = parseNumber(block.getAttribute('data-price'));
@@ -326,6 +413,9 @@
       p.sku = block.getAttribute('data-sku') || '';
       p.options = parseOptions(block.getAttribute('data-options'));
       p.videos = list(block.getAttribute('data-video')).map(youtubeId).filter(Boolean);
+      p.digital = /^(yes|true|1|digital|ja|oui)$/i.test((block.getAttribute('data-digital') || '').trim());
+      p.weight = parseWeight(block.getAttribute('data-weight'));
+      p.dimensions = (block.getAttribute('data-dimensions') || '').trim();
     }
     if (isNaN(p.price) && CFG.labelPrices && labels) {
       labels.forEach(function (name) {
@@ -378,7 +468,8 @@
     var line = cart.filter(function (l) { return l.key === key; })[0];
     if (line) line.qty += qty;
     else cart.push({ key: key, id: item.id, title: item.title, url: item.url, image: item.image,
-                     price: item.price, chosen: item.chosen, sku: item.sku, qty: qty });
+                     price: item.price, chosen: item.chosen, sku: item.sku, qty: qty,
+                     digital: !!item.digital, weight: item.weight || 0 });
     line = cart.filter(function (l) { return l.key === key; })[0];
     var limited = !isNaN(item.stock) && line.qty > item.stock;
     if (limited) line.qty = item.stock;
@@ -393,11 +484,22 @@
     return dest && !isNaN(dest.fee) ? dest.fee : CFG.shipping;
   }
 
-  function totals(country) {
+  // Totals for a country and a chosen delivery option. Digital-only carts have no shipping.
+  function totals(country, delivery) {
     var sub = cart.reduce(function (s, l) { return s + l.price * l.qty; }, 0);
-    var fee = shippingFor(country);
+    var weight = cart.reduce(function (s, l) { return s + (l.digital ? 0 : (l.weight || 0) * l.qty); }, 0);
+    var physical = cart.some(function (l) { return !l.digital; });
+    var fee = 0, hasFee = false, option = null;
+    if (physical && DELIVERY.length) {
+      var opts = deliveriesFor(country, weight);
+      option = opts.filter(function (o) { return o.name === delivery; })[0] || opts[0] || null;
+      if (option) { fee = feeFor(option, weight); hasFee = true; }
+    } else if (physical) {
+      fee = shippingFor(country);
+      hasFee = !!fee;
+    }
     var ship = cart.length && fee && !(CFG.freeOver && sub >= CFG.freeOver) ? fee : 0;
-    return { sub: sub, ship: ship, hasFee: !!fee, total: sub + ship,
+    return { sub: sub, ship: ship, hasFee: hasFee, total: sub + ship, weight: weight, physical: physical, option: option,
              count: cart.reduce(function (s, l) { return s + l.qty; }, 0) };
   }
 
@@ -418,6 +520,7 @@
       if (!soldOut(p) && !isNaN(p.stock) && p.stock <= 3) {
         card.appendChild(el('span', { 'class': 'shop-badge shop-badge-low', text: t('Only') + ' ' + p.stock + ' ' + t('in stock') }));
       }
+      if (p.digital) card.appendChild(el('span', { 'class': 'shop-badge shop-badge-digital', text: t('Digital') }));
       slot.appendChild(priceNode(p));
       var title = card.getAttribute('data-title') || (card.querySelector('h2, h3') || {}).textContent || '';
       if (soldOut(p)) {
@@ -432,7 +535,7 @@
           onclick: function () {
             addToCart({ id: card.getAttribute('data-id'), title: title.trim(), url: card.getAttribute('data-url'),
                         image: card.getAttribute('data-image') || '', price: p.price, stock: p.stock,
-                        sku: p.sku, chosen: [] }, 1);
+                        sku: p.sku, chosen: [], digital: p.digital, weight: p.weight }, 1);
           }
         }));
       }
@@ -478,6 +581,13 @@
     }
     slot.appendChild(priceNode(p));
     if (CFG.taxNote) slot.appendChild(el('p', { 'class': 'shop-note', text: t(CFG.taxNote) }));
+    if (p.digital) {
+      slot.appendChild(el('p', { 'class': 'shop-digital-note' }, [svg(ICONS.download, 'stroke'), ' ' + t('Digital download – the link is sent by email after payment.')]));
+    }
+    var facts = [];
+    if (p.weight) facts.push(t('Weight') + ': ' + fmtKg(p.weight));
+    if (p.dimensions) facts.push(t('Dimensions') + ': ' + p.dimensions);
+    if (facts.length) slot.appendChild(el('p', { 'class': 'shop-facts', text: facts.join(' · ') }));
 
     var selects = p.options.map(function (opt, n) {
       var id = 'shop-opt-' + n;
@@ -506,7 +616,8 @@
           var chosen = selects.map(function (s, n) { return t(p.options[n].name) + ': ' + s.value; });
           var n = Math.max(1, parseInt(qty.value, 10) || 1);
           addToCart({ id: item.getAttribute('data-id'), title: title, url: url,
-                      image: image, price: p.price, stock: p.stock, sku: p.sku, chosen: chosen }, n);
+                      image: image, price: p.price, stock: p.stock, sku: p.sku, chosen: chosen,
+                      digital: p.digital, weight: p.weight }, n);
         }
       }));
       slot.appendChild(msg);
@@ -612,6 +723,7 @@
     phone: 'M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z',
     video: 'M23 7l-7 5 7 5V7zM3 5h11a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z',
     clock: 'M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z',
+    download: 'M12 3v12M7 10l5 5 5-5M5 21h14',
     mail: 'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM22 6l-10 7L2 6',
     share: 'M12 3v12M7.5 7.5 12 3l4.5 4.5M5 13v7h14v-7'
   };
@@ -893,20 +1005,60 @@
       panel.appendChild(el('p', { 'class': 'shop-note', text: 'Shop owner: Layout › Shop settings › add whatsapp, telegram, email, paypal or google_sheet.' }));
       return;
     }
+    var physical = cart.some(function (l) { return !l.digital; });
+    var anyDigital = cart.some(function (l) { return l.digital; });
     var form = el('form', { 'class': 'shop-form', novalidate: 'novalidate' }, [
       field('name', 'Full name', 'text', true, { autocomplete: 'name' }),
       field('phone', 'Phone', 'tel', true, { autocomplete: 'tel' }),
-      field('email', 'Email', 'email', CFG.endpoint && CFG.placeOrder && ways[0][0] === 'order', { autocomplete: 'email' })
+      // Digital products are sent by email, so then email is always required.
+      field('email', 'Email', 'email', anyDigital || (CFG.endpoint && CFG.placeOrder && ways[0][0] === 'order'), { autocomplete: 'email' })
     ]);
     var sumBox = el('div', { 'class': 'shop-sum-box' });
-    var chosenCountry = '';
-    addressFields(form, function (c) {
-      chosenCountry = c;
+    var delBox = el('div', { 'class': 'shop-delivery-box' });
+    var chosen = { country: '', delivery: '' };
+    var showSum = function () {
       sumBox.textContent = '';
-      sumBox.appendChild(sumRows(totals(c)));
-    });
+      sumBox.appendChild(sumRows(totals(chosen.country, chosen.delivery)));
+    };
+    function drawDelivery() {
+      delBox.textContent = '';
+      if (!physical || !DELIVERY.length) return;
+      var base = totals(chosen.country, '');
+      var opts = deliveriesFor(chosen.country, base.weight);
+      if (!opts.length) {
+        chosen.delivery = '';
+        delBox.appendChild(el('p', { 'class': 'shop-msg', text: t('No delivery option for this country. Please contact us.') }));
+        return;
+      }
+      if (!opts.some(function (o) { return o.name === chosen.delivery; })) chosen.delivery = opts[0].name;
+      var fsd = el('fieldset', { 'class': 'shop-methods shop-deliveries' }, [el('legend', { text: t('Delivery') })]);
+      opts.forEach(function (o) {
+        var fee = feeFor(o, base.weight);
+        var free = !fee || (CFG.freeOver && base.sub >= CFG.freeOver);
+        var input = el('input', { type: 'radio', name: 'delivery', value: o.name, checked: o.name === chosen.delivery ? 'checked' : false,
+          onchange: function () { chosen.delivery = o.name; showSum(); } });
+        fsd.appendChild(el('label', { 'class': 'shop-method shop-delivery-opt' }, [input,
+          el('span', { 'class': 'shop-delivery-text' }, [
+            el('span', { 'class': 'shop-delivery-head' }, [el('strong', { text: t(o.name) }), el('span', { 'class': 'shop-delivery-fee', text: free ? t('Free') : money(fee) })]),
+            o.time ? el('span', { 'class': 'shop-contact-time' }, [svg(ICONS.clock, 'stroke'), ' ' + t(o.time)]) : null,
+            o.link ? el('a', { href: o.link, target: '_blank', rel: 'noopener', 'class': 'shop-delivery-info', text: t('About') + ' ' + t(o.name) }) : null
+          ])]));
+      });
+      delBox.appendChild(fsd);
+      if (base.weight) delBox.appendChild(el('p', { 'class': 'shop-note', text: t('Parcel weight') + ': ' + fmtKg(base.weight) }));
+    }
+    if (physical) {
+      addressFields(form, function (c) { chosen.country = c; drawDelivery(); showSum(); });
+      if (cart.some(function (l) { return l.digital; })) {
+        form.appendChild(el('p', { 'class': 'shop-digital-note' }, [svg(ICONS.download, 'stroke'), ' ' + t('Digital products: the download link is sent to your email after payment.')]));
+      }
+    } else {
+      form.appendChild(el('p', { 'class': 'shop-digital-note' }, [svg(ICONS.download, 'stroke'), ' ' + t('Digital products: the download link is sent to your email after payment.')]));
+      showSum();
+    }
     form.appendChild(field('note', 'Note', 'textarea', false));
     form.appendChild(el('input', { type: 'text', name: 'website', tabindex: '-1', autocomplete: 'off', 'class': 'shop-hp', 'aria-hidden': 'true' }));
+    form.appendChild(delBox);
     var fs = el('fieldset', { 'class': 'shop-methods' }, [el('legend', { text: t('How do you want to order?') })]);
     ways.forEach(function (m, n) {
       fs.appendChild(el('label', { 'class': 'shop-method shop-method-' + m[0] }, [
@@ -930,7 +1082,7 @@
     form.appendChild(el('button', { type: 'button', 'class': 'shop-link', text: '← ' + t('Back to cart'), onclick: renderCart }));
     form.addEventListener('change', function (e) {
       // Email is required only when the shop itself sends the confirmation.
-      if (e.target.name === 'method') form.elements.email.required = e.target.value === 'order';
+      if (e.target.name === 'method') form.elements.email.required = anyDigital || e.target.value === 'order';
     });
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -939,10 +1091,20 @@
         return !i.hidden && (!i.value.trim() || !i.checkValidity());
       });
       if (bad.length) { msg.textContent = t('Please fill in the marked fields.'); bad[0].focus(); return; }
-      var city = form.elements.city.value === '*' ? form.elements.city_other.value : form.elements.city.value;
-      var data = { country: chosenCountry, city: city.trim() };
-      ['name', 'phone', 'email', 'street', 'postcode', 'note'].forEach(function (k) { data[k] = form.elements[k].value.trim(); });
-      data.address = data.street + ', ' + data.postcode + ' ' + data.city + ', ' + data.country;
+      var data = { country: chosen.country, city: '', street: '', postcode: '', address: '' };
+      ['name', 'phone', 'email', 'note'].forEach(function (k) { data[k] = form.elements[k].value.trim(); });
+      if (physical) {
+        var city = form.elements.city.value === '*' ? form.elements.city_other.value : form.elements.city.value;
+        data.city = city.trim();
+        data.street = form.elements.street.value.trim();
+        data.postcode = form.elements.postcode.value.trim();
+        data.address = data.street + ', ' + data.postcode + ' ' + data.city + ', ' + data.country;
+      }
+      var tt = totals(chosen.country, chosen.delivery);
+      data.delivery = tt.option ? tt.option.name : '';
+      data.deliveryTime = tt.option ? tt.option.time : '';
+      data.weight = Math.round(tt.weight * 1000) / 1000;
+      data.digitalOnly = !physical;
       data.payment = form.elements.payment ? form.elements.payment.value : (form.elements.method.value === 'paypal' ? 'PayPal' : '');
       submitOrder(form.elements.method.value, data, msg, submit);
     });
@@ -973,33 +1135,37 @@
 
   // The order as a message for WhatsApp, Telegram and email (plain: no *bold* markers, for email).
   function orderText(id, c, plain) {
-    var tt = totals(c.country);
+    var tt = totals(c.country, c.delivery);
     var rule = '────────────────';
     var lines = ['🛍️ ' + t('New order').toUpperCase() + ' #' + id, CFG.shop, rule];
     cart.forEach(function (l) {
       lines.push(l.qty + ' × ' + l.title);
       if (l.chosen.length) lines.push('   ' + l.chosen.join(' · '));
+      if (l.digital) lines.push('   ' + t('Digital download'));
       lines.push('   ' + money(l.price) + (l.qty > 1 ? ' × ' + l.qty + ' = ' + money(l.price * l.qty) : ''));
       if (l.url) lines.push('   ' + l.url);
     });
     lines.push(rule, t('Subtotal') + ': ' + money(tt.sub));
-    if (tt.hasFee) lines.push(t('Shipping') + (c.country ? ' (' + c.country + ')' : '') + ': ' + (tt.ship ? money(tt.ship) : t('Free')));
+    if (tt.hasFee) lines.push(t('Shipping') + (c.delivery ? ' – ' + t(c.delivery) : (c.country ? ' (' + c.country + ')' : '')) + ': ' + (tt.ship ? money(tt.ship) : t('Free')));
     var star = plain ? '' : '*';
     lines.push(star + t('Total') + ': ' + money(tt.total) + star);
     if (c.payment) lines.push('💳 ' + t('Payment') + ': ' + t(c.payment));
+    if (c.delivery) lines.push('🚚 ' + t('Delivery') + ': ' + t(c.delivery) + (c.deliveryTime ? ' · ' + t(c.deliveryTime) : ''));
+    if (tt.physical && tt.weight) lines.push('⚖️ ' + t('Parcel weight') + ': ' + fmtKg(tt.weight));
     lines.push(rule, '👤 ' + c.name, '📞 ' + c.phone);
     if (c.email) lines.push('✉️ ' + c.email);
-    lines.push('📍 ' + c.street, '    ' + c.postcode + ' ' + c.city, '    ' + c.country);
+    if (tt.physical) lines.push('📍 ' + c.street, '    ' + c.postcode + ' ' + c.city, '    ' + c.country);
+    else lines.push('📥 ' + t('Download link to') + ': ' + c.email);
     if (c.note) lines.push('📝 ' + c.note);
     if (CFG.bank && (isBank(c.payment) || !CFG.payments.length)) lines.push(rule, t('Bank transfer') + ': ' + CFG.bank, t('Reference') + ': ' + id);
     return lines.join('\n');
   }
 
   function payload(id, method, customer) {
-    var tt = totals(customer.country);
+    var tt = totals(customer.country, customer.delivery);
     return JSON.stringify({ orderId: id, method: method, customer: customer, page: location.href, lang: LANG,
       shipping: tt.ship, total: tt.total,
-      items: cart.map(function (l) { return { id: l.id, title: l.title, qty: l.qty, chosen: l.chosen, price: l.price, url: l.url }; }) });
+      items: cart.map(function (l) { return { id: l.id, title: l.title, qty: l.qty, chosen: l.chosen, price: l.price, url: l.url, digital: !!l.digital }; }) });
   }
 
   // Copy of a chat/email/PayPal order for the Google Sheet. Fire-and-forget: it must never block the buyer.
@@ -1013,7 +1179,8 @@
   function submitOrder(method, customer, msg, button) {
     var id = orderId();
     var text = orderText(id, customer);
-    var after = { payment: customer.payment, total: totals(customer.country).total, lines: cart.slice(), ship: totals(customer.country).ship };
+    var tt = totals(customer.country, customer.delivery);
+    var after = { payment: customer.payment, total: tt.total, lines: cart.slice(), ship: tt.ship, digital: cart.some(function (l) { return l.digital; }) };
     if (method !== 'order') logOrder(id, method, customer);
     if (method === 'whatsapp') {
       window.open('https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
@@ -1044,8 +1211,8 @@
           throw new Error('');
         }
         if (!res.ok) throw new Error(res.error || '');
-        after.total = res.total;
-        done(res.orderId || id, t('Thank you! Your order was received. Total') + ': ' + money(res.total), true, '', after);
+        if (typeof res.total === 'number' && !isNaN(res.total)) after.total = res.total;
+        done(res.orderId || id, t('Thank you! Your order was received. Total') + ': ' + money(after.total), true, '', after);
       })
       .catch(function (err) {
         button.disabled = false;
@@ -1089,6 +1256,7 @@
       panel.appendChild(el('div', { 'class': 'shop-ask' }, [again,
         el('a', { 'class': 'shop-btn shop-btn-tg', href: 'https://t.me/' + CFG.telegram, target: '_blank', rel: 'noopener' }, [svg(ICONS.telegram), ' ' + t('Open Telegram')])]));
     }
+    if (after.digital) panel.appendChild(el('p', { 'class': 'shop-digital-note' }, [svg(ICONS.download, 'stroke'), ' ' + t('The download link is sent to your email after payment.')]));
     if (isPayPal(after.payment) && (CFG.paypalMe || CFG.paypalEmail)) panel.appendChild(payPalButton(id, after));
     if (CFG.bank && (isBank(after.payment) || !CFG.payments.length)) {
       panel.appendChild(el('p', { 'class': 'shop-note', text: t('Bank transfer') + ': ' + CFG.bank + ' — ' + t('Reference') + ': #' + id }));
@@ -1174,6 +1342,43 @@
     return (copy.textContent || '').split(/\r?\n/);
   }
 
+  // Page anchors per language: /p/delivery.html#dhl opens id="dhl-de" when the page is read in German
+  // (the English id="dhl" is in a hidden data-lang block then).
+  function jumpToLanguageAnchor() {
+    var id = decodeURIComponent(location.hash.slice(1));
+    if (!id || !/^[\w-]+$/.test(id)) return;
+    var own = doc.getElementById(id + '-' + LANG), base = doc.getElementById(id);
+    var target = own && own.offsetParent !== null ? own : base;
+    if (target && target.offsetParent !== null) setTimeout(function () { target.scrollIntoView(); }, 0);
+  }
+
+  // ------------------------------------------------------------ logo rows
+  // Partners on the homepage, accreditation symbols in the footer: a gadget wrapped in
+  // <div class='shop-logos'>, one logo per line:  Name | logo image link | website (optional).
+  // A line without an image shows the name as a badge.
+  function renderLogos() {
+    each(doc.querySelectorAll('.shop-logos'), function (box) {
+      var items = gadgetLinesOf(box).map(function (line) {
+        var parts = line.split('|').map(function (x) { return x.trim(); });
+        if (!parts[0]) return null;
+        return { name: parts[0], img: /^https:\/\//.test(parts[1] || '') ? parts[1] : '',
+                 link: /^(https:\/\/|\/)/.test(parts[2] || '') ? parts[2] : '' };
+      }).filter(Boolean);
+      if (!items.length) return;
+      box.textContent = '';
+      box.classList.add('is-ready');
+      var row = el('ul', { 'class': 'shop-logo-list' });
+      items.forEach(function (it) {
+        var inner = it.img ? el('img', { src: it.img, alt: it.name, loading: 'lazy' }) : el('span', { 'class': 'shop-logo-name', text: t(it.name) });
+        var node = it.link
+          ? el('a', { href: it.link, title: it.name, target: /^https/.test(it.link) ? '_blank' : false, rel: 'noopener' }, [inner])
+          : el('span', { title: it.name }, [inner]);
+        row.appendChild(el('li', { 'class': 'shop-logo' + (it.img ? '' : ' is-text') }, [node]));
+      });
+      box.appendChild(row);
+    });
+  }
+
   // ------------------------------------------------------------ page language
   function applyLanguage() {
     doc.documentElement.lang = LANG;
@@ -1224,6 +1429,8 @@
     enhanceCards();
     enhanceItem();
     renderContact();
+    renderLogos();
+    jumpToLanguageAnchor();
     renderCount();
     window.addEventListener('storage', function (e) {
       if (e.key !== KEY) return;

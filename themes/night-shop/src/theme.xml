@@ -20,10 +20,10 @@ Page not found - <data:blog.title/>
 <link href='https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&amp;family=Open+Sans:wght@400;600;700&amp;display=swap' rel='stylesheet'/>
 <b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .talk, .topics, .promo { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners { display: block; }</style>
 </b:if>
 <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .talk, .topics, .promo { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners { display: block; }</style>
 </b:if>
 </head>
 <body expr:class='&quot;rm shop pt-&quot; + data:blog.pageType'>
@@ -531,6 +531,28 @@ meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00]]></b:widget-sett
   </div>
 </section>
 
+<!-- ================= Our partners: logo row (shown on the homepage) ================= -->
+<section class='partners' id='partners'>
+  <div class='container'>
+    <b:section class='partners-section' id='partners-widgets' showaddelement='yes'>
+      <b:widget id='HTML12' locked='false' title='Our partners' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[Atelier Nord | | /p/contact.html
+Studio Lumen | |
+Green Courier | | /p/delivery.html]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-logos'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
 </main>
 
 <!-- ================= Footer ================= -->
@@ -552,6 +574,7 @@ meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00]]></b:widget-sett
           <b:widget-settings>
             <b:widget-setting name='content'><![CDATA[<ul>
 <li><a href="/p/shipping.html">Shipping &amp; delivery</a></li>
+<li><a href="/p/delivery.html">Delivery partners</a></li>
 <li><a href="/p/returns.html">Returns (Widerruf)</a></li>
 <li><a href="/p/contact.html">Contact</a></li>
 <li><a href="/p/impressum.html">Impressum</a></li>
@@ -571,6 +594,24 @@ meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00]]></b:widget-sett
 </ul>]]></b:widget-setting>
           </b:widget-settings>
           @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+    </div>
+    <div class='footer-badges'>
+      <b:section class='footer-badges-section' id='footer-badges' showaddelement='yes'>
+        <b:widget id='HTML13' locked='false' title='Certified &amp; accredited' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[14-day returns | | /p/returns.html
+Personal service | | /p/contact.html
+Fast shipping | | /p/delivery.html]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <h2 class='title'><data:title/></h2>
+            </b:if>
+            <div class='shop-logos'><data:content/></div>
+            <b:include name='quickedit'/>
+          </b:includable>
         </b:widget>
       </b:section>
     </div>
@@ -608,6 +649,17 @@ banner_image:]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
         <div class='shop-settings'><data:content/></div>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML93' locked='false' title='Delivery options' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[DHL Parcel | 4,90 up to 2 kg; 6,99 up to 5 kg; 10,49 up to 10 kg; 16,49 up to 31,5 kg | 2–4 working days | /p/delivery.html#dhl | Germany
+Hermes | 4,50 up to 5 kg; 6,95 up to 10 kg | 3–5 working days | /p/delivery.html#hermes | Germany
+DHL International | 14,90 up to 5 kg; 24,90 up to 20 kg | 4–7 working days | /p/delivery.html#dhl-international | Austria, Switzerland
+Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-delivery'><data:content/></div>
       </b:includable>
     </b:widget>
     <b:widget id='HTML92' locked='false' title='Shop words (optional translations)' type='HTML'>

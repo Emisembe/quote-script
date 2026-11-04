@@ -81,6 +81,16 @@ An HTML gadget wrapped in `<div class='shop-contact'>` becomes "Talk to us" card
 (also teams, whatsapp, telegram, email; optional third part = own button text; `text:` = intro line).
 Only https/tel/mailto links render. Snippet 5 in `theme-snippets.xml`.
 
+### Digital products, delivery partners, weight, logos
+- `data-digital="yes"`: no address/shipping, email required; Code.gs keeps a **Downloads** tab and emails the
+  link when the owner sets Status to `Paid` (installable `onOrderEdit` trigger made by `setup`).
+- `data-weight` / `data-dimensions`: entered by the **owner**, never the buyer; summed for weight steps.
+- `<div class='shop-delivery'>` gadget: `name | 4,90 up to 2 kg; 6,99 up to 5 kg | 2–4 days | /p/delivery.html#dhl | Germany`.
+  Buyer picks at checkout; Code.gs re-checks the fee. Page template `assets/pages/delivery.html`.
+- `<div class='shop-logos'>` gadget: `Name | logo https URL | link` → partner row / accreditation seals.
+- "Ask on WhatsApp/Telegram" also read the `.shop-contact` gadget, because a theme upload can empty Shop settings.
+Details: `references/products-and-orders.md` §2, §4b–4d. Snippets 6–8 in `theme-snippets.xml`.
+
 ### Languages
 `language:` sets the default, `languages: en, de, fr` adds a header picker (German and French are built
 in; any other language comes from the Shop words gadget, `[es] Add to cart: Añadir al carrito`). Owner

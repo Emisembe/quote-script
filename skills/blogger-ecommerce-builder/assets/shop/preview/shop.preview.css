@@ -175,3 +175,54 @@ body .shop-reviews .comment-thread ol { list-style: none; margin: 0; padding: 0;
   .post-body .photo-grid.cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .shop-row { grid-template-columns: 1fr; gap: 0; }
 }
+
+/* PayPal button on the thank-you screen */
+.shop-btn-paypal { background: #0070ba; border-color: #0070ba; color: #fff; text-decoration: none; }
+.shop-done + .shop-order-no + .shop-btn-paypal, form > .shop-btn-paypal { margin-top: 4px; }
+
+/* call and video buttons ("Talk to us" gadget with <div class="shop-contact">) */
+.shop-contact:not(.is-ready) { white-space: pre-line; }
+.shop-contact-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.shop-contact-intro { margin: 0 0 16px; color: #555; font-size: 1rem; }
+.shop-contact-card { display: flex; align-items: center; gap: 14px; padding: 16px 18px; background: #fff; border: 1px solid #e4e4e4; border-radius: 12px; color: #222; text-decoration: none; box-shadow: 0 1px 2px rgba(0,0,0,.04); transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.shop-contact-card:hover, .shop-contact-card:focus-visible { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.08); border-color: #d0d0d0; }
+.shop-contact-icon { flex: 0 0 48px; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; background: #FF3300; }
+.shop-contact-icon svg { width: 22px; height: 22px; }
+.shop-contact-zoom .shop-contact-icon { background: #2d8cff; }
+.shop-contact-meet .shop-contact-icon { background: #00897b; }
+.shop-contact-teams .shop-contact-icon { background: #5059c9; }
+.shop-contact-whatsapp .shop-contact-icon { background: #25d366; }
+.shop-contact-telegram .shop-contact-icon { background: #229ed9; }
+.shop-contact-email .shop-contact-icon { background: #444; }
+.shop-contact-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.shop-contact-text strong { font-size: 1rem; line-height: 1.25; }
+.shop-contact-detail { font-size: .9rem; color: #555; overflow-wrap: anywhere; }
+.shop-contact-time { display: inline-flex; align-items: center; gap: 5px; font-size: .85rem; color: #6b6b6b; }
+.shop-contact-time svg { width: 14px; height: 14px; flex: 0 0 14px; }
+@media (max-width: 480px) { .shop-contact-card { padding: 14px; } }
+
+/* digital products, weight and size */
+.shop-badge-digital { background: #2f6f5e; }
+.shop-badge:not(.shop-badge-low):not(.shop-badge-digital) ~ .shop-badge-digital { top: 42px; }
+.shop-digital-note { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 12px; padding: 10px 12px; background: #eef6f3; border: 1px solid #cfe5dc; border-radius: 6px; color: #234; font-size: .9rem; }
+.shop-digital-note svg { width: 18px; height: 18px; flex: 0 0 18px; margin-top: 1px; color: #2f6f5e; }
+.shop-facts { font-size: .9rem; color: #555; margin: 0 0 12px; }
+
+/* delivery partners at checkout (gadget with <div class="shop-delivery">) */
+.shop-delivery:not(.is-ready) { white-space: pre-line; }
+.shop-deliveries .shop-delivery-opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-top: 1px solid #eee; font-weight: 400; }
+.shop-deliveries legend + .shop-delivery-opt { border-top: 0; }
+.shop-deliveries input[type="radio"] { flex: 0 0 18px; margin-top: 2px; }
+.shop-delivery-text { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.shop-delivery-head { display: flex; justify-content: space-between; gap: 10px; }
+.shop-delivery-fee { font-weight: 700; white-space: nowrap; }
+.shop-delivery-info { font-size: .85rem; color: #FF3300; }
+
+/* partner logos and accreditation symbols (gadget with <div class="shop-logos">) */
+.shop-logos:not(.is-ready) { white-space: pre-line; }
+.shop-logo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 34px; }
+.shop-logo a, .shop-logo > span { display: flex; align-items: center; justify-content: center; text-decoration: none; }
+.shop-logo img { display: block; max-height: 56px; max-width: 150px; width: auto; height: auto; object-fit: contain; filter: grayscale(1); opacity: .75; transition: filter .2s ease, opacity .2s ease; }
+.shop-logo a:hover img, .shop-logo a:focus-visible img { filter: none; opacity: 1; }
+.shop-logo-name { display: inline-block; padding: 8px 14px; border: 1px solid #d6d6d6; border-radius: 999px; font-size: .85rem; font-weight: 600; color: #444; }
+@media (max-width: 480px) { .shop-logo-list { gap: 14px 22px; } .shop-logo img { max-height: 44px; max-width: 110px; } }

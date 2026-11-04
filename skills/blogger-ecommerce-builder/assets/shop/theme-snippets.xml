@@ -79,3 +79,39 @@ meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00]]></b:widget-sett
     <b:include name='quickedit'/>
   </b:includable>
 </b:widget>
+
+
+<!-- 6. Delivery options (checkout chooser). Put it inside the hidden shop-admin section next to HTML91/HTML92.
+        One option per line: name | price or weight steps | delivery time | info page link | countries. -->
+<b:widget id='HTML93' locked='false' title='Delivery options' type='HTML'>
+  <b:widget-settings>
+    <b:widget-setting name='content'><![CDATA[DHL Parcel | 4,90 up to 2 kg; 6,99 up to 5 kg; 10,49 up to 10 kg | 2–4 working days | /p/delivery.html#dhl | Germany
+Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:widget-setting>
+  </b:widget-settings>
+  <b:includable id='main'>
+    <div class='shop-delivery'><data:content/></div>
+  </b:includable>
+</b:widget>
+
+
+<!-- 7. Logo row: "Our partners" (homepage) or accreditation seals (footer). One logo per line:
+        Name | https://logo-image | https://website (optional). No image = name as a badge.
+        Put it in an unconditional section; hide it off the homepage with CSS if wanted. -->
+<b:widget id='HTML12' locked='false' title='Our partners' type='HTML'>
+  <b:widget-settings>
+    <b:widget-setting name='content'><![CDATA[Partner name | https://example.com/logo.png | https://example.com]]></b:widget-setting>
+  </b:widget-settings>
+  <b:includable id='main'>
+    <b:if cond='data:title != &quot;&quot;'>
+      <h2 class='title'><data:title/></h2>
+    </b:if>
+    <div class='shop-logos'><data:content/></div>
+    <b:include name='quickedit'/>
+  </b:includable>
+</b:widget>
+
+
+<!-- 8. Product block for a digital product, and weight/size for a physical one (in the post, HTML view):
+<div class="product" data-price="12,90" data-digital="yes">Price: 12,90 EUR (digital download)</div>
+<div class="product" data-price="64,90" data-weight="0.8" data-dimensions="38 x 30 x 12 cm">Price: 64,90 EUR</div>
+-->

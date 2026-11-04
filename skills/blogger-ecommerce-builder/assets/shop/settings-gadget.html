@@ -32,7 +32,8 @@ banner_image:
   What each line does
     language          the shop's default language (en, de, fr built in; others via Shop words)
     languages         languages in the header picker; leave empty for no picker
-    whatsapp/telegram  order + "Ask" buttons; telegram is the @username
+    whatsapp/telegram  order + "Ask" buttons; telegram is the @username. If empty here, the whatsapp:/telegram:
+                      lines of the "Talk to us" gadget are used, so the Ask buttons never vanish
     google_sheet      the /exec link of the Apps Script order inbox (also accepted: order_endpoint)
     paypal            your PayPal.Me name (paypal.me/NAME): the buyer gets a "Pay now with PayPal" button with the
                       amount filled in. A PayPal email instead uses the older PayPal cart (needs a business account)
@@ -40,6 +41,7 @@ banner_image:
                       PayPal shows the PayPal button). Empty = Bank transfer/PayPal if bank/paypal are set
     place_order       "no" hides the direct "Place order" button but still records chat orders in the sheet
     ship_to           one line per country: Country (fee) = city, city, ...  Fee and cities are optional.
+                      With a "Delivery options" gadget (<div class='shop-delivery'>), its options set the fee instead.
                       No ship_to lines = every country, free-text city, the general "shipping" fee.
     default_country   preselected country (code like DE or the name)
     hero_image / banner_image   https:// photo links for the homepage backgrounds (Night Shop theme)
