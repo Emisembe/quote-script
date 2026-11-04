@@ -1122,6 +1122,27 @@ body .shop-reviews .comment-thread ol { list-style: none; margin: 0; padding: 0;
 .shop-btn-paypal { background: #0070ba; border-color: #0070ba; color: #fff; text-decoration: none; }
 .shop-done + .shop-order-no + .shop-btn-paypal, form > .shop-btn-paypal { margin-top: 4px; }
 
+/* call and video buttons ("Talk to us" gadget with <div class="shop-contact">) */
+.shop-contact:not(.is-ready) { white-space: pre-line; }
+.shop-contact-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.shop-contact-intro { margin: 0 0 16px; color: #555; font-size: 1rem; }
+.shop-contact-card { display: flex; align-items: center; gap: 14px; padding: 16px 18px; background: #fff; border: 1px solid #e4e4e4; border-radius: 12px; color: #222; text-decoration: none; box-shadow: 0 1px 2px rgba(0,0,0,.04); transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.shop-contact-card:hover, .shop-contact-card:focus-visible { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.08); border-color: #d0d0d0; }
+.shop-contact-icon { flex: 0 0 48px; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; background: $(shop.accent); }
+.shop-contact-icon svg { width: 22px; height: 22px; }
+.shop-contact-zoom .shop-contact-icon { background: #2d8cff; }
+.shop-contact-meet .shop-contact-icon { background: #00897b; }
+.shop-contact-teams .shop-contact-icon { background: #5059c9; }
+.shop-contact-whatsapp .shop-contact-icon { background: #25d366; }
+.shop-contact-telegram .shop-contact-icon { background: #229ed9; }
+.shop-contact-email .shop-contact-icon { background: #444; }
+.shop-contact-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.shop-contact-text strong { font-size: 1rem; line-height: 1.25; }
+.shop-contact-detail { font-size: .9rem; color: #555; overflow-wrap: anywhere; }
+.shop-contact-time { display: inline-flex; align-items: center; gap: 5px; font-size: .85rem; color: #6b6b6b; }
+.shop-contact-time svg { width: 14px; height: 14px; flex: 0 0 14px; }
+@media (max-width: 480px) { .shop-contact-card { padding: 14px; } }
+
 .shop-admin { display: none; }
 body#layout .shop-admin { display: block; }
 
@@ -1266,3 +1287,14 @@ body .widget.Attribution { display: none; }
   .shop .brand-name { font-size: 22px; }
   .shop .site-nav ul { gap: 4px 16px; }
 }
+
+/* "Talk to us" strip under the homepage banner */
+.talk { display: none; background: #f7f5f2; border-bottom: 1px solid #e8e3dc; }
+.talk .container { padding-top: 36px; padding-bottom: 40px; }
+.talk .widget > h2.title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 26px; letter-spacing: 0.02em; margin: 0 0 6px; }
+.talk .widget > h2.title::after { content: '.'; color: $(accent.color); }
+@media (max-width: 600px) {
+  .talk .container { padding-top: 28px; padding-bottom: 30px; }
+  .talk .widget > h2.title, .talk .shop-contact-intro { text-align: center; }
+}
+body#layout .talk { display: block; }

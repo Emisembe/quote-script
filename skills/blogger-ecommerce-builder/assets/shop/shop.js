@@ -85,6 +85,11 @@
       'Share': 'Teilen', 'Copy link': 'Link kopieren', 'Link copied': 'Link kopiert', 'Share on': 'Teilen auf',
       'Reviews': 'Bewertungen', 'Write a review': 'Bewertung schreiben', 'review': 'Bewertung', 'reviews': 'Bewertungen',
       'Rated': 'Bewertet mit', 'out of 5': 'von 5', 'based on': 'aus',
+      'Talk to us': 'Sprechen Sie mit uns', 'Call us': 'Rufen Sie uns an', 'Zoom video call': 'Zoom-Videoanruf',
+      'Google Meet video call': 'Google-Meet-Videoanruf', 'Microsoft Teams call': 'Microsoft-Teams-Anruf',
+      'Chat on WhatsApp': 'Per WhatsApp schreiben', 'Chat on Telegram': 'Per Telegram schreiben', 'Email us': 'E-Mail schreiben',
+      'Prefer to talk? Call us or join a video call at these times.': 'Lieber persönlich? Rufen Sie an oder kommen Sie zu diesen Zeiten in einen Videoanruf.',
+      'Mon–Fri 9:00–18:00': 'Mo–Fr 9:00–18:00 Uhr', 'Tue & Thu 18:00–19:00': 'Di & Do 18:00–19:00 Uhr', 'Sat 10:00–12:00': 'Sa 10:00–12:00 Uhr',
       'Start your review with a rating, for example 5/5 or ★★★★★.': 'Beginnen Sie Ihre Bewertung mit Sternen, z. B. 5/5 oder ★★★★★.',
       'Language': 'Sprache', 'Incl. VAT, plus shipping': 'inkl. MwSt., zzgl. Versand',
       'New arrivals': 'Neuheiten', 'Shop by category': 'Nach Kategorie einkaufen', 'Categories': 'Kategorien',
@@ -131,6 +136,11 @@
       'Share': 'Partager', 'Copy link': 'Copier le lien', 'Link copied': 'Lien copié', 'Share on': 'Partager sur',
       'Reviews': 'Avis', 'Write a review': 'Écrire un avis', 'review': 'avis', 'reviews': 'avis',
       'Rated': 'Noté', 'out of 5': 'sur 5', 'based on': 'sur',
+      'Talk to us': 'Parlez-nous', 'Call us': 'Appelez-nous', 'Zoom video call': 'Appel vidéo Zoom',
+      'Google Meet video call': 'Appel vidéo Google Meet', 'Microsoft Teams call': 'Appel Microsoft Teams',
+      'Chat on WhatsApp': 'Écrire sur WhatsApp', 'Chat on Telegram': 'Écrire sur Telegram', 'Email us': 'Écrivez-nous',
+      'Prefer to talk? Call us or join a video call at these times.': 'Vous préférez parler ? Appelez-nous ou rejoignez un appel vidéo à ces horaires.',
+      'Mon–Fri 9:00–18:00': 'lun–ven 9h00–18h00', 'Tue & Thu 18:00–19:00': 'mar et jeu 18h00–19h00', 'Sat 10:00–12:00': 'sam 10h00–12h00',
       'Start your review with a rating, for example 5/5 or ★★★★★.': 'Commencez votre avis par une note, par ex. 5/5 ou ★★★★★.',
       'Language': 'Langue', 'Incl. VAT, plus shipping': 'TVA incluse, hors livraison',
       'New arrivals': 'Nouveautés', 'Shop by category': 'Acheter par catégorie', 'Categories': 'Catégories',
@@ -599,6 +609,10 @@
     x: 'M17.8 3h3.1l-6.8 7.8 8 10.2h-6.3l-4.9-6.4L5.3 21H2.2l7.3-8.3L1.8 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.3 4.7H5.5z',
     pinterest: 'M12 2a10 10 0 0 0-3.6 19.3c-.1-.8-.2-2 0-2.9l1.2-5s-.3-.6-.3-1.5c0-1.4.8-2.4 1.8-2.4.9 0 1.3.6 1.3 1.4 0 .9-.6 2.2-.9 3.4-.2 1 .5 1.9 1.6 1.9 1.9 0 3.3-2 3.3-4.9 0-2.5-1.8-4.3-4.4-4.3-3 0-4.8 2.3-4.8 4.6 0 .9.4 1.9.8 2.4.1.1.1.2.1.3l-.3 1.2c0 .2-.2.3-.4.2-1.4-.6-2.2-2.6-2.2-4.2 0-3.4 2.5-6.6 7.2-6.6 3.8 0 6.7 2.7 6.7 6.3 0 3.8-2.4 6.8-5.7 6.8-1.1 0-2.2-.6-2.5-1.3l-.7 2.6c-.2 1-.9 2.2-1.4 2.9A10 10 0 1 0 12 2z',
     link: 'M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1',
+    phone: 'M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z',
+    video: 'M23 7l-7 5 7 5V7zM3 5h11a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z',
+    clock: 'M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z',
+    mail: 'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM22 6l-10 7L2 6',
     share: 'M12 3v12M7.5 7.5 12 3l4.5 4.5M5 13v7h14v-7'
   };
 
@@ -1098,6 +1112,68 @@
     toastTimer = setTimeout(function () { toastEl.classList.remove('is-on'); }, 3500);
   }
 
+  // ------------------------------------------------------------ call and video buttons
+  // An HTML gadget whose content is wrapped in <div class='shop-contact'>, one button per line:
+  //   call: +49 157 00000000 | Mon–Fri 9:00–18:00
+  //   zoom: https://zoom.us/j/123 | Tue & Thu 18:00–19:00 | Video advice
+  //   meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00
+  //   text: Prefer to talk? …
+  // = type: link or number | times (optional) | own button text (optional). Also: teams, whatsapp, telegram, email.
+  var CONTACT = {
+    call: { icon: 'phone', stroke: true, label: 'Call us', href: function (v) { return 'tel:' + v.replace(/[^\d+]/g, ''); }, detail: true },
+    zoom: { icon: 'video', stroke: true, label: 'Zoom video call', href: function (v) { return v; } },
+    meet: { icon: 'video', stroke: true, label: 'Google Meet video call', href: function (v) { return v; } },
+    teams: { icon: 'video', stroke: true, label: 'Microsoft Teams call', href: function (v) { return v; } },
+    whatsapp: { icon: 'whatsapp', label: 'Chat on WhatsApp', href: function (v) { return 'https://wa.me/' + v.replace(/[^\d]/g, ''); }, detail: true },
+    telegram: { icon: 'telegram', label: 'Chat on Telegram', href: function (v) { return 'https://t.me/' + v.replace(/^@|^https?:\/\/t\.me\//, ''); } },
+    email: { icon: 'mail', stroke: true, label: 'Email us', href: function (v) { return 'mailto:' + v; }, detail: true }
+  };
+  var CONTACT_ALIAS = { phone: 'call', tel: 'call', google_meet: 'meet', googlemeet: 'meet', mail: 'email', e_mail: 'email' };
+
+  function renderContact() {
+    each(doc.querySelectorAll('.shop-contact'), function (box) {
+      var items = [], intro = '';
+      gadgetLinesOf(box).forEach(function (line) {
+        var m = /^\s*([A-Za-z][\w \-]*?)\s*:\s*(.+?)\s*$/.exec(line);
+        if (!m) return;
+        var key = m[1].toLowerCase().replace(/[\s\-]+/g, '_');
+        key = CONTACT_ALIAS[key] || key;
+        if (key === 'text') { intro = m[2]; return; }
+        var type = CONTACT[key];
+        var parts = m[2].split('|').map(function (x) { return x.trim(); });
+        if (!type || !parts[0]) return;
+        var href = type.href(parts[0]);
+        if (!/^(https:|tel:|mailto:)/.test(href)) return; // only safe links
+        items.push({ key: key, type: type, value: parts[0], href: href, time: parts[1] || '', label: parts[2] || '' });
+      });
+      if (!items.length) return;
+      box.textContent = '';
+      box.classList.add('is-ready');
+      if (intro) box.appendChild(el('p', { 'class': 'shop-contact-intro', text: t(intro) }));
+      var cards = el('div', { 'class': 'shop-contact-cards' });
+      box.appendChild(cards);
+      items.forEach(function (it) {
+        var outside = !/^(tel:|mailto:)/.test(it.href);
+        cards.appendChild(el('a', { 'class': 'shop-contact-card shop-contact-' + it.key, href: it.href,
+          target: outside ? '_blank' : false, rel: outside ? 'noopener' : false }, [
+          el('span', { 'class': 'shop-contact-icon' }, [svg(ICONS[it.type.icon], it.type.stroke ? 'stroke' : null)]),
+          el('span', { 'class': 'shop-contact-text' }, [
+            el('strong', { text: it.label ? t(it.label) : t(it.type.label) }),
+            it.type.detail ? el('span', { 'class': 'shop-contact-detail', text: it.value }) : null,
+            it.time ? el('span', { 'class': 'shop-contact-time' }, [svg(ICONS.clock, 'stroke'), ' ' + t(it.time)]) : null
+          ])
+        ]));
+      });
+    });
+  }
+
+  // Lines of a gadget's text, like gadgetLines() but for an element already found.
+  function gadgetLinesOf(el) {
+    var copy = el.cloneNode(true);
+    each(copy.querySelectorAll('br, p, div, li'), function (n) { n.appendChild(doc.createTextNode('\n')); });
+    return (copy.textContent || '').split(/\r?\n/);
+  }
+
   // ------------------------------------------------------------ page language
   function applyLanguage() {
     doc.documentElement.lang = LANG;
@@ -1147,6 +1223,7 @@
     buildDrawer();
     enhanceCards();
     enhanceItem();
+    renderContact();
     renderCount();
     window.addEventListener('storage', function (e) {
       if (e.key !== KEY) return;

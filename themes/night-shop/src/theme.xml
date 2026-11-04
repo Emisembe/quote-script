@@ -20,10 +20,10 @@ Page not found - <data:blog.title/>
 <link href='https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&amp;family=Open+Sans:wght@400;600;700&amp;display=swap' rel='stylesheet'/>
 <b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .topics, .promo { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo { display: block; }</style>
 </b:if>
 <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .topics, .promo { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo { display: block; }</style>
 </b:if>
 </head>
 <body expr:class='&quot;rm shop pt-&quot; + data:blog.pageType'>
@@ -164,6 +164,29 @@ Page not found - <data:blog.title/>
         </b:widget>
       </b:section>
     </div>
+  </div>
+</section>
+
+<!-- ================= Talk to us: call and video buttons (shown on the homepage) ================= -->
+<section class='talk' id='talk'>
+  <div class='container'>
+    <b:section class='talk-section' id='talk-widgets' showaddelement='yes'>
+      <b:widget id='HTML11' locked='false' title='Talk to us' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[text: Prefer to talk? Call us or join a video call at these times.
+call: +49 157 00000000 | Mon–Fri 9:00–18:00
+zoom: https://zoom.us/j/0000000000 | Tue & Thu 18:00–19:00
+meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-contact'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
   </div>
 </section>
 

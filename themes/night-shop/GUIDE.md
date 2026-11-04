@@ -179,6 +179,23 @@ Send order: Zahlungspflichtig bestellen
   language such as Spanish, add `es` to `languages:` and give the shop words in Spanish.
 - Product **titles** stay as you typed them (Blogger has one title per post).
 
+## 5b. Call and video buttons ("Talk to us")
+
+The homepage strip under the top banner shows a call, a Zoom and a Google Meet button with their call
+times. Edit it in **Layout → "Talk to us" → Edit**, one line per button:
+
+```
+text: Prefer to talk? Call us or join a video call at these times.
+call: +49 157 00000000 | Mon–Fri 9:00–18:00
+zoom: https://zoom.us/j/1234567890 | Tue & Thu 18:00–19:00
+meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00
+```
+
+`type: link or number | call times | own button text (optional)`. Types: `call`, `zoom`, `meet`,
+`teams`, `whatsapp`, `telegram`, `email`. Delete a line to remove a button. Use a Zoom/Meet link that
+stays the same (your personal room or a recurring meeting). Your own times in German or French: Shop
+words, e.g. `[de] Wed 17:00–19:00: Mi 17:00–19:00 Uhr`.
+
 ## 6. How orders reach you
 
 | The buyer picks | What happens |

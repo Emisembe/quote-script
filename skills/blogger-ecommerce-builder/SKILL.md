@@ -75,6 +75,12 @@ VAT note) are in `references/products-and-orders.md` §3–6.
 Never: put secret payment keys in the theme; use Blogger's contact-form endpoint for orders; trust
 browser-computed totals without a server check or a manual check by the owner.
 
+### Call and video buttons
+An HTML gadget wrapped in `<div class='shop-contact'>` becomes "Talk to us" cards: one line per button,
+`call: +49 … | Mon–Fri 9–18`, `zoom: https://zoom.us/j/… | times`, `meet: https://meet.google.com/… | times`
+(also teams, whatsapp, telegram, email; optional third part = own button text; `text:` = intro line).
+Only https/tel/mailto links render. Snippet 5 in `theme-snippets.xml`.
+
 ### Languages
 `language:` sets the default, `languages: en, de, fr` adds a header picker (German and French are built
 in; any other language comes from the Shop words gadget, `[es] Add to cart: Añadir al carrito`). Owner

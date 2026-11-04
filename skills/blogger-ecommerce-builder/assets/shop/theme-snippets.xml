@@ -59,3 +59,23 @@ google_sheet:]]></b:widget-setting>
 <script>//<![CDATA[
 @@SHOP_JS@@
 //]]></script>
+
+
+<!-- 5. Optional "Talk to us" call and video buttons (shop.js renders every <div class='shop-contact'>).
+        One line per button: type: link or number | times | own button text. Types: call, zoom, meet,
+        teams, whatsapp, telegram, email; "text:" adds an intro line. Put it in an unconditional section. -->
+<b:widget id='HTML11' locked='false' title='Talk to us' type='HTML'>
+  <b:widget-settings>
+    <b:widget-setting name='content'><![CDATA[text: Prefer to talk? Call us or join a video call at these times.
+call: +49 157 00000000 | Mon–Fri 9:00–18:00
+zoom: https://zoom.us/j/0000000000 | Tue & Thu 18:00–19:00
+meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00]]></b:widget-setting>
+  </b:widget-settings>
+  <b:includable id='main'>
+    <b:if cond='data:title != &quot;&quot;'>
+      <h2 class='title'><data:title/></h2>
+    </b:if>
+    <div class='shop-contact'><data:content/></div>
+    <b:include name='quickedit'/>
+  </b:includable>
+</b:widget>
