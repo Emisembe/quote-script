@@ -414,6 +414,90 @@
     window.addEventListener('beforeprint', function () { targets.forEach(function (t) { t.classList.add('is-visible'); }); });
   }
 
+  // ---------------------------------------------------------------- languages
+  // The language buttons drive Google Translate (gadget Translate1). The choice is
+  // kept in Google's own "googtrans" cookie, so it follows the visitor to every page.
+  var langButtons = $all('[data-lang]');
+  if (langButtons.length) {
+    var langSwitch = $('#lang-switch');
+    var langToggle = langSwitch && $('.lang-current', langSwitch);
+    var readLang = function () {
+      var m = doc.cookie.match(/(?:^|;\s*)googtrans=\/[^/;]*\/([a-zA-Z-]+)/);
+      return m ? m[1] : 'en';
+    };
+    var markLang = function (code) {
+      langButtons.forEach(function (b) {
+        var on = b.getAttribute('data-lang') === code;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        if (on && langToggle) $('.lang-code', langToggle).textContent = b.getAttribute('data-short') || code.toUpperCase();
+      });
+      root.dir = code === 'ar' ? 'rtl' : 'ltr';
+    };
+    var writeCookie = function (value) {
+      var host = location.hostname;
+      var base = host.split('.').slice(-2).join('.');
+      var tail = value ? '' : '; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      [null, host, '.' + host, '.' + base].forEach(function (domain) {
+        doc.cookie = 'googtrans=' + value + '; path=/' + (domain ? '; domain=' + domain : '') + tail;
+      });
+    };
+    var fire = function (combo) {
+      var ev;
+      try { ev = new Event('change', { bubbles: true }); } catch (err) { ev = doc.createEvent('HTMLEvents'); ev.initEvent('change', true, true); }
+      combo.dispatchEvent(ev);
+    };
+    var chooseLang = function (code) {
+      if (langSwitch) { langSwitch.classList.remove('is-open'); if (langToggle) langToggle.setAttribute('aria-expanded', 'false'); }
+      if (code === readLang()) return;
+      if (code === 'en') {  // back to the original English page
+        writeCookie('');
+        location.reload();
+        return;
+      }
+      writeCookie('/en/' + code);
+      markLang(code);
+      var combo = $('.goog-te-combo');
+      if (!combo) { location.reload(); return; }  // engine not loaded yet: the cookie translates on reload
+      combo.value = code;
+      fire(combo);
+      setTimeout(function () {  // Google sometimes ignores the first change event
+        if (!/translated-(ltr|rtl)/.test(root.className)) fire(combo);
+      }, 600);
+    };
+    langButtons.forEach(function (b) {
+      b.addEventListener('click', function (e) { e.stopPropagation(); chooseLang(b.getAttribute('data-lang')); });
+    });
+    if (langToggle) {
+      langToggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = !langSwitch.classList.contains('is-open');
+        langSwitch.classList.toggle('is-open', open);
+        langToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      doc.addEventListener('click', function () {
+        langSwitch.classList.remove('is-open');
+        langToggle.setAttribute('aria-expanded', 'false');
+      });
+      doc.addEventListener('keydown', function (e) {
+        if ((e.key === 'Escape' || e.key === 'Esc') && langSwitch.classList.contains('is-open')) {
+          langSwitch.classList.remove('is-open');
+          langToggle.setAttribute('aria-expanded', 'false');
+          langToggle.focus();
+        }
+      });
+    }
+    markLang(readLang());
+    // Google marks the page translated-rtl / translated-ltr: keep text direction in step
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        if (/translated-rtl/.test(root.className)) root.dir = 'rtl';
+        else if (/translated-ltr/.test(root.className) || readLang() !== 'ar') root.dir = 'ltr';
+      }).observe(root, { attributes: true, attributeFilter: ['class'] });
+    }
+    fitNav();
+  }
+
   // Footer year
   $all('.js-year').forEach(function (y) { y.textContent = String(new Date().getFullYear()); });
 })();

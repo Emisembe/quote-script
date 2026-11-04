@@ -1,5 +1,5 @@
 <b:includable id='main'>
-  <a class='brand' expr:href='data:blog.homepageUrl'>
+  <a class='brand notranslate' expr:href='data:blog.homepageUrl' translate='no'>
     <b:if cond='data:useImage'>
       <img class='brand-logo' expr:alt='data:title' expr:src='data:sourceUrl'/>
     <b:else/>

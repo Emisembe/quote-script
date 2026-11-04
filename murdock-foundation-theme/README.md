@@ -30,6 +30,15 @@ leftovers. Every gadget the foundation already had keeps its ID and pictures.
 | Who we are | **HTML25** | Review the mission text (written from the site's own programme list). |
 | Projects | **Item 1 to 6** | Rename the titles to the project names. They are used as the photo descriptions. |
 
+## Languages
+
+Visitors can read the site in **English, Kiswahili, Français, Arabic and Deutsch**
+(globe button in the header, language row in the footer). The buttons drive Google
+Translate (gadget *Translate1*), so translations are automatic and the choice follows
+the visitor from page to page. Arabic turns the layout right-to-left. To change the
+languages, edit the buttons in `src/theme.xml` and `includedLanguages` in
+`src/includables/translate-main.xml`. Full guide: *MEF Website Guide: Setup and Posting*.
+
 ## What changed
 
 - **Fixed broken things:** the *Donate* button went to a ThemeForest sales page;

@@ -357,7 +357,7 @@ def main():
             out = out.replace('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
                               'vendor/font-awesome/css/font-awesome.min.css')
         # Third-party widgets that can't load offline
-        out = re.sub(r'<script src="//translate\.google\.com[^"]*"></script>', '', out)
+        out = re.sub(r'<script[^>]*src="(https:)?//translate\.google\.com[^"]*"[^>]*></script>', '', out)
         out = re.sub(r'<iframe[^>]*(youtube|maps\.google)[^>]*></iframe>',
                      '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font:600 15px Inter,Arial">Embedded video / map</div>', out)
         (OUT / f'{name}.html').write_text(out, encoding='utf-8')

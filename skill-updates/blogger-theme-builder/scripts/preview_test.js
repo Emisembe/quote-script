@@ -125,6 +125,40 @@ const ok = (cond, label, detail) => { results.push((cond ? 'ok    ' : 'FAIL  ') 
         const bg = await p.evaluate(() => getComputedStyle(document.getElementById('get-involved')).backgroundImage);
         ok(/ph-/.test(bg), 'photo band takes its background from its Image gadget', bg.slice(0, 80));
       }
+      if (page === 'home' && (width === 1440 || width === 390)) {
+        // Language switcher: a stand-in for Google's hidden drop-down records what the buttons ask for
+        await p.setViewportSize({ width, height: 900 });
+        await p.reload({ waitUntil: 'networkidle' });
+        await p.evaluate(() => {
+          const s = document.createElement('select'); s.className = 'goog-te-combo';
+          ['', 'en', 'sw', 'fr', 'ar', 'de'].forEach(v => { const o = document.createElement('option'); o.value = v; s.appendChild(o); });
+          s.addEventListener('change', () => { document.documentElement.classList.remove('translated-ltr', 'translated-rtl'); document.documentElement.classList.add(s.value === 'ar' ? 'translated-rtl' : 'translated-ltr'); });
+          document.body.appendChild(s);
+        });
+        const order = await p.evaluate(() => [...document.querySelectorAll('#lang-menu [data-lang]')].map(b => b.getAttribute('data-lang')).join(','));
+        ok(order === 'en,sw,fr,ar,de', `languages in order (${width})`, order);
+        const footerLangs = await p.evaluate(() => document.querySelectorAll('.footer-langs [data-lang]').length);
+        ok(footerLangs === 5, `footer has the 5 language buttons (${width})`, String(footerLangs));
+        if (width === 390) { await p.click('#nav-toggle'); await p.waitForTimeout(400); }
+        else { await p.click('.lang-current'); await p.waitForTimeout(250); ok(await p.evaluate(() => document.getElementById('lang-switch').classList.contains('is-open')), 'globe button opens the language menu'); await p.screenshot({ path: `${out}/lang-menu-1440.png`, clip: { x: 700, y: 0, width: 740, height: 360 } }); }
+        await p.click('#lang-menu [data-lang="fr"]');
+        await p.waitForTimeout(200);
+        const fr = await p.evaluate(() => ({ combo: document.querySelector('.goog-te-combo').value, cookie: document.cookie, active: document.querySelector('#lang-menu .is-active') && document.querySelector('#lang-menu .is-active').getAttribute('data-lang'), code: document.querySelector('.lang-code').textContent, dir: document.documentElement.dir }));
+        ok(fr.combo === 'fr' && /googtrans=\/en\/fr/.test(fr.cookie) && fr.active === 'fr' && fr.code === 'FR' && fr.dir === 'ltr', `French button translates via Google and remembers the choice (${width})`, JSON.stringify(fr));
+        if (width === 390 && await p.evaluate(() => !document.getElementById('site-header').classList.contains('nav-open'))) { await p.click('#nav-toggle'); await p.waitForTimeout(400); }
+        if (width === 1440) { await p.click('.lang-current'); await p.waitForTimeout(250); }
+        await p.click('#lang-menu [data-lang="ar"]');
+        await p.waitForTimeout(400);
+        const ar = await p.evaluate(() => ({ dir: document.documentElement.dir, sw: document.documentElement.scrollWidth, iw: window.innerWidth }));
+        ok(ar.dir === 'rtl' && ar.sw <= ar.iw, `Arabic switches the page to right-to-left without sideways scrolling (${width})`, JSON.stringify(ar));
+        await p.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+        await p.screenshot({ path: `${out}/arabic-${width}.png`, fullPage: width === 390 ? false : false });
+        // Reload keeps the language (Google's cookie), English clears it
+        await p.reload({ waitUntil: 'networkidle' });
+        ok(await p.evaluate(() => document.querySelector('.footer-langs .is-active').getAttribute('data-lang') === 'ar' && document.documentElement.dir === 'rtl'), `language survives a page load (${width})`);
+        await Promise.all([p.waitForNavigation({ waitUntil: 'networkidle' }), p.evaluate(() => document.querySelector('.footer-langs [data-lang="en"]').click())]);
+        ok(await p.evaluate(() => !/googtrans=\/en\/[a-z]/.test(document.cookie) && document.documentElement.dir === 'ltr' && document.querySelector('.footer-langs .is-active').getAttribute('data-lang') === 'en'), `English restores the original page (${width})`);
+      }
       if (page === 'post' && width === 1440) {
         await p.waitForTimeout(500);
         const rel = await p.evaluate(() => ({ hidden: document.querySelector('.related').hidden, n: document.querySelectorAll('.related-card').length }));

@@ -109,6 +109,16 @@ Page not found | <data:blog.title/>
 @@HTML_CONTENT@@
 </b:widget>
       </b:section>
+      <div class='lang-switch notranslate' id='lang-switch' translate='no'>
+        <button aria-controls='lang-menu' aria-expanded='false' aria-label='Choose language' class='lang-current' type='button'><i aria-hidden='true' class='fa fa-globe'/> <span class='lang-code'>EN</span></button>
+        <ul aria-label='Languages' class='lang-menu' id='lang-menu'>
+          <li><button data-lang='en' data-short='EN' lang='en' type='button'>English</button></li>
+          <li><button data-lang='sw' data-short='SW' lang='sw' type='button'>Kiswahili</button></li>
+          <li><button data-lang='fr' data-short='FR' lang='fr' type='button'>Fran&#231;ais</button></li>
+          <li><button data-lang='ar' data-short='AR' dir='rtl' lang='ar' type='button'>&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;</button></li>
+          <li><button data-lang='de' data-short='DE' lang='de' type='button'>Deutsch</button></li>
+        </ul>
+      </div>
     </nav>
   </div>
 </header>
@@ -845,6 +855,16 @@ Page not found | <data:blog.title/>
 @@HTML_CONTENT@@
 </b:widget>
       </b:section>
+      <div class='footer-langs notranslate' translate='no'>
+        <span class='footer-langs-label'><i aria-hidden='true' class='fa fa-globe'/> Language</span>
+        <ul aria-label='Languages' class='lang-menu'>
+          <li><button data-lang='en' data-short='EN' lang='en' type='button'>English</button></li>
+          <li><button data-lang='sw' data-short='SW' lang='sw' type='button'>Kiswahili</button></li>
+          <li><button data-lang='fr' data-short='FR' lang='fr' type='button'>Fran&#231;ais</button></li>
+          <li><button data-lang='ar' data-short='AR' dir='rtl' lang='ar' type='button'>&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;</button></li>
+          <li><button data-lang='de' data-short='DE' lang='de' type='button'>Deutsch</button></li>
+        </ul>
+      </div>
       <b:section class='footer-translate' id='footer-translate' maxwidgets='1' showaddelement='no'>
 <b:widget id='Translate1' locked='false' title='' type='Translate'>
 <b:widget-settings>

@@ -225,6 +225,63 @@ body .widget li { margin: 0; padding: 0; }
   html:not(.nav-collapse) .header-cta .btn { width: auto; min-height: 44px; font-size: 15px; padding: 10px 24px; }
 }
 
+/* ---------- Language switcher (drives Google Translate; see Translate1) ---------- */
+.lang-switch { margin-top: 20px; }
+.lang-current { display: none; }
+.lang-menu { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+body .lang-menu li { margin: 0; padding: 0; }
+.lang-menu button {
+  min-height: 40px; padding: 8px 14px; border-radius: 999px; cursor: pointer;
+  border: 1px solid #DCE5EB; background: #FFFFFF; color: $(heading.color);
+  font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 600; line-height: 1.2; white-space: nowrap;
+}
+.lang-menu button:hover { border-color: $(primary.color); color: $(primary.color); }
+.lang-menu button.is-active { background: $(primary.color); border-color: $(primary.color); color: #FFFFFF; }
+@media (min-width: 1100px) {
+  html:not(.nav-collapse) .site-header .lang-switch { position: relative; margin: 0; }
+  html:not(.nav-collapse) .site-header .lang-current {
+    display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 8px 12px; border: 0; border-radius: 10px;
+    background: #EEF4F7; color: $(primary.color); font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap;
+  }
+  html:not(.nav-collapse) .site-header .lang-current:hover { background: #E1ECF2; }
+  html:not(.nav-collapse) .site-header .lang-menu {
+    display: block; position: absolute; right: 0; top: 100%; z-index: 120; min-width: 190px; margin-top: 8px; padding: 8px;
+    background: #FFFFFF; border-radius: 12px; box-shadow: 0 2px 4px rgba(15, 37, 51, 0.08), 0 18px 40px rgba(15, 37, 51, 0.14);
+    opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .18s ease, transform .18s ease, visibility 0s linear .18s;
+  }
+  html:not(.nav-collapse) .site-header .lang-switch.is-open .lang-menu { opacity: 1; visibility: visible; transform: none; transition: opacity .18s ease, transform .18s ease; }
+  html:not(.nav-collapse) .site-header .lang-menu button { display: block; width: 100%; text-align: left; border: 0; border-radius: 8px; min-height: 40px; }
+  html:not(.nav-collapse) .site-header .lang-menu button:hover { background: #EEF4F7; }
+  html:not(.nav-collapse) .site-header .lang-menu button.is-active { background: $(primary.color); color: #FFFFFF; }
+}
+.footer-langs { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; width: 100%; padding-bottom: 6px; }
+.footer-langs-label { color: rgba(255, 255, 255, 0.7); font-weight: 600; font-size: 14px; }
+.footer-langs .lang-menu button { min-height: 34px; padding: 6px 12px; font-size: 14px; background: transparent; border-color: rgba(255, 255, 255, 0.3); color: #FFFFFF; }
+.footer-langs .lang-menu button:hover { border-color: $(accent.color); color: $(accent.color); }
+.footer-langs .lang-menu button.is-active { background: $(accent.color); border-color: $(accent.color); color: $(heading.color); }
+@media (max-width: 767px) { .footer-langs { justify-content: center; } }
+
+/* Hide Google Translate's own bar, drop-down and pop-ups (the buttons above replace them) */
+.footer-translate { display: none; }
+body { top: 0 !important; }
+.skiptranslate iframe, iframe.skiptranslate, #goog-gt-tt, .goog-te-balloon-frame, .goog-tooltip { display: none !important; }
+.goog-text-highlight { background: none !important; box-shadow: none !important; }
+/* Arabic: JS sets dir="rtl" on <html> while the page is shown in Arabic */
+html[dir="rtl"] .hero-shade {
+  background:
+    linear-gradient(270deg, rgba(8, 36, 52, 0.88) 0%, rgba(8, 36, 52, 0.62) 50%, rgba(8, 36, 52, 0.25) 100%),
+    linear-gradient(0deg, rgba(8, 36, 52, 0.55) 0%, rgba(8, 36, 52, 0) 45%);
+}
+html[dir="rtl"] .text-link::after, html[dir="rtl"] .card-link::after { content: ' \2190'; }
+html[dir="rtl"] .site-header .lang-menu { right: auto; left: 0; }
+html[dir="rtl"] .menu .sub-toggle { right: auto; left: 0; }
+html[dir="rtl"] .menu .submenu { padding: 0 14px 10px 0; }
+@media (min-width: 1100px) {
+  html[dir="rtl"]:not(.nav-collapse) .menu .has-sub > a { padding-right: 11px; padding-left: 26px; }
+  html[dir="rtl"]:not(.nav-collapse) .menu .submenu { left: auto; right: 0; padding: 8px; }
+}
+html[dir="rtl"] .site-header .lang-menu button, html[dir="rtl"] .post-card-body { text-align: right; }
+
 /* ---------- Hero slider ---------- */
 .hero { position: relative; overflow: hidden; background: $(primary.deep.color); color: #FFFFFF; }
 .hero-images, .hero-images .widget, .hero-shade { position: absolute; inset: 0; }
@@ -610,7 +667,6 @@ body .footer-col li { padding: 5px 0; }
 .footer-bottom-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; padding-top: 22px; padding-bottom: 22px; font-size: 14px; }
 .copyright { margin: 0; }
 .footer-credit p, .footer-credit .widget-content { margin: 0; }
-.footer-translate { margin-left: auto; }
 .footer-translate .title, .footer-translate h2 { display: none; }
 .footer-translate .goog-te-gadget { color: rgba(255, 255, 255, 0.6) !important; font-size: 12px; font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; }
 .footer-translate .goog-te-gadget a, .footer-translate .goog-te-gadget span { color: rgba(255, 255, 255, 0.6) !important; }
@@ -685,7 +741,7 @@ body .footer-col li { padding: 5px 0; }
 /* ---------- Layout editor (Theme > Layout) ---------- */
 body#layout .site-header { position: static; }
 body#layout .home-only, body#layout .not-home, body#layout .error-only, body#layout .bg-source,
-body#layout .navbar-hidden, body#layout .sidebar, body#layout .hero { display: block; }
+body#layout .navbar-hidden, body#layout .sidebar, body#layout .hero, body#layout .footer-translate { display: block; }
 body#layout .hero-images, body#layout .hero-images .widget, body#layout .hero-shade { position: static; opacity: 1; }
 body#layout .hero-slides .widget { opacity: 1; visibility: visible; transform: none; }
 body#layout .nav-drawer { position: static; display: block; visibility: visible; opacity: 1; transform: none; }
@@ -703,7 +759,8 @@ body#layout .container { max-width: none; padding: 0 10px; }
 body#layout .site-header, body#layout .band, body#layout .page-hero, body#layout .site-footer,
 body#layout .footer-bottom { position: static; display: block; padding: 6px 0; margin: 0 0 8px; background: none; }
 body#layout .home-only, body#layout .not-home, body#layout .error-only, body#layout .bg-source,
-body#layout .navbar-hidden, body#layout .sidebar, body#layout .hero, body#layout .nav-drawer { display: block; }
+body#layout .navbar-hidden, body#layout .sidebar, body#layout .hero, body#layout .nav-drawer, body#layout .footer-translate { display: block; }
+body#layout .lang-switch, body#layout .footer-langs { display: none; }
 body#layout .hero-images, body#layout .hero-images .widget, body#layout .hero-shade { position: static; opacity: 1; }
 body#layout .header-inner, body#layout .split, body#layout .main-grid, body#layout .contact-grid,
 body#layout .footer-grid, body#layout .footer-bottom-inner { display: block; }
@@ -742,7 +799,7 @@ body#layout .section { margin: 0 0 6px; }
   <b:widget-setting name='displayWidth'>330</b:widget-setting>
 </b:widget-settings>
 <b:includable id='main'>
-  <a class='brand' expr:href='data:blog.homepageUrl'>
+  <a class='brand notranslate' expr:href='data:blog.homepageUrl' translate='no'>
     <b:if cond='data:useImage'>
       <img class='brand-logo' expr:alt='data:title' expr:src='data:sourceUrl'/>
     <b:else/>
@@ -799,6 +856,16 @@ body#layout .section { margin: 0 0 6px; }
 </b:includable>
 </b:widget>
       </b:section>
+      <div class='lang-switch notranslate' id='lang-switch' translate='no'>
+        <button aria-controls='lang-menu' aria-expanded='false' aria-label='Choose language' class='lang-current' type='button'><i aria-hidden='true' class='fa fa-globe'/> <span class='lang-code'>EN</span></button>
+        <ul aria-label='Languages' class='lang-menu' id='lang-menu'>
+          <li><button data-lang='en' data-short='EN' lang='en' type='button'>English</button></li>
+          <li><button data-lang='sw' data-short='SW' lang='sw' type='button'>Kiswahili</button></li>
+          <li><button data-lang='fr' data-short='FR' lang='fr' type='button'>Fran&#231;ais</button></li>
+          <li><button data-lang='ar' data-short='AR' dir='rtl' lang='ar' type='button'>&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;</button></li>
+          <li><button data-lang='de' data-short='DE' lang='de' type='button'>Deutsch</button></li>
+        </ul>
+      </div>
     </nav>
   </div>
 </header>
@@ -2743,26 +2810,38 @@ body#layout .section { margin: 0 0 6px; }
 </b:includable>
 </b:widget>
       </b:section>
+      <div class='footer-langs notranslate' translate='no'>
+        <span class='footer-langs-label'><i aria-hidden='true' class='fa fa-globe'/> Language</span>
+        <ul aria-label='Languages' class='lang-menu'>
+          <li><button data-lang='en' data-short='EN' lang='en' type='button'>English</button></li>
+          <li><button data-lang='sw' data-short='SW' lang='sw' type='button'>Kiswahili</button></li>
+          <li><button data-lang='fr' data-short='FR' lang='fr' type='button'>Fran&#231;ais</button></li>
+          <li><button data-lang='ar' data-short='AR' dir='rtl' lang='ar' type='button'>&#1575;&#1604;&#1593;&#1585;&#1576;&#1610;&#1577;</button></li>
+          <li><button data-lang='de' data-short='DE' lang='de' type='button'>Deutsch</button></li>
+        </ul>
+      </div>
       <b:section class='footer-translate' id='footer-translate' maxwidgets='1' showaddelement='no'>
 <b:widget id='Translate1' locked='false' title='' type='Translate'>
 <b:widget-settings>
   <b:widget-setting name='displayMode'>VERTICAL</b:widget-setting>
 </b:widget-settings>
 <b:includable id='main'>
-  <b:if cond='data:title != &quot;&quot;'>
-    <h2 class='title'><data:title/></h2>
-  </b:if>
+  <!-- Google Translate engine. Its own drop-down stays hidden: visitors use the
+       theme's language buttons (header and footer), which drive it. Languages,
+       in menu order: English, Kiswahili, French, Arabic, German. -->
   <div id='google_translate_element'/>
-  <script>
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement({
-        pageLanguage: &#39;<data:pageLanguage/>&#39;,
-        autoDisplay: &#39;true&#39;,
-        layout: google.translate.TranslateElement.InlineLayout.<data:layout/>
-      }, &#39;google_translate_element&#39;);
-    }
+  <script type='text/javascript'>
+  //<![CDATA[
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+      pageLanguage: 'en',
+      includedLanguages: 'en,sw,fr,ar,de',
+      autoDisplay: false
+    }, 'google_translate_element');
+  }
+  //]]>
   </script>
-  <script src='//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit'/>
+  <script async='async' src='https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit' type='text/javascript'/>
   <b:include name='quickedit'/>
 </b:includable>
 </b:widget>
@@ -3196,6 +3275,90 @@ body#layout .section { margin: 0 0 6px; }
     }, { rootMargin: '0px 0px -8% 0px' });
     targets.forEach(function (t) { io.observe(t); });
     window.addEventListener('beforeprint', function () { targets.forEach(function (t) { t.classList.add('is-visible'); }); });
+  }
+
+  // ---------------------------------------------------------------- languages
+  // The language buttons drive Google Translate (gadget Translate1). The choice is
+  // kept in Google's own "googtrans" cookie, so it follows the visitor to every page.
+  var langButtons = $all('[data-lang]');
+  if (langButtons.length) {
+    var langSwitch = $('#lang-switch');
+    var langToggle = langSwitch && $('.lang-current', langSwitch);
+    var readLang = function () {
+      var m = doc.cookie.match(/(?:^|;\s*)googtrans=\/[^/;]*\/([a-zA-Z-]+)/);
+      return m ? m[1] : 'en';
+    };
+    var markLang = function (code) {
+      langButtons.forEach(function (b) {
+        var on = b.getAttribute('data-lang') === code;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        if (on && langToggle) $('.lang-code', langToggle).textContent = b.getAttribute('data-short') || code.toUpperCase();
+      });
+      root.dir = code === 'ar' ? 'rtl' : 'ltr';
+    };
+    var writeCookie = function (value) {
+      var host = location.hostname;
+      var base = host.split('.').slice(-2).join('.');
+      var tail = value ? '' : '; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      [null, host, '.' + host, '.' + base].forEach(function (domain) {
+        doc.cookie = 'googtrans=' + value + '; path=/' + (domain ? '; domain=' + domain : '') + tail;
+      });
+    };
+    var fire = function (combo) {
+      var ev;
+      try { ev = new Event('change', { bubbles: true }); } catch (err) { ev = doc.createEvent('HTMLEvents'); ev.initEvent('change', true, true); }
+      combo.dispatchEvent(ev);
+    };
+    var chooseLang = function (code) {
+      if (langSwitch) { langSwitch.classList.remove('is-open'); if (langToggle) langToggle.setAttribute('aria-expanded', 'false'); }
+      if (code === readLang()) return;
+      if (code === 'en') {  // back to the original English page
+        writeCookie('');
+        location.reload();
+        return;
+      }
+      writeCookie('/en/' + code);
+      markLang(code);
+      var combo = $('.goog-te-combo');
+      if (!combo) { location.reload(); return; }  // engine not loaded yet: the cookie translates on reload
+      combo.value = code;
+      fire(combo);
+      setTimeout(function () {  // Google sometimes ignores the first change event
+        if (!/translated-(ltr|rtl)/.test(root.className)) fire(combo);
+      }, 600);
+    };
+    langButtons.forEach(function (b) {
+      b.addEventListener('click', function (e) { e.stopPropagation(); chooseLang(b.getAttribute('data-lang')); });
+    });
+    if (langToggle) {
+      langToggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = !langSwitch.classList.contains('is-open');
+        langSwitch.classList.toggle('is-open', open);
+        langToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      doc.addEventListener('click', function () {
+        langSwitch.classList.remove('is-open');
+        langToggle.setAttribute('aria-expanded', 'false');
+      });
+      doc.addEventListener('keydown', function (e) {
+        if ((e.key === 'Escape' || e.key === 'Esc') && langSwitch.classList.contains('is-open')) {
+          langSwitch.classList.remove('is-open');
+          langToggle.setAttribute('aria-expanded', 'false');
+          langToggle.focus();
+        }
+      });
+    }
+    markLang(readLang());
+    // Google marks the page translated-rtl / translated-ltr: keep text direction in step
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        if (/translated-rtl/.test(root.className)) root.dir = 'rtl';
+        else if (/translated-ltr/.test(root.className) || readLang() !== 'ar') root.dir = 'ltr';
+      }).observe(root, { attributes: true, attributeFilter: ['class'] });
+    }
+    fitNav();
   }
 
   // Footer year
