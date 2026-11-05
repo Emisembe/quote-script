@@ -1,0 +1,24 @@
+<!-- Chat assistant: paste just before the footer (inside <body>, outside any other b:section).
+     Replace HTML99 with an unused HTML gadget id (HTML1, HTML2... check the theme for the highest).
+     The wrapper is hidden: the gadget only holds the questions; the script draws the chat.
+     Keep the section unconditional (never inside <b:if>), or it disappears from Layout. -->
+<div class='chat-data' hidden='hidden'>
+  <b:section class='chat-section' id='chat-assistant' maxwidgets='1' showaddelement='yes'>
+    <b:widget id='HTML99' locked='false' title='Chat assistant (questions and answers)' type='HTML' version='1'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[PASTE THE QUESTIONS HERE (see assets/starter-faq.txt)]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <b:if cond='data:title != &quot;&quot;'>
+          <h2 class='title'><data:title/></h2>
+        </b:if>
+        <div class='widget-content'>
+          <data:content/>
+        </div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</div>
+<!-- So the gadget is visible and editable in Theme > Layout, add to the skin:
+     body#layout .chat-data[hidden] { display: block !important; } -->

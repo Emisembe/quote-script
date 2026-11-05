@@ -76,6 +76,27 @@ Message: Hello KPUWU, I'd like to ask about
 - **On phones and tablets** the two buttons sit in a bar across the bottom of the screen (it steps aside while the menu is open). **On computers** they are round buttons in the bottom corner; pointing at one shows the number.
 - The buttons don't appear when a page is printed.
 
+## Chat assistant ("Ask")
+
+**Layout → Chat assistant (questions and answers)** (near the bottom of Layout). An **Ask** button sits next to Call and WhatsApp and opens a chat that answers from this list:
+
+```
+Name: Ask KPUWU
+Welcome: Hello! I'm the KPUWU assistant. Ask me about joining the union, dues...
+Popular: How do I join the union? | Who can join? | How are union dues paid?
+
+Q: How do I join the union?
+Also: join, become a member, membership, register, sign up, form s
+A: You join by signing Form S ... Read more: [Who can join](/p/who-can-join.html).
+```
+
+- **Q:** the question as a member would ask it. **Also:** other words people use (helps matching). **A:** the answer; links as `[text](/p/page.html)`. An answer can run over several lines.
+- While people type, the chat **suggests matching questions**, even with spelling mistakes ("jion" → "How do I join the union?").
+- When nothing matches, it shows **matching articles** from the website and offers **Ask on WhatsApp** (their question already typed) and **Call us**.
+- The conversation is kept while the visitor moves between pages. Full screen on phones, a window in the corner on computers.
+- **The KPUWU starter list was drafted from your website** (joining with Form S, check-off, the membership card, benefits, NSSF/SHIF, branches, downloads, donations). Please check every answer before relying on it. Answers that need figures (like the dues rate) point people to the office.
+- Delete all the Q/A blocks to switch the chat off.
+
 ## Videos under short articles
 
 **Layout → Videos** (near the bottom of Layout): one YouTube link per line, optionally followed by `|` and a title:

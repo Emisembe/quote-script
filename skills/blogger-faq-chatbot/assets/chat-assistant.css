@@ -1,0 +1,105 @@
+/* FAQ chat assistant. Put this in a <style> block in <head> (outside <b:skin> in Blogger,
+   because Blogger's skin does not need to see the CSS variables). Change the colours here. */
+:root {
+  --chat-primary: #13294B;   /* header, user messages, launcher */
+  --chat-accent: #C8102E;    /* avatar, send button, links, Call */
+  --chat-whatsapp: #147A3E;  /* dark enough for white text (contrast 5:1) */
+  --chat-bg: #F4F6FA;
+  --chat-border: #DCE1EA;
+  --chat-text: #1B2533;
+  --chat-muted: #5B6778;
+  --chat-font-title: inherit;
+}
+
+/* Corner launcher (used when the theme has no Call/WhatsApp bar) */
+.chat-launcher {
+  position: fixed;
+  right: 20px;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: 20px;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 95;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 0 22px 0 18px;
+  border: 0;
+  border-radius: 28px;
+  background: var(--chat-primary);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 8px 22px rgba(15, 30, 55, 0.3);
+  cursor: pointer;
+}
+.chat-launcher:hover { transform: translateY(-2px); }
+.chat-launcher .chat-icon { width: 24px; height: 24px; fill: #fff; }
+/* "Ask" inside an existing Call/WhatsApp bar */
+.qc-ask { background: var(--chat-primary); border: 0; cursor: pointer; font: inherit; color: #fff; }
+
+.chat-icon { display: block; width: 18px; height: 18px; fill: currentColor; flex: 0 0 auto; }
+.chat-panel {
+  position: fixed;
+  z-index: 130;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  color: var(--chat-text);
+  box-shadow: 0 18px 50px rgba(15, 30, 55, 0.35);
+  overflow: hidden;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.chat-panel[hidden] { display: none !important; }
+/* Phones and tablets: full screen. Lock page scrolling on <html> ONLY: locking <body> as well turns
+   it into a scroll box, which unsticks sticky headers. */
+@media (max-width: 1023px) {
+  .chat-panel { left: 0; right: 0; top: 0; bottom: 0; }
+  html.chat-open { overflow: hidden; }
+}
+@media (min-width: 1024px) {
+  .chat-panel { right: 20px; bottom: 20px; width: 390px; height: 620px; max-height: calc(100vh - 40px); border-radius: 16px; }
+}
+.chat-head { display: flex; align-items: center; gap: 12px; padding: 14px 12px 14px 16px; background: var(--chat-primary); color: #fff; }
+.chat-avatar { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 50%; background: var(--chat-accent); display: flex; align-items: center; justify-content: center; }
+.chat-avatar .chat-icon { width: 20px; height: 20px; fill: #fff; }
+.chat-title { flex: 1 1 auto; min-width: 0; }
+.chat-title p { margin: 0; }
+.chat-name { font-family: var(--chat-font-title); font-size: 19px; font-weight: 700; }
+.chat-sub { font-size: 12px; opacity: 0.85; }
+.chat-close { flex: 0 0 44px; width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.chat-close:hover { background: rgba(255, 255, 255, 0.12); }
+.chat-close .chat-icon { width: 22px; height: 22px; fill: #fff; }
+.chat-log { flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; padding: 16px 14px; background: var(--chat-bg); display: flex; flex-direction: column; gap: 10px; }
+.chat-msg { display: flex; flex-direction: column; max-width: 88%; }
+.chat-bot { align-self: flex-start; }
+.chat-user { align-self: flex-end; align-items: flex-end; }
+.chat-bubble { padding: 10px 13px; border-radius: 14px; overflow-wrap: anywhere; }
+.chat-bot .chat-bubble { background: #fff; border: 1px solid var(--chat-border); border-bottom-left-radius: 4px; }
+.chat-user .chat-bubble { background: var(--chat-primary); color: #fff; border-bottom-right-radius: 4px; }
+.chat-bubble a { color: var(--chat-accent); font-weight: 600; text-decoration: underline; }
+.chat-typing .chat-bubble { letter-spacing: 3px; color: var(--chat-muted); }
+.chat-more { margin: 8px 0 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--chat-muted); }
+.chat-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chat-chip { border: 1px solid var(--chat-border); background: #fff; color: var(--chat-primary); border-radius: 999px; padding: 8px 12px; min-height: 36px; font: inherit; font-size: 13px; font-weight: 600; line-height: 1.25; text-align: left; cursor: pointer; }
+.chat-chip:hover, .chat-chip:focus-visible { border-color: var(--chat-accent); color: var(--chat-accent); }
+.chat-links { list-style: none; margin: 0; padding: 0; }
+.chat-links li { padding: 3px 0; margin: 0; }
+.chat-links a { color: var(--chat-primary); font-weight: 600; font-size: 14px; text-decoration: underline; }
+.chat-handover { display: flex; flex-wrap: wrap; gap: 8px; }
+.chat-action { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 8px 14px; border-radius: 999px; color: #fff !important; font-weight: 700; font-size: 14px; text-decoration: none; }
+.chat-action .chat-icon { width: 16px; height: 16px; fill: #fff; }
+.chat-wa { background: var(--chat-whatsapp); }
+.chat-call { background: var(--chat-accent); }
+.chat-suggest { padding: 0 12px; background: #fff; }
+.chat-suggest:not(:empty) { padding-top: 10px; border-top: 1px solid var(--chat-border); }
+.chat-chips-live .chat-chip { background: var(--chat-bg); }
+.chat-form { display: flex; gap: 8px; margin: 0; padding: 10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--chat-border); }
+/* 16px keeps iPhones from zooming in when the box is tapped */
+.chat-input { flex: 1 1 auto; min-width: 0; min-height: 46px; padding: 10px 14px; border: 1px solid var(--chat-border); border-radius: 999px; font: inherit; font-size: 16px; color: var(--chat-text); background: #fff; }
+.chat-input:focus { outline: none; border-color: var(--chat-primary); box-shadow: 0 0 0 3px rgba(19, 41, 75, 0.15); }
+.chat-send { flex: 0 0 46px; width: 46px; height: 46px; border: 0; border-radius: 50%; background: var(--chat-accent); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.chat-send .chat-icon { width: 20px; height: 20px; fill: #fff; }
+@media print { .chat-panel, .chat-launcher { display: none !important; } }
