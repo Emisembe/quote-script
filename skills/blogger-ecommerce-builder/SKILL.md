@@ -93,6 +93,13 @@ Only https/tel/mailto links render. Snippet 5 in `theme-snippets.xml`.
 - `<div class='shop-trust'>` gadget above the footer: `icon | title | text | link` + `pay: PayPal, Bank transfer`.
 - Logo: keep the Header widget's `data:useImage` / `data:imagePlacement` branches (both proven) and size the
   image in CSS; a favicon comes from Blogger Settings via `all-head-content`.
+- Homepage blocks (one line per item, `|` parts, `text:` intro, `#` notes, `data-lang` blocks per language):
+  `.shop-services` (icon|title|text|button|link), `.shop-steps` (title|text), `.shop-testimonials`
+  (stars|quote|name; hidden while empty, real reviews only), `.shop-faq` (question|answer, adds FAQPage JSON-LD),
+  `.shop-newsletter` (double opt-in via Code.gs: Newsletter tab, confirm/unsubscribe links in doGet).
+- Request forms anywhere: `<div class="shop-lead" data-kind="quote" data-fields="Name*; Email*; Orders: a / b">` →
+  Code.gs `Requests` tab + owner email; WhatsApp fallback without endpoint. Templates `assets/pages/fulfilment.html`, `kenya.html`.
+- Floating WhatsApp button (`whatsapp_button: no` to hide); "You may also like" from the label feed (http(s) only).
 - Team page template `assets/pages/team.html` (`.team-member` cards with data-phone/-email/-whatsapp/-instagram …).
 Details: `references/products-and-orders.md` §2, §4b–4f. Snippets 6–10 in `theme-snippets.xml`.
 

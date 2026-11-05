@@ -101,6 +101,14 @@
       'We answer within a day': 'Antwort innerhalb eines Tages', 'We accept': 'Wir akzeptieren', 'Bank transfer': 'Überweisung',
       'Cash on delivery': 'Nachnahme', 'Close': 'Schließen', 'Previous': 'Zurück', 'Next': 'Weiter',
       'Our team': 'Unser Team', 'Delivery partners': 'Versandpartner',
+      'You may also like': 'Das könnte Ihnen auch gefallen', 'Subscribe': 'Anmelden', 'Your email': 'Ihre E-Mail-Adresse',
+      'Yes, I would like to receive news and offers by email. I can unsubscribe at any time.': 'Ja, ich möchte Neuigkeiten und Angebote per E-Mail erhalten. Ich kann mich jederzeit abmelden.',
+      'Almost done! Please confirm your subscription in the email we just sent you.': 'Fast geschafft! Bitte bestätigen Sie die Anmeldung in der E-Mail, die wir Ihnen gerade geschickt haben.',
+      'I agree that my details are used to answer my request.': 'Ich bin einverstanden, dass meine Angaben zur Beantwortung meiner Anfrage verwendet werden.',
+      'Privacy policy': 'Datenschutzerklärung', 'Send request': 'Anfrage senden', 'Request a quote': 'Angebot anfragen',
+      'Thank you! Your request was sent. We will reply within one working day.': 'Vielen Dank! Ihre Anfrage wurde gesendet. Wir antworten innerhalb eines Werktags.',
+      'Something went wrong. Please try again or message us on WhatsApp.': 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder schreiben Sie uns auf WhatsApp.',
+      'Please tick the box to agree.': 'Bitte setzen Sie das Häkchen zur Zustimmung.', 'Learn more': 'Mehr erfahren',
       'Talk to us': 'Sprechen Sie mit uns', 'Call us': 'Rufen Sie uns an', 'Zoom video call': 'Zoom-Videoanruf',
       'Google Meet video call': 'Google-Meet-Videoanruf', 'Microsoft Teams call': 'Microsoft-Teams-Anruf',
       'Chat on WhatsApp': 'Per WhatsApp schreiben', 'Chat on Telegram': 'Per Telegram schreiben', 'Email us': 'E-Mail schreiben',
@@ -168,6 +176,14 @@
       'We answer within a day': 'Réponse sous 24 heures', 'We accept': 'Nous acceptons', 'Bank transfer': 'Virement bancaire',
       'Cash on delivery': 'Paiement à la livraison', 'Close': 'Fermer', 'Previous': 'Précédent', 'Next': 'Suivant',
       'Our team': 'Notre équipe', 'Delivery partners': 'Partenaires de livraison',
+      'You may also like': 'Vous aimerez aussi', 'Subscribe': "S'inscrire", 'Your email': 'Votre e-mail',
+      'Yes, I would like to receive news and offers by email. I can unsubscribe at any time.': 'Oui, je souhaite recevoir des nouveautés et des offres par e-mail. Je peux me désinscrire à tout moment.',
+      'Almost done! Please confirm your subscription in the email we just sent you.': "Presque fini ! Confirmez votre inscription dans l'e-mail que nous venons de vous envoyer.",
+      'I agree that my details are used to answer my request.': "J'accepte que mes données soient utilisées pour répondre à ma demande.",
+      'Privacy policy': 'Politique de confidentialité', 'Send request': 'Envoyer la demande', 'Request a quote': 'Demander un devis',
+      'Thank you! Your request was sent. We will reply within one working day.': 'Merci ! Votre demande a été envoyée. Nous répondons sous un jour ouvré.',
+      'Something went wrong. Please try again or message us on WhatsApp.': 'Une erreur est survenue. Réessayez ou écrivez-nous sur WhatsApp.',
+      'Please tick the box to agree.': 'Merci de cocher la case.', 'Learn more': 'En savoir plus',
       'Talk to us': 'Parlez-nous', 'Call us': 'Appelez-nous', 'Zoom video call': 'Appel vidéo Zoom',
       'Google Meet video call': 'Appel vidéo Google Meet', 'Microsoft Teams call': 'Appel Microsoft Teams',
       'Chat on WhatsApp': 'Écrire sur WhatsApp', 'Chat on Telegram': 'Écrire sur Telegram', 'Email us': 'Écrivez-nous',
@@ -751,6 +767,10 @@
     heart: 'M12 21s-8-5.3-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.7-8 11-8 11z',
     box: 'M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10',
     check: 'M20 6 9 17l-5-5',
+    globe: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z',
+    warehouse: 'M3 21V9l9-5 9 5v12M7 21v-7h10v7M7 17h10',
+    tag: 'M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01',
+    plus: 'M12 5v14M5 12h14',
     // team page social icons
     instagram: 'M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zM16 11.4A4 4 0 1 1 12.6 8 4 4 0 0 1 16 11.4zM17.5 6.5h.01',
     linkedin: 'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 6V21h-4v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V21H9z',
@@ -1499,6 +1519,276 @@
     });
   }
 
+  // ------------------------------------------------------------ homepage blocks
+  // Every block is an HTML gadget wrapped in a <div class='shop-…'>; one item per line, parts separated by |.
+  // Lines in the visitor's language: <div data-lang="de">…</div> blocks inside the gadget; English (or all) as fallback.
+  function langLines(box) {
+    var pick = function (lang) {
+      var copy = box.cloneNode(true);
+      each(copy.querySelectorAll('[data-lang]'), function (n) {
+        var langs = list(n.getAttribute('data-lang').replace(/\s+/g, ',')).map(function (l) { return l.toLowerCase().slice(0, 2); });
+        if (lang && langs.indexOf(lang) === -1) n.parentNode.removeChild(n);
+      });
+      return gadgetLinesOf(copy).filter(function (l) { return l.trim() && !/^\s*#/.test(l); });
+    };
+    var lines = pick(LANG);
+    if (!lines.length) lines = pick('en');
+    if (!lines.length) lines = pick('');
+    return lines;
+  }
+  function hideEmpty(box) {
+    var sec = box.closest('section') || box;
+    sec.hidden = true;
+  }
+  function lineParts(box) {
+    var intro = '', items = [];
+    langLines(box).forEach(function (line) {
+      var m = /^\s*text\s*:\s*(.+)$/i.exec(line);
+      if (m) { intro = m[1].trim(); return; }
+      var parts = line.split('|').map(function (x) { return x.trim(); });
+      if (parts[0]) items.push(parts);
+    });
+    return { intro: intro, items: items };
+  }
+  function safeLink(v) { return /^(https:\/\/|\/|#)/.test(v || '') ? v : ''; }
+  function ready(box, intro) {
+    box.textContent = '';
+    box.classList.add('is-ready');
+    if (intro) box.appendChild(el('p', { 'class': 'shop-block-intro', text: t(intro) }));
+  }
+
+  // What we do: icon | title | text | button text | link
+  function renderServices() {
+    each(doc.querySelectorAll('.shop-services'), function (box) {
+      var d = lineParts(box);
+      if (!d.items.length) return hideEmpty(box);
+      ready(box, d.intro);
+      var grid = el('div', { 'class': 'shop-services-grid' });
+      d.items.forEach(function (p) {
+        var icon = ICONS[(p[0] || '').toLowerCase()] ? p[0].toLowerCase() : 'check';
+        var link = safeLink(p[4]);
+        grid.appendChild(el('div', { 'class': 'shop-service' }, [
+          el('span', { 'class': 'shop-service-icon' }, [svg(ICONS[icon], 'stroke')]),
+          el('h3', { text: t(p[1] || '') }),
+          p[2] ? el('p', { text: t(p[2]) }) : null,
+          link ? el('a', { 'class': 'shop-btn shop-btn-ghost', href: link, text: t(p[3] || 'Learn more') + ' →' }) : null
+        ]));
+      });
+      box.appendChild(grid);
+    });
+  }
+
+  // How it works: title | text   (numbered automatically)
+  function renderSteps() {
+    each(doc.querySelectorAll('.shop-steps'), function (box) {
+      var d = lineParts(box);
+      if (!d.items.length) return hideEmpty(box);
+      ready(box, d.intro);
+      var ol = el('ol', { 'class': 'shop-steps-list' });
+      d.items.forEach(function (p, i) {
+        ol.appendChild(el('li', { 'class': 'shop-step' }, [
+          el('span', { 'class': 'shop-step-num', text: String(i + 1) }),
+          el('h3', { text: t(p[0]) }), p[1] ? el('p', { text: t(p[1]) }) : null]));
+      });
+      box.appendChild(ol);
+    });
+  }
+
+  // Customer reviews: stars (1-5) | quote | name, place
+  function renderTestimonials() {
+    each(doc.querySelectorAll('.shop-testimonials'), function (box) {
+      var d = lineParts(box);
+      var items = d.items.filter(function (p) { return p[1]; });
+      if (!items.length) return hideEmpty(box);
+      ready(box, d.intro);
+      var row = el('div', { 'class': 'shop-quotes' });
+      items.forEach(function (p) {
+        var n = Math.max(0, Math.min(5, (p[0].match(/★/g) || []).length || parseInt(p[0], 10) || 5));
+        row.appendChild(el('figure', { 'class': 'shop-quote' }, [
+          el('div', { 'class': 'shop-quote-stars', 'aria-label': n + ' / 5', text: '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n) }),
+          el('blockquote', { text: '“' + t(p[1]) + '”' }),
+          p[2] ? el('figcaption', { text: '– ' + p[2] }) : null]));
+      });
+      box.appendChild(row);
+    });
+  }
+
+  // FAQ: question | answer  → open/close list + FAQPage data for Google
+  function renderFaq() {
+    var all = [];
+    each(doc.querySelectorAll('.shop-faq'), function (box) {
+      var d = lineParts(box);
+      var items = d.items.filter(function (p) { return p[1]; });
+      if (!items.length) return hideEmpty(box);
+      ready(box, d.intro);
+      items.forEach(function (p) {
+        var q = t(p[0]), a = t(p.slice(1).join(' | '));
+        if (!box.closest('[hidden]')) all.push({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } });
+        box.appendChild(el('details', { 'class': 'shop-faq-item' }, [el('summary', { text: q }), el('p', { text: a })]));
+      });
+    });
+    if (all.length) {
+      var ld = el('script', { type: 'application/ld+json' });
+      ld.textContent = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: all });
+      doc.head.appendChild(ld);
+    }
+  }
+
+  // Sends a request or sign-up to the Google Sheet inbox. Returns a promise with the reply.
+  function sendLead(data) {
+    data.type = 'lead'; data.lang = LANG; data.page = location.href.split('#')[0];
+    return fetch(CFG.endpoint, { method: 'POST', body: JSON.stringify(data) })
+      .then(function (r) { return r.text(); })
+      .then(function (body) {
+        var res = JSON.parse(body);
+        if (!res.ok) throw new Error(res.error || '');
+        return res;
+      });
+  }
+  function consentBox(text, withPrivacy) {
+    var input = el('input', { type: 'checkbox', name: 'consent', required: 'required' });
+    return el('label', { 'class': 'shop-consent' }, [input, el('span', {}, [t(text) + ' ',
+      withPrivacy ? el('a', { href: '/p/privacy.html', target: '_blank', rel: 'noopener', text: t('Privacy policy') }) : null])]);
+  }
+
+  // Newsletter: "text: …" line for the intro; "button: …" for the button text. Needs google_sheet.
+  function renderNewsletter() {
+    each(doc.querySelectorAll('.shop-newsletter'), function (box) {
+      var section = box.closest('.newsletter') || box;
+      if (!CFG.endpoint) { section.hidden = true; console.warn('[shop] Newsletter needs google_sheet in Shop settings.'); return; }
+      var intro = '', button = 'Subscribe';
+      langLines(box).forEach(function (line) {
+        var m = /^\s*(text|button)\s*:\s*(.+)$/i.exec(line);
+        if (m && /text/i.test(m[1])) intro = m[2].trim();
+        else if (m) button = m[2].trim();
+      });
+      ready(box, intro);
+      var msg = el('p', { 'class': 'shop-msg', role: 'status' });
+      var email = el('input', { type: 'email', name: 'email', required: 'required', autocomplete: 'email', placeholder: t('Your email'), 'aria-label': t('Your email') });
+      var btn = el('button', { type: 'submit', 'class': 'shop-btn', text: t(button) });
+      var form = el('form', { 'class': 'shop-newsletter-form', novalidate: 'novalidate' }, [
+        el('div', { 'class': 'shop-newsletter-row' }, [email, btn]),
+        consentBox('Yes, I would like to receive news and offers by email. I can unsubscribe at any time.', true),
+        el('input', { type: 'text', name: 'website', tabindex: '-1', autocomplete: 'off', 'class': 'shop-hp', 'aria-hidden': 'true' }), msg]);
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (form.elements.website.value) return;
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value.trim())) { msg.textContent = t('Please fill in the marked fields.'); email.focus(); return; }
+        if (!form.elements.consent.checked) { msg.textContent = t('Please tick the box to agree.'); return; }
+        btn.disabled = true; msg.textContent = t('Sending…');
+        sendLead({ kind: 'newsletter', fields: { Email: email.value.trim() }, consent: true }).then(function () {
+          form.replaceWith(el('p', { 'class': 'shop-done-note', text: t('Almost done! Please confirm your subscription in the email we just sent you.') }));
+        }).catch(function () { btn.disabled = false; msg.textContent = t('Something went wrong. Please try again or message us on WhatsApp.'); });
+      });
+      box.appendChild(form);
+    });
+  }
+
+  // Request forms in pages: <div class="shop-lead" data-kind="quote" data-fields="Name*; Email*; Phone; Parcels per month: under 50 / 50–200; Message"
+  //   data-button="Request a quote"></div>. * = required. A field with ":" becomes a choice list.
+  function renderLeadForms() {
+    each(doc.querySelectorAll('.shop-lead'), function (box, n) {
+      var kind = (box.getAttribute('data-kind') || 'request').replace(/[^\w-]/g, '');
+      var specs = (box.getAttribute('data-fields') || 'Name*; Email*; Phone; Message').split(';').map(function (x) { return x.trim(); }).filter(Boolean);
+      var form = el('form', { 'class': 'shop-form shop-lead-form', novalidate: 'novalidate' });
+      specs.forEach(function (spec, i) {
+        var m = /^([^:*]+)(\*)?\s*(?::\s*(.+))?$/.exec(spec);
+        if (!m) return;
+        var label = m[1].trim(), req = !!m[2], id = 'shop-lead-' + n + '-' + i, input;
+        if (m[3]) {
+          input = el('select', { id: id, name: label, required: req ? 'required' : false },
+            [el('option', { value: '', text: t('Choose') + '…' })].concat(m[3].split('/').map(function (o) { return el('option', { value: o.trim(), text: t(o.trim()) }); })));
+        } else if (/message|details|nachricht|notes?|what do you|was verkaufen/i.test(label)) {
+          input = el('textarea', { id: id, name: label, rows: '4', required: req ? 'required' : false });
+        } else {
+          var type = /e-?mail/i.test(label) ? 'email' : (/phone|telefon|whatsapp/i.test(label) ? 'tel' : 'text');
+          input = el('input', { id: id, name: label, type: type, required: req ? 'required' : false,
+            autocomplete: type === 'email' ? 'email' : (type === 'tel' ? 'tel' : (/^name$/i.test(label) ? 'name' : 'off')) });
+        }
+        form.appendChild(el('label', { 'class': 'shop-field', 'for': id }, [el('span', { text: t(label) + (req ? ' *' : '') }), input]));
+      });
+      var msg = el('p', { 'class': 'shop-msg', role: 'status' });
+      var btn = el('button', { type: 'submit', 'class': 'shop-btn shop-btn-big', text: t(box.getAttribute('data-button') || 'Send request') });
+      form.appendChild(consentBox('I agree that my details are used to answer my request.', true));
+      form.appendChild(el('input', { type: 'text', name: 'website', tabindex: '-1', autocomplete: 'off', 'class': 'shop-hp', 'aria-hidden': 'true' }));
+      form.appendChild(btn); form.appendChild(msg);
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (form.elements.website.value) return;
+        var fields = {}, bad = null;
+        each(form.querySelectorAll('input, select, textarea'), function (f) {
+          if (!f.name || f.name === 'website' || f.name === 'consent') return;
+          var v = f.value.trim();
+          f.classList.toggle('is-invalid', f.required && !v);
+          if (f.required && !v && !bad) bad = f;
+          if (v && f.type === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v) && !bad) bad = f;
+          fields[f.name] = v;
+        });
+        if (bad) { msg.textContent = t('Please fill in the marked fields.'); bad.focus(); return; }
+        if (!form.elements.consent.checked) { msg.textContent = t('Please tick the box to agree.'); return; }
+        var text = '📩 ' + t(box.getAttribute('data-button') || 'Request') + ' – ' + CFG.shop + '\n' +
+          Object.keys(fields).filter(function (k) { return fields[k]; }).map(function (k) { return k + ': ' + fields[k]; }).join('\n');
+        var fallback = function () {
+          if (CFG.whatsapp) { window.open('https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(text), '_blank', 'noopener'); msg.textContent = t('WhatsApp opened with your order. Press send there to complete it.'); }
+          else if (CFG.email) location.href = 'mailto:' + CFG.email + '?subject=' + encodeURIComponent(CFG.shop) + '&body=' + encodeURIComponent(text);
+          else msg.textContent = t('Something went wrong. Please try again or message us on WhatsApp.');
+          btn.disabled = false;
+        };
+        if (!CFG.endpoint) return fallback();
+        btn.disabled = true; msg.textContent = t('Sending…');
+        sendLead({ kind: kind, fields: fields, consent: true }).then(function () {
+          form.replaceWith(el('p', { 'class': 'shop-done-note', text: t('Thank you! Your request was sent. We will reply within one working day.') }));
+        }).catch(fallback);
+      });
+      box.textContent = '';
+      box.appendChild(form);
+    });
+  }
+
+  // Round WhatsApp button in the bottom corner of every page ("whatsapp_button: no" switches it off).
+  function floatingWhatsApp() {
+    if (!CFG.whatsapp || /^(no|off|false|0|nein|non)$/i.test(S.whatsapp_button || '')) return;
+    var item = doc.querySelector('.shop-item');
+    var title = item ? (item.getAttribute('data-title') || '').trim() : '';
+    var text = t('Hi') + ' ' + CFG.shop + (title ? ', ' + t('I have a question about') + ' "' + title + '": ' + location.href.split('#')[0] : ', ');
+    doc.body.appendChild(el('a', { 'class': 'shop-wa-float', href: 'https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(text),
+      target: '_blank', rel: 'noopener', 'aria-label': t('Chat on WhatsApp'), title: t('Chat on WhatsApp') }, [svg(ICONS.whatsapp)]));
+  }
+
+  // "You may also like": other products from the same category, read from the blog feed.
+  function relatedProducts() {
+    var item = doc.querySelector('.shop-item.is-product');
+    if (!item || !window.fetch || !window.DOMParser || !/^https?:$/.test(location.protocol)) return;
+    var here = (item.getAttribute('data-url') || location.href).split(/[?#]/)[0];
+    var label = labelsOf(item).filter(function (l) { return !/^[_\-!]\d/.test(l); })[0];
+    var url = location.origin + '/feeds/posts/default' + (label ? '/-/' + encodeURIComponent(label) : '') + '?alt=json&max-results=12';
+    fetch(url).then(function (r) { return r.json(); }).then(function (data) {
+      var picks = [];
+      ((data.feed || {}).entry || []).forEach(function (e) {
+        if (picks.length >= 4) return;
+        var link = ((e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0] || {}).href || '';
+        if (!link || link.split(/[?#]/)[0] === here) return;
+        var html = (e.content || e.summary || {}).$t || '';
+        var dom = new DOMParser().parseFromString(html, 'text/html');
+        var p = productFrom(dom.body, (e.category || []).map(function (c) { return c.term; }));
+        if (!p) return;
+        var img = (e.media$thumbnail || {}).url || ((dom.querySelector('img') || {}).getAttribute ? dom.querySelector('img').getAttribute('src') : '');
+        img = (img || '').replace(/\/s\d+(-c)?\//, '/s400/').replace(/=s\d+(-c)?$/, '=s400');
+        picks.push({ title: e.title.$t, link: link, img: img, p: p });
+      });
+      if (!picks.length) return;
+      var grid = el('div', { 'class': 'shop-related-grid' });
+      picks.forEach(function (x) {
+        grid.appendChild(el('a', { 'class': 'shop-related-card', href: x.link }, [
+          el('span', { 'class': 'shop-related-img' }, [x.img ? el('img', { src: x.img, alt: x.title, loading: 'lazy' }) : null]),
+          el('span', { 'class': 'shop-related-title', text: x.title }), priceNode(x.p)]));
+      });
+      var sec = el('section', { 'class': 'shop-related' }, [el('h2', { text: t('You may also like') }), grid]);
+      var reviews = item.querySelector('.shop-reviews');
+      if (reviews) item.insertBefore(sec, reviews); else item.appendChild(sec);
+    }).catch(function () { /* no feed: nothing to show */ });
+  }
+
   // ------------------------------------------------------------ logo rows
   // Partners on the homepage, accreditation symbols in the footer: a gadget wrapped in
   // <div class='shop-logos'>, one logo per line:  Name | logo image link | website (optional).
@@ -1580,6 +1870,14 @@
     renderAnnounce();
     renderTrust();
     renderTeam();
+    renderServices();
+    renderSteps();
+    renderTestimonials();
+    renderFaq();
+    renderNewsletter();
+    renderLeadForms();
+    floatingWhatsApp();
+    relatedProducts();
     jumpToLanguageAnchor();
     renderCount();
     window.addEventListener('storage', function (e) {

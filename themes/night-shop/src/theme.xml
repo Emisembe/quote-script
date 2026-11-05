@@ -21,10 +21,10 @@ Page not found - <data:blog.title/>
 <link href='https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&amp;family=Open+Sans:wght@400;600;700&amp;display=swap' rel='stylesheet'/>
 <b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .talk, .topics, .promo, .partners { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter { display: block; }</style>
 </b:if>
 <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .talk, .topics, .promo, .partners { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter { display: block; }</style>
 </b:if>
 </head>
 <body expr:class='&quot;rm shop pt-&quot; + data:blog.pageType'>
@@ -35,9 +35,9 @@ Page not found - <data:blog.title/>
   <b:section class='announce-section' id='announce-widgets' maxwidgets='1' showaddelement='no'>
     <b:widget id='HTML14' locked='false' title='Announcement bar' type='HTML'>
       <b:widget-settings>
-        <b:widget-setting name='content'><![CDATA[Free shipping from 50 € | /p/shipping.html
-Order easily on WhatsApp or Telegram
-New arrivals every week]]></b:widget-setting>
+        <b:widget-setting name='content'><![CDATA[Free shipping in Germany from 50 € | /p/shipping.html
+Second-hand from Germany to Kenya | /p/kenya.html
+Fulfilment for online sellers, from Gießen | /p/fulfilment.html]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
         <div class='shop-announce'><data:content/></div>
@@ -96,9 +96,9 @@ New arrivals every week]]></b:widget-setting>
           <b:widget-settings>
             <b:widget-setting name='content'><![CDATA[<ul>
 <li><a href="/">Home</a></li>
-<li><a href="/search/label/Women">Women</a></li>
-<li><a href="/search/label/Men">Men</a></li>
-<li><a href="/search/label/Sale">Sale</a></li>
+<li><a href="/#shop">Shop</a></li>
+<li><a href="/p/kenya.html">Kenya</a></li>
+<li><a href="/p/fulfilment.html">Fulfilment</a></li>
 <li><a href="/#categories">Categories</a></li>
 </ul>]]></b:widget-setting>
           </b:widget-settings>
@@ -124,11 +124,11 @@ New arrivals every week]]></b:widget-setting>
   <div class='container hero-inner'>
     <div class='hero-grid'>
       <b:section class='hero-main' id='hero-main' showaddelement='yes'>
-        <b:widget id='HTML3' locked='false' title='New collection' type='HTML'>
+        <b:widget id='HTML3' locked='false' title='Keep good things moving' type='HTML'>
           <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[<p data-lang="en">Fresh styles for every day and every night out. Pick your size, add to cart and order in under a minute, online, on WhatsApp or Telegram.</p>
-<p data-lang="de">Neue Styles für jeden Tag und jede Nacht. Größe wählen, in den Warenkorb legen und in einer Minute bestellen: online, per WhatsApp oder Telegram.</p>
-<p data-lang="fr">De nouveaux styles pour chaque jour et chaque soirée. Choisissez votre taille et commandez en une minute : en ligne, sur WhatsApp ou Telegram.</p>]]></b:widget-setting>
+            <b:widget-setting name='content'><![CDATA[<p data-lang="en">Second-hand goods checked by hand, sold in Germany and shipped to Kenya. Digital products. And fulfilment for online sellers, right here in Gießen.</p>
+<p data-lang="de">Second-Hand-Ware, von Hand geprüft – verkauft in Deutschland und verschickt nach Kenia. Digitale Produkte. Und Fulfillment für Online-Händler, direkt aus Gießen.</p>
+<p data-lang="fr">Des articles d'occasion vérifiés à la main, vendus en Allemagne et expédiés au Kenya. Des produits numériques. Et la logistique e-commerce pour les vendeurs en ligne, depuis Gießen.</p>]]></b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
             <div class='hero-copy'>
@@ -145,29 +145,29 @@ New arrivals every week]]></b:widget-setting>
           <b:widget-settings>
             <b:widget-setting name='content'><![CDATA[<ul>
 <li><a href="#shop">Shop now</a></li>
-<li><a href="/search/label/Sale">See the sale</a></li>
+<li><a href="/p/fulfilment.html">Fulfilment for sellers</a></li>
 </ul>]]></b:widget-setting>
           </b:widget-settings>
           @@HTML_MAIN@@
         </b:widget>
       </b:section>
       <b:section class='hero-side' id='hero-side' showaddelement='yes'>
-        <b:widget id='HTML5' locked='false' title='Why shop with us' type='HTML'>
+        <b:widget id='HTML5' locked='false' title='Why Kreislo' type='HTML'>
           <b:widget-settings>
             <b:widget-setting name='content'><![CDATA[<ul data-lang="en">
-<li><strong>Free shipping</strong> on orders from 50 &euro;</li>
+<li><strong>Checked by hand</strong>: every item tested and honestly described</li>
+<li><strong>Germany &amp; Kenya</strong>: pickup in Gießen, delivery, or shipping to Kenya</li>
 <li><strong>Order your way</strong>: online, WhatsApp or Telegram</li>
-<li><strong>Personal service</strong>: we confirm every order</li>
 </ul>
 <ul data-lang="de">
-<li><strong>Versandkostenfrei</strong> ab 50 &euro;</li>
+<li><strong>Von Hand geprüft</strong>: jedes Teil getestet und ehrlich beschrieben</li>
+<li><strong>Deutschland &amp; Kenia</strong>: Abholung in Gießen, Versand oder Lieferung nach Kenia</li>
 <li><strong>Bestellen, wie Sie möchten</strong>: online, WhatsApp oder Telegram</li>
-<li><strong>Persönlicher Service</strong>: wir bestätigen jede Bestellung</li>
 </ul>
 <ul data-lang="fr">
-<li><strong>Livraison gratuite</strong> dès 50 &euro;</li>
+<li><strong>Vérifié à la main</strong> : chaque article testé et décrit honnêtement</li>
+<li><strong>Allemagne &amp; Kenya</strong> : retrait à Gießen, livraison ou envoi au Kenya</li>
 <li><strong>Commandez comme vous voulez</strong> : en ligne, WhatsApp ou Telegram</li>
-<li><strong>Service personnel</strong> : nous confirmons chaque commande</li>
 </ul>]]></b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
@@ -201,6 +201,39 @@ meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00]]></b:widget-sett
             <h2 class='title'><data:title/></h2>
           </b:if>
           <div class='shop-contact'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= What we do: services (homepage) ================= -->
+<section class='services' id='services'>
+  <div class='container'>
+    <b:section class='services-section' id='services-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML16' locked='false' title='What we do' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+text: One name, four ways to keep good things moving.
+tag | Second-hand shop | Clothes, furniture, washing machines and more – checked by hand and fairly priced. Pickup in Gießen or delivery. | Shop now | /#shop
+globe | Shipping to Kenya | Good things from Germany for homes and businesses in Kenya, tested and packed by us. | How it works | /p/kenya.html
+download | Digital products | Guides, templates and downloads, sent to your inbox right after payment. | See digital products | /search/label/Digital
+warehouse | Fulfilment for sellers | We store, pack and ship your products from Gießen, so you can focus on selling. | Request a quote | /p/fulfilment.html
+</div>
+<div data-lang="de">
+text: Ein Name, vier Wege, gute Dinge in Bewegung zu halten.
+tag | Second-Hand-Shop | Kleidung, Möbel, Waschmaschinen und mehr – von Hand geprüft, faire Preise. Abholung in Gießen oder Versand. | Zum Shop | /#shop
+globe | Versand nach Kenia | Gute Dinge aus Deutschland für Haushalte und Firmen in Kenia, von uns geprüft und verpackt. | So funktioniert es | /p/kenya.html
+download | Digitale Produkte | Ratgeber, Vorlagen und Downloads – direkt nach der Zahlung in Ihrem Postfach. | Digitale Produkte ansehen | /search/label/Digital
+warehouse | Fulfillment für Händler | Wir lagern, verpacken und versenden Ihre Produkte aus Gießen – Sie konzentrieren sich aufs Verkaufen. | Angebot anfragen | /p/fulfilment.html
+</div>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-services'><data:content/></div>
           <b:include name='quickedit'/>
         </b:includable>
       </b:widget>
@@ -514,16 +547,68 @@ meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00]]></b:widget-sett
   </div>
 </div>
 
+<!-- ================= How it works: 3 steps (homepage) ================= -->
+<section class='steps' id='steps'>
+  <div class='container'>
+    <b:section class='steps-section' id='steps-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML17' locked='false' title='How it works' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+Choose | Find your item in the shop, or tell us on WhatsApp what you are looking for.
+Order your way | Online, on WhatsApp or Telegram. Pay by bank transfer, PayPal or cash on pickup.
+Receive it | Pickup in Gießen, delivery in Germany, or shipping to Kenya.
+</div>
+<div data-lang="de">
+Aussuchen | Finden Sie Ihr Teil im Shop oder schreiben Sie uns auf WhatsApp, was Sie suchen.
+Bestellen, wie Sie möchten | Online, per WhatsApp oder Telegram. Zahlung per Überweisung, PayPal oder bar bei Abholung.
+Erhalten | Abholung in Gießen, Versand in Deutschland oder Lieferung nach Kenia.
+</div>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-steps'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Customer reviews (homepage) ================= -->
+<section class='testimonials' id='testimonials'>
+  <div class='container'>
+    <b:section class='testimonials-section' id='testimonials-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML18' locked='false' title='What customers say' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[# Customer reviews: one per line. Stars (1-5) | what the customer said | name, city
+# Only use real reviews, and ask the customer before you quote them. Lines starting with # are not shown.
+# While there are no lines without #, this section stays hidden.
+# 5 | Fast, friendly and exactly as described. | Amina, Gießen]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-testimonials'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
 <!-- ================= Promo banner (shown on the homepage) ================= -->
 <section class='promo' id='promo'>
   <div class='container'>
     <b:section class='promo-section' id='promo-widgets' showaddelement='yes'>
-      <b:widget id='HTML10' locked='false' title='Order directly' type='HTML'>
+      <b:widget id='HTML10' locked='false' title='Shipping to Kenya' type='HTML'>
         <b:widget-settings>
-          <b:widget-setting name='content'><![CDATA[<p data-lang="en">Questions about a size or colour? Message us and we answer the same day. You can also place your whole order on WhatsApp or Telegram.</p>
-<p data-lang="de">Fragen zu Größe oder Farbe? Schreiben Sie uns, wir antworten noch am selben Tag. Sie können auch direkt per WhatsApp oder Telegram bestellen.</p>
-<p data-lang="fr">Une question sur une taille ou une couleur ? Écrivez-nous, nous répondons le jour même. Vous pouvez aussi commander sur WhatsApp ou Telegram.</p>
-<p><a href="/p/contact.html">Contact us</a></p>]]></b:widget-setting>
+          <b:widget-setting name='content'><![CDATA[<p data-lang="en">Good second-hand goods from Germany for homes and businesses in Kenya: appliances, furniture, clothes and more, tested and packed by us. Tell us what you need and we send you a price including shipping.</p>
+<p data-lang="de">Gute Second-Hand-Ware aus Deutschland für Haushalte und Firmen in Kenia: Geräte, Möbel, Kleidung und mehr, von uns geprüft und verpackt. Sagen Sie uns, was Sie brauchen – wir schicken Ihnen einen Preis inklusive Versand.</p>
+<p data-lang="fr">Des articles d'occasion de qualité venus d'Allemagne pour le Kenya : appareils, meubles, vêtements et plus, testés et emballés par nos soins. Dites-nous ce qu'il vous faut, nous vous envoyons un prix livraison comprise.</p>
+<p><a href="/p/kenya.html">How shipping to Kenya works</a></p>]]></b:widget-setting>
         </b:widget-settings>
         @@HTML_MAIN@@
       </b:widget>
@@ -544,6 +629,68 @@ meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00]]></b:widget-sett
           <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
         </b:widget-settings>
         @@LABEL_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Questions & answers (homepage) ================= -->
+<section class='faq' id='faq'>
+  <div class='container'>
+    <b:section class='faq-section' id='faq-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML19' locked='false' title='Questions &amp; answers' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+How do I pay? | By bank transfer, PayPal or cash on pickup. You choose at checkout; the payment details come with your order confirmation.
+How long does delivery take? | In Germany usually 2–4 working days after payment. Pickup in Gießen by appointment.
+Do you ship to Kenya? | Yes. We tell you the next shipping date and the full price including shipping before you pay. See "Shipping to Kenya".
+Can I return an item? | Yes, within 14 days of receiving it. You find the details in our returns policy.
+How do I get my digital product? | The download link arrives by email as soon as your payment is confirmed.
+Do you offer fulfilment for other sellers? | Yes. We store, pack and ship for online shops. Ask for a quote on our Fulfilment page.
+</div>
+<div data-lang="de">
+Wie kann ich bezahlen? | Per Überweisung, PayPal oder bar bei Abholung. Sie wählen an der Kasse; die Zahlungsdaten kommen mit der Bestellbestätigung.
+Wie lange dauert die Lieferung? | In Deutschland meist 2–4 Werktage nach Zahlungseingang. Abholung in Gießen nach Absprache.
+Liefern Sie nach Kenia? | Ja. Wir nennen Ihnen vor der Zahlung den nächsten Versandtermin und den Gesamtpreis inklusive Versand. Siehe "Versand nach Kenia".
+Kann ich etwas zurückgeben? | Ja, innerhalb von 14 Tagen nach Erhalt. Die Einzelheiten finden Sie in der Widerrufsbelehrung.
+Wie bekomme ich mein digitales Produkt? | Der Download-Link kommt per E-Mail, sobald Ihre Zahlung bestätigt ist.
+Bieten Sie Fulfillment für andere Händler an? | Ja. Wir lagern, verpacken und versenden für Online-Shops. Fragen Sie auf unserer Fulfillment-Seite ein Angebot an.
+</div>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-faq'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Newsletter (homepage, needs google_sheet) ================= -->
+<section class='newsletter' id='newsletter'>
+  <div class='container'>
+    <b:section class='newsletter-section' id='newsletter-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML20' locked='false' title='Stay in the loop' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+text: New arrivals, Kenya shipping dates and offers – about twice a month. No spam.
+button: Subscribe
+</div>
+<div data-lang="de">
+text: Neue Teile, Versandtermine nach Kenia und Angebote – etwa zweimal im Monat. Kein Spam.
+button: Anmelden
+</div>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-newsletter'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
       </b:widget>
     </b:section>
   </div>
@@ -599,11 +746,11 @@ pay: PayPal, Bank transfer, Cash on delivery]]></b:widget-setting>
   <div class='container'>
     <div class='footer-grid'>
       <b:section class='footer-col' id='footer-about' preferred='yes'>
-        <b:widget id='HTML6' locked='false' title='About the shop' type='HTML'>
+        <b:widget id='HTML6' locked='false' title='About Kreislo' type='HTML'>
           <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[<p data-lang="en">Hand-picked clothing and accessories, shipped quickly and packed with care. Every order is confirmed personally.</p>
-<p data-lang="de">Ausgewählte Mode und Accessoires, schnell verschickt und sorgfältig verpackt. Jede Bestellung bestätigen wir persönlich.</p>
-<p data-lang="fr">Vêtements et accessoires choisis avec soin, expédiés rapidement. Chaque commande est confirmée personnellement.</p>]]></b:widget-setting>
+            <b:widget-setting name='content'><![CDATA[<p data-lang="en">Kreislo keeps good things moving: second-hand goods from Gießen to new owners in Germany and Kenya, digital products, and fulfilment for online sellers. Every item is checked by hand.</p>
+<p data-lang="de">Kreislo hält gute Dinge in Bewegung: Second-Hand-Ware aus Gießen für neue Besitzer in Deutschland und Kenia, digitale Produkte und Fulfillment für Online-Händler. Jedes Teil wird von Hand geprüft.</p>
+<p data-lang="fr">Kreislo fait circuler les bonnes choses : des articles d'occasion de Gießen pour l'Allemagne et le Kenya, des produits numériques et la logistique pour les vendeurs en ligne.</p>]]></b:widget-setting>
           </b:widget-settings>
           @@HTML_MAIN@@
         </b:widget>
@@ -615,6 +762,8 @@ pay: PayPal, Bank transfer, Cash on delivery]]></b:widget-setting>
 <li><a href="/p/shipping.html">Shipping &amp; delivery</a></li>
 <li><a href="/p/delivery.html">Delivery partners</a></li>
 <li><a href="/p/team.html">Our team</a></li>
+<li><a href="/p/fulfilment.html">Fulfilment for sellers</a></li>
+<li><a href="/p/kenya.html">Shipping to Kenya</a></li>
 <li><a href="/p/returns.html">Returns (Widerruf)</a></li>
 <li><a href="/p/contact.html">Contact</a></li>
 <li><a href="/p/impressum.html">Impressum</a></li>

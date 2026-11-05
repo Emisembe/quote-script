@@ -8,6 +8,8 @@
  *   - Optional: an instant Telegram message to you for every order (see TELEGRAM_* below).
  *   - Digital products: put each product's download link in the "Downloads" tab once. When you set an order's
  *     Status to "Paid", the buyer gets the download links by email (or use the menu Shop -> Send download links).
+ *   - Request forms (fulfilment quotes, Kenya shipments …) land in "Requests" and are emailed to you.
+ *   - Newsletter sign-ups land in "Newsletter" with double opt-in: the subscriber confirms by email.
  *   - Delivery partners: the buyer's choice (DHL, pickup …) and the parcel weight are checked against the blog's
  *     "Delivery options" gadget, so the shipping fee can't be changed in the browser either.
  *   - The browser's prices are never trusted: every price is re-read from the public Blogger feed of that post,
@@ -42,12 +44,16 @@ var ORDER_HEADERS = ['Order ID', 'Received', 'Status', 'Method', 'Payment', 'Nam
 var LINE_HEADERS = ['Order ID', 'Received', 'Product', 'Options', 'Qty', 'Price', 'Line total', 'Post ID', 'Link', 'Type'];
 var DOWNLOAD_HEADERS = ['Product', 'Post ID', 'Download link', 'Message to the buyer (optional)'];
 var PAID = /^(paid|bezahlt|payé|paye|pagado)$/i;
+var REQUEST_HEADERS = ['Received', 'Type', 'Name', 'Email', 'Phone', 'Company', 'Details', 'Status', 'Language', 'Page'];
+var NEWS_HEADERS = ['Received', 'Email', 'Status', 'Confirmed', 'Language', 'Page', 'Token'];
+var LEAD_NAMES = { quote: 'Fulfilment quote', kenya: 'Kenya shipment', newsletter: 'Newsletter', request: 'Request' };
 var METHOD_NAMES = { order: 'Website', whatsapp: 'WhatsApp', telegram: 'Telegram', email: 'Email', paypal: 'PayPal' };
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
   try {
     var order = JSON.parse(e.postData.contents);
+    if (order.type === 'lead') return lead_(order);
     var method = METHOD_NAMES[order.method] ? order.method : 'order';
     var c = order.customer || {};
     if (!c.name || !c.phone) return reply_({ ok: false, error: 'missing customer details' });
@@ -155,8 +161,103 @@ function uniqueId_(orders, wanted, now) {
   return id;
 }
 
-function doGet() {
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+  if (p.confirm || p.unsubscribe) return newsletterLink_(p.confirm ? 'confirm' : 'unsubscribe', String(p.confirm || p.unsubscribe));
   return reply_({ ok: true, shop: shopSettings_().name });
+}
+
+// ---------------------------------------------------------------- requests and newsletter
+
+/** A request form (quote, Kenya shipment …) or a newsletter sign-up from the website. */
+function lead_(data) {
+  var kind = String(data.kind || 'request').replace(/[^\w-]/g, '').slice(0, 30) || 'request';
+  var fields = {}, n = 0;
+  Object.keys(data.fields || {}).forEach(function (k) { if (n++ < 25) fields[String(k).slice(0, 60)] = String(data.fields[k] || '').slice(0, 2000); });
+  if (!data.consent) return reply_({ ok: false, error: 'consent missing' });
+  var find = function (re) { var k = Object.keys(fields).filter(function (x) { return re.test(x); })[0]; return k ? fields[k] : ''; };
+  var email = find(/e-?mail/i).trim(), phone = find(/phone|telefon|whatsapp|mobil/i), name = find(/^(full )?name$|^name|vorname|nom/i);
+  var shop = shopSettings_(), now = new Date();
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(20000);
+    var book = SpreadsheetApp.getActiveSpreadsheet();
+    if (kind === 'newsletter') {
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return reply_({ ok: false, error: 'invalid email' });
+      var news = sheet_(book, 'Newsletter', NEWS_HEADERS);
+      var rows = news.getLastRow() > 1 ? news.getRange(2, 1, news.getLastRow() - 1, NEWS_HEADERS.length).getValues() : [];
+      var known = rows.filter(function (r) { return String(r[1]).toLowerCase() === email.toLowerCase() && r[2] === 'Subscribed'; })[0];
+      if (known) return reply_({ ok: true, already: true });
+      var token = Utilities.getUuid();
+      news.appendRow([now, text_(email), 'Waiting for confirmation', '', text_(data.lang), text_(data.page), token]);
+      lock.releaseLock();
+      var url = ScriptApp.getService().getUrl();
+      var b = { name: shop.name, dark: SETTINGS.COLOR_DARK, accent: SETTINGS.COLOR_ACCENT, site: blog_() };
+      var body = '<div class="email-body" style="padding:26px 32px;">' +
+        '<p style="font-size:15px;color:#222222;line-height:1.7;margin:0 0 14px;">Hello,</p>' +
+        '<p style="font-size:15px;color:#222222;line-height:1.7;margin:0 0 6px;">please confirm that you want to receive news and offers from ' + esc_(shop.name) + ' by email.</p>' +
+        button_(url + '?confirm=' + token, 'Yes, subscribe me', b) +
+        '<p style="font-size:12px;color:#777777;line-height:1.7;margin:18px 0 0;">If you did not sign up, just ignore this email; you will not hear from us. ' +
+        'You can unsubscribe at any time: <a href="' + esc_(url + '?unsubscribe=' + token) + '" style="color:#777777;">unsubscribe</a>.</p></div>';
+      MailApp.sendEmail({ to: email, subject: shop.name + ': please confirm your subscription', name: shop.name,
+        body: 'Please confirm your subscription: ' + url + '?confirm=' + token,
+        htmlBody: wrapEmail_(banner_('Newsletter', 'Please confirm', b, true) + body, b) });
+      return reply_({ ok: true });
+    }
+    if (!email && !phone) return reply_({ ok: false, error: 'email or phone needed' });
+    var company = find(/company|firma|business|unternehmen|société/i);
+    var used = [name, email, phone, company];
+    var details = Object.keys(fields).filter(function (k) { return fields[k] && used.indexOf(fields[k]) === -1; })
+      .map(function (k) { return k + ': ' + fields[k]; }).join('\n');
+    var type = LEAD_NAMES[kind] || kind;
+    sheet_(book, 'Requests', REQUEST_HEADERS).appendRow([now, type, text_(name), text_(email), "'" + phone, text_(company),
+      text_(details), 'New', text_(data.lang), text_(data.page)]);
+    lock.releaseLock();
+    var b2 = { name: shop.name, dark: SETTINGS.COLOR_DARK, accent: SETTINGS.COLOR_ACCENT, site: blog_() };
+    var pairs = Object.keys(fields).filter(function (k) { return fields[k]; }).map(function (k) { return [k, fields[k]]; });
+    var tel = String(phone).replace(/[^\d+]/g, '');
+    var reply = /^(\+|00)\d{7,}$/.test(tel) ? button_('https://wa.me/' + tel.replace(/^\+|^00/, ''), 'Reply on WhatsApp', b2)
+      : (email ? button_('mailto:' + email + '?subject=' + encodeURIComponent(shop.name + ': ' + type), 'Reply by email', b2) : '');
+    MailApp.sendEmail({ to: SETTINGS.OWNER_EMAIL || Session.getEffectiveUser().getEmail(), replyTo: email || undefined, name: shop.name,
+      subject: '📩 New request: ' + type + ' · ' + (company || name || email || phone),
+      body: type + '\n\n' + pairs.map(function (x) { return x[0] + ': ' + x[1]; }).join('\n'),
+      htmlBody: wrapEmail_(banner_('New request', type, b2, false) + '<div class="email-body" style="padding:26px 32px;">' +
+        detailsTable_(pairs, b2) + reply + '</div>', b2) });
+    if (SETTINGS.TELEGRAM_BOT_TOKEN && SETTINGS.TELEGRAM_CHAT_ID) {
+      try {
+        UrlFetchApp.fetch('https://api.telegram.org/bot' + SETTINGS.TELEGRAM_BOT_TOKEN + '/sendMessage', { method: 'post', muteHttpExceptions: true,
+          payload: { chat_id: SETTINGS.TELEGRAM_CHAT_ID, text: '📩 ' + type + '\n' + pairs.map(function (x) { return x[0] + ': ' + x[1]; }).join('\n') } });
+      } catch (x) { /* the sheet row and email are what count */ }
+    }
+    return reply_({ ok: true });
+  } catch (err) {
+    return reply_({ ok: false, error: String(err.message || err) });
+  } finally {
+    try { lock.releaseLock(); } catch (x) {}
+  }
+}
+
+/** The confirm / unsubscribe links in newsletter emails. */
+function newsletterLink_(action, token) {
+  var shop = shopSettings_(), ok = false;
+  if (/^[\w-]{20,60}$/.test(token)) {
+    var news = sheet_(SpreadsheetApp.getActiveSpreadsheet(), 'Newsletter', NEWS_HEADERS);
+    if (news.getLastRow() > 1) {
+      var rows = news.getRange(2, 1, news.getLastRow() - 1, NEWS_HEADERS.length).getValues();
+      for (var i = 0; i < rows.length; i++) {
+        if (String(rows[i][6]) !== token) continue;
+        news.getRange(i + 2, 3, 1, 2).setValues([[action === 'confirm' ? 'Subscribed' : 'Unsubscribed', new Date()]]);
+        ok = true; break;
+      }
+    }
+  }
+  var msg = !ok ? 'This link is not valid any more.' : (action === 'confirm' ? 'Thank you! You are now subscribed.' : 'You are unsubscribed. You will not get any more emails.');
+  var html = '<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc_(shop.name) + '</title></head>' +
+    '<body style="margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f4f4;"><div style="max-width:520px;margin:60px auto;background:#fff;border-top:6px solid ' +
+    SETTINGS.COLOR_ACCENT + ';padding:36px 30px;text-align:center;"><h1 style="margin:0 0 12px;font-size:24px;">' + esc_(shop.name) + '</h1>' +
+    '<p style="font-size:16px;color:#333;line-height:1.6;">' + esc_(msg) + '</p><p style="margin-top:26px;"><a href="' + esc_(blog_()) +
+    '" style="background:' + SETTINGS.COLOR_ACCENT + ';color:#fff;padding:12px 22px;border-radius:6px;text-decoration:none;font-weight:bold;">Back to the shop</a></p></div></body></html>';
+  return HtmlService.createHtmlOutput(html).setTitle(shop.name);
 }
 
 /** The blog address from SETTINGS, without a trailing slash. */
@@ -630,6 +731,8 @@ function setup() {
   sheet_(book, 'Orders', ORDER_HEADERS);
   sheet_(book, 'Order lines', LINE_HEADERS);
   sheet_(book, 'Downloads', DOWNLOAD_HEADERS);
+  sheet_(book, 'Requests', REQUEST_HEADERS);
+  sheet_(book, 'Newsletter', NEWS_HEADERS);
   var has = ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === 'onOrderEdit'; });
   if (!has) ScriptApp.newTrigger('onOrderEdit').forSpreadsheet(book).onEdit().create();
   var shop = shopSettings_();

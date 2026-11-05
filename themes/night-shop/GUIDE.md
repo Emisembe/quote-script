@@ -22,6 +22,9 @@ is the "Night Shop: complete setup guide" document.
 5g. Announcement bar
 5h. Trust row above the footer
 5i. Team page (photos, names, phone numbers, social icons)
+5j. Homepage sections: What we do, How it works, Customer reviews, Questions & answers, Newsletter
+5k. Fulfilment page and Shipping to Kenya page (with request forms)
+5l. WhatsApp button and "You may also like"
 6. How orders reach you
 7. Saving every order in a Google Sheet
 8. Reviews
@@ -378,6 +381,58 @@ Each person is one block. Copy a whole block to add someone, delete one to remov
 - **Privacy (GDPR):** ask each person in writing before showing their photo, phone number or private
   accounts. A shop phone number or a shared shop email is often the better choice.
 
+## 5j. Homepage sections: What we do, How it works, Customer reviews, Questions & answers, Newsletter
+
+Five new homepage sections, each edited in **Layout** (gadget title = heading). One item per line, parts
+separated by `|`. A line starting with `text:` is the intro sentence. Lines starting with `#` are notes and
+are not shown. Write each language in its own block, `<div data-lang="en"> … </div>` and
+`<div data-lang="de"> … </div>`; visitors see their language (English if their language is missing).
+
+| Section (Layout) | One line = | Example |
+|---|---|---|
+| **What we do** | `icon | title | text | button text | link` | `warehouse | Fulfilment for sellers | We store, pack and ship … | Request a quote | /p/fulfilment.html` |
+| **How it works** | `title | text` (numbered automatically) | `Choose | Find your item in the shop …` |
+| **What customers say** | `stars 1–5 | what they said | name, city` | `5 | Fast and friendly. | Amina, Gießen` |
+| **Questions & answers** | `question | answer` | `How do I pay? | By bank transfer, PayPal or cash on pickup.` |
+| **Stay in the loop** (newsletter) | `text: …` and `button: …` | `button: Subscribe` |
+
+- Icons for "What we do": `tag`, `globe`, `download`, `warehouse`, `truck`, `return`, `lock`, `shield`,
+  `chat`, `card`, `gift`, `star`, `leaf`, `heart`, `box`, `check`, `clock`, `phone`, `mail`.
+- **Customer reviews stay hidden** until you add a line without `#`. Only use real reviews, and ask the
+  customer before quoting them.
+- The **FAQ** also tells Google your questions and answers (it can show them in search results).
+- The **newsletter** needs `google_sheet` (section 7). Sign-ups land in the **Newsletter** tab. Each
+  subscriber gets an email with a "Yes, subscribe me" button (double opt-in, required in Germany); only
+  people with Status **Subscribed** may get your newsletter. Every email has an unsubscribe link.
+  Send newsletters from Gmail to the Subscribed addresses (BCC), or import them into a newsletter service.
+
+## 5k. Fulfilment page and Shipping to Kenya page (with request forms)
+
+Two page templates: `pages/fulfilment.html` (short title `fulfilment`, then "Fulfilment for sellers") and
+`pages/kenya.html` (short title `kenya`, then "Shipping to Kenya"). Create them like the footer pages
+(section 9) and replace everything in `[square brackets]`, especially the next shipping date to Kenya,
+your prices, insurance and customs details. The menu, the footer and "What we do" already link to them.
+
+Each page has a **request form**. Requests land in the **Requests** tab of your order sheet (Type,
+name, email, phone, company, details, Status) and you get an email with a "Reply on WhatsApp" button.
+Without `google_sheet` the request opens in WhatsApp instead. Change the questions in the form's
+`data-fields`: separate them with `;`, `*` = required, `Question: a / b / c` = a choice list.
+
+```html
+<div class="shop-lead" data-kind="quote" data-button="Request a quote"
+     data-fields="Name*; Company; Email*; Phone; What do you sell?*; Orders per month: under 50 / 50–200 / over 200; Message"></div>
+```
+
+You can put a form like this on any page; `data-kind` is the type shown in the sheet (quote, kenya, …).
+
+## 5l. WhatsApp button and "You may also like"
+
+- **WhatsApp button:** a round green button in the bottom-right corner of every page, using the
+  `whatsapp:` number from Shop settings. On a product page the message already names the product and its
+  link. To switch it off: `whatsapp_button: no` in Shop settings.
+- **You may also like:** under each product, up to 4 other products from the same category (the first
+  label), with photo and price. It reads your blog feed, so **Settings → Site feed → Full** is needed.
+
 ## 6. How orders reach you
 
 | The buyer picks | What happens |
@@ -414,7 +469,7 @@ the part that receives orders (`doPost`) is missing. Set it up once (about 5 min
    you WhatsApp/Telegram orders). Save (disk icon).
 4. Choose **setup** in the function list next to Run, press **Run**, and allow the permissions
    ("Advanced → Go to … (unsafe)" is normal for your own script). You get a test email, and the tabs
-   **Orders**, **Order lines** and **Downloads** appear.
+   **Orders**, **Order lines**, **Downloads**, **Requests** and **Newsletter** appear.
 5. **Deploy → New deployment** → gear icon → **Web app** → Execute as **Me** → Who has access
    **Anyone** → Deploy. Copy the **Web app URL** (ends in `/exec`).
 6. Blogger: Layout → Shop settings → `google_sheet: ` + paste the URL → Save.
@@ -474,6 +529,10 @@ Impressum and Widerruf at all.
 | A delivery option doesn't appear at checkout | Its country (5th part) isn't spelled like the `ship_to` country, or the parcel is heavier than its last weight step |
 | The announcement bar is gone for me | You pressed × : it stays hidden until the browser is closed. Other visitors still see it |
 | Logo is missing in the header | Layout → Header → the image must be set to "Instead of title" or "Behind title"; very wide logos are scaled down to fit |
+| A homepage section is missing | "What customers say" stays hidden until it has a line without `#`. The newsletter is hidden without `google_sheet` |
+| Request form or newsletter says "Something went wrong" | The newest Code.gs isn't deployed: paste it, run setup, Deploy → Manage deployments → New version |
+| Newsletter confirm link says "not valid" | The link was already used, or the row was deleted in the Newsletter tab |
+| "You may also like" doesn't appear | The product has no category label, there are no other products in it, or the blog feed isn't set to Full |
 | "Missing link: …" in Downloads sent | Paste the Drive link into the Downloads tab, then set Status to Paid again |
 | Download email not sent when setting Paid | Run **setup** once after pasting the new Code.gs (it creates the trigger), and type exactly `Paid` |
 | PayPal shows "Things don't appear to be working" | You entered a PayPal email: use your PayPal.Me name in `paypal:` instead |
