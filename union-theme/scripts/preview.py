@@ -255,6 +255,7 @@ def render(name, kind):
 <section class='home-only band band-downloads' id='downloads'><div class='container'>{section('downloads-section', 'downloads-list', pg.html_widget('HTML35', f"<div class='widget-content'>{docs}</div>"))}</div></section>
 </main>
 <div class='u-data branch-data' hidden='hidden'>{section('branches-section', 'branch-offices', pg.html_widget('HTML36'))}</div>
+<div class='u-data chat-data' hidden='hidden'>{section('chat-section', 'chat-assistant', pg.html_widget('HTML39'))}</div>
 <div class='u-data contact-data' hidden='hidden'>{section('contact-section', 'quick-contact', pg.html_widget('HTML38'))}</div>
 <div class='u-data video-data' hidden='hidden'>{section('videos-section', 'videos-list', pg.html_widget('HTML37', f"<div class='widget-content'>{videos}</div>"))}</div>
 <footer class='site-footer' id='contact'><div class='container'>

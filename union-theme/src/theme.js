@@ -178,6 +178,9 @@
     tiktok: 'M16.6 2h-3.4v13.4a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .8.1V9.1a6.4 6.4 0 1 0 5.5 6.3V8.6a8 8 0 0 0 4.6 1.5V6.7a4.7 4.7 0 0 1-4.6-4.7z',
     whatsapp: 'M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.2-.7-2.7-1.1-4.4-3.8-4.5-4-.1-.2-1.1-1.4-1.1-2.7s.7-1.9.9-2.2c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.3.5-.4.4c-.1.1-.3.3-.1.6.1.3.7 1.1 1.5 1.8 1 .9 1.8 1.2 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.2z',
     email: 'M2 5h20v14H2V5zm2 2v.5l8 5 8-5V7H4zm16 2.8-8 5-8-5V17h16V9.8z',
+    chat: 'M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm3 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z',
+    send: 'M3 20.5V14l9-2-9-2V3.5L22 12 3 20.5z',
+    close: 'M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4z',
     download: 'M11 3h2v9.6l3.3-3.3 1.4 1.4L12 16.4l-5.7-5.7 1.4-1.4 3.3 3.3V3zM4 18h16v2H4z',
     phone: 'M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z',
     pin: 'M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z',
@@ -401,7 +404,8 @@
     setTimeout(function () { finish(null); }, 12000);
     script.src = (opts.pages ? '/feeds/pages/default' : '/feeds/posts/summary') +
       (label ? '/-/' + encodeURIComponent(label) : '') +
-      '?alt=json-in-script&max-results=' + count + (opts.start ? '&start-index=' + opts.start : '') + '&callback=' + cb;
+      '?alt=json-in-script&max-results=' + count + (opts.start ? '&start-index=' + opts.start : '') +
+      (opts.q ? '&q=' + encodeURIComponent(opts.q) : '') + '&callback=' + cb;
     doc.body.appendChild(script);
   }
 
@@ -1328,6 +1332,251 @@
       root.classList.add('has-quick-contact');
       if (buttons.length === 1) root.classList.add('qc-single');
     }
+  }
+
+  // ---------------------------------------------------------------- chat assistant (questions and answers)
+  // Layout > Chat assistant holds Name/Welcome/Popular settings and Q / Also / A blocks. The "Ask"
+  // button opens a chat that suggests matching questions while the visitor types, answers from the
+  // list, shows matching articles when nothing fits, and hands over to WhatsApp / Call.
+  var chatData = doc.querySelector('.chat-data .widget-content');
+  var chatConfig = { name: 'Ask us', welcome: 'Hello! How can we help you?', popular: [], faqs: [] };
+  if (chatData) {
+    var chatRows = [];
+    textLines(chatData).forEach(function (line) { chatRows = chatRows.concat(line.text.split(/\r?\n/)); });
+    var currentFaq = null, lastKey = null;
+    chatRows.forEach(function (row) {
+      row = row.replace(/ /g, ' ');
+      var m = row.trim().match(/^(name|welcome|popular|q|also|a)\s*:\s*(.*)$/i);
+      if (m) {
+        var key = m[1].toLowerCase(), val = m[2].trim();
+        if (key === 'q') { currentFaq = { q: val, also: '', a: '' }; chatConfig.faqs.push(currentFaq); }
+        else if (key === 'name') chatConfig.name = val || chatConfig.name;
+        else if (key === 'welcome') chatConfig.welcome = val || chatConfig.welcome;
+        else if (key === 'popular') chatConfig.popular = val.split('|').map(function (x) { return x.trim(); }).filter(Boolean);
+        else if (currentFaq) currentFaq[key] = val;
+        lastKey = key;
+      } else if (row.trim() && currentFaq && lastKey === 'a') {
+        currentFaq.a += '\n' + row.trim();               // answers may continue on the next lines
+      }
+    });
+    chatConfig.faqs = chatConfig.faqs.filter(function (f) { return f.q && f.a; });
+  }
+  var CHAT_STOP = { the: 1, a: 1, an: 1, i: 1, im: 1, my: 1, me: 1, to: 1, of: 1, in: 1, on: 1, for: 1, and: 1, or: 1, is: 1,
+    are: 1, do: 1, does: 1, did: 1, how: 1, what: 1, when: 1, where: 1, who: 1, which: 1, can: 1, could: 1, you: 1, your: 1,
+    be: 1, with: 1, it: 1, this: 1, that: 1, about: 1, at: 1, am: 1, was: 1, will: 1, would: 1, should: 1, please: 1,
+    hello: 1, hi: 1, there: 1, get: 1, have: 1, has: 1, any: 1, we: 1, us: 1, if: 1, so: 1, by: 1, from: 1 };
+  function chatWords(text) {
+    var t = (text || '').toLowerCase();
+    if (t.normalize) t = t.normalize('NFD').replace(/[̀-ͯ]/g, '');
+    return t.replace(/[^a-z0-9]+/g, ' ').split(' ').filter(function (w) { return w && !CHAT_STOP[w]; }).map(function (w) {
+      return w.length > 4 ? w.replace(/(ing|ed|es|s)$/, '') : w;   // join/joining/joined, fee/fees
+    });
+  }
+  // Edit distance where swapped neighbours ("jion" / "join") count as one mistake
+  function editDistance(a, b) {
+    if (Math.abs(a.length - b.length) > 2) return 3;
+    var d = [], i, j;
+    for (i = 0; i <= a.length; i++) d[i] = [i];
+    for (j = 0; j <= b.length; j++) d[0][j] = j;
+    for (i = 1; i <= a.length; i++) {
+      for (j = 1; j <= b.length; j++) {
+        var cost = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1;
+        d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+        if (i > 1 && j > 1 && a.charAt(i - 1) === b.charAt(j - 2) && a.charAt(i - 2) === b.charAt(j - 1)) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+      }
+    }
+    return d[a.length][b.length];
+  }
+  chatConfig.faqs.forEach(function (f) { f.words = chatWords(f.q + ' ' + f.also.replace(/,/g, ' ')); });
+  // How well a question (possibly half-typed, possibly misspelt) matches one FAQ: 0..1
+  function chatScore(query, faq, typing) {
+    var qw = chatWords(query);
+    if (!qw.length) return 0;
+    var total = 0, strong = 0;
+    qw.forEach(function (w, idx) {
+      var best = 0, lastWord = typing && idx === qw.length - 1;
+      faq.words.forEach(function (fw) {
+        var sc = 0;
+        if (fw === w) sc = 1;
+        else if (w.length >= 3 && fw.indexOf(w) === 0) sc = lastWord ? 0.9 : 0.75;     // still typing / short form
+        else if (fw.length >= 3 && w.indexOf(fw) === 0 && w.length - fw.length <= 3) sc = 0.85;   // fees -> fee, joined -> join
+        else if (w.length >= 4 && fw.length >= 4 && editDistance(w, fw) <= (w.length >= 8 ? 2 : 1)) sc = 0.8;  // spelling mistake
+        else if (w.length >= 5 && fw.length >= 5 && (fw.indexOf(w) !== -1 || w.indexOf(fw) !== -1)) sc = 0.6;
+        if (sc > best) best = sc;
+      });
+      total += best;
+      if (best >= 0.75) strong++;
+    });
+    return strong ? total / qw.length : 0;
+  }
+  function chatMatches(query, typing) {
+    return chatConfig.faqs.map(function (f) { return { faq: f, score: chatScore(query, f, typing) }; })
+      .filter(function (x) { return x.score >= 0.34; })
+      .sort(function (a, b) { return b.score - a.score; });
+  }
+  // Answer text -> DOM: [label](url), bare https:// links and /p/... /search/... paths become links
+  function chatRich(text) {
+    var frag = doc.createDocumentFragment();
+    var re = /\[([^\]]+)\]\(([^)\s]+)\)|(https?:\/\/[^\s)]+)|(\s|^)(\/(?:p|search|feeds)\/[^\s)]+)|([\w.+-]+@[\w-]+\.[\w.]+)/g;
+    String(text).split('\n').forEach(function (line, li) {
+      if (li) frag.appendChild(doc.createElement('br'));
+      var last = 0, m;
+      while ((m = re.exec(line))) {
+        var lead = m[4] || '';
+        frag.appendChild(doc.createTextNode(line.slice(last, m.index) + lead));
+        var href = m[2] || m[3] || m[5] || ('mailto:' + m[6]);
+        var label = m[1] || m[3] || m[5] || m[6];
+        var a = el('a', { href: href, text: label.replace(/[.,]$/, '') });
+        if (/^https?:/.test(href) && href.indexOf(window.location.host) === -1) { a.target = '_blank'; a.rel = 'noopener'; }
+        frag.appendChild(a);
+        last = m.index + m[0].length - ((m[3] || '').match(/[.,]$/) ? 1 : 0);
+      }
+      frag.appendChild(doc.createTextNode(line.slice(last)));
+    });
+    return frag;
+  }
+  if (chatConfig.faqs.length) {
+    var CHAT_KEY = 'union-chat-v1';
+    var chatHistory = [];
+    try { chatHistory = JSON.parse(window.sessionStorage.getItem(CHAT_KEY) || '[]') || []; } catch (err) { chatHistory = []; }
+    var saveChat = function () {
+      try { window.sessionStorage.setItem(CHAT_KEY, JSON.stringify(chatHistory.slice(-30))); } catch (err) { /* private mode */ }
+    };
+    // "Ask" joins the Call / WhatsApp buttons (or gets its own corner button)
+    var dock = doc.querySelector('.quick-contact');
+    if (!dock) {
+      dock = el('div', { className: 'quick-contact qc-count-0', role: 'complementary', 'aria-label': 'Contact us' });
+      doc.body.appendChild(dock);
+      root.classList.add('has-quick-contact');
+    }
+    var askBtn = el('button', { type: 'button', className: 'qc-btn qc-ask', 'aria-haspopup': 'dialog', 'aria-expanded': 'false', 'aria-label': 'Open the chat: ' + chatConfig.name }, [iconSvg('chat')]);
+    askBtn.appendChild(el('span', { className: 'qc-label' }, [el('span', { className: 'qc-short', text: 'Ask' }), el('span', { className: 'qc-number', text: chatConfig.name })]));
+    dock.insertBefore(askBtn, dock.firstChild);
+    var dockCount = dock.querySelectorAll('.qc-btn').length;
+    dock.className = dock.className.replace(/qc-count-\d/, '') + ' qc-count-' + dockCount;
+    root.classList.remove('qc-single');
+    if (dockCount === 1) root.classList.add('qc-single');
+    if (dockCount === 3) root.classList.add('qc-three');
+
+    var chatLog = el('div', { className: 'chat-log', role: 'log', 'aria-live': 'polite' });
+    var chatSuggest = el('div', { className: 'chat-suggest', 'aria-label': 'Suggested questions' });
+    var chatInput = el('input', { type: 'text', className: 'chat-input', placeholder: 'Type your question…', 'aria-label': 'Your question', autocomplete: 'off', maxlength: '200' });
+    var chatSend = el('button', { type: 'submit', className: 'chat-send', 'aria-label': 'Send' }, [iconSvg('send')]);
+    var chatClose = el('button', { type: 'button', className: 'chat-close', 'aria-label': 'Close the chat' }, [iconSvg('close')]);
+    var chatForm = el('form', { className: 'chat-form' }, [chatInput, chatSend]);
+    var chatPanel = el('div', { className: 'chat-panel', role: 'dialog', 'aria-label': chatConfig.name, hidden: 'hidden' }, [
+      el('div', { className: 'chat-head' }, [
+        el('span', { className: 'chat-avatar', 'aria-hidden': 'true' }, [iconSvg('chat')]),
+        el('div', { className: 'chat-title' }, [el('p', { className: 'chat-name', text: chatConfig.name }), el('p', { className: 'chat-sub', text: 'Answers straight away · or talk to a person' })]),
+        chatClose]),
+      chatLog, chatSuggest, chatForm]);
+    doc.body.appendChild(chatPanel);
+
+    var chipRow = function (questions, cls) {
+      return el('div', { className: 'chat-chips ' + (cls || '') }, questions.map(function (q) {
+        return el('button', { type: 'button', className: 'chat-chip', 'data-q': q, text: q });
+      }));
+    };
+    var handover = function (question) {
+      var row = el('div', { className: 'chat-handover' });
+      var wa = doc.querySelector('.quick-contact .qc-whatsapp');
+      var call = doc.querySelector('.quick-contact .qc-call');
+      if (wa) {
+        var waHref = wa.getAttribute('href').split('?')[0] + '?text=' + encodeURIComponent((question ? 'Hello, I have a question: ' + question : 'Hello, I have a question.'));
+        var waLink = el('a', { className: 'chat-action chat-wa', href: waHref, target: '_blank', rel: 'noopener' }, [iconSvg('whatsapp')]);
+        waLink.appendChild(doc.createTextNode('Ask on WhatsApp'));
+        row.appendChild(waLink);
+      }
+      if (call) {
+        var callLink = el('a', { className: 'chat-action chat-call', href: call.getAttribute('href') }, [iconSvg('phone')]);
+        callLink.appendChild(doc.createTextNode('Call us'));
+        row.appendChild(callLink);
+      }
+      if (!wa && !call) row.appendChild(el('a', { className: 'chat-action chat-call', href: '#contact', text: 'Contact details' }));
+      return row;
+    };
+    var addMsg = function (who, text, extras, save) {
+      var bubble = el('div', { className: 'chat-bubble' });
+      bubble.appendChild(who === 'bot' ? chatRich(text) : doc.createTextNode(text));
+      var msg = el('div', { className: 'chat-msg chat-' + who }, [bubble]);
+      (extras || []).forEach(function (x) { if (x) msg.appendChild(x); });
+      chatLog.appendChild(msg);
+      chatLog.scrollTop = chatLog.scrollHeight;
+      if (save !== false) { chatHistory.push({ who: who, text: text }); saveChat(); }
+      return msg;
+    };
+    var answer = function (question) {
+      question = question.trim();
+      if (!question) return;
+      addMsg('user', question);
+      chatSuggest.textContent = '';
+      chatInput.value = '';
+      var hits = chatMatches(question, false);
+      var typingDots = el('div', { className: 'chat-msg chat-bot chat-typing', 'aria-hidden': 'true' }, [el('div', { className: 'chat-bubble', text: '•••' })]);
+      chatLog.appendChild(typingDots);
+      chatLog.scrollTop = chatLog.scrollHeight;
+      setTimeout(function () {
+        if (typingDots.parentNode) chatLog.removeChild(typingDots);
+        if (hits.length && hits[0].score >= 0.6) {
+          var others = hits.slice(1, 3).filter(function (h) { return h.score >= 0.45; }).map(function (h) { return h.faq.q; });
+          addMsg('bot', hits[0].faq.a, others.length ? [el('p', { className: 'chat-more', text: 'You might also want to know:' }), chipRow(others)] : null);
+          return;
+        }
+        var near = hits.slice(0, 3).map(function (h) { return h.faq.q; });
+        var msg = addMsg('bot', near.length ? 'I\'m not completely sure. Did you mean one of these?' :
+          'I don\'t have a ready answer for that. Here is what I found on the website, or ask a person directly:',
+          [near.length ? chipRow(near) : null]);
+        // articles on the website that match the words
+        var results = el('div', { className: 'chat-results' });
+        msg.appendChild(results);
+        loadFeed('', 3, function (entries) {
+          if (entries && entries.length) {
+            results.appendChild(el('p', { className: 'chat-more', text: 'Articles that may help:' }));
+            results.appendChild(el('ul', { className: 'chat-links' }, entries.map(parseEntry).map(function (p) {
+              return el('li', null, [el('a', { href: p.url, text: p.title })]);
+            })));
+          }
+          msg.appendChild(el('p', { className: 'chat-more', text: 'Talk to a person:' }));
+          msg.appendChild(handover(question));
+          chatLog.scrollTop = chatLog.scrollHeight;
+        }, { q: question.slice(0, 80) });
+      }, 350);
+    };
+    var showSuggestions = function () {
+      var text = chatInput.value;
+      chatSuggest.textContent = '';
+      if (text.trim().length < 2) return;
+      var hits = chatMatches(text, true).slice(0, 4);
+      if (hits.length) chatSuggest.appendChild(chipRow(hits.map(function (h) { return h.faq.q; }), 'chat-chips-live'));
+    };
+    var started = false;
+    var startChat = function () {
+      if (started) return;
+      started = true;
+      if (chatHistory.length) {
+        chatHistory.forEach(function (h) { addMsg(h.who, h.text, null, false); });
+      } else {
+        addMsg('bot', chatConfig.welcome, null, false);
+      }
+      var pop = chatConfig.popular.length ? chatConfig.popular : chatConfig.faqs.slice(0, 4).map(function (f) { return f.q; });
+      chatLog.appendChild(el('div', { className: 'chat-msg chat-bot' }, [el('p', { className: 'chat-more', text: 'Popular questions:' }), chipRow(pop)]));
+    };
+    var setChat = function (open) {
+      chatPanel.hidden = !open;
+      askBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      root.classList.toggle('chat-open', open);
+      if (open) { startChat(); chatLog.scrollTop = chatLog.scrollHeight; chatInput.focus(); }
+      else askBtn.focus();
+    };
+    askBtn.addEventListener('click', function () { setChat(chatPanel.hidden); });
+    chatClose.addEventListener('click', function () { setChat(false); });
+    doc.addEventListener('keydown', function (e) { if ((e.key === 'Escape' || e.key === 'Esc') && !chatPanel.hidden) setChat(false); });
+    chatForm.addEventListener('submit', function (e) { e.preventDefault(); answer(chatInput.value); });
+    chatInput.addEventListener('input', showSuggestions);
+    chatPanel.addEventListener('click', function (e) {
+      var chip = e.target.closest ? e.target.closest('.chat-chip') : null;
+      if (chip) answer(chip.getAttribute('data-q'));
+    });
   }
 
   // ---------------------------------------------------------------- accessibility + image SEO

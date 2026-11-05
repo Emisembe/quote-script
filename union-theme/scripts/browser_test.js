@@ -608,6 +608,76 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
     await ctx.close();
   }
 
+  // Chat assistant: suggestions while typing, answers, fallback to articles + WhatsApp, history, phone + desktop
+  for (const [name, width, mobile] of [['kpuwu-home', 390, true], ['kpuwu-post', 320, true], ['kpuwu-home', 1440, false], ['generic-page', 1024, false]]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 760 }, isMobile: mobile, hasTouch: mobile });
+    const page = await ctx.newPage();
+    await page.route('**/*', (route) => {
+      const url = route.request().url();
+      if (url.startsWith(base + '/feeds/')) {
+        const u = new URL(url);
+        const body = `${u.searchParams.get('callback')}(${JSON.stringify(feedJson('', +u.searchParams.get('max-results')))});`;
+        return route.fulfill({ status: 200, contentType: 'application/javascript', body });
+      }
+      return url.startsWith(base) ? route.continue() : route.abort();
+    });
+    await page.goto(`${base}/preview/${name}.html`);
+    await page.waitForTimeout(300);
+    const kpuwu = name.startsWith('kpuwu');
+    const dock = await page.evaluate(() => [...document.querySelectorAll('.quick-contact .qc-btn')].map((b) => b.className.split(' ')[1]));
+    note(dock.join(',') === 'qc-ask,qc-call,qc-whatsapp', `chat ${name} @${width}: "Ask" sits with Call and WhatsApp (${dock.join(', ')})`);
+    if (mobile) {
+      const fit = await page.evaluate(() => [...document.querySelectorAll('.quick-contact .qc-btn')].every((b) => b.scrollWidth <= b.clientWidth + 1 && b.getBoundingClientRect().height >= 44));
+      note(fit, `chat ${name} @${width}: three bottom-bar buttons fit, labels not cut`);
+    }
+    await page.click('.qc-ask');
+    await page.waitForTimeout(200);
+    let r = await page.evaluate(() => {
+      const panel = document.querySelector('.chat-panel'); const rect = panel.getBoundingClientRect();
+      return { open: !panel.hidden, focus: document.activeElement === document.querySelector('.chat-input'), w: Math.round(rect.width), h: Math.round(rect.height),
+        welcome: (document.querySelector('.chat-bot .chat-bubble') || {}).textContent || '', chips: document.querySelectorAll('.chat-log .chat-chip').length,
+        iw: innerWidth, ih: innerHeight };
+    });
+    note(r.open && r.focus && r.chips >= 3 && /Hello/.test(r.welcome), `chat ${name} @${width}: opens with a welcome, ${r.chips} popular questions, cursor in the box`);
+    note(mobile ? (r.w === r.iw && r.h === r.ih) : (r.w === 390 && r.h <= 620), `chat ${name} @${width}: ${mobile ? 'full screen on phones' : 'chat window in the corner'} (${r.w}x${r.h})`);
+    await page.fill('.chat-input', 'jion');
+    await page.waitForTimeout(150);
+    const live = await page.evaluate(() => [...document.querySelectorAll('.chat-suggest .chat-chip')].map((c) => c.textContent));
+    note(live[0] === 'How do I join the union?', `chat ${name} @${width}: typing "jion" (typo) suggests "${live[0]}"`);
+    await page.fill('.chat-input', kpuwu ? 'how do i get a membership card' : 'how are dues paid');
+    await page.press('.chat-input', 'Enter');
+    await page.waitForTimeout(700);
+    r = await page.evaluate(() => { const bots = [...document.querySelectorAll('.chat-log .chat-bot .chat-bubble')]; return bots[bots.length - 1].textContent; });
+    note(kpuwu ? /membership card/.test(r) : /deducted from your salary/.test(r), `chat ${name} @${width}: answers from the list ("${r.slice(0, 60)}...")`);
+    await page.click('.chat-log .chat-chip >> nth=0');
+    await page.waitForTimeout(700);
+    const link = await page.evaluate(() => { const bots = [...document.querySelectorAll('.chat-log .chat-bot')]; const a = bots[bots.length - 1].querySelector('.chat-bubble a'); return a ? a.getAttribute('href') : null; });
+    note(!!link && /^\/(p|search)\//.test(link), `chat ${name} @${width}: tapping a question answers it, with a link (${link})`);
+    await page.fill('.chat-input', 'xylophone quantum zebra');
+    await page.press('.chat-input', 'Enter');
+    await page.waitForTimeout(900);
+    r = await page.evaluate(() => { const bots = [...document.querySelectorAll('.chat-log .chat-bot')]; const last = bots[bots.length - 1];
+      return { text: last.textContent, articles: last.querySelectorAll('.chat-links a').length, wa: (last.querySelector('.chat-wa') || {}).href || '', call: (last.querySelector('.chat-call') || {}).href || '' }; });
+    note(/don't have a ready answer/.test(r.text) && r.articles > 0, `chat ${name} @${width}: no match -> website articles (${r.articles})`);
+    note(/wa\.me\/\d+\?text=Hello%2C%20I%20have%20a%20question%3A%20xylophone%20quantum%20zebra/.test(r.wa) && /^tel:/.test(r.call), `chat ${name} @${width}: no match -> WhatsApp with the question typed, and Call`);
+    const noScroll = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && true);
+    await page.screenshot({ path: path.join(OUT, `chat-${name}-${width}.png`) });
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(150);
+    r = await page.evaluate(() => ({ closed: document.querySelector('.chat-panel').hidden, focus: document.activeElement === document.querySelector('.qc-ask') }));
+    note(r.closed && r.focus, `chat ${name} @${width}: Escape closes, focus back on the Ask button`);
+    // conversation kept when moving to another page in the same visit
+    await page.goto(`${base}/preview/${kpuwu ? 'kpuwu-page' : 'generic-post'}.html`);
+    await page.waitForTimeout(300);
+    await page.click('.qc-ask');
+    await page.waitForTimeout(200);
+    const kept = await page.evaluate(() => document.querySelectorAll('.chat-log .chat-user').length);
+    note(kept === 3, `chat ${name} @${width}: conversation kept on the next page (${kept} questions)`);
+    await page.emulateMedia({ media: 'print' });
+    note(!(await page.evaluate(() => document.querySelector('.chat-panel').offsetHeight)), `chat ${name} @${width}: not printed`);
+    await ctx.close();
+  }
+
   // Language picker: opens, marks English, choosing Kiswahili stores Google's googtrans cookie
   for (const width of [1440, 390]) {
     const { page } = await open('kpuwu-home', width);
