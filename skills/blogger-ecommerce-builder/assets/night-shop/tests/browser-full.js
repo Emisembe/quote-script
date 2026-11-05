@@ -97,10 +97,10 @@ const results = []; const ok = (name, cond, info) => { results.push([cond ? 'PAS
   ok('Home: What we do cards', (await p.$$('.shop-service')).length === 4);
   ok('Home: How it works steps', (await p.$$('.shop-step')).length === 3);
   ok('Home: FAQ opens', await (async () => { await p.click('.shop-faq-item summary'); return p.$eval('.shop-faq-item', n => n.open); })());
-  ok('Home: WhatsApp button visible', await p.isVisible('.shop-wa-float'));
+  ok('Home: "Ask" chat bubble visible (it holds the WhatsApp button)', await p.isVisible('.shop-chat-bubble') && !(await p.$('.shop-wa-float')));
   await p.click('.cart-button'); await p.waitForTimeout(150);
-  const cover = await p.evaluate(() => { const r = document.querySelector('.shop-wa-float').getBoundingClientRect(); const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return e && !e.closest('.shop-wa-float'); });
-  ok('Drawer covers the WhatsApp button (button never hides "Send order")', cover);
+  const cover = await p.evaluate(() => { const r = document.querySelector('.shop-chat-bubble').getBoundingClientRect(); const e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return e && !e.closest('.shop-chat-bubble'); });
+  ok('Drawer covers the chat bubble (bubble never hides "Send order")', cover);
   await p.keyboard.press('Escape');
   await p.fill('.shop-newsletter-form input[type=email]', 'nina@example.com'); await p.check('.shop-newsletter-form input[name=consent]');
   await p.click('.shop-newsletter-form button'); await p.waitForTimeout(300);

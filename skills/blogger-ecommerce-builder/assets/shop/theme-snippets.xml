@@ -179,3 +179,56 @@ Wie lange dauert der Versand? | 2–4 Werktage in Deutschland.
 <div class="shop-lead" data-kind="quote" data-button="Ask for a quote"
      data-fields="Name*; Email*; Phone; Service: Storage / Packing / Shipping; Message"></div>
 
+<!-- 12. News ticker under the header (homepage), branches section, and the "Ask" chat assistant.
+     Add .ticker and .branches to the homepage <style> list and hide them in the skin (display:none).
+     The assistant gadget goes into the hidden admin section next to Shop settings, so it is on every page. -->
+<section class='ticker' id='ticker'>
+  <b:section class='ticker-section' id='ticker-widgets' maxwidgets='1' showaddelement='no'>
+    <b:widget id='HTML21' locked='false' title='News' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[New in: washing machines, tested and cleaned | /search/label/Appliances
+Free shipping in Germany from *50 €* | /p/shipping.html
+# Figure with a source: Online retail in Germany: *€XX bn* in 2025 | Source: study, year | https://…]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <b:if cond='data:title != &quot;&quot;'><h2 class='title'><data:title/></h2></b:if>
+        <div class='shop-ticker'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</section>
+
+<section class='branches' id='branches'>
+  <div class='container'>
+    <b:section class='branches-section' id='branches-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML22' locked='false' title='Our branches' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[text: Visit us, call us or send a WhatsApp message.
+Main shop | Street 1, 12345 Town, Germany | +49 000 0000000 | +49 000 0000000 | Mon–Fri 9:00–18:00
+# name | address | phone | WhatsApp | opening hours | map link (optional) | email (optional)]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'><h2 class='title'><data:title/></h2></b:if>
+          <div class='shop-branches'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<b:widget id='HTML23' locked='false' title='Ask assistant (chat bubble)' type='HTML'>
+  <b:widget-settings>
+    <b:widget-setting name='content'><![CDATA[name: Ask us
+greeting: Hi! Ask me about payment, delivery or returns.
+suggest: How do I pay? ; How long does delivery take?
+use_faq: yes
+log_unanswered: yes
+Where can I pick up? | Pickup by appointment. Send us a WhatsApp message. | pickup collect address visit]]></b:widget-setting>
+  </b:widget-settings>
+  <b:includable id='main'>
+    <div class='shop-assistant'><data:content/></div>
+  </b:includable>
+</b:widget>
+

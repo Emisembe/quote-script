@@ -32,3 +32,8 @@ console.log('again:', JSON.stringify(post({type:'lead',kind:'newsletter',consent
 console.log('bad token:', /not valid/.test(ctx.doGet({parameter:{confirm:'nope'}}).html));
 ctx.doGet({parameter:{unsubscribe:tok}}); console.log('unsub status:', sheets['Newsletter'].rows[1][2]);
 console.log('plain doGet:', ctx.doGet({parameter:{}}));
+// "Ask" assistant: unanswered questions, anonymous, no consent box, no emails
+const before=mails.length;
+console.log('question:', JSON.stringify(post({type:'lead',kind:'question',lang:'de',page:'https://kreislo.blogspot.com/',fields:{Question:'  Do you sell   =tractors?  '}})));
+console.log('Questions rows:', JSON.stringify(sheets['Questions'].rows), '| emails sent:', mails.length-before);
+console.log('empty question:', JSON.stringify(post({type:'lead',kind:'question',fields:{Question:'  '}})));

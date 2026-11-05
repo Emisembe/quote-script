@@ -107,6 +107,13 @@
       'I agree that my details are used to answer my request.': 'Ich bin einverstanden, dass meine Angaben zur Beantwortung meiner Anfrage verwendet werden.',
       'Privacy policy': 'Datenschutzerklärung', 'Send request': 'Anfrage senden', 'Request a quote': 'Angebot anfragen',
       'Thank you! Your request was sent. We will reply within one working day.': 'Vielen Dank! Ihre Anfrage wurde gesendet. Wir antworten innerhalb eines Werktags.',
+      'Ask us': 'Fragen Sie uns', 'Answers from our help list': 'Antworten aus unserer Hilfeliste', 'Type your question…': 'Ihre Frage eingeben…',
+      'Your question': 'Ihre Frage', 'Send': 'Senden', 'Chat with a person on WhatsApp': 'Mit einem Menschen auf WhatsApp schreiben',
+      'Sorry, I do not have an answer to that yet.': 'Dazu habe ich leider noch keine Antwort.',
+      'Ask us on WhatsApp – your question is already typed in.': 'Fragen Sie uns auf WhatsApp – Ihre Frage ist schon eingetippt.',
+      'Ask on WhatsApp': 'Auf WhatsApp fragen', 'You might also mean:': 'Meinten Sie vielleicht:', 'Questions I can answer:': 'Fragen, die ich beantworten kann:',
+      'my question': 'meine Frage', 'Call': 'Anrufen', 'Directions': 'Route', 'Pause': 'Anhalten', 'Play': 'Abspielen', 'Source': 'Quelle',
+      'Open chat': 'Chat öffnen',
       'Something went wrong. Please try again or message us on WhatsApp.': 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder schreiben Sie uns auf WhatsApp.',
       'Please tick the box to agree.': 'Bitte setzen Sie das Häkchen zur Zustimmung.', 'Learn more': 'Mehr erfahren',
       'Talk to us': 'Sprechen Sie mit uns', 'Call us': 'Rufen Sie uns an', 'Zoom video call': 'Zoom-Videoanruf',
@@ -182,6 +189,13 @@
       'I agree that my details are used to answer my request.': "J'accepte que mes données soient utilisées pour répondre à ma demande.",
       'Privacy policy': 'Politique de confidentialité', 'Send request': 'Envoyer la demande', 'Request a quote': 'Demander un devis',
       'Thank you! Your request was sent. We will reply within one working day.': 'Merci ! Votre demande a été envoyée. Nous répondons sous un jour ouvré.',
+      'Ask us': 'Posez votre question', 'Answers from our help list': 'Réponses de notre liste d’aide', 'Type your question…': 'Tapez votre question…',
+      'Your question': 'Votre question', 'Send': 'Envoyer', 'Chat with a person on WhatsApp': 'Parler à une personne sur WhatsApp',
+      'Sorry, I do not have an answer to that yet.': 'Désolé, je n’ai pas encore de réponse à cela.',
+      'Ask us on WhatsApp – your question is already typed in.': 'Demandez-nous sur WhatsApp – votre question est déjà saisie.',
+      'Ask on WhatsApp': 'Demander sur WhatsApp', 'You might also mean:': 'Vouliez-vous dire :', 'Questions I can answer:': 'Questions auxquelles je peux répondre :',
+      'my question': 'ma question', 'Call': 'Appeler', 'Directions': 'Itinéraire', 'Pause': 'Pause', 'Play': 'Lecture', 'Source': 'Source',
+      'Open chat': 'Ouvrir le chat',
       'Something went wrong. Please try again or message us on WhatsApp.': 'Une erreur est survenue. Réessayez ou écrivez-nous sur WhatsApp.',
       'Please tick the box to agree.': 'Merci de cocher la case.', 'Learn more': 'En savoir plus',
       'Talk to us': 'Parlez-nous', 'Call us': 'Appelez-nous', 'Zoom video call': 'Appel vidéo Zoom',
@@ -771,6 +785,10 @@
     warehouse: 'M3 21V9l9-5 9 5v12M7 21v-7h10v7M7 17h10',
     tag: 'M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01',
     plus: 'M12 5v14M5 12h14',
+    pin: 'M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21zM12 12.5a2.8 2.8 0 1 0 0-5.6 2.8 2.8 0 0 0 0 5.6z',
+    send: 'M3 20.5 21.5 12 3 3.5 3 10l12 2-12 2z',
+    pause: 'M7 5h3.5v14H7zM13.5 5H17v14h-3.5z',
+    play: 'M8 5v14l11-7z',
     // team page social icons
     instagram: 'M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zM16 11.4A4 4 0 1 1 12.6 8 4 4 0 0 1 16 11.4zM17.5 6.5h.01',
     linkedin: 'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 6V21h-4v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V21H9z',
@@ -1747,6 +1765,7 @@
 
   // Round WhatsApp button in the bottom corner of every page ("whatsapp_button: no" switches it off).
   function floatingWhatsApp() {
+    if (ASK) return;   // the "Ask" chat bubble has the WhatsApp button inside
     if (!CFG.whatsapp || /^(no|off|false|0|nein|non)$/i.test(S.whatsapp_button || '')) return;
     var item = doc.querySelector('.shop-item');
     var title = item ? (item.getAttribute('data-title') || '').trim() : '';
@@ -1787,6 +1806,286 @@
       var reviews = item.querySelector('.shop-reviews');
       if (reviews) item.insertBefore(sec, reviews); else item.appendChild(sec);
     }).catch(function () { /* no feed: nothing to show */ });
+  }
+
+  // ------------------------------------------------------------ ticker (homepage)
+  // A gadget wrapped in <div class='shop-ticker'>, one item per line; the gadget title is the label on the left:
+  //   Next container to Mombasa: 15 December | /p/kenya.html
+  //   German online retail: *€88 bn* in 2024 | Source: HDE Online-Monitor 2025 | https://…
+  // *Text between stars* is highlighted. A part starting with / or https:// is the link; any other part is the source.
+  // It scrolls slowly, stops on mouse-over, focus or the pause button, and stands still for "reduce motion" visitors.
+  function tickerNodes(text) {
+    return String(text).split('*').map(function (s, i) { return i % 2 ? el('strong', { text: s }) : (s ? doc.createTextNode(s) : null); });
+  }
+  function renderTicker() {
+    each(doc.querySelectorAll('.shop-ticker'), function (box) {
+      var items = [];
+      langLines(box).forEach(function (line) {
+        var parts = line.split('|').map(function (x) { return x.trim(); });
+        if (!parts[0]) return;
+        var it = { text: t(parts[0]), link: '', source: '' };
+        parts.slice(1).forEach(function (x) { if (safeLink(x)) it.link = it.link || x; else if (x) it.source = x; });
+        items.push(it);
+      });
+      if (!items.length) return hideEmpty(box);
+      var widget = box.closest('.widget');
+      var head = widget && widget.querySelector('h2.title, h3.title');
+      var label = head ? head.textContent.trim() : '';
+      if (head) head.hidden = true;
+      box.textContent = '';
+      box.classList.add('is-ready');
+      var makeList = function () {
+        var ul = el('ul', { 'class': 'shop-ticker-list' });
+        items.forEach(function (it) {
+          var main = it.link
+            ? el('a', { href: it.link, target: /^https/.test(it.link) ? '_blank' : false, rel: /^https/.test(it.link) ? 'noopener' : false }, tickerNodes(it.text))
+            : el('span', {}, tickerNodes(it.text));
+          ul.appendChild(el('li', { 'class': 'shop-ticker-item' }, [main,
+            it.source ? el('span', { 'class': 'shop-ticker-source', text: '(' + t(it.source.replace(/^(source|quelle)\s*:\s*/i, 'Source: ')) + ')' }) : null]));
+        });
+        return ul;
+      };
+      var first = makeList();
+      var track = el('div', { 'class': 'shop-ticker-track' }, [first]);
+      var view = el('div', { 'class': 'shop-ticker-view' }, [track]);
+      var toggle = el('button', { type: 'button', 'class': 'shop-ticker-toggle', 'aria-pressed': 'false', 'aria-label': t('Pause'), title: t('Pause') }, [svg(ICONS.pause)]);
+      if (label) box.appendChild(el('span', { 'class': 'shop-ticker-label', text: t(label) }));
+      box.appendChild(view);
+      box.appendChild(toggle);
+      toggle.addEventListener('click', function () {
+        var paused = box.classList.toggle('is-paused');
+        toggle.setAttribute('aria-pressed', paused ? 'true' : 'false');
+        toggle.setAttribute('aria-label', t(paused ? 'Play' : 'Pause')); toggle.title = t(paused ? 'Play' : 'Pause');
+        toggle.replaceChild(svg(ICONS[paused ? 'play' : 'pause']), toggle.firstChild);
+      });
+      var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var setup = function () {
+        if (still) { box.classList.add('is-still'); return; }
+        // Fill at least one screen width, then add a hidden copy so the loop has no gap.
+        var guard = 0;
+        while (first.scrollWidth < view.clientWidth && guard++ < 8) {
+          items.forEach(function (it, i) { first.appendChild(first.children[i].cloneNode(true)); });
+        }
+        var copy = first.cloneNode(true);
+        copy.setAttribute('aria-hidden', 'true');
+        each(copy.querySelectorAll('a'), function (a) { a.setAttribute('tabindex', '-1'); });
+        track.appendChild(copy);
+        var speed = 60; // pixels per second
+        track.style.animationDuration = Math.max(12, Math.round(first.scrollWidth / speed)) + 's';
+        box.classList.add('is-moving');
+      };
+      if (box.offsetParent !== null) setup();
+      else if (window.requestAnimationFrame) requestAnimationFrame(function () { if (box.offsetParent !== null) setup(); });
+    });
+  }
+
+  // ------------------------------------------------------------ branches (homepage)
+  // A gadget wrapped in <div class='shop-branches'>, one branch per line (text: line = intro):
+  //   name | address | phone | WhatsApp number | opening hours | map link (optional) | email (optional)
+  // Without a map link, "Directions" opens Google Maps with the address. Adds LocalBusiness data for Google.
+  function renderBranches() {
+    each(doc.querySelectorAll('.shop-branches'), function (box) {
+      var d = lineParts(box);
+      var items = d.items.filter(function (p) { return p[0] && (p[1] || p[2]); });
+      if (!items.length) return hideEmpty(box);
+      ready(box, d.intro);
+      var grid = el('div', { 'class': 'shop-branches-grid' }), data = [];
+      items.forEach(function (p) {
+        var name = p[0], addr = p[1] || '', phone = p[2] || '', wa = (p[3] || '').replace(/[^\d]/g, ''), hours = p[4] || '';
+        var map = safeLink(p[5]) || (addr ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addr) : '');
+        var mail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(p[6] || '') ? p[6] : '';
+        var tel = phone.replace(/[^\d+]/g, '');
+        var outside = function (href) { return /^https/.test(href) ? { target: '_blank', rel: 'noopener' } : {}; };
+        var link = function (cls, href, kids) { var a = { 'class': cls, href: href }, o = outside(href); a.target = o.target || false; a.rel = o.rel || false; return el('a', a, kids); };
+        var actions = [];
+        if (tel) actions.push(link('shop-btn shop-branch-call', 'tel:' + tel, [svg(ICONS.phone, 'stroke'), ' ' + t('Call')]));
+        if (wa.length >= 7) actions.push(link('shop-btn shop-branch-wa', 'https://wa.me/' + wa + '?text=' + encodeURIComponent(t('Hi') + ' ' + CFG.shop + ' – ' + name + ', '), [svg(ICONS.whatsapp), ' WhatsApp']));
+        if (map) actions.push(link('shop-btn shop-btn-ghost shop-branch-map', map, [svg(ICONS.pin, 'stroke'), ' ' + t('Directions')]));
+        grid.appendChild(el('article', { 'class': 'shop-branch' }, [
+          el('h3', { text: t(name) }),
+          addr ? el('p', { 'class': 'shop-branch-line' }, [svg(ICONS.pin, 'stroke'), el('span', { text: addr })]) : null,
+          tel ? el('p', { 'class': 'shop-branch-line' }, [svg(ICONS.phone, 'stroke'), el('a', { href: 'tel:' + tel, text: phone })]) : null,
+          mail ? el('p', { 'class': 'shop-branch-line' }, [svg(ICONS.mail, 'stroke'), el('a', { href: 'mailto:' + mail, text: mail })]) : null,
+          hours ? el('p', { 'class': 'shop-branch-line' }, [svg(ICONS.clock, 'stroke'), el('span', { text: t(hours) })]) : null,
+          actions.length ? el('div', { 'class': 'shop-branch-actions' }, actions) : null
+        ]));
+        var biz = { '@context': 'https://schema.org', '@type': 'LocalBusiness', name: CFG.shop + ' – ' + name, url: location.origin + '/' };
+        if (addr) biz.address = addr;
+        if (phone) biz.telephone = phone;
+        if (mail) biz.email = mail;
+        if (/^https/.test(map)) biz.hasMap = map;
+        data.push(biz);
+      });
+      box.appendChild(grid);
+      if (box.offsetParent !== null && data.length) {   // only where the section is visible (homepage)
+        var ld = el('script', { type: 'application/ld+json' });
+        ld.textContent = JSON.stringify(data.length === 1 ? data[0] : data);
+        doc.head.appendChild(ld);
+      }
+    });
+  }
+
+  // ------------------------------------------------------------ "Ask" assistant (every page)
+  // A gadget in the hidden admin area wrapped in <div class='shop-assistant'>:
+  //   name: Ask Kreislo
+  //   greeting: Hi! Ask me about payment, delivery, shipping to Kenya or fulfilment.
+  //   suggest: How do I pay? ; Do you ship to Kenya? ; Where are you?
+  //   use_faq: yes            (also answers from the "Questions & answers" gadget)
+  //   log_unanswered: yes     (questions it could not answer go to the order sheet, tab "Questions")
+  //   question | answer | other words people use for it
+  // It is not AI: it picks the closest question from the list. No match: WhatsApp with the question typed in.
+  // An empty gadget switches it off (the round WhatsApp button comes back).
+  var STOP = ' a an the is are am do does did i you we it its to of for in on at and or my your our can could how what when where which who whom why with be will would should there this that these me us please hi hello hey get got have has any some much many about from ' +
+    'ich du sie wir es der die das den dem des ein eine einen ist sind und oder wie was wo wann kann konnen mein meine ihr ihre bitte hallo hi habt haben gibt man mit von zu im am auf fur ' +
+    'je tu vous nous il le la les un une des du est sont et ou comment quoi quand peux pouvez puis mon ma mes votre vos bonjour salut avec pour dans sur de ';
+  function words(s) {
+    var plain = String(s || '').toLowerCase();
+    if (plain.normalize) plain = plain.normalize('NFD').replace(/[̀-ͯ]/g, '');
+    return plain.replace(/ß/g, 'ss').split(/[^a-z0-9]+/).filter(function (w) { return w.length > 1 && STOP.indexOf(' ' + w + ' ') === -1; })
+      .map(function (w) { return w.length > 4 ? w.replace(/(ing|ed|es|en|er|s|e|n)$/, '') : w; });
+  }
+  function sameWord(a) {
+    return function (b) { return a === b || (a.length >= 4 && b.length >= 4 && (b.indexOf(a) !== -1 || a.indexOf(b) !== -1)); };
+  }
+  function collectAssistant() {
+    var box = doc.querySelector('.shop-assistant');
+    if (!box) return null;
+    var cfg = { name: 'Ask us', greeting: '', suggest: [], useFaq: true, log: false, placeholder: '', qa: [] };
+    var lines = langLines(box);
+    if (!lines.length) return null;   // empty gadget = assistant switched off
+    lines.forEach(function (line) {
+      var m = /^\s*(name|greeting|suggest|use_faq|log_unanswered|placeholder)\s*:\s*(.*)$/i.exec(line);
+      if (m) {
+        var k = m[1].toLowerCase(), v = m[2].trim();
+        if (k === 'name') cfg.name = v || cfg.name;
+        else if (k === 'greeting') cfg.greeting = v;
+        else if (k === 'suggest') cfg.suggest = v.split(';').map(function (x) { return x.trim(); }).filter(Boolean);
+        else if (k === 'use_faq') cfg.useFaq = on(v);
+        else if (k === 'log_unanswered') cfg.log = on(v);
+        else cfg.placeholder = v;
+        return;
+      }
+      var p = line.split('|').map(function (x) { return x.trim(); });
+      if (p[0] && p[1]) cfg.qa.push({ q: p[0], a: p[1], k: p.slice(2).join(' ') });
+    });
+    if (cfg.useFaq) each(doc.querySelectorAll('.shop-faq'), function (f) {
+      lineParts(f).items.forEach(function (p) {
+        if (p[1] && !cfg.qa.some(function (x) { return x.q.toLowerCase() === p[0].toLowerCase(); })) cfg.qa.push({ q: p[0], a: p.slice(1).join(' | '), k: '' });
+      });
+    });
+    if (!cfg.qa.length) return null;
+    cfg.qa.forEach(function (x) { x.wq = words(x.q); x.wk = words(x.k); x.wa = words(x.a); });
+    return cfg;
+  }
+  function bestAnswers(cfg, question) {
+    var exact = cfg.qa.filter(function (x) { return x.q.toLowerCase() === question.trim().toLowerCase(); })[0];
+    if (exact) return [exact];
+    var qw = words(question);
+    if (!qw.length) return [];
+    return cfg.qa.map(function (x) {
+      var s = 0, strong = 0;
+      qw.forEach(function (w) {
+        var m = sameWord(w), v = 0;
+        if (x.wk.some(m)) v = 3;
+        if (x.wq.some(m)) v = Math.max(v, 2.5);
+        if (!v && x.wa.some(m)) v = 0.6;
+        if (v >= 2.5) strong++;
+        s += v;
+      });
+      return { x: x, s: s + 2 * strong / qw.length, strong: strong };
+    }).filter(function (r) { return r.strong > 0 && r.s >= 2.5; })
+      .sort(function (a, b) { return b.s - a.s; }).slice(0, 3)
+      .filter(function (r, i, all) { return i === 0 || r.s >= all[0].s * 0.6; })
+      .map(function (r) { return r.x; });
+  }
+  // Answer text with clickable links: https://…, /p/… and /search/… paths, email addresses.
+  function answerNodes(text) {
+    var out = [], re = /(https:\/\/[^\s]+|\/(?:p|search)\/[^\s]+|[^\s@()]+@[^\s@()]+\.[a-z]{2,})/gi, last = 0, m;
+    while ((m = re.exec(text))) {
+      var raw = m[1].replace(/[.,;:!?)]+$/, ''), end = m.index + raw.length;
+      if (m.index > last) out.push(text.slice(last, m.index));
+      var href = /@/.test(raw) && !/^https/.test(raw) ? 'mailto:' + raw : raw;
+      out.push(el('a', { href: href, target: /^https/.test(href) ? '_blank' : false, rel: /^https/.test(href) ? 'noopener' : false,
+        text: /^\/p\//.test(raw) ? raw.replace(/^\/p\/|\.html$/g, '').replace(/[-_]/g, ' ') : raw }));
+      last = end; re.lastIndex = end;
+    }
+    if (last < text.length) out.push(text.slice(last));
+    return out;
+  }
+  function waLink(question) {
+    var item = doc.querySelector('.shop-item');
+    var title = item ? (item.getAttribute('data-title') || '').trim() : '';
+    var text = t('Hi') + ' ' + CFG.shop + ', ' + (question ? t('my question') + ': ' + question : '') +
+      (title ? (question ? ' – ' : '') + t('I have a question about') + ' "' + title + '": ' + location.href.split('#')[0] : '');
+    return 'https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(text);
+  }
+  var ASK = null;
+  function buildAssistant(cfg) {
+    var name = t(cfg.name), opened = false, asked = {};
+    var bubble = el('button', { type: 'button', 'class': 'shop-chat-bubble', 'aria-expanded': 'false', 'aria-controls': 'shop-chat-panel', 'aria-label': t('Open chat') + ': ' + name },
+      [svg(ICONS.chat, 'stroke'), el('span', { 'class': 'shop-chat-bubble-text', text: name })]);
+    var log = el('div', { 'class': 'shop-chat-log', role: 'log', 'aria-live': 'polite' });
+    var input = el('input', { type: 'text', 'class': 'shop-chat-input', name: 'question', maxlength: '300', autocomplete: 'off',
+      placeholder: t(cfg.placeholder || 'Type your question…'), 'aria-label': t('Your question') });
+    var form = el('form', { 'class': 'shop-chat-form' }, [input, el('button', { type: 'submit', 'class': 'shop-chat-send', 'aria-label': t('Send'), title: t('Send') }, [svg(ICONS.send)])]);
+    var wa = CFG.whatsapp ? el('a', { 'class': 'shop-chat-wa', href: waLink(''), target: '_blank', rel: 'noopener' }, [svg(ICONS.whatsapp), ' ' + t('Chat with a person on WhatsApp')]) : null;
+    var close = function () {
+      panel.hidden = true; bubble.setAttribute('aria-expanded', 'false'); doc.body.classList.remove('shop-chat-open'); bubble.focus();
+    };
+    var panel = el('div', { 'class': 'shop-chat-panel', id: 'shop-chat-panel', role: 'dialog', 'aria-label': name, hidden: 'hidden' }, [
+      el('div', { 'class': 'shop-chat-head' }, [
+        el('span', { 'class': 'shop-chat-avatar' }, [svg(ICONS.chat, 'stroke')]),
+        el('div', { 'class': 'shop-chat-title' }, [el('strong', { text: name }), el('span', { text: t('Answers from our help list') })]),
+        el('button', { type: 'button', 'class': 'shop-chat-close', 'aria-label': t('Close'), title: t('Close'), text: '×', onclick: close })]),
+      log, el('div', { 'class': 'shop-chat-foot' }, [form, wa])]);
+    var say = function (who, kids) {
+      var msg = el('div', { 'class': 'shop-chat-msg is-' + who }, kids);
+      log.appendChild(msg);
+      log.scrollTop = log.scrollHeight;
+      return msg;
+    };
+    var chips = function (title, qs) {
+      if (!qs.length) return;
+      say('bot', [title ? el('p', { 'class': 'shop-chat-note', text: t(title) }) : null,
+        el('div', { 'class': 'shop-chat-chips' }, qs.map(function (q) {
+          return el('button', { type: 'button', 'class': 'shop-chat-chip', text: t(q), onclick: function () { ask(q); } });
+        }))]);
+    };
+    var ask = function (q) {
+      q = String(q || '').trim().slice(0, 300);
+      if (!q) return;
+      say('user', [el('p', { text: q })]);
+      if (wa) wa.href = waLink(q);
+      var found = bestAnswers(cfg, q);
+      if (found.length) {
+        say('bot', [el('p', { 'class': 'shop-chat-q', text: t(found[0].q) }), el('p', {}, answerNodes(t(found[0].a)))]);
+        chips('You might also mean:', found.slice(1).map(function (x) { return x.q; }));
+        return;
+      }
+      say('bot', [el('p', { text: t('Sorry, I do not have an answer to that yet.') }),
+        CFG.whatsapp ? el('p', { text: t('Ask us on WhatsApp – your question is already typed in.') }) : null,
+        CFG.whatsapp ? el('a', { 'class': 'shop-btn shop-chat-wa-btn', href: waLink(q), target: '_blank', rel: 'noopener' }, [svg(ICONS.whatsapp), ' ' + t('Ask on WhatsApp')]) : null]);
+      chips('Questions I can answer:', (cfg.suggest.length ? cfg.suggest : cfg.qa.slice(0, 4).map(function (x) { return x.q; })).slice(0, 4));
+      var key = q.toLowerCase();
+      if (cfg.log && CFG.endpoint && !asked[key] && window.fetch) {
+        asked[key] = 1;
+        sendLead({ kind: 'question', fields: { Question: q } }).catch(function () { /* logging is optional */ });
+      }
+    };
+    form.addEventListener('submit', function (e) { e.preventDefault(); var q = input.value; input.value = ''; ask(q); });
+    bubble.addEventListener('click', function () {
+      if (!panel.hidden) return close();
+      panel.hidden = false; bubble.setAttribute('aria-expanded', 'true'); doc.body.classList.add('shop-chat-open');
+      if (!opened) {
+        opened = true;
+        say('bot', [el('p', { text: t(cfg.greeting || 'Hi! How can we help?') })]);
+        chips('', (cfg.suggest.length ? cfg.suggest : cfg.qa.slice(0, 4).map(function (x) { return x.q; })).slice(0, 5));
+      }
+      setTimeout(function () { input.focus(); }, 30);
+    });
+    panel.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    doc.body.appendChild(panel);
+    doc.body.appendChild(bubble);
   }
 
   // ------------------------------------------------------------ logo rows
@@ -1873,9 +2172,13 @@
     renderServices();
     renderSteps();
     renderTestimonials();
+    ASK = collectAssistant();   // reads the FAQ gadget too, so before renderFaq() rebuilds it
     renderFaq();
+    renderTicker();
+    renderBranches();
     renderNewsletter();
     renderLeadForms();
+    if (ASK) buildAssistant(ASK);
     floatingWhatsApp();
     relatedProducts();
     jumpToLanguageAnchor();

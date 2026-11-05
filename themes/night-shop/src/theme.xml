@@ -21,10 +21,10 @@ Page not found - <data:blog.title/>
 <link href='https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&amp;family=Open+Sans:wght@400;600;700&amp;display=swap' rel='stylesheet'/>
 <b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter, .ticker, .branches { display: block; }</style>
 </b:if>
 <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter, .ticker, .branches { display: block; }</style>
 </b:if>
 </head>
 <body expr:class='&quot;rm shop pt-&quot; + data:blog.pageType'>
@@ -116,6 +116,37 @@ Fulfilment for online sellers, from Gießen | /p/fulfilment.html]]></b:widget-se
     </nav>
   </div>
 </header>
+
+<!-- ================= News ticker: announcements and figures (homepage; empty gadget = no ticker) ================= -->
+<section class='ticker' id='ticker'>
+  <b:section class='ticker-section' id='ticker-widgets' maxwidgets='1' showaddelement='no'>
+    <b:widget id='HTML21' locked='false' title='News' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+New in: washing machines and fridges, tested and cleaned | /search/label/Appliances
+Next container to Mombasa: ask us for the loading date | /p/kenya.html
+Fulfilment for online sellers from Gießen: ask for a quote | /p/fulfilment.html
+Free shipping in Germany from *50 €* | /p/shipping.html
+# One item per line. A figure: put the number between stars and add the source, for example:
+# Online retail in Germany: *€XX bn* in 2025 | Source: name of the study, year | https://link-to-the-source
+</div>
+<div data-lang="de">
+Neu: Waschmaschinen und Kühlschränke, geprüft und gereinigt | /search/label/Appliances
+Nächster Container nach Mombasa: fragen Sie uns nach dem Ladetermin | /p/kenya.html
+Fulfillment für Online-Händler aus Gießen: jetzt Angebot anfragen | /p/fulfilment.html
+Versandkostenfrei in Deutschland ab *50 €* | /p/shipping.html
+</div>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <b:if cond='data:title != &quot;&quot;'>
+          <h2 class='title'><data:title/></h2>
+        </b:if>
+        <div class='shop-ticker'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</section>
 
 <main id='content'>
 
@@ -669,6 +700,36 @@ Bieten Sie Fulfillment für andere Händler an? | Ja. Wir lagern, verpacken und 
   </div>
 </section>
 
+<!-- ================= Our branches: addresses and phone numbers (homepage) ================= -->
+<section class='branches' id='branches'>
+  <div class='container'>
+    <b:section class='branches-section' id='branches-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML22' locked='false' title='Our branches' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+text: Visit us, call us or send a WhatsApp message.
+Kreislo Gießen – shop and warehouse | Musterstraße 1, 35390 Gießen, Germany | +49 157 0000000 | +49 157 0000000 | Mon–Fri 9:00–18:00, Sat by appointment
+# More branches: one per line, in this order (map link and email are optional):
+# name | address | phone | WhatsApp | opening hours | map link | email
+# Kreislo Mombasa | Moi Avenue 1, Mombasa, Kenya | +254 700 000000 | +254 700 000000 | Mon–Sat 8:00–17:00
+</div>
+<div data-lang="de">
+text: Besuchen Sie uns, rufen Sie an oder schreiben Sie uns auf WhatsApp.
+Kreislo Gießen – Laden und Lager | Musterstraße 1, 35390 Gießen | +49 157 0000000 | +49 157 0000000 | Mo–Fr 9:00–18:00, Sa nach Absprache
+</div>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-branches'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
 <!-- ================= Newsletter (homepage, needs google_sheet) ================= -->
 <section class='newsletter' id='newsletter'>
   <div class='container'>
@@ -845,10 +906,48 @@ banner_image:]]></b:widget-setting>
         <b:widget-setting name='content'><![CDATA[DHL Parcel | 4,90 up to 2 kg; 6,99 up to 5 kg; 10,49 up to 10 kg; 16,49 up to 31,5 kg | 2–4 working days | /p/delivery.html#dhl | Germany
 Hermes | 4,50 up to 5 kg; 6,95 up to 10 kg | 3–5 working days | /p/delivery.html#hermes | Germany
 DHL International | 14,90 up to 5 kg; 24,90 up to 20 kg | 4–7 working days | /p/delivery.html#dhl-international | Austria, Switzerland
-Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:widget-setting>
+Pickup in Gießen | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
         <div class='shop-delivery'><data:content/></div>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML23' locked='false' title='Ask assistant (chat bubble)' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+name: Ask Kreislo
+greeting: Hi! I am the Kreislo helper. Ask me about payment, delivery, shipping to Kenya, digital products or fulfilment.
+suggest: How do I pay? ; Do you ship to Kenya? ; Where can I pick up? ; How do I order?
+use_faq: yes
+log_unanswered: yes
+# One question per line: question | answer | other words people use for it (optional). Check every answer before you go live.
+How do I order? | Click "Add to cart" on a product, open the cart and choose how you want to order: online, WhatsApp, Telegram or email. | buy purchase checkout cart
+Where can I pick up? | Pickup is in Gießen by appointment. Send us a WhatsApp message and we agree on a time. | pickup collect address location visit shop
+What are your opening hours? | Monday to Friday 9:00–18:00, Saturday by appointment. | open hours time
+Is everything tested? | Yes. Every appliance and tool is checked, cleaned and tested before we sell it. The product page says what we tested. | condition working quality used broken warranty
+Can I sell my things to you? | Maybe! Send us photos and a short description on WhatsApp and we tell you if we can take it. | sell offer old items
+How much does shipping to Kenya cost? | It depends on size and weight. Tell us what you want and your city, and we send you the full price before you pay. More: /p/kenya.html | price cost mombasa nairobi container freight
+How do I track my order? | You get your order number by email. Send it to us on WhatsApp and we tell you where your parcel is. | tracking parcel status
+How do I contact you? | WhatsApp is fastest. You can also email us or call during opening hours. | phone call email reach talk
+</div>
+<div data-lang="de">
+name: Fragen Sie Kreislo
+greeting: Hallo! Ich bin der Kreislo-Helfer. Fragen Sie mich zu Zahlung, Lieferung, Versand nach Kenia, digitalen Produkten oder Fulfillment.
+suggest: Wie kann ich bezahlen? ; Liefern Sie nach Kenia? ; Wo kann ich abholen? ; Wie bestelle ich?
+use_faq: yes
+log_unanswered: yes
+Wie bestelle ich? | Klicken Sie beim Produkt auf "In den Warenkorb", öffnen Sie den Warenkorb und wählen Sie, wie Sie bestellen möchten: online, per WhatsApp, Telegram oder E-Mail. | kaufen bestellung kasse warenkorb
+Wo kann ich abholen? | Abholung in Gießen nach Absprache. Schreiben Sie uns auf WhatsApp, dann vereinbaren wir einen Termin. | abholung adresse standort besuch laden
+Wann haben Sie geöffnet? | Montag bis Freitag 9:00–18:00, Samstag nach Absprache. | öffnungszeiten offen uhrzeit
+Ist alles geprüft? | Ja. Jedes Gerät und Werkzeug wird vor dem Verkauf geprüft, gereinigt und getestet. Auf der Produktseite steht, was wir getestet haben. | zustand funktioniert qualität gebraucht kaputt garantie
+Kann ich Ihnen Sachen verkaufen? | Vielleicht! Schicken Sie uns Fotos und eine kurze Beschreibung per WhatsApp, dann sagen wir Ihnen, ob wir es nehmen. | verkaufen ankauf angebot
+Was kostet der Versand nach Kenia? | Das hängt von Größe und Gewicht ab. Sagen Sie uns, was Sie möchten und Ihre Stadt, dann nennen wir Ihnen vor der Zahlung den Gesamtpreis. Mehr: /p/kenya.html | preis kosten mombasa nairobi container fracht
+Wo ist meine Bestellung? | Ihre Bestellnummer kommt per E-Mail. Schicken Sie sie uns per WhatsApp, dann sagen wir Ihnen, wo Ihr Paket ist. | sendungsverfolgung paket status tracking
+Wie erreiche ich Sie? | Am schnellsten per WhatsApp. Sie können uns auch eine E-Mail schreiben oder während der Öffnungszeiten anrufen. | telefon anrufen email kontakt
+</div>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-assistant'><data:content/></div>
       </b:includable>
     </b:widget>
     <b:widget id='HTML92' locked='false' title='Shop words (optional translations)' type='HTML'>

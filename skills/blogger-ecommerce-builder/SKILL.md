@@ -1,6 +1,6 @@
 ---
 name: blogger-ecommerce-builder
-description: Turn a Blogger (Blogspot) blog into a complete online shop and small-business site, or customise, audit or migrate a Blogger shopping template such as SpotCommerce. Ships a tested shop theme: products with price/sale/stock/options/weight/video, digital downloads, cart and checkout (Google Sheet order inbox that re-checks prices, WhatsApp, Telegram, email, PayPal.Me, bank transfer), delivery partners with weight prices, multilingual shops, homepage sections (services, steps, reviews, FAQ, newsletter, partners, trust row), team/fulfilment/export pages with request forms, plus a logo/brand kit, owner guide and launch plan. Use whenever the user wants to sell products or services on Blogger, add a cart, checkout, order or quote form to Blogger, build an e-commerce Blogger theme, mentions SpotCommerce or another Blogger shop template, or asks how a Blogger store takes orders or payments, even if they only say "my blog shop".
+description: Turn a Blogger (Blogspot) blog into a complete online shop and small-business site, or customise, audit or migrate a Blogger shopping template such as SpotCommerce. Ships a tested shop theme: products with price/sale/stock/options/weight/video, digital downloads, cart and checkout (Google Sheet order inbox that re-checks prices, WhatsApp, Telegram, email, PayPal.Me, bank transfer), delivery partners with weight prices, multilingual shops, homepage sections (services, steps, reviews, FAQ, newsletter, partners, trust row, news ticker, branches), an "Ask" chat assistant, team/fulfilment/export pages with request forms, plus a logo/brand kit, owner guide and launch plan. Use whenever the user wants to sell products or services on Blogger, add a cart, checkout, order or quote form to Blogger, build an e-commerce Blogger theme, mentions SpotCommerce or another Blogger shop template, or asks how a Blogger store takes orders or payments, even if they only say "my blog shop".
 ---
 
 # Blogger e-commerce builder
@@ -25,7 +25,7 @@ reference, src → build.py → theme.xml, check.py, upload steps). If the user 
 | **Orders** | Order numbers from product initials + date + time (`SST-261105-063922`); Google Sheet inbox re-checks every price, stock, delivery fee and weight from the blog feed; branded HTML emails to owner and buyer; optional Telegram alert; chat orders logged too; bank details or "Pay now with PayPal (34,80 €)" after ordering |
 | **Digital products** | `data-digital="yes"`; Downloads tab; owner sets Status = Paid → buyer gets the download email |
 | **Business pages** | Templates: shipping, delivery partners, returns (Widerruf), contact, Impressum, privacy, team (photo, role, phone, social icons), fulfilment for sellers (quote form), shipping to another country (request form) |
-| **Homepage sections** | Announcement bar, hero + perks, "Talk to us" call/Zoom/Meet buttons with times, What we do (service cards), How it works (steps), customer reviews, FAQ (+ FAQPage JSON-LD), newsletter (double opt-in), partner logos, trust row with payment badges, accreditation seals, floating WhatsApp button |
+| **Homepage sections** | Announcement bar, hero + perks, "Talk to us" call/Zoom/Meet buttons with times, What we do (service cards), How it works (steps), customer reviews, FAQ (+ FAQPage JSON-LD), newsletter (double opt-in), partner logos, trust row with payment badges, accreditation seals, news ticker with sourced figures, branches with Call / WhatsApp / Directions, "Ask …" chat assistant (Q&A from Layout, WhatsApp fallback; or a floating WhatsApp button) |
 | **Languages** | English, German, French built in; any other language via the Shop words gadget; owner content in `data-lang` blocks, also inside line-based gadgets |
 | **Owner handover** | Owner guide with a start-to-finish quick start and test checklist, living guide document with every code block, prefilled order-inbox script |
 | **Brand & launch** | Logo project + brand kit (one folder per design, editable SVG, PNG, print PDF, Word letterhead, guidelines PDF), name research, launch plan with posts for every platform |
@@ -56,7 +56,7 @@ inside, theme.js, shop.js, includables), `preview/` (home, post, team, fulfilmen
 3. Rebrand: the default gadget texts are the example shop "Kreislo" (second-hand Germany → Kenya, digital
    products, fulfilment in Gießen). Replace them in `src/theme.xml`: HTML1 menu, HTML3–5 hero, HTML6–8 footer,
    HTML10 promo, HTML11 talk, HTML12 partners, HTML13 seals, HTML14 announcement, HTML15 trust row,
-   HTML16–20 homepage sections, HTML91 Shop settings, HTML93 Delivery options; and the pages in `assets/pages/`.
+   HTML16–20 homepage sections, HTML21 news ticker, HTML22 branches, HTML23 Ask assistant, HTML91 Shop settings, HTML93 Delivery options; and the pages in `assets/pages/`.
    Colours are skin `<Variable>`s (`accent.color`, `shop.accent` …) so the owner can also change them in Theme → Customise.
 4. Edit `OWNER-GUIDE.md` for the new shop and hand it over (§9).
 
@@ -113,16 +113,19 @@ blocks give per-language versions (fallback English). Blocks without items hide 
 | `shop-newsletter` | `text: …`, `button: …` | Needs google_sheet; double opt-in |
 | `shop-logos` | `Name \| https logo \| link` | Partners / accreditation seals; text badge without logo |
 | `shop-trust` | `icon \| title \| text \| link`, `pay: …` | Trust row + payment badges |
+| `shop-ticker` | `text with *figure* \| source \| link` (parts after the first in any order) | Homepage news ticker under the header; gadget title = label; pause button, stops on hover/focus, still for reduced motion |
+| `shop-branches` | `name \| address \| phone \| WhatsApp \| hours \| map link \| email`, `text:` | Branch cards with Call / WhatsApp / Directions (Google Maps search when no map link) + LocalBusiness JSON-LD |
+| `shop-assistant` (hidden) | `name:`, `greeting:`, `suggest: a ; b`, `use_faq:`, `log_unanswered:`, `question \| answer \| other words` | "Ask …" chat bubble on every page (not AI: word matching incl. FAQ); no match → WhatsApp with the question + anonymous Questions tab; replaces the WhatsApp float; empty = off |
 | `shop-lead` (in pages) | `data-kind`, `data-button`, `data-fields="Name*; Email*; Choice: a / b; Message"` | Request/quote form → Requests tab; WhatsApp fallback |
 | `team` / `team-member` (in pages) | `data-phone`, `data-email`, `data-whatsapp`, `data-telegram`, `data-instagram` … | Team cards with icon buttons |
 
-Icons: `tag globe download warehouse truck return lock shield chat card gift star leaf heart box check clock phone mail`.
+Icons: `tag globe download warehouse truck return lock shield chat card gift star leaf heart box check clock phone mail pin`.
 Line formats and examples: `references/products-and-orders.md` §4b–4g; gadget XML: `assets/shop/theme-snippets.xml`.
 
 ## 5. The order inbox (Code.gs)
 
 One Apps Script web app bound to a Google Sheet. Tabs: **Orders**, **Order lines**, **Downloads**, **Requests**,
-**Newsletter** (all created by `setup`; new columns are appended to old tabs, foreign tabs are moved aside
+**Newsletter**, **Questions** (unanswered chat questions, anonymous, max 300/day; all created by `setup`; new columns are appended to old tabs, foreign tabs are moved aside
 as "(old …)"). It re-reads price, stock, digital flag and weight from the post feed, the Shop settings,
 Delivery options and Talk-to-us gadgets from the homepage (cached 10 min), recomputes shipping, stores
 customer text safely (no formulas), sends branded emails, and answers JSON. `doGet` serves newsletter
@@ -207,3 +210,9 @@ controls; it warns on unknown emails/IBANs, vendor licence switches and third-pa
   into `src/` (shop.css is embedded in `src/skin.css` between "Blogger shop styles." and the end of shop.css).
 - Theme rules (`.widget li`, post-body tables) can override block styles: use specific selectors and check
   screenshots at 375 px.
+- Two features must not share a class prefix: the product page already had `.shop-ask` (Ask on WhatsApp), so the
+  chat assistant uses `.shop-chat-*`. Grep shop.js/shop.css for a new prefix before using it.
+- Anything that reads a gadget another renderer rebuilds (the assistant reads the FAQ) must run before that renderer.
+- Moving content needs a pause button, must stop on hover/focus and stand still for `prefers-reduced-motion`;
+  in tests, wait ~150 ms after clicking pause before measuring.
+- Never invent market figures for a ticker or a page: ship `#` example lines with "Source:" and let the owner fill them.

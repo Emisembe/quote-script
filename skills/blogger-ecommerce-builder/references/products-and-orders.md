@@ -223,6 +223,27 @@ shown) and `<div data-lang="de">…</div>` blocks; a block with no items hides i
 Code.gs routing: `doPost` checks `data.type === 'lead'` first → `lead_()`; everything else is an order.
 Tabs are created by `setup` (run it again after updating the script) and old tabs get missing columns appended.
 
+### 4h. News ticker, branches and the "Ask" chat assistant
+
+- **Ticker** (`shop-ticker`, HTML21, section `.ticker` under the header, homepage only): one item per line,
+  `text | source | link` (after the first part: `/…` or `https://…` = link, anything else = source shown small in
+  brackets). `*text*` is highlighted. The widget title becomes the label (JS hides the h2). JS fills one screen
+  width, appends an `aria-hidden` copy (links `tabindex=-1`) and animates `translateX(0 → -50%)` at ~60 px/s;
+  pause button (`aria-pressed`), paused on hover/focus-within, `prefers-reduced-motion` → still + swipeable.
+- **Branches** (`shop-branches`, HTML22): `name | address | phone | WhatsApp | hours | map link | email`, `text:`
+  intro. Directions = the map link or `https://www.google.com/maps/search/?api=1&query=<address>`. LocalBusiness
+  JSON-LD is added only where the section is visible (`offsetParent`), so once, on the homepage.
+- **Assistant** (`shop-assistant`, HTML23 in the hidden admin area, so on every page): `name:`, `greeting:`,
+  `suggest: a ; b`, `use_faq: yes` (adds every `.shop-faq` pair: the FAQ section exists on every page, hidden by
+  CSS), `log_unanswered: yes`, then `question | answer | other words`. Matching: lower-case, accents stripped,
+  stop words (en/de/fr) removed, light suffix stemming; a query word matches if equal or one contains the other
+  (≥ 4 letters, so "zahlen" finds "bezahlen"); keywords 3, question 2.5, answer 0.6; needs ≥ 1 keyword/question hit.
+  Answers turn `https://…`, `/p/…`, `/search/…` and emails into links. No match → WhatsApp link with the
+  question, suggestion chips, and (once per question) `sendLead({kind:'question', fields:{Question}})` →
+  Code.gs `question_()` → **Questions** tab, no email, no consent needed (anonymous), 300 a day max.
+  While on, the floating WhatsApp button is not added (the chat window has the WhatsApp link). Empty gadget = off.
+  Mention the anonymous question log in the privacy policy (template section 6a).
+
 ## 5. Payments
 
 - Never put **secret** keys (`sk_live_…`, API secrets) in a theme. Everyone can read the XML.

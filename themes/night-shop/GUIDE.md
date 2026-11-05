@@ -26,6 +26,9 @@ is the "Night Shop: complete setup guide" document.
 5j. Homepage sections: What we do, How it works, Customer reviews, Questions & answers, Newsletter
 5k. Fulfilment page and Shipping to Kenya page (with request forms)
 5l. WhatsApp button and "You may also like"
+5m. "Ask Kreislo" chat assistant (questions and answers you edit in Layout)
+5n. News ticker on the homepage (announcements and figures)
+5o. Our branches (addresses, phone numbers, WhatsApp, directions)
 6. How orders reach you
 7. Saving every order in a Google Sheet
 8. Reviews
@@ -71,13 +74,19 @@ Do these steps in this order; each one points to the section with the details. T
       Questions & answers · Stay in the loop (section 5j)
 - [ ] Shipping to Kenya banner · Shop by category · Our partners (5c) · Trust row (5h) · Certified & accredited (5c) ·
       footer texts and menu.
+- [ ] **News** ticker under the header (5n) · **Our branches** with your real address and numbers (5o).
+- [ ] **Ask assistant (chat bubble)** at the bottom of Layout: check every answer, add your own (5m).
 
 **F. Products** (section 4)
 - [ ] 6–10 products: photos first, then the product block with price, stock, options, **weight**, labels.
 - [ ] One digital product (5e): Drive link in the sheet's **Downloads** tab.
 
 **G. Test everything, on your phone and on a computer** (about 20 minutes)
-- [ ] Homepage on the phone: menu opens, language picker works, no sideways scrolling, WhatsApp button bottom-right.
+- [ ] Homepage on the phone: menu opens, language picker works, no sideways scrolling, "Ask Kreislo" bubble bottom-right.
+- [ ] News ticker moves, stops when you touch it, and the pause button works; each link opens the right page.
+- [ ] Our branches: Call rings your number, WhatsApp opens the right chat, Directions opens Google Maps at your address.
+- [ ] Chat bubble: tap a suggested question; type a question in your own words; type something it can't know
+      → "Ask on WhatsApp" opens WhatsApp with the question typed in, and a row appears in the **Questions** tab.
 - [ ] Product page: gallery and video, size/colour required, Ask on WhatsApp / Telegram, "You may also like".
 - [ ] Cart: change the quantity, remove a product, totals and free shipping are right.
 - [ ] Checkout: change country and delivery partner (the shipping price changes); test **each** way:
@@ -494,11 +503,101 @@ You can put a form like this on any page; `data-kind` is the type shown in the s
 
 ## 5l. WhatsApp button and "You may also like"
 
-- **WhatsApp button:** a round green button in the bottom-right corner of every page, using the
-  `whatsapp:` number from Shop settings. On a product page the message already names the product and its
-  link. To switch it off: `whatsapp_button: no` in Shop settings.
+- **WhatsApp button:** while the "Ask Kreislo" assistant is on (section 5m), WhatsApp is inside its chat
+  window. Without the assistant, a round green button sits in the bottom-right corner of every page, using
+  the `whatsapp:` number from Shop settings. On a product page the message already names the product and
+  its link. To switch the round button off: `whatsapp_button: no` in Shop settings.
 - **You may also like:** under each product, up to 4 other products from the same category (the first
   label), with photo and price. It reads your blog feed, so **Settings → Site feed → Full** is needed.
+
+## 5m. "Ask Kreislo" chat assistant (questions and answers you edit in Layout)
+
+A round **Ask Kreislo** button sits in the bottom-right corner of every page. It opens a small chat window
+with a greeting and a few suggested questions. Visitors tap one or type their own question; the assistant
+finds the closest question in your list and shows your answer. When it has no answer it says so and
+offers **Ask on WhatsApp**, with the visitor's question already typed in. A "Chat with a person on
+WhatsApp" link is always at the bottom of the window, so this button replaces the round WhatsApp button.
+
+It is **not AI**: it only knows what you write, it costs nothing and sends no visitor data anywhere except
+the optional "unanswered questions" list below. Edit it in **Layout → bottom of the page → "Ask
+assistant (chat bubble)"**:
+
+```
+<div data-lang="en">
+name: Ask Kreislo
+greeting: Hi! I am the Kreislo helper. Ask me about payment, delivery, shipping to Kenya or fulfilment.
+suggest: How do I pay? ; Do you ship to Kenya? ; Where can I pick up? ; How do I order?
+use_faq: yes
+log_unanswered: yes
+Where can I pick up? | Pickup is in Gießen by appointment. Send us a WhatsApp message. | pickup collect address visit
+How much does shipping to Kenya cost? | It depends on size and weight … More: /p/kenya.html | price mombasa nairobi freight
+</div>
+<div data-lang="de">
+name: Fragen Sie Kreislo
+…
+</div>
+```
+
+| Line | What it does |
+|---|---|
+| `name:` | Text on the button and at the top of the chat window |
+| `greeting:` | First message when the window opens |
+| `suggest:` | Questions shown as buttons, separated by `;` (write them exactly like the questions in your list) |
+| `use_faq: yes` | Also answers with everything in **Questions & answers** (section 5j), so you don't type answers twice |
+| `log_unanswered: yes` | Questions it could not answer are saved in your order sheet, tab **Questions** (needs `google_sheet`) |
+| `question \| answer \| other words` | One question per line. "Other words" are words people might use instead (freight, cost, Mombasa…): they help it find the right answer |
+
+- **Links in answers:** write `/p/kenya.html` or a full `https://…` address in the answer; it becomes a link.
+  An email address becomes a mail link.
+- **Make it better every week:** open the **Questions** tab, add a line to the assistant for each real
+  question people asked, then type "Yes" in "Added to the assistant?".
+- **Privacy:** the Questions tab only stores the question, the language and the page, no name or address.
+  Add one sentence to your privacy policy, e.g. "Questions typed into the chat assistant that it cannot
+  answer are stored anonymously so we can improve our answers." Or switch it off with `log_unanswered: no`.
+- **Switch the assistant off:** empty the gadget (the round WhatsApp button comes back).
+
+## 5n. News ticker on the homepage (announcements and figures)
+
+A dark strip under the header on the homepage, with your news scrolling slowly from right to left. The
+gadget title (**News**) is the orange label on the left. It stops when someone points at it or taps it,
+has a pause button, and stands still for visitors whose phone is set to "reduce motion" (they can swipe it).
+Edit it in **Layout → News** (under the header). One item per line:
+
+```
+New in: washing machines and fridges, tested and cleaned | /search/label/Appliances
+Next container to Mombasa: loading on 15 December | /p/kenya.html
+Online retail in Germany: *€XX bn* in 2025 | Source: name of the study, year | https://link-to-the-study
+```
+
+- The part after the first `|` that starts with `/` or `https://` is the link (optional).
+- Any other part is shown small in brackets as the source, e.g. "(Source: HDE 2025)".
+- `*Text between stars*` is highlighted in orange: use it for numbers.
+- **Figures:** only use numbers you can show a source for, and say which year they are from. Check them
+  every few months.
+- Lines starting with `#` are notes and are not shown. An empty gadget hides the ticker.
+- German lines go in a `<div data-lang="de"> … </div>` block, like the other homepage sections.
+
+## 5o. Our branches (addresses, phone numbers, WhatsApp, directions)
+
+A homepage section with one card per branch: name, address, phone number, opening hours, and the
+buttons **Call**, **WhatsApp** and **Directions** (opens Google Maps at the address). Google also gets the
+address and phone number of every branch, which helps you appear in local search and on Google Maps.
+Edit it in **Layout → Our branches**. One branch per line, always in this order:
+
+```
+text: Visit us, call us or send a WhatsApp message.
+Kreislo Gießen – shop and warehouse | Musterstraße 1, 35390 Gießen, Germany | +49 157 0000000 | +49 157 0000000 | Mon–Fri 9:00–18:00
+Kreislo Mombasa | Moi Avenue 1, Mombasa, Kenya | +254 700 000000 | +254 700 000000 | Mon–Sat 8:00–17:00 | https://maps.app.goo.gl/… | mombasa@kreislo.de
+```
+
+`name | address | phone | WhatsApp number | opening hours | map link (optional) | email (optional)`
+
+- Write phone numbers with the country code (`+49 …`, `+254 …`). Leave a part empty (`| |`) to skip it,
+  e.g. a branch without WhatsApp.
+- **Map link:** without one, Directions searches Google Maps for the address. For an exact pin, open your
+  place in Google Maps → Share → Copy link, and paste it as the 6th part.
+- **Replace the example address** (Musterstraße) before you go live: a wrong address on Google is worse
+  than none. Only list addresses where customers may come or call.
 
 ## 6. How orders reach you
 
@@ -538,7 +637,7 @@ the part that receives orders (`doPost`) is missing. Set it up once (about 5 min
    you WhatsApp/Telegram orders). Save (disk icon).
 4. Choose **setup** in the function list next to Run, press **Run**, and allow the permissions
    ("Advanced → Go to … (unsafe)" is normal for your own script). You get a test email, and the tabs
-   **Orders**, **Order lines**, **Downloads**, **Requests** and **Newsletter** appear.
+   **Orders**, **Order lines**, **Downloads**, **Requests**, **Newsletter** and **Questions** appear.
 5. **Deploy → New deployment** → gear icon → **Web app** → Execute as **Me** → Who has access
    **Anyone** → Deploy. Copy the **Web app URL** (ends in `/exec`).
 6. Blogger: Layout → Shop settings → `google_sheet: ` + paste the URL → Save.
@@ -604,6 +703,10 @@ Impressum and Widerruf at all.
 | A homepage section is missing | "What customers say" stays hidden until it has a line without `#`. The newsletter is hidden without `google_sheet` |
 | Request form or newsletter says "Something went wrong" | The newest Code.gs isn't deployed: paste it, run setup, Deploy → Manage deployments → New version |
 | Newsletter confirm link says "not valid" | The link was already used, or the row was deleted in the Newsletter tab |
+| No "Ask Kreislo" button | The assistant gadget (Layout, bottom) is empty or was reset by a theme upload: paste your saved text back |
+| The assistant gives the wrong answer | Add "other words" to the right question (3rd part), or make the question more specific. Test again with the same words |
+| Nothing arrives in the **Questions** tab | `log_unanswered: yes` and `google_sheet` are needed; paste the newest Code.gs, run **setup** once, then Deploy → Manage deployments → New version |
+| The ticker doesn't move | Your phone or computer is set to "reduce motion" (then it stands still on purpose), or you pressed pause |
 | "You may also like" doesn't appear | The product has no category label, there are no other products in it, or the blog feed isn't set to Full |
 | "Missing link: …" in Downloads sent | Paste the Drive link into the Downloads tab, then set Status to Paid again |
 | Download email not sent when setting Paid | Run **setup** once after pasting the new Code.gs (it creates the trigger), and type exactly `Paid` |

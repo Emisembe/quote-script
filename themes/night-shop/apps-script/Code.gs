@@ -46,6 +46,7 @@ var DOWNLOAD_HEADERS = ['Product', 'Post ID', 'Download link', 'Message to the b
 var PAID = /^(paid|bezahlt|payé|paye|pagado)$/i;
 var REQUEST_HEADERS = ['Received', 'Type', 'Name', 'Email', 'Phone', 'Company', 'Details', 'Status', 'Language', 'Page'];
 var NEWS_HEADERS = ['Received', 'Email', 'Status', 'Confirmed', 'Language', 'Page', 'Token'];
+var QUESTION_HEADERS = ['Received', 'Question', 'Language', 'Page', 'Added to the assistant?'];
 var LEAD_NAMES = { quote: 'Fulfilment quote', kenya: 'Kenya shipment', newsletter: 'Newsletter', request: 'Request' };
 var METHOD_NAMES = { order: 'Website', whatsapp: 'WhatsApp', telegram: 'Telegram', email: 'Email', paypal: 'PayPal' };
 
@@ -174,6 +175,7 @@ function lead_(data) {
   var kind = String(data.kind || 'request').replace(/[^\w-]/g, '').slice(0, 30) || 'request';
   var fields = {}, n = 0;
   Object.keys(data.fields || {}).forEach(function (k) { if (n++ < 25) fields[String(k).slice(0, 60)] = String(data.fields[k] || '').slice(0, 2000); });
+  if (kind === 'question') return question_(fields, data);
   if (!data.consent) return reply_({ ok: false, error: 'consent missing' });
   var find = function (re) { var k = Object.keys(fields).filter(function (x) { return re.test(x); })[0]; return k ? fields[k] : ''; };
   var email = find(/e-?mail/i).trim(), phone = find(/phone|telefon|whatsapp|mobil/i), name = find(/^(full )?name$|^name|vorname|nom/i);
@@ -723,6 +725,25 @@ function telegram_(o) {
   } catch (x) { /* the sheet row and email are what count */ }
 }
 
+/** Questions the "Ask" chat assistant could not answer: anonymous, one row each, at most 300 a day (no emails). */
+function question_(fields, data) {
+  var q = String(fields.Question || fields.question || '').replace(/\s+/g, ' ').trim().slice(0, 300);
+  if (!q) return reply_({ ok: false, error: 'empty question' });
+  var cache = CacheService.getScriptCache(), key = 'questions-' + Utilities.formatDate(new Date(), 'UTC', 'yyyyMMdd');
+  var count = Number(cache.get(key) || 0);
+  if (count >= 300) return reply_({ ok: true, skipped: true });
+  cache.put(key, String(count + 1), 21600);
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(20000);
+    sheet_(SpreadsheetApp.getActiveSpreadsheet(), 'Questions', QUESTION_HEADERS)
+      .appendRow([new Date(), text_(q), text_(data.lang), text_(data.page), 'No']);
+    return reply_({ ok: true });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
 // ---------------------------------------------------------------- run these from the editor
 
 /** Run once: creates the tabs, asks for permissions and emails you a test. */
@@ -733,6 +754,7 @@ function setup() {
   sheet_(book, 'Downloads', DOWNLOAD_HEADERS);
   sheet_(book, 'Requests', REQUEST_HEADERS);
   sheet_(book, 'Newsletter', NEWS_HEADERS);
+  sheet_(book, 'Questions', QUESTION_HEADERS);
   var has = ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === 'onOrderEdit'; });
   if (!has) ScriptApp.newTrigger('onOrderEdit').forSpreadsheet(book).onEdit().create();
   var shop = shopSettings_();

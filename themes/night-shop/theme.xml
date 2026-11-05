@@ -1282,6 +1282,83 @@ body .shop-steps-list > li.shop-step { position: relative; padding: 0 0 0 64px; 
 .shop-related-card .shop-price { font-size: .95rem; }
 @media (max-width: 700px) { .shop-related-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
+/* ticker: scrolling news and figures (homepage) */
+.shop-ticker:not(.is-ready) { white-space: pre-line; }
+.shop-ticker.is-ready { display: flex; align-items: stretch; gap: 0; min-height: 44px; }
+.shop-ticker-label { flex: 0 0 auto; display: flex; align-items: center; padding: 0 16px; background: $(shop.accent); color: #fff; font-weight: 700; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+.shop-ticker-view { flex: 1 1 auto; overflow: hidden; display: flex; align-items: center; min-width: 0; }
+.shop-ticker-track { display: flex; width: max-content; }
+.shop-ticker.is-moving .shop-ticker-track { animation: shop-ticker-run 40s linear infinite; }
+.shop-ticker.is-paused .shop-ticker-track, .shop-ticker:hover .shop-ticker-track, .shop-ticker:focus-within .shop-ticker-track { animation-play-state: paused; }
+@keyframes shop-ticker-run { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+body .shop-ticker-list { display: flex; flex: 0 0 auto; margin: 0; padding: 0; list-style: none; }
+body .shop-ticker-list > li.shop-ticker-item { margin: 0; padding: 0 28px 0 0; white-space: nowrap; font-size: .95rem; line-height: 44px; list-style: none; }
+.shop-ticker-item::after { content: '\25C6'; color: $(shop.accent); font-size: .6rem; margin-left: 28px; vertical-align: middle; }
+.shop-ticker-item a { color: inherit; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.35); }
+.shop-ticker-item a:hover { border-bottom-color: currentColor; }
+.shop-ticker-item strong { color: $(shop.accent); font-weight: 700; }
+.shop-ticker-source { margin-left: 6px; font-size: .78rem; opacity: .65; }
+.shop-ticker-toggle { flex: 0 0 auto; width: 44px; border: 0; background: transparent; color: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: .75; }
+.shop-ticker-toggle:hover, .shop-ticker-toggle:focus-visible { opacity: 1; }
+.shop-ticker-toggle svg { width: 16px; height: 16px; }
+.shop-ticker.is-still .shop-ticker-view { overflow-x: auto; }
+.shop-ticker.is-still .shop-ticker-toggle { display: none; }
+@media (prefers-reduced-motion: reduce) { .shop-ticker-track { animation: none !important; } }
+@media (max-width: 600px) { .shop-ticker-label { padding: 0 10px; font-size: .7rem; } body .shop-ticker-list > li.shop-ticker-item { font-size: .88rem; } }
+
+/* branches with phone numbers (homepage) */
+.shop-branches:not(.is-ready) { white-space: pre-line; }
+.shop-branches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-top: 18px; }
+.shop-branch { background: #fff; border: 1px solid #e4e4e4; border-radius: 14px; padding: 22px 22px 20px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+.shop-branch h3 { margin: 0 0 6px; font-size: 1.15rem; }
+.shop-branch-line { display: flex; gap: 10px; align-items: flex-start; margin: 0; color: #444; line-height: 1.5; }
+.shop-branch-line svg { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 2px; color: $(shop.accent); }
+.shop-branch-line a { color: inherit; }
+.shop-branch-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 12px; }
+.shop-branch-actions .shop-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; font-size: .9rem; }
+.shop-branch-actions .shop-btn svg { width: 16px; height: 16px; }
+.shop-branch-actions .shop-branch-wa { background: #25d366; border-color: #25d366; color: #fff; }
+
+/* "Ask" chat assistant: bubble and window (every page) */
+.shop-chat-bubble { position: fixed; right: 18px; bottom: 18px; z-index: 950; display: flex; align-items: center; gap: 8px; height: 56px; padding: 0 20px 0 16px; border: 0; border-radius: 28px; background: $(shop.accent); color: #fff; font: inherit; font-weight: 700; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.25); transition: transform .15s ease; }
+.shop-chat-bubble:hover, .shop-chat-bubble:focus-visible { transform: translateY(-2px); }
+.shop-chat-bubble svg { width: 24px; height: 24px; }
+.shop-chat-open .shop-chat-bubble { display: none; }
+.shop-chat-panel { position: fixed; right: 18px; bottom: 18px; z-index: 960; width: 370px; max-width: calc(100vw - 24px); height: 540px; max-height: calc(100vh - 36px); display: flex; flex-direction: column; background: #fff; color: #222; border-radius: 16px; overflow: hidden; box-shadow: 0 18px 50px rgba(0,0,0,.3); }
+.shop-chat-panel[hidden] { display: none; }
+.shop-chat-head { display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 16px; background: $(shop.ink); color: #fff; }
+.shop-chat-avatar { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%; background: $(shop.accent); display: flex; align-items: center; justify-content: center; }
+.shop-chat-avatar svg { width: 20px; height: 20px; }
+.shop-chat-title { flex: 1 1 auto; display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.shop-chat-title span { font-size: .78rem; opacity: .75; }
+.shop-chat-close { flex: 0 0 auto; width: 36px; height: 36px; border: 0; border-radius: 50%; background: rgba(255,255,255,.12); color: #fff; font-size: 1.5rem; line-height: 1; cursor: pointer; }
+.shop-chat-log { flex: 1 1 auto; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; background: #f6f5f3; }
+.shop-chat-msg { max-width: 88%; padding: 10px 14px; border-radius: 14px; font-size: .95rem; line-height: 1.5; }
+.shop-chat-msg p { margin: 0 0 6px; }
+.shop-chat-msg p:last-child { margin-bottom: 0; }
+.shop-chat-msg.is-bot { align-self: flex-start; background: #fff; border: 1px solid #e6e3df; border-bottom-left-radius: 4px; }
+.shop-chat-msg.is-user { align-self: flex-end; background: $(shop.ink); color: #fff; border-bottom-right-radius: 4px; }
+.shop-chat-msg a { color: $(shop.accent); word-break: break-word; }
+.shop-chat-q { font-weight: 700; }
+.shop-chat-note { font-size: .82rem; color: #666; }
+.shop-chat-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.shop-chat-chip { border: 1px solid $(shop.accent); background: #fff; color: $(shop.accent); border-radius: 18px; padding: 6px 12px; font: inherit; font-size: .85rem; cursor: pointer; text-align: left; }
+.shop-chat-chip:hover, .shop-chat-chip:focus-visible { background: $(shop.accent); color: #fff; }
+.shop-chat-msg .shop-chat-wa-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; background: #25d366; border-color: #25d366; color: #fff; }
+.shop-chat-msg .shop-chat-wa-btn svg { width: 18px; height: 18px; }
+.shop-chat-foot { border-top: 1px solid #e6e3df; padding: 10px 12px 12px; background: #fff; }
+.shop-chat-form { display: flex; gap: 8px; }
+.shop-chat-input { flex: 1 1 auto; min-width: 0; border: 1px solid #d6d2cc; border-radius: 22px; padding: 10px 14px; font: inherit; font-size: 16px; }
+.shop-chat-input:focus { outline: 2px solid $(shop.accent); outline-offset: 0; border-color: transparent; }
+.shop-chat-send { flex: 0 0 auto; width: 44px; height: 44px; border: 0; border-radius: 50%; background: $(shop.accent); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.shop-chat-wa { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px; font-size: .85rem; color: #128c7e; text-decoration: none; font-weight: 600; }
+.shop-chat-wa svg { width: 18px; height: 18px; }
+@media (max-width: 480px) {
+  .shop-chat-bubble { right: 14px; bottom: 14px; height: 52px; padding: 0 16px 0 14px; }
+  .shop-chat-panel { right: 0; bottom: 0; width: 100vw; max-width: 100vw; height: 82vh; max-height: 82vh; border-radius: 16px 16px 0 0; }
+}
+@media print { .shop-chat-bubble, .shop-chat-panel { display: none; } }
+
 .shop-admin { display: none; }
 body#layout .shop-admin { display: block; }
 
@@ -1492,12 +1569,25 @@ body#layout .announce, body#layout .trust { display: block; }
   .services .widget > h2.title, .steps .widget > h2.title, .testimonials .widget > h2.title, .faq .widget > h2.title, .newsletter .widget > h2.title { font-size: 26px; }
 }
 body#layout .services, body#layout .steps, body#layout .testimonials, body#layout .faq, body#layout .newsletter { display: block; }
+
+/* News ticker (homepage, under the header) and branches */
+.ticker, .branches { display: none; }
+.ticker { background: #111111; color: #ffffff; border-bottom: 1px solid #262626; }
+.ticker .widget { margin: 0; }
+.ticker .widget > h2.title { display: none; }
+.ticker .shop-ticker:not(.is-ready) { padding: 10px 16px; font-size: 14px; }
+.branches { background: #f7f5f2; border-top: 1px solid #e8e3dc; }
+.branches .container { padding-top: 56px; padding-bottom: 56px; }
+.branches .widget > h2.title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
+.branches .widget > h2.title::after { content: '.'; color: $(accent.color); }
+@media (max-width: 600px) { .branches .container { padding-top: 40px; padding-bottom: 40px; } .branches .widget > h2.title { font-size: 26px; } }
+body#layout .ticker, body#layout .branches { display: block; }
 ]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter, .ticker, .branches { display: block; }</style>
 </b:if>
 <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter, .ticker, .branches { display: block; }</style>
 </b:if>
 </head>
 <body expr:class='&quot;rm shop pt-&quot; + data:blog.pageType'>
@@ -1609,6 +1699,37 @@ Fulfilment for online sellers, from Gießen | /p/fulfilment.html]]></b:widget-se
     </nav>
   </div>
 </header>
+
+<!-- ================= News ticker: announcements and figures (homepage; empty gadget = no ticker) ================= -->
+<section class='ticker' id='ticker'>
+  <b:section class='ticker-section' id='ticker-widgets' maxwidgets='1' showaddelement='no'>
+    <b:widget id='HTML21' locked='false' title='News' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+New in: washing machines and fridges, tested and cleaned | /search/label/Appliances
+Next container to Mombasa: ask us for the loading date | /p/kenya.html
+Fulfilment for online sellers from Gießen: ask for a quote | /p/fulfilment.html
+Free shipping in Germany from *50 €* | /p/shipping.html
+# One item per line. A figure: put the number between stars and add the source, for example:
+# Online retail in Germany: *€XX bn* in 2025 | Source: name of the study, year | https://link-to-the-source
+</div>
+<div data-lang="de">
+Neu: Waschmaschinen und Kühlschränke, geprüft und gereinigt | /search/label/Appliances
+Nächster Container nach Mombasa: fragen Sie uns nach dem Ladetermin | /p/kenya.html
+Fulfillment für Online-Händler aus Gießen: jetzt Angebot anfragen | /p/fulfilment.html
+Versandkostenfrei in Deutschland ab *50 €* | /p/shipping.html
+</div>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <b:if cond='data:title != &quot;&quot;'>
+          <h2 class='title'><data:title/></h2>
+        </b:if>
+        <div class='shop-ticker'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</section>
 
 <main id='content'>
 
@@ -2856,6 +2977,36 @@ Bieten Sie Fulfillment für andere Händler an? | Ja. Wir lagern, verpacken und 
   </div>
 </section>
 
+<!-- ================= Our branches: addresses and phone numbers (homepage) ================= -->
+<section class='branches' id='branches'>
+  <div class='container'>
+    <b:section class='branches-section' id='branches-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML22' locked='false' title='Our branches' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+text: Visit us, call us or send a WhatsApp message.
+Kreislo Gießen – shop and warehouse | Musterstraße 1, 35390 Gießen, Germany | +49 157 0000000 | +49 157 0000000 | Mon–Fri 9:00–18:00, Sat by appointment
+# More branches: one per line, in this order (map link and email are optional):
+# name | address | phone | WhatsApp | opening hours | map link | email
+# Kreislo Mombasa | Moi Avenue 1, Mombasa, Kenya | +254 700 000000 | +254 700 000000 | Mon–Sat 8:00–17:00
+</div>
+<div data-lang="de">
+text: Besuchen Sie uns, rufen Sie an oder schreiben Sie uns auf WhatsApp.
+Kreislo Gießen – Laden und Lager | Musterstraße 1, 35390 Gießen | +49 157 0000000 | +49 157 0000000 | Mo–Fr 9:00–18:00, Sa nach Absprache
+</div>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-branches'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
 <!-- ================= Newsletter (homepage, needs google_sheet) ================= -->
 <section class='newsletter' id='newsletter'>
   <div class='container'>
@@ -3062,10 +3213,48 @@ banner_image:]]></b:widget-setting>
         <b:widget-setting name='content'><![CDATA[DHL Parcel | 4,90 up to 2 kg; 6,99 up to 5 kg; 10,49 up to 10 kg; 16,49 up to 31,5 kg | 2–4 working days | /p/delivery.html#dhl | Germany
 Hermes | 4,50 up to 5 kg; 6,95 up to 10 kg | 3–5 working days | /p/delivery.html#hermes | Germany
 DHL International | 14,90 up to 5 kg; 24,90 up to 20 kg | 4–7 working days | /p/delivery.html#dhl-international | Austria, Switzerland
-Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:widget-setting>
+Pickup in Gießen | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
         <div class='shop-delivery'><data:content/></div>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML23' locked='false' title='Ask assistant (chat bubble)' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+name: Ask Kreislo
+greeting: Hi! I am the Kreislo helper. Ask me about payment, delivery, shipping to Kenya, digital products or fulfilment.
+suggest: How do I pay? ; Do you ship to Kenya? ; Where can I pick up? ; How do I order?
+use_faq: yes
+log_unanswered: yes
+# One question per line: question | answer | other words people use for it (optional). Check every answer before you go live.
+How do I order? | Click "Add to cart" on a product, open the cart and choose how you want to order: online, WhatsApp, Telegram or email. | buy purchase checkout cart
+Where can I pick up? | Pickup is in Gießen by appointment. Send us a WhatsApp message and we agree on a time. | pickup collect address location visit shop
+What are your opening hours? | Monday to Friday 9:00–18:00, Saturday by appointment. | open hours time
+Is everything tested? | Yes. Every appliance and tool is checked, cleaned and tested before we sell it. The product page says what we tested. | condition working quality used broken warranty
+Can I sell my things to you? | Maybe! Send us photos and a short description on WhatsApp and we tell you if we can take it. | sell offer old items
+How much does shipping to Kenya cost? | It depends on size and weight. Tell us what you want and your city, and we send you the full price before you pay. More: /p/kenya.html | price cost mombasa nairobi container freight
+How do I track my order? | You get your order number by email. Send it to us on WhatsApp and we tell you where your parcel is. | tracking parcel status
+How do I contact you? | WhatsApp is fastest. You can also email us or call during opening hours. | phone call email reach talk
+</div>
+<div data-lang="de">
+name: Fragen Sie Kreislo
+greeting: Hallo! Ich bin der Kreislo-Helfer. Fragen Sie mich zu Zahlung, Lieferung, Versand nach Kenia, digitalen Produkten oder Fulfillment.
+suggest: Wie kann ich bezahlen? ; Liefern Sie nach Kenia? ; Wo kann ich abholen? ; Wie bestelle ich?
+use_faq: yes
+log_unanswered: yes
+Wie bestelle ich? | Klicken Sie beim Produkt auf "In den Warenkorb", öffnen Sie den Warenkorb und wählen Sie, wie Sie bestellen möchten: online, per WhatsApp, Telegram oder E-Mail. | kaufen bestellung kasse warenkorb
+Wo kann ich abholen? | Abholung in Gießen nach Absprache. Schreiben Sie uns auf WhatsApp, dann vereinbaren wir einen Termin. | abholung adresse standort besuch laden
+Wann haben Sie geöffnet? | Montag bis Freitag 9:00–18:00, Samstag nach Absprache. | öffnungszeiten offen uhrzeit
+Ist alles geprüft? | Ja. Jedes Gerät und Werkzeug wird vor dem Verkauf geprüft, gereinigt und getestet. Auf der Produktseite steht, was wir getestet haben. | zustand funktioniert qualität gebraucht kaputt garantie
+Kann ich Ihnen Sachen verkaufen? | Vielleicht! Schicken Sie uns Fotos und eine kurze Beschreibung per WhatsApp, dann sagen wir Ihnen, ob wir es nehmen. | verkaufen ankauf angebot
+Was kostet der Versand nach Kenia? | Das hängt von Größe und Gewicht ab. Sagen Sie uns, was Sie möchten und Ihre Stadt, dann nennen wir Ihnen vor der Zahlung den Gesamtpreis. Mehr: /p/kenya.html | preis kosten mombasa nairobi container fracht
+Wo ist meine Bestellung? | Ihre Bestellnummer kommt per E-Mail. Schicken Sie sie uns per WhatsApp, dann sagen wir Ihnen, wo Ihr Paket ist. | sendungsverfolgung paket status tracking
+Wie erreiche ich Sie? | Am schnellsten per WhatsApp. Sie können uns auch eine E-Mail schreiben oder während der Öffnungszeiten anrufen. | telefon anrufen email kontakt
+</div>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-assistant'><data:content/></div>
       </b:includable>
     </b:widget>
     <b:widget id='HTML92' locked='false' title='Shop words (optional translations)' type='HTML'>
@@ -3339,6 +3528,13 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:
       'I agree that my details are used to answer my request.': 'Ich bin einverstanden, dass meine Angaben zur Beantwortung meiner Anfrage verwendet werden.',
       'Privacy policy': 'Datenschutzerklärung', 'Send request': 'Anfrage senden', 'Request a quote': 'Angebot anfragen',
       'Thank you! Your request was sent. We will reply within one working day.': 'Vielen Dank! Ihre Anfrage wurde gesendet. Wir antworten innerhalb eines Werktags.',
+      'Ask us': 'Fragen Sie uns', 'Answers from our help list': 'Antworten aus unserer Hilfeliste', 'Type your question…': 'Ihre Frage eingeben…',
+      'Your question': 'Ihre Frage', 'Send': 'Senden', 'Chat with a person on WhatsApp': 'Mit einem Menschen auf WhatsApp schreiben',
+      'Sorry, I do not have an answer to that yet.': 'Dazu habe ich leider noch keine Antwort.',
+      'Ask us on WhatsApp – your question is already typed in.': 'Fragen Sie uns auf WhatsApp – Ihre Frage ist schon eingetippt.',
+      'Ask on WhatsApp': 'Auf WhatsApp fragen', 'You might also mean:': 'Meinten Sie vielleicht:', 'Questions I can answer:': 'Fragen, die ich beantworten kann:',
+      'my question': 'meine Frage', 'Call': 'Anrufen', 'Directions': 'Route', 'Pause': 'Anhalten', 'Play': 'Abspielen', 'Source': 'Quelle',
+      'Open chat': 'Chat öffnen',
       'Something went wrong. Please try again or message us on WhatsApp.': 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder schreiben Sie uns auf WhatsApp.',
       'Please tick the box to agree.': 'Bitte setzen Sie das Häkchen zur Zustimmung.', 'Learn more': 'Mehr erfahren',
       'Talk to us': 'Sprechen Sie mit uns', 'Call us': 'Rufen Sie uns an', 'Zoom video call': 'Zoom-Videoanruf',
@@ -3414,6 +3610,13 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:
       'I agree that my details are used to answer my request.': "J'accepte que mes données soient utilisées pour répondre à ma demande.",
       'Privacy policy': 'Politique de confidentialité', 'Send request': 'Envoyer la demande', 'Request a quote': 'Demander un devis',
       'Thank you! Your request was sent. We will reply within one working day.': 'Merci ! Votre demande a été envoyée. Nous répondons sous un jour ouvré.',
+      'Ask us': 'Posez votre question', 'Answers from our help list': 'Réponses de notre liste d’aide', 'Type your question…': 'Tapez votre question…',
+      'Your question': 'Votre question', 'Send': 'Envoyer', 'Chat with a person on WhatsApp': 'Parler à une personne sur WhatsApp',
+      'Sorry, I do not have an answer to that yet.': 'Désolé, je n’ai pas encore de réponse à cela.',
+      'Ask us on WhatsApp – your question is already typed in.': 'Demandez-nous sur WhatsApp – votre question est déjà saisie.',
+      'Ask on WhatsApp': 'Demander sur WhatsApp', 'You might also mean:': 'Vouliez-vous dire :', 'Questions I can answer:': 'Questions auxquelles je peux répondre :',
+      'my question': 'ma question', 'Call': 'Appeler', 'Directions': 'Itinéraire', 'Pause': 'Pause', 'Play': 'Lecture', 'Source': 'Source',
+      'Open chat': 'Ouvrir le chat',
       'Something went wrong. Please try again or message us on WhatsApp.': 'Une erreur est survenue. Réessayez ou écrivez-nous sur WhatsApp.',
       'Please tick the box to agree.': 'Merci de cocher la case.', 'Learn more': 'En savoir plus',
       'Talk to us': 'Parlez-nous', 'Call us': 'Appelez-nous', 'Zoom video call': 'Appel vidéo Zoom',
@@ -4003,6 +4206,10 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:
     warehouse: 'M3 21V9l9-5 9 5v12M7 21v-7h10v7M7 17h10',
     tag: 'M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01',
     plus: 'M12 5v14M5 12h14',
+    pin: 'M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21zM12 12.5a2.8 2.8 0 1 0 0-5.6 2.8 2.8 0 0 0 0 5.6z',
+    send: 'M3 20.5 21.5 12 3 3.5 3 10l12 2-12 2z',
+    pause: 'M7 5h3.5v14H7zM13.5 5H17v14h-3.5z',
+    play: 'M8 5v14l11-7z',
     // team page social icons
     instagram: 'M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zM16 11.4A4 4 0 1 1 12.6 8 4 4 0 0 1 16 11.4zM17.5 6.5h.01',
     linkedin: 'M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.1c.5-1 1.8-2 3.7-2 4 0 4.7 2.6 4.7 6V21h-4v-5.6c0-1.3 0-3-1.9-3s-2.1 1.4-2.1 2.9V21H9z',
@@ -4979,6 +5186,7 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:
 
   // Round WhatsApp button in the bottom corner of every page ("whatsapp_button: no" switches it off).
   function floatingWhatsApp() {
+    if (ASK) return;   // the "Ask" chat bubble has the WhatsApp button inside
     if (!CFG.whatsapp || /^(no|off|false|0|nein|non)$/i.test(S.whatsapp_button || '')) return;
     var item = doc.querySelector('.shop-item');
     var title = item ? (item.getAttribute('data-title') || '').trim() : '';
@@ -5019,6 +5227,286 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:
       var reviews = item.querySelector('.shop-reviews');
       if (reviews) item.insertBefore(sec, reviews); else item.appendChild(sec);
     }).catch(function () { /* no feed: nothing to show */ });
+  }
+
+  // ------------------------------------------------------------ ticker (homepage)
+  // A gadget wrapped in <div class='shop-ticker'>, one item per line; the gadget title is the label on the left:
+  //   Next container to Mombasa: 15 December | /p/kenya.html
+  //   German online retail: *€88 bn* in 2024 | Source: HDE Online-Monitor 2025 | https://…
+  // *Text between stars* is highlighted. A part starting with / or https:// is the link; any other part is the source.
+  // It scrolls slowly, stops on mouse-over, focus or the pause button, and stands still for "reduce motion" visitors.
+  function tickerNodes(text) {
+    return String(text).split('*').map(function (s, i) { return i % 2 ? el('strong', { text: s }) : (s ? doc.createTextNode(s) : null); });
+  }
+  function renderTicker() {
+    each(doc.querySelectorAll('.shop-ticker'), function (box) {
+      var items = [];
+      langLines(box).forEach(function (line) {
+        var parts = line.split('|').map(function (x) { return x.trim(); });
+        if (!parts[0]) return;
+        var it = { text: t(parts[0]), link: '', source: '' };
+        parts.slice(1).forEach(function (x) { if (safeLink(x)) it.link = it.link || x; else if (x) it.source = x; });
+        items.push(it);
+      });
+      if (!items.length) return hideEmpty(box);
+      var widget = box.closest('.widget');
+      var head = widget && widget.querySelector('h2.title, h3.title');
+      var label = head ? head.textContent.trim() : '';
+      if (head) head.hidden = true;
+      box.textContent = '';
+      box.classList.add('is-ready');
+      var makeList = function () {
+        var ul = el('ul', { 'class': 'shop-ticker-list' });
+        items.forEach(function (it) {
+          var main = it.link
+            ? el('a', { href: it.link, target: /^https/.test(it.link) ? '_blank' : false, rel: /^https/.test(it.link) ? 'noopener' : false }, tickerNodes(it.text))
+            : el('span', {}, tickerNodes(it.text));
+          ul.appendChild(el('li', { 'class': 'shop-ticker-item' }, [main,
+            it.source ? el('span', { 'class': 'shop-ticker-source', text: '(' + t(it.source.replace(/^(source|quelle)\s*:\s*/i, 'Source: ')) + ')' }) : null]));
+        });
+        return ul;
+      };
+      var first = makeList();
+      var track = el('div', { 'class': 'shop-ticker-track' }, [first]);
+      var view = el('div', { 'class': 'shop-ticker-view' }, [track]);
+      var toggle = el('button', { type: 'button', 'class': 'shop-ticker-toggle', 'aria-pressed': 'false', 'aria-label': t('Pause'), title: t('Pause') }, [svg(ICONS.pause)]);
+      if (label) box.appendChild(el('span', { 'class': 'shop-ticker-label', text: t(label) }));
+      box.appendChild(view);
+      box.appendChild(toggle);
+      toggle.addEventListener('click', function () {
+        var paused = box.classList.toggle('is-paused');
+        toggle.setAttribute('aria-pressed', paused ? 'true' : 'false');
+        toggle.setAttribute('aria-label', t(paused ? 'Play' : 'Pause')); toggle.title = t(paused ? 'Play' : 'Pause');
+        toggle.replaceChild(svg(ICONS[paused ? 'play' : 'pause']), toggle.firstChild);
+      });
+      var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var setup = function () {
+        if (still) { box.classList.add('is-still'); return; }
+        // Fill at least one screen width, then add a hidden copy so the loop has no gap.
+        var guard = 0;
+        while (first.scrollWidth < view.clientWidth && guard++ < 8) {
+          items.forEach(function (it, i) { first.appendChild(first.children[i].cloneNode(true)); });
+        }
+        var copy = first.cloneNode(true);
+        copy.setAttribute('aria-hidden', 'true');
+        each(copy.querySelectorAll('a'), function (a) { a.setAttribute('tabindex', '-1'); });
+        track.appendChild(copy);
+        var speed = 60; // pixels per second
+        track.style.animationDuration = Math.max(12, Math.round(first.scrollWidth / speed)) + 's';
+        box.classList.add('is-moving');
+      };
+      if (box.offsetParent !== null) setup();
+      else if (window.requestAnimationFrame) requestAnimationFrame(function () { if (box.offsetParent !== null) setup(); });
+    });
+  }
+
+  // ------------------------------------------------------------ branches (homepage)
+  // A gadget wrapped in <div class='shop-branches'>, one branch per line (text: line = intro):
+  //   name | address | phone | WhatsApp number | opening hours | map link (optional) | email (optional)
+  // Without a map link, "Directions" opens Google Maps with the address. Adds LocalBusiness data for Google.
+  function renderBranches() {
+    each(doc.querySelectorAll('.shop-branches'), function (box) {
+      var d = lineParts(box);
+      var items = d.items.filter(function (p) { return p[0] && (p[1] || p[2]); });
+      if (!items.length) return hideEmpty(box);
+      ready(box, d.intro);
+      var grid = el('div', { 'class': 'shop-branches-grid' }), data = [];
+      items.forEach(function (p) {
+        var name = p[0], addr = p[1] || '', phone = p[2] || '', wa = (p[3] || '').replace(/[^\d]/g, ''), hours = p[4] || '';
+        var map = safeLink(p[5]) || (addr ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(addr) : '');
+        var mail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(p[6] || '') ? p[6] : '';
+        var tel = phone.replace(/[^\d+]/g, '');
+        var outside = function (href) { return /^https/.test(href) ? { target: '_blank', rel: 'noopener' } : {}; };
+        var link = function (cls, href, kids) { var a = { 'class': cls, href: href }, o = outside(href); a.target = o.target || false; a.rel = o.rel || false; return el('a', a, kids); };
+        var actions = [];
+        if (tel) actions.push(link('shop-btn shop-branch-call', 'tel:' + tel, [svg(ICONS.phone, 'stroke'), ' ' + t('Call')]));
+        if (wa.length >= 7) actions.push(link('shop-btn shop-branch-wa', 'https://wa.me/' + wa + '?text=' + encodeURIComponent(t('Hi') + ' ' + CFG.shop + ' – ' + name + ', '), [svg(ICONS.whatsapp), ' WhatsApp']));
+        if (map) actions.push(link('shop-btn shop-btn-ghost shop-branch-map', map, [svg(ICONS.pin, 'stroke'), ' ' + t('Directions')]));
+        grid.appendChild(el('article', { 'class': 'shop-branch' }, [
+          el('h3', { text: t(name) }),
+          addr ? el('p', { 'class': 'shop-branch-line' }, [svg(ICONS.pin, 'stroke'), el('span', { text: addr })]) : null,
+          tel ? el('p', { 'class': 'shop-branch-line' }, [svg(ICONS.phone, 'stroke'), el('a', { href: 'tel:' + tel, text: phone })]) : null,
+          mail ? el('p', { 'class': 'shop-branch-line' }, [svg(ICONS.mail, 'stroke'), el('a', { href: 'mailto:' + mail, text: mail })]) : null,
+          hours ? el('p', { 'class': 'shop-branch-line' }, [svg(ICONS.clock, 'stroke'), el('span', { text: t(hours) })]) : null,
+          actions.length ? el('div', { 'class': 'shop-branch-actions' }, actions) : null
+        ]));
+        var biz = { '@context': 'https://schema.org', '@type': 'LocalBusiness', name: CFG.shop + ' – ' + name, url: location.origin + '/' };
+        if (addr) biz.address = addr;
+        if (phone) biz.telephone = phone;
+        if (mail) biz.email = mail;
+        if (/^https/.test(map)) biz.hasMap = map;
+        data.push(biz);
+      });
+      box.appendChild(grid);
+      if (box.offsetParent !== null && data.length) {   // only where the section is visible (homepage)
+        var ld = el('script', { type: 'application/ld+json' });
+        ld.textContent = JSON.stringify(data.length === 1 ? data[0] : data);
+        doc.head.appendChild(ld);
+      }
+    });
+  }
+
+  // ------------------------------------------------------------ "Ask" assistant (every page)
+  // A gadget in the hidden admin area wrapped in <div class='shop-assistant'>:
+  //   name: Ask Kreislo
+  //   greeting: Hi! Ask me about payment, delivery, shipping to Kenya or fulfilment.
+  //   suggest: How do I pay? ; Do you ship to Kenya? ; Where are you?
+  //   use_faq: yes            (also answers from the "Questions & answers" gadget)
+  //   log_unanswered: yes     (questions it could not answer go to the order sheet, tab "Questions")
+  //   question | answer | other words people use for it
+  // It is not AI: it picks the closest question from the list. No match: WhatsApp with the question typed in.
+  // An empty gadget switches it off (the round WhatsApp button comes back).
+  var STOP = ' a an the is are am do does did i you we it its to of for in on at and or my your our can could how what when where which who whom why with be will would should there this that these me us please hi hello hey get got have has any some much many about from ' +
+    'ich du sie wir es der die das den dem des ein eine einen ist sind und oder wie was wo wann kann konnen mein meine ihr ihre bitte hallo hi habt haben gibt man mit von zu im am auf fur ' +
+    'je tu vous nous il le la les un une des du est sont et ou comment quoi quand peux pouvez puis mon ma mes votre vos bonjour salut avec pour dans sur de ';
+  function words(s) {
+    var plain = String(s || '').toLowerCase();
+    if (plain.normalize) plain = plain.normalize('NFD').replace(/[̀-ͯ]/g, '');
+    return plain.replace(/ß/g, 'ss').split(/[^a-z0-9]+/).filter(function (w) { return w.length > 1 && STOP.indexOf(' ' + w + ' ') === -1; })
+      .map(function (w) { return w.length > 4 ? w.replace(/(ing|ed|es|en|er|s|e|n)$/, '') : w; });
+  }
+  function sameWord(a) {
+    return function (b) { return a === b || (a.length >= 4 && b.length >= 4 && (b.indexOf(a) !== -1 || a.indexOf(b) !== -1)); };
+  }
+  function collectAssistant() {
+    var box = doc.querySelector('.shop-assistant');
+    if (!box) return null;
+    var cfg = { name: 'Ask us', greeting: '', suggest: [], useFaq: true, log: false, placeholder: '', qa: [] };
+    var lines = langLines(box);
+    if (!lines.length) return null;   // empty gadget = assistant switched off
+    lines.forEach(function (line) {
+      var m = /^\s*(name|greeting|suggest|use_faq|log_unanswered|placeholder)\s*:\s*(.*)$/i.exec(line);
+      if (m) {
+        var k = m[1].toLowerCase(), v = m[2].trim();
+        if (k === 'name') cfg.name = v || cfg.name;
+        else if (k === 'greeting') cfg.greeting = v;
+        else if (k === 'suggest') cfg.suggest = v.split(';').map(function (x) { return x.trim(); }).filter(Boolean);
+        else if (k === 'use_faq') cfg.useFaq = on(v);
+        else if (k === 'log_unanswered') cfg.log = on(v);
+        else cfg.placeholder = v;
+        return;
+      }
+      var p = line.split('|').map(function (x) { return x.trim(); });
+      if (p[0] && p[1]) cfg.qa.push({ q: p[0], a: p[1], k: p.slice(2).join(' ') });
+    });
+    if (cfg.useFaq) each(doc.querySelectorAll('.shop-faq'), function (f) {
+      lineParts(f).items.forEach(function (p) {
+        if (p[1] && !cfg.qa.some(function (x) { return x.q.toLowerCase() === p[0].toLowerCase(); })) cfg.qa.push({ q: p[0], a: p.slice(1).join(' | '), k: '' });
+      });
+    });
+    if (!cfg.qa.length) return null;
+    cfg.qa.forEach(function (x) { x.wq = words(x.q); x.wk = words(x.k); x.wa = words(x.a); });
+    return cfg;
+  }
+  function bestAnswers(cfg, question) {
+    var exact = cfg.qa.filter(function (x) { return x.q.toLowerCase() === question.trim().toLowerCase(); })[0];
+    if (exact) return [exact];
+    var qw = words(question);
+    if (!qw.length) return [];
+    return cfg.qa.map(function (x) {
+      var s = 0, strong = 0;
+      qw.forEach(function (w) {
+        var m = sameWord(w), v = 0;
+        if (x.wk.some(m)) v = 3;
+        if (x.wq.some(m)) v = Math.max(v, 2.5);
+        if (!v && x.wa.some(m)) v = 0.6;
+        if (v >= 2.5) strong++;
+        s += v;
+      });
+      return { x: x, s: s + 2 * strong / qw.length, strong: strong };
+    }).filter(function (r) { return r.strong > 0 && r.s >= 2.5; })
+      .sort(function (a, b) { return b.s - a.s; }).slice(0, 3)
+      .filter(function (r, i, all) { return i === 0 || r.s >= all[0].s * 0.6; })
+      .map(function (r) { return r.x; });
+  }
+  // Answer text with clickable links: https://…, /p/… and /search/… paths, email addresses.
+  function answerNodes(text) {
+    var out = [], re = /(https:\/\/[^\s]+|\/(?:p|search)\/[^\s]+|[^\s@()]+@[^\s@()]+\.[a-z]{2,})/gi, last = 0, m;
+    while ((m = re.exec(text))) {
+      var raw = m[1].replace(/[.,;:!?)]+$/, ''), end = m.index + raw.length;
+      if (m.index > last) out.push(text.slice(last, m.index));
+      var href = /@/.test(raw) && !/^https/.test(raw) ? 'mailto:' + raw : raw;
+      out.push(el('a', { href: href, target: /^https/.test(href) ? '_blank' : false, rel: /^https/.test(href) ? 'noopener' : false,
+        text: /^\/p\//.test(raw) ? raw.replace(/^\/p\/|\.html$/g, '').replace(/[-_]/g, ' ') : raw }));
+      last = end; re.lastIndex = end;
+    }
+    if (last < text.length) out.push(text.slice(last));
+    return out;
+  }
+  function waLink(question) {
+    var item = doc.querySelector('.shop-item');
+    var title = item ? (item.getAttribute('data-title') || '').trim() : '';
+    var text = t('Hi') + ' ' + CFG.shop + ', ' + (question ? t('my question') + ': ' + question : '') +
+      (title ? (question ? ' – ' : '') + t('I have a question about') + ' "' + title + '": ' + location.href.split('#')[0] : '');
+    return 'https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(text);
+  }
+  var ASK = null;
+  function buildAssistant(cfg) {
+    var name = t(cfg.name), opened = false, asked = {};
+    var bubble = el('button', { type: 'button', 'class': 'shop-chat-bubble', 'aria-expanded': 'false', 'aria-controls': 'shop-chat-panel', 'aria-label': t('Open chat') + ': ' + name },
+      [svg(ICONS.chat, 'stroke'), el('span', { 'class': 'shop-chat-bubble-text', text: name })]);
+    var log = el('div', { 'class': 'shop-chat-log', role: 'log', 'aria-live': 'polite' });
+    var input = el('input', { type: 'text', 'class': 'shop-chat-input', name: 'question', maxlength: '300', autocomplete: 'off',
+      placeholder: t(cfg.placeholder || 'Type your question…'), 'aria-label': t('Your question') });
+    var form = el('form', { 'class': 'shop-chat-form' }, [input, el('button', { type: 'submit', 'class': 'shop-chat-send', 'aria-label': t('Send'), title: t('Send') }, [svg(ICONS.send)])]);
+    var wa = CFG.whatsapp ? el('a', { 'class': 'shop-chat-wa', href: waLink(''), target: '_blank', rel: 'noopener' }, [svg(ICONS.whatsapp), ' ' + t('Chat with a person on WhatsApp')]) : null;
+    var close = function () {
+      panel.hidden = true; bubble.setAttribute('aria-expanded', 'false'); doc.body.classList.remove('shop-chat-open'); bubble.focus();
+    };
+    var panel = el('div', { 'class': 'shop-chat-panel', id: 'shop-chat-panel', role: 'dialog', 'aria-label': name, hidden: 'hidden' }, [
+      el('div', { 'class': 'shop-chat-head' }, [
+        el('span', { 'class': 'shop-chat-avatar' }, [svg(ICONS.chat, 'stroke')]),
+        el('div', { 'class': 'shop-chat-title' }, [el('strong', { text: name }), el('span', { text: t('Answers from our help list') })]),
+        el('button', { type: 'button', 'class': 'shop-chat-close', 'aria-label': t('Close'), title: t('Close'), text: '×', onclick: close })]),
+      log, el('div', { 'class': 'shop-chat-foot' }, [form, wa])]);
+    var say = function (who, kids) {
+      var msg = el('div', { 'class': 'shop-chat-msg is-' + who }, kids);
+      log.appendChild(msg);
+      log.scrollTop = log.scrollHeight;
+      return msg;
+    };
+    var chips = function (title, qs) {
+      if (!qs.length) return;
+      say('bot', [title ? el('p', { 'class': 'shop-chat-note', text: t(title) }) : null,
+        el('div', { 'class': 'shop-chat-chips' }, qs.map(function (q) {
+          return el('button', { type: 'button', 'class': 'shop-chat-chip', text: t(q), onclick: function () { ask(q); } });
+        }))]);
+    };
+    var ask = function (q) {
+      q = String(q || '').trim().slice(0, 300);
+      if (!q) return;
+      say('user', [el('p', { text: q })]);
+      if (wa) wa.href = waLink(q);
+      var found = bestAnswers(cfg, q);
+      if (found.length) {
+        say('bot', [el('p', { 'class': 'shop-chat-q', text: t(found[0].q) }), el('p', {}, answerNodes(t(found[0].a)))]);
+        chips('You might also mean:', found.slice(1).map(function (x) { return x.q; }));
+        return;
+      }
+      say('bot', [el('p', { text: t('Sorry, I do not have an answer to that yet.') }),
+        CFG.whatsapp ? el('p', { text: t('Ask us on WhatsApp – your question is already typed in.') }) : null,
+        CFG.whatsapp ? el('a', { 'class': 'shop-btn shop-chat-wa-btn', href: waLink(q), target: '_blank', rel: 'noopener' }, [svg(ICONS.whatsapp), ' ' + t('Ask on WhatsApp')]) : null]);
+      chips('Questions I can answer:', (cfg.suggest.length ? cfg.suggest : cfg.qa.slice(0, 4).map(function (x) { return x.q; })).slice(0, 4));
+      var key = q.toLowerCase();
+      if (cfg.log && CFG.endpoint && !asked[key] && window.fetch) {
+        asked[key] = 1;
+        sendLead({ kind: 'question', fields: { Question: q } }).catch(function () { /* logging is optional */ });
+      }
+    };
+    form.addEventListener('submit', function (e) { e.preventDefault(); var q = input.value; input.value = ''; ask(q); });
+    bubble.addEventListener('click', function () {
+      if (!panel.hidden) return close();
+      panel.hidden = false; bubble.setAttribute('aria-expanded', 'true'); doc.body.classList.add('shop-chat-open');
+      if (!opened) {
+        opened = true;
+        say('bot', [el('p', { text: t(cfg.greeting || 'Hi! How can we help?') })]);
+        chips('', (cfg.suggest.length ? cfg.suggest : cfg.qa.slice(0, 4).map(function (x) { return x.q; })).slice(0, 5));
+      }
+      setTimeout(function () { input.focus(); }, 30);
+    });
+    panel.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+    doc.body.appendChild(panel);
+    doc.body.appendChild(bubble);
   }
 
   // ------------------------------------------------------------ logo rows
@@ -5105,9 +5593,13 @@ Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:
     renderServices();
     renderSteps();
     renderTestimonials();
+    ASK = collectAssistant();   // reads the FAQ gadget too, so before renderFaq() rebuilds it
     renderFaq();
+    renderTicker();
+    renderBranches();
     renderNewsletter();
     renderLeadForms();
+    if (ASK) buildAssistant(ASK);
     floatingWhatsApp();
     relatedProducts();
     jumpToLanguageAnchor();
