@@ -9,6 +9,7 @@ folder (`themes/night-shop/GUIDE.md`). The complete click-by-click version, with
 is the "Night Shop: complete setup guide" document.
 
 ## Contents
+0. Quick start: the whole setup in order (with test checklist)
 1. What's in the folder
 2. Install or update the theme (do this every time)
 3. Shop settings: every line explained
@@ -35,13 +36,71 @@ is the "Night Shop: complete setup guide" document.
 
 ---
 
+## 0. Quick start: the whole setup in order
+
+Do these steps in this order; each one points to the section with the details. Tick them off.
+
+**A. Blogger basics** (once)
+- [ ] Theme → ▾ → **Backup** → Download (keep the file).
+- [ ] Upload `theme-night-shop.xml` (section 2).
+- [ ] Settings → **Title**: `Kreislo` · Description: `Keep good things moving`.
+- [ ] Theme → ▾ → **Mobile settings** → **Desktop**.
+- [ ] Settings → Site feed → Allow blog feed → **Full**.
+- [ ] Settings → Comments → Who can comment → **Anyone**.
+- [ ] Settings → **Favicon** → Logo Project `03 Favicon` → the 512px file (section 5f).
+- [ ] Layout → **Header** → Image → Logo Project `01 Website header logo` (88px file) → "Instead of title and description" (section 5f).
+
+**B. Shop settings and delivery** (Layout, bottom of the page)
+- [ ] **Shop settings**: `shop_name: Kreislo`, whatsapp, telegram, email, paypal, payment, bank, shipping,
+      free_shipping_over, ship_to, default_country, tax_note, language(s) (section 3).
+- [ ] **Delivery options**: your real carriers, prices and countries (section 5d).
+
+**C. Order sheet** (once, about 10 minutes)
+- [ ] sheets.new → Extensions → Apps Script → paste the whole `Code.gs` → Save → run **setup** → allow →
+      Deploy as Web app (Anyone) → copy the `/exec` link (section 7).
+- [ ] Shop settings → `google_sheet: ` + the `/exec` link.
+
+**D. Pages** (Pages → New page; short title first, then the nice title; section 9)
+- [ ] `shipping` · `delivery` · `returns` · `contact` · `impressum` · `privacy` (footer pages, section 9)
+- [ ] `team` (section 5i) · `fulfilment` and `kenya` (section 5k)
+- [ ] Replace every `[square bracket]` with your real details (address, prices, dates, insurance, customs).
+
+**E. Homepage texts** (Layout; edit or delete what you don't need)
+- [ ] Announcement bar (5g) · Banner "Keep good things moving" and its buttons · "Why Kreislo"
+- [ ] Talk to us (5b) · What we do · How it works · What customers say (only real reviews) ·
+      Questions & answers · Stay in the loop (section 5j)
+- [ ] Shipping to Kenya banner · Shop by category · Our partners (5c) · Trust row (5h) · Certified & accredited (5c) ·
+      footer texts and menu.
+
+**F. Products** (section 4)
+- [ ] 6–10 products: photos first, then the product block with price, stock, options, **weight**, labels.
+- [ ] One digital product (5e): Drive link in the sheet's **Downloads** tab.
+
+**G. Test everything, on your phone and on a computer** (about 20 minutes)
+- [ ] Homepage on the phone: menu opens, language picker works, no sideways scrolling, WhatsApp button bottom-right.
+- [ ] Product page: gallery and video, size/colour required, Ask on WhatsApp / Telegram, "You may also like".
+- [ ] Cart: change the quantity, remove a product, totals and free shipping are right.
+- [ ] Checkout: change country and delivery partner (the shipping price changes); test **each** way:
+      Place order · WhatsApp · Telegram · Email; and both payments: Bank transfer (bank details shown) ·
+      PayPal (button with the amount).
+- [ ] Digital product alone: no address asked; set its order to **Paid** in the sheet → download email arrives.
+- [ ] Fulfilment page and Kenya page: send each form → a row in **Requests** + an email to you.
+- [ ] Newsletter: sign up → confirmation email → click it → Status **Subscribed** in the **Newsletter** tab.
+- [ ] In the sheet: rows in **Orders** and **Order lines** for every test order; you and the buyer got emails.
+- [ ] Delete the test rows when you're done.
+
+**H. Before you announce the launch**
+- [ ] Impressum, privacy policy and returns checked (e-recht24.de or a lawyer).
+- [ ] No `[square brackets]`, "Your Name" or example numbers left anywhere.
+- [ ] Copy the text of all your Layout gadgets into a note (you need it after every theme update).
+
 ## 1. What's in the folder
 
 | File | What it's for |
 |---|---|
 | `theme-night-shop.xml` (in the main folder) | The theme you upload to Blogger |
 | `samples/` | Seven ready-made product posts to copy (07 = digital download) |
-| `pages/` | Templates for the footer pages, including `delivery.html` (Delivery partners) |
+| `pages/` | Page templates: shipping, delivery, returns, contact, impressum, privacy, team, fulfilment, kenya |
 | `apps-script/Code.gs` | The Google Sheet order inbox |
 | `GUIDE.md` | This guide |
 | `src/`, `scripts/`, `preview/` | The theme's source; Claude edits these and builds `theme-night-shop.xml` |
@@ -52,9 +111,11 @@ Uploading a theme puts every gadget back to the theme's default text. So **save 
 
 1. **Back up:** Theme → ▾ (next to Customise) → **Backup** → Download. Keep the file.
 2. **Copy your settings:** Layout → **Shop settings** (bottom of the page) → Edit → select all text →
-   copy it into a note. Do the same for **Shop words**, the **menu** gadget, and any gadget you changed
-   (hero text, "Why shop with us", "Order directly", "Talk to us", **Delivery options**, "Our partners",
-   "Certified & accredited", **Announcement bar**, the trust row, footer texts).
+   copy it into a note. Do the same for **Shop words**, **Delivery options**, the **menu** gadget, and every
+   gadget you changed: Announcement bar, the banner ("Keep good things moving") and its buttons,
+   "Why Kreislo", "Talk to us", "What we do", "How it works", "What customers say", "Questions & answers",
+   "Stay in the loop", "Shipping to Kenya" banner, "Our partners", Trust row, "Certified & accredited",
+   footer texts. (The pages and posts are not touched by a theme upload.)
 3. **Upload:** Theme → ▾ → **Restore** → upload `theme-night-shop.xml`.
    If it only says "Could not restore theme": Theme → ▾ → **Edit HTML**, select everything, paste the
    whole file, Save. That screen names the exact problem; send Claude a screenshot.
@@ -62,8 +123,9 @@ Uploading a theme puts every gadget back to the theme's default text. So **save 
 5. **Phones:** Theme → ▾ → **Mobile settings** → choose **Desktop** (once is enough).
 6. **Blog feed:** Settings → Site feed → Allow blog feed → **Full** (needed by the Google Sheet inbox).
 7. **Reviews without a Google account:** Settings → Comments → Who can comment → **Anyone**.
-8. **Check** (2 minutes): homepage, one product, add to cart, checkout, a category page, the language
-   picker, and the phone menu.
+8. **Check** (5 minutes): homepage, one product, add to cart, checkout, a category page, the language
+   picker, the phone menu and the WhatsApp button. After a bigger update, do the full test list in
+   section 0, part G.
 
 ## 3. Shop settings: every line explained
 
@@ -71,7 +133,7 @@ Layout → **Shop settings** → Edit. One setting per line. Capital letters don
 work. Leave a value empty to switch it off.
 
 ```
-shop_name: Night Shop
+shop_name: Kreislo
 currency: EUR
 locale: de-DE
 language: en
@@ -92,6 +154,7 @@ ship_to: Austria (9,90) = Vienna, Graz
 ship_to: Switzerland (14,90)
 tax_note: Incl. VAT, plus shipping
 label_prices: yes
+whatsapp_button: yes
 hero_image:
 banner_image:
 ```
@@ -116,7 +179,8 @@ banner_image:
 | `default_country` | Country selected at checkout (`DE` or `Germany`) |
 | `tax_note` | Small line under the price |
 | `label_prices` | `yes` keeps old SpotCommerce labels (`_39` = price, `-49` = old price, `!0` = sold out) working |
-| `hero_image`, `banner_image` | A photo link (`https://…`) for the big homepage background and the "Order directly" banner. Empty = the drawn city lights |
+| `whatsapp_button` | `no` hides the round WhatsApp button in the corner of every page (section 5l). Empty or `yes` = shown |
+| `hero_image`, `banner_image` | A photo link (`https://…`) for the big homepage background and the "Shipping to Kenya" banner. Empty = the drawn city lights |
 
 **How to get a photo link:** upload the photo into any post (it can stay a draft), switch to HTML view
 (the `<>` pencil icon at top left), and copy the address inside `src="…"`.
@@ -316,6 +380,9 @@ make a separate copy and link per buyer.
 
 Save. Remove the image the same way to go back to the text name.
 
+**Which Kreislo file:** Logo Project → `01 Website header logo` → the "88px high" PNG (white letters for
+the black header). Browser icon: `03 Favicon` → the "512px" PNG.
+
 **Browser icon (favicon):** Settings → **Favicon** → upload a square image (at least 48 × 48 px, under
 100 KB). It shows in the browser tab and in Google search results. The theme also colours the phone's
 browser bar black to match the header.
@@ -450,7 +517,9 @@ Each order has a number made of the first product's initials, the date and the t
 e.g. **BRA-261104-153012** ("Bra", 4 Nov 2026, 15:30:12) or **SST-…** for "Sportiva Swing Tee". A second
 order with the same number gets **-2** (same phone, same second), and the Google Sheet adds -2, -3 … to any
 number it already has, so no two rows share a number. Ask buyers to use it as the payment reference.
-Checkout asks for name, phone, email, street, postcode, city and country, plus an optional note.
+Checkout asks for name, phone, email, street, postcode, city and country, the delivery partner (with
+price and delivery time), how to order and how to pay, plus an optional note. A cart with only digital
+products skips the address and delivery and requires the email.
 
 ## 7. Saving every order in a Google Sheet
 
@@ -458,7 +527,7 @@ You can't paste a normal Sheet link into the shop: a sheet can't receive orders 
 script acts as the sheet's "inbox". **Where is it?** In the kit zip, folder `apps-script`, file `Code.gs`
 (Claude also sends it as its own file, already filled in with your blog address and email).
 
-**Paste the whole file, unchanged.** It is about 650 lines long. If you only have a short version
+**Paste the whole file, unchanged.** It is about 760 lines long. If you only have a short version
 (for example one an AI "tidied up"), orders fail with "Sorry, the order could not be sent", because
 the part that receives orders (`doPost`) is missing. Set it up once (about 5 minutes):
 
@@ -474,7 +543,8 @@ the part that receives orders (`doPost`) is missing. Set it up once (about 5 min
    **Anyone** → Deploy. Copy the **Web app URL** (ends in `/exec`).
 6. Blogger: Layout → Shop settings → `google_sheet: ` + paste the URL → Save.
 7. Place a test order. A new row appears in **Orders** (one row per order) and **Order lines** (one
-   row per product).
+   row per product). Send one fulfilment request and one newsletter sign-up too: rows appear in
+   **Requests** and **Newsletter**.
 
 **Replacing an older script:** paste the new file over everything, Save, run **setup** again (new
 columns are added at the end of your tabs and your orders stay; tabs from a completely different script
@@ -504,11 +574,13 @@ buyers don't need a Google account. Moderate comments in **Comments** in Blogger
 
 ## 9. Footer pages (Shipping, Delivery partners, Returns, Contact, Impressum, Privacy)
 
-The footer already links to `/p/shipping.html`, `/p/delivery.html`, `/p/team.html`, `/p/returns.html`, `/p/contact.html`,
-`/p/impressum.html` and `/p/privacy.html`. Create each page once:
+The footer already links to `/p/shipping.html`, `/p/delivery.html`, `/p/team.html`, `/p/fulfilment.html`,
+`/p/kenya.html`, `/p/returns.html`, `/p/contact.html`, `/p/impressum.html` and `/p/privacy.html`; the menu
+links to Kenya and Fulfilment. Create each page once:
 
 1. **Pages → New page.**
-2. Title: the **short name first**: `shipping` (then `delivery`, `team`, `returns`, `contact`, `impressum`, `privacy`).
+2. Title: the **short name first**: `shipping` (then `delivery`, `team`, `fulfilment`, `kenya`, `returns`,
+   `contact`, `impressum`, `privacy`). The file to paste has the same name, e.g. `pages/kenya.html`.
    Blogger makes the page address from the first title.
 3. HTML view → paste the matching file from `pages/` → replace everything in `[square brackets]`.
 4. **Publish.** Then change the title to the nice name ("Shipping & delivery", "Returns (Widerruf)" …)
