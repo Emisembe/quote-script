@@ -29,6 +29,28 @@ python3 -I src/finish.py "$PWD"                  # favicon.ico, watermark, Word 
 ```
 Output: `ROOT/final/` (folders) and `ROOT/downloads/` (zips).
 
+## Design templates (Inkscape): sale posts, merchandise, press wall, video backgrounds
+`design_templates.py` makes one Inkscape project per design (layers, locked background, hidden guide layer,
+export DPI stored in the file), and `render_inkscape.py` exports them with Inkscape itself:
+- **Sale posts** (live, editable text): square, portrait 4:5, story 9:16 (safe zones), landscape; filled examples
+  (washing machine, fridge, tools, tractor with line drawings as photo stand-ins); "new arrivals" grid; shipment
+  announcement. Documents are sized in inches with a px viewBox, so a **300 dpi export = 2x the platform size**
+  (1080 -> 2160 px). The photo window is a hole in the locked background layer, with the photo layer underneath:
+  the owner imports a photo, scales it, done (no clipping path).
+- **Merchandise print files** (outlines, real size in mm, transparent, small margin): T-shirt chest 90 mm + back
+  280 mm (dark/light), cap front symbol 55 mm / logo 100 mm for embroidery, work uniform chest/back/sleeve +
+  one-colour version; placement preview sheets.
+- **Events:** step-and-repeat press backdrop 300 x 200 cm + 2 cm bleed (light/dark, vector PDF), roll-up
+  85 x 200 cm (bottom 10 cm in the stand, QR placeholder), video backgrounds 1920x1080 + 4K.
+```bash
+python3 -I design_templates.py FONTS_DIR OUT && python3 -I render_inkscape.py OUT/jobs.json
+```
+Needs **full** Oswald/Open Sans TTFs installed (`~/.local/share/fonts`, `fc-cache -f`): the Latin-subset files
+from the Google Fonts CSS API render as blank text in Inkscape ("Invalid glyph found"). Full TTFs come from npm
+(`npm pack @expo-google-fonts/oswald @expo-google-fonts/open-sans`, with the OFL licence). `apt-get install inkscape`
+works in cloud sessions. Check after export: alpha bounding box of print PNGs must not touch the edge; `pdffonts`
+shows 0 fonts and `pdfimages -list` 0 images for print PDFs; test the photo window by inserting an oversized image.
+
 ## Change it for another brand
 - `kreislo.py`: `NAME` (the word), `RING_AT` (which letter becomes the arrow ring; must be an O or round
   letter), `CAP`, `TRACK`, `WORD_RING_SW`, `RING_GAP`, `RING_HEAD`, colours, and the default `tagline` text.
@@ -46,4 +68,5 @@ Output: `ROOT/final/` (folders) and `ROOT/downloads/` (zips).
 - Doc and artifact tools cap one write at 32 KB: split long code into Part 1 / Part 2.
 - Keep print PDFs vector (Chromium `page.pdf` of the SVG); check page size in mm and that there are no
   raster images inside.
+- Inkscape needs full font files (subset web fonts render blank); print files use outlines so the shop needs no fonts.
 - Real reviews only in any "customer review" template; placeholders must be clearly fake.
