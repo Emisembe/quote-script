@@ -188,6 +188,13 @@ controls; it warns on unknown emails/IBANs, vendor licence switches and third-pa
   step-and-repeat press backdrop, roll-up banner and video-call backgrounds. One folder and one zip per design.
   `social_profiles.py`: profile pictures and header images for YouTube, LinkedIn (company + personal), Facebook,
   TikTok, Instagram (highlight covers), X and WhatsApp Business, each named by platform with safe-area checks.
+- **Intro and outro videos:** `assets/brand-kit/video/` renders 2D logo animations at 4K 60 fps for desktop (16:9,
+  YouTube end screen frames) and mobile (9:16, TikTok/Reels safe area), with a sound logo made in code.
+- **Business model and team plan:** write them as documents with a Business Model Canvas, the business lines, unit
+  economics per sale, start and monthly costs, break-even, phases with triggers, legal rules (look them up: e.g.
+  export of used electrical goods needs a function test per device), risks, KPIs; a team plan per phase with
+  contract types, current minimum wage and Minijob limits (search them), costs, job ads and employer checklist.
+  Mark every number that is not sourced as an assumption.
 - **Launch plan document:** costs to secure the name (trade registration at the town hall ≈ €20–60, DPMA
   trademark €290 online for up to 3 classes + €100 per extra class, EU trademark €850/€900/€1,050 for 1/2/3
   classes, domain a few euros a year; confirm current fees), a 7-day timeline, ready posts for LinkedIn,

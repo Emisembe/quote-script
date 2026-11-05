@@ -1,0 +1,105 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Kreislo intro</title>
+<style>
+@font-face { font-family: 'Oswald'; font-weight: 600; src: url('fonts/Oswald-600.ttf'); }
+@font-face { font-family: 'Open Sans'; font-weight: 600; src: url('fonts/OpenSans-600.ttf'); }
+html, body { margin: 0; background: #111; overflow: hidden; }
+svg { display: block; }
+</style></head>
+<body>
+<script>
+// ===== Change the words here, then render again =====
+var CONFIG = {
+  tagline: 'KEEP GOOD THINGS MOVING',
+  duration: 6.0            // seconds
+};
+</script>
+<script src="logo.js"></script>
+<script src="engine.js"></script>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var mobile = q.get('format') === 'mobile';
+  var W = mobile ? 1080 : 1920, H = mobile ? 1920 : 1080;
+  var svg = K.el('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H }, document.body);
+  var bg = K.makeBackground(svg, W, H);
+
+  // Wordmark placement (logo units → screen)
+  var visW = mobile ? 860 : 900;
+  var s = visW / (K.WORD.right - K.WORD.left);
+  var cy = mobile ? H * 0.46 : H * 0.44;
+  var x0 = W / 2 - s * (K.WORD.left + K.WORD.right) / 2, y0 = cy - s * K.WORD.ringY;
+  var stage = K.el('g', {}, svg);
+  var wm = K.makeWordmark(stage);
+  wm.g.setAttribute('transform', 'translate(' + x0 + ',' + y0 + ') scale(' + s + ')');
+
+  // Light sweep over the letters (clipped to the letters)
+  var clip = K.el('clipPath', { id: 'letterclip' }, bg.defs);
+  LOGO.letters.forEach(function (L) { K.el('path', { d: L.d }, clip); });
+  var lg = K.el('linearGradient', { id: 'sheen', x1: '0', y1: '0', x2: '1', y2: '0' }, bg.defs);
+  K.el('stop', { offset: '0', 'stop-color': '#fff', 'stop-opacity': 0 }, lg);
+  K.el('stop', { offset: '0.5', 'stop-color': '#fff', 'stop-opacity': 0.55 }, lg);
+  K.el('stop', { offset: '1', 'stop-color': '#fff', 'stop-opacity': 0 }, lg);
+  var sheenG = K.el('g', { 'clip-path': 'url(#letterclip)' }, wm.g);
+  var sheen = K.el('rect', { x: -200, y: 0, width: 120, height: 170, fill: 'url(#sheen)', transform: 'skewX(-20)' }, sheenG);
+
+  // Tagline and accent line
+  var tagSize = mobile ? 36 : 30;
+  var tagY = y0 + s * 131 + (mobile ? 92 : 84);
+  var tag = K.text(stage, CONFIG.tagline, { x: W / 2, y: tagY, 'text-anchor': 'middle', fill: K.C.grey,
+    'font-family': 'Open Sans', 'font-weight': 600, 'font-size': tagSize });
+  var line = K.el('rect', { x: W / 2, y: tagY + 30, width: 0, height: 4, fill: K.C.orange }, stage);
+  var fade = K.el('rect', { width: W, height: H, fill: '#000', opacity: 1 }, svg);
+
+  // Letter boxes for the stagger
+  var boxes = wm.letters.map(function (L) { return L.path.getBBox(); });
+
+  window.renderFrame = function (t) {
+    var T = CONFIG.duration, e = K.ease, P = K.p;
+    // background
+    fade.setAttribute('opacity', 1 - e.out(P(t, 0, 0.5)) + e.in(P(t, T - 0.7, T)));
+    bg.glow.setAttribute('opacity', e.out(P(t, 0, 1.0)));
+    bg.big.update(W / 2, H * 0.5, (mobile ? 760 : 620), mobile ? 90 : 80, 1);
+    bg.big.g.setAttribute('transform', 'rotate(' + (t * 12) + ' ' + W / 2 + ' ' + H * 0.5 + ')');
+
+    // ring: draws itself big in the centre while spinning, then flies into the O
+    var draw = e.inOut(P(t, 0.25, 1.35));
+    var move = e.inOut(P(t, 1.35, 2.05));
+    var spin = 360 * e.out(P(t, 0.25, 2.05)) + 360 * e.inOut(P(t, 4.0, 4.9));
+    var pop = t < 2.05 ? 1 : 1 + 0.10 * Math.sin(Math.PI * P(t, 2.05, 2.35));
+    var bigK = mobile ? 3.0 : 2.6;
+    var k = K.lerp(bigK, 1, move) * pop;
+    // ring centre in logo units: interpolate from screen centre to the O
+    var cxL = K.lerp((W / 2 - x0) / s, K.WORD.ringX, move), cyL = K.lerp((cy - y0) / s, K.WORD.ringY, move);
+    wm.ring.update(0, 0, K.WORD.r, K.WORD.sw, Math.max(draw, 0.0001));
+    wm.ring.g.setAttribute('opacity', t < 0.25 ? 0 : 1);
+    wm.ringHolder.setAttribute('transform', 'translate(' + cxL + ',' + cyL + ') scale(' + k + ') rotate(' + spin + ')');
+
+    // letters rise in one by one
+    wm.letters.forEach(function (L, i) {
+      var a = e.out(P(t, 1.75 + i * 0.07, 2.25 + i * 0.07));
+      L.g.setAttribute('opacity', a);
+      L.g.setAttribute('transform', 'translate(0,' + (36 * (1 - a)) + ')');
+    });
+    // sheen across the letters
+    var sh = e.inOut(P(t, 3.6, 4.5));
+    sheen.setAttribute('x', K.lerp(-150, 560, sh));
+    sheen.setAttribute('opacity', sh > 0 && sh < 1 ? 1 : 0);
+
+    // tagline: letters open up, then the orange line grows
+    var tg = e.out(P(t, 2.5, 3.4));
+    tag.setAttribute('opacity', tg);
+    tag.setAttribute('letter-spacing', K.lerp(24, 10, tg) * (mobile ? 0.9 : 1));
+    tag.setAttribute('y', tagY + 14 * (1 - tg));
+    var ln = e.inOut(P(t, 3.0, 3.8)) * (mobile ? 140 : 160);
+    line.setAttribute('x', W / 2 - ln / 2);
+    line.setAttribute('width', ln);
+
+    // gentle push-in over the whole intro
+    var z = 1 + 0.035 * P(t, 2.0, T);
+    stage.setAttribute('transform', 'translate(' + (W / 2) + ',' + cy + ') scale(' + z + ') translate(' + (-W / 2) + ',' + (-cy) + ')');
+  };
+  K.ready().then(function () { window.renderFrame(0); window.__ready = true; });
+})();
+</script>
+</body></html>

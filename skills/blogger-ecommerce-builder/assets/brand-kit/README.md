@@ -59,6 +59,26 @@ from the Google Fonts CSS API render as blank text in Inkscape ("Invalid glyph f
 works in cloud sessions. Check after export: alpha bounding box of print PNGs must not touch the edge; `pdffonts`
 shows 0 fonts and `pdfimages -list` 0 images for print PDFs; test the photo window by inserting an oversized image.
 
+## Intro and outro videos (2D animation, 4K, desktop 16:9 and mobile 9:16)
+`video/`: the animation is SVG drawn by JavaScript as a pure function of time (`window.renderFrame(t)`), so every
+frame is exact. `render.js` opens the page in Playwright at deviceScaleFactor 2 (3840x2160 or 2160x3840), screenshots
+each frame as JPEG and pipes it into ffmpeg (H.264 High, CRF 16, 60 fps; about 0.25 s per 4K frame on 4 cores).
+`sound.py` makes the sound logo with numpy only (filtered-noise whooshes, low thump, bell partials, soft chord,
+simple reverb; peak -1 dBFS), so there is no music licence. `package.py` makes one folder per video with 4K,
+4K silent, HD and a still image.
+- Intro (6 s): the arrow ring draws itself big in the centre while spinning, flies into the O, letters rise one by
+  one, tagline opens up with an orange line, a light sheen crosses the letters, fade.
+- Outro (12 s): logo, "Thanks for watching", website / WhatsApp / social handles with icons, Subscribe (desktop) or
+  Follow (mobile) button; desktop has two "Watch next" frames for YouTube end-screen elements (5–20 s allowed);
+  mobile keeps everything above the bottom caption area of TikTok/Reels.
+- Texts live in `CONFIG` at the top of intro.html / outro.html. `logo.js` comes from `make_logo_js.py`
+  (wordmark + symbol masters + icons from shop.js). Copy Oswald/Open Sans TTFs into `video/fonts/`.
+```bash
+python3 make_logo_js.py masters ../../shop/shop.js logo.js
+node preview.js intro.html desktop "0.8,2.0,3.0,5.0" prev/in      # check stills first
+python3 sound.py intro intro.wav && node render.js intro.html desktop intro-desktop-4k.mp4 intro.wav 60
+```
+
 ## Change it for another brand
 - `kreislo.py`: `NAME` (the word), `RING_AT` (which letter becomes the arrow ring; must be an O or round
   letter), `CAP`, `TRACK`, `WORD_RING_SW`, `RING_GAP`, `RING_HEAD`, colours, and the default `tagline` text.

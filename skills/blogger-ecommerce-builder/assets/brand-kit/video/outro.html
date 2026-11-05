@@ -1,0 +1,158 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Kreislo outro</title>
+<style>
+@font-face { font-family: 'Oswald'; font-weight: 600; src: url('fonts/Oswald-600.ttf'); }
+@font-face { font-family: 'Open Sans'; font-weight: 600; src: url('fonts/OpenSans-600.ttf'); }
+html, body { margin: 0; background: #111; overflow: hidden; }
+svg { display: block; }
+</style></head>
+<body>
+<script>
+// ===== Change the words here, then render again =====
+var CONFIG = {
+  headline: 'THANKS FOR WATCHING',
+  subline: { desktop: 'Subscribe for new arrivals every week', mobile: 'Follow for new arrivals every week' },
+  button: { desktop: 'SUBSCRIBE', mobile: 'FOLLOW' },
+  links: [
+    { icons: ['globe'], text: 'kreislo.de' },
+    { icons: ['whatsapp'], text: '+49 157 0000000' },
+    { icons: ['youtube', 'instagram', 'tiktok', 'facebook'], text: '@kreislo' }
+  ],
+  watchNext: 'WATCH NEXT',   // label in the two video frames (desktop only, for YouTube end screens)
+  duration: 12.0             // seconds (YouTube end screens need 5–20 s)
+};
+</script>
+<script src="logo.js"></script>
+<script src="engine.js"></script>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var mobile = q.get('format') === 'mobile';
+  var F = mobile ? 'mobile' : 'desktop';
+  var W = mobile ? 1080 : 1920, H = mobile ? 1920 : 1080;
+  var svg = K.el('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H }, document.body);
+  var bg = K.makeBackground(svg, W, H);
+  var e = K.ease, P = K.p, C = K.C;
+
+  // ---- layout
+  var L = mobile
+    ? { wmW: 620, wmX: W / 2, wmY: 330, symX: W / 2, symY: 690, symD: 320, headY: 1010, headSize: 84, subY: 1078, subSize: 38,
+        linkX: 170, linkY: 1180, linkGap: 78, linkSize: 38, iconSize: 42, btnY: 1420, btnX: W / 2, align: 'middle' }
+    : { wmW: 440, wmX: 140, wmY: 190, headY: 420, headSize: 84, subY: 488, subSize: 36,
+        linkX: 140, linkY: 590, linkGap: 78, linkSize: 36, iconSize: 40, btnY: 860, btnX: 140, align: 'start' };
+
+  // wordmark
+  var s = L.wmW / (K.WORD.right - K.WORD.left);
+  var wx = (L.align === 'middle' ? L.wmX - L.wmW / 2 : L.wmX) - s * K.WORD.left, wy = L.wmY - s * K.WORD.ringY;
+  var wm = K.makeWordmark(svg);
+  wm.g.setAttribute('transform', 'translate(' + wx + ',' + wy + ') scale(' + s + ')');
+
+  // mobile: big symbol ring with the K
+  var sym = null;
+  if (mobile) {
+    sym = { g: K.el('g', {}, svg) };
+    sym.ring = K.makeRing(sym.g);
+    var kScale = L.symD / 200;   // symbol drawn on a 260 box with ring diameter 200, centre 130
+    sym.kWrap = K.el('g', {}, sym.g);
+    sym.k = K.el('path', { d: LOGO.symbolK, fill: C.white, transform: 'translate(' + (L.symX - 130 * kScale) + ',' + (L.symY - 130 * kScale) + ') scale(' + kScale + ')' }, sym.kWrap);
+  }
+
+  // headline and subline
+  var head = K.text(svg, CONFIG.headline, { x: L.align === 'middle' ? W / 2 : L.linkX, y: L.headY, 'text-anchor': L.align, fill: C.white,
+    'font-family': 'Oswald', 'font-weight': 600, 'font-size': L.headSize, 'letter-spacing': 1 });
+  var sub = K.text(svg, CONFIG.subline[F], { x: L.align === 'middle' ? W / 2 : L.linkX, y: L.subY, 'text-anchor': L.align, fill: C.orange,
+    'font-family': 'Open Sans', 'font-weight': 600, 'font-size': L.subSize });
+
+  // link rows
+  var rows = CONFIG.links.map(function (ln, i) {
+    var g = K.el('g', {}, svg), x = 0;
+    ln.icons.forEach(function (name) {
+      K.el('circle', { cx: x + L.iconSize / 2, cy: -L.iconSize * 0.35, r: L.iconSize * 0.62, fill: '#262626' }, g);
+      K.icon(g, name, x + L.iconSize * 0.15, -L.iconSize * 0.35 - L.iconSize * 0.35, L.iconSize * 0.7, i === 1 ? '#25D366' : C.white);
+      x += L.iconSize * 1.45;
+    });
+    K.text(g, ln.text, { x: x + 12, y: 0, fill: C.white, 'font-family': 'Open Sans', 'font-weight': 600, 'font-size': L.linkSize });
+    return { g: g, w: x + 12 + ln.text.length * L.linkSize * 0.56 };
+  });
+  var rowsX = mobile ? W / 2 - Math.max.apply(null, rows.map(function (r) { return r.w; })) / 2 : L.linkX;
+
+  // button
+  var btnG = K.el('g', {}, svg);
+  var btnW = mobile ? 360 : 330, btnH = 84;
+  K.el('rect', { x: -btnW / 2, y: -btnH / 2, width: btnW, height: btnH, rx: btnH / 2, fill: C.orange }, btnG);
+  K.text(btnG, CONFIG.button[F], { x: 0, y: 14, 'text-anchor': 'middle', fill: C.white, 'font-family': 'Oswald', 'font-weight': 600, 'font-size': 40, 'letter-spacing': 3 });
+  var btnCx = mobile ? W / 2 : L.btnX + btnW / 2;
+
+  // desktop: two "watch next" frames on the right, where YouTube end-screen videos go
+  var frames = [];
+  if (!mobile) {
+    [[1100, 160], [1100, 580]].forEach(function (pos) {
+      var g = K.el('g', { transform: 'translate(' + pos[0] + ',' + pos[1] + ')' }, svg);
+      var fw = 680, fh = 382;
+      var fill = K.el('rect', { width: fw, height: fh, rx: 18, fill: '#1C1C1C' }, g);
+      var border = K.el('rect', { width: fw, height: fh, rx: 18, fill: 'none', stroke: C.orange, 'stroke-width': 4 }, g);
+      var per = 2 * (fw + fh);
+      border.setAttribute('stroke-dasharray', per); border.setAttribute('stroke-dashoffset', per);
+      var labelG = K.el('g', {}, g);
+      K.el('circle', { cx: fw / 2, cy: fh / 2 - 14, r: 46, fill: '#2A2A2A' }, labelG);
+      K.el('path', { d: 'M' + (fw / 2 - 14) + ' ' + (fh / 2 - 40) + 'l40 26-40 26z', fill: C.white, opacity: 0.85 }, labelG);
+      K.text(labelG, CONFIG.watchNext, { x: fw / 2, y: fh / 2 + 76, 'text-anchor': 'middle', fill: '#8A8A8A', 'font-family': 'Oswald', 'font-weight': 600, 'font-size': 30, 'letter-spacing': 6 });
+      frames.push({ fill: fill, border: border, label: labelG, per: per });
+    });
+  }
+  var fade = K.el('rect', { width: W, height: H, fill: '#000', opacity: 1 }, svg);
+
+  window.renderFrame = function (t) {
+    var T = CONFIG.duration;
+    fade.setAttribute('opacity', 1 - e.out(P(t, 0, 0.5)) + e.in(P(t, T - 0.7, T)));
+    bg.glow.setAttribute('opacity', e.out(P(t, 0, 1)));
+    bg.big.update(mobile ? W / 2 : W * 0.3, mobile ? H * 0.37 : H * 0.5, mobile ? 700 : 640, 80, 1);
+    bg.big.g.setAttribute('transform', 'rotate(' + (t * 10) + ' ' + (mobile ? W / 2 : W * 0.3) + ' ' + (mobile ? H * 0.37 : H * 0.5) + ')');
+
+    // wordmark: ring draws in place, letters rise; a full turn every few seconds keeps it alive
+    var spin = 360 * e.inOut(P(t, 5.0, 5.9)) + 360 * e.inOut(P(t, 9.0, 9.9));
+    wm.ring.update(0, 0, K.WORD.r, K.WORD.sw, Math.max(e.inOut(P(t, 0.3, 1.1)), 0.0001));
+    wm.ringHolder.setAttribute('transform', 'translate(' + K.WORD.ringX + ',' + K.WORD.ringY + ') rotate(' + spin + ')');
+    wm.letters.forEach(function (Lt, i) {
+      var a = e.out(P(t, 0.45 + i * 0.06, 0.9 + i * 0.06));
+      Lt.g.setAttribute('opacity', a);
+      Lt.g.setAttribute('transform', 'translate(0,' + (30 * (1 - a)) + ')');
+    });
+
+    if (sym) {
+      var d = e.inOut(P(t, 0.8, 1.8)), r = L.symD / 2 - L.symD * 0.165 / 2;
+      sym.ring.update(0, 0, r, L.symD * 0.165, Math.max(d, 0.0001));
+      sym.ring.g.setAttribute('transform', 'translate(' + L.symX + ',' + L.symY + ') rotate(' + (360 * e.out(P(t, 0.8, 2.0)) + spin) + ')');
+      var kp = e.back(P(t, 1.5, 2.0));
+      sym.k.setAttribute('opacity', P(t, 1.5, 1.7));
+      var ks = Math.max(kp, 0.001);
+      sym.kWrap.setAttribute('transform', 'translate(' + L.symX + ',' + L.symY + ') scale(' + ks + ') translate(' + (-L.symX) + ',' + (-L.symY) + ')');
+    }
+
+    var h = e.out(P(t, 1.2, 1.8));
+    head.setAttribute('opacity', h); head.setAttribute('transform', 'translate(0,' + (30 * (1 - h)) + ')');
+    var sb = e.out(P(t, 1.6, 2.2));
+    sub.setAttribute('opacity', sb); sub.setAttribute('transform', 'translate(0,' + (24 * (1 - sb)) + ')');
+
+    rows.forEach(function (r, i) {
+      var a = e.out(P(t, 2.1 + i * 0.25, 2.6 + i * 0.25));
+      r.g.setAttribute('opacity', a);
+      r.g.setAttribute('transform', 'translate(' + (rowsX - 40 * (1 - a)) + ',' + (L.linkY + i * L.linkGap) + ')');
+    });
+
+    var b = P(t, 3.0, 3.5), pulse = t > 4 ? 1 + 0.035 * Math.sin((t - 4) * Math.PI * 1.2) : 1;
+    var bs = Math.max(e.back(b), 0.001) * pulse;
+    btnG.setAttribute('opacity', P(t, 3.0, 3.15));
+    btnG.setAttribute('transform', 'translate(' + btnCx + ',' + L.btnY + ') scale(' + bs + ')');
+
+    frames.forEach(function (f, i) {
+      var p = e.inOut(P(t, 1.0 + i * 0.3, 2.4 + i * 0.3));
+      f.border.setAttribute('stroke-dashoffset', f.per * (1 - p));
+      f.fill.setAttribute('opacity', p);
+      f.label.setAttribute('opacity', e.out(P(t, 2.2 + i * 0.3, 2.8 + i * 0.3)));
+    });
+  };
+  K.ready().then(function () { window.renderFrame(0); window.__ready = true; });
+})();
+</script>
+</body></html>
