@@ -84,6 +84,14 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 → Restoring a theme can overwrite gadget text and links the user already edited.
 → Always say: back up first, and note any edits.
 
+**`&` in a widget title breaks the upload**
+→ `title='Questions & answers'` is invalid XML; the restore fails.
+→ Write `&amp;` in attributes (`title='Questions &amp; answers'`), and never `]]>` inside CDATA.
+
+**Feed-based features fail in the local preview**
+→ `fetch('/feeds/…')` on a `file://` page logs errors and tests look broken.
+→ Guard with `/^https?:$/.test(location.protocol)` and serve previews with `python3 -m http.server`.
+
 ## 4. CSS
 
 **Blogger injects its own widget stylesheet, sometimes after the skin**
@@ -104,6 +112,10 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 
 **Layout editor**
 → The legacy engine applies the skin to Layout too (`body#layout`). Make hidden-by-default sections visible there: `body#layout .hero, body#layout .sidebar { display: block }`, and un-stick the header.
+
+**Theme list rules beat a component's layout**
+→ Numbered step badges overlapped titles because `.widget li` padding won over `.shop-step`.
+→ Use a stronger selector for component lists (`body .shop-steps-list > li.shop-step { padding: 0 0 0 64px }`) and check at 375px.
 
 ## 5. JavaScript and images
 

@@ -89,9 +89,13 @@ Read `references/pitfalls.md` before writing or fixing a theme. It lists every r
 - `hentry` Search Console errors
 - image-URL resizing rules
 - bought templates: someone else's payment details as defaults, closed vendor scripts, `?m=1` redirects, dead services, icon-only controls
-- a `]]>` inside a script or comment ending the CDATA block
+- a `]]>` inside a script or comment ending the CDATA block, and a bare `&` in a widget title
+- feed-based JS failing on `file://` previews (serve them over http)
+- theme list rules overriding a component's layout
 
 For data tags and settings commonly needed in legacy Blog widgets, see `references/legacy-tags.md`.
+
+For owner-editable list gadgets and homepage-only sections without `<b:if>`, see `references/patterns.md` §9–10.
 
 ## Explaining things to the user
 

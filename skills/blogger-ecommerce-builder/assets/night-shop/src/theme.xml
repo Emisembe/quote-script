@@ -1,0 +1,875 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:version='2' expr:dir='data:blog.languageDirection' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<meta content='width=device-width, initial-scale=1' name='viewport'/>
+<meta content='#111111' name='theme-color'/>
+<b:include data='blog' name='all-head-content'/>
+<title>
+<b:if cond='data:blog.pageType == &quot;index&quot;'>
+<data:blog.pageTitle/>
+<b:else/>
+<b:if cond='data:blog.pageType != &quot;error_page&quot;'>
+<data:blog.pageName/> - <data:blog.title/>
+<b:else/>
+Page not found - <data:blog.title/>
+</b:if>
+</b:if>
+</title>
+<link href='https://fonts.googleapis.com' rel='preconnect'/>
+<link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
+<link href='https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&amp;family=Open+Sans:wght@400;600;700&amp;display=swap' rel='stylesheet'/>
+<b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
+<b:if cond='data:blog.url == data:blog.homepageUrl'>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter { display: block; }</style>
+</b:if>
+<b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter { display: block; }</style>
+</b:if>
+</head>
+<body expr:class='&quot;rm shop pt-&quot; + data:blog.pageType'>
+<a class='skip-link' data-i18n='' href='#content'>Skip to content</a>
+
+<!-- ================= Announcement bar (every page; empty gadget = no bar) ================= -->
+<div class='announce' id='announce'>
+  <b:section class='announce-section' id='announce-widgets' maxwidgets='1' showaddelement='no'>
+    <b:widget id='HTML14' locked='false' title='Announcement bar' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[Free shipping in Germany from 50 € | /p/shipping.html
+Second-hand from Germany to Kenya | /p/kenya.html
+Fulfilment for online sellers, from Gießen | /p/fulfilment.html]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-announce'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</div>
+
+<!-- ================= Header ================= -->
+<header class='site-header' id='site-header'>
+  <div class='container header-inner'>
+<div class='lang-switch' data-lang-switch='' hidden='hidden'/>
+<a aria-label='Cart' class='cart-button' data-cart-open='' data-i18n-label='' href='#cart'>
+  <svg aria-hidden='true' height='22' viewBox='0 0 24 24' width='22'><path d='M6 6h15l-1.5 9h-12z' fill='none' stroke='currentColor' stroke-width='2'/><circle cx='9' cy='20' fill='currentColor' r='1.5'/><circle cx='18' cy='20' fill='currentColor' r='1.5'/><path d='M6 6L5 2H2' fill='none' stroke='currentColor' stroke-width='2'/></svg>
+  <span data-cart-count='' hidden='hidden'>0</span>
+</a>
+    <b:section class='brand-section' id='header' maxwidgets='1' showaddelement='no'>
+      <b:widget id='Header1' locked='true' title='Blog title (Header)' type='Header' version='1'>
+        <b:includable id='main'>
+          <a class='brand' expr:href='data:blog.homepageUrl'>
+            <b:if cond='data:useImage'>
+              <b:if cond='data:imagePlacement == &quot;REPLACE&quot;'>
+                <span class='brand-logo'><img expr:alt='data:title' expr:src='data:sourceUrl'/></span>
+              <b:else/>
+                <span aria-hidden='true' class='brand-mark brand-mark-img'><img alt='' expr:src='data:sourceUrl'/></span>
+                <span class='brand-text'>
+                  <span class='brand-name'><data:title/></span>
+                  <b:if cond='data:description != &quot;&quot;'>
+                    <span class='brand-tagline'><data:description/></span>
+                  </b:if>
+                </span>
+              </b:if>
+            <b:else/>
+              <span aria-hidden='true' class='brand-mark'/>
+              <span class='brand-text'>
+                <span class='brand-name'><data:title/></span>
+                <b:if cond='data:description != &quot;&quot;'>
+                  <span class='brand-tagline'><data:description/></span>
+                </b:if>
+              </span>
+            </b:if>
+          </a>
+        </b:includable>
+      </b:widget>
+    </b:section>
+
+    <button aria-controls='site-nav' aria-expanded='false' aria-label='Open menu' class='nav-toggle' data-i18n-label='' id='nav-toggle' type='button'>
+      <svg aria-hidden='true' class='icon-menu' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='3' x2='21' y1='6' y2='6'/><line x1='3' x2='21' y1='12' y2='12'/><line x1='3' x2='21' y1='18' y2='18'/></svg>
+      <svg aria-hidden='true' class='icon-close' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='18' x2='6' y1='6' y2='18'/><line x1='6' x2='18' y1='6' y2='18'/></svg>
+    </button>
+
+    <nav aria-label='Main' class='nav-drawer' id='site-nav'>
+      <b:section class='site-nav' id='menu' maxwidgets='1' showaddelement='no'>
+        <b:widget id='HTML1' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/">Home</a></li>
+<li><a href="/#shop">Shop</a></li>
+<li><a href="/p/kenya.html">Kenya</a></li>
+<li><a href="/p/fulfilment.html">Fulfilment</a></li>
+<li><a href="/#categories">Categories</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='header-cta' id='header-cta' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML2' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<a href="/p/contact.html">Contact</a>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+    </nav>
+  </div>
+</header>
+
+<main id='content'>
+
+<!-- ================= Hero (shown on the homepage) ================= -->
+<section class='hero' id='top'>
+  <div class='container hero-inner'>
+    <div class='hero-grid'>
+      <b:section class='hero-main' id='hero-main' showaddelement='yes'>
+        <b:widget id='HTML3' locked='false' title='Keep good things moving' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<p data-lang="en">Second-hand goods checked by hand, sold in Germany and shipped to Kenya. Digital products. And fulfilment for online sellers, right here in Gießen.</p>
+<p data-lang="de">Second-Hand-Ware, von Hand geprüft – verkauft in Deutschland und verschickt nach Kenia. Digitale Produkte. Und Fulfillment für Online-Händler, direkt aus Gießen.</p>
+<p data-lang="fr">Des articles d'occasion vérifiés à la main, vendus en Allemagne et expédiés au Kenya. Des produits numériques. Et la logistique e-commerce pour les vendeurs en ligne, depuis Gießen.</p>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+            <div class='hero-copy'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <p class='hero-eyebrow'><data:title/></p>
+              </b:if>
+              <h1 class='hero-title'><data:blog.title/></h1>
+              <div class='hero-text'><data:content/></div>
+            </div>
+            <b:include name='quickedit'/>
+          </b:includable>
+        </b:widget>
+        <b:widget id='HTML4' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="#shop">Shop now</a></li>
+<li><a href="/p/fulfilment.html">Fulfilment for sellers</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='hero-side' id='hero-side' showaddelement='yes'>
+        <b:widget id='HTML5' locked='false' title='Why Kreislo' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul data-lang="en">
+<li><strong>Checked by hand</strong>: every item tested and honestly described</li>
+<li><strong>Germany &amp; Kenya</strong>: pickup in Gießen, delivery, or shipping to Kenya</li>
+<li><strong>Order your way</strong>: online, WhatsApp or Telegram</li>
+</ul>
+<ul data-lang="de">
+<li><strong>Von Hand geprüft</strong>: jedes Teil getestet und ehrlich beschrieben</li>
+<li><strong>Deutschland &amp; Kenia</strong>: Abholung in Gießen, Versand oder Lieferung nach Kenia</li>
+<li><strong>Bestellen, wie Sie möchten</strong>: online, WhatsApp oder Telegram</li>
+</ul>
+<ul data-lang="fr">
+<li><strong>Vérifié à la main</strong> : chaque article testé et décrit honnêtement</li>
+<li><strong>Allemagne &amp; Kenya</strong> : retrait à Gießen, livraison ou envoi au Kenya</li>
+<li><strong>Commandez comme vous voulez</strong> : en ligne, WhatsApp ou Telegram</li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+            <div class='perk-card'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <p class='perk-title'><data:title/></p>
+              </b:if>
+              <div class='perk-list'><data:content/></div>
+            </div>
+            <b:include name='quickedit'/>
+          </b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Talk to us: call and video buttons (shown on the homepage) ================= -->
+<section class='talk' id='talk'>
+  <div class='container'>
+    <b:section class='talk-section' id='talk-widgets' showaddelement='yes'>
+      <b:widget id='HTML11' locked='false' title='Talk to us' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[text: Prefer to talk? Call us or join a video call at these times.
+call: +49 157 00000000 | Mon–Fri 9:00–18:00
+zoom: https://zoom.us/j/0000000000 | Tue & Thu 18:00–19:00
+meet: https://meet.google.com/abc-defg-hij | Sat 10:00–12:00]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-contact'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= What we do: services (homepage) ================= -->
+<section class='services' id='services'>
+  <div class='container'>
+    <b:section class='services-section' id='services-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML16' locked='false' title='What we do' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+text: One name, four ways to keep good things moving.
+tag | Second-hand shop | Clothes, furniture, washing machines and more – checked by hand and fairly priced. Pickup in Gießen or delivery. | Shop now | /#shop
+globe | Shipping to Kenya | Good things from Germany for homes and businesses in Kenya, tested and packed by us. | How it works | /p/kenya.html
+download | Digital products | Guides, templates and downloads, sent to your inbox right after payment. | See digital products | /search/label/Digital
+warehouse | Fulfilment for sellers | We store, pack and ship your products from Gießen, so you can focus on selling. | Request a quote | /p/fulfilment.html
+</div>
+<div data-lang="de">
+text: Ein Name, vier Wege, gute Dinge in Bewegung zu halten.
+tag | Second-Hand-Shop | Kleidung, Möbel, Waschmaschinen und mehr – von Hand geprüft, faire Preise. Abholung in Gießen oder Versand. | Zum Shop | /#shop
+globe | Versand nach Kenia | Gute Dinge aus Deutschland für Haushalte und Firmen in Kenia, von uns geprüft und verpackt. | So funktioniert es | /p/kenya.html
+download | Digitale Produkte | Ratgeber, Vorlagen und Downloads – direkt nach der Zahlung in Ihrem Postfach. | Digitale Produkte ansehen | /search/label/Digital
+warehouse | Fulfillment für Händler | Wir lagern, verpacken und versenden Ihre Produkte aus Gießen – Sie konzentrieren sich aufs Verkaufen. | Angebot anfragen | /p/fulfilment.html
+</div>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-services'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Posts ================= -->
+<div class='page-main' id='shop'>
+  <div class='container main-grid'>
+    <div class='main-col'>
+      <b:section class='main' id='main' showaddelement='no'>
+        <b:widget id='Blog1' locked='true' title='New arrivals' type='Blog' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='showDateHeader'>false</b:widget-setting>
+            <b:widget-setting name='showShareButtons'>false</b:widget-setting>
+            <b:widget-setting name='authorLabel'>By</b:widget-setting>
+            <b:widget-setting name='showCommentLink'>true</b:widget-setting>
+            <b:widget-setting name='showAuthor'>true</b:widget-setting>
+            <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
+            <b:widget-setting name='reactionsLabel'/>
+            <b:widget-setting name='showAuthorProfile'>false</b:widget-setting>
+            <b:widget-setting name='style.layout'>1x1</b:widget-setting>
+            <b:widget-setting name='showLabels'>true</b:widget-setting>
+            <b:widget-setting name='showLocation'>false</b:widget-setting>
+            <b:widget-setting name='showTimestamp'>false</b:widget-setting>
+            <b:widget-setting name='postsPerAd'>3</b:widget-setting>
+            <b:widget-setting name='showBacklinks'>false</b:widget-setting>
+            <b:widget-setting name='showInlineAds'>false</b:widget-setting>
+            <b:widget-setting name='showReactions'>false</b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main' var='top'>
+            <b:if cond='data:blog.pageType == &quot;error_page&quot;'>
+              <b:include name='rmNotFound'/>
+            <b:else/>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='shopItem'/>
+                </b:loop>
+                <b:include name='rmItemPager'/>
+              <b:else/>
+                <b:if cond='data:blog.pageType == &quot;static_page&quot;'>
+                  <b:loop values='data:posts' var='post'>
+                    <b:include data='post' name='rmSingle'/>
+                  </b:loop>
+                <b:else/>
+                  <b:include name='rmList'/>
+                </b:if>
+              </b:if>
+            </b:if>
+          </b:includable>
+
+          <b:includable id='rmList'>
+            <div class='section-head'>
+              <b:if cond='data:blog.url == data:blog.homepageUrl'>
+                <h2 class='section-title'><data:title/></h2>
+              <b:else/>
+              <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+                <h2 class='section-title'><data:title/></h2>
+              <b:else/>
+                <h1 class='section-title'>
+                <b:if cond='data:blog.searchQuery'>
+                  Search: <data:blog.searchQuery/>
+                <b:else/>
+                  <b:if cond='data:blog.url == data:blog.homepageUrl'>
+                    <data:title/>
+                  <b:else/>
+                    <b:if cond='data:blog.pageName != &quot;&quot;'>
+                      <data:blog.pageName/>
+                    <b:else/>
+                      <data:title/>
+                    </b:if>
+                  </b:if>
+                </b:if>
+              </h1>
+              </b:if>
+              </b:if>
+              <b:include name='rmSearchForm'/>
+            </div>
+            <b:if cond='data:numPosts != 0'>
+              <div class='post-grid shop-grid'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='shopCard'/>
+                </b:loop>
+              </div>
+            <b:else/>
+              <div class='empty-state'>
+                <p data-i18n=''>No posts found here yet.</p>
+                <a class='btn btn-primary' data-i18n='' expr:href='data:blog.homepageUrl'>Back to home</a>
+              </div>
+            </b:if>
+            <b:if cond='data:newerPageUrl'>
+              <b:include name='rmListPager'/>
+            <b:else/>
+              <b:if cond='data:olderPageUrl'>
+                <b:include name='rmListPager'/>
+              </b:if>
+            </b:if>
+          </b:includable>
+
+          <b:includable id='shopCard' var='post'>
+  <article class='shop-card' expr:data-id='data:post.id' expr:data-url='data:post.url' expr:data-title='data:post.title' expr:data-image='data:post.firstImageUrl'>
+    <a aria-hidden='true' class='shop-card-media' expr:href='data:post.url' tabindex='-1'>
+      <b:if cond='data:post.firstImageUrl'>
+        <img class='shop-img' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
+      <b:else/>
+        <b:if cond='data:post.thumbnailUrl'>
+          <img class='shop-img' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
+        </b:if>
+      </b:if>
+    </a>
+    <h2 class='shop-card-title'><a expr:href='data:post.url'><data:post.title/></a></h2>
+    <div class='shop-card-buy'/>
+    <b:loop values='data:post.labels' var='label'>
+      <span class='shop-src' expr:data-label='data:label.name'/>
+    </b:loop>
+    <!-- The post body (up to the jump break) carries the product block. Inside
+         <template> it is inert: no images download, no scripts run. -->
+    <template class='shop-src'><data:post.body/></template>
+  </article>
+</b:includable>
+
+<b:includable id='shopItem' var='post'>
+  <article class='shop-item' expr:data-id='data:post.id' expr:data-url='data:post.url' expr:data-title='data:post.title' expr:data-image='data:post.firstImageUrl'>
+    <a expr:name='data:post.id'/>
+    <div class='shop-top'>
+      <div class='shop-gallery'/>
+      <div class='shop-summary'>
+        <b:if cond='data:post.labels'>
+          <p class='shop-cats'>
+            <b:loop values='data:post.labels' var='label'>
+              <a class='shop-cat' expr:data-label='data:label.name' expr:href='data:label.url' rel='tag'><data:label.name/></a>
+            </b:loop>
+          </p>
+        </b:if>
+        <h1 class='post-title'><data:post.title/></h1>
+        <div class='shop-buy'/>
+        <div class='shop-share'>
+          <a expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+          <a expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+          <a expr:href='&quot;https://pinterest.com/pin/create/button/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Pinterest</a>
+          <b:include data='post' name='postQuickEdit'/>
+        </div>
+      </div>
+    </div>
+    <div class='post-body' expr:id='&quot;post-body-&quot; + data:post.id'>
+      <data:post.body/>
+    </div>
+    <!-- Blogger comments, shown as reviews. Needs the theme's own comment_picker and
+         postQuickEdit includables (every Blogger-generated theme has them). -->
+    <div class='shop-reviews'>
+      <b:include data='post' name='comment_picker'/>
+    </div>
+  </article>
+</b:includable>
+
+          <b:includable id='rmCard' var='post'>
+            <article class='post-card'>
+              <a aria-hidden='true' class='post-card-media' expr:href='data:post.url' tabindex='-1'>
+                <b:if cond='data:post.firstImageUrl'>
+                  <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
+                <b:else/>
+                  <b:if cond='data:post.thumbnailUrl'>
+                    <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
+                  <b:else/>
+                    <span class='post-card-placeholder'>
+                      <svg aria-hidden='true' fill='none' height='40' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.8' viewBox='0 0 24 24' width='40'><path d='M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z'/><path d='M19 10v2a7 7 0 0 1-14 0v-2'/><line x1='12' x2='12' y1='19' y2='23'/><line x1='8' x2='16' y1='23' y2='23'/></svg>
+                    </span>
+                  </b:if>
+                </b:if>
+              </a>
+              <div class='post-card-body'>
+                <b:if cond='data:post.labels'>
+                  <div class='post-card-labels'>
+                    <b:loop index='x' values='data:post.labels' var='label'>
+                      <b:if cond='data:x == 0'>
+                        <a class='badge' expr:href='data:label.url'><data:label.name/></a>
+                      </b:if>
+                    </b:loop>
+                  </div>
+                </b:if>
+                <h3 class='post-card-title'>
+                  <a expr:href='data:post.url'><b:if cond='data:post.title'><data:post.title/><b:else/>Untitled post</b:if></a>
+                </h3>
+                <div class='post-card-meta'>
+                  <time class='js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time>
+                  <b:if cond='data:post.allowComments'>
+                    <b:if cond='data:post.numComments != 0'>
+                      <span class='post-card-comments'><data:post.numComments/> <b:if cond='data:post.numComments == 1'>comment<b:else/>comments</b:if></span>
+                    </b:if>
+                  </b:if>
+                </div>
+              </div>
+            </article>
+          </b:includable>
+
+          <b:includable id='rmSingle' var='post'>
+            <article class='post-single post'>
+              <a expr:name='data:post.id'/>
+              <header class='post-head'>
+                <b:if cond='data:post.labels'>
+                  <div class='post-labels'>
+                    <b:loop values='data:post.labels' var='label'>
+                      <a class='badge' expr:href='data:label.url' rel='tag'><data:label.name/></a>
+                    </b:loop>
+                  </div>
+                </b:if>
+                <b:if cond='data:post.title'>
+                  <h1 class='post-title entry-title'><data:post.title/></h1>
+                </b:if>
+                <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                  <div class='post-meta'>
+                    <b:if cond='data:post.authorProfileUrl'>
+                      <a class='post-author' expr:href='data:post.authorProfileUrl' rel='author'><data:post.author/></a>
+                    <b:else/>
+                      <span class='post-author'><data:post.author/></span>
+                    </b:if>
+                    <span aria-hidden='true' class='sep'/>
+                    <time class='published js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time>
+                    <b:include data='post' name='postQuickEdit'/>
+                  </div>
+                </b:if>
+              </header>
+              <div class='post-body entry-content' expr:id='&quot;post-body-&quot; + data:post.id'>
+                <data:post.body/>
+              </div>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                <div class='post-share'>
+                  <span class='post-share-label'>Share</span>
+                  <a expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+                  <a expr:href='&quot;https://twitter.com/intent/tweet?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>X</a>
+                  <a expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
+                  <a expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+                  <button expr:data-copy-url='data:post.url' type='button'>Copy link</button>
+                </div>
+              </b:if>
+              <b:include data='post' name='comment_picker'/>
+            </article>
+          </b:includable>
+
+          <b:includable id='rmItemPager'>
+            <nav aria-label='More posts' class='blog-pager-nav'>
+              <b:if cond='data:newerPageUrl'>
+                <a class='btn btn-outline newer' expr:href='data:newerPageUrl' expr:title='data:newerPageTitle'>&#8592; <span data-i18n=''>Newer post</span></a>
+              </b:if>
+              <b:if cond='data:olderPageUrl'>
+                <a class='btn btn-outline older' expr:href='data:olderPageUrl' expr:title='data:olderPageTitle'><span data-i18n=''>Older post</span> &#8594;</a>
+              </b:if>
+            </nav>
+          </b:includable>
+
+          <b:includable id='rmListPager'>
+            <nav aria-label='Pages' class='blog-pager-nav'>
+              <b:if cond='data:newerPageUrl'>
+                <a class='btn btn-outline newer' expr:href='data:newerPageUrl'>&#8592; <span data-i18n=''>Newer posts</span></a>
+              </b:if>
+              <b:if cond='data:olderPageUrl'>
+                <a class='btn btn-primary older' expr:href='data:olderPageUrl'><span data-i18n=''>Older posts</span> &#8594;</a>
+              </b:if>
+            </nav>
+          </b:includable>
+
+          <b:includable id='rmSearchForm'>
+            <form action='/search' class='search-form' method='get' role='search'>
+              <input aria-label='Search' data-i18n-label='' data-i18n-placeholder='' name='q' placeholder='Search products...' type='search'/>
+              <button aria-label='Search' type='submit'>
+                <svg aria-hidden='true' fill='none' height='20' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='20'><circle cx='11' cy='11' r='8'/><line x1='21' x2='16.65' y1='21' y2='16.65'/></svg>
+              </button>
+            </form>
+          </b:includable>
+
+          <b:includable id='rmNotFound'>
+            <div class='not-found'>
+              <p class='not-found-code'>404</p>
+              <h1 data-i18n=''>Page not found</h1>
+              <p data-i18n=''>The page you were looking for has moved or no longer exists.</p>
+              <b:include name='rmSearchForm'/>
+              <a class='btn btn-primary' data-i18n='' expr:href='data:blog.homepageUrl'>Back to home</a>
+            </div>
+          </b:includable>
+
+          <!-- Comment includables below are Blogger's own, taken from the blog's original theme -->
+@@BLOG_COMMENTS@@
+        </b:widget>
+      </b:section>
+    </div>
+
+    <aside class='sidebar'>
+      <b:section class='sidebar-section' id='sidebar' preferred='yes'>
+        <b:widget id='PopularPosts1' locked='false' title='Popular products' type='PopularPosts' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='numItemsToShow'>3</b:widget-setting>
+            <b:widget-setting name='showThumbnails'>true</b:widget-setting>
+            <b:widget-setting name='showSnippets'>false</b:widget-setting>
+            <b:widget-setting name='timeRange'>LAST_YEAR</b:widget-setting>
+          </b:widget-settings>
+          @@POPULARPOSTS_MAIN@@
+        </b:widget>
+        <b:widget id='Label2' locked='false' title='Categories' type='Label' version='1'>
+          <b:widget-settings>
+            <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+            <b:widget-setting name='display'>LIST</b:widget-setting>
+            <b:widget-setting name='selectedLabelsList'/>
+            <b:widget-setting name='showType'>ALL</b:widget-setting>
+            <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+          </b:widget-settings>
+          @@LABEL_MAIN@@
+        </b:widget>
+      </b:section>
+    </aside>
+  </div>
+</div>
+
+<!-- ================= How it works: 3 steps (homepage) ================= -->
+<section class='steps' id='steps'>
+  <div class='container'>
+    <b:section class='steps-section' id='steps-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML17' locked='false' title='How it works' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+Choose | Find your item in the shop, or tell us on WhatsApp what you are looking for.
+Order your way | Online, on WhatsApp or Telegram. Pay by bank transfer, PayPal or cash on pickup.
+Receive it | Pickup in Gießen, delivery in Germany, or shipping to Kenya.
+</div>
+<div data-lang="de">
+Aussuchen | Finden Sie Ihr Teil im Shop oder schreiben Sie uns auf WhatsApp, was Sie suchen.
+Bestellen, wie Sie möchten | Online, per WhatsApp oder Telegram. Zahlung per Überweisung, PayPal oder bar bei Abholung.
+Erhalten | Abholung in Gießen, Versand in Deutschland oder Lieferung nach Kenia.
+</div>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-steps'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Customer reviews (homepage) ================= -->
+<section class='testimonials' id='testimonials'>
+  <div class='container'>
+    <b:section class='testimonials-section' id='testimonials-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML18' locked='false' title='What customers say' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[# Customer reviews: one per line. Stars (1-5) | what the customer said | name, city
+# Only use real reviews, and ask the customer before you quote them. Lines starting with # are not shown.
+# While there are no lines without #, this section stays hidden.
+# 5 | Fast, friendly and exactly as described. | Amina, Gießen]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-testimonials'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Promo banner (shown on the homepage) ================= -->
+<section class='promo' id='promo'>
+  <div class='container'>
+    <b:section class='promo-section' id='promo-widgets' showaddelement='yes'>
+      <b:widget id='HTML10' locked='false' title='Shipping to Kenya' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<p data-lang="en">Good second-hand goods from Germany for homes and businesses in Kenya: appliances, furniture, clothes and more, tested and packed by us. Tell us what you need and we send you a price including shipping.</p>
+<p data-lang="de">Gute Second-Hand-Ware aus Deutschland für Haushalte und Firmen in Kenia: Geräte, Möbel, Kleidung und mehr, von uns geprüft und verpackt. Sagen Sie uns, was Sie brauchen – wir schicken Ihnen einen Preis inklusive Versand.</p>
+<p data-lang="fr">Des articles d'occasion de qualité venus d'Allemagne pour le Kenya : appareils, meubles, vêtements et plus, testés et emballés par nos soins. Dites-nous ce qu'il vous faut, nous vous envoyons un prix livraison comprise.</p>
+<p><a href="/p/kenya.html">How shipping to Kenya works</a></p>]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Categories (shown on the homepage) ================= -->
+<section class='topics' id='categories'>
+  <div class='container'>
+    <b:section class='topics-section' id='topics-widgets' showaddelement='yes'>
+      <b:widget id='Label1' locked='false' title='Shop by category' type='Label' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+          <b:widget-setting name='display'>LIST</b:widget-setting>
+          <b:widget-setting name='selectedLabelsList'/>
+          <b:widget-setting name='showType'>ALL</b:widget-setting>
+          <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+        </b:widget-settings>
+        @@LABEL_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Questions & answers (homepage) ================= -->
+<section class='faq' id='faq'>
+  <div class='container'>
+    <b:section class='faq-section' id='faq-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML19' locked='false' title='Questions &amp; answers' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+How do I pay? | By bank transfer, PayPal or cash on pickup. You choose at checkout; the payment details come with your order confirmation.
+How long does delivery take? | In Germany usually 2–4 working days after payment. Pickup in Gießen by appointment.
+Do you ship to Kenya? | Yes. We tell you the next shipping date and the full price including shipping before you pay. See "Shipping to Kenya".
+Can I return an item? | Yes, within 14 days of receiving it. You find the details in our returns policy.
+How do I get my digital product? | The download link arrives by email as soon as your payment is confirmed.
+Do you offer fulfilment for other sellers? | Yes. We store, pack and ship for online shops. Ask for a quote on our Fulfilment page.
+</div>
+<div data-lang="de">
+Wie kann ich bezahlen? | Per Überweisung, PayPal oder bar bei Abholung. Sie wählen an der Kasse; die Zahlungsdaten kommen mit der Bestellbestätigung.
+Wie lange dauert die Lieferung? | In Deutschland meist 2–4 Werktage nach Zahlungseingang. Abholung in Gießen nach Absprache.
+Liefern Sie nach Kenia? | Ja. Wir nennen Ihnen vor der Zahlung den nächsten Versandtermin und den Gesamtpreis inklusive Versand. Siehe "Versand nach Kenia".
+Kann ich etwas zurückgeben? | Ja, innerhalb von 14 Tagen nach Erhalt. Die Einzelheiten finden Sie in der Widerrufsbelehrung.
+Wie bekomme ich mein digitales Produkt? | Der Download-Link kommt per E-Mail, sobald Ihre Zahlung bestätigt ist.
+Bieten Sie Fulfillment für andere Händler an? | Ja. Wir lagern, verpacken und versenden für Online-Shops. Fragen Sie auf unserer Fulfillment-Seite ein Angebot an.
+</div>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-faq'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Newsletter (homepage, needs google_sheet) ================= -->
+<section class='newsletter' id='newsletter'>
+  <div class='container'>
+    <b:section class='newsletter-section' id='newsletter-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML20' locked='false' title='Stay in the loop' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+text: New arrivals, Kenya shipping dates and offers – about twice a month. No spam.
+button: Subscribe
+</div>
+<div data-lang="de">
+text: Neue Teile, Versandtermine nach Kenia und Angebote – etwa zweimal im Monat. Kein Spam.
+button: Anmelden
+</div>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-newsletter'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Our partners: logo row (shown on the homepage) ================= -->
+<section class='partners' id='partners'>
+  <div class='container'>
+    <b:section class='partners-section' id='partners-widgets' showaddelement='yes'>
+      <b:widget id='HTML12' locked='false' title='Our partners' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[Atelier Nord | | /p/contact.html
+Studio Lumen | |
+Green Courier | | /p/delivery.html]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-logos'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= Trust row (every page, above the footer) ================= -->
+<section class='trust' id='trust'>
+  <div class='container'>
+    <b:section class='trust-section' id='trust-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML15' locked='false' title='Trust row' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[truck | Free shipping from 50 € | Delivered in 2–4 working days | /p/delivery.html
+return | 14-day returns | Easy and personal | /p/returns.html
+lock | Secure payment | PayPal or bank transfer
+chat | Personal service | We answer within a day | /p/contact.html
+pay: PayPal, Bank transfer, Cash on delivery]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='shop-trust'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Footer ================= -->
+<footer class='site-footer' id='contact'>
+  <div class='container'>
+    <div class='footer-grid'>
+      <b:section class='footer-col' id='footer-about' preferred='yes'>
+        <b:widget id='HTML6' locked='false' title='About Kreislo' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<p data-lang="en">Kreislo keeps good things moving: second-hand goods from Gießen to new owners in Germany and Kenya, digital products, and fulfilment for online sellers. Every item is checked by hand.</p>
+<p data-lang="de">Kreislo hält gute Dinge in Bewegung: Second-Hand-Ware aus Gießen für neue Besitzer in Deutschland und Kenia, digitale Produkte und Fulfillment für Online-Händler. Jedes Teil wird von Hand geprüft.</p>
+<p data-lang="fr">Kreislo fait circuler les bonnes choses : des articles d'occasion de Gießen pour l'Allemagne et le Kenya, des produits numériques et la logistique pour les vendeurs en ligne.</p>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='footer-connect' preferred='yes'>
+        <b:widget id='HTML7' locked='false' title='Customer service' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/p/shipping.html">Shipping &amp; delivery</a></li>
+<li><a href="/p/delivery.html">Delivery partners</a></li>
+<li><a href="/p/team.html">Our team</a></li>
+<li><a href="/p/fulfilment.html">Fulfilment for sellers</a></li>
+<li><a href="/p/kenya.html">Shipping to Kenya</a></li>
+<li><a href="/p/returns.html">Returns (Widerruf)</a></li>
+<li><a href="/p/contact.html">Contact</a></li>
+<li><a href="/p/impressum.html">Impressum</a></li>
+<li><a href="/p/privacy.html">Privacy policy</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='footer-explore' preferred='yes'>
+        <b:widget id='HTML8' locked='false' title='Follow us' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="https://www.instagram.com/">Instagram</a></li>
+<li><a href="https://www.facebook.com/">Facebook</a></li>
+<li><a href="https://www.tiktok.com/">TikTok</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+    </div>
+    <div class='footer-badges'>
+      <b:section class='footer-badges-section' id='footer-badges' showaddelement='yes'>
+        <b:widget id='HTML13' locked='false' title='Certified &amp; accredited' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[14-day returns | | /p/returns.html
+Personal service | | /p/contact.html
+Fast shipping | | /p/delivery.html]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <h2 class='title'><data:title/></h2>
+            </b:if>
+            <div class='shop-logos'><data:content/></div>
+            <b:include name='quickedit'/>
+          </b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+    <div class='footer-bottom'>
+      <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/></p>
+    </div>
+  </div>
+</footer>
+
+<div class='shop-admin'>
+  <b:section class='shop-settings-section' id='shop-settings' showaddelement='no'>
+    <b:widget id='HTML91' locked='true' title='Shop settings' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[currency: EUR
+locale: de-DE
+language: en
+languages: en, de, fr
+whatsapp:
+telegram:
+email:
+google_sheet:
+paypal:
+payment: Bank transfer, PayPal, Cash on delivery
+shipping: 4,90
+free_shipping_over: 50
+tax_note: Incl. VAT, plus shipping
+bank:
+label_prices: yes
+default_country: DE
+ship_to: Germany = Berlin, Hamburg, Munich, Frankfurt, Cologne
+ship_to: Austria (9,90)
+ship_to: Switzerland (14,90)
+hero_image:
+banner_image:]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-settings'><data:content/></div>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML93' locked='false' title='Delivery options' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[DHL Parcel | 4,90 up to 2 kg; 6,99 up to 5 kg; 10,49 up to 10 kg; 16,49 up to 31,5 kg | 2–4 working days | /p/delivery.html#dhl | Germany
+Hermes | 4,50 up to 5 kg; 6,95 up to 10 kg | 3–5 working days | /p/delivery.html#hermes | Germany
+DHL International | 14,90 up to 5 kg; 24,90 up to 20 kg | 4–7 working days | /p/delivery.html#dhl-international | Austria, Switzerland
+Pickup in Berlin | 0 | By appointment | /p/delivery.html#pickup | Germany]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-delivery'><data:content/></div>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML92' locked='false' title='Shop words (optional translations)' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[[de] Send order: Zahlungspflichtig bestellen]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='shop-words'><data:content/></div>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</div>
+<script type='text/javascript'>
+//<![CDATA[
+@@THEME_JS@@
+//]]>
+</script>
+<script type='text/javascript'>
+//<![CDATA[
+@@SHOP_JS@@
+//]]>
+</script>
+</body>
+</html>

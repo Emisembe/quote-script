@@ -13,6 +13,8 @@ against `reference/proven.json` before using it.
 6. Post body for JavaScript on list pages, without loading its images
 7. Page type on `<body>`
 8. Marker comments around values a tool may rewrite
+9. Line-based content gadgets (one item per line)
+10. Homepage-only sections without `<b:if>`
 
 ---
 
@@ -107,3 +109,21 @@ When a value will be changed by a script or by Claude later (copyright year, men
 wrap it in a unique comment pair: `<!--cpr-year-start-->2026<!--cpr-year-end-->`. Search-and-replace
 is then exact, and nothing else in the theme can match. Don't hard-code a year at all where JS can
 fill it in (`theme.js` already does).
+
+## 9. Line-based content gadgets (one item per line)
+
+Owners edit lists far more easily than HTML. Put `<div class='shop-services'>…</div>` in an HTML gadget,
+one item per line with parts split by `|` (`icon | title | text | button | link`), and let JS build the
+cards. Conventions that kept owners out of trouble: `text:` for an intro line, `#` for notes that never
+show (good for "how to fill this in"), `<div data-lang="de">` blocks for other languages (fallback
+English), only http(s)/mailto links, and **hide the whole section when there are no items** so an
+unfilled block never shows an empty heading.
+
+## 10. Homepage-only sections without `<b:if>`
+
+Sections must stay unconditional to remain in Layout. Hide them in the skin
+(`.services, .steps, .faq { display: none }`), then in `<head>` add one conditional
+`<style>` that reveals them on the homepage (`.hero, .services, .steps, .testimonials, .faq,
+.newsletter { display: block }`) using the tracking-parameter-proof homepage check from pitfalls.
+Keep `body#layout` showing all of them.
+

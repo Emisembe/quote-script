@@ -151,3 +151,31 @@ pay: PayPal, Bank transfer, Cash on delivery]]></b:widget-setting>
   </b:includable>
 </b:widget>
 
+<!-- 11. Homepage block + request form. Section: unconditional, hidden in skin CSS
+     (.faq { display:none }) and revealed by the homepage <style> in head
+     (.hero, .services, .steps, .testimonials, .faq, .newsletter { display:block }).
+     Same pattern for shop-services (HTML16), shop-steps (HTML17), shop-testimonials (HTML18),
+     shop-newsletter (HTML20). Note: '&' in a title must be written '&amp;'. -->
+<b:section class='faq' id='faq' maxwidgets='1' name='FAQ' showaddelement='no'>
+<b:widget id='HTML19' locked='false' title='Questions &amp; answers' type='HTML'>
+  <b:widget-settings>
+    <b:widget-setting name='content'><![CDATA[<div class='shop-faq'>
+How long does delivery take? | 2–4 working days in Germany.
+Can I return an item? | Yes, within 14 days.
+<div data-lang="de">
+Wie lange dauert der Versand? | 2–4 Werktage in Deutschland.
+</div>
+</div>]]></b:widget-setting>
+  </b:widget-settings>
+  <b:includable id='main'>
+    <b:if cond='data:title != &quot;&quot;'><h2 class='title'><data:title/></h2></b:if>
+    <div class='widget-content'><data:content/></div>
+    <b:include name='quickedit'/>
+  </b:includable>
+</b:widget>
+</b:section>
+
+<!-- Request form inside a page or post (HTML view). Sends to the Requests tab of the order sheet. -->
+<div class="shop-lead" data-kind="quote" data-button="Ask for a quote"
+     data-fields="Name*; Email*; Phone; Service: Storage / Packing / Shipping; Message"></div>
+

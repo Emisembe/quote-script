@@ -194,6 +194,35 @@ the owner to get written consent for staff photos and private numbers.
 
 More delivery partners = more lines in the `.shop-delivery` gadget; give each an anchor on the delivery page.
 
+### 4g. Homepage sections, request forms and newsletter
+
+Homepage-only gadgets (HTML16–20) sit in unconditional sections hidden by CSS and revealed by the
+conditional homepage `<style>` in head. Each line-based block accepts `text:` (intro), `#` (note, never
+shown) and `<div data-lang="de">…</div>` blocks; a block with no items hides its whole `<section>`.
+
+- **Services** (`shop-services`): `icon | title | text | button | link`.
+- **Steps** (`shop-steps`): `title | text`, numbered automatically.
+- **Testimonials** (`shop-testimonials`): `5 | quote | name, city`. Ships with `#` notes only, so the
+  section stays hidden until the owner adds **real** reviews (never invent them).
+- **FAQ** (`shop-faq`, also usable in pages): `question | answer` → `<details>` list; shop.js adds one
+  FAQPage JSON-LD for the boxes that are visible (the active language only).
+- **Newsletter** (`shop-newsletter`): `text: …`, `button: …`. Needs `google_sheet`. Posts
+  `{type:'lead', kind:'newsletter', fields, consent}`; Code.gs writes the Newsletter tab (Pending), mails a
+  confirm link (`doGet ?confirm=TOKEN`), sets Confirmed with date; every mail carries `?unsubscribe=TOKEN`.
+  Double opt-in is required in Germany/EU.
+- **Request forms** (`<div class="shop-lead" data-kind="fulfilment" data-button="Ask for a quote"
+  data-fields="Name*; Email*; Phone; Volume per month: under 100 / 100–1000 / over 1000; Message">`):
+  `*` = required, `Label: a / b` = select. Sends `{type:'lead', kind, fields, consent}` → Requests tab +
+  owner email + receipt to the sender. Without `google_sheet` it opens WhatsApp with the text.
+  A consent checkbox links the privacy page.
+- **Floating WhatsApp** (`whatsapp_button: yes` in Shop settings): bottom-right on every page, z-index
+  900 (the checkout drawer is 9999), hidden while the cart is open.
+- **You may also like**: on product posts, reads `/feeds/posts/default/-/LABEL?alt=json` for the first
+  label and shows up to 4 other products. Needs http(s): it is skipped on `file://` previews.
+
+Code.gs routing: `doPost` checks `data.type === 'lead'` first → `lead_()`; everything else is an order.
+Tabs are created by `setup` (run it again after updating the script) and old tabs get missing columns appended.
+
 ## 5. Payments
 
 - Never put **secret** keys (`sk_live_…`, API secrets) in a theme. Everyone can read the XML.
