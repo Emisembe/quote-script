@@ -183,6 +183,8 @@ controls; it warns on unknown emails/IBANs, vendor licence switches and third-pa
   product (square, 4:5, story, landscape, examples, new-arrivals grid, shipment notice) with a photo window and
   300 dpi export, merchandise print files (T-shirt, cap embroidery, work uniform) with placement previews, a
   step-and-repeat press backdrop, roll-up banner and video-call backgrounds. One folder and one zip per design.
+  `social_profiles.py`: profile pictures and header images for YouTube, LinkedIn (company + personal), Facebook,
+  TikTok, Instagram (highlight covers), X and WhatsApp Business, each named by platform with safe-area checks.
 - **Launch plan document:** costs to secure the name (trade registration at the town hall ≈ €20–60, DPMA
   trademark €290 online for up to 3 classes + €100 per extra class, EU trademark €850/€900/€1,050 for 1/2/3
   classes, domain a few euros a year; confirm current fees), a 7-day timeline, ready posts for LinkedIn,

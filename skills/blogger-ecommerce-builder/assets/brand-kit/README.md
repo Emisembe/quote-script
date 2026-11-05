@@ -45,6 +45,14 @@ export DPI stored in the file), and `render_inkscape.py` exports them with Inksc
 ```bash
 python3 -I design_templates.py FONTS_DIR OUT && python3 -I render_inkscape.py OUT/jobs.json
 ```
+`social_profiles.py` (same arguments, writes `jobs-social.json`) adds one project per platform image, named by
+platform: YouTube banner (2560x1440, all text in the centre 1546x423), profile picture 800, thumbnail 1280x720,
+watermark 150; LinkedIn company cover 1128x191 + logo 400, personal background 1584x396 + personal photo with the
+arrow ring; Facebook page cover 1640x924 (text in the centre 1640x624 band) + profile 720; TikTok profile 800 +
+video cover 1080x1920 (title inside the 3:4 grid crop; TikTok and Instagram have no header image); Instagram
+profile + 6 story highlight covers; X header 1500x500 + profile 400; WhatsApp Business profile 640. Headers get a
+hidden "SAFE AREAS" layer and a rendered "SAFE AREAS check" PNG. Platform sizes change: search before reusing.
+
 Needs **full** Oswald/Open Sans TTFs installed (`~/.local/share/fonts`, `fc-cache -f`): the Latin-subset files
 from the Google Fonts CSS API render as blank text in Inkscape ("Invalid glyph found"). Full TTFs come from npm
 (`npm pack @expo-google-fonts/oswald @expo-google-fonts/open-sans`, with the OFL licence). `apt-get install inkscape`

@@ -680,4 +680,5 @@ Screens use pixels, not dpi, so these are given in pixels.
     with open(os.path.join(OUT, 'jobs.json'), 'w') as f: json.dump(jobs, f, indent=1)
     print(len(jobs), 'render jobs')
 
-build()
+if __name__ == '__main__':
+    build()
