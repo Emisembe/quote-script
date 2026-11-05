@@ -1693,7 +1693,11 @@ body .cert-list li {
 .post-body table:not(.tr-caption-container) th,
 .post-body table:not(.tr-caption-container) td { overflow-wrap: normal; word-break: normal; min-width: 4.5em; }
 .post-body img { max-width: 100% !important; height: auto !important; }
-.post-body .tr-caption-container { max-width: 100%; height: auto !important; }
+/* Blogger wraps captioned photos in a table as wide as the photo. A table doesn't let its photo shrink,
+   so on phones it pushed the page wider than the screen and the phone zoomed out. A fixed-layout table
+   at 100% lets the photo shrink to the screen, with the caption still centred under it. */
+.post-body .tr-caption-container { width: 100% !important; max-width: 100% !important; table-layout: fixed; height: auto !important; }
+.post-body .tr-caption-container td { overflow-wrap: anywhere; }
 .post-body .tr-caption-container td { padding: 0; }
 /* Very small phones (fold-style, 280-340px) */
 @media (max-width: 340px) {
@@ -1926,11 +1930,77 @@ body .cert-list li {
 img.fit-contain { object-fit: contain !important; padding: 8px; background: #fff; }
 .popular-posts img.fit-contain, .feed-list img.fit-contain { padding: 3px; }
 
+/* ---------- Quick contact: Call + WhatsApp ---------- */
+.quick-contact { position: fixed; z-index: 95; display: flex; }
+.qc-btn { display: flex; align-items: center; justify-content: center; gap: 8px; color: #fff !important; text-decoration: none; }
+.qc-btn .social-icon { width: 20px; height: 20px; flex: 0 0 auto; }
+.qc-call { background: var(--u-accent); }
+.qc-whatsapp { background: #147A3E; }
+.qc-number { display: none; }
+/* Phones and tablets: a bar across the bottom of the screen */
+@media (max-width: 1023px) {
+  .quick-contact {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    gap: 8px;
+    padding: 8px 12px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    background: #fff;
+    box-shadow: 0 -4px 18px rgba(15, 30, 55, 0.14);
+  }
+  .qc-btn {
+    flex: 1 1 0;
+    min-height: 48px;
+    border-radius: var(--u-radius-sm);
+    font-family: var(--u-display);
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+  /* keep the end of the page and the back-to-top button above the bar */
+  html.has-quick-contact body { padding-bottom: 72px; }
+  html.has-quick-contact .to-top { bottom: 80px; bottom: calc(72px + max(8px, env(safe-area-inset-bottom))); }
+  html.nav-locked .quick-contact { display: none; }
+}
+/* Computers: round buttons in the corner; the number slides out on hover or keyboard focus */
+@media (min-width: 1024px) {
+  .quick-contact {
+    right: 20px;
+    bottom: 20px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  .qc-btn {
+    height: 56px;
+    min-width: 56px;
+    padding: 0 18px;
+    border-radius: 28px;
+    box-shadow: 0 8px 22px rgba(15, 30, 55, 0.28);
+    font-weight: 700;
+    font-size: 15px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .qc-btn .social-icon { width: 24px; height: 24px; }
+  .qc-short { display: none; }
+  .qc-label { max-width: 0; overflow: hidden; white-space: nowrap; transition: max-width 0.25s ease; }
+  .qc-number { display: inline; }
+  .qc-btn:hover .qc-label, .qc-btn:focus-visible .qc-label { max-width: 260px; }
+  .qc-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(15, 30, 55, 0.32); }
+  .qc-btn:not(:hover):not(:focus-visible) { padding: 0; width: 56px; gap: 0; }
+  /* back-to-top sits above the round buttons */
+  html.has-quick-contact .to-top { right: 26px; bottom: 156px; }
+  html.has-quick-contact.qc-single .to-top { bottom: 88px; }
+}
+
 /* ---------- Print: just the article ---------- */
 @media print {
   @page { margin: 16mm 14mm; }
   html, body { background: #fff !important; color: #000; font-size: 11.5pt; }
   .topbar, .site-header, .ticker, .home-only, .sidebar, .site-footer, .to-top, .skip-link,
+  .quick-contact, .video-fill, .toc,
   .u-share, .join-box, .related, .comments, #comments, .blog-pager-nav, .breadcrumb,
   .item-control, .post-tags, .feed-block, .navbar, iframe.skiptranslate { display: none !important; }
   .page-main { padding: 0; }

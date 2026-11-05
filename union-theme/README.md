@@ -60,6 +60,22 @@ About the author: Jane has represented support staff at KCA University since 201
 
 **Also automatic on every article:** reading time ("4 min read"); the first paragraph shown as a larger introduction; quotes (the editor's *Quote* button) shown as large pull quotes; and an **In this article** contents box on long articles with 3 or more headings (use *Heading* / *Subheading* in the editor).
 
+## Call and WhatsApp buttons (every page)
+
+**Layout → Quick contact (Call and WhatsApp buttons)** (near the bottom of Layout). Change a number whenever it changes: open the gadget, edit the line, Save.
+
+```
+Phone: +254 705 782 994
+WhatsApp: +254 705 782 994
+Message: Hello KPUWU, I'd like to ask about
+```
+
+- Write numbers with the country code (+254…). Spaces are fine.
+- **Phone** is what the Call button dials; **WhatsApp** is where WhatsApp messages go (the two can be different numbers); **Message** is the text already typed when WhatsApp opens, so the visitor only finishes the sentence.
+- Delete a line (or its number) to hide that button. Delete both to hide the buttons completely.
+- **On phones and tablets** the two buttons sit in a bar across the bottom of the screen (it steps aside while the menu is open). **On computers** they are round buttons in the bottom corner; pointing at one shows the number.
+- The buttons don't appear when a page is printed.
+
 ## Videos under short articles
 
 **Layout → Videos** (near the bottom of Layout): one YouTube link per line, optionally followed by `|` and a title:

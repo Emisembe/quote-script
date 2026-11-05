@@ -1294,6 +1294,42 @@
     }
   }
 
+  // ---------------------------------------------------------------- quick contact: Call + WhatsApp
+  // Layout > Quick contact holds "Phone:", "WhatsApp:" and "Message:" lines. Phones get a bar at the
+  // bottom of the screen; computers get round buttons in the corner that show the number on hover.
+  var contactData = doc.querySelector('.contact-data .widget-content');
+  if (contactData) {
+    var qc = {};
+    var qcRows = [];
+    textLines(contactData).forEach(function (line) { qcRows = qcRows.concat(line.text.split(/\r?\n/)); });
+    qcRows.forEach(function (row) {
+      var m = row.replace(/ /g, ' ').trim().match(/^(phone|call|tel|telephone|whatsapp|message|text)\s*:\s*(.*)$/i);
+      if (!m) return;
+      var k = m[1].toLowerCase();
+      k = k === 'whatsapp' ? 'whatsapp' : (k === 'message' || k === 'text') ? 'message' : 'phone';
+      qc[k] = m[2].trim();
+    });
+    var dialDigits = function (v) { return (v || '').replace(/[^\d+]/g, ''); };
+    var hasDigits = function (v) { return dialDigits(v).replace(/\D/g, '').length >= 6; };
+    var buttons = [];
+    if (hasDigits(qc.phone)) {
+      var callBtn = el('a', { className: 'qc-btn qc-call', href: 'tel:' + dialDigits(qc.phone), 'aria-label': 'Call us on ' + qc.phone }, [iconSvg('phone')]);
+      callBtn.appendChild(el('span', { className: 'qc-label' }, [el('span', { className: 'qc-short', text: 'Call' }), el('span', { className: 'qc-number notranslate', text: qc.phone })]));
+      buttons.push(callBtn);
+    }
+    if (hasDigits(qc.whatsapp)) {
+      var waHref = 'https://wa.me/' + dialDigits(qc.whatsapp).replace(/^\+/, '') + (qc.message ? '?text=' + encodeURIComponent(qc.message + ' ') : '');
+      var waBtn = el('a', { className: 'qc-btn qc-whatsapp', href: waHref, target: '_blank', rel: 'noopener', 'aria-label': 'Chat with us on WhatsApp (' + qc.whatsapp + ')' }, [iconSvg('whatsapp')]);
+      waBtn.appendChild(el('span', { className: 'qc-label' }, [el('span', { className: 'qc-short', text: 'WhatsApp' }), el('span', { className: 'qc-number notranslate', text: 'WhatsApp ' + qc.whatsapp })]));
+      buttons.push(waBtn);
+    }
+    if (buttons.length) {
+      doc.body.appendChild(el('div', { className: 'quick-contact qc-count-' + buttons.length, role: 'complementary', 'aria-label': 'Contact us' }, buttons));
+      root.classList.add('has-quick-contact');
+      if (buttons.length === 1) root.classList.add('qc-single');
+    }
+  }
+
   // ---------------------------------------------------------------- accessibility + image SEO
   // Images in posts without a description get one (the photo caption, else the post title):
   // Google reads it to understand the image, screen readers read it aloud

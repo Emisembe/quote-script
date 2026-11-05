@@ -504,6 +504,110 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
     await page.close();
   }
 
+  // Real phone emulation on every page: nothing wider than the screen, so the phone never zooms out
+  // (in phone mode an over-wide element widens the page itself, so scrollWidth checks alone miss it)
+  for (const name of PAGES.concat(['kpuwu-downloads', 'generic-sitemap', 'kpuwu-branches'])) {
+    for (const width of [320, 390]) {
+      const ctx = await browser.newContext({ viewport: { width, height: 760 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+      const page = await ctx.newPage();
+      await page.route('**/*', (route) => {
+        const url = route.request().url();
+        if (url.startsWith(base + '/feeds/')) {
+          const u = new URL(url); const m = u.pathname.match(/\/-\/(.+)$/);
+          const data = u.pathname.startsWith('/feeds/pages/') ? pagesJson() : feedJson(m ? decodeURIComponent(m[1]) : '', +u.searchParams.get('max-results'));
+          return route.fulfill({ status: 200, contentType: 'application/javascript', body: `${u.searchParams.get('callback')}(${JSON.stringify(data)});` });
+        }
+        if (url.startsWith(base)) return route.continue();
+        if (/googleusercontent\.com|blogspot\.com|ytimg\.com/.test(url)) return route.fulfill({ status: 200, contentType: 'image/svg+xml', body: placeholder(url) });
+        return route.abort();
+      });
+      await page.goto(`${base}/preview/${name}.html`);
+      for (let pass = 0; pass < 2; pass++) {
+        await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
+        await page.waitForTimeout(500);
+      }
+      const r = await page.evaluate((w) => {
+        const wide = [];
+        for (const e of document.querySelectorAll('body *')) {
+          const rect = e.getBoundingClientRect();
+          if (rect.width && rect.right > w + 1 && getComputedStyle(e).position !== 'fixed' && !e.closest('[style*="overflow"], .feed-strip, .ticker-track, .post-body table:not(.tr-caption-container)'))
+            if (!wide.some((x) => x.contains(e))) wide.push(e);
+        }
+        return { iw: innerWidth, wide: wide.slice(0, 3).map((e) => e.tagName + '.' + (typeof e.className === 'string' ? e.className : '')) };
+      }, width);
+      note(r.iw === width, `phone ${name} @${width}: page fits the screen, no zoom-out (${r.iw}px) ${r.wide.join(', ')}`);
+      await ctx.close();
+    }
+  }
+
+  // Quick contact: Call + WhatsApp on every page
+  for (const [name, width, mobile] of [['kpuwu-home', 390, true], ['kpuwu-post', 320, true], ['generic-page', 768, true], ['kpuwu-home', 1440, false], ['generic-post', 1024, false]]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 760 }, isMobile: mobile, hasTouch: mobile });
+    const page = await ctx.newPage();
+    await page.route('**/*', (route) => route.request().url().startsWith(base) || /\/feeds\//.test(route.request().url()) ? route.continue() : route.abort());
+    await page.goto(`${base}/preview/${name}.html`);
+    await page.waitForTimeout(300);
+    const r = await page.evaluate(() => {
+      const box = document.querySelector('.quick-contact');
+      if (!box) return null;
+      const call = box.querySelector('.qc-call'), wa = box.querySelector('.qc-whatsapp');
+      const rb = box.getBoundingClientRect(), rc = call.getBoundingClientRect(), rw = wa.getBoundingClientRect();
+      return { call: call.getAttribute('href'), wa: wa.getAttribute('href'), boxBottom: Math.round(rb.bottom), boxTop: Math.round(rb.top), boxLeft: Math.round(rb.left), boxRight: Math.round(rb.right),
+        callH: Math.round(rc.height), callW: Math.round(rc.width), waH: Math.round(rw.height), waW: Math.round(rw.width), inner: innerHeight, innerW: innerWidth,
+        scroll: document.documentElement.scrollWidth, callText: call.textContent.trim() };
+    });
+    note(!!r, `quick contact ${name} @${width}: buttons present`);
+    if (!r) { await ctx.close(); continue; }
+    const kpuwu = name.startsWith('kpuwu');
+    note(r.call === (kpuwu ? 'tel:+254705782994' : 'tel:+000700000000'), `quick contact ${name} @${width}: Call dials ${r.call}`);
+    note(r.wa === (kpuwu ? 'https://wa.me/254705782994?text=Hello%20KPUWU%2C%20I\'d%20like%20to%20ask%20about%20' : 'https://wa.me/000700000000?text=Hello%2C%20I\'d%20like%20to%20ask%20about%20'),
+      `quick contact ${name} @${width}: WhatsApp opens a chat with the message typed (${r.wa})`);
+    note(r.scroll <= r.innerW, `quick contact ${name} @${width}: no horizontal scroll`);
+    if (mobile) {
+      note(r.boxBottom === r.inner && r.boxLeft === 0 && r.boxRight === r.innerW, `quick contact ${name} @${width}: bar across the bottom of the screen`);
+      note(r.callH >= 44 && r.waH >= 44 && Math.abs(r.callW - r.waW) <= 1, `quick contact ${name} @${width}: two equal finger-sized buttons (${r.callW}x${r.callH})`);
+      // the end of the page is not hidden behind the bar
+      // scroll to the end twice: lazy photos load on the way and make the page longer
+      for (let pass = 0; pass < 2; pass++) {
+        await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
+        await page.waitForTimeout(600);
+      }
+      const zoom = await page.evaluate(() => ({ iw: innerWidth, scale: visualViewport.scale }));
+      note(zoom.iw === width, `quick contact ${name} @${width}: phone does not zoom out (page fits the ${width}px screen: ${zoom.iw})`);
+      const end = await page.evaluate(() => {
+        const bar = document.querySelector('.quick-contact').getBoundingClientRect();
+        const last = document.querySelector('.footer-bottom').getBoundingClientRect();
+        const top = document.querySelector('.to-top').getBoundingClientRect();
+        return { lastBottom: Math.round(last.bottom), barTop: Math.round(bar.top), toTopBottom: Math.round(top.bottom) };
+      });
+      note(end.lastBottom <= end.barTop + 1, `quick contact ${name} @${width}: footer ends above the bar (${end.lastBottom} <= ${end.barTop})`);
+      note(end.toTopBottom <= end.barTop, `quick contact ${name} @${width}: back-to-top button sits above the bar`);
+      await page.screenshot({ path: path.join(OUT, `quick-contact-${name}-${width}.png`) });
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.click('#nav-toggle');
+      await page.waitForTimeout(200);
+      note(!(await page.evaluate(() => document.querySelector('.quick-contact').offsetHeight)), `quick contact ${name} @${width}: bar hidden while the menu is open`);
+    } else {
+      note(r.boxRight <= r.innerW - 16 && r.boxBottom <= r.inner - 16 && r.callW === 56 && r.waW === 56, `quick contact ${name} @${width}: round buttons in the corner (${r.callW}px)`);
+      await page.hover('.qc-call');
+      await page.waitForTimeout(400);
+      const hov = await page.evaluate(() => { const c = document.querySelector('.qc-call'); return { w: Math.round(c.getBoundingClientRect().width), label: c.querySelector('.qc-number').getBoundingClientRect().width }; });
+      note(hov.w > 120 && hov.label > 60, `quick contact ${name} @${width}: hovering Call shows the number (${hov.w}px wide)`);
+      await page.mouse.move(10, 10);
+      await page.evaluate(() => window.scrollTo(0, 1500));
+      await page.waitForTimeout(400);
+      const overlap = await page.evaluate(() => {
+        const a = document.querySelector('.to-top').getBoundingClientRect(), b = document.querySelector('.quick-contact').getBoundingClientRect();
+        return !(a.bottom <= b.top || a.top >= b.bottom || a.right <= b.left || a.left >= b.right);
+      });
+      note(!overlap, `quick contact ${name} @${width}: back-to-top and contact buttons don't overlap`);
+      await page.screenshot({ path: path.join(OUT, `quick-contact-${name}-${width}.png`) });
+    }
+    await page.emulateMedia({ media: 'print' });
+    note(!(await page.evaluate(() => document.querySelector('.quick-contact').offsetHeight)), `quick contact ${name} @${width}: not printed`);
+    await ctx.close();
+  }
+
   // Language picker: opens, marks English, choosing Kiswahili stores Google's googtrans cookie
   for (const width of [1440, 390]) {
     const { page } = await open('kpuwu-home', width);

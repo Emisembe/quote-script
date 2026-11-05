@@ -704,6 +704,18 @@ Page not found - <data:blog.title/>
   </b:section>
 </div>
 
+<!-- Quick contact (Layout gadget): Call + WhatsApp buttons on every page (bottom bar on phones, bubbles on computers) -->
+<div class='u-data contact-data' hidden='hidden'>
+  <b:section class='contact-section' id='quick-contact' maxwidgets='1' showaddelement='yes'>
+    <b:widget id='HTML38' locked='false' title='@@T:HTML38@@' type='HTML' version='1'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[@@C:HTML38@@]]></b:widget-setting>
+      </b:widget-settings>
+      @@HTML_MAIN@@
+    </b:widget>
+  </b:section>
+</div>
+
 <!-- ================= Footer ================= -->
 <footer class='site-footer' id='contact'>
   <div class='container'>
