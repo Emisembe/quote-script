@@ -183,7 +183,7 @@ body .widget li { margin: 0; padding: 0; }
 @media (min-width: 1100px) {
   html:not(.nav-collapse) .nav-toggle { display: none; }
   html:not(.nav-collapse) .nav-drawer {
-    position: static; display: flex; align-items: center; gap: 22px; margin-left: auto;
+    position: static; display: flex; align-items: center; gap: 22px; margin-left: auto; width: auto; max-width: none; box-shadow: none;
     padding: 0; border: 0; overflow: visible; background: transparent;
     visibility: visible; opacity: 1; transform: none; transition: none;
   }
