@@ -1220,6 +1220,55 @@ body .widget .toc-list li { padding: 3px 0; }
 .branch-btn .social-icon { width: 16px; height: 16px; }
 @media (max-width: 479px) { .post-body .branch-btn { flex: 1 1 calc(50% - 4px); justify-content: center; } }
 
+/* ---------- Leadership and shop stewards ---------- */
+.post-body .team-group { margin: 0 0 34px; }
+.post-body .team-group-title { font-family: var(--u-display) !important; font-size: 24px !important; color: var(--u-primary) !important; margin: 0 0 16px !important;
+  padding-bottom: 8px; border-bottom: 3px solid var(--u-accent); }
+.team-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+@media (min-width: 560px) { .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1200px) { .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.team-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 22px 18px 18px;
+  background: #fff; border: 1px solid var(--u-border); border-top: 4px solid var(--u-primary); border-radius: var(--u-radius); min-width: 0; }
+.team-card[hidden] { display: none !important; }
+.team-photo, .post-body .team-photo { display: block; width: 120px !important; height: 120px !important; max-width: none !important; margin: 0 !important;
+  border-radius: 50% !important; object-fit: cover; flex: 0 0 auto; box-shadow: 0 0 0 4px var(--u-band); }
+.team-initials, .post-body .team-initials { display: flex !important; align-items: center; justify-content: center; background: var(--u-primary) !important;
+  color: #fff !important; font-family: var(--u-display) !important; font-size: 40px !important; line-height: 1 !important; letter-spacing: 1px !important; }
+.post-body .team-branch { display: inline-block !important; font-family: var(--u-display) !important; font-size: 12px !important; letter-spacing: 0.8px !important;
+  line-height: 1 !important; padding: 5px 8px 6px !important; color: var(--u-primary) !important; background-color: var(--u-band) !important; }
+.team-text { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
+.team-card .team-name, .post-body .team-name { font-family: var(--u-display) !important; font-size: 21px !important; line-height: 1.2 !important;
+  color: var(--u-primary) !important; margin: 0 !important; overflow-wrap: anywhere; }
+.team-card .team-role, .post-body .team-role { font-size: 13px !important; font-weight: 700 !important; letter-spacing: 0.6px; text-transform: uppercase;
+  color: var(--u-accent) !important; margin: 0 !important; }
+.post-body .team-bio { font-size: 15px !important; line-height: 1.55 !important; color: var(--u-text) !important; margin: 4px 0 0 !important; }
+.post-body .team-articles { font-size: 14px !important; font-weight: 700; color: var(--u-primary) !important; }
+.team-contacts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: auto; padding-top: 6px; }
+.post-body .team-contact { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--u-primary); text-decoration: none; transition: transform 0.15s, opacity 0.15s; }
+.post-body .team-contact:hover { transform: translateY(-2px); opacity: 0.9; }
+.post-body .team-call { background: var(--u-accent); }
+.post-body .team-whatsapp { background: #147A3E; }
+.team-contact .social-icon { width: 20px; height: 20px; fill: #fff; }
+.team-cv-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; }
+.team-contacts + .team-cv-row { margin-top: 4px; }
+.team-text + .team-cv-row { margin-top: auto; }
+.post-body .team-cv-row .btn { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 10px 16px; white-space: nowrap; text-decoration: none; }
+.post-body .team-cv-row .btn-primary { color: #fff !important; }
+.post-body .team-cv-row .btn-outline { color: var(--u-primary) !important; }
+.team-cv .social-icon { width: 18px; height: 18px; fill: currentColor; }
+.band-team { background: #fff; }
+.team-home h2.title { text-align: center; }
+.team-home h2.title::after { left: 50%; margin-left: -28px; }
+.team-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (min-width: 900px) { .team-row { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.team-compact { padding: 18px 10px 14px; gap: 8px; }
+.team-compact .team-photo { width: 96px !important; height: 96px !important; }
+.team-compact .team-initials { font-size: 32px !important; }
+.team-compact .team-name { font-size: 18px !important; }
+.team-compact .team-role { font-size: 12px !important; }
+.team-more { text-align: center; margin: 24px 0 0; }
+
 /* ---------- Videos under short articles ---------- */
 .video-fill { margin-top: 36px; }
 .video-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
@@ -2107,7 +2156,7 @@ body .chat-links { list-style: none; margin: 0; padding: 0; }
   @page { margin: 16mm 14mm; }
   html, body { background: #fff !important; color: #000; font-size: 11.5pt; }
   .topbar, .site-header, .ticker, .home-only, .sidebar, .site-footer, .to-top, .skip-link,
-  .quick-contact, .video-fill, .toc, .chat-panel,
+  .quick-contact, .video-fill, .toc, .chat-panel, .team-contacts, .team-filter, .team-cv-view,
   .u-share, .join-box, .related, .comments, #comments, .blog-pager-nav, .breadcrumb,
   .item-control, .post-tags, .feed-block, .navbar, iframe.skiptranslate { display: none !important; }
   .page-main { padding: 0; }

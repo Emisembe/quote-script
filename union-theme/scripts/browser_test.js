@@ -83,7 +83,7 @@ function pagesJson() {
   })) } };
 }
 
-const PAGES = ['kpuwu-home', 'kpuwu-post', 'kpuwu-page', 'generic-home', 'generic-post', 'generic-page', 'generic-downloads', 'kpuwu-sitemap', 'generic-branches'];
+const PAGES = ['kpuwu-home', 'kpuwu-post', 'kpuwu-page', 'generic-home', 'generic-post', 'generic-page', 'generic-downloads', 'kpuwu-sitemap', 'generic-branches', 'generic-team'];
 const WIDTHS = [280, 320, 360, 375, 414, 480, 600, 768, 834, 1024, 1100, 1280, 1440, 1920];
 const SHOTS = [280, 375, 768, 1100, 1440, 1920];
 // QUICK=1 node scripts/browser_test.js : only 390 and 1440 in the page matrix (for fast iteration)
@@ -451,6 +451,79 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
     const { page } = await open('kpuwu-branches', 1024);
     note(/added here soon/.test(await page.textContent('.u-branches')), 'kpuwu branches: friendly message while no branch is listed');
     await page.close();
+  }
+
+  // Leadership and shop stewards: groups, cards, contacts, CV downloads, search, branch filter, structured data
+  for (const width of [1440, 390, 320]) {
+    const { page } = await open('generic-team', width);
+    const r = await page.evaluate(() => {
+      const card = (n) => [...document.querySelectorAll('.u-team .team-card')].find((c) => c.querySelector('.team-name').textContent === n);
+      const href = (c, s) => (c && c.querySelector(s) ? c.querySelector(s).getAttribute('href') : null);
+      const john = card('John Smith'), sam = card('Samuel Kiptoo'), grace = card('Grace Achieng'), mary = card('Mary Wanjiru');
+      const ld = [...document.querySelectorAll('script[type="application/ld+json"]')].map((x) => JSON.parse(x.textContent))[0]['@graph'][0];
+      const init = mary.querySelector('.team-initials');
+      const cs = getComputedStyle(init);
+      return { groups: [...document.querySelectorAll('.team-group-title')].map((h) => h.textContent), n: document.querySelectorAll('.u-team .team-card').length,
+        headings: [...document.querySelectorAll('.u-team h2, .u-team h3')].map((h) => h.tagName).join(''),
+        mail: href(john, '.team-email'), call: href(john, '.team-call'), wa: href(sam, '.team-whatsapp'), maryContacts: mary.querySelectorAll('.team-contact').length,
+        cv: href(john, '.team-cv'), cvView: !!john.querySelector('.team-cv-view'), driveCv: href(grace, '.team-cv'), driveView: href(grace, '.team-cv-view'),
+        noCv: !mary.querySelector('.team-cv'), photo: (grace.querySelector('img.team-photo') || {}).alt, initials: init.textContent,
+        initBg: cs.backgroundColor, initColor: cs.color, initDisplay: cs.display,
+        articles: href(card('Jane Wanjiku'), '.team-articles'), labels: [...john.querySelectorAll('a')].every((a) => a.getAttribute('aria-label') || a.textContent.trim()),
+        members: (ld.member || []).length, jobTitle: ((ld.member || [])[1] || {}).jobTitle,
+        options: [...document.querySelectorAll('.team-branch-select option')].map((o) => o.textContent), count: (document.querySelector('.team-count') || {}).textContent,
+        cvRows: [...document.querySelectorAll('.u-team .team-cv')].map((b) => b.getBoundingClientRect().height),
+        scroll: document.documentElement.scrollWidth, inner: innerWidth };
+    });
+    note(r.groups.join('|') === 'National leadership|Branch officials|Shop stewards' && r.n === 10, `team @${width}: 3 groups in the order they appear, 10 people (${r.groups.join(', ')})`);
+    note(/^H2(H3)+H2(H3)+H2(H3)+$/.test(r.headings), `team @${width}: headings in order (group h2, person h3)`);
+    note(r.mail === 'mailto:gs@example.org' && r.call === 'tel:+000700000001' && r.wa === 'https://wa.me/000700000002' && r.maryContacts === 1,
+      `team @${width}: Email / Call / WhatsApp only where filled in ${JSON.stringify([r.mail, r.call, r.wa])}`);
+    note(r.cv === 'https://example.org/files/cv-john-smith.pdf' && !r.cvView && r.noCv, `team @${width}: Download CV button (none when no CV)`);
+    note(r.driveCv === 'https://drive.google.com/uc?export=download&id=1TeamCvDrive_X' && /drive\.google\.com\/file\/d\/1TeamCvDrive_X\/view/.test(r.driveView || ''),
+      `team @${width}: Google Drive CV downloads directly, plus View`);
+    note(r.photo === 'Grace Achieng' && r.initials === 'MW' && r.initDisplay === 'flex' && r.initBg !== 'rgba(0, 0, 0, 0)' && r.initColor === 'rgb(255, 255, 255)',
+      `team @${width}: photo from the list, initials circle when there is none (${r.initBg})`);
+    note(/\/search\/label\/Writer/.test(r.articles || ''), `team @${width}: "Articles by" link for a member who writes`);
+    note(r.labels, `team @${width}: every link and button has a name`);
+    note(r.members === 10 && r.jobTitle === 'General Secretary', `team @${width}: people in Google structured data (${r.members})`);
+    note(r.options.join('|') === 'All branches|Campus branch|Coast branch|Head office|North branch|West branch' && r.count === '10 people', `team @${width}: branch filter + count`);
+    note(r.cvRows.length === 5 && r.cvRows.every((h) => h <= 64), `team @${width}: "Download CV" stays on one line (${r.cvRows.map(Math.round)})`);
+    await page.fill('.team-search', 'treasurer');
+    let f = await page.evaluate(() => ({ shown: [...document.querySelectorAll('.u-team .team-card')].filter((c) => !c.hidden).map((c) => c.querySelector('.team-name').textContent),
+      groups: [...document.querySelectorAll('.team-group')].filter((g) => !g.hidden).length }));
+    note(f.shown.join() === 'Amina Hassan' && f.groups === 1, `team @${width}: search "treasurer" finds Amina, empty groups hidden`);
+    await page.fill('.team-search', '');
+    await page.selectOption('.team-branch-select', 'Coast branch');
+    f = await page.evaluate(() => ({ shown: [...document.querySelectorAll('.u-team .team-card')].filter((c) => !c.hidden).length, count: document.querySelector('.team-count').textContent }));
+    note(f.shown === 3 && f.count === 'Showing 3 of 10', `team @${width}: branch "Coast branch" shows 3 (${f.count})`);
+    await page.selectOption('.team-branch-select', '');
+    note(r.scroll <= r.inner && r.inner === width, `team @${width}: fits the screen (no zoom-out, no sideways scroll)`);
+    await page.screenshot({ path: path.join(OUT, `team-${width}.png`), fullPage: true });
+    await page.close();
+  }
+  for (const width of [1440, 390]) {
+    const { page } = await open('generic-home', width);
+    const r = await page.evaluate(() => {
+      const band = document.querySelector('.band-team');
+      return { visible: !!band && !band.hidden && band.getBoundingClientRect().height > 0, names: [...band.querySelectorAll('.team-name')].map((n) => n.textContent),
+        more: (band.querySelector('.team-more a') || {}).getAttribute('href'), noButtons: !band.querySelector('.team-contact, .team-cv'),
+        scroll: document.documentElement.scrollWidth, inner: innerWidth };
+    });
+    note(r.visible && r.names.join() === 'Jane Doe,John Smith,Amina Hassan' && r.more === '/p/leadership.html' && r.noButtons,
+      `homepage @${width}: "Our leadership" row shows the Featured people and links to the Leadership page`);
+    note(r.scroll <= r.inner && r.inner === width, `homepage @${width}: leadership row fits the screen`);
+    if (width === 390) await page.locator('.band-team').screenshot({ path: path.join(OUT, 'team-home-390.png') });
+    await page.close();
+  }
+  {
+    const { page } = await open('kpuwu-team', 1024);
+    note(/added here soon/.test(await page.textContent('.u-team')), 'kpuwu team: friendly message while no one is listed');
+    await page.close();
+    const home = (await open('kpuwu-home', 1024)).page;
+    note(await home.evaluate(() => document.querySelector('.band-team').hidden && document.querySelector('.band-team').getBoundingClientRect().height === 0),
+      'kpuwu home: leadership row hidden while the list is empty');
+    await home.close();
   }
 
   // Videos fill the empty space under short articles, never more; phones show one; related articles always there

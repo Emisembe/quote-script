@@ -304,6 +304,11 @@ Page not found - <data:blog.title/>
   </div>
 </section>
 
+<!-- ================= Our leadership (homepage; filled from Layout > Our team) ================= -->
+<section class='home-only band band-team' hidden='hidden'>
+  <div class='container team-home'/>
+</section>
+
 <!-- ================= Posts + sidebar (every page) ================= -->
 <div class='page-main' id='news'>
   <div class='container main-grid'>
@@ -717,6 +722,17 @@ Page not found - <data:blog.title/>
 </div>
 
 <!-- Chat assistant (Layout gadget): questions and answers; "Ask" button next to Call and WhatsApp -->
+<!-- Our team (Layout gadget): leadership and shop stewards for the Leadership page and the homepage row -->
+<div class='u-data team-data' hidden='hidden'>
+  <b:section class='team-section' id='our-team' maxwidgets='1' showaddelement='yes'>
+    <b:widget id='HTML40' locked='false' title='@@T:HTML40@@' type='HTML' version='1'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[@@C:HTML40@@]]></b:widget-setting>
+      </b:widget-settings>
+      @@HTML_MAIN@@
+    </b:widget>
+  </b:section>
+</div>
 <div class='u-data chat-data' hidden='hidden'>
   <b:section class='chat-section' id='chat-assistant' maxwidgets='1' showaddelement='yes'>
     <b:widget id='HTML39' locked='false' title='@@T:HTML39@@' type='HTML' version='1'>

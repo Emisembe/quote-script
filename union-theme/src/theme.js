@@ -979,6 +979,129 @@
     }
   }
 
+  // ---------------------------------------------------------------- our team: leadership and shop stewards
+  // Layout > Our team lists people (one <li> each: name, then Role/Group/Branch/Photo/Email/Phone/
+  // WhatsApp/Bio/CV/Featured lines). The Leadership page (/p/leadership.html, or any page with
+  // <div class="u-team"></div>) shows them grouped; Featured people also appear on the homepage.
+  var TEAM_KEYS = { role: 'role', position: 'role', title: 'role', group: 'group', section: 'group', branch: 'branch',
+    photo: 'photo', picture: 'photo', image: 'photo', email: 'email', 'e-mail': 'email', phone: 'phone', tel: 'phone',
+    mobile: 'phone', whatsapp: 'whatsapp', bio: 'bio', about: 'bio', cv: 'cv', resume: 'cv', featured: 'featured' };
+  function parsePerson(li) {
+    var person = {};
+    var rows = [];
+    textLines(li).forEach(function (line) { rows = rows.concat(line.text.split(/\r?\n/)); });
+    rows.forEach(function (t) {
+      t = t.replace(/ /g, ' ').trim();
+      if (!t) return;
+      var m = t.match(/^([A-Za-z][A-Za-z -]{0,15}?)\s*:\s*(.*)$/);
+      var key = m ? TEAM_KEYS[m[1].trim().toLowerCase()] : null;
+      if (key) person[key] = m[2].trim();
+      else if (!person.name) person.name = t;
+      else person.bio = person.bio ? person.bio + ' ' + t : t;
+    });
+    var pic = li.querySelector('img');
+    if (!person.photo && pic) person.photo = pic.src;
+    var link = li.querySelector('a[href]');
+    if (!person.cv && link && /cv|resume|drive\.google|docs\.google|\.pdf/i.test(link.getAttribute('href') + link.textContent)) person.cv = link.getAttribute('href');
+    person.featured = /^(yes|y|true|1)$/i.test(person.featured || '');
+    person.group = person.group || 'Our team';
+    return person.name ? person : null;
+  }
+  var teamPeople = [].slice.call(doc.querySelectorAll('.team-data .team-list > li')).map(parsePerson).filter(Boolean);
+  function teamCard(person, headingTag, compact) {
+    var dial = function (v) { return (v || '').replace(/[^\d+]/g, ''); };
+    var initials = person.name.split(/\s+/).map(function (w) { return w.charAt(0); }).slice(0, 2).join('').toUpperCase();
+    var photo = person.photo ? el('img', { className: 'team-photo', src: sized(person.photo, 320, 320), alt: person.name, loading: 'lazy' })
+      : el('span', { className: 'team-photo team-initials', 'aria-hidden': 'true', text: initials });
+    if (compact) {
+      return el('article', { className: 'team-card team-compact' }, [photo,
+        el(headingTag, { className: 'team-name', text: person.name }),
+        person.role ? el('p', { className: 'team-role', text: person.role }) : null]);
+    }
+    var contacts = el('div', { className: 'team-contacts' });
+    var contact = function (cls, href, label, iconName, external) {
+      contacts.appendChild(el('a', { className: 'team-contact ' + cls, href: href, title: label, 'aria-label': label + ' (' + person.name + ')',
+        target: external ? '_blank' : null, rel: external ? 'noopener' : null }, [iconSvg(iconName)]));
+    };
+    if (person.email) contact('team-email', 'mailto:' + person.email, 'Email ' + person.email, 'email');
+    if (dial(person.phone).replace(/\D/g, '').length >= 6) contact('team-call', 'tel:' + dial(person.phone), 'Call ' + person.phone, 'phone');
+    if (dial(person.whatsapp).replace(/\D/g, '').length >= 6) contact('team-whatsapp', 'https://wa.me/' + dial(person.whatsapp).replace(/^\+/, ''), 'WhatsApp ' + person.whatsapp, 'whatsapp', true);
+    var cvRow = null;
+    if (person.cv) {
+      var cvInfo = docInfo(el('a', { href: person.cv }));
+      var dl = el('a', { className: 'btn btn-primary team-cv', href: cvInfo.download, target: '_blank', rel: 'noopener', 'aria-label': 'Download the CV of ' + person.name }, [iconSvg('download')]);
+      dl.appendChild(doc.createTextNode('Download CV'));
+      cvRow = el('div', { className: 'team-cv-row' }, [dl, cvInfo.hasViewer ? el('a', { className: 'btn btn-outline team-cv-view', href: cvInfo.view, target: '_blank', rel: 'noopener',
+        'aria-label': 'View the CV of ' + person.name, text: 'View' }) : null]);
+    }
+    var articles = writerLinks[person.name.toLowerCase()];
+    return el('article', { className: 'team-card', 'data-branch': person.branch || '' }, [
+      photo,
+      el('div', { className: 'team-text' }, [
+        el(headingTag, { className: 'team-name', text: person.name }),
+        person.role ? el('p', { className: 'team-role', text: person.role }) : null,
+        person.branch ? el('span', { className: 'badge badge-soft team-branch', text: person.branch }) : null,
+        person.bio ? el('p', { className: 'team-bio', text: person.bio }) : null,
+        articles ? el('a', { className: 'team-articles', href: articles, text: 'Articles by ' + person.name.split(/\s+/)[0] }) : null
+      ]),
+      contacts.children.length ? contacts : null,
+      cvRow
+    ]);
+  }
+  var teamHost = doc.querySelector('.post-body .u-team') ||
+    (/\/p\/(leadership|our-team|team|leaders|whos-who)\.html$/i.test(window.location.pathname) ? doc.querySelector('.post-single .post-body') : null);
+  if (teamHost) {
+    var teamBox = teamHost.classList.contains('u-team') ? teamHost : teamHost.appendChild(el('div', { className: 'u-team' }));
+    if (!teamPeople.length) {
+      teamBox.appendChild(el('p', { className: 'feed-status', text: 'Details of our leadership and shop stewards will be added here soon.' }));
+    } else {
+      var groupNames = [];
+      teamPeople.forEach(function (pp) { if (groupNames.indexOf(pp.group) === -1) groupNames.push(pp.group); });
+      var groupBlocks = groupNames.map(function (g) {
+        var grid = el('div', { className: 'team-grid' });
+        teamPeople.filter(function (pp) { return pp.group === g; }).forEach(function (pp) { grid.appendChild(teamCard(pp, 'h3')); });
+        return el('section', { className: 'team-group', 'aria-label': g }, [el('h2', { className: 'team-group-title', text: g }), grid]);
+      });
+      if (teamPeople.length > 8) {
+        var teamBranches = teamPeople.map(function (pp) { return pp.branch; }).filter(function (b, i, a) { return b && a.indexOf(b) === i; }).sort();
+        var teamSearch = el('input', { type: 'search', className: 'branch-search team-search', placeholder: 'Search by name, role or branch…', 'aria-label': 'Search the team' });
+        var teamSelect = teamBranches.length > 1 ? el('select', { className: 'branch-region-select team-branch-select', 'aria-label': 'Filter by branch' },
+          [el('option', { value: '', text: 'All branches' })].concat(teamBranches.map(function (b) { return el('option', { value: b, text: b }); }))) : null;
+        var teamCount = el('p', { className: 'branch-count team-count', 'aria-live': 'polite' });
+        var filterTeam = function () {
+          var q = teamSearch.value.trim().toLowerCase(), br = teamSelect ? teamSelect.value : '', shown = 0;
+          groupBlocks.forEach(function (block) {
+            var visible = 0;
+            [].forEach.call(block.querySelectorAll('.team-card'), function (card) {
+              var ok = (!q || card.textContent.toLowerCase().indexOf(q) !== -1) && (!br || card.getAttribute('data-branch') === br);
+              card.hidden = !ok;
+              if (ok) { visible++; shown++; }
+            });
+            block.hidden = !visible;
+          });
+          teamCount.textContent = shown === teamPeople.length ? teamPeople.length + ' people' : 'Showing ' + shown + ' of ' + teamPeople.length;
+        };
+        teamSearch.addEventListener('input', filterTeam);
+        if (teamSelect) teamSelect.addEventListener('change', filterTeam);
+        teamBox.appendChild(el('div', { className: 'branch-filter team-filter' }, [teamSearch, teamSelect, teamCount]));
+        filterTeam();
+      }
+      groupBlocks.forEach(function (block) { teamBox.appendChild(block); });
+    }
+  }
+  // Homepage row: the Featured people (or the first group's first four)
+  var teamBand = doc.querySelector('.band-team');
+  var teamHome = teamBand ? teamBand.querySelector('.team-home') : null;
+  if (teamHome && teamPeople.length) {
+    var featured = teamPeople.filter(function (pp) { return pp.featured; });
+    if (!featured.length) featured = teamPeople.filter(function (pp) { return pp.group === teamPeople[0].group; });
+    featured = featured.slice(0, 4);
+    teamHome.appendChild(el('h2', { className: 'title', text: 'Our leadership' }));
+    teamHome.appendChild(el('div', { className: 'team-row' }, featured.map(function (pp) { return teamCard(pp, 'h3', true); })));
+    teamHome.appendChild(el('p', { className: 'team-more' }, [el('a', { className: 'btn btn-outline', href: '/p/leadership.html', text: 'Meet our leadership & shop stewards →' })]));
+    teamBand.hidden = false;
+  }
+
   // ---------------------------------------------------------------- structured data for Google
   // schema.org JSON-LD: who the organisation is, the website, and on posts the article and
   // its breadcrumb. Built from what is on the page, so it is always in step with the gadgets.
@@ -998,6 +1121,17 @@
   if (logoImg && logoImg.src) org.logo = { '@type': 'ImageObject', url: logoImg.src };
   var sameAs = [].slice.call(doc.querySelectorAll('.topbar-social .widget-content a[href^="http"]')).map(function (a) { return a.href; });
   if (sameAs.length) org.sameAs = sameAs;
+  // Leadership, on the page that shows it
+  if (teamHost && teamPeople.length) {
+    org.member = teamPeople.map(function (pp) {
+      var person = { '@type': 'Person', name: pp.name };
+      if (pp.role) person.jobTitle = pp.role;
+      if (pp.photo) person.image = pp.photo;
+      if (pp.email) person.email = pp.email;
+      if (pp.branch) person.workLocation = pp.branch;
+      return person;
+    });
+  }
   // Branch offices, on the pages that show them
   if (branchHost && branchItems.length) {
     org.subOrganization = branchItems.map(function (b) {

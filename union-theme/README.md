@@ -33,6 +33,7 @@ A rebuild of the BCorporate v3 theme used on kpuwuke.blogspot.com. It has the sa
 | News blocks | **Campaigns / Emerging issues / Publications** | The gadget content is a **label name**. The block shows the latest posts with that label. |
 | Leadership | **Message from the General Secretary** | A label name. Shows the latest post with that label. |
 | Events | **Events** | A label name. Shows six posts as photo tiles. |
+| Our leadership | **Our team** (near the bottom of Layout) | Featured officials with photos and a link to the Leadership page. See [Leadership and shop stewards page](#leadership-and-shop-stewards-page). Hidden while the list is empty. |
 | Latest news | Blog posts | Your posts, as cards, on every list page. |
 | About | **Background of the union / Who we are** | A label name. |
 | Members | **Member institutions / Our branches** | A label name. A scrollable strip. |
@@ -135,6 +136,40 @@ Only the first line (the branch name) is required; also possible: `Map:` (a Goog
 Where it shows:
 - a **Branches** page: Pages → New page → title **Branches** → publish (the address must end in `/p/branches.html`); the KPUWU menu item *Regions & Branches* already points there;
 - any other page or post, e.g. **About KPUWU**: open the page → *HTML view* → put `<div class="u-branches"></div>` where the list should appear.
+
+## Leadership and shop stewards page
+
+**Layout → Our team (leadership and shop stewards)** (near the bottom of Layout) holds the list. Add one `<li>` per person, one detail per line (the instructions are inside the gadget):
+
+```
+<li>Jane Wanjiku
+Role: Branch Secretary
+Group: Branch officials
+Branch: KCA University
+Photo: https://... (a square photo link, or insert the photo inside the <li>)
+Email: kca@example.com
+Phone: +254 700 000 000
+WhatsApp: +254 700 000 000
+Bio: Jane has represented support staff since 2019.
+CV: https://drive.google.com/file/d/.../view
+Featured: yes
+</li>
+```
+
+Only the first line (the name) is required; buttons appear only for the details you fill in.
+- **Group** makes the sections, in the order they first appear in the list: put *National leadership* people first, then *Branch officials*, then *Shop stewards* (or any group names you like).
+- **CV**: upload the CV to Google Drive → *Share* → *Anyone with the link* → copy the link. The card gets a **Download CV** button (straight download) and a **View** button. A link to a PDF elsewhere works too.
+- No photo? The card shows the person's initials in a circle.
+- A member who writes articles (label `Writer: Their Name`) also gets an **Articles by …** link.
+- **Featured: yes** puts the person in the **Our leadership** row on the homepage (up to 4), with a link to the full page. Without any Featured people, the first group is shown. While the list is empty the row is hidden and the page says details are coming.
+- With more than 8 people, a search box and a branch filter appear.
+- The officials are also given to Google (name, role, photo, email) on that page.
+
+Where it shows:
+- a **Leadership** page: Pages → New page → title **Leadership** → publish (the address must end in `/p/leadership.html`). Write a short introduction if you like; the list appears under it. The menu already points there: KPUWU *At Work → Leadership & Shop Stewards* (it replaces *Who's Who*, which used to list posts labelled *Who's who*), template *About us → Leadership & shop stewards*.
+- any other page, e.g. **About us**: *HTML view* → put `<div class="u-team"></div>` where the list should appear.
+
+**Privacy (please read).** Names, photos, phone numbers and CVs are personal data. Under Kenya's Data Protection Act, 2019, publish each person only with their consent, and remove them when they leave office or ask you to. Prefer official email addresses and office numbers over personal ones. Ask officials for a short **public CV**: no ID number, date of birth, home address, personal phone, marital status or referees' contacts. Anyone can download what you publish.
 
 ## Downloads page and Sitemap page (one-time setup, 2 minutes)
 

@@ -148,14 +148,25 @@ def render(name, kind):
     if name == 'generic':
         docs = docs.replace('</ul>', "<li><a href='https://drive.google.com/file/d/1AbCdEfGh_ijk-LMN/view?usp=sharing' data-type='pdf'>Preview: Drive file</a> Shared from Google Drive</li>"
                             "<li><a href='https://docs.google.com/spreadsheets/d/1ZyXwV_uts-RQ/edit?usp=sharing'>Preview: Google Sheet</a> Exported as Excel</li></ul>")
-    if kind in ('downloads', 'sitemap', 'branches'):
-        heading = {'downloads': 'Downloads', 'sitemap': 'Sitemap', 'branches': 'About us'}[kind]
+    # Test-only extra people (preview, never in a profile): enough to switch on search and the branch
+    # filter, a photo inside the <li>, a Google Drive CV and a writer who has articles
+    team = content['HTML40']
+    if name == 'generic':
+        extra = ''.join(f"<li>Steward Number{i}\nRole: Shop Steward\nGroup: Shop stewards\nBranch: {b}\nPhone: +000 711 000 00{i}\n</li>"
+                        for i, b in ((1, 'Coast branch'), (2, 'West branch')))
+        extra += ("<li><img src='https://blogger.googleusercontent.com/img/b/sample/s400/steward.jpg'/>Grace Achieng\nRole: Shop Steward\n"
+                  "Group: Shop stewards\nBranch: Coast branch\nCV: https://drive.google.com/file/d/1TeamCvDrive_X/view?usp=sharing\n</li>")
+        extra += "<li>Jane Wanjiku\nRole: Women's Officer\nGroup: Branch officials\nBranch: North branch\n</li>"
+        team = team.replace('</ul>', extra + '</ul>')
+    if kind in ('downloads', 'sitemap', 'branches', 'team'):
+        heading = {'downloads': 'Downloads', 'sitemap': 'Sitemap', 'branches': 'About us', 'team': 'Leadership & shop stewards'}[kind]
         holder = {'downloads': "<p>All our documents in one place.</p><div class='u-downloads'></div>",
                   'sitemap': "<div class='u-sitemap'></div>",
+                  'team': "<p>The elected officials who lead the union and represent members at every workplace.</p><div class='u-team'></div>",
                   'branches': "<p>We are a democratic union run by and for our members. Find your nearest office below.</p><h2>Our branch offices</h2><div class='u-branches'></div>"}[kind]
-        main = f"""<article class='post-single post'><a name='3'></a><header class='post-head'><h1 class='post-title entry-title'>{heading}</h1></header>
+        main = f"""<article class='post-single post'><a name='3'></a><header class='post-head'><h1 class='post-title entry-title'>{esc(heading)}</h1></header>
 <div class='post-body entry-content' id='post-body-3'>{holder}</div>
-""" + share.replace('{title}', heading).replace('{slug}', 'p/' + kind).replace('{blog}', blog_title) + "</article>"
+""" + share.replace('{title}', esc(heading)).replace('{slug}', 'p/' + kind).replace('{blog}', blog_title) + "</article>"
     elif kind == 'page':
         main = f"""<article class='post-single post'><a name='2'></a><header class='post-head'><h1 class='post-title entry-title'>Who can join?</h1></header>
 <div class='post-body entry-content' id='post-body-2'>
@@ -244,6 +255,7 @@ def render(name, kind):
 <section class='home-only band band-leader'><div class='container leader-grid'>
 {section('leader-col', 'box4', pg.feed_widget('HTML14', 'message', 1))}{section('events-col', 'box6', pg.feed_widget('HTML10', 'tiles', 6))}
 </div></section>
+<section class='home-only band band-team' hidden='hidden'><div class='container team-home'></div></section>
 <div class='page-main' id='news'><div class='container main-grid'>
 <div class='main-col'>{section('main', 'main', f"<div class='widget Blog' data-version='1' id='Blog1'>{main}</div>")}</div>
 <aside class='sidebar'>{section('sidebar-section', 'sidebar', sidebar)}</aside>
@@ -255,6 +267,7 @@ def render(name, kind):
 <section class='home-only band band-downloads' id='downloads'><div class='container'>{section('downloads-section', 'downloads-list', pg.html_widget('HTML35', f"<div class='widget-content'>{docs}</div>"))}</div></section>
 </main>
 <div class='u-data branch-data' hidden='hidden'>{section('branches-section', 'branch-offices', pg.html_widget('HTML36'))}</div>
+<div class='u-data team-data' hidden='hidden'>{section('team-section', 'our-team', pg.html_widget('HTML40', f"<div class='widget-content'>{team}</div>"))}</div>
 <div class='u-data chat-data' hidden='hidden'>{section('chat-section', 'chat-assistant', pg.html_widget('HTML39'))}</div>
 <div class='u-data contact-data' hidden='hidden'>{section('contact-section', 'quick-contact', pg.html_widget('HTML38'))}</div>
 <div class='u-data video-data' hidden='hidden'>{section('videos-section', 'videos-list', pg.html_widget('HTML37', f"<div class='widget-content'>{videos}</div>"))}</div>
@@ -281,7 +294,7 @@ def render(name, kind):
 def main():
     OUT.mkdir(exist_ok=True)
     for name in ('kpuwu', 'generic'):
-        for kind in ('home', 'post', 'page', 'downloads', 'sitemap', 'branches'):
+        for kind in ('home', 'post', 'page', 'downloads', 'sitemap', 'branches', 'team'):
             (OUT / f'{name}-{kind}.html').write_text(render(name, kind), encoding='utf-8')
             print(f'wrote preview/{name}-{kind}.html')
 
