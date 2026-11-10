@@ -224,6 +224,20 @@ Page not found - <data:blog.title/>
   </div>
 </section>
 
+<!-- ================= Donate (homepage; Layout > Donate button) ================= -->
+<section class='home-only band band-donate js-hide-empty'>
+  <div class='container'>
+    <b:section class='donate-section' id='donate' maxwidgets='1' showaddelement='yes'>
+      <b:widget id='HTML41' locked='false' title='@@T:HTML41@@' type='HTML' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[@@C:HTML41@@]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
 <!-- ================= What we do + numbers (homepage) ================= -->
 <section class='home-only band band-services'>
   <div class='container'>

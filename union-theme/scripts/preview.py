@@ -258,6 +258,7 @@ def render(name, kind):
 <main id='content'>
 <div class='home-only ticker' id='ticker'><div class='container ticker-inner'><span class='ticker-label'>Latest</span><div class='ticker-track'><ul class='ticker-list'></ul></div></div></div>
 <section class='home-only hero'><div class='container hero-grid'>{section('hero-main', 'hero-main', hero_main)}{section('hero-side', 'hero-side', hero_side)}</div></section>
+<section class='home-only band band-donate js-hide-empty'><div class='container'>{section('donate-section', 'donate', pg.html_widget('HTML41'))}</div></section>
 <section class='home-only band band-services'><div class='container'>{section('services', 'services', pg.html_widget('HTML27'))}</div></section>
 <section class='home-only band band-stats js-hide-empty'><div class='container'>{section('stats', 'stats', stats)}</div></section>
 <section class='home-only band band-feeds'><div class='container'><div class='feed-row'>

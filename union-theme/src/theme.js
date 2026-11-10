@@ -181,6 +181,7 @@
     chat: 'M4 3h16a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm3 6.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z',
     send: 'M3 20.5V14l9-2-9-2V3.5L22 12 3 20.5z',
     close: 'M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6l5.6-5.6L5 6.4z',
+    heart: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z',
     download: 'M11 3h2v9.6l3.3-3.3 1.4 1.4L12 16.4l-5.7-5.7 1.4-1.4 3.3 3.3V3zM4 18h16v2H4z',
     phone: 'M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z',
     pin: 'M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z',
@@ -1199,6 +1200,28 @@
   var certs = doc.querySelector('.footer-certs');
   if (certs && !certs.querySelector('.widget-content li, .widget-content img')) certs.hidden = true;
 
+  // Donate strip (homepage; Layout > Donate button): heart icon, the list's links become buttons
+  var donate = doc.querySelector('.band-donate .widget');
+  if (donate) {
+    var donateBody = donate.querySelector('.widget-content');
+    var donateLinks = donateBody ? donateBody.querySelectorAll('li a[href], .widget-content > a[href]') : [];
+    var donateForms = donateBody ? donateBody.querySelectorAll('form') : [];
+    if (!donateBody || (!donateLinks.length && !donateForms.length && !donateBody.textContent.trim())) {
+      donate.parentNode.removeChild(donate);
+    } else {
+      var donateActions = el('div', { className: 'donate-actions' });
+      [].forEach.call(donateLinks, function (a, i) {
+        a.className += ' btn donate-btn ' + (i ? 'btn-outline' : 'btn-primary');
+        var holder = a.closest('ul, ol') || a;
+        if (holder.parentNode !== donateActions) donateActions.appendChild(holder);
+      });
+      [].forEach.call(donateForms, function (f) { donateActions.appendChild(f); });
+      donateBody.parentNode.insertBefore(donateActions, donateBody.nextSibling);
+      donate.insertBefore(el('span', { className: 'donate-icon', 'aria-hidden': 'true' }, [iconSvg('heart')]), donate.firstChild);
+      donate.classList.add('donate-box');
+    }
+  }
+
   // Hide homepage bands whose section has no gadget (e.g. "numbers" left empty)
   var optional = doc.querySelectorAll('.js-hide-empty');
   for (var o = 0; o < optional.length; o++) {
@@ -1288,6 +1311,19 @@
 
   // ---------------------------------------------------------------- language (Google Translate)
   var picker = doc.querySelector('.lang-picker');
+  // Amharic and Tigrinya are always offered (requested by the union), even when the Languages gadget
+  // still holds an older list: Blogger can keep a gadget's saved list when a new theme is uploaded.
+  var langList = picker ? picker.querySelector('.lang-menu ul') : null;
+  if (langList && langList.querySelector('a[data-lang]')) {
+    var langAfter = langList.querySelector('a[data-lang="sw"]');
+    langAfter = langAfter ? langAfter.parentNode : langList.querySelector('li');
+    [['am', '\u12a0\u121b\u122d\u129b (Amharic)'], ['ti', '\u1275\u130d\u122d\u129b (Tigrinya)']].forEach(function (lg) {
+      if (langList.querySelector('a[data-lang="' + lg[0] + '"]')) return;
+      var li = el('li', null, [el('a', { href: '#', 'data-lang': lg[0], lang: lg[0], text: lg[1] })]);
+      langList.insertBefore(li, langAfter.nextSibling);
+      langAfter = li;
+    });
+  }
   var langLinks = picker ? picker.querySelectorAll('a[data-lang]') : [];
   if (picker && langLinks.length) {
     // The first language in the gadget is the language the blog is written in

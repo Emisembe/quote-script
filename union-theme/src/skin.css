@@ -1223,6 +1223,60 @@ body .widget .toc-list li { padding: 3px 0; }
 /* ---------- Old live-chat boxes (MyLiveChat): never shown; the script removes them ---------- */
 iframe[src*='mylivechat'], [id*='mylivechat'], [id*='MyLiveChat'], [class*='mylivechat'], [class*='MyLiveChat'] { display: none !important; }
 
+/* ---------- Donate strip (homepage, under the banner) ---------- */
+.band-donate { background: var(--u-band); padding: 28px 0; }
+@media (min-width: 768px) { .band-donate { padding: 36px 0; } }
+.band-donate .widget {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+  padding: 26px 20px;
+  background: #fff;
+  border-radius: var(--u-radius);
+  border-top: 5px solid var(--u-accent);
+  box-shadow: var(--u-shadow);
+}
+.band-donate .widget { position: relative; }
+.band-donate .widget > .item-control { position: absolute; top: 8px; right: 10px; }
+.donate-icon { display: flex; align-items: center; justify-content: center; width: 60px; height: 60px; border-radius: 50%; background: var(--u-accent); }
+.donate-icon .social-icon { width: 30px; height: 30px; fill: #fff; }
+.band-donate h2.title { margin: 0; padding: 0; font-size: clamp(22px, 3vw, 28px); }
+.band-donate h2.title::after { display: none; }
+.band-donate .widget-content { max-width: 640px; color: var(--u-text); font-size: 16px; line-height: 1.55; }
+.band-donate .widget-content p { margin: 0; }
+.band-donate .widget-content p + p { margin-top: 6px; }
+.band-donate .donate-note { font-size: 14px; color: var(--u-muted); }
+.donate-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+body .band-donate .donate-actions ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.donate-actions form { margin: 0; }
+.band-donate li a, .band-donate .donate-btn { min-height: 50px; padding: 12px 30px; font-size: 18px; white-space: nowrap; }
+.band-donate li:first-child a:not(.btn) { background: var(--u-accent); border-color: var(--u-accent); color: #fff; }
+@media (max-width: 479px) {
+  body .band-donate .donate-actions ul, .donate-actions { width: 100%; }
+  body .band-donate .donate-actions li { flex: 1 1 100%; }
+  .band-donate .donate-btn { width: 100%; }
+}
+@media (min-width: 860px) {
+  .band-donate .widget {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: 'icon title actions' 'icon text actions';
+    justify-items: start;
+    align-items: center;
+    column-gap: 24px;
+    row-gap: 4px;
+    text-align: left;
+    padding: 26px 32px;
+    border-top: 0;
+    border-left: 6px solid var(--u-accent);
+  }
+  .donate-icon { grid-area: icon; width: 68px; height: 68px; }
+  .band-donate h2.title { grid-area: title; align-self: end; }
+  .band-donate .widget-content { grid-area: text; align-self: start; }
+  .donate-actions { grid-area: actions; justify-content: flex-end; }
+}
+
 /* ---------- Leadership and shop stewards ---------- */
 .post-body .team-group { margin: 0 0 34px; }
 .post-body .team-group-title { font-family: var(--u-display) !important; font-size: 24px !important; color: var(--u-primary) !important; margin: 0 0 16px !important;

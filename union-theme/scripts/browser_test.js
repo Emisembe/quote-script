@@ -96,7 +96,7 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
   const base = `http://localhost:${server.address().port}`;
   const browser = await chromium.launch();
 
-  async function open(name, width) {
+  async function open(name, width, edit) {
     const page = await browser.newPage({ viewport: { width, height: 900 } });
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
@@ -112,6 +112,9 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
           : max === 150 && !label ? allPostsJson(+(u.searchParams.get('start-index') || 1), max) : feedJson(label, max);
         const body = `${u.searchParams.get('callback')}(${JSON.stringify(data)});`;
         return route.fulfill({ status: 200, contentType: 'application/javascript', body });
+      }
+      if (edit && url === `${base}/preview/${name}.html`) {
+        return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: edit(fs.readFileSync(path.join(__dirname, '..', 'preview', `${name}.html`), 'utf8')) });
       }
       if (url.startsWith(base)) return route.continue();
       if (/googleusercontent\.com|blogspot\.com|ytimg\.com/.test(url)) {
@@ -785,6 +788,48 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
     }
     await page.click('.lang-toggle');
     await Promise.all([page.waitForNavigation(), page.click('.lang-menu a[data-lang="en"]')]);
+    await page.close();
+  }
+
+  // Amharic and Tigrinya still offered when the Languages gadget keeps an older saved list
+  {
+    const { page } = await open('kpuwu-home', 1440, (h) => h.replace(/<li><a href="#" data-lang="(am|ti)"[^\n]*<\/li>\n?/g, ''));
+    const r = await page.evaluate(() => ({ fromGadget: [...document.querySelectorAll('.lang-menu a[data-lang]')].map((a) => a.getAttribute('data-lang')).join(','),
+      am: (document.querySelector('.lang-menu a[data-lang="am"]') || {}).textContent }));
+    note(r.fromGadget === 'en,sw,am,ti,fr,es,pt,de,ar,zh-CN' && r.am === 'አማርኛ (Amharic)', `language: Amharic and Tigrinya added after Kiswahili even when missing from the gadget (${r.fromGadget})`);
+    await page.close();
+  }
+
+  // Donate strip on the homepage (Layout > Donate button)
+  for (const name of ['kpuwu-home', 'generic-home']) {
+    for (const width of [1440, 1024, 768, 390, 320]) {
+      const { page } = await open(name, width);
+      const r = await page.evaluate(() => {
+        const band = document.querySelector('.band-donate');
+        const box = band.querySelector('.widget').getBoundingClientRect();
+        const btns = [...band.querySelectorAll('.donate-btn')];
+        const b = btns[0].getBoundingClientRect();
+        const text = band.querySelector('.widget-content').getBoundingClientRect();
+        const hero = document.querySelector('.hero').getBoundingClientRect(), services = document.querySelector('.band-services').getBoundingClientRect();
+        return { visible: !band.hidden && box.height > 0, heading: (band.querySelector('h2.title') || {}).textContent, n: btns.length,
+          href: btns[0].getAttribute('href'), primary: btns[0].classList.contains('btn-primary'), bg: getComputedStyle(btns[0]).backgroundColor,
+          h: Math.round(b.height), inside: b.left >= box.left - 1 && b.right <= box.right + 1, sameRow: b.left > text.right,
+          icon: !!band.querySelector('.donate-icon svg'), order: hero.bottom <= box.top && box.bottom <= services.top,
+          scroll: document.documentElement.scrollWidth, inner: innerWidth };
+      });
+      const tag = `donate ${name} @${width}`;
+      note(r.visible && r.heading === 'Support the union' && r.icon && r.order, `${tag}: strip under the banner, heading and heart icon`);
+      note(r.href === '/p/donate.html' && r.primary && r.bg !== 'rgba(0, 0, 0, 0)' && r.n === (name === 'generic-home' ? 2 : 1), `${tag}: ${r.n} button(s), first is the red "Donate now" -> ${r.href}`);
+      note(r.h >= 44 && r.h <= 60 && r.inside, `${tag}: button easy to tap (${r.h}px) and inside the box`);
+      if (width >= 1024) note(r.sameRow, `${tag}: button beside the text on wide screens`);
+      note(r.scroll <= r.inner, `${tag}: no sideways scroll`);
+      if (width === 1440 || width === 390) await page.locator('.band-donate').screenshot({ path: path.join(OUT, `donate-${name}-${width}.png`) });
+      await page.close();
+    }
+  }
+  {
+    const { page } = await open('kpuwu-home', 1024, (h) => h.replace(/(<div class='widget HTML' data-version='1' id='HTML41'>[\s\S]*?<div class='widget-content'>)[\s\S]*?(<\/div><\/div>)/, '$1$2'));
+    note(await page.evaluate(() => document.querySelector('.band-donate').hidden), 'donate: strip hidden when the gadget is emptied');
     await page.close();
   }
 
