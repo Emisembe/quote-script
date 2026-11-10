@@ -214,9 +214,20 @@ def render(name, kind):
 </ol></div></div></div>
 </article><nav aria-label='More posts' class='blog-pager-nav'><a class='btn btn-outline newer' href='#'>&#8592; Newer</a><a class='btn btn-outline older' href='#'>Older &#8594;</a></nav>"""
 
+    # Test-only (KPUWU preview): a leftover MyLiveChat gadget like the one on the live blog, which adds its
+    # box straight away and again a moment later; the theme must remove all of it
+    leftover_chat = ''
+    if name == 'kpuwu':
+        leftover_chat = ("<div class='widget HTML' data-version='1' id='HTML20'><h2 class='title'>Live chat</h2><div class='widget-content'>"
+            "<script>function add_chatinline(){var hccid=91844755;var b=document.createElement('div');b.id='test-leftover-chat';b.className='mylivechat_inline';"
+            "b.style.cssText='position:fixed;right:0;bottom:0;width:480px;height:600px;background:#fff;z-index:9999';"
+            "b.innerHTML='Leave a message <a href=\\'https://mylivechat.com/\\'>by MyLiveChat</a>';document.body.appendChild(b);"
+            "setTimeout(function(){var c=document.createElement('div');c.id='test-leftover-chat-2';c.style.cssText='position:fixed;right:0;bottom:0;width:300px;height:60px;z-index:9999';"
+            "c.innerHTML='<iframe src=\\'https://mylivechat.com/chatwidget.aspx\\'></iframe>';document.body.appendChild(c);},1200);} add_chatinline();</script>"
+            "<p class='test-leftover-text'>Chat with us</p></div></div>")
     sidebar = ''.join([
         pg.html_widget('HTML2'), popular(), pg.html_widget('HTML19'), label_widget('Label1', 'Topics'),
-        pg.html_widget('HTML5'),
+        pg.html_widget('HTML5'), leftover_chat,
     ])
     home_style = "<style>.home-only { display: block; }</style>" if home else ''
     stats = pg.html_widget('HTML28')

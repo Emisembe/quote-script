@@ -1220,6 +1220,9 @@ body .widget .toc-list li { padding: 3px 0; }
 .branch-btn .social-icon { width: 16px; height: 16px; }
 @media (max-width: 479px) { .post-body .branch-btn { flex: 1 1 calc(50% - 4px); justify-content: center; } }
 
+/* ---------- Old live-chat boxes (MyLiveChat): never shown; the script removes them ---------- */
+iframe[src*='mylivechat'], [id*='mylivechat'], [id*='MyLiveChat'], [class*='mylivechat'], [class*='MyLiveChat'] { display: none !important; }
+
 /* ---------- Leadership and shop stewards ---------- */
 .post-body .team-group { margin: 0 0 34px; }
 .post-body .team-group-title { font-family: var(--u-display) !important; font-size: 24px !important; color: var(--u-primary) !important; margin: 0 0 16px !important;

@@ -773,6 +773,31 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
     await Promise.all([page.waitForNavigation(), page.click('.lang-menu a[data-lang="en"]')]);
     const back = (await page.context().cookies()).find((c) => c.name === 'googtrans');
     note(!back || !back.value, `language @${width}: choosing English clears the cookie`);
+    const langs = await page.evaluate(() => [...document.querySelectorAll('.lang-menu a[data-lang]')].map((x) => x.getAttribute('data-lang')));
+    note(langs.includes('am') && langs.includes('ti'), `language @${width}: Amharic and Tigrinya offered (${langs.join(', ')})`);
+    for (const [code, name] of [['am', 'አማርኛ'], ['ti', 'ትግርኛ']]) {
+      await page.click('.lang-toggle');
+      await Promise.all([page.waitForNavigation(), page.click(`.lang-menu a[data-lang="${code}"]`)]);
+      const c = (await page.context().cookies()).find((x) => x.name === 'googtrans');
+      const shown = (await page.textContent('.lang-current')).trim();
+      const fit = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.querySelector('.lang-toggle').getBoundingClientRect().right <= innerWidth);
+      note(c && c.value === `/en/${code}` && shown === name && fit, `language @${width}: ${code} sets googtrans=/en/${code}, picker shows "${shown}", top bar still fits`);
+    }
+    await page.click('.lang-toggle');
+    await Promise.all([page.waitForNavigation(), page.click('.lang-menu a[data-lang="en"]')]);
+    await page.close();
+  }
+
+  // Old MyLiveChat box (kept on the live blog in a gadget): removed, including what it adds later
+  for (const width of [1440, 390]) {
+    const { page } = await open('kpuwu-home', width);
+    await page.waitForTimeout(2000);
+    const r = await page.evaluate(() => ({
+      boxes: document.querySelectorAll('#test-leftover-chat, #test-leftover-chat-2, .test-leftover-text, a[href*="mylivechat"], iframe[src*="mylivechat"]').length,
+      sidebar: document.querySelectorAll('.sidebar .widget').length, posts: document.querySelectorAll('.post-card').length,
+      quick: !!document.querySelector('.quick-contact'), ask: !!document.querySelector('.qc-ask, .chat-launcher') }));
+    note(r.boxes === 0, `live chat @${width}: old "Leave a message" box removed (${r.boxes} left)`);
+    note(r.sidebar >= 4 && r.posts > 0 && r.quick && r.ask, `live chat @${width}: everything else still there (sidebar ${r.sidebar} gadgets, ${r.posts} posts, Call/WhatsApp/Ask bar)`);
     await page.close();
   }
 

@@ -1301,7 +1301,7 @@
       langLinks[ll].setAttribute('hreflang', code);
       if (code === active) {
         langLinks[ll].setAttribute('aria-current', 'true');
-        current.textContent = langLinks[ll].textContent.trim();
+        current.textContent = langLinks[ll].textContent.replace(/\s*\([^)]*\)\s*$/, '').trim();
         current.setAttribute('data-short', code.split('-')[0].toUpperCase());
       }
     }
@@ -1742,6 +1742,40 @@
   };
   labelTranslate();
   [1500, 4000, 8000].forEach(function (ms) { setTimeout(labelTranslate, ms); });
+
+  // ---------------------------------------------------------------- old live-chat boxes (MyLiveChat and similar)
+  // The old theme's "Leave a message" box can survive on the live blog in a gadget or pasted code.
+  // Remove it wherever it comes from, including what its script adds to the page later.
+  var CHAT_LEFTOVER = /mylivechat|chatinline\.aspx|hccid/i;
+  var isLeftoverChat = function (node) {
+    if (!node || node.nodeType !== 1) return false;
+    if (node.tagName === 'SCRIPT') return CHAT_LEFTOVER.test((node.getAttribute('src') || '') + node.text);
+    return CHAT_LEFTOVER.test((node.id || '') + ' ' + (typeof node.className === 'string' ? node.className : '') + ' ' +
+      (node.getAttribute('src') || '') + ' ' + (node.getAttribute('href') || ''));
+  };
+  var dropLeftoverChat = function (node) {
+    // the gadget that holds it, or the box the chat script put directly on the page
+    var box = node.closest ? node.closest('.widget') : null;
+    if (!box || box.closest('.u-data')) {
+      box = node;
+      while (box.parentNode && box.parentNode !== doc.body && box.parentNode !== doc.documentElement && box.parentNode !== doc.head) box = box.parentNode;
+      if (box.parentNode === doc.body && (box.querySelector('#content, .site-header, .site-footer, .main-col') || box.id === 'content')) box = node;
+    }
+    if (box.parentNode) box.parentNode.removeChild(box);
+  };
+  var sweepLeftoverChat = function (root) {
+    if (isLeftoverChat(root)) { dropLeftoverChat(root); return; }
+    if (!root.querySelectorAll) return;
+    [].forEach.call(root.querySelectorAll('script, iframe, a[href], div[id], div[class]'), function (n) { if (isLeftoverChat(n) && n.parentNode) dropLeftoverChat(n); });
+  };
+  sweepLeftoverChat(doc.documentElement);
+  if (window.MutationObserver) {
+    var chatWatch = new MutationObserver(function (records) {
+      records.forEach(function (r) { [].forEach.call(r.addedNodes, function (n) { if (n.nodeType === 1 && n.parentNode) sweepLeftoverChat(n); }); });
+    });
+    chatWatch.observe(doc.documentElement, { childList: true, subtree: true });
+    setTimeout(function () { chatWatch.disconnect(); }, 30000);
+  }
 
   // Footer year
   var years = doc.querySelectorAll('.js-year');
