@@ -18,7 +18,7 @@ Page not found - <data:blog.title/>
 </title>
 <link href='https://fonts.googleapis.com' rel='preconnect'/>
 <link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
-<link href='https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&amp;family=Open+Sans:wght@400;600;700&amp;display=swap' rel='stylesheet'/>
+<link href='https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&amp;family=Open+Sans:wght@400;600;700&amp;family=Noto+Sans+Arabic:wght@400;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;600;700&amp;display=swap' rel='stylesheet'/>
 <b:skin><![CDATA[
 /*
 -----------------------------------------------
@@ -54,7 +54,7 @@ html {
 }
 body {
   margin: 0;
-  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+  font-family: 'Open Sans', 'Noto Sans Arabic', 'Noto Sans Ethiopic', Arial, Helvetica, sans-serif;
   font-size: 16px;
   line-height: 1.65;
   color: $(text.color);
@@ -85,7 +85,8 @@ body .widget li { margin: 0; padding: 0; }
 
 .skip-link {
   position: absolute;
-  left: -9999px;
+  left: 16px;
+  transform: translateY(-300%);
   top: 12px;
   z-index: 300;
   background: #fff;
@@ -94,7 +95,7 @@ body .widget li { margin: 0; padding: 0; }
   padding: 10px 16px;
   border-radius: 8px;
 }
-.skip-link:focus { left: 16px; }
+.skip-link:focus { transform: none; }
 
 .badge {
   display: inline-block;
@@ -340,7 +341,7 @@ a.badge:hover { background: $(primary.color); color: $(accent.color); }
   position: relative;
   margin: 0 0 24px;
   padding-left: 18px;
-  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
   font-weight: 400;
   font-size: clamp(46px, 8vw, 84px);
   line-height: 0.95;
@@ -425,7 +426,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
   display: inline-block;
   margin: 0;
   padding-bottom: 6px;
-  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
   font-weight: 400;
   font-size: clamp(30px, 4vw, 42px);
   letter-spacing: 1.5px;
@@ -565,7 +566,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 .post-labels { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 .post-title {
   margin: 0 0 12px;
-  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
   font-weight: 400;
   font-size: clamp(34px, 5.5vw, 56px);
   line-height: 1.02;
@@ -595,7 +596,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 }
 .post-body h2, .post-body h3, .post-body h4 {
   margin: 1.6em 0 0.5em;
-  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
   font-weight: 400;
   letter-spacing: 1px;
   line-height: 1.1;
@@ -665,7 +666,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 }
 .post-share-label {
   margin-right: 6px;
-  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
   font-size: 22px;
   letter-spacing: 1px;
   color: $(primary.color);
@@ -693,7 +694,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   border-top: 1px solid $(border.color);
 }
 .comments .title, .comments h3, .comments h4 {
-  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
   font-weight: 400;
   font-size: 28px;
   letter-spacing: 1px;
@@ -750,12 +751,12 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 .not-found { padding: 56px 20px; text-align: center; }
 .not-found-code {
   margin: 0;
-  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
   font-size: clamp(96px, 20vw, 180px);
   line-height: 1;
   color: $(accent.color);
 }
-.not-found h1 { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-weight: 400; font-size: 40px; letter-spacing: 1px; color: $(primary.color); }
+.not-found h1 { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; font-weight: 400; font-size: 40px; letter-spacing: 1px; color: $(primary.color); }
 .not-found p { color: $(muted.color); }
 .not-found .search-form { margin: 24px auto; }
 
@@ -775,7 +776,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   display: inline-block;
   margin: 0 0 16px;
   padding-bottom: 6px;
-  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
   font-weight: 400;
   font-size: 24px;
   letter-spacing: 1px;
@@ -841,7 +842,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   display: inline-block;
   margin: 0 0 16px;
   padding-bottom: 6px;
-  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
   font-weight: 400;
   font-size: 24px;
   letter-spacing: 1px;
@@ -987,7 +988,7 @@ body .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax
 .shop-field input, .shop-field select, .shop-field textarea { width: 100%; box-sizing: border-box; font: inherit; padding: 10px; border: 1px solid #c8c8c8; border-radius: 4px; background: #fff; color: #222; }
 .shop-qty input { max-width: 100px; }
 .shop-msg { color: #a00; min-height: 1.2em; }
-.shop-hp { position: absolute !important; left: -9999px !important; }
+.shop-hp { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap; opacity: 0; }
 .shop-methods { border: 1px solid #ddd; border-radius: 4px; padding: 10px 12px; margin: 0 0 12px; }
 .shop-methods label { display: block; padding: 4px 0; cursor: pointer; }
 
@@ -1359,13 +1360,38 @@ body .shop-ticker-list > li.shop-ticker-item { margin: 0; padding: 0 28px 0 0; w
 }
 @media print { .shop-chat-bubble, .shop-chat-panel { display: none; } }
 
+/* Anything marked hidden stays hidden, even where the homepage rule shows its section (empty reviews, no newsletter …) */
+[hidden] { display: none !important; }
+/* Form fields inside dark sections: dark text on white, so people see what they type */
+.shop-newsletter-row input, .shop-chat-input { color: #111; background: #fff; caret-color: #111; }
+.shop-newsletter-row input::placeholder, .shop-chat-input::placeholder { color: #777; }
+/* Language menu: readable options on every system */
+.shop-lang option { color: #111; background: #fff; }
+
+/* Right-to-left languages (Arabic): mirror the few places that are placed by hand */
+[dir="rtl"] body .shop-steps-list > li.shop-step { padding: 0 64px 0 0; }
+[dir="rtl"] .shop-step-num { left: auto; right: 0; }
+[dir="rtl"] .shop-chat-msg.is-bot { border-bottom-left-radius: 14px; border-bottom-right-radius: 4px; }
+[dir="rtl"] .shop-chat-msg.is-user { border-bottom-right-radius: 14px; border-bottom-left-radius: 4px; }
+[dir="rtl"] .shop-faq-item summary { padding: 16px 0 16px 40px; }
+[dir="rtl"] .shop-faq-item summary::after { right: auto; left: 6px; }
+[dir="rtl"] .shop-ticker-track { direction: ltr; }
+[dir="rtl"] .shop-ticker-item { direction: rtl; }
+[dir="rtl"] .shop-ticker-item::after { margin-left: 0; margin-right: 28px; }
+[dir="rtl"] .shop-badge { left: auto; right: 10px; }
+/* Ethiopic and Arabic letters are a little taller: give lines room */
+.lang-am, .lang-ti, .lang-ar { line-height: 1.75; }
+.lang-am h1, .lang-am h2, .lang-am h3, .lang-ti h1, .lang-ti h2, .lang-ti h3, .lang-ar h1, .lang-ar h2, .lang-ar h3 { line-height: 1.35; letter-spacing: 0; }
+/* Phone numbers, prices with symbols and web addresses always read left to right, also inside Arabic text */
+.shop-contact-detail, a[href^="tel:"], a[href^="mailto:"], .shop-branch-line a, .shop-chat-msg a, .shop-price, .shop-ticker-item strong { unicode-bidi: isolate; direction: ltr; }
+
 .shop-admin { display: none; }
 body#layout .shop-admin { display: block; }
 
 /* ================= Night Shop look (SpotCommerce-inspired) ================= */
 /* logo: white wordmark with a dot in the accent colour */
 .shop .brand-mark { display: none; }
-.shop .brand-name { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-weight: 600; font-size: 26px; letter-spacing: 0.04em; text-transform: uppercase; }
+.shop .brand-name { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; font-weight: 600; font-size: 26px; letter-spacing: 0.04em; text-transform: uppercase; }
 .shop .brand-name::after { content: '.'; color: $(accent.color); }
 .shop .brand-tagline { color: #A59C92; }
 .cart-button { order: 3; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: 4px; color: #fff; border-radius: 50%; flex: 0 0 auto; }
@@ -1395,12 +1421,12 @@ body#layout .shop-admin { display: block; }
 }
 .shop .hero::before { background: linear-gradient(90deg, rgba(10, 6, 3, 0.72) 0%, rgba(10, 6, 3, 0.25) 70%); }
 .shop .hero-inner { min-height: 0; padding-top: 88px; padding-bottom: 96px; }
-.shop .hero-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-weight: 600; letter-spacing: 0.01em; }
+.shop .hero-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-weight: 600; letter-spacing: 0.01em; }
 .shop .hero-eyebrow { color: $(accent.color); }
 
 /* perks card in the hero */
 .perk-card { background: rgba(17, 17, 17, 0.72); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 26px 26px 18px; color: #fff; }
-.perk-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.06em; font-size: 15px; color: $(accent.color); margin: 0 0 12px; }
+.perk-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.06em; font-size: 15px; color: $(accent.color); margin: 0 0 12px; }
 body .perk-list li { position: relative; padding: 10px 0 10px 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #E6E1DB; font-size: 15px; }
 body .perk-list li:first-child { border-top: 0; }
 .perk-list li::before { content: ''; position: absolute; left: 4px; top: 17px; width: 12px; height: 7px; border-left: 2px solid $(accent.color); border-bottom: 2px solid $(accent.color); transform: rotate(-45deg); }
@@ -1415,7 +1441,7 @@ body .perk-list li:first-child { border-top: 0; }
 .shop-card { background: transparent; }
 .shop-card-media { border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03); }
 .shop-card-media img { padding: 8%; box-sizing: border-box; }
-.shop-card-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-weight: 500; font-size: 17px; text-transform: uppercase; letter-spacing: 0.02em; }
+.shop-card-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; font-weight: 500; font-size: 17px; text-transform: uppercase; letter-spacing: 0.02em; }
 .shop-card-title a:hover { color: $(accent.color); }
 .shop .section-title { text-transform: uppercase; }
 
@@ -1423,7 +1449,7 @@ body .perk-list li:first-child { border-top: 0; }
 .shop .pt-item .main-grid, .pt-item.shop .main-grid { grid-template-columns: minmax(0, 1fr); }
 .shop-item { background: #fff; border: 1px solid $(border.color); border-radius: 14px; padding: 20px; }
 @media (min-width: 768px) { .shop-item { padding: 36px; } }
-.shop-item .post-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 34px; line-height: 1.1; margin: 4px 0 0; }
+.shop-item .post-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 34px; line-height: 1.1; margin: 4px 0 0; }
 .shop-cat { color: $(accent.color); font-weight: 700; }
 .shop-share { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; font-size: 14px; }
 .shop-share a { color: #6B6B6B; text-decoration: underline; }
@@ -1437,7 +1463,7 @@ body .perk-list li:first-child { border-top: 0; }
 body .sidebar .popular-posts ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .sidebar .popular-posts .item-thumbnail { float: none; margin: 0 0 8px; background: #EBE2D9; border-radius: 8px; aspect-ratio: 4 / 5; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .sidebar .popular-posts .item-thumbnail img { width: 100%; height: 100%; object-fit: contain; padding: 8%; box-sizing: border-box; }
-.sidebar .popular-posts .item-title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 14px; }
+.sidebar .popular-posts .item-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 14px; }
 .sidebar .popular-posts .item-title b { font-weight: 500; }
 
 /* promo banner: teal night street, drawn in CSS; banner_image replaces it */
@@ -1458,14 +1484,14 @@ body .sidebar .popular-posts ul { display: grid; grid-template-columns: repeat(3
 }
 .promo .container { padding-top: 72px; padding-bottom: 72px; }
 .promo .widget { max-width: 620px; }
-.promo .widget > h2.title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 40px; letter-spacing: 0.02em; margin: 0 0 12px; }
+.promo .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 40px; letter-spacing: 0.02em; margin: 0 0 12px; }
 .promo .widget > h2.title::after { content: '.'; color: $(accent.color); }
 .promo .widget-content { font-size: 17px; line-height: 1.7; color: #DDE7E6; }
 .promo .widget-content a { display: inline-block; margin-top: 6px; padding: 12px 22px; border-radius: 6px; background: $(accent.color); color: #fff; font-weight: 700; text-decoration: none; }
 .promo .widget-content a:hover { background: $(accent.hover.color); }
 
 /* categories on the homepage: big pill links */
-.shop .topics .widget > h2 { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; }
+.shop .topics .widget > h2 { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; }
 
 /* footer */
 .shop .site-footer { background: #111111; }
@@ -1507,7 +1533,7 @@ body .widget.Attribution { display: none; }
 /* "Talk to us" strip under the homepage banner */
 .talk { display: none; background: #f7f5f2; border-bottom: 1px solid #e8e3dc; }
 .talk .container { padding-top: 36px; padding-bottom: 40px; }
-.talk .widget > h2.title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 26px; letter-spacing: 0.02em; margin: 0 0 6px; }
+.talk .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 26px; letter-spacing: 0.02em; margin: 0 0 6px; }
 .talk .widget > h2.title::after { content: '.'; color: $(accent.color); }
 @media (max-width: 600px) {
   .talk .container { padding-top: 28px; padding-bottom: 30px; }
@@ -1518,7 +1544,7 @@ body#layout .talk { display: block; }
 /* Our partners (homepage) and accreditation symbols (footer) */
 .partners { display: none; background: #ffffff; border-top: 1px solid #ece8e2; }
 .partners .container { padding-top: 44px; padding-bottom: 48px; text-align: center; }
-.partners .widget > h2.title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 22px; letter-spacing: 0.06em; color: #6b6b6b; margin: 0 0 22px; }
+.partners .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 22px; letter-spacing: 0.06em; color: #6b6b6b; margin: 0 0 22px; }
 .footer-badges { border-top: 1px solid rgba(255,255,255,0.12); padding: 22px 0 6px; }
 .footer-badges .widget { margin: 0; text-align: center; }
 .footer-badges .widget > h2.title { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; margin: 0 0 14px; opacity: .7; }
@@ -1561,7 +1587,7 @@ body#layout .announce, body#layout .trust { display: block; }
 .newsletter .shop-consent { color: #bdbdbd; }
 .newsletter .shop-msg { color: #ffb4a0; }
 .services .widget > h2.title, .steps .widget > h2.title, .testimonials .widget > h2.title, .faq .widget > h2.title, .newsletter .widget > h2.title {
-  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
 .services .widget > h2.title::after, .steps .widget > h2.title::after, .testimonials .widget > h2.title::after, .faq .widget > h2.title::after, .newsletter .widget > h2.title::after { content: '.'; color: $(accent.color); }
 .newsletter .widget > h2.title { color: #ffffff; }
 @media (max-width: 600px) {
@@ -1578,7 +1604,7 @@ body#layout .services, body#layout .steps, body#layout .testimonials, body#layou
 .ticker .shop-ticker:not(.is-ready) { padding: 10px 16px; font-size: 14px; }
 .branches { background: #f7f5f2; border-top: 1px solid #e8e3dc; }
 .branches .container { padding-top: 56px; padding-bottom: 56px; }
-.branches .widget > h2.title { font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
+.branches .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
 .branches .widget > h2.title::after { content: '.'; color: $(accent.color); }
 @media (max-width: 600px) { .branches .container { padding-top: 40px; padding-bottom: 40px; } .branches .widget > h2.title { font-size: 26px; } }
 body#layout .ticker, body#layout .branches { display: block; }
@@ -1718,6 +1744,30 @@ Neu: Waschmaschinen und Kühlschränke, geprüft und gereinigt | /search/label/A
 Nächster Container nach Mombasa: fragen Sie uns nach dem Ladetermin | /p/kenya.html
 Fulfillment für Online-Händler aus Gießen: jetzt Angebot anfragen | /p/fulfilment.html
 Versandkostenfrei in Deutschland ab *50 €* | /p/shipping.html
+</div>
+<div data-lang="sw">
+Mpya: mashine za kufulia na friji, zimekaguliwa na kusafishwa | /search/label/Appliances
+Kontena linalofuata kwenda Mombasa: tuulize tarehe ya kupakia | /p/kenya.html
+Huduma za ghala kwa wauzaji mtandaoni kutoka Gießen: omba bei | /p/fulfilment.html
+Usafirishaji bure ndani ya Ujerumani kuanzia *50 €* | /p/shipping.html
+</div>
+<div data-lang="ar">
+وصل حديثًا: غسالات وثلاجات، مفحوصة ونظيفة | /search/label/Appliances
+الحاوية القادمة إلى مومباسا: اسألنا عن موعد التحميل | /p/kenya.html
+خدمات التخزين والشحن للبائعين عبر الإنترنت من غيسن: اطلب عرض سعر | /p/fulfilment.html
+شحن مجاني داخل ألمانيا ابتداءً من *50 €* | /p/shipping.html
+</div>
+<div data-lang="am">
+አዲስ፦ የልብስ ማጠቢያ ማሽኖች እና ማቀዝቀዣዎች፣ ተፈትሸው የጸዱ | /search/label/Appliances
+ወደ ሞምባሳ የሚሄደው ቀጣዩ ኮንቴይነር፦ የመጫኛ ቀኑን ይጠይቁን | /p/kenya.html
+ከጊሰን ለኦንላይን ሻጮች የማከማቻ እና የመላኪያ አገልግሎት፦ የዋጋ ጥያቄ ያቅርቡ | /p/fulfilment.html
+በጀርመን ውስጥ ከ*50 €* ጀምሮ ነፃ መላኪያ | /p/shipping.html
+</div>
+<div data-lang="ti">
+ሓድሽ፦ መሕጸቢ ክዳውንቲ ማሽናትን ፍሪጃትን፡ ዝተፈተኑን ዝጸረዩን | /search/label/Appliances
+ዝቕጽል ኮንቴነር ናብ ሞምባሳ፦ ዕለት ምጽዓን ሕተቱና | /p/kenya.html
+ካብ ጊሰን ንሸየጥቲ ኦንላይን ኣገልግሎት ምኽዛንን ምልኣኽን፦ ዋጋ ሕተቱ | /p/fulfilment.html
+ኣብ ውሽጢ ጀርመን ካብ *50 €* ጀሚሩ ብነጻ ምልኣኽ | /p/shipping.html
 </div>]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
@@ -1742,7 +1792,11 @@ Versandkostenfrei in Deutschland ab *50 €* | /p/shipping.html
           <b:widget-settings>
             <b:widget-setting name='content'><![CDATA[<p data-lang="en">Second-hand goods checked by hand, sold in Germany and shipped to Kenya. Digital products. And fulfilment for online sellers, right here in Gießen.</p>
 <p data-lang="de">Second-Hand-Ware, von Hand geprüft – verkauft in Deutschland und verschickt nach Kenia. Digitale Produkte. Und Fulfillment für Online-Händler, direkt aus Gießen.</p>
-<p data-lang="fr">Des articles d'occasion vérifiés à la main, vendus en Allemagne et expédiés au Kenya. Des produits numériques. Et la logistique e-commerce pour les vendeurs en ligne, depuis Gießen.</p>]]></b:widget-setting>
+<p data-lang="fr">Des articles d'occasion vérifiés à la main, vendus en Allemagne et expédiés au Kenya. Des produits numériques. Et la logistique e-commerce pour les vendeurs en ligne, depuis Gießen.</p>
+<p data-lang="sw">Bidhaa za mtumba zilizokaguliwa kwa mkono, zinauzwa Ujerumani na kusafirishwa Kenya. Bidhaa za kidijitali. Na huduma za ghala kwa wauzaji mtandaoni, hapa hapa Gießen.</p>
+<p data-lang="ar">بضائع مستعملة مفحوصة يدويًا، تُباع في ألمانيا وتُشحن إلى كينيا. منتجات رقمية. وخدمات التخزين والشحن للبائعين عبر الإنترنت، هنا في غيسن.</p>
+<p data-lang="am">በእጅ የተፈተሹ ያገለገሉ ዕቃዎች፣ በጀርመን የሚሸጡ እና ወደ ኬንያ የሚላኩ። ዲጂታል ምርቶች። እና ለኦንላይን ሻጮች የማከማቻ እና የመላኪያ አገልግሎት፣ እዚሁ ጊሰን።</p>
+<p data-lang="ti">ብኢድ ዝተፈተሹ ዝተጠቕመሎም ኣቑሑት፡ ኣብ ጀርመን ዝሽየጡን ናብ ኬንያ ዝለኣኹን። ዲጂታላዊ ፍርያት። ከምኡ'ውን ንሸየጥቲ ኦንላይን ኣገልግሎት ምኽዛንን ምልኣኽን፡ ኣብዚ ጊሰን።</p>]]></b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
             <div class='hero-copy'>
@@ -1792,6 +1846,26 @@ Versandkostenfrei in Deutschland ab *50 €* | /p/shipping.html
 <li><strong>Vérifié à la main</strong> : chaque article testé et décrit honnêtement</li>
 <li><strong>Allemagne &amp; Kenya</strong> : retrait à Gießen, livraison ou envoi au Kenya</li>
 <li><strong>Commandez comme vous voulez</strong> : en ligne, WhatsApp ou Telegram</li>
+</ul>
+<ul data-lang="sw">
+<li><strong>Imekaguliwa kwa mkono</strong>: kila bidhaa imejaribiwa na kuelezwa kwa ukweli</li>
+<li><strong>Ujerumani na Kenya</strong>: kuchukua Gießen, kufikishiwa, au kusafirishwa Kenya</li>
+<li><strong>Agiza unavyopenda</strong>: mtandaoni, WhatsApp au Telegram</li>
+</ul>
+<ul data-lang="ar">
+<li><strong>مفحوص يدويًا</strong>: كل قطعة مُختبرة وموصوفة بصدق</li>
+<li><strong>ألمانيا وكينيا</strong>: الاستلام في غيسن أو التوصيل أو الشحن إلى كينيا</li>
+<li><strong>اطلب بطريقتك</strong>: عبر الإنترنت أو واتساب أو تيليجرام</li>
+</ul>
+<ul data-lang="am">
+<li><strong>በእጅ የተፈተሸ</strong>፦ እያንዳንዱ ዕቃ ተሞክሮ በታማኝነት የተገለጸ</li>
+<li><strong>ጀርመን እና ኬንያ</strong>፦ ከጊሰን መውሰድ፣ ማድረስ ወይም ወደ ኬንያ መላክ</li>
+<li><strong>በፈለጉት መንገድ ይዘዙ</strong>፦ በኦንላይን፣ በWhatsApp ወይም በTelegram</li>
+</ul>
+<ul data-lang="ti">
+<li><strong>ብኢድ ዝተፈተሸ</strong>፦ ነፍሲ ወከፍ ኣቕሓ ተፈቲኑ ብቕንዕና ዝተገልጸ</li>
+<li><strong>ጀርመንን ኬንያን</strong>፦ ካብ ጊሰን ምውሳድ፡ ምብጻሕ ወይ ናብ ኬንያ ምልኣኽ</li>
+<li><strong>ከም ድላይኩም እዘዙ</strong>፦ ብኦንላይን፡ ብWhatsApp ወይ ብTelegram</li>
 </ul>]]></b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
@@ -1851,6 +1925,34 @@ tag | Second-Hand-Shop | Kleidung, Möbel, Waschmaschinen und mehr – von Hand 
 globe | Versand nach Kenia | Gute Dinge aus Deutschland für Haushalte und Firmen in Kenia, von uns geprüft und verpackt. | So funktioniert es | /p/kenya.html
 download | Digitale Produkte | Ratgeber, Vorlagen und Downloads – direkt nach der Zahlung in Ihrem Postfach. | Digitale Produkte ansehen | /search/label/Digital
 warehouse | Fulfillment für Händler | Wir lagern, verpacken und versenden Ihre Produkte aus Gießen – Sie konzentrieren sich aufs Verkaufen. | Angebot anfragen | /p/fulfilment.html
+</div>
+<div data-lang="sw">
+text: Jina moja, njia nne za kuweka vitu vizuri katika mzunguko.
+tag | Duka la mtumba | Nguo, samani, mashine za kufulia na zaidi – zimekaguliwa kwa mkono kwa bei nzuri. Chukua Gießen au tukufikishie. | Nunua sasa | /#shop
+globe | Usafirishaji kwenda Kenya | Bidhaa nzuri kutoka Ujerumani kwa nyumba na biashara Kenya, tumezijaribu na kuzifunga sisi wenyewe. | Jinsi inavyofanya kazi | /p/kenya.html
+download | Bidhaa za kidijitali | Miongozo, violezo na vipakuliwa, vinatumwa kwenye barua pepe yako mara baada ya malipo. | Tazama bidhaa za kidijitali | /search/label/Digital
+warehouse | Huduma za ghala kwa wauzaji | Tunahifadhi, kufunga na kutuma bidhaa zako kutoka Gießen, ili uzingatie kuuza. | Omba bei | /p/fulfilment.html
+</div>
+<div data-lang="ar">
+text: اسم واحد وأربع طرق لإبقاء الأشياء الجيدة في حركة.
+tag | متجر المستعمل | ملابس وأثاث وغسالات والمزيد – مفحوصة يدويًا وبأسعار عادلة. الاستلام في غيسن أو التوصيل. | تسوق الآن | /#shop
+globe | الشحن إلى كينيا | أشياء جيدة من ألمانيا للمنازل والشركات في كينيا، نختبرها ونغلّفها بأنفسنا. | كيف يعمل | /p/kenya.html
+download | منتجات رقمية | أدلة وقوالب وملفات للتنزيل تصل إلى بريدك فور الدفع. | شاهد المنتجات الرقمية | /search/label/Digital
+warehouse | خدمات التخزين والشحن للبائعين | نخزّن منتجاتك ونغلّفها ونشحنها من غيسن، لتتفرغ أنت للبيع. | اطلب عرض سعر | /p/fulfilment.html
+</div>
+<div data-lang="am">
+text: አንድ ስም፣ ጥሩ ነገሮችን በእንቅስቃሴ የምናቆይባቸው አራት መንገዶች።
+tag | ያገለገሉ ዕቃዎች ሱቅ | ልብሶች፣ የቤት ዕቃዎች፣ የልብስ ማጠቢያ ማሽኖች እና ሌሎችም – በእጅ የተፈተሹ እና በተመጣጣኝ ዋጋ። ከጊሰን ይውሰዱ ወይም እናድርስልዎ። | አሁን ይግዙ | /#shop
+globe | ወደ ኬንያ መላክ | ከጀርመን ለኬንያ ቤቶች እና ንግዶች ጥሩ ዕቃዎች፣ በእኛ የተሞከሩ እና የታሸጉ። | እንዴት እንደሚሠራ | /p/kenya.html
+download | ዲጂታል ምርቶች | መመሪያዎች፣ አብነቶች እና ማውረጃዎች፣ ከክፍያ በኋላ ወዲያውኑ ወደ ኢሜይልዎ ይላካሉ። | ዲጂታል ምርቶችን ይመልከቱ | /search/label/Digital
+warehouse | ለሻጮች የማከማቻ እና የመላኪያ አገልግሎት | ምርቶችዎን ከጊሰን እናከማቻለን፣ እናሽጋለን እና እንልካለን፣ እርስዎ በሽያጭ ላይ እንዲያተኩሩ። | የዋጋ ጥያቄ ያቅርቡ | /p/fulfilment.html
+</div>
+<div data-lang="ti">
+text: ሓደ ስም፡ ጽቡቕ ነገራት ኣብ ምንቅስቓስ ንምሕላው ኣርባዕተ መንገድታት።
+tag | ድኳን ዝተጠቕመሎም ኣቑሑት | ክዳውንቲ፡ ኣቑሑት ገዛ፡ መሕጸቢ ማሽናትን ካልኦትን – ብኢድ ዝተፈተሹን ብቕኑዕ ዋጋን። ካብ ጊሰን ውሰዱ ወይ ነብጽሓልኩም። | ሕጂ ዕደጉ | /#shop
+globe | ናብ ኬንያ ምልኣኽ | ካብ ጀርመን ንኣባይቲን ንንግድታትን ኬንያ ጽቡቓት ኣቑሑት፡ ባዕልና ዝፈተንናዮምን ዝጠቕለልናዮምን። | ብኸመይ ከም ዝሰርሕ | /p/kenya.html
+download | ዲጂታላዊ ፍርያት | መምርሒታት፡ ቅጥዕታትን ዝውረዱን፡ ድሕሪ ክፍሊት ብቕልጡፍ ናብ ኢመይልኩም ይለኣኹ። | ዲጂታላዊ ፍርያት ርአዩ | /search/label/Digital
+warehouse | ንሸየጥቲ ኣገልግሎት ምኽዛንን ምልኣኽን | ፍርያትኩም ካብ ጊሰን ንዕቅብ፡ ንጥቕልልን ንልእኽን፡ ንስኹም ኣብ ምሻጥ ክተተኩሩ። | ዋጋ ሕተቱ | /p/fulfilment.html
 </div>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
@@ -2806,6 +2908,26 @@ Receive it | Pickup in Gießen, delivery in Germany, or shipping to Kenya.
 Aussuchen | Finden Sie Ihr Teil im Shop oder schreiben Sie uns auf WhatsApp, was Sie suchen.
 Bestellen, wie Sie möchten | Online, per WhatsApp oder Telegram. Zahlung per Überweisung, PayPal oder bar bei Abholung.
 Erhalten | Abholung in Gießen, Versand in Deutschland oder Lieferung nach Kenia.
+</div>
+<div data-lang="sw">
+Chagua | Tafuta bidhaa yako dukani, au tuambie kwa WhatsApp unachotafuta.
+Agiza unavyopenda | Mtandaoni, kwa WhatsApp au Telegram. Lipa kwa uhamisho wa benki, PayPal au taslimu unapochukua.
+Pokea | Chukua Gießen, tukufikishie ndani ya Ujerumani, au tusafirishe Kenya.
+</div>
+<div data-lang="ar">
+اختر | ابحث عن القطعة في المتجر، أو أخبرنا عبر واتساب بما تبحث عنه.
+اطلب بطريقتك | عبر الإنترنت أو واتساب أو تيليجرام. ادفع بتحويل بنكي أو PayPal أو نقدًا عند الاستلام.
+استلم طلبك | الاستلام في غيسن، أو التوصيل داخل ألمانيا، أو الشحن إلى كينيا.
+</div>
+<div data-lang="am">
+ይምረጡ | ዕቃዎን በሱቁ ውስጥ ያግኙ፣ ወይም የሚፈልጉትን በWhatsApp ይንገሩን።
+በፈለጉት መንገድ ይዘዙ | በኦንላይን፣ በWhatsApp ወይም በTelegram። በባንክ ዝውውር፣ በPayPal ወይም ሲወስዱ በጥሬ ገንዘብ ይክፈሉ።
+ይቀበሉ | ከጊሰን ይውሰዱ፣ በጀርመን ውስጥ እናድርስልዎ፣ ወይም ወደ ኬንያ እንላክልዎ።
+</div>
+<div data-lang="ti">
+ምረጹ | ኣቕሑኹም ኣብቲ ድኳን ድለዩ፡ ወይ እትደልይዎ ብWhatsApp ንገሩና።
+ከም ድላይኩም እዘዙ | ብኦንላይን፡ ብWhatsApp ወይ ብTelegram። ብባንካዊ ምትሕልላፍ፡ ብPayPal ወይ ኣብ ምውሳድ ብጥረ ገንዘብ ክፈሉ።
+ተቐበሉ | ካብ ጊሰን ውሰዱ፡ ኣብ ውሽጢ ጀርመን ነብጽሓልኩም፡ ወይ ናብ ኬንያ ንልኣኸልኩም።
 </div>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
@@ -2852,6 +2974,10 @@ Erhalten | Abholung in Gießen, Versand in Deutschland oder Lieferung nach Kenia
           <b:widget-setting name='content'><![CDATA[<p data-lang="en">Good second-hand goods from Germany for homes and businesses in Kenya: appliances, furniture, clothes and more, tested and packed by us. Tell us what you need and we send you a price including shipping.</p>
 <p data-lang="de">Gute Second-Hand-Ware aus Deutschland für Haushalte und Firmen in Kenia: Geräte, Möbel, Kleidung und mehr, von uns geprüft und verpackt. Sagen Sie uns, was Sie brauchen – wir schicken Ihnen einen Preis inklusive Versand.</p>
 <p data-lang="fr">Des articles d'occasion de qualité venus d'Allemagne pour le Kenya : appareils, meubles, vêtements et plus, testés et emballés par nos soins. Dites-nous ce qu'il vous faut, nous vous envoyons un prix livraison comprise.</p>
+<p data-lang="sw">Bidhaa nzuri za mtumba kutoka Ujerumani kwa nyumba na biashara Kenya: vifaa vya nyumbani, samani, nguo na zaidi, tumezijaribu na kuzifunga sisi wenyewe. Tuambie unachohitaji na tutakutumia bei pamoja na usafirishaji.</p>
+<p data-lang="ar">بضائع مستعملة جيدة من ألمانيا للمنازل والشركات في كينيا: أجهزة وأثاث وملابس والمزيد، نختبرها ونغلّفها بأنفسنا. أخبرنا بما تحتاجه ونرسل لك السعر شاملًا الشحن.</p>
+<p data-lang="am">ከጀርመን ለኬንያ ቤቶች እና ንግዶች ጥሩ ያገለገሉ ዕቃዎች፦ የቤት መሣሪያዎች፣ የቤት ዕቃዎች፣ ልብሶች እና ሌሎችም፣ በእኛ የተሞከሩ እና የታሸጉ። የሚፈልጉትን ይንገሩን፣ መላኪያን ጨምሮ ዋጋውን እንልክልዎታለን።</p>
+<p data-lang="ti">ካብ ጀርመን ንኣባይቲን ንንግድታትን ኬንያ ጽቡቓት ዝተጠቕመሎም ኣቑሑት፦ ናውቲ ገዛ፡ ኣቑሑት ገዛ፡ ክዳውንትን ካልኦትን፡ ባዕልና ዝፈተንናዮምን ዝጠቕለልናዮምን። እትደልይዎ ንገሩና፡ ምልኣኽ ወሲኽና ዋጋ ክንልእከልኩም ኢና።</p>
 <p><a href="/p/kenya.html">How shipping to Kenya works</a></p>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
@@ -2963,6 +3089,38 @@ Liefern Sie nach Kenia? | Ja. Wir nennen Ihnen vor der Zahlung den nächsten Ver
 Kann ich etwas zurückgeben? | Ja, innerhalb von 14 Tagen nach Erhalt. Die Einzelheiten finden Sie in der Widerrufsbelehrung.
 Wie bekomme ich mein digitales Produkt? | Der Download-Link kommt per E-Mail, sobald Ihre Zahlung bestätigt ist.
 Bieten Sie Fulfillment für andere Händler an? | Ja. Wir lagern, verpacken und versenden für Online-Shops. Fragen Sie auf unserer Fulfillment-Seite ein Angebot an.
+</div>
+<div data-lang="sw">
+Ninalipaje? | Kwa uhamisho wa benki, PayPal au taslimu unapochukua. Unachagua wakati wa kulipia; maelezo ya malipo yanakuja pamoja na uthibitisho wa oda yako.
+Usafirishaji huchukua muda gani? | Ndani ya Ujerumani kwa kawaida siku 2–4 za kazi baada ya malipo. Kuchukua Gießen kwa miadi.
+Mnasafirisha kwenda Kenya? | Ndiyo. Tunakuambia tarehe ya usafirishaji inayofuata na bei kamili pamoja na usafirishaji kabla hujalipa. Tazama "Usafirishaji kwenda Kenya".
+Naweza kurudisha bidhaa? | Ndiyo, ndani ya siku 14 baada ya kuipokea. Maelezo yako kwenye sera yetu ya kurudisha bidhaa.
+Napataje bidhaa yangu ya kidijitali? | Kiungo cha kupakua kinakuja kwa barua pepe mara malipo yako yanapothibitishwa.
+Mnatoa huduma za ghala kwa wauzaji wengine? | Ndiyo. Tunahifadhi, kufunga na kutuma kwa maduka ya mtandaoni. Omba bei kwenye ukurasa wetu wa huduma za ghala.
+</div>
+<div data-lang="ar">
+كيف أدفع؟ | بتحويل بنكي أو PayPal أو نقدًا عند الاستلام. تختار عند إتمام الطلب، وتصلك بيانات الدفع مع تأكيد الطلب.
+كم يستغرق التوصيل؟ | داخل ألمانيا عادةً 2–4 أيام عمل بعد الدفع. الاستلام في غيسن بموعد مسبق.
+هل تشحنون إلى كينيا؟ | نعم. نخبرك بموعد الشحن القادم والسعر الكامل شاملًا الشحن قبل أن تدفع. راجع صفحة "الشحن إلى كينيا".
+هل يمكنني إرجاع منتج؟ | نعم، خلال 14 يومًا من استلامه. التفاصيل في سياسة الإرجاع.
+كيف أحصل على منتجي الرقمي؟ | يصلك رابط التنزيل بالبريد الإلكتروني فور تأكيد الدفع.
+هل تقدمون خدمات التخزين والشحن لبائعين آخرين؟ | نعم. نخزّن ونغلّف ونشحن للمتاجر الإلكترونية. اطلب عرض سعر من صفحة خدمات التخزين والشحن.
+</div>
+<div data-lang="am">
+እንዴት እከፍላለሁ? | በባንክ ዝውውር፣ በPayPal ወይም ሲወስዱ በጥሬ ገንዘብ። በክፍያ ጊዜ ይመርጣሉ፤ የክፍያ ዝርዝሩ ከትዕዛዝ ማረጋገጫዎ ጋር ይመጣል።
+ማድረስ ምን ያህል ጊዜ ይወስዳል? | በጀርመን ውስጥ ብዙውን ጊዜ ከክፍያ በኋላ 2–4 የሥራ ቀናት። ከጊሰን መውሰድ በቀጠሮ።
+ወደ ኬንያ ትልካላችሁ? | አዎ። ከመክፈልዎ በፊት ቀጣዩን የመላኪያ ቀን እና መላኪያን ጨምሮ ሙሉ ዋጋውን እንነግርዎታለን። "ወደ ኬንያ መላክ" ይመልከቱ።
+ዕቃ መመለስ እችላለሁ? | አዎ፣ ከተቀበሉ በ14 ቀናት ውስጥ። ዝርዝሩ በመመለሻ ፖሊሲያችን ውስጥ አለ።
+ዲጂታል ምርቴን እንዴት አገኛለሁ? | ክፍያዎ እንደተረጋገጠ የማውረጃ ሊንኩ በኢሜይል ይደርስዎታል።
+ለሌሎች ሻጮች የማከማቻ እና የመላኪያ አገልግሎት ትሰጣላችሁ? | አዎ። ለኦንላይን ሱቆች እናከማቻለን፣ እናሽጋለን እና እንልካለን። በአገልግሎት ገጻችን ላይ የዋጋ ጥያቄ ያቅርቡ።
+</div>
+<div data-lang="ti">
+ብኸመይ እኸፍል? | ብባንካዊ ምትሕልላፍ፡ ብPayPal ወይ ኣብ ምውሳድ ብጥረ ገንዘብ። ኣብ ግዜ ክፍሊት ትመርጹ፤ ዝርዝር ክፍሊት ምስ መረጋገጺ ትእዛዝኩም ይመጽእ።
+ምብጻሕ ክንደይ ግዜ ይወስድ? | ኣብ ጀርመን መብዛሕትኡ ግዜ ድሕሪ ክፍሊት 2–4 መዓልታት ስራሕ። ካብ ጊሰን ምውሳድ ብቖጸራ።
+ናብ ኬንያ ትልእኹ ዶ? | እወ። ቅድሚ ምኽፋልኩም ዝቕጽል ዕለት ምልኣኽን ምልኣኽ ዘጠቓለለ ምሉእ ዋጋን ንሕብረኩም። "ናብ ኬንያ ምልኣኽ" ርአዩ።
+ኣቕሓ ክመልስ እኽእል ዶ? | እወ፡ ካብ ዝተቐበልኩምዎ ኣብ ውሽጢ 14 መዓልቲ። ዝርዝሩ ኣብ ፖሊሲ ምምላስና ኣሎ።
+ዲጂታላዊ ፍርያተይ ብኸመይ እረክብ? | ክፍሊትኩም ምስ ተረጋገጸ መላግቦ ምውራድ ብኢመይል ይበጽሓኩም።
+ንካልኦት ሸየጥቲ ኣገልግሎት ምኽዛንን ምልኣኽን ትህቡ ዶ? | እወ። ንድኳናት ኦንላይን ንዕቅብ፡ ንጥቕልልን ንልእኽን። ኣብ ገጽ ኣገልግሎትና ዋጋ ሕተቱ።
 </div>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
@@ -2993,6 +3151,22 @@ Kreislo Gießen – shop and warehouse | Musterstraße 1, 35390 Gießen, Germany
 <div data-lang="de">
 text: Besuchen Sie uns, rufen Sie an oder schreiben Sie uns auf WhatsApp.
 Kreislo Gießen – Laden und Lager | Musterstraße 1, 35390 Gießen | +49 157 0000000 | +49 157 0000000 | Mo–Fr 9:00–18:00, Sa nach Absprache
+</div>
+<div data-lang="sw">
+text: Tutembelee, tupigie simu au tutumie ujumbe wa WhatsApp.
+Kreislo Gießen – duka na ghala | Musterstraße 1, 35390 Gießen, Ujerumani | +49 157 0000000 | +49 157 0000000 | Jumatatu–Ijumaa 9:00–18:00, Jumamosi kwa miadi
+</div>
+<div data-lang="ar">
+text: زورونا أو اتصلوا بنا أو أرسلوا رسالة واتساب.
+Kreislo غيسن – متجر ومستودع | Musterstraße 1, 35390 Gießen, ألمانيا | +49 157 0000000 | +49 157 0000000 | الاثنين–الجمعة 9:00–18:00، السبت بموعد مسبق
+</div>
+<div data-lang="am">
+text: ይጎብኙን፣ ይደውሉልን ወይም የWhatsApp መልዕክት ይላኩልን።
+Kreislo ጊሰን – ሱቅ እና መጋዘን | Musterstraße 1, 35390 Gießen, ጀርመን | +49 157 0000000 | +49 157 0000000 | ሰኞ–አርብ 9:00–18:00፣ ቅዳሜ በቀጠሮ
+</div>
+<div data-lang="ti">
+text: በጽሑና፡ ደውሉልና ወይ መልእኽቲ WhatsApp ስደዱልና።
+Kreislo ጊሰን – ድኳንን መኽዘንን | Musterstraße 1, 35390 Gießen, ጀርመን | +49 157 0000000 | +49 157 0000000 | ሰኑይ–ዓርቢ 9:00–18:00፡ ቀዳም ብቖጸራ
 </div>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
@@ -3020,6 +3194,22 @@ button: Subscribe
 <div data-lang="de">
 text: Neue Teile, Versandtermine nach Kenia und Angebote – etwa zweimal im Monat. Kein Spam.
 button: Anmelden
+</div>
+<div data-lang="sw">
+text: Bidhaa mpya, tarehe za usafirishaji kwenda Kenya na ofa – takriban mara mbili kwa mwezi. Hakuna barua taka.
+button: Jisajili
+</div>
+<div data-lang="ar">
+text: منتجات جديدة ومواعيد الشحن إلى كينيا وعروض – نحو مرتين في الشهر. بلا رسائل مزعجة.
+button: اشترك
+</div>
+<div data-lang="am">
+text: አዳዲስ ዕቃዎች፣ ወደ ኬንያ የሚላክባቸው ቀናት እና ቅናሾች – በወር ሁለት ጊዜ ያህል። አላስፈላጊ መልዕክት የለም።
+button: ይመዝገቡ
+</div>
+<div data-lang="ti">
+text: ሓደስቲ ኣቑሑት፡ ዕለታት ምልኣኽ ናብ ኬንያን ቅናሻትን – ኣብ ወርሒ ክልተ ግዜ ኣቢሉ። ዘይተደለየ መልእኽቲ የለን።
+button: ተመዝገቡ
 </div>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
@@ -3088,7 +3278,11 @@ pay: PayPal, Bank transfer, Cash on delivery]]></b:widget-setting>
           <b:widget-settings>
             <b:widget-setting name='content'><![CDATA[<p data-lang="en">Kreislo keeps good things moving: second-hand goods from Gießen to new owners in Germany and Kenya, digital products, and fulfilment for online sellers. Every item is checked by hand.</p>
 <p data-lang="de">Kreislo hält gute Dinge in Bewegung: Second-Hand-Ware aus Gießen für neue Besitzer in Deutschland und Kenia, digitale Produkte und Fulfillment für Online-Händler. Jedes Teil wird von Hand geprüft.</p>
-<p data-lang="fr">Kreislo fait circuler les bonnes choses : des articles d'occasion de Gießen pour l'Allemagne et le Kenya, des produits numériques et la logistique pour les vendeurs en ligne.</p>]]></b:widget-setting>
+<p data-lang="fr">Kreislo fait circuler les bonnes choses : des articles d'occasion de Gießen pour l'Allemagne et le Kenya, des produits numériques et la logistique pour les vendeurs en ligne.</p>
+<p data-lang="sw">Kreislo huweka vitu vizuri katika mzunguko: bidhaa za mtumba kutoka Gießen kwa wamiliki wapya Ujerumani na Kenya, bidhaa za kidijitali, na huduma za ghala kwa wauzaji mtandaoni. Kila bidhaa hukaguliwa kwa mkono.</p>
+<p data-lang="ar">Kreislo يُبقي الأشياء الجيدة في حركة: بضائع مستعملة من غيسن لمالكين جدد في ألمانيا وكينيا، ومنتجات رقمية، وخدمات التخزين والشحن للبائعين عبر الإنترنت. كل قطعة مفحوصة يدويًا.</p>
+<p data-lang="am">Kreislo ጥሩ ነገሮችን በእንቅስቃሴ ያቆያል፦ ከጊሰን ለጀርመን እና ለኬንያ አዲስ ባለቤቶች ያገለገሉ ዕቃዎች፣ ዲጂታል ምርቶች፣ እና ለኦንላይን ሻጮች የማከማቻ እና የመላኪያ አገልግሎት። እያንዳንዱ ዕቃ በእጅ ይፈተሻል።</p>
+<p data-lang="ti">Kreislo ጽቡቕ ነገራት ኣብ ምንቅስቓስ የሕልው፦ ካብ ጊሰን ንሓደስቲ ወነንቲ ኣብ ጀርመንን ኬንያን ዝተጠቕመሎም ኣቑሑት፡ ዲጂታላዊ ፍርያት፡ ከምኡ'ውን ንሸየጥቲ ኦንላይን ኣገልግሎት ምኽዛንን ምልኣኽን። ነፍሲ ወከፍ ኣቕሓ ብኢድ ይፍተሽ።</p>]]></b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
   <!-- only display title if it's non-empty -->
@@ -3185,7 +3379,7 @@ Fast shipping | | /p/delivery.html]]></b:widget-setting>
         <b:widget-setting name='content'><![CDATA[currency: EUR
 locale: de-DE
 language: en
-languages: en, de, fr
+languages: en, de, fr, sw, ar, am, ti
 whatsapp:
 telegram:
 email:
@@ -3251,6 +3445,66 @@ Kann ich Ihnen Sachen verkaufen? | Vielleicht! Schicken Sie uns Fotos und eine k
 Was kostet der Versand nach Kenia? | Das hängt von Größe und Gewicht ab. Sagen Sie uns, was Sie möchten und Ihre Stadt, dann nennen wir Ihnen vor der Zahlung den Gesamtpreis. Mehr: /p/kenya.html | preis kosten mombasa nairobi container fracht
 Wo ist meine Bestellung? | Ihre Bestellnummer kommt per E-Mail. Schicken Sie sie uns per WhatsApp, dann sagen wir Ihnen, wo Ihr Paket ist. | sendungsverfolgung paket status tracking
 Wie erreiche ich Sie? | Am schnellsten per WhatsApp. Sie können uns auch eine E-Mail schreiben oder während der Öffnungszeiten anrufen. | telefon anrufen email kontakt
+</div>
+<div data-lang="sw">
+name: Uliza Kreislo
+greeting: Habari! Mimi ni msaidizi wa Kreislo. Niulize kuhusu malipo, ufikishaji, usafirishaji kwenda Kenya, bidhaa za kidijitali au huduma za ghala.
+suggest: Ninalipaje? ; Mnasafirisha kwenda Kenya? ; Naweza kuchukua wapi? ; Ninaagizaje?
+use_faq: yes
+log_unanswered: yes
+Ninaagizaje? | Bonyeza "Weka kwenye kikapu" kwenye bidhaa, fungua kikapu na uchague jinsi ya kuagiza: mtandaoni, WhatsApp, Telegram au barua pepe. | nunua kununua oda kikapu lipia
+Naweza kuchukua wapi? | Kuchukua ni Gießen kwa miadi. Tutumie ujumbe wa WhatsApp tupange muda. | chukua kuchukua anwani mahali tembelea duka
+Mnafungua saa ngapi? | Jumatatu hadi Ijumaa 9:00–18:00, Jumamosi kwa miadi. | saa wazi muda
+Kila kitu kimejaribiwa? | Ndiyo. Kila kifaa na zana hukaguliwa, husafishwa na kujaribiwa kabla hatujakiuza. Ukurasa wa bidhaa unaeleza tulichojaribu. | hali inafanya kazi ubora mtumba mbovu dhamana
+Naweza kuwauzia vitu vyangu? | Huenda! Tutumie picha na maelezo mafupi kwa WhatsApp na tutakuambia kama tunaweza kuvichukua. | uza kuuza vitu vya zamani
+Usafirishaji kwenda Kenya ni bei gani? | Inategemea ukubwa na uzito. Tuambie unachotaka na mji wako, na tutakutumia bei kamili kabla hujalipa. Zaidi: /p/kenya.html | bei gharama mombasa nairobi kontena mzigo
+Nafuatiliaje oda yangu? | Unapata namba ya oda kwa barua pepe. Tutumie kwa WhatsApp na tutakuambia kifurushi chako kiko wapi. | fuatilia kifurushi hali
+Nawasilianaje nanyi? | WhatsApp ni haraka zaidi. Unaweza pia kututumia barua pepe au kupiga simu wakati wa saa za kazi. | simu piga barua pepe wasiliana ongea
+</div>
+<div data-lang="ar">
+name: اسأل Kreislo
+greeting: مرحبًا! أنا مساعد Kreislo. اسألني عن الدفع أو التوصيل أو الشحن إلى كينيا أو المنتجات الرقمية أو خدمات التخزين.
+suggest: كيف أدفع؟ ; هل تشحنون إلى كينيا؟ ; أين يمكنني الاستلام؟ ; كيف أطلب؟
+use_faq: yes
+log_unanswered: yes
+كيف أطلب؟ | اضغط "أضف إلى السلة" في صفحة المنتج، ثم افتح السلة واختر طريقة الطلب: عبر الإنترنت أو واتساب أو تيليجرام أو البريد الإلكتروني. | شراء اشتري طلب سلة دفع
+أين يمكنني الاستلام؟ | الاستلام في غيسن بموعد مسبق. أرسل لنا رسالة واتساب ونتفق على الوقت. | استلام عنوان موقع زيارة متجر
+ما هي ساعات العمل؟ | من الاثنين إلى الجمعة 9:00–18:00، والسبت بموعد مسبق. | ساعات مفتوح وقت دوام
+هل كل شيء مفحوص؟ | نعم. كل جهاز وأداة نفحصها وننظفها ونختبرها قبل البيع. صفحة المنتج تذكر ما اختبرناه. | حالة يعمل جودة مستعمل معطل ضمان
+هل يمكنني بيع أغراضي لكم؟ | ربما! أرسل لنا صورًا ووصفًا قصيرًا عبر واتساب ونخبرك إن كنا نستطيع أخذها. | بيع أبيع أغراض قديمة
+كم تكلفة الشحن إلى كينيا؟ | تعتمد على الحجم والوزن. أخبرنا بما تريد ومدينتك، ونرسل لك السعر الكامل قبل الدفع. المزيد: /p/kenya.html | سعر تكلفة مومباسا نيروبي حاوية شحن
+كيف أتتبع طلبي؟ | يصلك رقم الطلب بالبريد الإلكتروني. أرسله لنا عبر واتساب ونخبرك أين طردك. | تتبع طرد حالة
+كيف أتواصل معكم؟ | واتساب هو الأسرع. يمكنك أيضًا مراسلتنا بالبريد الإلكتروني أو الاتصال خلال ساعات العمل. | هاتف اتصال بريد تواصل
+</div>
+<div data-lang="am">
+name: Kreislo ይጠይቁ
+greeting: ሰላም! እኔ የKreislo ረዳት ነኝ። ስለ ክፍያ፣ ማድረስ፣ ወደ ኬንያ መላክ፣ ዲጂታል ምርቶች ወይም የማከማቻ አገልግሎት ይጠይቁኝ።
+suggest: እንዴት እከፍላለሁ? ; ወደ ኬንያ ትልካላችሁ? ; የት መውሰድ እችላለሁ? ; እንዴት አዝዛለሁ?
+use_faq: yes
+log_unanswered: yes
+እንዴት አዝዛለሁ? | በምርቱ ገጽ ላይ "ወደ ጋሪ ጨምር" ይጫኑ፣ ጋሪውን ይክፈቱ እና የማዘዣ መንገድ ይምረጡ፦ በኦንላይን፣ በWhatsApp፣ በTelegram ወይም በኢሜይል። | መግዛት ግዢ ትዕዛዝ ጋሪ ክፍያ
+የት መውሰድ እችላለሁ? | መውሰድ በጊሰን በቀጠሮ ነው። የWhatsApp መልዕክት ይላኩልን እና ሰዓት እንስማማለን። | መውሰድ አድራሻ ቦታ መጎብኘት ሱቅ
+የሥራ ሰዓታችሁ መቼ ነው? | ከሰኞ እስከ አርብ 9:00–18:00፣ ቅዳሜ በቀጠሮ። | ሰዓት ክፍት ጊዜ
+ሁሉም ነገር ተፈትሿል? | አዎ። እያንዳንዱ መሣሪያ ከመሸጡ በፊት ይፈተሻል፣ ይጸዳል እና ይሞከራል። የምርቱ ገጽ የሞከርነውን ይገልጻል። | ሁኔታ ይሠራል ጥራት ያገለገለ የተበላሸ ዋስትና
+ዕቃዎቼን ልሸጥላችሁ እችላለሁ? | ምናልባት! ፎቶዎችን እና አጭር መግለጫ በWhatsApp ይላኩልን፣ መውሰድ እንደምንችል እንነግርዎታለን። | መሸጥ ሽያጭ አሮጌ ዕቃዎች
+ወደ ኬንያ መላክ ስንት ያስከፍላል? | በመጠኑ እና በክብደቱ ይወሰናል። የሚፈልጉትን እና ከተማዎን ይንገሩን፣ ከመክፈልዎ በፊት ሙሉ ዋጋውን እንልክልዎታለን። ተጨማሪ፦ /p/kenya.html | ዋጋ ወጪ ሞምባሳ ናይሮቢ ኮንቴይነር ጭነት
+ትዕዛዜን እንዴት እከታተላለሁ? | የትዕዛዝ ቁጥርዎ በኢሜይል ይደርስዎታል። በWhatsApp ይላኩልን፣ ጥቅልዎ የት እንዳለ እንነግርዎታለን። | መከታተል ጥቅል ሁኔታ
+እንዴት ላገኛችሁ እችላለሁ? | WhatsApp ፈጣኑ ነው። በኢሜይልም ሊጽፉልን ወይም በሥራ ሰዓት ሊደውሉልን ይችላሉ። | ስልክ መደወል ኢሜይል ማግኘት
+</div>
+<div data-lang="ti">
+name: Kreislo ሕተቱ
+greeting: ሰላም! ኣነ ሓጋዚ Kreislo እየ። ብዛዕባ ክፍሊት፡ ምብጻሕ፡ ናብ ኬንያ ምልኣኽ፡ ዲጂታላዊ ፍርያት ወይ ኣገልግሎት ምኽዛን ሕተቱኒ።
+suggest: ብኸመይ እኸፍል? ; ናብ ኬንያ ትልእኹ ዶ? ; ኣበይ ክወስድ እኽእል? ; ብኸመይ እእዝዝ?
+use_faq: yes
+log_unanswered: yes
+ብኸመይ እእዝዝ? | ኣብ ገጽ እቲ ፍርያት "ናብ ዘንቢል ወስኽ" ጠውቑ፡ ዘንቢል ክፈቱ እሞ መንገዲ ምእዛዝ ምረጹ፦ ብኦንላይን፡ ብWhatsApp፡ ብTelegram ወይ ብኢመይል። | ምዕዳግ ዕድጊ ትእዛዝ ዘንቢል ክፍሊት
+ኣበይ ክወስድ እኽእል? | ምውሳድ ኣብ ጊሰን ብቖጸራ እዩ። መልእኽቲ WhatsApp ስደዱልና እሞ ግዜ ንሰማማዕ። | ምውሳድ ኣድራሻ ቦታ ምብጻሕ ድኳን
+ሰዓታት ስራሕኩም መዓስ እዩ? | ካብ ሰኑይ ክሳብ ዓርቢ 9:00–18:00፡ ቀዳም ብቖጸራ። | ሰዓት ክፉት ግዜ
+ኩሉ ተፈቲኑ ዶ? | እወ። ነፍሲ ወከፍ መሳርሒ ቅድሚ ምሻጡ ይፍተሽ፡ ይጸሪ፡ ይፍተን። ገጽ እቲ ፍርያት ዝፈተንናዮ ይገልጽ። | ኩነታት ይሰርሕ ዓይነት ዝተጠቕመሉ ዝተበላሸወ ውሕስነት
+ኣቑሑተይ ክሸጠልኩም እኽእል ዶ? | ምናልባት! ስእልታትን ሓጺር መግለጺን ብWhatsApp ስደዱልና፡ ክንወስዶም ከም እንኽእል ክንሕብረኩም ኢና። | ምሻጥ መሸጣ ኣረጊት ኣቑሑት
+ናብ ኬንያ ምልኣኽ ክንደይ የኽፍል? | ኣብ ዓቐንን ክብደትን ይምርኮስ። እትደልይዎን ከተማኹምን ንገሩና፡ ቅድሚ ምኽፋልኩም ምሉእ ዋጋ ክንልእከልኩም ኢና። ተወሳኺ፦ /p/kenya.html | ዋጋ ወጻኢ ሞምባሳ ናይሮቢ ኮንቴነር ጽዕነት
+ትእዛዘይ ብኸመይ እከታተል? | ቁጽሪ ትእዛዝኩም ብኢመይል ይበጽሓኩም። ብWhatsApp ስደዱልና፡ ጥቕሊኹም ኣበይ ከም ዘሎ ክንሕብረኩም ኢና። | ምክትታል ጥቕሊ ኩነታት
+ብኸመይ ክረኽበኩም እኽእል? | WhatsApp እቲ ዝቐልጠፈ እዩ። ብኢመይል'ውን ክትጽሕፉልና ወይ ኣብ ሰዓታት ስራሕ ክትድውሉልና ትኽእሉ። | ስልኪ ምድዋል ኢመይል ምርካብ
 </div>]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
@@ -3558,7 +3812,18 @@ Wie erreiche ich Sie? | Am schnellsten per WhatsApp. Sie können uns auch eine E
       'No posts found here yet.': 'Hier gibt es noch keine Produkte.',
       'How will you pay?': 'Wie möchten Sie bezahlen?', 'Payment': 'Zahlung', 'Cash on delivery': 'Barzahlung bei Lieferung',
       'Cash on pickup': 'Barzahlung bei Abholung', 'Pay now with PayPal': 'Jetzt mit PayPal bezahlen',
-      'Size': 'Größe', 'Colour': 'Farbe', 'Color': 'Farbe'
+      'Size': 'Größe', 'Colour': 'Farbe', 'Color': 'Farbe',
+      'Shop': "Shop",
+      'Kenya': "Kenia",
+      'Fulfilment': "Fulfillment",
+      'News': "Neuigkeiten",
+      'Our branches': "Unsere Standorte",
+      'What we do': "Was wir tun",
+      'How it works': "So funktioniert es",
+      'What customers say': "Das sagen Kunden",
+      'Questions & answers': "Fragen & Antworten",
+      'Stay in the loop': "Bleiben Sie informiert",
+      'Talk to us': "Sprechen Sie mit uns"
     },
     fr: {
       'Add to cart': 'Ajouter au panier', 'Choose options': 'Choisir les options', 'Out of stock': 'Épuisé', 'Sale': 'Promo',
@@ -3640,7 +3905,854 @@ Wie erreiche ich Sie? | Am schnellsten per WhatsApp. Sie können uns auch eine E
       'No posts found here yet.': 'Aucun produit pour le moment.',
       'How will you pay?': 'Comment voulez-vous payer ?', 'Payment': 'Paiement', 'Cash on delivery': 'Paiement à la livraison',
       'Cash on pickup': 'Paiement au retrait', 'Pay now with PayPal': 'Payer maintenant avec PayPal',
-      'Size': 'Taille', 'Colour': 'Couleur', 'Color': 'Couleur'
+      'Size': 'Taille', 'Colour': 'Couleur', 'Color': 'Couleur',
+      'Shop': "Boutique",
+      'Kenya': "Kenya",
+      'Fulfilment': "Logistique",
+      'News': "Actualités",
+      'Our branches': "Nos agences",
+      'What we do': "Ce que nous faisons",
+      'How it works': "Comment ça marche",
+      'What customers say': "Avis clients",
+      'Questions & answers': "Questions & réponses",
+      'Stay in the loop': "Restez informé",
+      'Talk to us': "Parlez-nous"
+    },
+    sw: {
+      'Add to cart': "Weka kwenye kikapu",
+      'Choose options': "Chagua chaguo",
+      'Out of stock': "Imeisha",
+      'Sale': "Punguzo",
+      'Quantity': "Idadi",
+      'Choose': "Chagua",
+      'Please choose': "Tafadhali chagua",
+      'Cart': "Kikapu",
+      'Checkout': "Lipia",
+      'Subtotal': "Jumla ndogo",
+      'Shipping': "Usafirishaji",
+      'Free': "Bure",
+      'Total': "Jumla",
+      'Free shipping from': "Usafirishaji bure kuanzia",
+      'Your cart is empty.': "Kikapu chako ni tupu.",
+      'Full name': "Jina kamili",
+      'Phone': "Simu",
+      'Email': "Barua pepe",
+      'Street and house number': "Mtaa na namba ya nyumba",
+      'Postcode': "Postikodi",
+      'City': "Mji",
+      'Country': "Nchi",
+      'Other city…': "Mji mwingine…",
+      'Note': "Maelezo",
+      'How do you want to order?': "Ungependa kuagiza vipi?",
+      'Send order': "Tuma oda",
+      'Back to cart': "Rudi kwenye kikapu",
+      'Please fill in the marked fields.': "Tafadhali jaza sehemu zilizowekwa alama.",
+      'added to cart': "imewekwa kwenye kikapu",
+      'View cart': "Tazama kikapu",
+      'Only': "Zimebaki",
+      'in stock': "tu",
+      'Thank you': "Asante",
+      'Order number': "Namba ya oda",
+      'Bank transfer': "Uhamisho wa benki",
+      'Reference': "Kumbukumbu",
+      'Clear cart': "Futa kikapu",
+      'Ask on WhatsApp': "Uliza kwa WhatsApp",
+      'Ask on Telegram': "Uliza kwa Telegram",
+      'Hi, I am interested in': "Habari, ninavutiwa na",
+      'Place order (we confirm by email)': "Weka oda (tutathibitisha kwa barua pepe)",
+      'Send order on WhatsApp': "Tuma oda kwa WhatsApp",
+      'Send order on Telegram': "Tuma oda kwa Telegram",
+      'Pay with PayPal': "Lipa kwa PayPal",
+      'Send order by email': "Tuma oda kwa barua pepe",
+      'Sending…': "Inatuma…",
+      'New order': "Oda mpya",
+      'Order': "Oda",
+      'Customer': "Mteja",
+      'Delivery address': "Anwani ya kufikishiwa",
+      'WhatsApp opened with your order. Press send there to complete it.': "WhatsApp imefunguka na oda yako. Bonyeza tuma huko ili kukamilisha.",
+      'Your email app opened with the order. Press send there to complete it.': "Programu yako ya barua pepe imefunguka na oda. Bonyeza tuma huko ili kukamilisha.",
+      'Your order is copied. In Telegram, paste it into the chat and send it.': "Oda yako imenakiliwa. Kwenye Telegram, ibandike kwenye gumzo na uitume.",
+      'Copy order again': "Nakili oda tena",
+      'Copied': "Imenakiliwa",
+      'Open Telegram': "Fungua Telegram",
+      'Thank you! Your order was received. Total': "Asante! Oda yako imepokelewa. Jumla",
+      'Sorry, the order could not be sent.': "Samahani, oda haikuweza kutumwa.",
+      'Please choose another way to order.': "Tafadhali chagua njia nyingine ya kuagiza.",
+      'Online ordering is not available yet. Please contact us.': "Kuagiza mtandaoni bado hakupatikani. Tafadhali wasiliana nasi.",
+      'Image': "Picha",
+      'Video': "Video",
+      'Close': "Funga",
+      'Remove': "Ondoa",
+      'Share': "Shiriki",
+      'Copy link': "Nakili kiungo",
+      'Link copied': "Kiungo kimenakiliwa",
+      'Share on': "Shiriki kwenye",
+      'Reviews': "Maoni",
+      'Write a review': "Andika maoni",
+      'review': "maoni",
+      'reviews': "maoni",
+      'Rated': "Imepewa",
+      'out of 5': "kati ya 5",
+      'based on': "kutokana na",
+      'Digital': "Kidijitali",
+      'Digital download': "Upakuaji wa kidijitali",
+      'Weight': "Uzito",
+      'Dimensions': "Vipimo",
+      'Digital download – the link is sent by email after payment.': "Upakuaji wa kidijitali – kiungo kinatumwa kwa barua pepe baada ya malipo.",
+      'Digital products: the download link is sent to your email after payment.': "Bidhaa za kidijitali: kiungo cha kupakua kinatumwa kwenye barua pepe yako baada ya malipo.",
+      'The download link is sent to your email after payment.': "Kiungo cha kupakua kinatumwa kwenye barua pepe yako baada ya malipo.",
+      'Download link to': "Kiungo cha kupakua kwa",
+      'Delivery': "Ufikishaji",
+      'About': "Kuhusu",
+      'Parcel weight': "Uzito wa kifurushi",
+      'No delivery option for this country. Please contact us.': "Hakuna njia ya kufikisha kwa nchi hii. Tafadhali wasiliana nasi.",
+      'Our partners': "Washirika wetu",
+      'Certified & accredited': "Imethibitishwa na kuidhinishwa",
+      '2–4 working days': "Siku 2–4 za kazi",
+      '3–5 working days': "Siku 3–5 za kazi",
+      '4–7 working days': "Siku 4–7 za kazi",
+      'By appointment': "Kwa miadi",
+      'Pickup in Berlin': "Kuchukua Berlin",
+      '14-day returns': "Kurudisha ndani ya siku 14",
+      'Personal service': "Huduma ya kibinafsi",
+      'Fast shipping': "Usafirishaji wa haraka",
+      'Free shipping from 50 €': "Usafirishaji bure kuanzia 50 €",
+      'Order easily on WhatsApp or Telegram': "Agiza kwa urahisi kwa WhatsApp au Telegram",
+      'New arrivals every week': "Bidhaa mpya kila wiki",
+      'Delivered in 2–4 working days': "Inafika ndani ya siku 2–4 za kazi",
+      'Easy and personal': "Rahisi na ya kibinafsi",
+      'Secure payment': "Malipo salama",
+      'PayPal or bank transfer': "PayPal au uhamisho wa benki",
+      'We answer within a day': "Tunajibu ndani ya siku moja",
+      'We accept': "Tunapokea",
+      'Cash on delivery': "Lipa unapopokea",
+      'Previous': "Iliyotangulia",
+      'Next': "Inayofuata",
+      'Our team': "Timu yetu",
+      'Delivery partners': "Washirika wa usafirishaji",
+      'You may also like': "Unaweza pia kupenda",
+      'Subscribe': "Jisajili",
+      'Your email': "Barua pepe yako",
+      'Yes, I would like to receive news and offers by email. I can unsubscribe at any time.': "Ndiyo, ningependa kupokea habari na ofa kwa barua pepe. Naweza kujiondoa wakati wowote.",
+      'Almost done! Please confirm your subscription in the email we just sent you.': "Karibu tumemaliza! Tafadhali thibitisha usajili wako kwenye barua pepe tuliyokutumia sasa hivi.",
+      'I agree that my details are used to answer my request.': "Nakubali taarifa zangu zitumike kujibu ombi langu.",
+      'Privacy policy': "Sera ya faragha",
+      'Send request': "Tuma ombi",
+      'Request a quote': "Omba bei",
+      'Thank you! Your request was sent. We will reply within one working day.': "Asante! Ombi lako limetumwa. Tutajibu ndani ya siku moja ya kazi.",
+      'Ask us': "Tuulize",
+      'Answers from our help list': "Majibu kutoka orodha yetu ya msaada",
+      'Type your question…': "Andika swali lako…",
+      'Your question': "Swali lako",
+      'Send': "Tuma",
+      'Chat with a person on WhatsApp': "Ongea na mtu kwa WhatsApp",
+      'Sorry, I do not have an answer to that yet.': "Samahani, bado sina jibu la hilo.",
+      'Ask us on WhatsApp – your question is already typed in.': "Tuulize kwa WhatsApp – swali lako tayari limeandikwa.",
+      'You might also mean:': "Huenda unamaanisha:",
+      'Questions I can answer:': "Maswali ninayoweza kujibu:",
+      'my question': "swali langu",
+      'Call': "Piga simu",
+      'Directions': "Maelekezo",
+      'Pause': "Sitisha",
+      'Play': "Endelea",
+      'Source': "Chanzo",
+      'Open chat': "Fungua gumzo",
+      'Something went wrong. Please try again or message us on WhatsApp.': "Kuna tatizo. Tafadhali jaribu tena au tutumie ujumbe kwa WhatsApp.",
+      'Please tick the box to agree.': "Tafadhali weka alama kwenye kisanduku kukubali.",
+      'Learn more': "Jifunze zaidi",
+      'Talk to us': "Ongea nasi",
+      'Call us': "Tupigie simu",
+      'Zoom video call': "Simu ya video ya Zoom",
+      'Google Meet video call': "Simu ya video ya Google Meet",
+      'Microsoft Teams call': "Simu ya Microsoft Teams",
+      'Chat on WhatsApp': "Ongea kwa WhatsApp",
+      'Chat on Telegram': "Ongea kwa Telegram",
+      'Email us': "Tutumie barua pepe",
+      'Prefer to talk? Call us or join a video call at these times.': "Ungependa kuongea? Tupigie simu au jiunge na simu ya video nyakati hizi.",
+      'Mon–Fri 9:00–18:00': "Jumatatu–Ijumaa 9:00–18:00",
+      'Tue & Thu 18:00–19:00': "Jumanne na Alhamisi 18:00–19:00",
+      'Sat 10:00–12:00': "Jumamosi 10:00–12:00",
+      'Start your review with a rating, for example 5/5 or ★★★★★.': "Anza maoni yako kwa alama, kwa mfano 5/5 au ★★★★★.",
+      'Language': "Lugha",
+      'Incl. VAT, plus shipping': "Pamoja na VAT, bila usafirishaji",
+      'New arrivals': "Bidhaa mpya",
+      'Shop by category': "Nunua kwa aina",
+      'Categories': "Aina",
+      'Popular products': "Bidhaa maarufu",
+      'Order directly': "Agiza moja kwa moja",
+      'Why shop with us': "Kwa nini ununue kwetu",
+      'New collection': "Mkusanyiko mpya",
+      'About the shop': "Kuhusu duka",
+      'Customer service': "Huduma kwa wateja",
+      'Follow us': "Tufuate",
+      'Home': "Nyumbani",
+      'Women': "Wanawake",
+      'Men': "Wanaume",
+      'Contact': "Mawasiliano",
+      'Shop now': "Nunua sasa",
+      'See the sale': "Tazama punguzo",
+      'Contact us': "Wasiliana nasi",
+      'Shipping & delivery': "Usafirishaji na ufikishaji",
+      'Returns (Widerruf)': "Kurudisha bidhaa",
+      'Search products...': "Tafuta bidhaa...",
+      'Newer posts': "Bidhaa mpya zaidi",
+      'Older posts': "Bidhaa zaidi",
+      'Newer post': "Bidhaa iliyotangulia",
+      'Older post': "Bidhaa inayofuata",
+      'Page not found': "Ukurasa haupatikani",
+      'Back to home': "Rudi nyumbani",
+      'Search': "Tafuta",
+      'Skip to content': "Ruka hadi maudhui",
+      'Open menu': "Fungua menyu",
+      'Features': "Sifa",
+      'Size guide': "Mwongozo wa saizi",
+      'Details': "Maelezo",
+      'The page you were looking for has moved or no longer exists.': "Ukurasa uliotafuta umehamishwa au haupo tena.",
+      'No posts found here yet.': "Bado hakuna bidhaa hapa.",
+      'How will you pay?': "Utalipa vipi?",
+      'Payment': "Malipo",
+      'Cash on pickup': "Lipa taslimu unapochukua",
+      'Pay now with PayPal': "Lipa sasa kwa PayPal",
+      'Size': "Saizi",
+      'Colour': "Rangi",
+      'Color': "Rangi",
+      'Shop': "Duka",
+      'Kenya': "Kenya",
+      'Fulfilment': "Huduma za ghala",
+      'News': "Habari",
+      'Our branches': "Matawi yetu",
+      'What we do': "Tunachofanya",
+      'How it works': "Jinsi inavyofanya kazi",
+      'What customers say': "Wateja wanasema nini",
+      'Questions & answers': "Maswali na majibu",
+      'Stay in the loop': "Pata habari zetu"
+    },
+    ar: {
+      'Add to cart': "أضف إلى السلة",
+      'Choose options': "اختر الخيارات",
+      'Out of stock': "نفد من المخزون",
+      'Sale': "تخفيض",
+      'Quantity': "الكمية",
+      'Choose': "اختر",
+      'Please choose': "يرجى اختيار",
+      'Cart': "السلة",
+      'Checkout': "إتمام الطلب",
+      'Subtotal': "المجموع الفرعي",
+      'Shipping': "الشحن",
+      'Free': "مجاني",
+      'Total': "الإجمالي",
+      'Free shipping from': "شحن مجاني ابتداءً من",
+      'Your cart is empty.': "سلتك فارغة.",
+      'Full name': "الاسم الكامل",
+      'Phone': "الهاتف",
+      'Email': "البريد الإلكتروني",
+      'Street and house number': "الشارع ورقم المنزل",
+      'Postcode': "الرمز البريدي",
+      'City': "المدينة",
+      'Country': "الدولة",
+      'Other city…': "مدينة أخرى…",
+      'Note': "ملاحظة",
+      'How do you want to order?': "كيف تريد أن تطلب؟",
+      'Send order': "إرسال الطلب",
+      'Back to cart': "العودة إلى السلة",
+      'Please fill in the marked fields.': "يرجى ملء الحقول المحددة.",
+      'added to cart': "أُضيف إلى السلة",
+      'View cart': "عرض السلة",
+      'Only': "متبقٍ",
+      'in stock': "فقط",
+      'Thank you': "شكرًا لك",
+      'Order number': "رقم الطلب",
+      'Bank transfer': "تحويل بنكي",
+      'Reference': "المرجع",
+      'Clear cart': "إفراغ السلة",
+      'Ask on WhatsApp': "اسأل عبر واتساب",
+      'Ask on Telegram': "اسأل عبر تيليجرام",
+      'Hi, I am interested in': "مرحبًا، أنا مهتم بـ",
+      'Place order (we confirm by email)': "تقديم الطلب (نؤكده بالبريد الإلكتروني)",
+      'Send order on WhatsApp': "إرسال الطلب عبر واتساب",
+      'Send order on Telegram': "إرسال الطلب عبر تيليجرام",
+      'Pay with PayPal': "الدفع عبر PayPal",
+      'Send order by email': "إرسال الطلب بالبريد الإلكتروني",
+      'Sending…': "جارٍ الإرسال…",
+      'New order': "طلب جديد",
+      'Order': "الطلب",
+      'Customer': "العميل",
+      'Delivery address': "عنوان التوصيل",
+      'WhatsApp opened with your order. Press send there to complete it.': "تم فتح واتساب مع طلبك. اضغط إرسال هناك لإتمامه.",
+      'Your email app opened with the order. Press send there to complete it.': "تم فتح تطبيق البريد مع الطلب. اضغط إرسال هناك لإتمامه.",
+      'Your order is copied. In Telegram, paste it into the chat and send it.': "تم نسخ طلبك. الصقه في محادثة تيليجرام وأرسله.",
+      'Copy order again': "انسخ الطلب مرة أخرى",
+      'Copied': "تم النسخ",
+      'Open Telegram': "افتح تيليجرام",
+      'Thank you! Your order was received. Total': "شكرًا لك! تم استلام طلبك. الإجمالي",
+      'Sorry, the order could not be sent.': "عذرًا، تعذّر إرسال الطلب.",
+      'Please choose another way to order.': "يرجى اختيار طريقة أخرى للطلب.",
+      'Online ordering is not available yet. Please contact us.': "الطلب عبر الإنترنت غير متاح بعد. يرجى التواصل معنا.",
+      'Image': "صورة",
+      'Video': "فيديو",
+      'Close': "إغلاق",
+      'Remove': "إزالة",
+      'Share': "مشاركة",
+      'Copy link': "نسخ الرابط",
+      'Link copied': "تم نسخ الرابط",
+      'Share on': "مشاركة على",
+      'Reviews': "التقييمات",
+      'Write a review': "اكتب تقييمًا",
+      'review': "تقييم",
+      'reviews': "تقييمات",
+      'Rated': "التقييم",
+      'out of 5': "من 5",
+      'based on': "بناءً على",
+      'Digital': "رقمي",
+      'Digital download': "تنزيل رقمي",
+      'Weight': "الوزن",
+      'Dimensions': "الأبعاد",
+      'Digital download – the link is sent by email after payment.': "تنزيل رقمي – يُرسل الرابط بالبريد الإلكتروني بعد الدفع.",
+      'Digital products: the download link is sent to your email after payment.': "المنتجات الرقمية: يُرسل رابط التنزيل إلى بريدك الإلكتروني بعد الدفع.",
+      'The download link is sent to your email after payment.': "يُرسل رابط التنزيل إلى بريدك الإلكتروني بعد الدفع.",
+      'Download link to': "رابط التنزيل إلى",
+      'Delivery': "التوصيل",
+      'About': "حول",
+      'Parcel weight': "وزن الطرد",
+      'No delivery option for this country. Please contact us.': "لا يوجد خيار توصيل لهذه الدولة. يرجى التواصل معنا.",
+      'Our partners': "شركاؤنا",
+      'Certified & accredited': "معتمد وموثّق",
+      '2–4 working days': "2–4 أيام عمل",
+      '3–5 working days': "3–5 أيام عمل",
+      '4–7 working days': "4–7 أيام عمل",
+      'By appointment': "بموعد مسبق",
+      'Pickup in Berlin': "الاستلام في برلين",
+      '14-day returns': "إرجاع خلال 14 يومًا",
+      'Personal service': "خدمة شخصية",
+      'Fast shipping': "شحن سريع",
+      'Free shipping from 50 €': "شحن مجاني ابتداءً من 50 €",
+      'Order easily on WhatsApp or Telegram': "اطلب بسهولة عبر واتساب أو تيليجرام",
+      'New arrivals every week': "وصول منتجات جديدة كل أسبوع",
+      'Delivered in 2–4 working days': "التوصيل خلال 2–4 أيام عمل",
+      'Easy and personal': "سهل وشخصي",
+      'Secure payment': "دفع آمن",
+      'PayPal or bank transfer': "PayPal أو تحويل بنكي",
+      'We answer within a day': "نرد خلال يوم واحد",
+      'We accept': "نقبل",
+      'Cash on delivery': "الدفع عند الاستلام",
+      'Previous': "السابق",
+      'Next': "التالي",
+      'Our team': "فريقنا",
+      'Delivery partners': "شركاء التوصيل",
+      'You may also like': "قد يعجبك أيضًا",
+      'Subscribe': "اشترك",
+      'Your email': "بريدك الإلكتروني",
+      'Yes, I would like to receive news and offers by email. I can unsubscribe at any time.': "نعم، أرغب في تلقي الأخبار والعروض بالبريد الإلكتروني. يمكنني إلغاء الاشتراك في أي وقت.",
+      'Almost done! Please confirm your subscription in the email we just sent you.': "اقتربت! يرجى تأكيد اشتراكك من الرسالة التي أرسلناها إليك الآن.",
+      'I agree that my details are used to answer my request.': "أوافق على استخدام بياناتي للرد على طلبي.",
+      'Privacy policy': "سياسة الخصوصية",
+      'Send request': "إرسال الطلب",
+      'Request a quote': "اطلب عرض سعر",
+      'Thank you! Your request was sent. We will reply within one working day.': "شكرًا لك! تم إرسال طلبك. سنرد خلال يوم عمل واحد.",
+      'Ask us': "اسألنا",
+      'Answers from our help list': "إجابات من قائمة المساعدة لدينا",
+      'Type your question…': "اكتب سؤالك…",
+      'Your question': "سؤالك",
+      'Send': "إرسال",
+      'Chat with a person on WhatsApp': "تحدث مع شخص عبر واتساب",
+      'Sorry, I do not have an answer to that yet.': "عذرًا، ليس لدي إجابة على ذلك بعد.",
+      'Ask us on WhatsApp – your question is already typed in.': "اسألنا عبر واتساب – سؤالك مكتوب مسبقًا.",
+      'You might also mean:': "ربما تقصد:",
+      'Questions I can answer:': "أسئلة يمكنني الإجابة عنها:",
+      'my question': "سؤالي",
+      'Call': "اتصال",
+      'Directions': "الاتجاهات",
+      'Pause': "إيقاف مؤقت",
+      'Play': "تشغيل",
+      'Source': "المصدر",
+      'Open chat': "افتح المحادثة",
+      'Something went wrong. Please try again or message us on WhatsApp.': "حدث خطأ ما. يرجى المحاولة مرة أخرى أو مراسلتنا عبر واتساب.",
+      'Please tick the box to agree.': "يرجى تحديد المربع للموافقة.",
+      'Learn more': "اعرف المزيد",
+      'Talk to us': "تحدث إلينا",
+      'Call us': "اتصل بنا",
+      'Zoom video call': "مكالمة فيديو عبر Zoom",
+      'Google Meet video call': "مكالمة فيديو عبر Google Meet",
+      'Microsoft Teams call': "مكالمة عبر Microsoft Teams",
+      'Chat on WhatsApp': "تحدث عبر واتساب",
+      'Chat on Telegram': "تحدث عبر تيليجرام",
+      'Email us': "راسلنا بالبريد",
+      'Prefer to talk? Call us or join a video call at these times.': "تفضّل التحدث؟ اتصل بنا أو انضم إلى مكالمة فيديو في هذه الأوقات.",
+      'Mon–Fri 9:00–18:00': "الاثنين–الجمعة 9:00–18:00",
+      'Tue & Thu 18:00–19:00': "الثلاثاء والخميس 18:00–19:00",
+      'Sat 10:00–12:00': "السبت 10:00–12:00",
+      'Start your review with a rating, for example 5/5 or ★★★★★.': "ابدأ تقييمك بعدد النجوم، مثل 5/5 أو ★★★★★.",
+      'Language': "اللغة",
+      'Incl. VAT, plus shipping': "شامل ضريبة القيمة المضافة، دون الشحن",
+      'New arrivals': "وصل حديثًا",
+      'Shop by category': "تسوق حسب الفئة",
+      'Categories': "الفئات",
+      'Popular products': "المنتجات الأكثر رواجًا",
+      'Order directly': "اطلب مباشرة",
+      'Why shop with us': "لماذا تتسوق معنا",
+      'New collection': "تشكيلة جديدة",
+      'About the shop': "عن المتجر",
+      'Customer service': "خدمة العملاء",
+      'Follow us': "تابعنا",
+      'Home': "الرئيسية",
+      'Women': "نساء",
+      'Men': "رجال",
+      'Contact': "اتصل بنا",
+      'Shop now': "تسوق الآن",
+      'See the sale': "شاهد التخفيضات",
+      'Contact us': "تواصل معنا",
+      'Shipping & delivery': "الشحن والتوصيل",
+      'Returns (Widerruf)': "الإرجاع",
+      'Search products...': "ابحث عن منتجات...",
+      'Newer posts': "منتجات أحدث",
+      'Older posts': "منتجات أخرى",
+      'Newer post': "المنتج السابق",
+      'Older post': "المنتج التالي",
+      'Page not found': "الصفحة غير موجودة",
+      'Back to home': "العودة إلى الرئيسية",
+      'Search': "بحث",
+      'Skip to content': "انتقل إلى المحتوى",
+      'Open menu': "افتح القائمة",
+      'Features': "المزايا",
+      'Size guide': "دليل المقاسات",
+      'Details': "التفاصيل",
+      'The page you were looking for has moved or no longer exists.': "الصفحة التي تبحث عنها نُقلت أو لم تعد موجودة.",
+      'No posts found here yet.': "لا توجد منتجات هنا بعد.",
+      'How will you pay?': "كيف ستدفع؟",
+      'Payment': "الدفع",
+      'Cash on pickup': "الدفع نقدًا عند الاستلام",
+      'Pay now with PayPal': "ادفع الآن عبر PayPal",
+      'Size': "المقاس",
+      'Colour': "اللون",
+      'Color': "اللون",
+      'Shop': "المتجر",
+      'Kenya': "كينيا",
+      'Fulfilment': "خدمات التخزين والشحن",
+      'News': "أخبار",
+      'Our branches': "فروعنا",
+      'What we do': "ماذا نقدم",
+      'How it works': "كيف يعمل",
+      'What customers say': "آراء العملاء",
+      'Questions & answers': "أسئلة وأجوبة",
+      'Stay in the loop': "ابقَ على اطلاع"
+    },
+    am: {
+      'Add to cart': "ወደ ጋሪ ጨምር",
+      'Choose options': "አማራጮችን ይምረጡ",
+      'Out of stock': "ተሽጦ አልቋል",
+      'Sale': "ቅናሽ",
+      'Quantity': "ብዛት",
+      'Choose': "ይምረጡ",
+      'Please choose': "እባክዎ ይምረጡ",
+      'Cart': "ጋሪ",
+      'Checkout': "ክፍያ ፈጽም",
+      'Subtotal': "ንዑስ ድምር",
+      'Shipping': "መላኪያ",
+      'Free': "ነፃ",
+      'Total': "ጠቅላላ",
+      'Free shipping from': "ነፃ መላኪያ ከ",
+      'Your cart is empty.': "ጋሪዎ ባዶ ነው።",
+      'Full name': "ሙሉ ስም",
+      'Phone': "ስልክ",
+      'Email': "ኢሜይል",
+      'Street and house number': "መንገድ እና የቤት ቁጥር",
+      'Postcode': "የፖስታ ኮድ",
+      'City': "ከተማ",
+      'Country': "አገር",
+      'Other city…': "ሌላ ከተማ…",
+      'Note': "ማስታወሻ",
+      'How do you want to order?': "እንዴት ማዘዝ ይፈልጋሉ?",
+      'Send order': "ትዕዛዝ ላክ",
+      'Back to cart': "ወደ ጋሪ ተመለስ",
+      'Please fill in the marked fields.': "እባክዎ ምልክት የተደረገባቸውን መስኮች ይሙሉ።",
+      'added to cart': "ወደ ጋሪ ተጨምሯል",
+      'View cart': "ጋሪውን ይመልከቱ",
+      'Only': "የቀሩት",
+      'in stock': "ብቻ ናቸው",
+      'Thank you': "እናመሰግናለን",
+      'Order number': "የትዕዛዝ ቁጥር",
+      'Bank transfer': "የባንክ ዝውውር",
+      'Reference': "ማጣቀሻ",
+      'Clear cart': "ጋሪውን አጽዳ",
+      'Ask on WhatsApp': "በWhatsApp ይጠይቁ",
+      'Ask on Telegram': "በTelegram ይጠይቁ",
+      'Hi, I am interested in': "ሰላም፣ ፍላጎት አለኝ በ",
+      'Place order (we confirm by email)': "ትዕዛዝ ያስገቡ (በኢሜይል እናረጋግጣለን)",
+      'Send order on WhatsApp': "ትዕዛዙን በWhatsApp ላክ",
+      'Send order on Telegram': "ትዕዛዙን በTelegram ላክ",
+      'Pay with PayPal': "በPayPal ይክፈሉ",
+      'Send order by email': "ትዕዛዙን በኢሜይል ላክ",
+      'Sending…': "በመላክ ላይ…",
+      'New order': "አዲስ ትዕዛዝ",
+      'Order': "ትዕዛዝ",
+      'Customer': "ደንበኛ",
+      'Delivery address': "የማድረሻ አድራሻ",
+      'WhatsApp opened with your order. Press send there to complete it.': "WhatsApp ከትዕዛዝዎ ጋር ተከፍቷል። ለማጠናቀቅ እዚያ ላክ ይጫኑ።",
+      'Your email app opened with the order. Press send there to complete it.': "የኢሜይል መተግበሪያዎ ከትዕዛዙ ጋር ተከፍቷል። ለማጠናቀቅ እዚያ ላክ ይጫኑ።",
+      'Your order is copied. In Telegram, paste it into the chat and send it.': "ትዕዛዝዎ ተቀድቷል። በTelegram ውይይት ውስጥ ለጥፈው ይላኩት።",
+      'Copy order again': "ትዕዛዙን እንደገና ቅዳ",
+      'Copied': "ተቀድቷል",
+      'Open Telegram': "Telegram ክፈት",
+      'Thank you! Your order was received. Total': "እናመሰግናለን! ትዕዛዝዎ ደርሶናል። ጠቅላላ",
+      'Sorry, the order could not be sent.': "ይቅርታ፣ ትዕዛዙ ሊላክ አልቻለም።",
+      'Please choose another way to order.': "እባክዎ ሌላ የማዘዣ መንገድ ይምረጡ።",
+      'Online ordering is not available yet. Please contact us.': "በመስመር ላይ ማዘዝ ገና አልተጀመረም። እባክዎ ያግኙን።",
+      'Image': "ምስል",
+      'Video': "ቪዲዮ",
+      'Close': "ዝጋ",
+      'Remove': "አስወግድ",
+      'Share': "አጋራ",
+      'Copy link': "ሊንክ ቅዳ",
+      'Link copied': "ሊንኩ ተቀድቷል",
+      'Share on': "አጋራ በ",
+      'Reviews': "ግምገማዎች",
+      'Write a review': "ግምገማ ይጻፉ",
+      'review': "ግምገማ",
+      'reviews': "ግምገማዎች",
+      'Rated': "ደረጃ",
+      'out of 5': "ከ5",
+      'based on': "በ",
+      'Digital': "ዲጂታል",
+      'Digital download': "ዲጂታል ማውረድ",
+      'Weight': "ክብደት",
+      'Dimensions': "መጠን",
+      'Digital download – the link is sent by email after payment.': "ዲጂታል ማውረድ – ሊንኩ ከክፍያ በኋላ በኢሜይል ይላካል።",
+      'Digital products: the download link is sent to your email after payment.': "ዲጂታል ምርቶች፦ የማውረጃ ሊንኩ ከክፍያ በኋላ ወደ ኢሜይልዎ ይላካል።",
+      'The download link is sent to your email after payment.': "የማውረጃ ሊንኩ ከክፍያ በኋላ ወደ ኢሜይልዎ ይላካል።",
+      'Download link to': "የማውረጃ ሊንክ ወደ",
+      'Delivery': "ማድረስ",
+      'About': "ስለ",
+      'Parcel weight': "የጥቅሉ ክብደት",
+      'No delivery option for this country. Please contact us.': "ለዚህ አገር የማድረሻ አማራጭ የለም። እባክዎ ያግኙን።",
+      'Our partners': "አጋሮቻችን",
+      'Certified & accredited': "የተረጋገጠ እና እውቅና ያለው",
+      '2–4 working days': "2–4 የሥራ ቀናት",
+      '3–5 working days': "3–5 የሥራ ቀናት",
+      '4–7 working days': "4–7 የሥራ ቀናት",
+      'By appointment': "በቀጠሮ",
+      'Pickup in Berlin': "ከበርሊን መውሰድ",
+      '14-day returns': "በ14 ቀናት ውስጥ መመለስ",
+      'Personal service': "የግል አገልግሎት",
+      'Fast shipping': "ፈጣን መላኪያ",
+      'Free shipping from 50 €': "ከ50 € ጀምሮ ነፃ መላኪያ",
+      'Order easily on WhatsApp or Telegram': "በWhatsApp ወይም በTelegram በቀላሉ ይዘዙ",
+      'New arrivals every week': "በየሳምንቱ አዳዲስ ዕቃዎች",
+      'Delivered in 2–4 working days': "በ2–4 የሥራ ቀናት ውስጥ ይደርሳል",
+      'Easy and personal': "ቀላል እና የግል",
+      'Secure payment': "ደህንነቱ የተጠበቀ ክፍያ",
+      'PayPal or bank transfer': "PayPal ወይም የባንክ ዝውውር",
+      'We answer within a day': "በአንድ ቀን ውስጥ እንመልሳለን",
+      'We accept': "እንቀበላለን",
+      'Cash on delivery': "ሲደርስ በጥሬ ገንዘብ",
+      'Previous': "የቀደመው",
+      'Next': "ቀጣይ",
+      'Our team': "ቡድናችን",
+      'Delivery partners': "የመላኪያ አጋሮች",
+      'You may also like': "እነዚህንም ሊወዱ ይችላሉ",
+      'Subscribe': "ይመዝገቡ",
+      'Your email': "ኢሜይልዎ",
+      'Yes, I would like to receive news and offers by email. I can unsubscribe at any time.': "አዎ፣ ዜናዎችንና ቅናሾችን በኢሜይል መቀበል እፈልጋለሁ። በማንኛውም ጊዜ ምዝገባዬን መሰረዝ እችላለሁ።",
+      'Almost done! Please confirm your subscription in the email we just sent you.': "ሊጠናቀቅ ነው! እባክዎ አሁን በላክንልዎ ኢሜይል ምዝገባዎን ያረጋግጡ።",
+      'I agree that my details are used to answer my request.': "መረጃዬ ጥያቄዬን ለመመለስ ጥቅም ላይ እንዲውል እስማማለሁ።",
+      'Privacy policy': "የግላዊነት ፖሊሲ",
+      'Send request': "ጥያቄ ላክ",
+      'Request a quote': "የዋጋ ጥያቄ ያቅርቡ",
+      'Thank you! Your request was sent. We will reply within one working day.': "እናመሰግናለን! ጥያቄዎ ተልኳል። በአንድ የሥራ ቀን ውስጥ እንመልሳለን።",
+      'Ask us': "ይጠይቁን",
+      'Answers from our help list': "ከእርዳታ ዝርዝራችን የተገኙ መልሶች",
+      'Type your question…': "ጥያቄዎን ይጻፉ…",
+      'Your question': "ጥያቄዎ",
+      'Send': "ላክ",
+      'Chat with a person on WhatsApp': "በWhatsApp ከሰው ጋር ይወያዩ",
+      'Sorry, I do not have an answer to that yet.': "ይቅርታ፣ ለዚህ ገና መልስ የለኝም።",
+      'Ask us on WhatsApp – your question is already typed in.': "በWhatsApp ይጠይቁን – ጥያቄዎ አስቀድሞ ተጽፏል።",
+      'You might also mean:': "ምናልባት ይህን ማለትዎ ይሆናል፦",
+      'Questions I can answer:': "ልመልሳቸው የምችላቸው ጥያቄዎች፦",
+      'my question': "ጥያቄዬ",
+      'Call': "ይደውሉ",
+      'Directions': "አቅጣጫ",
+      'Pause': "ለአፍታ አቁም",
+      'Play': "ቀጥል",
+      'Source': "ምንጭ",
+      'Open chat': "ውይይት ክፈት",
+      'Something went wrong. Please try again or message us on WhatsApp.': "ችግር ተፈጥሯል። እባክዎ እንደገና ይሞክሩ ወይም በWhatsApp መልዕክት ይላኩልን።",
+      'Please tick the box to agree.': "ለመስማማት እባክዎ ሳጥኑን ምልክት ያድርጉ።",
+      'Learn more': "ተጨማሪ ይወቁ",
+      'Talk to us': "ያነጋግሩን",
+      'Call us': "ይደውሉልን",
+      'Zoom video call': "የZoom ቪዲዮ ጥሪ",
+      'Google Meet video call': "የGoogle Meet ቪዲዮ ጥሪ",
+      'Microsoft Teams call': "የMicrosoft Teams ጥሪ",
+      'Chat on WhatsApp': "በWhatsApp ይወያዩ",
+      'Chat on Telegram': "በTelegram ይወያዩ",
+      'Email us': "ኢሜይል ይላኩልን",
+      'Prefer to talk? Call us or join a video call at these times.': "መነጋገር ይመርጣሉ? በእነዚህ ሰዓቶች ይደውሉልን ወይም የቪዲዮ ጥሪ ይቀላቀሉ።",
+      'Mon–Fri 9:00–18:00': "ሰኞ–አርብ 9:00–18:00",
+      'Tue & Thu 18:00–19:00': "ማክሰኞ እና ሐሙስ 18:00–19:00",
+      'Sat 10:00–12:00': "ቅዳሜ 10:00–12:00",
+      'Start your review with a rating, for example 5/5 or ★★★★★.': "ግምገማዎን በደረጃ ይጀምሩ፣ ለምሳሌ 5/5 ወይም ★★★★★።",
+      'Language': "ቋንቋ",
+      'Incl. VAT, plus shipping': "ተ.እ.ታ ጨምሮ፣ መላኪያ ሳይጨምር",
+      'New arrivals': "አዳዲስ ዕቃዎች",
+      'Shop by category': "በምድብ ይግዙ",
+      'Categories': "ምድቦች",
+      'Popular products': "ተወዳጅ ምርቶች",
+      'Order directly': "በቀጥታ ይዘዙ",
+      'Why shop with us': "ለምን ከእኛ ይገዛሉ",
+      'New collection': "አዲስ ስብስብ",
+      'About the shop': "ስለ ሱቁ",
+      'Customer service': "የደንበኞች አገልግሎት",
+      'Follow us': "ይከተሉን",
+      'Home': "መነሻ",
+      'Women': "ሴቶች",
+      'Men': "ወንዶች",
+      'Contact': "አድራሻ",
+      'Shop now': "አሁን ይግዙ",
+      'See the sale': "ቅናሹን ይመልከቱ",
+      'Contact us': "ያግኙን",
+      'Shipping & delivery': "መላኪያ እና ማድረስ",
+      'Returns (Widerruf)': "መመለስ",
+      'Search products...': "ምርቶችን ይፈልጉ...",
+      'Newer posts': "አዳዲስ ምርቶች",
+      'Older posts': "ተጨማሪ ምርቶች",
+      'Newer post': "የቀደመው ምርት",
+      'Older post': "ቀጣዩ ምርት",
+      'Page not found': "ገጹ አልተገኘም",
+      'Back to home': "ወደ መነሻ ተመለስ",
+      'Search': "ፈልግ",
+      'Skip to content': "ወደ ይዘቱ ዝለል",
+      'Open menu': "ምናሌ ክፈት",
+      'Features': "ባህሪያት",
+      'Size guide': "የመጠን መመሪያ",
+      'Details': "ዝርዝሮች",
+      'The page you were looking for has moved or no longer exists.': "የፈለጉት ገጽ ተዛውሯል ወይም ከእንግዲህ የለም።",
+      'No posts found here yet.': "እዚህ ገና ምርቶች የሉም።",
+      'How will you pay?': "እንዴት ይከፍላሉ?",
+      'Payment': "ክፍያ",
+      'Cash on pickup': "ሲወስዱ በጥሬ ገንዘብ",
+      'Pay now with PayPal': "አሁን በPayPal ይክፈሉ",
+      'Size': "መጠን",
+      'Colour': "ቀለም",
+      'Color': "ቀለም",
+      'Shop': "ሱቅ",
+      'Kenya': "ኬንያ",
+      'Fulfilment': "የማከማቻ እና የመላኪያ አገልግሎት",
+      'News': "ዜና",
+      'Our branches': "ቅርንጫፎቻችን",
+      'What we do': "የምንሠራው",
+      'How it works': "እንዴት እንደሚሠራ",
+      'What customers say': "ደንበኞች ምን ይላሉ",
+      'Questions & answers': "ጥያቄዎችና መልሶች",
+      'Stay in the loop': "መረጃ ያግኙ"
+    },
+    ti: {
+      'Add to cart': "ናብ ዘንቢል ወስኽ",
+      'Choose options': "ምርጫታት ምረጽ",
+      'Out of stock': "ተሸይጡ ተወዲኡ",
+      'Sale': "ቅናሽ",
+      'Quantity': "ብዝሒ",
+      'Choose': "ምረጽ",
+      'Please choose': "በጃኹም ምረጹ",
+      'Cart': "ዘንቢል",
+      'Checkout': "ክፍሊት ፈጽም",
+      'Subtotal': "ንኡስ ድምር",
+      'Shipping': "ምልኣኽ",
+      'Free': "ብነጻ",
+      'Total': "ጠቕላላ",
+      'Free shipping from': "ብነጻ ምልኣኽ ካብ",
+      'Your cart is empty.': "ዘንቢልኩም ባዶ እዩ።",
+      'Full name': "ምሉእ ስም",
+      'Phone': "ስልኪ",
+      'Email': "ኢመይል",
+      'Street and house number': "ጎደና ከምኡ'ውን ቁጽሪ ገዛ",
+      'Postcode': "ፖስታዊ ኮድ",
+      'City': "ከተማ",
+      'Country': "ሃገር",
+      'Other city…': "ካልእ ከተማ…",
+      'Note': "መዘኻኸሪ",
+      'How do you want to order?': "ብኸመይ ክትእዝዙ ትደልዩ?",
+      'Send order': "ትእዛዝ ስደድ",
+      'Back to cart': "ናብ ዘንቢል ተመለስ",
+      'Please fill in the marked fields.': "በጃኹም ዝተመልከቱ ቦታታት ምልኡ።",
+      'added to cart': "ናብ ዘንቢል ተወሲኹ",
+      'View cart': "ዘንቢል ርአ",
+      'Only': "ዝተረፉ",
+      'in stock': "ጥራይ እዮም",
+      'Thank you': "የቐንየልና",
+      'Order number': "ቁጽሪ ትእዛዝ",
+      'Bank transfer': "ባንካዊ ምትሕልላፍ",
+      'Reference': "መወከሲ",
+      'Clear cart': "ዘንቢል ኣጽሪ",
+      'Ask on WhatsApp': "ብWhatsApp ሕተቱ",
+      'Ask on Telegram': "ብTelegram ሕተቱ",
+      'Hi, I am interested in': "ሰላም፡ ድሌት ኣለኒ ኣብ",
+      'Place order (we confirm by email)': "ትእዛዝ ኣእትዉ (ብኢመይል ነረጋግጽ)",
+      'Send order on WhatsApp': "ትእዛዝ ብWhatsApp ስደድ",
+      'Send order on Telegram': "ትእዛዝ ብTelegram ስደድ",
+      'Pay with PayPal': "ብPayPal ክፈሉ",
+      'Send order by email': "ትእዛዝ ብኢመይል ስደድ",
+      'Sending…': "ይስደድ ኣሎ…",
+      'New order': "ሓድሽ ትእዛዝ",
+      'Order': "ትእዛዝ",
+      'Customer': "ዓሚል",
+      'Delivery address': "ኣድራሻ ምብጻሕ",
+      'WhatsApp opened with your order. Press send there to complete it.': "WhatsApp ምስ ትእዛዝኩም ተኸፊቱ ኣሎ። ንምዝዛም ኣብኡ ስደድ ጠውቑ።",
+      'Your email app opened with the order. Press send there to complete it.': "መተግበሪ ኢመይልኩም ምስ ትእዛዝ ተኸፊቱ ኣሎ። ንምዝዛም ኣብኡ ስደድ ጠውቑ።",
+      'Your order is copied. In Telegram, paste it into the chat and send it.': "ትእዛዝኩም ተቐዲሑ ኣሎ። ኣብ Telegram ናብ ዕላል ለጢፍኩም ስደዱዎ።",
+      'Copy order again': "ትእዛዝ ደጊምካ ቕዳሕ",
+      'Copied': "ተቐዲሑ",
+      'Open Telegram': "Telegram ክፈት",
+      'Thank you! Your order was received. Total': "የቐንየልና! ትእዛዝኩም በጺሑና ኣሎ። ጠቕላላ",
+      'Sorry, the order could not be sent.': "ይቕሬታ፡ ትእዛዝ ክስደድ ኣይከኣለን።",
+      'Please choose another way to order.': "በጃኹም ካልእ መንገዲ ምእዛዝ ምረጹ።",
+      'Online ordering is not available yet. Please contact us.': "ብኢንተርነት ምእዛዝ ገና ኣይጀመረን። በጃኹም ተራኸቡና።",
+      'Image': "ስእሊ",
+      'Video': "ቪድዮ",
+      'Close': "ዕጸው",
+      'Remove': "ኣልግስ",
+      'Share': "ኣካፍል",
+      'Copy link': "መላግቦ ቕዳሕ",
+      'Link copied': "መላግቦ ተቐዲሑ",
+      'Share on': "ኣካፍል ኣብ",
+      'Reviews': "ርእይቶታት",
+      'Write a review': "ርእይቶ ጸሓፉ",
+      'review': "ርእይቶ",
+      'reviews': "ርእይቶታት",
+      'Rated': "ደረጃ",
+      'out of 5': "ካብ 5",
+      'based on': "ብመሰረት",
+      'Digital': "ዲጂታላዊ",
+      'Digital download': "ዲጂታላዊ ምውራድ",
+      'Weight': "ክብደት",
+      'Dimensions': "ዓቐን",
+      'Digital download – the link is sent by email after payment.': "ዲጂታላዊ ምውራድ – መላግቦ ድሕሪ ክፍሊት ብኢመይል ይለኣኽ።",
+      'Digital products: the download link is sent to your email after payment.': "ዲጂታላዊ ፍርያት፦ መላግቦ ምውራድ ድሕሪ ክፍሊት ናብ ኢመይልኩም ይለኣኽ።",
+      'The download link is sent to your email after payment.': "መላግቦ ምውራድ ድሕሪ ክፍሊት ናብ ኢመይልኩም ይለኣኽ።",
+      'Download link to': "መላግቦ ምውራድ ናብ",
+      'Delivery': "ምብጻሕ",
+      'About': "ብዛዕባ",
+      'Parcel weight': "ክብደት ጥቕሊ",
+      'No delivery option for this country. Please contact us.': "ነዛ ሃገር ዝኸውን መማረጺ ምብጻሕ የለን። በጃኹም ተራኸቡና።",
+      'Our partners': "መሻርኽትና",
+      'Certified & accredited': "ዝተረጋገጸን ኣፍልጦ ዘለዎን",
+      '2–4 working days': "2–4 መዓልታት ስራሕ",
+      '3–5 working days': "3–5 መዓልታት ስራሕ",
+      '4–7 working days': "4–7 መዓልታት ስራሕ",
+      'By appointment': "ብቖጸራ",
+      'Pickup in Berlin': "ካብ በርሊን ምውሳድ",
+      '14-day returns': "ኣብ ውሽጢ 14 መዓልቲ ምምላስ",
+      'Personal service': "ውልቃዊ ኣገልግሎት",
+      'Fast shipping': "ቅልጡፍ ምልኣኽ",
+      'Free shipping from 50 €': "ካብ 50 € ጀሚሩ ብነጻ ምልኣኽ",
+      'Order easily on WhatsApp or Telegram': "ብWhatsApp ወይ ብTelegram ብቐሊሉ እዘዙ",
+      'New arrivals every week': "ኣብ ነፍሲ ወከፍ ሰሙን ሓደስቲ ኣቑሑት",
+      'Delivered in 2–4 working days': "ኣብ ውሽጢ 2–4 መዓልታት ስራሕ ይበጽሕ",
+      'Easy and personal': "ቀሊልን ውልቃውን",
+      'Secure payment': "ውሑስ ክፍሊት",
+      'PayPal or bank transfer': "PayPal ወይ ባንካዊ ምትሕልላፍ",
+      'We answer within a day': "ኣብ ውሽጢ ሓደ መዓልቲ ንምልሽ",
+      'We accept': "ንቕበል",
+      'Cash on delivery': "ምስ በጽሐ ብጥረ ገንዘብ",
+      'Previous': "ዝሓለፈ",
+      'Next': "ዝቕጽል",
+      'Our team': "ጉጅለና",
+      'Delivery partners': "መሻርኽቲ ምልኣኽ",
+      'You may also like': "እዚኦም'ውን ክፈትዉኹም ይኽእሉ",
+      'Subscribe': "ተመዝገቡ",
+      'Your email': "ኢመይልኩም",
+      'Yes, I would like to receive news and offers by email. I can unsubscribe at any time.': "እወ፡ ዜናታትን ቅናሻትን ብኢመይል ክቕበል እደሊ። ኣብ ዝኾነ ግዜ ምዝገባይ ክሰርዝ እኽእል።",
+      'Almost done! Please confirm your subscription in the email we just sent you.': "ክንዛዘም ቀሪብና! በጃኹም ኣብቲ ሕጂ ዝለኣኽናልኩም ኢመይል ምዝገባኹም ኣረጋግጹ።",
+      'I agree that my details are used to answer my request.': "ሓበሬታይ ንሕቶይ ንምምላስ ክጥቀመሉ ይሰማማዕ።",
+      'Privacy policy': "ፖሊሲ ውልቃውነት",
+      'Send request': "ሕቶ ስደድ",
+      'Request a quote': "ዋጋ ሕተቱ",
+      'Thank you! Your request was sent. We will reply within one working day.': "የቐንየልና! ሕቶኹም ተላኢኹ ኣሎ። ኣብ ውሽጢ ሓደ መዓልቲ ስራሕ ክንምልስ ኢና።",
+      'Ask us': "ሕተቱና",
+      'Answers from our help list': "መልስታት ካብ ዝርዝር ሓገዝና",
+      'Type your question…': "ሕቶኹም ጸሓፉ…",
+      'Your question': "ሕቶኹም",
+      'Send': "ስደድ",
+      'Chat with a person on WhatsApp': "ብWhatsApp ምስ ሰብ ተዘራረቡ",
+      'Sorry, I do not have an answer to that yet.': "ይቕሬታ፡ ነዚ ገና መልሲ የብለይን።",
+      'Ask us on WhatsApp – your question is already typed in.': "ብWhatsApp ሕተቱና – ሕቶኹም ኣቐዲሙ ተጻሒፉ ኣሎ።",
+      'You might also mean:': "ምናልባት እዚ ማለትኩም ይኸውን፦",
+      'Questions I can answer:': "ክምልሶም ዝኽእል ሕቶታት፦",
+      'my question': "ሕቶይ",
+      'Call': "ደውሉ",
+      'Directions': "ኣንፈት",
+      'Pause': "ደው ኣብል",
+      'Play': "ቀጽል",
+      'Source': "ምንጪ",
+      'Open chat': "ዕላል ክፈት",
+      'Something went wrong. Please try again or message us on WhatsApp.': "ጌጋ ተፈጢሩ። በጃኹም ደጊምኩም ፈትኑ ወይ ብWhatsApp መልእኽቲ ስደዱልና።",
+      'Please tick the box to agree.': "ንምስምማዕ በጃኹም ነቲ ሳጹን ምልክት ግበሩ።",
+      'Learn more': "ተወሳኺ ፍለጡ",
+      'Talk to us': "ተዘራረቡና",
+      'Call us': "ደውሉልና",
+      'Zoom video call': "ናይ Zoom ቪድዮ ጻውዒት",
+      'Google Meet video call': "ናይ Google Meet ቪድዮ ጻውዒት",
+      'Microsoft Teams call': "ናይ Microsoft Teams ጻውዒት",
+      'Chat on WhatsApp': "ብWhatsApp ተዘራረቡ",
+      'Chat on Telegram': "ብTelegram ተዘራረቡ",
+      'Email us': "ኢመይል ስደዱልና",
+      'Prefer to talk? Call us or join a video call at these times.': "ምዝርራብ ትመርጹ? ኣብዚ ሰዓታት ደውሉልና ወይ ናብ ቪድዮ ጻውዒት ተጸንበሩ።",
+      'Mon–Fri 9:00–18:00': "ሰኑይ–ዓርቢ 9:00–18:00",
+      'Tue & Thu 18:00–19:00': "ሰሉስን ሓሙስን 18:00–19:00",
+      'Sat 10:00–12:00': "ቀዳም 10:00–12:00",
+      'Start your review with a rating, for example 5/5 or ★★★★★.': "ርእይቶኹም ብደረጃ ጀምሩ፡ ንኣብነት 5/5 ወይ ★★★★★።",
+      'Language': "ቋንቋ",
+      'Incl. VAT, plus shipping': "ግብሪ ወሲኹ፡ ምልኣኽ ከይወሰኸ",
+      'New arrivals': "ሓደስቲ ኣቑሑት",
+      'Shop by category': "ብዓይነት ዕደጉ",
+      'Categories': "ዓይነታት",
+      'Popular products': "ፍቱዋት ፍርያት",
+      'Order directly': "ብቐጥታ እዘዙ",
+      'Why shop with us': "ስለምንታይ ካባና ትዕድጉ",
+      'New collection': "ሓድሽ ስብስብ",
+      'About the shop': "ብዛዕባ እቲ ድኳን",
+      'Customer service': "ኣገልግሎት ዓማዊል",
+      'Follow us': "ተኸተሉና",
+      'Home': "መበገሲ",
+      'Women': "ደቂ ኣንስትዮ",
+      'Men': "ደቂ ተባዕትዮ",
+      'Contact': "ርክብ",
+      'Shop now': "ሕጂ ዕደጉ",
+      'See the sale': "ቅናሽ ርአዩ",
+      'Contact us': "ተራኸቡና",
+      'Shipping & delivery': "ምልኣኽን ምብጻሕን",
+      'Returns (Widerruf)': "ምምላስ",
+      'Search products...': "ፍርያት ድለዩ...",
+      'Newer posts': "ሓደስቲ ፍርያት",
+      'Older posts': "ተወሰኽቲ ፍርያት",
+      'Newer post': "ዝሓለፈ ፍርያት",
+      'Older post': "ዝቕጽል ፍርያት",
+      'Page not found': "ገጽ ኣይተረኽበን",
+      'Back to home': "ናብ መበገሲ ተመለስ",
+      'Search': "ድለ",
+      'Skip to content': "ናብ ትሕዝቶ ሕለፍ",
+      'Open menu': "ዝርዝር ክፈት",
+      'Features': "መለለዪታት",
+      'Size guide': "መምርሒ ዓቐን",
+      'Details': "ዝርዝራት",
+      'The page you were looking for has moved or no longer exists.': "እቲ ዝደለኹሞ ገጽ ተቐዪሩ ወይ ድማ የለን።",
+      'No posts found here yet.': "ኣብዚ ገና ፍርያት የለን።",
+      'How will you pay?': "ብኸመይ ክትከፍሉ ኢኹም?",
+      'Payment': "ክፍሊት",
+      'Cash on pickup': "ኣብ ምውሳድ ብጥረ ገንዘብ",
+      'Pay now with PayPal': "ሕጂ ብPayPal ክፈሉ",
+      'Size': "ዓቐን",
+      'Colour': "ሕብሪ",
+      'Color': "ሕብሪ",
+      'Shop': "ድኳን",
+      'Kenya': "ኬንያ",
+      'Fulfilment': "ኣገልግሎት ምኽዛንን ምልኣኽን",
+      'News': "ዜና",
+      'Our branches': "ጨናፍርና",
+      'What we do': "እንገብሮ",
+      'How it works': "ብኸመይ ከም ዝሰርሕ",
+      'What customers say': "ዓማዊል እንታይ ይብሉ",
+      'Questions & answers': "ሕቶታትን መልስታትን",
+      'Stay in the loop': "ሓበሬታ ርኸቡ"
     }
   };
 
@@ -5358,11 +6470,18 @@ Wie erreiche ich Sie? | Am schnellsten per WhatsApp. Sie können uns auch eine E
   // An empty gadget switches it off (the round WhatsApp button comes back).
   var STOP = ' a an the is are am do does did i you we it its to of for in on at and or my your our can could how what when where which who whom why with be will would should there this that these me us please hi hello hey get got have has any some much many about from ' +
     'ich du sie wir es der die das den dem des ein eine einen ist sind und oder wie was wo wann kann konnen mein meine ihr ihre bitte hallo hi habt haben gibt man mit von zu im am auf fur ' +
-    'je tu vous nous il le la les un une des du est sont et ou comment quoi quand peux pouvez puis mon ma mes votre vos bonjour salut avec pour dans sur de ';
+    'je tu vous nous il le la les un une des du est sont et ou comment quoi quand peux pouvez puis mon ma mes votre vos bonjour salut avec pour dans sur de ' +
+    'na ya wa za la kwa ni je nini gani vipi lini wapi nina una ana mna tuna hii hiyo huu hilo habari jambo naomba tafadhali ' +
+    'في من علي عن الي هل كيف ما ماذا متي اين انا انت نحن هذا هذه لي لك مع او مرحبا ';
   function words(s) {
     var plain = String(s || '').toLowerCase();
-    if (plain.normalize) plain = plain.normalize('NFD').replace(/[̀-ͯ]/g, '');
-    return plain.replace(/ß/g, 'ss').split(/[^a-z0-9]+/).filter(function (w) { return w.length > 1 && STOP.indexOf(' ' + w + ' ') === -1; })
+    // strip accents (Latin) and short vowel marks (Arabic); unify Arabic letter variants
+    if (plain.normalize) plain = plain.normalize('NFD').replace(/[̀-ًͯ-ٰٟ]/g, '');
+    plain = plain.replace(/ß/g, 'ss').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
+    var parts;
+    try { parts = plain.split(new RegExp('[^\\p{L}\\p{N}]+', 'u')); } // any script: Latin, Arabic, Ge'ez (Amharic, Tigrinya) …
+    catch (e) { parts = plain.split(/[\s.,;:!?()"'\-\/|·…؟،፡-፨]+/); }
+    return parts.filter(function (w) { return w.length > 1 && STOP.indexOf(' ' + w + ' ') === -1; })
       .map(function (w) { return w.length > 4 ? w.replace(/(ing|ed|es|en|er|s|e|n)$/, '') : w; });
   }
   function sameWord(a) {
@@ -5537,8 +6656,14 @@ Wie erreiche ich Sie? | Am schnellsten per WhatsApp. Sie können uns auch eine E
   }
 
   // ------------------------------------------------------------ page language
+  // Languages written right to left, and native names for the language picker.
+  var RTL = ['ar', 'fa', 'he', 'ur', 'ps'];
+  var NATIVE = { en: 'English', de: 'Deutsch', fr: 'Français', sw: 'Kiswahili', ar: 'العربية', am: 'አማርኛ', ti: 'ትግርኛ',
+    so: 'Soomaali', es: 'Español', it: 'Italiano', pt: 'Português', tr: 'Türkçe', pl: 'Polski', nl: 'Nederlands' };
   function applyLanguage() {
     doc.documentElement.lang = LANG;
+    doc.documentElement.dir = RTL.indexOf(LANG) > -1 ? 'rtl' : 'ltr';
+    doc.documentElement.classList.add('lang-' + LANG);
     // Owner content in several languages: <div data-lang="de">…</div><div data-lang="en">…</div>
     each(doc.querySelectorAll('[data-lang]'), function (n) {
       var langs = list(n.getAttribute('data-lang').replace(/\s+/g, ',')).map(function (l) { return l.toLowerCase().slice(0, 2); });
@@ -5559,8 +6684,8 @@ Wie erreiche ich Sie? | Am schnellsten per WhatsApp. Sie können uns auch eine E
       var names;
       try { names = new Intl.DisplayNames(LANGS, { type: 'language' }); } catch (e) { names = null; }
       var pick = el('select', { 'class': 'shop-lang', 'aria-label': t('Language') }, LANGS.map(function (l) {
-        var name = l.toUpperCase();
-        try { name = new Intl.DisplayNames([l], { type: 'language' }).of(l); } catch (e) { /* code is fine */ }
+        var name = NATIVE[l] || l.toUpperCase();
+        if (!NATIVE[l]) { try { name = new Intl.DisplayNames([l], { type: 'language' }).of(l); } catch (e) { /* code is fine */ } }
         return el('option', { value: l, text: name.charAt(0).toUpperCase() + name.slice(1) });
       }));
       pick.value = LANG;

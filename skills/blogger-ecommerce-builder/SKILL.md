@@ -26,7 +26,7 @@ reference, src → build.py → theme.xml, check.py, upload steps). If the user 
 | **Digital products** | `data-digital="yes"`; Downloads tab; owner sets Status = Paid → buyer gets the download email |
 | **Business pages** | Templates: shipping, delivery partners, returns (Widerruf), contact, Impressum, privacy, team (photo, role, phone, social icons), fulfilment for sellers (quote form), shipping to another country (request form) |
 | **Homepage sections** | Announcement bar, hero + perks, "Talk to us" call/Zoom/Meet buttons with times, What we do (service cards), How it works (steps), customer reviews, FAQ (+ FAQPage JSON-LD), newsletter (double opt-in), partner logos, trust row with payment badges, accreditation seals, news ticker with sourced figures, branches with Call / WhatsApp / Directions, "Ask …" chat assistant (Q&A from Layout, WhatsApp fallback; or a floating WhatsApp button) |
-| **Languages** | English, German, French built in; any other language via the Shop words gadget; owner content in `data-lang` blocks, also inside line-based gadgets |
+| **Languages** | English, German, French, Swahili, Arabic (right to left), Amharic, Tigrinya built in (native names in the picker, Noto fonts for Ge'ez/Arabic, homepage gadgets with a block per language); any other language via the Shop words gadget; owner content in `data-lang` blocks, also inside line-based gadgets |
 | **Owner handover** | Owner guide with a start-to-finish quick start and test checklist, living guide document with every code block, prefilled order-inbox script |
 | **Brand & launch** | Logo project + brand kit (one folder per design, editable SVG, PNG, print PDF, Word letterhead, guidelines PDF), name research, launch plan with posts for every platform |
 
@@ -136,8 +136,12 @@ filled in, but never commit their email to a repository.
 
 ## 6. Languages
 
-`language:` sets the default, `languages: en, de, fr` adds a header picker. German and French packs are in
-`shop.js`; other languages come from Shop words. Owner content uses `data-lang` blocks; fixed theme words
+`language:` sets the default, `languages: en, de, fr, sw, ar, am, ti` adds a header picker (native names). Packs
+for de, fr, sw, ar, am, ti are in `shop.js` (same keys; add a language by copying a pack); others come from Shop
+words. RTL languages (`ar fa he ur ps`) set `dir="rtl"` on `<html>`; phone numbers, prices and links are isolated
+LTR. Non-Latin scripts need fonts: add Noto Sans Arabic / Noto Sans Ethiopic to the Google Fonts link (only
+downloaded when those letters appear) and after the primary family in every font stack. Mark machine-made
+translations for a native speaker's check. Owner content uses `data-lang` blocks; fixed theme words
 use `data-i18n`, `data-i18n-placeholder`, `data-i18n-label`. Gadget titles and menu links typed in English
 are translated when a pack or Shop words know them.
 
@@ -223,3 +227,10 @@ controls; it warns on unknown emails/IBANs, vendor licence switches and third-pa
 - Moving content needs a pause button, must stop on hover/focus and stand still for `prefers-reduced-motion`;
   in tests, wait ~150 ms after clicking pause before measuring.
 - Never invent market figures for a ticker or a page: ship `#` example lines with "Source:" and let the owner fill them.
+- A homepage `<style>` that sets `.section { display:block }` beats the `hidden` attribute: ship
+  `[hidden] { display: none !important; }`, or empty sections show their raw `#` notes.
+- `button, input { color: inherit }` in a theme makes inputs inside dark sections white-on-white: give shop
+  inputs an explicit dark colour and white background; style `<option>` colours on dark selects.
+- Right to left: anything parked at `left: -9999px` (skip links, honeypots) widens an RTL page by 10,000 px and
+  phones zoom out; hide with `transform`/`clip-path` instead. Test every language at 390 px.
+- Tokenize chat questions with `\p{L}\p{N}` (Unicode), not `[a-z0-9]`, or Arabic and Ge'ez questions find nothing.

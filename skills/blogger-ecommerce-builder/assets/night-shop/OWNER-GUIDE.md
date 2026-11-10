@@ -248,10 +248,23 @@ table · `03` sale item with lifestyle photo grid · `04` sold out · `05` bag w
 
 ## 5. Languages
 
-- `language: en` is what visitors see first; `languages: en, de, fr` shows the picker in the header.
-  The visitor's choice is remembered on their device.
+- `language: en` is what visitors see first; `languages: en, de, fr, sw, ar, am, ti` shows the picker in
+  the header, with each language in its own name (Kiswahili, العربية, አማርኛ, ትግርኛ). The visitor's choice is
+  remembered on their device. Leave out any language you don't want.
 - **Built in:** all shop buttons and messages, the menu and gadget titles of this theme, and fixed theme
-  text (search, pages, 404) in English, German and French.
+  text (search, pages, 404) in **English, German, French, Swahili, Arabic, Amharic and Tigrinya**.
+- **The homepage texts** (news ticker, What we do, How it works, Questions & answers, Our branches,
+  newsletter, the Ask Kreislo chat, banner and footer text) already have a block for every one of these
+  languages in the theme. If you change the English text, change the other blocks too, or delete them
+  (then that language shows English there).
+- **Arabic** is written right to left: when a visitor picks العربية, the whole page turns around (menu,
+  cards, chat). Phone numbers, prices and web addresses stay left to right.
+- **Letters:** Amharic and Tigrinya (Ge'ez script) and Arabic use the free Noto fonts from Google, loaded
+  only when those letters are on the page.
+- **Have the translations checked** by a native speaker before you advertise in a language, especially
+  Amharic and Tigrinya: they are careful first drafts. Change any word in the gadget (homepage texts) or
+  with **Shop words** (buttons and messages), e.g. `[sw] Add to cart: Ongeza kwenye kikapu`.
+- The chat assistant understands questions in all these languages (it compares words in any script).
 - **Your own text** (product descriptions, hero text, pages): write one block per language:
 
 ```html
@@ -271,6 +284,7 @@ Send order: Zahlungspflichtig bestellen
 
   Plain lines change a text for every language; `[xx]` lines only for that language. For a new
   language such as Spanish, add `es` to `languages:` and give the shop words in Spanish.
+  Language codes: `sw` Swahili, `ar` Arabic, `am` Amharic, `ti` Tigrinya, `so` Somali, `es` Spanish.
 - Product **titles** stay as you typed them (Blogger has one title per post).
 
 ## 5b. Call and video buttons ("Talk to us")
@@ -700,6 +714,9 @@ Impressum and Widerruf at all.
 | A delivery option doesn't appear at checkout | Its country (5th part) isn't spelled like the `ship_to` country, or the parcel is heavier than its last weight step |
 | The announcement bar is gone for me | You pressed × : it stays hidden until the browser is closed. Other visitors still see it |
 | Logo is missing in the header | Layout → Header → the image must be set to "Instead of title" or "Behind title"; very wide logos are scaled down to fit |
+| "What customers say" shows lines starting with # | Fixed in this version: a section without real reviews now stays hidden. Add real reviews as lines without # (`5 \| what they said \| name, city`) and the cards appear. The preview showed demo reviews marked [demo] only for testing |
+| Text in a form box is white or invisible | Fixed in this version: form boxes always use dark text on white |
+| An Arabic, Amharic or Tigrinya word looks wrong | Change it in the gadget (homepage texts) or in Shop words (`[am] English text: your word`) |
 | A homepage section is missing | "What customers say" stays hidden until it has a line without `#`. The newsletter is hidden without `google_sheet` |
 | Request form or newsletter says "Something went wrong" | The newest Code.gs isn't deployed: paste it, run setup, Deploy → Manage deployments → New version |
 | Newsletter confirm link says "not valid" | The link was already used, or the row was deleted in the Newsletter tab |
