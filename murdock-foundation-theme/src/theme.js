@@ -91,6 +91,15 @@
   // Menu items written as "_Name" in the Menu gadget become a dropdown under the item above them
   var menu = $('.menu');
   if (menu) {
+    // Drop exact duplicates (same name and link), a common slip when editing the Menu gadget
+    var seen = {};
+    $all('.menu > li', menu).forEach(function (li) {
+      var a = li.querySelector('a');
+      if (!a) return;
+      var key = a.textContent.replace(/\s+/g, ' ').trim().toLowerCase() + '|' + (a.getAttribute('href') || '');
+      if (seen[key]) li.parentNode.removeChild(li);
+      seen[key] = true;
+    });
     var parent = null;
     $all('.menu > li', menu).forEach(function (li) {
       var a = li.querySelector('a');
@@ -151,6 +160,10 @@
         if (t.tagName === 'A') { setMenu(false); return; }
         t = t.parentNode;
       }
+    });
+    // A click on the dimmed page beside the menu panel closes it
+    doc.addEventListener('click', function (e) {
+      if (header.classList.contains('nav-open') && !drawer.contains(e.target) && !toggle.contains(e.target)) setMenu(false);
     });
     doc.addEventListener('keydown', function (e) {
       if ((e.key === 'Escape' || e.key === 'Esc') && header.classList.contains('nav-open')) {

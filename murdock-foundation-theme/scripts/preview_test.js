@@ -170,6 +170,35 @@ const ok = (cond, label, detail) => { results.push((cond ? 'ok    ' : 'FAIL  ') 
         return { kinds: kinds.join(','), hit };
       });
       ok(fc.kinds === 'whatsapp,telegram,phone' && !fc.hit, `${page}@${width}: quick contact buttons (WhatsApp, Telegram, Call)`, JSON.stringify(fc));
+      if (page === 'post' && (width === 1440 || width === 390)) {
+        // Open the menu after scrolling down (the live-site bug): the header (logo + close button) must stay on screen
+        await p.setViewportSize({ width, height: 900 });
+        await p.reload({ waitUntil: 'networkidle' });
+        if (width === 1440) await p.evaluate(async () => {  // a long menu like the live one forces the menu button on a big screen
+          const menu = document.querySelector('.menu');
+          ['Contact', 'The Emisembe Report', 'Volunteer opportunities', 'Annual reports'].forEach(t => { const li = document.createElement('li'); li.innerHTML = '<a href="/x-' + t.length + '">' + t + '</a>'; menu.appendChild(li); });
+          window.dispatchEvent(new Event('resize')); await new Promise(r => setTimeout(r, 300));
+        });
+        await p.evaluate(() => window.scrollTo({ top: 1600, behavior: 'instant' }));
+        await p.waitForTimeout(300);
+        await p.click('#nav-toggle');
+        await p.waitForTimeout(400);
+        const st = await p.evaluate(() => {
+          const h = document.getElementById('site-header').getBoundingClientRect();
+          const d = document.getElementById('site-nav').getBoundingClientRect();
+          return { headerTop: Math.round(h.top), headerBottom: Math.round(h.bottom), drawerWidth: Math.round(d.width), drawerRight: Math.round(window.innerWidth - d.right) };
+        });
+        ok(st.headerTop === 0 && st.headerBottom > 40, `menu opened after scrolling keeps the header on screen (${width})`, JSON.stringify(st));
+        if (width === 1440) ok(st.drawerWidth <= 460 && st.drawerRight === 0, 'on big screens the menu opens as a side panel, not full width', JSON.stringify(st));
+        await p.screenshot({ path: `${out}/menu-scrolled-${width}.png` });
+        if (width === 1440) {
+          await p.evaluate(() => document.addEventListener('click', e => { if (e.target.closest('a')) e.preventDefault(); }));
+          await p.mouse.click(200, 500);
+          await p.waitForTimeout(300);
+          ok(!(await p.evaluate(() => document.getElementById('site-header').classList.contains('nav-open'))), 'clicking beside the menu panel closes it');
+        }
+        await p.reload({ waitUntil: 'networkidle' });
+      }
       if (page === 'post' && width === 1440) {
         await p.waitForTimeout(500);
         const rel = await p.evaluate(() => ({ hidden: document.querySelector('.related').hidden, n: document.querySelectorAll('.related-card').length }));

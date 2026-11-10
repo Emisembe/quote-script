@@ -54,9 +54,11 @@ body {
   color: var(--text);
   background: var(--white);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
-html.no-scroll, html.no-scroll body { overflow: hidden; }
+/* Clip sideways overflow on <html>, never <body>: an overflowing body becomes its own scroll box
+   when the menu locks scrolling, and the sticky header would scroll away with the page. */
+html { overflow-x: hidden; }
+html.no-scroll { overflow: hidden; }
 img, video, iframe, embed, object { max-width: 100%; }
 img { height: auto; border: 0; }
 a { color: var(--blue); text-decoration: none; }
@@ -129,6 +131,7 @@ body .widget li { margin: 0; padding: 0; }
 }
 .site-header.is-scrolled { box-shadow: 0 6px 24px rgba(15, 37, 51, 0.08); border-bottom-color: var(--line-cool); }
 .header-inner { display: flex; align-items: center; gap: 16px; min-height: var(--header-h); }
+.site-header .container { max-width: 1380px; }
 .brand-section { flex: 0 0 auto; }
 .brand { display: flex; align-items: center; }
 .brand-logo { display: block; height: 56px; width: auto; max-width: 240px; object-fit: contain; object-position: left center; }
@@ -151,13 +154,14 @@ body .widget li { margin: 0; padding: 0; }
 .nav-open .nav-toggle-bars::after { top: 0; transform: rotate(-45deg); }
 
 .nav-drawer {
-  position: fixed; left: 0; right: 0; top: var(--header-h); bottom: 0;
+  position: fixed; right: 0; top: var(--header-h); bottom: 0; width: 100%; max-width: 440px;
   background: var(--white); padding: 12px 20px 32px; overflow-y: auto;
-  border-top: 1px solid var(--line-cool);
+  border-top: 1px solid var(--line-cool); box-shadow: -12px 0 32px rgba(15, 37, 51, 0.12);
   visibility: hidden; opacity: 0; transform: translateY(-8px);
   transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
 }
 .nav-open .nav-drawer { visibility: visible; opacity: 1; transform: none; transition: opacity .2s ease, transform .2s ease; }
+.site-header.nav-open::after { content: ''; position: fixed; left: 0; right: 0; top: var(--header-h); bottom: 0; z-index: -1; background: rgba(6, 22, 32, 0.45); }
 .menu > li { border-bottom: 1px solid var(--line-cool); }
 .menu a {
   display: block; padding: 14px 4px; color: var(--ink); font-weight: 600; font-size: 17px; white-space: nowrap;
