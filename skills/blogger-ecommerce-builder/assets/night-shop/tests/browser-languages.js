@@ -1,10 +1,12 @@
-// Tests Swahili, Arabic (right to left), Amharic and Tigrinya, plus three display fixes:
+// Tests Spanish, Swahili, Arabic (right to left), Amharic, Tigrinya and Chinese, plus three display fixes:
 // empty sections stay hidden on the homepage, dark text in the newsletter box, readable language menu.
 // Serve the theme folder first:  python3 -m http.server 8765   then:  node tests/browser-languages.js <screenshot folder>
 const { chromium, devices } = require('playwright');
 const base = 'http://127.0.0.1:8765/preview/', out = process.argv[2] || '.';
 const results = []; const ok = (name, cond, info) => { results.push([cond ? 'PASS' : 'FAIL', name, info || '']); };
 const LANGS = {
+  es: { dir: 'ltr', bubble: 'Pregunta a Kreislo', ticker: 'Mombasa', faq: '¿Cómo pago?', add: 'Añadir al carrito', title: 'Preguntas y respuestas',
+        ask: ['donde puedo recoger', /Gießen con cita previa/], ask2: ['cuanto cuesta el envio a kenia', /tamaño y del peso/] },
   sw: { dir: 'ltr', bubble: 'Uliza Kreislo', ticker: 'Kontena', faq: 'Ninalipaje?', add: 'Weka kwenye kikapu', title: 'Maswali na majibu',
         ask: ['naweza kuchukua wapi', /Gießen kwa miadi/], ask2: ['usafirishaji kwenda kenya ni bei gani', /ukubwa na uzito/] },
   ar: { dir: 'rtl', bubble: 'اسأل Kreislo', ticker: 'مومباسا', faq: 'كيف أدفع؟', add: 'أضف إلى السلة', title: 'أسئلة وأجوبة',
@@ -12,7 +14,9 @@ const LANGS = {
   am: { dir: 'ltr', bubble: 'Kreislo ይጠይቁ', ticker: 'ሞምባሳ', faq: 'እንዴት እከፍላለሁ?', add: 'ወደ ጋሪ ጨምር', title: 'ጥያቄዎችና መልሶች',
         ask: ['የት መውሰድ', /በጊሰን በቀጠሮ/], ask2: ['ወደ ኬንያ መላክ ዋጋ', /በመጠኑ እና በክብደቱ/] },
   ti: { dir: 'ltr', bubble: 'Kreislo ሕተቱ', ticker: 'ሞምባሳ', faq: 'ብኸመይ እኸፍል?', add: 'ናብ ዘንቢል ወስኽ', title: 'ሕቶታትን መልስታትን',
-        ask: ['ኣበይ ክወስድ', /ኣብ ጊሰን ብቖጸራ/], ask2: ['ናብ ኬንያ ምልኣኽ ዋጋ', /ኣብ ዓቐንን ክብደትን/] }
+        ask: ['ኣበይ ክወስድ', /ኣብ ጊሰን ብቖጸራ/], ask2: ['ናብ ኬንያ ምልኣኽ ዋጋ', /ኣብ ዓቐንን ክብደትን/] },
+  zh: { dir: 'ltr', bubble: '问问 Kreislo', ticker: '蒙巴萨', faq: '我怎么付款？', add: '加入购物车', title: '常见问题',
+        ask: ['我可以在哪里取货', /在吉森自提/], ask2: ['运到肯尼亚要多少钱', /取决于尺寸和重量/] }
 };
 (async () => {
   const b = await chromium.launch();
@@ -45,7 +49,7 @@ const LANGS = {
         JSON.stringify([st.bubble, st.ticker.slice(0, 60), st.faq, st.faqTitle]));
       ok(`${tag}: shop buttons translated`, st.add.includes(L.add), st.add.slice(0, 160));
       ok(`${tag}: no sideways scrolling`, st.over <= 0, st.over + 'px');
-      if (label === 'desktop') ok(`${tag}: language menu shows native names`, ['Kiswahili', 'العربية', 'አማርኛ', 'ትግርኛ'].every(n => st.options.includes(n)), st.options.join(', '));
+      if (label === 'desktop') ok(`${tag}: language menu shows native names`, ['Español', 'Kiswahili', 'العربية', 'አማርኛ', 'ትግርኛ', '中文'].every(n => st.options.includes(n)), st.options.join(', '));
       // chat: a suggestion, then two questions typed in the language
       await p.click('.shop-chat-bubble'); await p.waitForTimeout(100);
       await p.click('.shop-chat-chip >> nth=0'); await p.waitForTimeout(80);

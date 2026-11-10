@@ -54,7 +54,7 @@ html {
 }
 body {
   margin: 0;
-  font-family: 'Open Sans', 'Noto Sans Arabic', 'Noto Sans Ethiopic', Arial, Helvetica, sans-serif;
+  font-family: 'Open Sans', 'Noto Sans Arabic', 'Noto Sans Ethiopic', Arial, Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
   font-size: 16px;
   line-height: 1.65;
   color: $(text.color);
@@ -341,7 +341,7 @@ a.badge:hover { background: $(primary.color); color: $(accent.color); }
   position: relative;
   margin: 0 0 24px;
   padding-left: 18px;
-  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
   font-weight: 400;
   font-size: clamp(46px, 8vw, 84px);
   line-height: 0.95;
@@ -426,7 +426,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
   display: inline-block;
   margin: 0;
   padding-bottom: 6px;
-  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
   font-weight: 400;
   font-size: clamp(30px, 4vw, 42px);
   letter-spacing: 1.5px;
@@ -566,7 +566,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 .post-labels { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
 .post-title {
   margin: 0 0 12px;
-  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
   font-weight: 400;
   font-size: clamp(34px, 5.5vw, 56px);
   line-height: 1.02;
@@ -596,7 +596,7 @@ a.host-card:hover { border-color: rgba(0, 192, 168, 0.5); color: #fff; }
 }
 .post-body h2, .post-body h3, .post-body h4 {
   margin: 1.6em 0 0.5em;
-  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
   font-weight: 400;
   letter-spacing: 1px;
   line-height: 1.1;
@@ -666,7 +666,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 }
 .post-share-label {
   margin-right: 6px;
-  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
   font-size: 22px;
   letter-spacing: 1px;
   color: $(primary.color);
@@ -694,7 +694,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   border-top: 1px solid $(border.color);
 }
 .comments .title, .comments h3, .comments h4 {
-  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
   font-weight: 400;
   font-size: 28px;
   letter-spacing: 1px;
@@ -751,12 +751,12 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 .not-found { padding: 56px 20px; text-align: center; }
 .not-found-code {
   margin: 0;
-  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
   font-size: clamp(96px, 20vw, 180px);
   line-height: 1;
   color: $(accent.color);
 }
-.not-found h1 { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; font-weight: 400; font-size: 40px; letter-spacing: 1px; color: $(primary.color); }
+.not-found h1 { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; font-weight: 400; font-size: 40px; letter-spacing: 1px; color: $(primary.color); }
 .not-found p { color: $(muted.color); }
 .not-found .search-form { margin: 24px auto; }
 
@@ -776,7 +776,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   display: inline-block;
   margin: 0 0 16px;
   padding-bottom: 6px;
-  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
   font-weight: 400;
   font-size: 24px;
   letter-spacing: 1px;
@@ -842,7 +842,7 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
   display: inline-block;
   margin: 0 0 16px;
   padding-bottom: 6px;
-  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
   font-weight: 400;
   font-size: 24px;
   letter-spacing: 1px;
@@ -1396,6 +1396,8 @@ body .shop-ticker-list > li.shop-ticker-item { margin: 0; padding: 0 28px 0 0; w
 [dir="rtl"] .shop-badge { left: auto; right: 10px; }
 /* Ethiopic and Arabic letters are a little taller: give lines room */
 .lang-am, .lang-ti, .lang-ar { line-height: 1.75; }
+.lang-zh { line-height: 1.75; }
+.lang-zh h1, .lang-zh h2, .lang-zh h3 { line-height: 1.35; letter-spacing: 0.02em; }
 .lang-am h1, .lang-am h2, .lang-am h3, .lang-ti h1, .lang-ti h2, .lang-ti h3, .lang-ar h1, .lang-ar h2, .lang-ar h3 { line-height: 1.35; letter-spacing: 0; }
 /* Phone numbers, prices with symbols and web addresses always read left to right, also inside Arabic text */
 .shop-contact-detail, a[href^="tel:"], a[href^="mailto:"], .shop-branch-line a, .shop-chat-msg a, .shop-price, .shop-ticker-item strong { unicode-bidi: isolate; direction: ltr; }
@@ -1406,7 +1408,7 @@ body#layout .shop-admin { display: block; }
 /* ================= Night Shop look (SpotCommerce-inspired) ================= */
 /* logo: white wordmark with a dot in the accent colour */
 .shop .brand-mark { display: none; }
-.shop .brand-name { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; font-weight: 600; font-size: 26px; letter-spacing: 0.04em; text-transform: uppercase; }
+.shop .brand-name { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; font-weight: 600; font-size: 26px; letter-spacing: 0.04em; text-transform: uppercase; }
 .shop .brand-name::after { content: '.'; color: $(accent.color); }
 .shop .brand-tagline { color: #A59C92; }
 .cart-button { order: 3; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: 4px; color: #fff; border-radius: 50%; flex: 0 0 auto; }
@@ -1436,12 +1438,12 @@ body#layout .shop-admin { display: block; }
 }
 .shop .hero::before { background: linear-gradient(90deg, rgba(10, 6, 3, 0.72) 0%, rgba(10, 6, 3, 0.25) 70%); }
 .shop .hero-inner { min-height: 0; padding-top: 88px; padding-bottom: 96px; }
-.shop .hero-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-weight: 600; letter-spacing: 0.01em; }
+.shop .hero-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-weight: 600; letter-spacing: 0.01em; }
 .shop .hero-eyebrow { color: $(accent.color); }
 
 /* perks card in the hero */
 .perk-card { background: rgba(17, 17, 17, 0.72); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 26px 26px 18px; color: #fff; }
-.perk-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.06em; font-size: 15px; color: $(accent.color); margin: 0 0 12px; }
+.perk-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; letter-spacing: 0.06em; font-size: 15px; color: $(accent.color); margin: 0 0 12px; }
 body .perk-list li { position: relative; padding: 10px 0 10px 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #E6E1DB; font-size: 15px; }
 body .perk-list li:first-child { border-top: 0; }
 .perk-list li::before { content: ''; position: absolute; left: 4px; top: 17px; width: 12px; height: 7px; border-left: 2px solid $(accent.color); border-bottom: 2px solid $(accent.color); transform: rotate(-45deg); }
@@ -1456,7 +1458,7 @@ body .perk-list li:first-child { border-top: 0; }
 .shop-card { background: transparent; }
 .shop-card-media { border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03); }
 .shop-card-media img { padding: 8%; box-sizing: border-box; }
-.shop-card-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; font-weight: 500; font-size: 17px; text-transform: uppercase; letter-spacing: 0.02em; }
+.shop-card-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; font-weight: 500; font-size: 17px; text-transform: uppercase; letter-spacing: 0.02em; }
 .shop-card-title a:hover { color: $(accent.color); }
 .shop .section-title { text-transform: uppercase; }
 
@@ -1464,7 +1466,7 @@ body .perk-list li:first-child { border-top: 0; }
 .shop .pt-item .main-grid, .pt-item.shop .main-grid { grid-template-columns: minmax(0, 1fr); }
 .shop-item { background: #fff; border: 1px solid $(border.color); border-radius: 14px; padding: 20px; }
 @media (min-width: 768px) { .shop-item { padding: 36px; } }
-.shop-item .post-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 34px; line-height: 1.1; margin: 4px 0 0; }
+.shop-item .post-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 34px; line-height: 1.1; margin: 4px 0 0; }
 .shop-cat { color: $(accent.color); font-weight: 700; }
 .shop-share { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; font-size: 14px; }
 .shop-share a { color: #6B6B6B; text-decoration: underline; }
@@ -1478,7 +1480,7 @@ body .perk-list li:first-child { border-top: 0; }
 body .sidebar .popular-posts ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .sidebar .popular-posts .item-thumbnail { float: none; margin: 0 0 8px; background: #EBE2D9; border-radius: 8px; aspect-ratio: 4 / 5; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .sidebar .popular-posts .item-thumbnail img { width: 100%; height: 100%; object-fit: contain; padding: 8%; box-sizing: border-box; }
-.sidebar .popular-posts .item-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 14px; }
+.sidebar .popular-posts .item-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 14px; }
 .sidebar .popular-posts .item-title b { font-weight: 500; }
 
 /* promo banner: teal night street, drawn in CSS; banner_image replaces it */
@@ -1499,14 +1501,14 @@ body .sidebar .popular-posts ul { display: grid; grid-template-columns: repeat(3
 }
 .promo .container { padding-top: 72px; padding-bottom: 72px; }
 .promo .widget { max-width: 620px; }
-.promo .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 40px; letter-spacing: 0.02em; margin: 0 0 12px; }
+.promo .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 40px; letter-spacing: 0.02em; margin: 0 0 12px; }
 .promo .widget > h2.title::after { content: '.'; color: $(accent.color); }
 .promo .widget-content { font-size: 17px; line-height: 1.7; color: #DDE7E6; }
 .promo .widget-content a { display: inline-block; margin-top: 6px; padding: 12px 22px; border-radius: 6px; background: $(accent.color); color: #fff; font-weight: 700; text-decoration: none; }
 .promo .widget-content a:hover { background: $(accent.hover.color); }
 
 /* categories on the homepage: big pill links */
-.shop .topics .widget > h2 { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; }
+.shop .topics .widget > h2 { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; }
 
 /* footer */
 .shop .site-footer { background: #111111; }
@@ -1548,7 +1550,7 @@ body .widget.Attribution { display: none; }
 /* "Talk to us" strip under the homepage banner */
 .talk { display: none; background: #f7f5f2; border-bottom: 1px solid #e8e3dc; }
 .talk .container { padding-top: 36px; padding-bottom: 40px; }
-.talk .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 26px; letter-spacing: 0.02em; margin: 0 0 6px; }
+.talk .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 26px; letter-spacing: 0.02em; margin: 0 0 6px; }
 .talk .widget > h2.title::after { content: '.'; color: $(accent.color); }
 @media (max-width: 600px) {
   .talk .container { padding-top: 28px; padding-bottom: 30px; }
@@ -1559,7 +1561,7 @@ body#layout .talk { display: block; }
 /* Our partners (homepage) and accreditation symbols (footer) */
 .partners { display: none; background: #ffffff; border-top: 1px solid #ece8e2; }
 .partners .container { padding-top: 44px; padding-bottom: 48px; text-align: center; }
-.partners .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 22px; letter-spacing: 0.06em; color: #6b6b6b; margin: 0 0 22px; }
+.partners .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 22px; letter-spacing: 0.06em; color: #6b6b6b; margin: 0 0 22px; }
 .footer-badges { border-top: 1px solid rgba(255,255,255,0.12); padding: 22px 0 6px; }
 .footer-badges .widget { margin: 0; text-align: center; }
 .footer-badges .widget > h2.title { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; margin: 0 0 14px; opacity: .7; }
@@ -1604,7 +1606,7 @@ body#layout .announce, body#layout .trust { display: block; }
 .newsletter .shop-consent { color: #bdbdbd; }
 .newsletter .shop-msg { color: #ffb4a0; }
 .services .widget > h2.title, .steps .widget > h2.title, .testimonials .widget > h2.title, .faq .widget > h2.title, .newsletter .widget > h2.title {
-  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
 .services .widget > h2.title::after, .steps .widget > h2.title::after, .testimonials .widget > h2.title::after, .faq .widget > h2.title::after, .newsletter .widget > h2.title::after { content: '.'; color: $(accent.color); }
 .newsletter .widget > h2.title { color: #ffffff; }
 @media (max-width: 600px) {
@@ -1621,7 +1623,7 @@ body#layout .services, body#layout .steps, body#layout .testimonials, body#layou
 .ticker .shop-ticker:not(.is-ready) { padding: 10px 16px; font-size: 14px; }
 .branches { background: #f7f5f2; border-top: 1px solid #e8e3dc; }
 .branches .container { padding-top: 56px; padding-bottom: 56px; }
-.branches .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
+.branches .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
 .branches .widget > h2.title::after { content: '.'; color: $(accent.color); }
 @media (max-width: 600px) { .branches .container { padding-top: 40px; padding-bottom: 40px; } .branches .widget > h2.title { font-size: 26px; } }
 body#layout .ticker, body#layout .branches { display: block; }
@@ -1785,6 +1787,18 @@ Usafirishaji bure ndani ya Ujerumani kuanzia *50 €* | /p/shipping.html
 ዝቕጽል ኮንቴነር ናብ ሞምባሳ፦ ዕለት ምጽዓን ሕተቱና | /p/kenya.html
 ካብ ጊሰን ንሸየጥቲ ኦንላይን ኣገልግሎት ምኽዛንን ምልኣኽን፦ ዋጋ ሕተቱ | /p/fulfilment.html
 ኣብ ውሽጢ ጀርመን ካብ *50 €* ጀሚሩ ብነጻ ምልኣኽ | /p/shipping.html
+</div>
+<div data-lang="es">
+Nuevo: lavadoras y neveras, revisadas y limpias | /search/label/Appliances
+Próximo contenedor a Mombasa: pregúntanos la fecha de carga | /p/kenya.html
+Logística para vendedores online desde Gießen: pide presupuesto | /p/fulfilment.html
+Envío gratis en Alemania desde *50 €* | /p/shipping.html
+</div>
+<div data-lang="zh">
+新到：洗衣机和冰箱，已检测并清洁 | /search/label/Appliances
+下一个发往蒙巴萨的集装箱：欢迎询问装柜日期 | /p/kenya.html
+来自吉森的电商仓储物流服务：欢迎询价 | /p/fulfilment.html
+德国境内满 *50 €* 免运费 | /p/shipping.html
 </div>]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
@@ -1813,7 +1827,9 @@ Usafirishaji bure ndani ya Ujerumani kuanzia *50 €* | /p/shipping.html
 <p data-lang="sw">Bidhaa za mtumba zilizokaguliwa kwa mkono, zinauzwa Ujerumani na kusafirishwa Kenya. Bidhaa za kidijitali. Na huduma za ghala kwa wauzaji mtandaoni, hapa hapa Gießen.</p>
 <p data-lang="ar">بضائع مستعملة مفحوصة يدويًا، تُباع في ألمانيا وتُشحن إلى كينيا. منتجات رقمية. وخدمات التخزين والشحن للبائعين عبر الإنترنت، هنا في غيسن.</p>
 <p data-lang="am">በእጅ የተፈተሹ ያገለገሉ ዕቃዎች፣ በጀርመን የሚሸጡ እና ወደ ኬንያ የሚላኩ። ዲጂታል ምርቶች። እና ለኦንላይን ሻጮች የማከማቻ እና የመላኪያ አገልግሎት፣ እዚሁ ጊሰን።</p>
-<p data-lang="ti">ብኢድ ዝተፈተሹ ዝተጠቕመሎም ኣቑሑት፡ ኣብ ጀርመን ዝሽየጡን ናብ ኬንያ ዝለኣኹን። ዲጂታላዊ ፍርያት። ከምኡ'ውን ንሸየጥቲ ኦንላይን ኣገልግሎት ምኽዛንን ምልኣኽን፡ ኣብዚ ጊሰን።</p>]]></b:widget-setting>
+<p data-lang="ti">ብኢድ ዝተፈተሹ ዝተጠቕመሎም ኣቑሑት፡ ኣብ ጀርመን ዝሽየጡን ናብ ኬንያ ዝለኣኹን። ዲጂታላዊ ፍርያት። ከምኡ'ውን ንሸየጥቲ ኦንላይን ኣገልግሎት ምኽዛንን ምልኣኽን፡ ኣብዚ ጊሰን።</p>
+<p data-lang="es">Artículos de segunda mano revisados a mano, vendidos en Alemania y enviados a Kenia. Productos digitales. Y logística para vendedores online, aquí mismo en Gießen.</p>
+<p data-lang="zh">人工检验的二手商品，在德国销售并发往肯尼亚。数字产品。还有为网店卖家提供的仓储物流服务，就在吉森。</p>]]></b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
             <div class='hero-copy'>
@@ -1883,6 +1899,16 @@ Usafirishaji bure ndani ya Ujerumani kuanzia *50 €* | /p/shipping.html
 <li><strong>ብኢድ ዝተፈተሸ</strong>፦ ነፍሲ ወከፍ ኣቕሓ ተፈቲኑ ብቕንዕና ዝተገልጸ</li>
 <li><strong>ጀርመንን ኬንያን</strong>፦ ካብ ጊሰን ምውሳድ፡ ምብጻሕ ወይ ናብ ኬንያ ምልኣኽ</li>
 <li><strong>ከም ድላይኩም እዘዙ</strong>፦ ብኦንላይን፡ ብWhatsApp ወይ ብTelegram</li>
+</ul>
+<ul data-lang="es">
+<li><strong>Revisado a mano</strong>: cada artículo probado y descrito con honestidad</li>
+<li><strong>Alemania y Kenia</strong>: recogida en Gießen, entrega o envío a Kenia</li>
+<li><strong>Pide como quieras</strong>: online, por WhatsApp o Telegram</li>
+</ul>
+<ul data-lang="zh">
+<li><strong>人工检验</strong>：每件商品都经过测试并如实描述</li>
+<li><strong>德国和肯尼亚</strong>：吉森自提、送货上门或发往肯尼亚</li>
+<li><strong>随心下单</strong>：在线、WhatsApp 或 Telegram</li>
 </ul>]]></b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
@@ -1970,6 +1996,20 @@ tag | ድኳን ዝተጠቕመሎም ኣቑሑት | ክዳውንቲ፡ ኣቑ�
 globe | ናብ ኬንያ ምልኣኽ | ካብ ጀርመን ንኣባይቲን ንንግድታትን ኬንያ ጽቡቓት ኣቑሑት፡ ባዕልና ዝፈተንናዮምን ዝጠቕለልናዮምን። | ብኸመይ ከም ዝሰርሕ | /p/kenya.html
 download | ዲጂታላዊ ፍርያት | መምርሒታት፡ ቅጥዕታትን ዝውረዱን፡ ድሕሪ ክፍሊት ብቕልጡፍ ናብ ኢመይልኩም ይለኣኹ። | ዲጂታላዊ ፍርያት ርአዩ | /search/label/Digital
 warehouse | ንሸየጥቲ ኣገልግሎት ምኽዛንን ምልኣኽን | ፍርያትኩም ካብ ጊሰን ንዕቅብ፡ ንጥቕልልን ንልእኽን፡ ንስኹም ኣብ ምሻጥ ክተተኩሩ። | ዋጋ ሕተቱ | /p/fulfilment.html
+</div>
+<div data-lang="es">
+text: Un nombre, cuatro formas de mantener las cosas buenas en movimiento.
+tag | Tienda de segunda mano | Ropa, muebles, lavadoras y más, revisados a mano y a buen precio. Recogida en Gießen o entrega. | Comprar ahora | /#shop
+globe | Envíos a Kenia | Cosas buenas de Alemania para hogares y negocios en Kenia, probadas y embaladas por nosotros. | Cómo funciona | /p/kenya.html
+download | Productos digitales | Guías, plantillas y descargas, en tu correo justo después del pago. | Ver productos digitales | /search/label/Digital
+warehouse | Logística para vendedores | Almacenamos, embalamos y enviamos tus productos desde Gießen, para que te centres en vender. | Pedir presupuesto | /p/fulfilment.html
+</div>
+<div data-lang="zh">
+text: 一个品牌，四种方式让好东西继续流转。
+tag | 二手商店 | 服装、家具、洗衣机等，人工检验，价格公道。可在吉森自提或送货。 | 立即购买 | /#shop
+globe | 发往肯尼亚 | 来自德国的好物，送到肯尼亚的家庭和企业，由我们检测并包装。 | 如何运作 | /p/kenya.html
+download | 数字产品 | 指南、模板和下载资源，付款后立即发送到您的邮箱。 | 查看数字产品 | /search/label/Digital
+warehouse | 卖家仓储物流 | 我们在吉森为您存储、打包和发货，让您专心销售。 | 获取报价 | /p/fulfilment.html
 </div>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
@@ -2945,6 +2985,16 @@ Pokea | Chukua Gießen, tukufikishie ndani ya Ujerumani, au tusafirishe Kenya.
 ምረጹ | ኣቕሑኹም ኣብቲ ድኳን ድለዩ፡ ወይ እትደልይዎ ብWhatsApp ንገሩና።
 ከም ድላይኩም እዘዙ | ብኦንላይን፡ ብWhatsApp ወይ ብTelegram። ብባንካዊ ምትሕልላፍ፡ ብPayPal ወይ ኣብ ምውሳድ ብጥረ ገንዘብ ክፈሉ።
 ተቐበሉ | ካብ ጊሰን ውሰዱ፡ ኣብ ውሽጢ ጀርመን ነብጽሓልኩም፡ ወይ ናብ ኬንያ ንልኣኸልኩም።
+</div>
+<div data-lang="es">
+Elige | Encuentra tu artículo en la tienda o dinos por WhatsApp qué buscas.
+Pide como quieras | Online, por WhatsApp o Telegram. Paga por transferencia, PayPal o en efectivo al recoger.
+Recíbelo | Recogida en Gießen, entrega en Alemania o envío a Kenia.
+</div>
+<div data-lang="zh">
+挑选 | 在商店里找到您想要的商品，或通过 WhatsApp 告诉我们您在找什么。
+随心下单 | 在线、WhatsApp 或 Telegram 下单。可用银行转账、PayPal 或自提时现金付款。
+收货 | 吉森自提、德国境内配送，或发往肯尼亚。
 </div>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
@@ -2995,6 +3045,8 @@ Pokea | Chukua Gießen, tukufikishie ndani ya Ujerumani, au tusafirishe Kenya.
 <p data-lang="ar">بضائع مستعملة جيدة من ألمانيا للمنازل والشركات في كينيا: أجهزة وأثاث وملابس والمزيد، نختبرها ونغلّفها بأنفسنا. أخبرنا بما تحتاجه ونرسل لك السعر شاملًا الشحن.</p>
 <p data-lang="am">ከጀርመን ለኬንያ ቤቶች እና ንግዶች ጥሩ ያገለገሉ ዕቃዎች፦ የቤት መሣሪያዎች፣ የቤት ዕቃዎች፣ ልብሶች እና ሌሎችም፣ በእኛ የተሞከሩ እና የታሸጉ። የሚፈልጉትን ይንገሩን፣ መላኪያን ጨምሮ ዋጋውን እንልክልዎታለን።</p>
 <p data-lang="ti">ካብ ጀርመን ንኣባይቲን ንንግድታትን ኬንያ ጽቡቓት ዝተጠቕመሎም ኣቑሑት፦ ናውቲ ገዛ፡ ኣቑሑት ገዛ፡ ክዳውንትን ካልኦትን፡ ባዕልና ዝፈተንናዮምን ዝጠቕለልናዮምን። እትደልይዎ ንገሩና፡ ምልኣኽ ወሲኽና ዋጋ ክንልእከልኩም ኢና።</p>
+<p data-lang="es">Buenos artículos de segunda mano de Alemania para hogares y negocios en Kenia: electrodomésticos, muebles, ropa y más, probados y embalados por nosotros. Dinos qué necesitas y te enviamos un precio con el envío incluido.</p>
+<p data-lang="zh">来自德国的优质二手商品，送到肯尼亚的家庭和企业：家电、家具、服装等，由我们检测并包装。告诉我们您需要什么，我们会发给您含运费的报价。</p>
 <p><a href="/p/kenya.html">How shipping to Kenya works</a></p>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
@@ -3138,6 +3190,22 @@ Mnatoa huduma za ghala kwa wauzaji wengine? | Ndiyo. Tunahifadhi, kufunga na kut
 ኣቕሓ ክመልስ እኽእል ዶ? | እወ፡ ካብ ዝተቐበልኩምዎ ኣብ ውሽጢ 14 መዓልቲ። ዝርዝሩ ኣብ ፖሊሲ ምምላስና ኣሎ።
 ዲጂታላዊ ፍርያተይ ብኸመይ እረክብ? | ክፍሊትኩም ምስ ተረጋገጸ መላግቦ ምውራድ ብኢመይል ይበጽሓኩም።
 ንካልኦት ሸየጥቲ ኣገልግሎት ምኽዛንን ምልኣኽን ትህቡ ዶ? | እወ። ንድኳናት ኦንላይን ንዕቅብ፡ ንጥቕልልን ንልእኽን። ኣብ ገጽ ኣገልግሎትና ዋጋ ሕተቱ።
+</div>
+<div data-lang="es">
+¿Cómo pago? | Por transferencia, PayPal o en efectivo al recoger. Eliges al pagar; los datos de pago llegan con la confirmación del pedido.
+¿Cuánto tarda la entrega? | En Alemania normalmente 2–4 días laborables después del pago. Recogida en Gießen con cita previa.
+¿Enviáis a Kenia? | Sí. Te decimos la próxima fecha de envío y el precio total con envío antes de que pagues. Mira "Envíos a Kenia".
+¿Puedo devolver un artículo? | Sí, en los 14 días siguientes a recibirlo. Los detalles están en nuestra política de devoluciones.
+¿Cómo recibo mi producto digital? | El enlace de descarga llega por correo en cuanto se confirma tu pago.
+¿Ofrecéis logística a otros vendedores? | Sí. Almacenamos, embalamos y enviamos para tiendas online. Pide presupuesto en nuestra página de logística.
+</div>
+<div data-lang="zh">
+我怎么付款？ | 银行转账、PayPal 或自提时现金付款。结算时选择；付款信息会随订单确认一起发送给您。
+配送需要多长时间？ | 德国境内通常在付款后 2–4 个工作日送达。吉森自提需预约。
+你们发货到肯尼亚吗？ | 是的。付款前我们会告诉您下一次发货日期和含运费的总价。请看“发往肯尼亚”。
+可以退货吗？ | 可以，收货后 14 天内。详情请见退货政策。
+我怎么收到数字产品？ | 付款确认后，下载链接会立即通过邮件发送给您。
+你们为其他卖家提供仓储物流吗？ | 是的。我们为网店提供存储、打包和发货服务。请在仓储物流页面获取报价。
 </div>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
@@ -3184,6 +3252,14 @@ Kreislo ጊሰን – ሱቅ እና መጋዘን | Musterstraße 1, 35390 Gieße
 <div data-lang="ti">
 text: በጽሑና፡ ደውሉልና ወይ መልእኽቲ WhatsApp ስደዱልና።
 Kreislo ጊሰን – ድኳንን መኽዘንን | Musterstraße 1, 35390 Gießen, ጀርመን | +49 157 0000000 | +49 157 0000000 | ሰኑይ–ዓርቢ 9:00–18:00፡ ቀዳም ብቖጸራ
+</div>
+<div data-lang="es">
+text: Visítanos, llámanos o envíanos un mensaje por WhatsApp.
+Kreislo Gießen – tienda y almacén | Musterstraße 1, 35390 Gießen, Alemania | +49 157 0000000 | +49 157 0000000 | lun–vie 9:00–18:00, sáb con cita previa
+</div>
+<div data-lang="zh">
+text: 欢迎来访、致电或发送 WhatsApp 消息。
+Kreislo 吉森 – 商店和仓库 | Musterstraße 1, 35390 Gießen, 德国 | +49 157 0000000 | +49 157 0000000 | 周一至周五 9:00–18:00，周六需预约
 </div>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
@@ -3227,6 +3303,14 @@ button: ይመዝገቡ
 <div data-lang="ti">
 text: ሓደስቲ ኣቑሑት፡ ዕለታት ምልኣኽ ናብ ኬንያን ቅናሻትን – ኣብ ወርሒ ክልተ ግዜ ኣቢሉ። ዘይተደለየ መልእኽቲ የለን።
 button: ተመዝገቡ
+</div>
+<div data-lang="es">
+text: Novedades, fechas de envío a Kenia y ofertas, unas dos veces al mes. Sin spam.
+button: Suscribirse
+</div>
+<div data-lang="zh">
+text: 新品、发往肯尼亚的日期和优惠，大约每月两次。绝无垃圾邮件。
+button: 订阅
 </div>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
@@ -3303,7 +3387,9 @@ pay: PayPal, Bank transfer, Cash on delivery]]></b:widget-setting>
 <p data-lang="sw">Kreislo huweka vitu vizuri katika mzunguko: bidhaa za mtumba kutoka Gießen kwa wamiliki wapya Ujerumani na Kenya, bidhaa za kidijitali, na huduma za ghala kwa wauzaji mtandaoni. Kila bidhaa hukaguliwa kwa mkono.</p>
 <p data-lang="ar">Kreislo يُبقي الأشياء الجيدة في حركة: بضائع مستعملة من غيسن لمالكين جدد في ألمانيا وكينيا، ومنتجات رقمية، وخدمات التخزين والشحن للبائعين عبر الإنترنت. كل قطعة مفحوصة يدويًا.</p>
 <p data-lang="am">Kreislo ጥሩ ነገሮችን በእንቅስቃሴ ያቆያል፦ ከጊሰን ለጀርመን እና ለኬንያ አዲስ ባለቤቶች ያገለገሉ ዕቃዎች፣ ዲጂታል ምርቶች፣ እና ለኦንላይን ሻጮች የማከማቻ እና የመላኪያ አገልግሎት። እያንዳንዱ ዕቃ በእጅ ይፈተሻል።</p>
-<p data-lang="ti">Kreislo ጽቡቕ ነገራት ኣብ ምንቅስቓስ የሕልው፦ ካብ ጊሰን ንሓደስቲ ወነንቲ ኣብ ጀርመንን ኬንያን ዝተጠቕመሎም ኣቑሑት፡ ዲጂታላዊ ፍርያት፡ ከምኡ'ውን ንሸየጥቲ ኦንላይን ኣገልግሎት ምኽዛንን ምልኣኽን። ነፍሲ ወከፍ ኣቕሓ ብኢድ ይፍተሽ።</p>]]></b:widget-setting>
+<p data-lang="ti">Kreislo ጽቡቕ ነገራት ኣብ ምንቅስቓስ የሕልው፦ ካብ ጊሰን ንሓደስቲ ወነንቲ ኣብ ጀርመንን ኬንያን ዝተጠቕመሎም ኣቑሑት፡ ዲጂታላዊ ፍርያት፡ ከምኡ'ውን ንሸየጥቲ ኦንላይን ኣገልግሎት ምኽዛንን ምልኣኽን። ነፍሲ ወከፍ ኣቕሓ ብኢድ ይፍተሽ።</p>
+<p data-lang="es">Kreislo mantiene las cosas buenas en movimiento: artículos de segunda mano de Gießen para nuevos dueños en Alemania y Kenia, productos digitales y logística para vendedores online. Cada artículo se revisa a mano.</p>
+<p data-lang="zh">Kreislo 让好东西继续流转：从吉森出发的二手商品，送到德国和肯尼亚的新主人手中；还有数字产品，以及为网店卖家提供的仓储物流服务。每件商品都经过人工检验。</p>]]></b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
   <!-- only display title if it's non-empty -->
@@ -3401,7 +3487,7 @@ Fast shipping | | /p/delivery.html]]></b:widget-setting>
         <b:widget-setting name='content'><![CDATA[currency: EUR
 locale: de-DE
 language: en
-languages: en, de, fr, sw, ar, am, ti
+languages: en, de, fr, es, sw, ar, am, ti, zh
 whatsapp:
 telegram:
 email:
@@ -3527,6 +3613,36 @@ log_unanswered: yes
 ናብ ኬንያ ምልኣኽ ክንደይ የኽፍል? | ኣብ ዓቐንን ክብደትን ይምርኮስ። እትደልይዎን ከተማኹምን ንገሩና፡ ቅድሚ ምኽፋልኩም ምሉእ ዋጋ ክንልእከልኩም ኢና። ተወሳኺ፦ /p/kenya.html | ዋጋ ወጻኢ ሞምባሳ ናይሮቢ ኮንቴነር ጽዕነት
 ትእዛዘይ ብኸመይ እከታተል? | ቁጽሪ ትእዛዝኩም ብኢመይል ይበጽሓኩም። ብWhatsApp ስደዱልና፡ ጥቕሊኹም ኣበይ ከም ዘሎ ክንሕብረኩም ኢና። | ምክትታል ጥቕሊ ኩነታት
 ብኸመይ ክረኽበኩም እኽእል? | WhatsApp እቲ ዝቐልጠፈ እዩ። ብኢመይል'ውን ክትጽሕፉልና ወይ ኣብ ሰዓታት ስራሕ ክትድውሉልና ትኽእሉ። | ስልኪ ምድዋል ኢመይል ምርካብ
+</div>
+<div data-lang="es">
+name: Pregunta a Kreislo
+greeting: ¡Hola! Soy el asistente de Kreislo. Pregúntame por el pago, la entrega, los envíos a Kenia, los productos digitales o la logística.
+suggest: ¿Cómo pago? ; ¿Enviáis a Kenia? ; ¿Dónde puedo recoger? ; ¿Cómo hago un pedido?
+use_faq: yes
+log_unanswered: yes
+¿Cómo hago un pedido? | Pulsa "Añadir al carrito" en un producto, abre el carrito y elige cómo quieres pedir: online, WhatsApp, Telegram o correo. | comprar compra pedir pedido carrito
+¿Dónde puedo recoger? | La recogida es en Gießen con cita previa. Envíanos un WhatsApp y acordamos una hora. | recoger recogida dirección ubicación visitar tienda
+¿Cuál es vuestro horario? | De lunes a viernes 9:00–18:00, sábados con cita previa. | horario abierto hora
+¿Está todo revisado? | Sí. Cada aparato y herramienta se revisa, se limpia y se prueba antes de venderlo. La página del producto dice qué hemos probado. | estado funciona calidad usado roto garantía
+¿Puedo venderos mis cosas? | ¡Quizás! Envíanos fotos y una breve descripción por WhatsApp y te decimos si podemos aceptarlo. | vender venta oferta cosas viejas
+¿Cuánto cuesta el envío a Kenia? | Depende del tamaño y del peso. Dinos qué quieres y tu ciudad, y te enviamos el precio total antes de que pagues. Más: /p/kenya.html | precio coste cuesta mombasa nairobi contenedor flete
+¿Cómo sigo mi pedido? | Recibes tu número de pedido por correo. Envíanoslo por WhatsApp y te decimos dónde está tu paquete. | seguimiento paquete estado
+¿Cómo os contacto? | WhatsApp es lo más rápido. También puedes escribirnos un correo o llamar en horario de apertura. | teléfono llamar correo contactar hablar
+</div>
+<div data-lang="zh">
+name: 问问 Kreislo
+greeting: 您好！我是 Kreislo 小助手。您可以问我关于付款、配送、发往肯尼亚、数字产品或仓储物流的问题。
+suggest: 我怎么付款？ ; 你们发货到肯尼亚吗？ ; 在哪里自提？ ; 怎么下单？
+use_faq: yes
+log_unanswered: yes
+怎么下单？ | 在商品页点击“加入购物车”，打开购物车，选择下单方式：在线、WhatsApp、Telegram 或邮件。 | 下单 购买 买 订购 结算 购物车
+在哪里自提？ | 在吉森自提，需要预约。给我们发 WhatsApp 消息，我们约个时间。 | 自提 提货 取货 地址 位置 门店
+营业时间是什么时候？ | 周一至周五 9:00–18:00，周六需预约。 | 营业 时间 开门 几点
+所有东西都检测过吗？ | 是的。每台电器和工具在出售前都经过检查、清洁和测试。商品页面会写明我们测试了什么。 | 检测 质量 状况 好用 二手 坏了 保修
+我可以把东西卖给你们吗？ | 也许可以！通过 WhatsApp 发给我们照片和简短描述，我们会告诉您能否收购。 | 卖 出售 回收 旧东西
+发到肯尼亚运费多少钱？ | 取决于尺寸和重量。告诉我们您想要什么以及所在城市，付款前我们会发给您总价。更多：/p/kenya.html | 运费 多少钱 价格 费用 蒙巴萨 内罗毕 集装箱 海运
+怎么查询我的订单？ | 订单号会通过邮件发送给您。通过 WhatsApp 发给我们，我们会告诉您包裹在哪里。 | 查询 跟踪 物流 包裹 订单状态
+怎么联系你们？ | WhatsApp 最快。也可以发邮件，或在营业时间打电话。 | 电话 联系 邮件 打电话 客服
 </div>]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
@@ -4781,6 +4897,430 @@ log_unanswered: yes
       'What customers say': "ዓማዊል እንታይ ይብሉ",
       'Questions & answers': "ሕቶታትን መልስታትን",
       'Stay in the loop': "ሓበሬታ ርኸቡ"
+    },
+    es: {
+      "Newsletter sign-up": "Suscripción al boletín",
+      "Your email app opened. Press send there to finish signing up.": "Se abrió tu aplicación de correo. Pulsa enviar para terminar la suscripción.",
+      "WhatsApp opened. Press send there to finish signing up.": "Se abrió WhatsApp. Pulsa enviar para terminar la suscripción.",
+      "Add to cart": "Añadir al carrito",
+      "Choose options": "Elegir opciones",
+      "Out of stock": "Agotado",
+      "Sale": "Oferta",
+      "Quantity": "Cantidad",
+      "Choose": "Elegir",
+      "Please choose": "Por favor, elige",
+      "Cart": "Carrito",
+      "Checkout": "Pagar",
+      "Subtotal": "Subtotal",
+      "Shipping": "Envío",
+      "Free": "Gratis",
+      "Total": "Total",
+      "Free shipping from": "Envío gratis desde",
+      "Your cart is empty.": "Tu carrito está vacío.",
+      "Full name": "Nombre completo",
+      "Phone": "Teléfono",
+      "Email": "Correo electrónico",
+      "Street and house number": "Calle y número",
+      "Postcode": "Código postal",
+      "City": "Ciudad",
+      "Country": "País",
+      "Other city…": "Otra ciudad…",
+      "Note": "Nota",
+      "How do you want to order?": "¿Cómo quieres hacer el pedido?",
+      "Send order": "Enviar pedido",
+      "Back to cart": "Volver al carrito",
+      "Please fill in the marked fields.": "Por favor, rellena los campos marcados.",
+      "added to cart": "añadido al carrito",
+      "View cart": "Ver carrito",
+      "Only": "Solo quedan",
+      "in stock": "en stock",
+      "Thank you": "Gracias",
+      "Order number": "Número de pedido",
+      "Bank transfer": "Transferencia bancaria",
+      "Reference": "Referencia",
+      "Clear cart": "Vaciar carrito",
+      "Ask on WhatsApp": "Preguntar por WhatsApp",
+      "Ask on Telegram": "Preguntar por Telegram",
+      "Hi, I am interested in": "Hola, me interesa",
+      "Place order (we confirm by email)": "Hacer pedido (lo confirmamos por correo)",
+      "Send order on WhatsApp": "Enviar pedido por WhatsApp",
+      "Send order on Telegram": "Enviar pedido por Telegram",
+      "Pay with PayPal": "Pagar con PayPal",
+      "Send order by email": "Enviar pedido por correo",
+      "Sending…": "Enviando…",
+      "New order": "Nuevo pedido",
+      "Order": "Pedido",
+      "Customer": "Cliente",
+      "Delivery address": "Dirección de entrega",
+      "WhatsApp opened with your order. Press send there to complete it.": "WhatsApp se abrió con tu pedido. Pulsa enviar para completarlo.",
+      "Your email app opened with the order. Press send there to complete it.": "Tu aplicación de correo se abrió con el pedido. Pulsa enviar para completarlo.",
+      "Your order is copied. In Telegram, paste it into the chat and send it.": "Tu pedido está copiado. En Telegram, pégalo en el chat y envíalo.",
+      "Copy order again": "Copiar pedido otra vez",
+      "Copied": "Copiado",
+      "Open Telegram": "Abrir Telegram",
+      "Thank you! Your order was received. Total": "¡Gracias! Hemos recibido tu pedido. Total",
+      "Sorry, the order could not be sent.": "Lo sentimos, no se pudo enviar el pedido.",
+      "Please choose another way to order.": "Por favor, elige otra forma de pedir.",
+      "Online ordering is not available yet. Please contact us.": "El pedido en línea aún no está disponible. Por favor, contáctanos.",
+      "Image": "Imagen",
+      "Video": "Vídeo",
+      "Close": "Cerrar",
+      "Remove": "Quitar",
+      "Share": "Compartir",
+      "Copy link": "Copiar enlace",
+      "Link copied": "Enlace copiado",
+      "Share on": "Compartir en",
+      "Reviews": "Opiniones",
+      "Write a review": "Escribir una opinión",
+      "review": "opinión",
+      "reviews": "opiniones",
+      "Rated": "Valorado con",
+      "out of 5": "de 5",
+      "based on": "según",
+      "Digital": "Digital",
+      "Digital download": "Descarga digital",
+      "Weight": "Peso",
+      "Dimensions": "Medidas",
+      "Digital download – the link is sent by email after payment.": "Descarga digital: el enlace se envía por correo después del pago.",
+      "Digital products: the download link is sent to your email after payment.": "Productos digitales: el enlace de descarga se envía a tu correo después del pago.",
+      "The download link is sent to your email after payment.": "El enlace de descarga se envía a tu correo después del pago.",
+      "Download link to": "Enlace de descarga a",
+      "Delivery": "Entrega",
+      "About": "Acerca de",
+      "Parcel weight": "Peso del paquete",
+      "No delivery option for this country. Please contact us.": "No hay envío para este país. Por favor, contáctanos.",
+      "Our partners": "Nuestros socios",
+      "Certified & accredited": "Certificados y acreditados",
+      "2–4 working days": "2–4 días laborables",
+      "3–5 working days": "3–5 días laborables",
+      "4–7 working days": "4–7 días laborables",
+      "By appointment": "Con cita previa",
+      "Pickup in Berlin": "Recogida en Berlín",
+      "14-day returns": "Devolución en 14 días",
+      "Personal service": "Atención personal",
+      "Fast shipping": "Envío rápido",
+      "Free shipping from 50 €": "Envío gratis desde 50 €",
+      "Order easily on WhatsApp or Telegram": "Pide fácilmente por WhatsApp o Telegram",
+      "New arrivals every week": "Novedades cada semana",
+      "Delivered in 2–4 working days": "Entrega en 2–4 días laborables",
+      "Easy and personal": "Fácil y personal",
+      "Secure payment": "Pago seguro",
+      "PayPal or bank transfer": "PayPal o transferencia",
+      "We answer within a day": "Respondemos en un día",
+      "We accept": "Aceptamos",
+      "Cash on delivery": "Pago contra reembolso",
+      "Previous": "Anterior",
+      "Next": "Siguiente",
+      "Our team": "Nuestro equipo",
+      "Delivery partners": "Socios de envío",
+      "You may also like": "También te puede gustar",
+      "Subscribe": "Suscribirse",
+      "Your email": "Tu correo",
+      "Yes, I would like to receive news and offers by email. I can unsubscribe at any time.": "Sí, quiero recibir novedades y ofertas por correo. Puedo darme de baja en cualquier momento.",
+      "Almost done! Please confirm your subscription in the email we just sent you.": "¡Casi listo! Confirma tu suscripción en el correo que te acabamos de enviar.",
+      "I agree that my details are used to answer my request.": "Acepto que mis datos se usen para responder a mi solicitud.",
+      "Privacy policy": "Política de privacidad",
+      "Send request": "Enviar solicitud",
+      "Request a quote": "Pedir presupuesto",
+      "Thank you! Your request was sent. We will reply within one working day.": "¡Gracias! Tu solicitud se ha enviado. Responderemos en un día laborable.",
+      "Ask us": "Pregúntanos",
+      "Answers from our help list": "Respuestas de nuestra lista de ayuda",
+      "Type your question…": "Escribe tu pregunta…",
+      "Your question": "Tu pregunta",
+      "Send": "Enviar",
+      "Chat with a person on WhatsApp": "Habla con una persona por WhatsApp",
+      "Sorry, I do not have an answer to that yet.": "Lo siento, todavía no tengo respuesta para eso.",
+      "Ask us on WhatsApp – your question is already typed in.": "Pregúntanos por WhatsApp: tu pregunta ya está escrita.",
+      "You might also mean:": "Quizás quieres decir:",
+      "Questions I can answer:": "Preguntas que puedo responder:",
+      "my question": "mi pregunta",
+      "Call": "Llamar",
+      "Directions": "Cómo llegar",
+      "Pause": "Pausa",
+      "Play": "Reproducir",
+      "Source": "Fuente",
+      "Open chat": "Abrir chat",
+      "Something went wrong. Please try again or message us on WhatsApp.": "Algo salió mal. Inténtalo de nuevo o escríbenos por WhatsApp.",
+      "Please tick the box to agree.": "Por favor, marca la casilla para aceptar.",
+      "Learn more": "Más información",
+      "Talk to us": "Habla con nosotros",
+      "Call us": "Llámanos",
+      "Zoom video call": "Videollamada por Zoom",
+      "Google Meet video call": "Videollamada por Google Meet",
+      "Microsoft Teams call": "Llamada por Microsoft Teams",
+      "Chat on WhatsApp": "Escribir por WhatsApp",
+      "Chat on Telegram": "Escribir por Telegram",
+      "Email us": "Escríbenos un correo",
+      "Prefer to talk? Call us or join a video call at these times.": "¿Prefieres hablar? Llámanos o únete a una videollamada en estos horarios.",
+      "Mon–Fri 9:00–18:00": "lun–vie 9:00–18:00",
+      "Tue & Thu 18:00–19:00": "mar y jue 18:00–19:00",
+      "Sat 10:00–12:00": "sáb 10:00–12:00",
+      "Start your review with a rating, for example 5/5 or ★★★★★.": "Empieza tu opinión con una nota, por ejemplo 5/5 o ★★★★★.",
+      "Language": "Idioma",
+      "Incl. VAT, plus shipping": "IVA incluido, más envío",
+      "New arrivals": "Novedades",
+      "Shop by category": "Comprar por categoría",
+      "Categories": "Categorías",
+      "Popular products": "Productos populares",
+      "Order directly": "Pide directamente",
+      "Why shop with us": "Por qué comprar con nosotros",
+      "New collection": "Nueva colección",
+      "About the shop": "Sobre la tienda",
+      "Customer service": "Atención al cliente",
+      "Follow us": "Síguenos",
+      "Home": "Inicio",
+      "Women": "Mujer",
+      "Men": "Hombre",
+      "Contact": "Contacto",
+      "Shop now": "Comprar ahora",
+      "See the sale": "Ver ofertas",
+      "Contact us": "Contáctanos",
+      "Shipping & delivery": "Envío y entrega",
+      "Returns (Widerruf)": "Devoluciones (desistimiento)",
+      "Search products...": "Buscar productos...",
+      "Newer posts": "Productos más recientes",
+      "Older posts": "Más productos",
+      "Newer post": "Producto anterior",
+      "Older post": "Producto siguiente",
+      "Page not found": "Página no encontrada",
+      "Back to home": "Volver al inicio",
+      "Search": "Buscar",
+      "Skip to content": "Ir al contenido",
+      "Open menu": "Abrir menú",
+      "Features": "Características",
+      "Size guide": "Guía de tallas",
+      "Details": "Detalles",
+      "The page you were looking for has moved or no longer exists.": "La página que buscas se ha movido o ya no existe.",
+      "No posts found here yet.": "Todavía no hay productos aquí.",
+      "How will you pay?": "¿Cómo vas a pagar?",
+      "Payment": "Pago",
+      "Cash on pickup": "Pago en efectivo al recoger",
+      "Pay now with PayPal": "Pagar ahora con PayPal",
+      "Size": "Talla",
+      "Colour": "Color",
+      "Color": "Color",
+      "Shop": "Tienda",
+      "Kenya": "Kenia",
+      "Fulfilment": "Logística",
+      "News": "Novedades",
+      "Our branches": "Nuestras tiendas",
+      "What we do": "Lo que hacemos",
+      "How it works": "Cómo funciona",
+      "What customers say": "Lo que dicen los clientes",
+      "Questions & answers": "Preguntas y respuestas",
+      "Stay in the loop": "Mantente al día"
+    },
+    zh: {
+      "Newsletter sign-up": "订阅新闻简报",
+      "Your email app opened. Press send there to finish signing up.": "邮件应用已打开。请在那里点击发送以完成订阅。",
+      "WhatsApp opened. Press send there to finish signing up.": "WhatsApp 已打开。请在那里点击发送以完成订阅。",
+      "Add to cart": "加入购物车",
+      "Choose options": "选择规格",
+      "Out of stock": "已售罄",
+      "Sale": "特价",
+      "Quantity": "数量",
+      "Choose": "选择",
+      "Please choose": "请选择",
+      "Cart": "购物车",
+      "Checkout": "结算",
+      "Subtotal": "小计",
+      "Shipping": "运费",
+      "Free": "免费",
+      "Total": "合计",
+      "Free shipping from": "满额免运费：",
+      "Your cart is empty.": "您的购物车是空的。",
+      "Full name": "姓名",
+      "Phone": "电话",
+      "Email": "电子邮箱",
+      "Street and house number": "街道和门牌号",
+      "Postcode": "邮政编码",
+      "City": "城市",
+      "Country": "国家",
+      "Other city…": "其他城市…",
+      "Note": "备注",
+      "How do you want to order?": "您想如何下单？",
+      "Send order": "提交订单",
+      "Back to cart": "返回购物车",
+      "Please fill in the marked fields.": "请填写标记的栏目。",
+      "added to cart": "已加入购物车",
+      "View cart": "查看购物车",
+      "Only": "仅剩",
+      "in stock": "件",
+      "Thank you": "谢谢",
+      "Order number": "订单号",
+      "Bank transfer": "银行转账",
+      "Reference": "付款备注",
+      "Clear cart": "清空购物车",
+      "Ask on WhatsApp": "通过 WhatsApp 咨询",
+      "Ask on Telegram": "通过 Telegram 咨询",
+      "Hi, I am interested in": "您好，我对以下商品感兴趣：",
+      "Place order (we confirm by email)": "下单（我们会通过邮件确认）",
+      "Send order on WhatsApp": "通过 WhatsApp 发送订单",
+      "Send order on Telegram": "通过 Telegram 发送订单",
+      "Pay with PayPal": "使用 PayPal 付款",
+      "Send order by email": "通过邮件发送订单",
+      "Sending…": "发送中…",
+      "New order": "新订单",
+      "Order": "订单",
+      "Customer": "客户",
+      "Delivery address": "收货地址",
+      "WhatsApp opened with your order. Press send there to complete it.": "WhatsApp 已打开并填好您的订单。请在那里点击发送完成下单。",
+      "Your email app opened with the order. Press send there to complete it.": "邮件应用已打开并填好订单。请在那里点击发送完成下单。",
+      "Your order is copied. In Telegram, paste it into the chat and send it.": "订单已复制。请在 Telegram 聊天中粘贴并发送。",
+      "Copy order again": "再次复制订单",
+      "Copied": "已复制",
+      "Open Telegram": "打开 Telegram",
+      "Thank you! Your order was received. Total": "谢谢！我们已收到您的订单。合计",
+      "Sorry, the order could not be sent.": "抱歉，订单未能发送。",
+      "Please choose another way to order.": "请选择其他下单方式。",
+      "Online ordering is not available yet. Please contact us.": "暂不支持在线下单，请联系我们。",
+      "Image": "图片",
+      "Video": "视频",
+      "Close": "关闭",
+      "Remove": "删除",
+      "Share": "分享",
+      "Copy link": "复制链接",
+      "Link copied": "链接已复制",
+      "Share on": "分享到",
+      "Reviews": "评价",
+      "Write a review": "写评价",
+      "review": "条评价",
+      "reviews": "条评价",
+      "Rated": "评分",
+      "out of 5": "（满分 5 分）",
+      "based on": "共",
+      "Digital": "数字商品",
+      "Digital download": "数字下载",
+      "Weight": "重量",
+      "Dimensions": "尺寸",
+      "Digital download – the link is sent by email after payment.": "数字下载：付款后下载链接将通过邮件发送。",
+      "Digital products: the download link is sent to your email after payment.": "数字商品：付款后下载链接将发送到您的邮箱。",
+      "The download link is sent to your email after payment.": "付款后下载链接将发送到您的邮箱。",
+      "Download link to": "下载链接发送至",
+      "Delivery": "配送",
+      "About": "关于",
+      "Parcel weight": "包裹重量",
+      "No delivery option for this country. Please contact us.": "暂不支持配送到该国家，请联系我们。",
+      "Our partners": "合作伙伴",
+      "Certified & accredited": "认证与资质",
+      "2–4 working days": "2–4 个工作日",
+      "3–5 working days": "3–5 个工作日",
+      "4–7 working days": "4–7 个工作日",
+      "By appointment": "需预约",
+      "Pickup in Berlin": "柏林自提",
+      "14-day returns": "14 天退货",
+      "Personal service": "贴心服务",
+      "Fast shipping": "快速发货",
+      "Free shipping from 50 €": "满 50 € 免运费",
+      "Order easily on WhatsApp or Telegram": "通过 WhatsApp 或 Telegram 轻松下单",
+      "New arrivals every week": "每周上新",
+      "Delivered in 2–4 working days": "2–4 个工作日送达",
+      "Easy and personal": "简单贴心",
+      "Secure payment": "安全支付",
+      "PayPal or bank transfer": "PayPal 或银行转账",
+      "We answer within a day": "一天内回复",
+      "We accept": "支持的付款方式",
+      "Cash on delivery": "货到付款",
+      "Previous": "上一个",
+      "Next": "下一个",
+      "Our team": "我们的团队",
+      "Delivery partners": "物流伙伴",
+      "You may also like": "猜你喜欢",
+      "Subscribe": "订阅",
+      "Your email": "您的邮箱",
+      "Yes, I would like to receive news and offers by email. I can unsubscribe at any time.": "是的，我想通过邮件接收新品和优惠信息。我可以随时退订。",
+      "Almost done! Please confirm your subscription in the email we just sent you.": "快完成了！请在我们刚发给您的邮件中确认订阅。",
+      "I agree that my details are used to answer my request.": "我同意使用我的信息来回复我的请求。",
+      "Privacy policy": "隐私政策",
+      "Send request": "发送请求",
+      "Request a quote": "获取报价",
+      "Thank you! Your request was sent. We will reply within one working day.": "谢谢！您的请求已发送，我们会在一个工作日内回复。",
+      "Ask us": "向我们提问",
+      "Answers from our help list": "来自帮助列表的回答",
+      "Type your question…": "输入您的问题…",
+      "Your question": "您的问题",
+      "Send": "发送",
+      "Chat with a person on WhatsApp": "通过 WhatsApp 联系人工客服",
+      "Sorry, I do not have an answer to that yet.": "抱歉，我暂时无法回答这个问题。",
+      "Ask us on WhatsApp – your question is already typed in.": "通过 WhatsApp 问我们，您的问题已自动填好。",
+      "You might also mean:": "您是不是想问：",
+      "Questions I can answer:": "我可以回答的问题：",
+      "my question": "我的问题",
+      "Call": "拨打电话",
+      "Directions": "路线",
+      "Pause": "暂停",
+      "Play": "播放",
+      "Source": "来源",
+      "Open chat": "打开聊天",
+      "Something went wrong. Please try again or message us on WhatsApp.": "出了点问题。请重试，或通过 WhatsApp 给我们发消息。",
+      "Please tick the box to agree.": "请勾选同意。",
+      "Learn more": "了解更多",
+      "Talk to us": "联系我们",
+      "Call us": "致电我们",
+      "Zoom video call": "Zoom 视频通话",
+      "Google Meet video call": "Google Meet 视频通话",
+      "Microsoft Teams call": "Microsoft Teams 通话",
+      "Chat on WhatsApp": "WhatsApp 聊天",
+      "Chat on Telegram": "Telegram 聊天",
+      "Email us": "给我们发邮件",
+      "Prefer to talk? Call us or join a video call at these times.": "想直接沟通？请在以下时间致电或加入视频通话。",
+      "Mon–Fri 9:00–18:00": "周一至周五 9:00–18:00",
+      "Tue & Thu 18:00–19:00": "周二和周四 18:00–19:00",
+      "Sat 10:00–12:00": "周六 10:00–12:00",
+      "Start your review with a rating, for example 5/5 or ★★★★★.": "请以评分开头，例如 5/5 或 ★★★★★。",
+      "Language": "语言",
+      "Incl. VAT, plus shipping": "含增值税，另加运费",
+      "New arrivals": "新品",
+      "Shop by category": "按类别购物",
+      "Categories": "分类",
+      "Popular products": "热门商品",
+      "Order directly": "直接下单",
+      "Why shop with us": "为什么选择我们",
+      "New collection": "新系列",
+      "About the shop": "关于本店",
+      "Customer service": "客户服务",
+      "Follow us": "关注我们",
+      "Home": "首页",
+      "Women": "女士",
+      "Men": "男士",
+      "Contact": "联系",
+      "Shop now": "立即购买",
+      "See the sale": "查看特价",
+      "Contact us": "联系我们",
+      "Shipping & delivery": "运输与配送",
+      "Returns (Widerruf)": "退货（撤回权）",
+      "Search products...": "搜索商品...",
+      "Newer posts": "较新的商品",
+      "Older posts": "更多商品",
+      "Newer post": "上一件商品",
+      "Older post": "下一件商品",
+      "Page not found": "页面未找到",
+      "Back to home": "返回首页",
+      "Search": "搜索",
+      "Skip to content": "跳到正文",
+      "Open menu": "打开菜单",
+      "Features": "特点",
+      "Size guide": "尺码指南",
+      "Details": "详情",
+      "The page you were looking for has moved or no longer exists.": "您要找的页面已移动或不存在。",
+      "No posts found here yet.": "这里暂时没有商品。",
+      "How will you pay?": "您将如何付款？",
+      "Payment": "付款",
+      "Cash on pickup": "自提时现金付款",
+      "Pay now with PayPal": "立即使用 PayPal 付款",
+      "Size": "尺码",
+      "Colour": "颜色",
+      "Color": "颜色",
+      "Shop": "商店",
+      "Kenya": "肯尼亚",
+      "Fulfilment": "仓储物流",
+      "News": "最新消息",
+      "Our branches": "我们的门店",
+      "What we do": "我们的业务",
+      "How it works": "如何运作",
+      "What customers say": "客户评价",
+      "Questions & answers": "常见问题",
+      "Stay in the loop": "获取最新消息"
     }
   };
 
@@ -6511,7 +7051,10 @@ log_unanswered: yes
     'ich du sie wir es der die das den dem des ein eine einen ist sind und oder wie was wo wann kann konnen mein meine ihr ihre bitte hallo hi habt haben gibt man mit von zu im am auf fur ' +
     'je tu vous nous il le la les un une des du est sont et ou comment quoi quand peux pouvez puis mon ma mes votre vos bonjour salut avec pour dans sur de ' +
     'na ya wa za la kwa ni je nini gani vipi lini wapi nina una ana mna tuna hii hiyo huu hilo habari jambo naomba tafadhali ' +
-    'في من علي عن الي هل كيف ما ماذا متي اين انا انت نحن هذا هذه لي لك مع او مرحبا ';
+    'في من علي عن الي هل كيف ما ماذا متي اين انا انت نحن هذا هذه لي لك مع او مرحبا ' +
+    'el la lo los las del que en un una por con para mi mis tu tus su como donde cuando cuanto puedo puede hola hay ' +
+    '怎么 怎样 如何 什么 可以 我们 你们 您们 是否 请问 你好 您好 一下 哪里 ';
+  var CJK_STOP = STOP.split(' ').filter(function (x) { return /[\u3400-\u9fff]/.test(x); });
   function words(s) {
     var plain = String(s || '').toLowerCase();
     // strip accents (Latin) and short vowel marks (Arabic); unify Arabic letter variants
@@ -6520,6 +7063,18 @@ log_unanswered: yes
     var parts;
     try { parts = plain.split(new RegExp('[^\\p{L}\\p{N}]+', 'u')); } // any script: Latin, Arabic, Ge'ez (Amharic, Tigrinya) …
     catch (e) { parts = plain.split(/[\s.,;:!?()"'\-\/|·…؟،፡-፨]+/); }
+    // Chinese and Japanese have no spaces: split runs of Han characters into overlapping pairs (付款方式 → 付款 款方 方式)
+    var cjk = /[\u3400-\u9fff\uf900-\ufaff]{2,}/;
+    parts = parts.reduce(function (all, w) {
+      if (!cjk.test(w)) { all.push(w); return all; }
+      CJK_STOP.forEach(function (x) { w = w.split(x).join(' '); });
+      w.replace(/[我你您他她吗呢吧啊的了么在要]/g, ' ').split(/([\u3400-\u9fff\uf900-\ufaff]+)/).forEach(function (run) {
+        if (!/^[\u3400-\u9fff\uf900-\ufaff]+$/.test(run)) { run = run.trim(); if (run.length > 1) all.push(run); return; }
+        if (run.length < 2) return;
+        for (var i = 0; i < run.length - 1; i++) all.push(run.slice(i, i + 2));
+      });
+      return all;
+    }, []);
     return parts.filter(function (w) { return w.length > 1 && STOP.indexOf(' ' + w + ' ') === -1; })
       .map(function (w) { return w.length > 4 ? w.replace(/(ing|ed|es|en|er|s|e|n)$/, '') : w; });
   }
@@ -6719,7 +7274,7 @@ log_unanswered: yes
   // ------------------------------------------------------------ page language
   // Languages written right to left, and native names for the language picker.
   var RTL = ['ar', 'fa', 'he', 'ur', 'ps'];
-  var NATIVE = { en: 'English', de: 'Deutsch', fr: 'Français', sw: 'Kiswahili', ar: 'العربية', am: 'አማርኛ', ti: 'ትግርኛ',
+  var NATIVE = { en: 'English', de: 'Deutsch', fr: 'Français', sw: 'Kiswahili', ar: 'العربية', am: 'አማርኛ', ti: 'ትግርኛ', zh: '中文',
     so: 'Soomaali', es: 'Español', it: 'Italiano', pt: 'Português', tr: 'Türkçe', pl: 'Polski', nl: 'Nederlands' };
   function applyLanguage() {
     doc.documentElement.lang = LANG;

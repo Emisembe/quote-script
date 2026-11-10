@@ -26,7 +26,7 @@ reference, src → build.py → theme.xml, check.py, upload steps). If the user 
 | **Digital products** | `data-digital="yes"`; Downloads tab; owner sets Status = Paid → buyer gets the download email |
 | **Business pages** | Templates: shipping, delivery partners, returns (Widerruf), contact, Impressum, privacy, team (photo, role, phone, social icons), fulfilment for sellers (quote form), shipping to another country (request form) |
 | **Homepage sections** | Announcement bar, hero + perks, "Talk to us" call/Zoom/Meet buttons with times, What we do (service cards), How it works (steps), customer reviews, FAQ (+ FAQPage JSON-LD), newsletter (double opt-in), partner logos, trust row with payment badges, accreditation seals, news ticker with sourced figures, branches with Call / WhatsApp / Directions, "Ask …" chat assistant (Q&A from Layout, WhatsApp fallback; or a floating WhatsApp button) |
-| **Languages** | English, German, French, Swahili, Arabic (right to left), Amharic, Tigrinya built in (native names in the picker, Noto fonts for Ge'ez/Arabic, homepage gadgets with a block per language); any other language via the Shop words gadget; owner content in `data-lang` blocks, also inside line-based gadgets |
+| **Languages** | English, German, French, Spanish, Swahili, Arabic (right to left), Amharic, Tigrinya, Chinese (simplified) built in (native names in the picker, Noto fonts for Ge'ez/Arabic, system CJK fonts, homepage gadgets with a block per language); any other language via the Shop words gadget; owner content in `data-lang` blocks, also inside line-based gadgets |
 | **Owner handover** | Owner guide with a start-to-finish quick start and test checklist, living guide document with every code block, prefilled order-inbox script |
 | **Brand & launch** | Logo project + brand kit (one folder per design, editable SVG, PNG, print PDF, Word letterhead, guidelines PDF), name research, launch plan with posts for every platform |
 
@@ -136,8 +136,8 @@ filled in, but never commit their email to a repository.
 
 ## 6. Languages
 
-`language:` sets the default, `languages: en, de, fr, sw, ar, am, ti` adds a header picker (native names). Packs
-for de, fr, sw, ar, am, ti are in `shop.js` (same keys; add a language by copying a pack); others come from Shop
+`language:` sets the default, `languages: en, de, fr, es, sw, ar, am, ti, zh` adds a header picker (native names). Packs
+for de, fr, es, sw, ar, am, ti, zh are in `shop.js` (same keys; add a language by copying a pack); others come from Shop
 words. RTL languages (`ar fa he ur ps`) set `dir="rtl"` on `<html>`; phone numbers, prices and links are isolated
 LTR. Non-Latin scripts need fonts: add Noto Sans Arabic / Noto Sans Ethiopic to the Google Fonts link (only
 downloaded when those letters appear) and after the primary family in every font stack. Mark machine-made

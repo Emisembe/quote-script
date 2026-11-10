@@ -34,7 +34,7 @@ License:  Free to use on any Blogger blog
   --rm-on-dark: #E6E1DB;
   --rm-on-dark-muted: #A59C92;
   --rm-gradient: linear-gradient(to bottom, #FFB347, $(accent.color));
-  --rm-display: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif;
+  --rm-display: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
   --rm-radius: 12px;
   --rm-radius-sm: 8px;
   --rm-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
@@ -51,7 +51,7 @@ html {
 }
 body {
   margin: 0;
-  font-family: 'Open Sans', 'Noto Sans Arabic', 'Noto Sans Ethiopic', Arial, Helvetica, sans-serif;
+  font-family: 'Open Sans', 'Noto Sans Arabic', 'Noto Sans Ethiopic', Arial, Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif;
   font-size: 16px;
   line-height: 1.65;
   color: var(--rm-text);
@@ -1393,6 +1393,8 @@ body .shop-ticker-list > li.shop-ticker-item { margin: 0; padding: 0 28px 0 0; w
 [dir="rtl"] .shop-badge { left: auto; right: 10px; }
 /* Ethiopic and Arabic letters are a little taller: give lines room */
 .lang-am, .lang-ti, .lang-ar { line-height: 1.75; }
+.lang-zh { line-height: 1.75; }
+.lang-zh h1, .lang-zh h2, .lang-zh h3 { line-height: 1.35; letter-spacing: 0.02em; }
 .lang-am h1, .lang-am h2, .lang-am h3, .lang-ti h1, .lang-ti h2, .lang-ti h3, .lang-ar h1, .lang-ar h2, .lang-ar h3 { line-height: 1.35; letter-spacing: 0; }
 /* Phone numbers, prices with symbols and web addresses always read left to right, also inside Arabic text */
 .shop-contact-detail, a[href^="tel:"], a[href^="mailto:"], .shop-branch-line a, .shop-chat-msg a, .shop-price, .shop-ticker-item strong { unicode-bidi: isolate; direction: ltr; }
@@ -1403,7 +1405,7 @@ body#layout .shop-admin { display: block; }
 /* ================= Night Shop look (SpotCommerce-inspired) ================= */
 /* logo: white wordmark with a dot in the accent colour */
 .shop .brand-mark { display: none; }
-.shop .brand-name { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; font-weight: 600; font-size: 26px; letter-spacing: 0.04em; text-transform: uppercase; }
+.shop .brand-name { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; font-weight: 600; font-size: 26px; letter-spacing: 0.04em; text-transform: uppercase; }
 .shop .brand-name::after { content: '.'; color: $(accent.color); }
 .shop .brand-tagline { color: #A59C92; }
 .cart-button { order: 3; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: 4px; color: #fff; border-radius: 50%; flex: 0 0 auto; }
@@ -1433,12 +1435,12 @@ body#layout .shop-admin { display: block; }
 }
 .shop .hero::before { background: linear-gradient(90deg, rgba(10, 6, 3, 0.72) 0%, rgba(10, 6, 3, 0.25) 70%); }
 .shop .hero-inner { min-height: 0; padding-top: 88px; padding-bottom: 96px; }
-.shop .hero-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-weight: 600; letter-spacing: 0.01em; }
+.shop .hero-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-weight: 600; letter-spacing: 0.01em; }
 .shop .hero-eyebrow { color: $(accent.color); }
 
 /* perks card in the hero */
 .perk-card { background: rgba(17, 17, 17, 0.72); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 26px 26px 18px; color: #fff; }
-.perk-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.06em; font-size: 15px; color: $(accent.color); margin: 0 0 12px; }
+.perk-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; letter-spacing: 0.06em; font-size: 15px; color: $(accent.color); margin: 0 0 12px; }
 body .perk-list li { position: relative; padding: 10px 0 10px 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: #E6E1DB; font-size: 15px; }
 body .perk-list li:first-child { border-top: 0; }
 .perk-list li::before { content: ''; position: absolute; left: 4px; top: 17px; width: 12px; height: 7px; border-left: 2px solid $(accent.color); border-bottom: 2px solid $(accent.color); transform: rotate(-45deg); }
@@ -1453,7 +1455,7 @@ body .perk-list li:first-child { border-top: 0; }
 .shop-card { background: transparent; }
 .shop-card-media { border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03); }
 .shop-card-media img { padding: 8%; box-sizing: border-box; }
-.shop-card-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; font-weight: 500; font-size: 17px; text-transform: uppercase; letter-spacing: 0.02em; }
+.shop-card-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; font-weight: 500; font-size: 17px; text-transform: uppercase; letter-spacing: 0.02em; }
 .shop-card-title a:hover { color: $(accent.color); }
 .shop .section-title { text-transform: uppercase; }
 
@@ -1461,7 +1463,7 @@ body .perk-list li:first-child { border-top: 0; }
 .shop .pt-item .main-grid, .pt-item.shop .main-grid { grid-template-columns: minmax(0, 1fr); }
 .shop-item { background: #fff; border: 1px solid $(border.color); border-radius: 14px; padding: 20px; }
 @media (min-width: 768px) { .shop-item { padding: 36px; } }
-.shop-item .post-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 34px; line-height: 1.1; margin: 4px 0 0; }
+.shop-item .post-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 34px; line-height: 1.1; margin: 4px 0 0; }
 .shop-cat { color: $(accent.color); font-weight: 700; }
 .shop-share { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; font-size: 14px; }
 .shop-share a { color: #6B6B6B; text-decoration: underline; }
@@ -1475,7 +1477,7 @@ body .perk-list li:first-child { border-top: 0; }
 body .sidebar .popular-posts ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .sidebar .popular-posts .item-thumbnail { float: none; margin: 0 0 8px; background: #EBE2D9; border-radius: 8px; aspect-ratio: 4 / 5; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .sidebar .popular-posts .item-thumbnail img { width: 100%; height: 100%; object-fit: contain; padding: 8%; box-sizing: border-box; }
-.sidebar .popular-posts .item-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 14px; }
+.sidebar .popular-posts .item-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 14px; }
 .sidebar .popular-posts .item-title b { font-weight: 500; }
 
 /* promo banner: teal night street, drawn in CSS; banner_image replaces it */
@@ -1496,14 +1498,14 @@ body .sidebar .popular-posts ul { display: grid; grid-template-columns: repeat(3
 }
 .promo .container { padding-top: 72px; padding-bottom: 72px; }
 .promo .widget { max-width: 620px; }
-.promo .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 40px; letter-spacing: 0.02em; margin: 0 0 12px; }
+.promo .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 40px; letter-spacing: 0.02em; margin: 0 0 12px; }
 .promo .widget > h2.title::after { content: '.'; color: $(accent.color); }
 .promo .widget-content { font-size: 17px; line-height: 1.7; color: #DDE7E6; }
 .promo .widget-content a { display: inline-block; margin-top: 6px; padding: 12px 22px; border-radius: 6px; background: $(accent.color); color: #fff; font-weight: 700; text-decoration: none; }
 .promo .widget-content a:hover { background: $(accent.hover.color); }
 
 /* categories on the homepage: big pill links */
-.shop .topics .widget > h2 { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; }
+.shop .topics .widget > h2 { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; }
 
 /* footer */
 .shop .site-footer { background: #111111; }
@@ -1545,7 +1547,7 @@ body .widget.Attribution { display: none; }
 /* "Talk to us" strip under the homepage banner */
 .talk { display: none; background: #f7f5f2; border-bottom: 1px solid #e8e3dc; }
 .talk .container { padding-top: 36px; padding-bottom: 40px; }
-.talk .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 26px; letter-spacing: 0.02em; margin: 0 0 6px; }
+.talk .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 26px; letter-spacing: 0.02em; margin: 0 0 6px; }
 .talk .widget > h2.title::after { content: '.'; color: $(accent.color); }
 @media (max-width: 600px) {
   .talk .container { padding-top: 28px; padding-bottom: 30px; }
@@ -1556,7 +1558,7 @@ body#layout .talk { display: block; }
 /* Our partners (homepage) and accreditation symbols (footer) */
 .partners { display: none; background: #ffffff; border-top: 1px solid #ece8e2; }
 .partners .container { padding-top: 44px; padding-bottom: 48px; text-align: center; }
-.partners .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 22px; letter-spacing: 0.06em; color: #6b6b6b; margin: 0 0 22px; }
+.partners .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 22px; letter-spacing: 0.06em; color: #6b6b6b; margin: 0 0 22px; }
 .footer-badges { border-top: 1px solid rgba(255,255,255,0.12); padding: 22px 0 6px; }
 .footer-badges .widget { margin: 0; text-align: center; }
 .footer-badges .widget > h2.title { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; margin: 0 0 14px; opacity: .7; }
@@ -1601,7 +1603,7 @@ body#layout .announce, body#layout .trust { display: block; }
 .newsletter .shop-consent { color: #bdbdbd; }
 .newsletter .shop-msg { color: #ffb4a0; }
 .services .widget > h2.title, .steps .widget > h2.title, .testimonials .widget > h2.title, .faq .widget > h2.title, .newsletter .widget > h2.title {
-  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
+  font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
 .services .widget > h2.title::after, .steps .widget > h2.title::after, .testimonials .widget > h2.title::after, .faq .widget > h2.title::after, .newsletter .widget > h2.title::after { content: '.'; color: $(accent.color); }
 .newsletter .widget > h2.title { color: #ffffff; }
 @media (max-width: 600px) {
@@ -1618,7 +1620,7 @@ body#layout .services, body#layout .steps, body#layout .testimonials, body#layou
 .ticker .shop-ticker:not(.is-ready) { padding: 10px 16px; font-size: 14px; }
 .branches { background: #f7f5f2; border-top: 1px solid #e8e3dc; }
 .branches .container { padding-top: 56px; padding-bottom: 56px; }
-.branches .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
+.branches .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; font-size: 32px; letter-spacing: 0.02em; margin: 0 0 10px; }
 .branches .widget > h2.title::after { content: '.'; color: $(accent.color); }
 @media (max-width: 600px) { .branches .container { padding-top: 40px; padding-bottom: 40px; } .branches .widget > h2.title { font-size: 26px; } }
 body#layout .ticker, body#layout .branches { display: block; }
