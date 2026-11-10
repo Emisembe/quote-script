@@ -1,0 +1,377 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Kreislo advert</title>
+<style>
+@font-face { font-family: 'Oswald'; font-weight: 600; src: url('fonts/Oswald-600.ttf'); }
+@font-face { font-family: 'Open Sans'; font-weight: 600; src: url('fonts/OpenSans-600.ttf'); }
+@font-face { font-family: 'Open Sans'; font-weight: 400; src: url('fonts/OpenSans-400.ttf'); }
+html, body { margin: 0; background: #111; overflow: hidden; }
+svg { display: block; }
+</style></head>
+<body>
+<script>
+// ===== Words on screen. The spoken words and their timing come from timeline.js (made by build_voice.py). =====
+var CONFIG = {
+  site: 'kreislo.de',
+  handle: '@kreislo',
+  tagline: 'KEEP GOOD THINGS MOVING',
+  duration: 0            // set from the voice timeline below
+};
+</script>
+<script src="timeline.js"></script>
+<script src="logo.js"></script>
+<script src="engine.js"></script>
+<script>
+CONFIG.duration = TL.duration;
+Promise.all(['600 40px Oswald', '600 40px "Open Sans"', '400 40px "Open Sans"'].map(function (f) { return document.fonts.load(f); })).then(function () {
+  var q = new URLSearchParams(location.search), M = q.get('format') === 'mobile';
+  var W = M ? 1080 : 1920, H = M ? 1920 : 1080, CX = W / 2;
+  var e = K.ease, P = K.p, C = K.C;
+  var svg = K.el('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H }, document.body);
+  var bg = K.makeBackground(svg, W, H);
+  var LN = {}; TL.lines.forEach(function (l) { LN[l.key] = l; });
+
+  // time when word i of a line is spoken (estimated from the letters, good enough for on-screen words)
+  function wt(key, i) {
+    var l = LN[key], w = l.text.split(/\s+/), tot = 0, acc = 0;
+    w.forEach(function (x) { tot += x.length + 2; });
+    for (var k = 0; k < i; k++) acc += w[k].length + 2;
+    return l.start + (l.end - l.start) * acc / tot;
+  }
+  // ---------- small helpers
+  function T(parent, str, x, y, size, color, o) {
+    o = o || {};
+    return K.text(parent, str, { x: x, y: y, 'text-anchor': o.anchor || 'middle', fill: color,
+      'font-family': o.font || 'Oswald', 'font-weight': o.weight || 600, 'font-size': size, 'letter-spacing': o.ls == null ? 1 : o.ls });
+  }
+  function G(parent, attrs) { return K.el('g', attrs || {}, parent || svg); }
+  function show(g, a, dy, s, cx, cy) {   // opacity a (0..1), slide up dy*(1-a), optional scale around cx,cy
+    g.setAttribute('opacity', a);
+    var tr = 'translate(0,' + ((dy || 0) * (1 - a)) + ')';
+    if (s != null) tr += ' translate(' + cx + ',' + cy + ') scale(' + s + ') translate(' + (-cx) + ',' + (-cy) + ')';
+    g.setAttribute('transform', tr);
+  }
+  function pop(t, t0) { return Math.max(0.001, e.back(P(t, t0, t0 + 0.35))); }
+  function fadeIn(t, t0, d) { return e.out(P(t, t0, t0 + (d || 0.4))); }
+  // Line icons on a 24 grid (stroke), drawn centred at cx,cy with the given size
+  var IC = {
+    washer: 'M5 2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z M3 7h18 M6.5 4.5h.01 M9 4.5h.01 M12 19a5 5 0 1 0 0-10 5 5 0 0 0 0 10z M9.5 15.5a3 3 0 0 0 4 1',
+    fridge: 'M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z M5 10h14 M8.5 5.5v2 M8.5 13v3.5',
+    sofa: 'M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3 M3 11a2 2 0 0 1 2 2v2h14v-2a2 2 0 0 1 4 0v5H1v-5a2 2 0 0 1 2-2z M4 18v2 M20 18v2',
+    jacket: 'M9 3l3 3 3-3 5 3-1.5 5H17v10H7V11H5.5L4 6z M12 6v15 M9 3c0 2 1.5 3 3 3s3-1 3-3',
+    pin: 'M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+    truck: 'M1 5h13v11H1z M14 9h4.5L22 12.5V16h-8z M6 19.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z M18 19.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+    ship: 'M2 15h20l-2.5 5h-15z M5 15V9h14v6 M8 9V6h4v3 M12 9V6h4v3 M7 12h2 M11 12h2 M15 12h2',
+    box: 'M12 2l9 4.5v11L12 22l-9-4.5v-11z M3 6.5l9 4.5 9-4.5 M12 11v11 M7.5 4.2l9 4.6',
+    shelf: 'M3 3v18 M21 3v18 M3 9h18 M3 15h18 M5.5 5h4v4h-4z M11 5h3.5v4H11z M6 11h5v4H6z M13 11h5v4h-5z M5.5 17h4.5v4H5.5z',
+    check: 'M5 12.5l4.5 4.5L19 7.5',
+    plane: 'M21.5 3.5L2.5 11l6.5 2.5 2.5 7 3.5-4.5 5 3.5z M9 13.5l12.5-10',
+    tag: 'M3 3h8l10 10-8 8L3 11z M7.5 7.5h.01'
+  };
+  function icon(parent, name, cx, cy, size, color, sw) {
+    var g = G(parent, { transform: 'translate(' + (cx - size / 2) + ',' + (cy - size / 2) + ') scale(' + (size / 24) + ')' });
+    K.el('path', { d: IC[name], fill: 'none', stroke: color, 'stroke-width': sw || 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+    return g;
+  }
+  function badge(parent, cx, cy, r) {   // orange round check badge
+    var g = G(parent);
+    K.el('circle', { cx: cx, cy: cy, r: r, fill: C.orange }, g);
+    icon(g, 'check', cx, cy, r * 1.25, C.white, 3);
+    return g;
+  }
+  function pill(parent, x, y, h, label, iconFn, opt) {   // returns {g, w}; x = centre
+    opt = opt || {};
+    var g = G(parent), size = opt.size || h * 0.36;
+    var txt = T(g, label, 0, 0, size, opt.color || C.white, { ls: 2 });
+    var tw = txt.getComputedTextLength(), iw = iconFn ? h * 0.5 + 18 : 0, w = tw + iw + h * 0.9;
+    K.el('rect', { x: x - w / 2, y: y - h / 2, width: w, height: h, rx: h / 2, fill: opt.fill || C.panel, stroke: opt.stroke || 'none', 'stroke-width': 3 }, g).parentNode.insertBefore(g.lastChild, g.firstChild);
+    K.set(txt, { x: x - w / 2 + h * 0.45 + iw + tw / 2, y: y + size * 0.36 });
+    if (iconFn) iconFn(g, x - w / 2 + h * 0.45 + h * 0.25, y, h * 0.5);
+    return { g: g, w: w };
+  }
+
+  // ---------- scene windows
+  var SC = {
+    hook: [0, LN.checked.start - 0.25],
+    checked: [LN.checked.start - 0.25, LN.germany.start - 0.3],
+    germany: [LN.germany.start - 0.3, LN.kenya.start - 0.3],
+    kenya: [LN.kenya.start - 0.3, LN.sellers.start - 0.3],
+    sellers: [LN.sellers.start - 0.3, LN.order.start - 0.3],
+    order: [LN.order.start - 0.3, LN.brand.start - 0.45],
+    brand: [LN.brand.start - 0.45, TL.duration + 1]
+  };
+  function sceneAlpha(t, k) { var a = SC[k][0], b = SC[k][1]; return Math.min(P(t, a, a + 0.35), 1 - P(t, b - 0.3, b)); }
+
+  // orange wipe bar between scenes
+  var wipe = K.el('rect', { x: 0, y: 0, width: W, height: H, fill: C.orange, opacity: 0 }, svg);
+
+  // small wordmark in the corner during the middle scenes
+  var mini = K.makeWordmark(G());
+  var ms = (M ? 230 : 210) / (K.WORD.right - K.WORD.left);
+  var mx = M ? CX - ms * (K.WORD.left + K.WORD.right) / 2 : 70 - ms * K.WORD.left, my = (M ? 190 : 80) - ms * K.WORD.ringY;
+  mini.g.setAttribute('transform', 'translate(' + mx + ',' + my + ') scale(' + ms + ')');
+  mini.ring.update(0, 0, K.WORD.r, K.WORD.sw, 1);
+  mini.ringHolder.setAttribute('transform', 'translate(' + K.WORD.ringX + ',' + K.WORD.ringY + ')');
+  var miniWrap = G(); miniWrap.appendChild(mini.g);
+
+  // ================= Scene 1: hook =================
+  var s1 = G(), s1a = G(s1), s1b = G(s1);
+  var hs = M ? 128 : 150, hy = M ? H * 0.40 : H * 0.36, hg = M ? 150 : 165;
+  var hookLines = [['GOOD THINGS', C.white, 0], ["DON'T BELONG", C.white, 2], ['IN THE BIN.', C.orange, 4]].map(function (x, i) {
+    var g = G(s1a); T(g, x[0], CX, hy + i * hg, hs, x[1], { ls: 3 }); return { g: g, t: wt('hook', x[2]) };
+  });
+  var strike = K.el('rect', { x: CX - (M ? 300 : 330), y: hy + 2 * hg - hs * 0.36, width: 0, height: 14, rx: 7, fill: C.white }, s1a);
+  var ringR = M ? 420 : 430, ringY = M ? H * 0.47 : H * 0.5;
+  var bigRing = K.makeRing(G(s1b), C.orange);
+  var sl1 = G(s1b), sl2 = G(s1b);
+  T(sl1, 'THEY DESERVE A', CX, ringY - (M ? 70 : 60), M ? 72 : 70, C.white, { ls: 4 });
+  T(sl2, 'SECOND LIFE.', CX, ringY + (M ? 85 : 85), M ? 118 : 128, C.orange, { ls: 3 });
+
+  // ================= Scene 2: checked by hand =================
+  var s2 = G();
+  var t2y = M ? 400 : 190;
+  var lab2 = G(s2); T(lab2, 'EVERY ITEM', CX, t2y - (M ? 118 : 108), M ? 40 : 36, C.orange, { ls: 8 });
+  var head2 = G(s2); T(head2, 'CHECKED BY HAND', CX, t2y + 20, M ? 104 : 96, C.white, { ls: 3 });
+  var items = [['washer', 'WASHING MACHINES', 3], ['fridge', 'FRIDGES', 5], ['sofa', 'SOFAS', 6], ['jacket', 'JACKETS', 8]];
+  var cw = M ? 420 : 360, chh = M ? 400 : 360;
+  var cards = items.map(function (it, i) {
+    var cx = M ? CX + (i % 2 ? 1 : -1) * (cw / 2 + 18) : CX + (i - 1.5) * (cw + 36);
+    var cy = M ? 820 + Math.floor(i / 2) * (chh + 36) : 560;
+    var g = G(s2);
+    K.el('rect', { x: cx - cw / 2, y: cy - chh / 2, width: cw, height: chh, rx: 28, fill: C.panel, stroke: '#2A2A2A', 'stroke-width': 2 }, g);
+    icon(g, it[0], cx, cy - 40, M ? 170 : 150, C.white, 1.4);
+    T(g, it[1], cx, cy + chh / 2 - 48, M ? 36 : 32, C.grey, { ls: 3 });
+    var b = badge(G(s2), cx + cw / 2 - 46, cy - chh / 2 + 46, 34);
+    return { g: g, b: b, cx: cx, cy: cy, t: wt('checked', it[2]) };
+  });
+  var chips2y = M ? 1680 : 900;
+  var chipDefs = [['CHECKED', 10], ['CLEANED', 13], ['HONESTLY DESCRIBED', 15]];
+  var chips2 = chipDefs.map(function (c) {
+    var p = pill(s2, 0, chips2y, M ? 88 : 84, c[0], function (g, x, y, s) { icon(g, 'check', x, y, s, C.orange, 3); });
+    return { p: p, t: wt('checked', c[1]) };
+  });
+  (function layoutRow(list, gap, maxW) {   // centre pills in a row (or two rows if too wide)
+    var total = list.reduce(function (a, c) { return a + c.p.w; }, 0) + gap * (list.length - 1);
+    if (total <= maxW) {
+      var x = CX - total / 2;
+      list.forEach(function (c) { c.dx = x + c.p.w / 2; c.dy = 0; x += c.p.w + gap; });
+    } else {
+      var a = list.slice(0, 2), wa = a[0].p.w + a[1].p.w + gap, x2 = CX - wa / 2;
+      a.forEach(function (c) { c.dx = x2 + c.p.w / 2; c.dy = -50; x2 += c.p.w + gap; });
+      list[2].dx = CX; list[2].dy = 50;
+    }
+  })(chips2, 22, W - 120);
+
+  // ================= Scene 3: pickup in Giessen, delivery in Germany =================
+  var s3 = G();
+  var head3 = G(s3); T(head3, 'IN GERMANY', CX, M ? 400 : 190, M ? 104 : 96, C.white, { ls: 3 });
+  var lab3 = G(s3); T(lab3, 'BUY HERE', CX, (M ? 400 : 190) - (M ? 118 : 108), M ? 40 : 36, C.orange, { ls: 8 });
+  var pinX = M ? CX : CX - 430, pinY = M ? 760 : 560;
+  var pinG = G(s3);
+  K.el('ellipse', { cx: pinX, cy: pinY + 120, rx: 70, ry: 16, fill: '#000', opacity: 0.5 }, pinG);
+  var pinIcon = G(pinG); icon(pinIcon, 'pin', pinX, pinY, 240, C.orange, 1.6);
+  var pinLab = G(s3);
+  T(pinLab, 'PICKUP IN', pinX, pinY + 210, M ? 40 : 36, C.grey, { ls: 6 });
+  T(pinLab, 'GIESSEN', pinX, pinY + (M ? 290 : 280), M ? 84 : 76, C.white, { ls: 4 });
+  var roadX0 = M ? 140 : CX + 60, roadX1 = M ? W - 140 : W - 160, roadY = M ? 1400 : 600;
+  var road = G(s3);
+  K.el('rect', { x: roadX0, y: roadY + 70, width: roadX1 - roadX0, height: 6, rx: 3, fill: '#2E2E2E' }, road);
+  var dash = K.el('line', { x1: roadX0, y1: roadY + 73, x2: roadX1, y2: roadY + 73, stroke: C.orange, 'stroke-width': 6, 'stroke-dasharray': '26 22', 'stroke-linecap': 'round' }, road);
+  var truck = G(s3); var truckIc = icon(truck, 'truck', 0, 0, 170, C.white, 1.4);
+  var delLab = G(s3);
+  T(delLab, 'DELIVERY ACROSS', (roadX0 + roadX1) / 2, roadY + (M ? 180 : 170), M ? 40 : 36, C.grey, { ls: 6 });
+  T(delLab, 'GERMANY', (roadX0 + roadX1) / 2, roadY + (M ? 260 : 245), M ? 84 : 76, C.white, { ls: 4 });
+  var or3 = G(s3); T(or3, 'OR', M ? CX : CX - 120, M ? 1170 : 600, M ? 46 : 42, C.orange, { ls: 6 });
+
+  // ================= Scene 4: Kenya =================
+  var s4 = G();
+  var lab4 = G(s4); T(lab4, 'FOR HOMES AND BUSINESSES', CX, (M ? 400 : 170) - (M ? 118 : 108), M ? 36 : 34, C.orange, { ls: 7 });
+  var head4 = G(s4); T(head4, 'SHIPPING TO KENYA', CX, M ? 400 : 170, M ? 100 : 96, C.white, { ls: 3 });
+  var A = M ? { x: 230, y: 760 } : { x: 360, y: 470 }, B = M ? { x: W - 230, y: 1130 } : { x: W - 360, y: 470 };
+  var ctrl = M ? { x: W - 120, y: 640 } : { x: CX, y: 230 };
+  var arcD = 'M' + A.x + ' ' + A.y + ' Q' + ctrl.x + ' ' + ctrl.y + ' ' + B.x + ' ' + B.y;
+  var route = G(s4);
+  var arcBase = K.el('path', { d: arcD, fill: 'none', stroke: '#2E2E2E', 'stroke-width': 5, 'stroke-dasharray': '4 16', 'stroke-linecap': 'round' }, route);
+  var arc = K.el('path', { d: arcD, fill: 'none', stroke: C.orange, 'stroke-width': 6, 'stroke-linecap': 'round' }, route);
+  var arcLen = arc.getTotalLength(); arc.setAttribute('stroke-dasharray', arcLen); arc.setAttribute('stroke-dashoffset', arcLen);
+  [[A, 'GERMANY', 'GIESSEN'], [B, 'KENYA', 'MOMBASA · NAIROBI']].forEach(function (d, i) {
+    K.el('circle', { cx: d[0].x, cy: d[0].y, r: 18, fill: C.orange }, route);
+    K.el('circle', { cx: d[0].x, cy: d[0].y, r: 34, fill: 'none', stroke: C.orange, 'stroke-width': 3, opacity: 0.5 }, route);
+    T(route, d[1], d[0].x, d[0].y + 86, M ? 60 : 56, C.white, { ls: 4 });
+    T(route, d[2], d[0].x, d[0].y + 130, M ? 30 : 26, C.grey, { ls: 4, font: 'Open Sans' });
+  });
+  var shipG = G(s4); icon(shipG, 'ship', 0, 0, 120, C.white, 1.4);
+  var steps4y = M ? 1420 : 780;
+  var steps4 = [['TEST', 9], ['PACK', 11], ['SHIP', 14]].map(function (c) {
+    var p = pill(s4, 0, steps4y, M ? 92 : 84, c[0], function (g, x, y, s) { icon(g, 'check', x, y, s, C.orange, 3); });
+    return { p: p, t: wt('kenya', c[1]) };
+  });
+  (function () { var gap = 24, tot = steps4.reduce(function (a, c) { return a + c.p.w; }, 0) + gap * 2, x = CX - tot / 2;
+    steps4.forEach(function (c) { c.dx = x + c.p.w / 2; x += c.p.w + gap; }); })();
+  var price = G(s4), priceY = M ? 1600 : 925;
+  (function () {
+    var h = M ? 100 : 92, txt = 'FULL PRICE BEFORE YOU PAY';
+    var p = pill(price, CX, priceY, h, txt, function (g, x, y, s) { icon(g, 'tag', x, y, s, C.white, 2.2); }, { fill: C.orange, size: M ? 40 : 38 });
+  })();
+
+  // ================= Scene 5: fulfilment for sellers =================
+  var s5 = G();
+  var lab5 = G(s5); T(lab5, 'SELLING ONLINE?', CX, (M ? 400 : 190) - (M ? 118 : 108), M ? 40 : 36, C.orange, { ls: 8 });
+  var head5 = G(s5); T(head5, 'WE DO THE SHIPPING', CX, M ? 400 : 190, M ? 100 : 96, C.white, { ls: 3 });
+  var flow = [['shelf', 'STORE', 3], ['box', 'PACK', 4], ['truck', 'SHIP', 6]].map(function (f, i) {
+    var cx = M ? CX : CX + (i - 1) * 470, cy = M ? 720 + i * 330 : 520, r = M ? 120 : 125;
+    var g = G(s5);
+    K.el('circle', { cx: cx, cy: cy, r: r, fill: C.panel, stroke: '#2A2A2A', 'stroke-width': 2 }, g);
+    icon(g, f[0], cx, cy, r * 1.05, C.white, 1.4);
+    T(g, f[1], M ? cx + r + 50 : cx, M ? cy + 22 : cy + r + 70, M ? 60 : 56, C.white, { ls: 5, anchor: M ? 'start' : 'middle' });
+    return { g: g, t: wt('sellers', f[2]), cx: cx, cy: cy, r: r };
+  });
+  var arrows5 = [0, 1].map(function (i) {
+    var a = flow[i], b = flow[i + 1], d = M ? 'M' + a.cx + ' ' + (a.cy + a.r + 14) + ' L' + b.cx + ' ' + (b.cy - b.r - 14)
+      : 'M' + (a.cx + a.r + 24) + ' ' + a.cy + ' L' + (b.cx - b.r - 24) + ' ' + b.cy;
+    var p = K.el('path', { d: d, fill: 'none', stroke: C.orange, 'stroke-width': 6, 'stroke-linecap': 'round' }, s5);
+    var len = p.getTotalLength(); p.setAttribute('stroke-dasharray', len); p.setAttribute('stroke-dashoffset', len);
+    return { p: p, len: len, t: flow[i + 1].t - 0.15 };
+  });
+  var focus = G(s5); T(focus, 'YOU FOCUS ON SELLING.', CX, M ? 1640 : 900, M ? 74 : 72, C.orange, { ls: 3 });
+
+  // ================= Scene 6: order your way =================
+  var s6 = G();
+  var head6 = G(s6); T(head6, 'ORDER YOUR WAY', CX, M ? 560 : 300, M ? 110 : 110, C.white, { ls: 3 });
+  var ul6 = K.el('rect', { x: CX, y: (M ? 560 : 300) + 40, width: 0, height: 8, rx: 4, fill: C.orange }, s6);
+  var ways = [['ONLINE', 1, function (g, x, y, s) { K.icon(g, 'globe', x - s / 2, y - s / 2, s, C.white); }, C.panel],
+              ['WHATSAPP', 3, function (g, x, y, s) { K.icon(g, 'whatsapp', x - s / 2, y - s / 2, s, C.white); }, '#1DA851'],
+              ['TELEGRAM', 6, function (g, x, y, s) { icon(g, 'plane', x, y, s, C.white, 2); }, '#229ED9']].map(function (w, i) {
+    var h = M ? 130 : 120, x = M ? CX : CX + (i - 1) * 520, y = M ? 860 + i * 190 : 600;
+    var p = pill(s6, x, y, h, w[0], w[2], { fill: w[3], size: M ? 52 : 48 });
+    return { g: p.g, t: wt('order', w[1]), x: x, y: y };
+  });
+
+  // ================= Scene 7: brand =================
+  var s7 = G();
+  var wm = K.makeWordmark(G(s7));
+  var bw = M ? 760 : 900, bs = bw / (K.WORD.right - K.WORD.left), by = M ? H * 0.40 : H * 0.40;
+  var bx = CX - bs * (K.WORD.left + K.WORD.right) / 2;
+  wm.g.setAttribute('transform', 'translate(' + bx + ',' + (by - bs * K.WORD.ringY) + ') scale(' + bs + ')');
+  var tag7 = G(s7); T(tag7, CONFIG.tagline, CX, by + (M ? 200 : 215), M ? 58 : 64, C.orange, { ls: M ? 6 : 10 });
+  var links7 = G(s7), ly = by + (M ? 360 : 350);
+  (function () {
+    var size = M ? 44 : 44;
+    var a = G(links7), b = G(links7);
+    K.icon(a, 'globe', 0, -size * 0.8, size, C.white);
+    T(a, CONFIG.site, size + 18, 0, size, C.white, { anchor: 'start', font: 'Open Sans', ls: 0 });
+    ['youtube', 'instagram', 'tiktok', 'facebook'].forEach(function (n, i) { K.icon(b, n, i * size * 1.25, -size * 0.8, size, C.white); });
+    T(b, CONFIG.handle, 4 * size * 1.25 + 8, 0, size, C.white, { anchor: 'start', font: 'Open Sans', ls: 0 });
+    var wa = a.getBBox().width, wb = b.getBBox().width;
+    if (M) {
+      a.setAttribute('transform', 'translate(' + (CX - wa / 2) + ',' + ly + ')');
+      b.setAttribute('transform', 'translate(' + (CX - wb / 2) + ',' + (ly + 90) + ')');
+    } else {
+      var gap = 90, tot = wa + gap + wb;
+      a.setAttribute('transform', 'translate(' + (CX - tot / 2) + ',' + ly + ')');
+      b.setAttribute('transform', 'translate(' + (CX - tot / 2 + wa + gap) + ',' + ly + ')');
+    }
+  })();
+
+  var fade = K.el('rect', { width: W, height: H, fill: '#000', opacity: 1 }, svg);
+
+  // ================= frame =================
+  window.renderFrame = function (t) {
+    var D = TL.duration;
+    fade.setAttribute('opacity', Math.max(1 - P(t, 0, 0.4), P(t, D - 0.9, D)));
+    bg.glow.setAttribute('opacity', 0.6 + 0.4 * e.out(P(t, 0, 2)));
+    var rx = M ? CX : W * (0.5 + 0.18 * Math.sin(t * 0.12)), ry = M ? H * (0.45 + 0.1 * Math.sin(t * 0.1)) : H * 0.5;
+    bg.big.update(rx, ry, M ? 760 : 620, 90, 1);
+    bg.big.g.setAttribute('transform', 'rotate(' + (t * 8) + ' ' + rx + ' ' + ry + ')');
+
+    // wipes at scene changes (a quick orange flash bar from left)
+    var wa = 0;
+    ['checked', 'kenya', 'order'].forEach(function (k) { var a = SC[k][0]; wa = Math.max(wa, 0.12 * (1 - Math.abs(P(t, a - 0.25, a + 0.25) * 2 - 1))); });
+    wipe.setAttribute('opacity', wa);
+
+    var midA = Math.min(P(t, SC.checked[0], SC.checked[0] + 0.5), 1 - P(t, SC.order[1] - 0.4, SC.order[1]));
+    miniWrap.setAttribute('opacity', midA * 0.95);
+
+    // --- scene 1
+    var a1 = sceneAlpha(t, 'hook');
+    s1.setAttribute('opacity', a1);
+    var hookOut = e.inOut(P(t, LN.second.start - 0.35, LN.second.start + 0.05));
+    hookLines.forEach(function (l) { var a = fadeIn(t, l.t - 0.05, 0.3); show(l.g, a, 40); });
+    strike.setAttribute('width', (M ? 600 : 660) * e.inOut(P(t, LN.hook.end - 0.1, LN.hook.end + 0.35)));
+    s1a.setAttribute('opacity', 1 - hookOut); s1a.setAttribute('transform', 'translate(0,' + (-80 * hookOut) + ')');
+    var rp = e.inOut(P(t, LN.second.start - 0.1, LN.second.end + 0.2));
+    bigRing.update(CX, ringY, ringR, M ? 46 : 42, Math.max(rp, 0.0001));
+    bigRing.g.setAttribute('transform', 'rotate(' + (-90 + 200 * e.out(P(t, LN.second.start - 0.1, LN.checked.start))) + ' ' + CX + ' ' + ringY + ')');
+    bigRing.g.setAttribute('opacity', rp > 0.001 ? 1 : 0);
+    show(sl1, fadeIn(t, wt('second', 0) - 0.05), 30);
+    var s2s = pop(t, wt('second', 3) - 0.1); show(sl2, Math.min(1, P(t, wt('second', 3) - 0.1, wt('second', 3) + 0.05)), 0, s2s, CX, ringY + 60);
+
+    // --- scene 2
+    s2.setAttribute('opacity', sceneAlpha(t, 'checked'));
+    show(lab2, fadeIn(t, SC.checked[0] + 0.05), 20); show(head2, fadeIn(t, SC.checked[0] + 0.1), 30);
+    cards.forEach(function (c, i) {
+      var a = P(t, c.t - 0.1, c.t + 0.1); show(c.g, a, 0, pop(t, c.t - 0.12), c.cx, c.cy);
+      var bt = wt('checked', 10) + i * 0.12; show(c.b, P(t, bt, bt + 0.08), 0, pop(t, bt), c.cx + cw / 2 - 46, c.cy - chh / 2 + 46);
+    });
+    chips2.forEach(function (c) { var a = fadeIn(t, c.t - 0.1, 0.3); c.p.g.setAttribute('opacity', a);
+      c.p.g.setAttribute('transform', 'translate(' + c.dx + ',' + (c.dy + 30 * (1 - a)) + ')'); });
+
+    // --- scene 3
+    s3.setAttribute('opacity', sceneAlpha(t, 'germany'));
+    show(lab3, fadeIn(t, SC.germany[0] + 0.05), 20); show(head3, fadeIn(t, SC.germany[0] + 0.1), 30);
+    var pt = wt('germany', 2) - 0.2, drop = e.back(P(t, pt, pt + 0.45));
+    pinG.setAttribute('opacity', P(t, pt, pt + 0.1));
+    pinIcon.setAttribute('transform', 'translate(0,' + (-260 * (1 - drop)) + ')');
+    show(pinLab, fadeIn(t, pt + 0.25), 20);
+    show(or3, fadeIn(t, wt('germany', 5) - 0.05, 0.3), 10);
+    var dt = wt('germany', 7) - 0.2;
+    road.setAttribute('opacity', fadeIn(t, dt - 0.2));
+    dash.setAttribute('stroke-dashoffset', -t * 120);
+    var tx = K.lerp(roadX0 + 60, roadX1 - 100, e.inOut(P(t, dt, SC.germany[1] - 0.2)));
+    truck.setAttribute('opacity', fadeIn(t, dt - 0.1, 0.25));
+    truck.setAttribute('transform', 'translate(' + tx + ',' + (roadY + Math.sin(t * 30) * 1.5) + ')');
+    show(delLab, fadeIn(t, wt('germany', 8) - 0.1), 20);
+
+    // --- scene 4
+    s4.setAttribute('opacity', sceneAlpha(t, 'kenya'));
+    show(lab4, fadeIn(t, SC.kenya[0] + 0.05), 20); show(head4, fadeIn(t, wt('kenya', 7) - 0.4), 30);
+    route.setAttribute('opacity', fadeIn(t, SC.kenya[0] + 0.2, 0.5));
+    var ap = e.inOut(P(t, wt('kenya', 14) - 0.3, wt('kenya', 16)));
+    arc.setAttribute('stroke-dashoffset', arcLen * (1 - ap));
+    var pp = arc.getPointAtLength(Math.max(1, arcLen * ap)), pq = arc.getPointAtLength(Math.min(arcLen, arcLen * ap + 2));
+    var ang = Math.atan2(pq.y - pp.y, pq.x - pp.x) * 180 / Math.PI;
+    shipG.setAttribute('opacity', P(t, wt('kenya', 14) - 0.3, wt('kenya', 14)) * (1 - P(t, LN.kenya.end + 0.2, LN.kenya.end + 0.5)));
+    shipG.setAttribute('transform', 'translate(' + pp.x + ',' + (pp.y - 60) + ') rotate(' + (ang * 0.25) + ')');
+    steps4.forEach(function (c) { var a = pop(t, c.t - 0.1); c.p.g.setAttribute('opacity', P(t, c.t - 0.1, c.t));
+      c.p.g.setAttribute('transform', 'translate(' + c.dx + ',' + steps4y + ') scale(' + a + ') translate(0,' + (-steps4y) + ')'); });
+    var prt = wt('kenya', 20) - 0.15; show(price, P(t, prt, prt + 0.1), 0, pop(t, prt), CX, priceY);
+
+    // --- scene 5
+    s5.setAttribute('opacity', sceneAlpha(t, 'sellers'));
+    show(lab5, fadeIn(t, SC.sellers[0] + 0.05), 20); show(head5, fadeIn(t, wt('sellers', 2) - 0.2), 30);
+    flow.forEach(function (f) { show(f.g, P(t, f.t - 0.12, f.t), 0, pop(t, f.t - 0.12), f.cx, f.cy); });
+    arrows5.forEach(function (a) { a.p.setAttribute('stroke-dashoffset', a.len * (1 - e.out(P(t, a.t - 0.25, a.t)))); });
+    show(focus, fadeIn(t, wt('sellers', 12) - 0.1), 30);
+
+    // --- scene 6
+    s6.setAttribute('opacity', sceneAlpha(t, 'order'));
+    show(head6, fadeIn(t, SC.order[0] + 0.05), 30);
+    var uw = (M ? 420 : 460) * e.out(P(t, SC.order[0] + 0.2, SC.order[0] + 0.7)); K.set(ul6, { x: CX - uw / 2, width: uw });
+    ways.forEach(function (w) { show(w.g, P(t, w.t - 0.12, w.t), 0, pop(t, w.t - 0.12), w.x, w.y); });
+
+    // --- scene 7: wordmark like the intro, tagline, links
+    s7.setAttribute('opacity', P(t, SC.brand[0], SC.brand[0] + 0.3));
+    var b0 = SC.brand[0];
+    var spin = 360 * e.inOut(P(t, b0 + 0.2, b0 + 1.1));
+    wm.ring.update(0, 0, K.WORD.r, K.WORD.sw, Math.max(e.inOut(P(t, b0, b0 + 0.8)), 0.0001));
+    wm.ringHolder.setAttribute('transform', 'translate(' + K.WORD.ringX + ',' + K.WORD.ringY + ') rotate(' + spin + ')');
+    wm.letters.forEach(function (Lt, i) {
+      var a = e.out(P(t, b0 + 0.15 + i * 0.06, b0 + 0.6 + i * 0.06));
+      Lt.g.setAttribute('opacity', a); Lt.g.setAttribute('transform', 'translate(0,' + (40 * (1 - a)) + ')');
+    });
+    show(tag7, fadeIn(t, wt('brand', 1) - 0.1, 0.5), 30);
+    show(links7, fadeIn(t, LN.brand.end + 0.1, 0.5), 20);
+  };
+  window.renderFrame(0); window.__ready = true;
+});
+</script>
+</body></html>

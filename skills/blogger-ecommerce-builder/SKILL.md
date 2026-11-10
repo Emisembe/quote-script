@@ -194,6 +194,9 @@ controls; it warns on unknown emails/IBANs, vendor licence switches and third-pa
   TikTok, Instagram (highlight covers), X and WhatsApp Business, each named by platform with safe-area checks.
 - **Intro and outro videos:** `assets/brand-kit/video/` renders 2D logo animations at 4K 60 fps for desktop (16:9,
   YouTube end screen frames) and mobile (9:16, TikTok/Reels safe area), with a sound logo made in code.
+- **Video advert with voice-over:** `assets/brand-kit/video/advert/` – script → Kokoro voice (open, commercial use OK;
+  lowered pitch + broadcast EQ for a strong voice) → music bed in code that ducks under the voice → kinetic scenes
+  timed to the spoken words → 4K/HD 16:9 and 9:16, music-only version, stems, voice samples. See its README.
 - **Business model and team plan:** write them as documents with a Business Model Canvas, the business lines, unit
   economics per sale, start and monthly costs, break-even, phases with triggers, legal rules (look them up: e.g.
   export of used electrical goods needs a function test per device), risks, KPIs; a team plan per phase with
