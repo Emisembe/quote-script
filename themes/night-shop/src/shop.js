@@ -2976,26 +2976,37 @@
   // A line without an image shows the name as a badge.
   function renderLogos() {
     each(doc.querySelectorAll('.shop-logos'), function (box) {
+      var grey = false;
       var items = gadgetLinesOf(box).map(function (line) {
+        if (/^\s*#/.test(line)) return null;                       // notes for the owner
+        if (/^\s*grey\s*:\s*(yes|true|on|ja)\s*$/i.test(line)) { grey = true; return null; }
         var parts = line.split('|').map(function (x) { return x.trim(); });
         if (!parts[0]) return null;
-        return { name: parts[0], img: /^https:\/\//.test(parts[1] || '') ? parts[1] : '',
-                 link: /^(https:\/\/|\/)/.test(parts[2] || '') ? parts[2] : '' };
+        return { name: parts[0], img: /^https:\/\//.test(parts[1] || '') ? sized(parts[1], 400) : '',
+                 link: /^(https?:\/\/|\/)/.test(parts[2] || '') ? parts[2] : '' };
       }).filter(Boolean);
       if (!items.length) return;
       box.textContent = '';
       box.classList.add('is-ready');
+      box.classList.toggle('is-grey', grey);
       var row = el('ul', { 'class': 'shop-logo-list' });
       items.forEach(function (it) {
-        var inner = it.img ? el('img', { src: it.img, alt: it.name, loading: 'lazy' }) : el('span', { 'class': 'shop-logo-name', text: t(it.name) });
-        var node = it.link
-          ? el('a', { href: it.link, title: it.name, target: /^https/.test(it.link) ? '_blank' : false, rel: 'noopener' }, [inner])
-          : el('span', { title: it.name }, [inner]);
-        row.appendChild(el('li', { 'class': 'shop-logo' + (it.img ? '' : ' is-text') }, [node]));
+        var badge = function () { return el('span', { 'class': 'shop-logo-name', text: t(it.name) }); };
+        var inner = it.img ? el('img', { src: it.img, alt: it.name, loading: 'lazy', decoding: 'async' }) : badge();
+        var outside = /^https?:/.test(it.link);
+        var tile = it.link
+          ? el('a', { 'class': 'shop-logo-tile', href: it.link, title: it.name, 'aria-label': it.name, target: outside ? '_blank' : false, rel: outside ? 'noopener' : false }, [inner])
+          : el('span', { 'class': 'shop-logo-tile', title: it.name }, [inner]);
+        var li = el('li', { 'class': 'shop-logo' + (it.img ? '' : ' is-text') }, [tile]);
+        if (it.img) inner.addEventListener('error', function () {   // broken picture link: show the name instead
+          li.classList.add('is-text'); tile.replaceChild(badge(), inner);
+        });
+        row.appendChild(li);
       });
       box.appendChild(row);
     });
   }
+
 
   // ------------------------------------------------------------ page language
   // Languages written right to left, and native names for the language picker.

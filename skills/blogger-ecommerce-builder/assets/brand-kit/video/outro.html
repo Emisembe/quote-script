@@ -13,9 +13,9 @@ var CONFIG = {
   headline: 'THANKS FOR WATCHING',
   subline: { desktop: 'Subscribe for new arrivals every week', mobile: 'Follow for new arrivals every week' },
   button: { desktop: 'SUBSCRIBE', mobile: 'FOLLOW' },
+  // No phone number on purpose: numbers change, videos stay online for years. Add a line here if you want one.
   links: [
     { icons: ['globe'], text: 'kreislo.de' },
-    { icons: ['whatsapp'], text: '+49 157 0000000' },
     { icons: ['youtube', 'instagram', 'tiktok', 'facebook'], text: '@kreislo' }
   ],
   watchNext: 'WATCH NEXT',   // label in the two video frames (desktop only, for YouTube end screens)
@@ -68,7 +68,7 @@ var CONFIG = {
     var g = K.el('g', {}, svg), x = 0;
     ln.icons.forEach(function (name) {
       K.el('circle', { cx: x + L.iconSize / 2, cy: -L.iconSize * 0.35, r: L.iconSize * 0.62, fill: '#262626' }, g);
-      K.icon(g, name, x + L.iconSize * 0.15, -L.iconSize * 0.35 - L.iconSize * 0.35, L.iconSize * 0.7, i === 1 ? '#25D366' : C.white);
+      K.icon(g, name, x + L.iconSize * 0.15, -L.iconSize * 0.35 - L.iconSize * 0.35, L.iconSize * 0.7, name === 'whatsapp' ? '#25D366' : C.white);
       x += L.iconSize * 1.45;
     });
     K.text(g, ln.text, { x: x + 12, y: 0, fill: C.white, 'font-family': 'Open Sans', 'font-weight': 600, 'font-size': L.linkSize });

@@ -220,12 +220,18 @@ body .shop-reviews .comment-thread ol { list-style: none; margin: 0; padding: 0;
 
 /* partner logos and accreditation symbols (gadget with <div class="shop-logos">) */
 .shop-logos:not(.is-ready) { white-space: pre-line; }
-.shop-logo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 34px; }
-.shop-logo a, .shop-logo > span { display: flex; align-items: center; justify-content: center; text-decoration: none; }
-.shop-logo img { display: block; max-height: 56px; max-width: 150px; width: auto; height: auto; object-fit: contain; filter: grayscale(1); opacity: .75; transition: filter .2s ease, opacity .2s ease; }
-.shop-logo a:hover img, .shop-logo a:focus-visible img { filter: none; opacity: 1; }
+.shop-logo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px; }
+body .shop-logo-list > li.shop-logo { margin: 0; padding: 0; list-style: none; }
+/* every logo sits in the same tile and is scaled to fit it: never stretched, never cut off */
+.shop-logo-tile { display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 180px; height: 90px; padding: 14px 18px; background: #fff; border: 1px solid #e8e3dc; border-radius: 12px; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+a.shop-logo-tile:hover, a.shop-logo-tile:focus-visible { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.08); border-color: $(shop.accent); }
+.shop-logo-tile img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+.shop-logos.is-grey .shop-logo-tile img { filter: grayscale(1); opacity: .75; transition: filter .2s ease, opacity .2s ease; }
+.shop-logos.is-grey a.shop-logo-tile:hover img, .shop-logos.is-grey a.shop-logo-tile:focus-visible img { filter: none; opacity: 1; }
+.shop-logo.is-text .shop-logo-tile { width: auto; height: auto; padding: 0; border: 0; background: none; box-shadow: none; transform: none; }
 .shop-logo-name { display: inline-block; padding: 8px 14px; border: 1px solid #d6d6d6; border-radius: 999px; font-size: .85rem; font-weight: 600; color: #444; }
-@media (max-width: 480px) { .shop-logo-list { gap: 14px 22px; } .shop-logo img { max-height: 44px; max-width: 110px; } }
+a.shop-logo-tile:hover .shop-logo-name { border-color: $(shop.accent); color: $(shop.accent); }
+@media (max-width: 480px) { .shop-logo-list { gap: 10px; } .shop-logo-tile { width: calc(50vw - 34px); max-width: 160px; height: 76px; padding: 10px 12px; } }
 
 /* announcement bar (gadget with <div class="shop-announce">, above the header) */
 .shop-announce:not(.is-ready) { white-space: pre-line; }

@@ -318,10 +318,22 @@ Trusted Shops | https://…/trusted-shops-seal.png | https://www.trustedshops.de
 14-day returns | | /p/returns.html
 ```
 
-**Getting a logo picture link:** create a draft post, upload the logo (PNG with a transparent background,
-about 300 px wide), switch to HTML view and copy the `https://blogger.googleusercontent.com/…` address.
-Don't publish the draft. Without a picture link the name shows as a neat round badge. Logos show grey and
-turn colourful on mouse-over. Only show seals and memberships you really hold, and link them to the
+**How logos fit:** every logo sits in the same white tile (180 × 90 px on computers, two per row on
+phones) and is scaled to fit it, never stretched or cut off. Wide, tall and square logos all line up.
+The whole tile is clickable: a website link (`https://…`) opens in a new tab, a page of your blog
+(`/p/…`) opens in the same tab. No third part = the logo is shown but not clickable.
+
+**Getting a logo picture link:**
+1. Ask the partner for their logo as a **PNG with a transparent background** (or JPG on white), at least 400 px wide.
+2. **Crop away the empty space** around the logo first (any photo app): a logo surrounded by a lot of white
+   looks tiny in its tile.
+3. Blogger → **New post** → Insert image → Upload the logo → switch to **HTML view** → copy the address that
+   starts with `https://blogger.googleusercontent.com/…`. Close the post **without publishing** (keep it as a draft).
+4. Paste it as the 2nd part of the line in the gadget and save.
+
+Without a picture link the name shows as a round badge. If a picture link stops working, the name shows
+instead. Logos show in colour; add the line `grey: yes` for grey logos that turn colourful on mouse-over.
+Lines starting with `#` are notes. Only show seals and memberships you really hold, and link them to the
 certificate page; most seal providers have rules for how their logo may be used.
 
 ## 5d. Delivery partners, delivery time and weight

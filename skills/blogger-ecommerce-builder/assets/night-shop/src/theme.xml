@@ -927,7 +927,10 @@ button: ተመዝገቡ
     <b:section class='partners-section' id='partners-widgets' showaddelement='yes'>
       <b:widget id='HTML12' locked='false' title='Our partners' type='HTML'>
         <b:widget-settings>
-          <b:widget-setting name='content'><![CDATA[Atelier Nord | | /p/contact.html
+          <b:widget-setting name='content'><![CDATA[# One partner per line:  Name | logo picture link (https://…) | their website (optional)
+# Example: Green Courier | https://blogger.googleusercontent.com/img/…/green-courier.png | https://greencourier.de
+# Without a picture link the name shows as a badge. Add  grey: yes  for grey logos that turn colour on hover.
+Atelier Nord | | /p/contact.html
 Studio Lumen | |
 Green Courier | | /p/delivery.html]]></b:widget-setting>
         </b:widget-settings>
@@ -1019,7 +1022,8 @@ pay: PayPal, Bank transfer, Cash on delivery]]></b:widget-setting>
       <b:section class='footer-badges-section' id='footer-badges' showaddelement='yes'>
         <b:widget id='HTML13' locked='false' title='Certified &amp; accredited' type='HTML'>
           <b:widget-settings>
-            <b:widget-setting name='content'><![CDATA[14-day returns | | /p/returns.html
+            <b:widget-setting name='content'><![CDATA[# Seals and memberships, one per line:  Name | logo picture link (https://…) | link (optional)
+14-day returns | | /p/returns.html
 Personal service | | /p/contact.html
 Fast shipping | | /p/delivery.html]]></b:widget-setting>
           </b:widget-settings>
