@@ -318,8 +318,9 @@ Trusted Shops | https://…/trusted-shops-seal.png | https://www.trustedshops.de
 14-day returns | | /p/returns.html
 ```
 
-**How logos fit:** every logo sits in the same white tile (180 × 90 px on computers, two per row on
-phones) and is scaled to fit it, never stretched or cut off. Wide, tall and square logos all line up.
+**How logos look:** all logos sit in one clean row, the same height, grey until the mouse is over them
+(then in their own colours). Each logo is scaled to fit the same space (130 × 60 px; three per row on
+phones), never stretched or cut off, so wide, tall and square logos line up.
 The whole tile is clickable: a website link (`https://…`) opens in a new tab, a page of your blog
 (`/p/…`) opens in the same tab. No third part = the logo is shown but not clickable.
 
@@ -332,7 +333,9 @@ The whole tile is clickable: a website link (`https://…`) opens in a new tab, 
 4. Paste it as the 2nd part of the line in the gadget and save.
 
 Without a picture link the name shows as a round badge. If a picture link stops working, the name shows
-instead. Logos show in colour; add the line `grey: yes` for grey logos that turn colourful on mouse-over.
+instead. Options, each on its own line in the gadget: `grey: no` = logos always in colour;
+`style: tiles` = each logo in a white box. Seals in the footer always sit on small white cards so dark
+logos stay visible on the dark background.
 Lines starting with `#` are notes. Only show seals and memberships you really hold, and link them to the
 certificate page; most seal providers have rules for how their logo may be used.
 

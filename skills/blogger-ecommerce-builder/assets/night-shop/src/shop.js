@@ -2974,12 +2974,22 @@
   // Partners on the homepage, accreditation symbols in the footer: a gadget wrapped in
   // <div class='shop-logos'>, one logo per line:  Name | logo image link | website (optional).
   // A line without an image shows the name as a badge.
+  // Default: one clean row, logos the same height, grey until the mouse is over them.
+  // Options:  grey: no  (always in colour)   style: tiles  (each logo in a white box)
   function renderLogos() {
+    var YES = /^(yes|true|on|ja)$/i, NO = /^(no|false|off|nein)$/i;
     each(doc.querySelectorAll('.shop-logos'), function (box) {
-      var grey = false;
+      var grey = true, tiles = false;
       var items = gadgetLinesOf(box).map(function (line) {
         if (/^\s*#/.test(line)) return null;                       // notes for the owner
-        if (/^\s*grey\s*:\s*(yes|true|on|ja)\s*$/i.test(line)) { grey = true; return null; }
+        var opt = /^\s*(grey|gray|colou?r|style)\s*:\s*(\S+)\s*$/i.exec(line);
+        if (opt) {
+          var k = opt[1].toLowerCase(), v = opt[2];
+          if (k === 'style') tiles = /^(tiles?|boxe?s?)$/i.test(v);
+          else if (/^gr/.test(k)) grey = !NO.test(v);
+          else grey = !YES.test(v);                                // colour: yes = no grey
+          return null;
+        }
         var parts = line.split('|').map(function (x) { return x.trim(); });
         if (!parts[0]) return null;
         return { name: parts[0], img: /^https:\/\//.test(parts[1] || '') ? sized(parts[1], 400) : '',
@@ -2989,6 +2999,7 @@
       box.textContent = '';
       box.classList.add('is-ready');
       box.classList.toggle('is-grey', grey);
+      box.classList.toggle('is-tiles', tiles);
       var row = el('ul', { 'class': 'shop-logo-list' });
       items.forEach(function (it) {
         var badge = function () { return el('span', { 'class': 'shop-logo-name', text: t(it.name) }); };

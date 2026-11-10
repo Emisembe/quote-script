@@ -111,7 +111,7 @@ blocks give per-language versions (fallback English). Blocks without items hide 
 | `shop-testimonials` | `stars \| quote \| name, city` | Hidden while empty; real reviews only |
 | `shop-faq` | `question \| answer` | Adds FAQPage JSON-LD for the visible language |
 | `shop-newsletter` | `text: …`, `button: …` | Needs google_sheet; double opt-in |
-| `shop-logos` | `Name \| https logo \| link`, `grey: yes`, `#` notes | Partners / seals: equal tiles, logo scaled to fit (object-fit contain), whole tile links, broken picture → name badge |
+| `shop-logos` | `Name \| https logo \| link`, `grey: no`, `style: tiles`, `#` notes | Partners / seals: one row, same height, grey → colour on hover (default); logo scaled to fit (object-fit contain), whole logo links, broken picture → name badge |
 | `shop-trust` | `icon \| title \| text \| link`, `pay: …` | Trust row + payment badges |
 | `shop-ticker` | `text with *figure* \| source \| link` (parts after the first in any order) | Homepage news ticker under the header; gadget title = label; pause button, stops on hover/focus, still for reduced motion |
 | `shop-branches` | `name \| address \| phone \| WhatsApp \| hours \| map link \| email`, `text:` | Branch cards with Call / WhatsApp / Directions (Google Maps search when no map link) + LocalBusiness JSON-LD |

@@ -1166,18 +1166,27 @@ body .shop-reviews .comment-thread ol { list-style: none; margin: 0; padding: 0;
 
 /* partner logos and accreditation symbols (gadget with <div class="shop-logos">) */
 .shop-logos:not(.is-ready) { white-space: pre-line; }
-.shop-logo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 16px; }
+.shop-logo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 24px 44px; }
 body .shop-logo-list > li.shop-logo { margin: 0; padding: 0; list-style: none; }
-/* every logo sits in the same tile and is scaled to fit it: never stretched, never cut off */
-.shop-logo-tile { display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 180px; height: 90px; padding: 14px 18px; background: #fff; border: 1px solid #e8e3dc; border-radius: 12px; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
-a.shop-logo-tile:hover, a.shop-logo-tile:focus-visible { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.08); border-color: $(shop.accent); }
+/* every logo gets the same box and is scaled to fit it: same height, never stretched, never cut off */
+.shop-logo-tile { display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 130px; height: 60px; padding: 0; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+a.shop-logo-tile:hover, a.shop-logo-tile:focus-visible { transform: translateY(-2px); }
 .shop-logo-tile img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
-.shop-logos.is-grey .shop-logo-tile img { filter: grayscale(1); opacity: .75; transition: filter .2s ease, opacity .2s ease; }
-.shop-logos.is-grey a.shop-logo-tile:hover img, .shop-logos.is-grey a.shop-logo-tile:focus-visible img { filter: none; opacity: 1; }
-.shop-logo.is-text .shop-logo-tile { width: auto; height: auto; padding: 0; border: 0; background: none; box-shadow: none; transform: none; }
-.shop-logo-name { display: inline-block; padding: 8px 14px; border: 1px solid #d6d6d6; border-radius: 999px; font-size: .85rem; font-weight: 600; color: #444; }
+.shop-logos.is-grey .shop-logo-tile img { filter: grayscale(1); opacity: .6; transition: filter .2s ease, opacity .2s ease; }
+.shop-logos.is-grey .shop-logo-tile:hover img, .shop-logos.is-grey .shop-logo-tile:focus-visible img { filter: none; opacity: 1; }
+/* style: tiles  -> each logo in a white box */
+.shop-logos.is-tiles .shop-logo-list { gap: 16px; }
+.shop-logos.is-tiles .shop-logo-tile { width: 180px; height: 90px; padding: 14px 18px; background: #fff; border: 1px solid #e8e3dc; border-radius: 12px; }
+.shop-logos.is-tiles a.shop-logo-tile:hover, .shop-logos.is-tiles a.shop-logo-tile:focus-visible { box-shadow: 0 6px 18px rgba(0,0,0,.08); border-color: $(shop.accent); }
+.shop-logo.is-text .shop-logo-tile, .shop-logos.is-tiles .shop-logo.is-text .shop-logo-tile { width: auto; height: auto; padding: 0; border: 0; background: none; box-shadow: none; transform: none; }
+.shop-logo-name { display: inline-block; max-width: calc(100vw - 48px); box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 8px 14px; border: 1px solid #d6d6d6; border-radius: 999px; font-size: .85rem; font-weight: 600; color: #444; }
 a.shop-logo-tile:hover .shop-logo-name { border-color: $(shop.accent); color: $(shop.accent); }
-@media (max-width: 480px) { .shop-logo-list { gap: 10px; } .shop-logo-tile { width: calc(50vw - 34px); max-width: 160px; height: 76px; padding: 10px 12px; } }
+@media (max-width: 480px) {
+  .shop-logo-list { gap: 20px 28px; }
+  .shop-logo-tile { width: calc(33vw - 34px); max-width: 110px; height: 50px; }
+  .shop-logos.is-tiles .shop-logo-list { gap: 10px; }
+  .shop-logos.is-tiles .shop-logo-tile { width: calc(50vw - 34px); max-width: 160px; height: 76px; padding: 10px 12px; }
+}
 
 /* announcement bar (gadget with <div class="shop-announce">, above the header) */
 .shop-announce:not(.is-ready) { white-space: pre-line; }
@@ -1554,8 +1563,10 @@ body#layout .talk { display: block; }
 .footer-badges { border-top: 1px solid rgba(255,255,255,0.12); padding: 22px 0 6px; }
 .footer-badges .widget { margin: 0; text-align: center; }
 .footer-badges .widget > h2.title { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; text-align: center; margin: 0 0 14px; opacity: .7; }
-.site-footer .footer-badges .shop-logo-tile { width: 130px; height: 66px; padding: 10px 14px; border-color: transparent; }
-.site-footer .footer-badges a.shop-logo-tile:hover { border-color: $(accent.color); }
+/* seals on the dark footer: small white cards so dark logos stay visible */
+.site-footer .footer-badges .shop-logo-list { gap: 12px; }
+.site-footer .footer-badges .shop-logo:not(.is-text) .shop-logo-tile { width: 112px; height: 58px; padding: 8px 12px; background: #fff; border: 1px solid transparent; border-radius: 10px; }
+.site-footer .footer-badges .shop-logo:not(.is-text) a.shop-logo-tile:hover { border-color: $(accent.color); }
 .site-footer .footer-badges .shop-logo-name { color: #E6E1DB; border-color: rgba(255,255,255,0.28); }
 .site-footer .footer-badges .widget-content li { margin: 0; }
 body#layout .partners, body#layout .footer-badges { display: block; }
@@ -3238,7 +3249,8 @@ button: ተመዝገቡ
         <b:widget-settings>
           <b:widget-setting name='content'><![CDATA[# One partner per line:  Name | logo picture link (https://…) | their website (optional)
 # Example: Green Courier | https://blogger.googleusercontent.com/img/…/green-courier.png | https://greencourier.de
-# Without a picture link the name shows as a badge. Add  grey: yes  for grey logos that turn colour on hover.
+# Logos show in one row, same height, grey until the mouse is over them. Without a picture link the name shows as a badge.
+# Options (own line):  grey: no  = always in colour      style: tiles  = each logo in a white box
 Atelier Nord | | /p/contact.html
 Studio Lumen | |
 Green Courier | | /p/delivery.html]]></b:widget-setting>
@@ -6659,12 +6671,22 @@ log_unanswered: yes
   // Partners on the homepage, accreditation symbols in the footer: a gadget wrapped in
   // <div class='shop-logos'>, one logo per line:  Name | logo image link | website (optional).
   // A line without an image shows the name as a badge.
+  // Default: one clean row, logos the same height, grey until the mouse is over them.
+  // Options:  grey: no  (always in colour)   style: tiles  (each logo in a white box)
   function renderLogos() {
+    var YES = /^(yes|true|on|ja)$/i, NO = /^(no|false|off|nein)$/i;
     each(doc.querySelectorAll('.shop-logos'), function (box) {
-      var grey = false;
+      var grey = true, tiles = false;
       var items = gadgetLinesOf(box).map(function (line) {
         if (/^\s*#/.test(line)) return null;                       // notes for the owner
-        if (/^\s*grey\s*:\s*(yes|true|on|ja)\s*$/i.test(line)) { grey = true; return null; }
+        var opt = /^\s*(grey|gray|colou?r|style)\s*:\s*(\S+)\s*$/i.exec(line);
+        if (opt) {
+          var k = opt[1].toLowerCase(), v = opt[2];
+          if (k === 'style') tiles = /^(tiles?|boxe?s?)$/i.test(v);
+          else if (/^gr/.test(k)) grey = !NO.test(v);
+          else grey = !YES.test(v);                                // colour: yes = no grey
+          return null;
+        }
         var parts = line.split('|').map(function (x) { return x.trim(); });
         if (!parts[0]) return null;
         return { name: parts[0], img: /^https:\/\//.test(parts[1] || '') ? sized(parts[1], 400) : '',
@@ -6674,6 +6696,7 @@ log_unanswered: yes
       box.textContent = '';
       box.classList.add('is-ready');
       box.classList.toggle('is-grey', grey);
+      box.classList.toggle('is-tiles', tiles);
       var row = el('ul', { 'class': 'shop-logo-list' });
       items.forEach(function (it) {
         var badge = function () { return el('span', { 'class': 'shop-logo-name', text: t(it.name) }); };

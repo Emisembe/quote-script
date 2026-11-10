@@ -929,7 +929,8 @@ button: ተመዝገቡ
         <b:widget-settings>
           <b:widget-setting name='content'><![CDATA[# One partner per line:  Name | logo picture link (https://…) | their website (optional)
 # Example: Green Courier | https://blogger.googleusercontent.com/img/…/green-courier.png | https://greencourier.de
-# Without a picture link the name shows as a badge. Add  grey: yes  for grey logos that turn colour on hover.
+# Logos show in one row, same height, grey until the mouse is over them. Without a picture link the name shows as a badge.
+# Options (own line):  grey: no  = always in colour      style: tiles  = each logo in a white box
 Atelier Nord | | /p/contact.html
 Studio Lumen | |
 Green Courier | | /p/delivery.html]]></b:widget-setting>

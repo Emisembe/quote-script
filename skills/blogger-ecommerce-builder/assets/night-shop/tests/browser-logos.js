@@ -1,5 +1,6 @@
 // Partner logos: every logo fits the same tile (wide, tall, square, lots of white space), the whole tile is a link,
 // a broken picture link falls back to the name, # lines are notes, text-only partners stay badges.
+// Default look: one row, no boxes, grey until hover. Options: grey: no, style: tiles.
 // node tests/browser-logos.js <folder with wide.png tall.png square.png padded.png> <screenshot folder>
 const { chromium, devices } = require('playwright');
 const fs = require('fs'), path = require('path');
@@ -14,14 +15,16 @@ const LINES = ['# One partner per line: Name | logo picture link | website',
   'Atelier Nord | | /p/contact.html'].join('\n');
 (async () => {
   const b = await chromium.launch();
-  for (const [label, vp] of [['desktop', { viewport: { width: 1366, height: 900 } }], ['iPhone 13', devices['iPhone 13']]]) {
+  for (const [mode, extra] of [['row', ''], ['tiles', '\nstyle: tiles\ngrey: no']])
+  for (const [label0, vp] of [['desktop', { viewport: { width: 1366, height: 900 } }], ['iPhone 13', devices['iPhone 13']]]) {
+    const label = label0 + ' ' + mode;
     const ctx = await b.newContext(vp); const p = await ctx.newPage(); const pe = [];
     p.on('pageerror', e => pe.push(e.message));
     await ctx.route('**/feeds/**', r => r.fulfill({ status: 200, body: '{"feed":{}}' }));
     await ctx.route('https://logos.test/**', r => { const f = path.join(logos, path.basename(new URL(r.request().url()).pathname));
       fs.existsSync(f) ? r.fulfill({ status: 200, contentType: 'image/png', body: fs.readFileSync(f) }) : r.fulfill({ status: 404, body: '' }); });
     await p.route('**/preview/home.html', async r => { const res = await r.fetch(); const html = (await res.text())
-      .replace(/<div class="shop-logos">Atelier Nord[\s\S]*?<\/div>/, '<div class="shop-logos">' + LINES + '</div>');
+      .replace(/<div class="shop-logos">Atelier Nord[\s\S]*?<\/div>/, '<div class="shop-logos">' + LINES + extra + '</div>');
       r.fulfill({ response: res, body: html, headers: { 'content-type': 'text/html; charset=utf-8' } }); });
     await p.goto(base + 'home.html'); await p.waitForTimeout(300);
     await p.evaluate(() => document.querySelector('.partners').scrollIntoView()); await p.waitForTimeout(900);
@@ -35,7 +38,9 @@ const LINES = ['# One partner per line: Name | logo picture link | website',
           ratio: img && img.naturalWidth ? Math.abs((ir.width / ir.height) - (img.naturalWidth / img.naturalHeight)) < 0.03 : true,
           name: li.textContent.trim() };
       });
-      return { tiles, notes: /One partner per line/.test(box.textContent), over: document.documentElement.scrollWidth - innerWidth };
+      const t0 = box.querySelector('.shop-logo:not(.is-text) .shop-logo-tile'), cs = getComputedStyle(t0), img0 = t0.querySelector('img');
+      const look = { grey: /grayscale/.test(getComputedStyle(img0).filter), boxed: cs.backgroundColor === 'rgb(255, 255, 255)' && cs.borderTopWidth !== '0px' };
+      return { look, tiles, notes: /One partner per line/.test(box.textContent), over: document.documentElement.scrollWidth - innerWidth };
     });
     const T = st.tiles, pics = T.filter(x => !x.text);
     ok(`${label}: 6 partners, # note not shown`, T.length === 6 && !st.notes, JSON.stringify(T.map(x => x.name || 'logo')));
@@ -45,8 +50,11 @@ const LINES = ['# One partner per line: Name | logo picture link | website',
     ok(`${label}: logo without a website is shown but not a link`, T[3].tag === 'SPAN', T[3].tag);
     ok(`${label}: broken picture link falls back to the name, still clickable`, T[4].text && /Broken Logo GmbH/.test(T[4].name) && T[4].tag === 'A', JSON.stringify(T[4]));
     ok(`${label}: partner without logo stays a name badge`, T[5].text && /Atelier Nord/.test(T[5].name), JSON.stringify(T[5]));
+    ok(`${label}: look = ${mode === 'row' ? 'no boxes, grey' : 'white boxes, in colour'}`, mode === 'row' ? (!st.look.boxed && st.look.grey) : (st.look.boxed && !st.look.grey), JSON.stringify(st.look));
+    if (mode === 'row') { const sum = pics.map(x => x.h); ok(`${label}: logos line up in one row (same box height)`, sum.every(h => h === sum[0]), JSON.stringify(sum)); }
     ok(`${label}: no sideways scrolling, no script errors`, st.over <= 0 && pe.length === 0, st.over + ' ' + pe.join('|'));
     await (await p.$('.partners')).screenshot({ path: `${out}/logos-${label.replace(/\W/g, '')}.png` });
+    if (mode === 'row' && label0 === 'desktop') { await p.evaluate(() => document.querySelector('.footer-badges').scrollIntoView()); await p.waitForTimeout(300); await (await p.$('.footer-badges')).screenshot({ path: `${out}/logos-footer.png` }); }
     await ctx.close();
   }
   await b.close();
