@@ -58,6 +58,7 @@
   // ------------------------------------------------------------ languages
   var PACKS = {
     de: {
+      'Newsletter sign-up': 'Anmeldung zum Newsletter', 'Your email app opened. Press send there to finish signing up.': 'Ihr E-Mail-Programm wurde geöffnet. Tippen Sie dort auf Senden, um die Anmeldung abzuschließen.', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp wurde geöffnet. Tippen Sie dort auf Senden, um die Anmeldung abzuschließen.',
       'Add to cart': 'In den Warenkorb', 'Choose options': 'Optionen wählen', 'Out of stock': 'Ausverkauft', 'Sale': 'Angebot',
       'Quantity': 'Menge', 'Choose': 'Bitte wählen', 'Please choose': 'Bitte wählen Sie', 'Cart': 'Warenkorb',
       'Checkout': 'Zur Kasse', 'Subtotal': 'Zwischensumme', 'Shipping': 'Versand', 'Free': 'Kostenlos', 'Total': 'Gesamt',
@@ -151,6 +152,7 @@
       'Talk to us': "Sprechen Sie mit uns"
     },
     fr: {
+      'Newsletter sign-up': 'Inscription à la newsletter', 'Your email app opened. Press send there to finish signing up.': 'Votre messagerie s’est ouverte. Appuyez sur Envoyer pour terminer l’inscription.', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp s’est ouvert. Appuyez sur Envoyer pour terminer l’inscription.',
       'Add to cart': 'Ajouter au panier', 'Choose options': 'Choisir les options', 'Out of stock': 'Épuisé', 'Sale': 'Promo',
       'Quantity': 'Quantité', 'Choose': 'Choisir', 'Please choose': 'Veuillez choisir', 'Cart': 'Panier',
       'Checkout': 'Commander', 'Subtotal': 'Sous-total', 'Shipping': 'Livraison', 'Free': 'Gratuite', 'Total': 'Total',
@@ -244,6 +246,7 @@
       'Talk to us': "Parlez-nous"
     },
     sw: {
+      'Newsletter sign-up': 'Usajili wa jarida', 'Your email app opened. Press send there to finish signing up.': 'Programu yako ya barua pepe imefunguka. Bonyeza tuma huko ili kukamilisha usajili.', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp imefunguka. Bonyeza tuma huko ili kukamilisha usajili.',
       'Add to cart': "Weka kwenye kikapu",
       'Choose options': "Chagua chaguo",
       'Out of stock': "Imeisha",
@@ -453,6 +456,7 @@
       'Stay in the loop': "Pata habari zetu"
     },
     ar: {
+      'Newsletter sign-up': 'الاشتراك في النشرة البريدية', 'Your email app opened. Press send there to finish signing up.': 'تم فتح تطبيق البريد. اضغط إرسال هناك لإتمام الاشتراك.', 'WhatsApp opened. Press send there to finish signing up.': 'تم فتح واتساب. اضغط إرسال هناك لإتمام الاشتراك.',
       'Add to cart': "أضف إلى السلة",
       'Choose options': "اختر الخيارات",
       'Out of stock': "نفد من المخزون",
@@ -662,6 +666,7 @@
       'Stay in the loop': "ابقَ على اطلاع"
     },
     am: {
+      'Newsletter sign-up': 'የዜና መጽሔት ምዝገባ', 'Your email app opened. Press send there to finish signing up.': 'የኢሜይል መተግበሪያዎ ተከፍቷል። ምዝገባውን ለማጠናቀቅ እዚያ ላክ ይጫኑ።', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp ተከፍቷል። ምዝገባውን ለማጠናቀቅ እዚያ ላክ ይጫኑ።',
       'Add to cart': "ወደ ጋሪ ጨምር",
       'Choose options': "አማራጮችን ይምረጡ",
       'Out of stock': "ተሽጦ አልቋል",
@@ -871,6 +876,7 @@
       'Stay in the loop': "መረጃ ያግኙ"
     },
     ti: {
+      'Newsletter sign-up': 'ምዝገባ ጋዜጣ', 'Your email app opened. Press send there to finish signing up.': 'መተግበሪ ኢመይልኩም ተኸፊቱ ኣሎ። ምዝገባ ንምዝዛም ኣብኡ ስደድ ጠውቑ።', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp ተኸፊቱ ኣሎ። ምዝገባ ንምዝዛም ኣብኡ ስደድ ጠውቑ።',
       'Add to cart': "ናብ ዘንቢል ወስኽ",
       'Choose options': "ምርጫታት ምረጽ",
       'Out of stock': "ተሸይጡ ተወዲኡ",
@@ -2531,7 +2537,10 @@
   function renderNewsletter() {
     each(doc.querySelectorAll('.shop-newsletter'), function (box) {
       var section = box.closest('.newsletter') || box;
-      if (!CFG.endpoint) { section.hidden = true; console.warn('[shop] Newsletter needs google_sheet in Shop settings.'); return; }
+      // Without the order sheet the box still shows: sign-ups go to you by email or WhatsApp instead.
+      var direct = !CFG.endpoint;
+      if (direct && !CFG.email && !CFG.whatsapp) { section.hidden = true; console.warn('[shop] Newsletter needs google_sheet (or email/whatsapp) in Shop settings.'); return; }
+      if (direct) console.warn('[shop] Newsletter: no google_sheet in Shop settings, sign-ups are sent by ' + (CFG.email ? 'email' : 'WhatsApp') + '.');
       var intro = '', button = 'Subscribe';
       langLines(box).forEach(function (line) {
         var m = /^\s*(text|button)\s*:\s*(.+)$/i.exec(line);
@@ -2551,6 +2560,14 @@
         if (form.elements.website.value) return;
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value.trim())) { msg.textContent = t('Please fill in the marked fields.'); email.focus(); return; }
         if (!form.elements.consent.checked) { msg.textContent = t('Please tick the box to agree.'); return; }
+        if (direct) {
+          var note = t('Newsletter sign-up') + ' – ' + CFG.shop + '\n' + t('Email') + ': ' + email.value.trim() + '\n' +
+            t('Yes, I would like to receive news and offers by email. I can unsubscribe at any time.');
+          if (CFG.email) location.href = 'mailto:' + CFG.email + '?subject=' + encodeURIComponent(t('Newsletter sign-up') + ' – ' + CFG.shop) + '&body=' + encodeURIComponent(note);
+          else window.open('https://wa.me/' + CFG.whatsapp + '?text=' + encodeURIComponent(note), '_blank', 'noopener');
+          msg.textContent = t(CFG.email ? 'Your email app opened. Press send there to finish signing up.' : 'WhatsApp opened. Press send there to finish signing up.');
+          return;
+        }
         btn.disabled = true; msg.textContent = t('Sending…');
         sendLead({ kind: 'newsletter', fields: { Email: email.value.trim() }, consent: true }).then(function () {
           form.replaceWith(el('p', { 'class': 'shop-done-note', text: t('Almost done! Please confirm your subscription in the email we just sent you.') }));

@@ -718,6 +718,7 @@ Impressum and Widerruf at all.
 | Text in a form box is white or invisible | Fixed in this version: form boxes always use dark text on white |
 | An Arabic, Amharic or Tigrinya word looks wrong | Change it in the gadget (homepage texts) or in Shop words (`[am] English text: your word`) |
 | A homepage section is missing | "What customers say" stays hidden until it has a line without `#`. The newsletter is hidden without `google_sheet` |
+| "Stay in the loop" (newsletter) is gone, or sign-ups open an email instead of "Please confirm" | The `google_sheet:` line is missing in Shop settings, usually because a theme upload reset it. Paste it back (section 7). Without it, the newsletter box still shows, but each sign-up comes to you as an email (or WhatsApp) instead of landing in the Newsletter tab with double opt-in |
 | Request form or newsletter says "Something went wrong" | The newest Code.gs isn't deployed: paste it, run setup, Deploy → Manage deployments → New version |
 | Newsletter confirm link says "not valid" | The link was already used, or the row was deleted in the Newsletter tab |
 | No "Ask Kreislo" button | The assistant gadget (Layout, bottom) is empty or was reset by a theme upload: paste your saved text back |

@@ -95,6 +95,27 @@ const LANGS = {
     await (await p.$('.newsletter')).screenshot({ path: `${out}/fix-newsletter.png` });
     await ctx.close();
   }
+  // newsletter: always visible; with google_sheet it signs up through the sheet, without it by email/WhatsApp
+  for (const withSheet of [true, false]) {
+    const ctx = await ctxFor({ viewport: { width: 1366, height: 900 } }); const p = await ctx.newPage(); const posts = [];
+    await ctx.unroute('https://script.google.com/**');
+    await ctx.route('https://script.google.com/**', r => { posts.push(JSON.parse(r.request().postData())); r.fulfill({ status: 200, body: '{"ok":true}' }); });
+    await p.addInitScript(() => { window.__nav = []; window.open = u => { window.__nav.push(u); return null; }; });
+    if (!withSheet) await p.route('**/preview/home.html', async r => { const res = await r.fetch(); const html = (await res.text()).replace(/google_sheet: [^<]*<br\/>/, '');
+      r.fulfill({ response: res, body: html, headers: { 'content-type': 'text/html; charset=utf-8' } }); });
+    await p.goto(base + 'home.html'); await p.waitForTimeout(400);
+    const vis = await p.evaluate(() => { const s = document.querySelector('section.newsletter'); return { shown: s.offsetHeight > 0, form: !!s.querySelector('.shop-newsletter-form') }; });
+    ok(`Newsletter ${withSheet ? 'with' : 'without'} google_sheet: "Stay in the loop" is shown with its form`, vis.shown && vis.form, JSON.stringify(vis));
+    let mailto = '';
+    p.on('request', r => { if (r.url().startsWith('mailto:')) mailto = r.url(); });
+    await p.fill('.shop-newsletter-row input', 'nina@example.com'); await p.check('.shop-newsletter-form input[name=consent]');
+    if (!withSheet) await p.evaluate(() => { const real = Object.getOwnPropertyDescriptor(Location.prototype, 'href'); window.__href = ''; });
+    await p.click('.shop-newsletter-form button'); await p.waitForTimeout(400);
+    const after = await p.evaluate(() => ({ text: document.querySelector('section.newsletter').textContent, href: location.href }));
+    if (withSheet) ok('Newsletter with google_sheet: sign-up goes to the sheet and asks to confirm by email', posts.some(x => x.kind === 'newsletter' && x.fields.Email === 'nina@example.com') && /confirm your subscription/.test(after.text), JSON.stringify(posts).slice(0, 120));
+    else ok('Newsletter without google_sheet: sign-up opens an email to the shop (nothing lost)', /email app opened/.test(after.text) && posts.length === 0, after.text.slice(-120));
+    await ctx.close();
+  }
   await b.close();
   const fails = results.filter(r => r[0] === 'FAIL');
   results.forEach(r => console.log(r[0], r[1], r[0] === 'FAIL' ? '→ ' + r[2] : ''));
