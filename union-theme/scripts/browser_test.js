@@ -791,6 +791,85 @@ const note = (ok, msg) => { if (!ok) failures.push(msg); console.log(`${ok ? 'ok
     await page.close();
   }
 
+  // Hero slideshow with a YouTube video slide (written as a line in Layout > Hero slideshow)
+  for (const [width, phone] of [[1440, false], [390, true]]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 900 }, isMobile: phone, hasTouch: phone });
+    const page = await ctx.newPage();
+    const errors = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    await page.route('**/*', (route) => {
+      const url = route.request().url();
+      if (url.startsWith(base + '/feeds/')) return route.fulfill({ status: 200, contentType: 'application/javascript', body: `${new URL(url).searchParams.get('callback')}(${JSON.stringify(feedJson('', 4))});` });
+      if (url.startsWith(base)) return route.continue();
+      if (/googleusercontent\.com|ytimg\.com/.test(url)) return route.fulfill({ status: 200, contentType: 'image/svg+xml', body: placeholder(url) });
+      if (/youtube-nocookie\.com\/embed/.test(url)) return route.fulfill({ status: 200, contentType: 'text/html', body: '<p>player</p>' });
+      return route.abort();
+    });
+    await page.goto(`${base}/preview/kpuwu-home.html`, { waitUntil: 'load' });
+    await page.waitForTimeout(500);
+    const tag = `slideshow @${width}`;
+    let r = await page.evaluate(() => {
+      const m = document.querySelector('.hero-media');
+      const slides = [...m.querySelectorAll('img, .slide-video')].filter((n) => !n.classList.contains('slide-thumb'));
+      const v = m.querySelector('.slide-video');
+      return { n: slides.length, dots: m.querySelectorAll('.slide-dots button').length, videoAt: slides.indexOf(v), id: v && v.getAttribute('data-video'),
+        thumb: v && v.querySelector('.slide-thumb').getAttribute('src'), caption: v && (v.querySelector('.slide-caption') || {}).textContent,
+        label: v && v.querySelector('.slide-play').getAttribute('aria-label'), frames: m.querySelectorAll('iframe').length,
+        leftover: /youtube\.com\/watch/.test(m.textContent) };
+    });
+    note(r.n === 13 && r.dots === 13 && r.videoAt === 1 && r.id === 'SlideVid001' && !r.leftover, `${tag}: 12 photos + the video as slide 2 (${r.n} slides, video at ${r.videoAt + 1})`);
+    note(/i\.ytimg\.com\/vi\/SlideVid001\/hqdefault\.jpg/.test(r.thumb) && r.caption === 'Annual Delegates Conference' && r.label === 'Play video: Annual Delegates Conference',
+      `${tag}: video slide shows its picture, title and a named play button`);
+    note(r.frames === 0, `${tag}: no YouTube player loaded until play is tapped`);
+    if (!phone) {
+      await page.waitForTimeout(5800);
+      const auto = await page.evaluate(() => [...document.querySelectorAll('.slide-dots button')].findIndex((b) => b.getAttribute('aria-current') === 'true'));
+      note(auto === 1, `${tag}: slideshow moves on by itself (now on slide ${auto + 1})`);
+      await page.click('.slide-prev');
+      await page.waitForTimeout(300);
+    }
+    await page.click('.slide-next');
+    await page.waitForTimeout(900);
+    await page.click('.slide-video.is-active .slide-play');
+    await page.waitForTimeout(300);
+    r = await page.evaluate(() => ({ frame: (document.querySelector('.slide-video.is-active iframe') || {}).src, dots: getComputedStyle(document.querySelector('.slide-dots')).display,
+      box: document.querySelector('.slide-video.is-active iframe').getBoundingClientRect().toJSON(), media: document.querySelector('.hero-media').getBoundingClientRect().toJSON() }));
+    note(/youtube-nocookie\.com\/embed\/SlideVid001\?autoplay=1/.test(r.frame || '') && r.dots === 'none', `${tag}: tapping play starts the video inside the slide`);
+    note(Math.abs(r.box.width - r.media.width) < 2 && Math.abs(r.box.height - r.media.height) < 2, `${tag}: video fills the slide (${Math.round(r.box.width)}x${Math.round(r.box.height)})`);
+    await page.mouse.move(5, 5);
+    await page.waitForTimeout(6500);
+    r = await page.evaluate(() => !!document.querySelector('.slide-video.is-active iframe'));
+    note(r, `${tag}: slideshow waits while the video plays`);
+    if (width === 1440) await page.locator('.hero-media').screenshot({ path: path.join(OUT, 'slideshow-video-playing-1440.png') });
+    await page.click('.slide-next');
+    await page.waitForTimeout(300);
+    r = await page.evaluate(() => ({ frames: document.querySelectorAll('.hero-media iframe').length, active: [...document.querySelectorAll('.slide-dots button')].findIndex((b) => b.getAttribute('aria-current') === 'true') }));
+    note(r.frames === 0 && r.active === 2, `${tag}: moving to the next slide stops the video`);
+    if (phone) {
+      const box = await page.locator('.hero-media').boundingBox();
+      const swipe = async (from, to) => {
+        await page.evaluate(([x1, x2, y]) => {
+          const m = document.querySelector('.hero-media');
+          const t = (x) => new Touch({ identifier: 1, target: m, clientX: x, clientY: y });
+          m.dispatchEvent(new TouchEvent('touchstart', { touches: [t(x1)], changedTouches: [t(x1)], bubbles: true }));
+          m.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [t(x2)], bubbles: true }));
+        }, [from, to, box.y + box.height / 2]);
+        await page.waitForTimeout(200);
+        return page.evaluate(() => [...document.querySelectorAll('.slide-dots button')].findIndex((b) => b.getAttribute('aria-current') === 'true'));
+      };
+      const afterLeft = await swipe(box.x + box.width - 30, box.x + 30);
+      const afterRight = await swipe(box.x + 30, box.x + box.width - 30);
+      note(afterLeft === 3 && afterRight === 2, `${tag}: swiping left/right changes slides (${afterLeft + 1}, then ${afterRight + 1})`);
+      await page.evaluate(() => { const b = document.querySelectorAll('.slide-dots button')[1]; b.click(); });
+      await page.waitForTimeout(900);
+      await page.locator('.hero-media').screenshot({ path: path.join(OUT, 'slideshow-video-390.png') });
+      const fit = await page.evaluate((w) => innerWidth === w && document.documentElement.scrollWidth <= innerWidth, width);
+      note(fit, `${tag}: page fits the phone screen`);
+    }
+    note(!errors.length, `${tag}: no JavaScript errors ${errors.join(' | ')}`);
+    await ctx.close();
+  }
+
   // Amharic and Tigrinya still offered when the Languages gadget keeps an older saved list
   {
     const { page } = await open('kpuwu-home', 1440, (h) => h.replace(/<li><a href="#" data-lang="(am|ti)"[^\n]*<\/li>\n?/g, ''));

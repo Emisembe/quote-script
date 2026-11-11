@@ -669,6 +669,26 @@ body { top: 0 !important; }
 .hero-media img:first-child,
 .hero-media img.is-active { opacity: 1; }
 .hero-media.is-slideshow img:first-child:not(.is-active) { opacity: 0; }
+/* Video slides: the video's picture and a play button; the player loads when tapped */
+.slide-video { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity 0.8s ease, visibility 0.8s; background: #000; }
+.slide-video.is-active { opacity: 1; visibility: visible; z-index: 1; }
+.hero-media .slide-video .slide-thumb, .hero-media.is-slideshow .slide-video .slide-thumb:first-child:not(.is-active) {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.92; transition: none;
+}
+.slide-play { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.slide-play .video-play { width: 72px; height: 72px; margin: -36px 0 0 -36px; }
+.slide-play:hover .video-play, .slide-play:focus-visible .video-play { transform: scale(1.08); }
+.slide-play:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
+.slide-caption {
+  position: absolute; left: 0; right: 0; top: 0; padding: 12px 56px 28px 16px;
+  font-family: 'Oswald', 'Arial Narrow', Arial, sans-serif; font-size: 17px; letter-spacing: 0.4px; color: #fff;
+  background: linear-gradient(rgba(0, 0, 0, 0.65), transparent); pointer-events: none;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.slide-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 3; }
+.slide-video.is-playing .slide-play, .slide-video.is-playing .slide-caption, .hero-media .slide-video.is-playing .slide-thumb { display: none; }
+.hero-media.is-playing .slide-dots { display: none; }
+.hero-media.is-playing .slide-btn { z-index: 4; top: 22px; margin-top: 0; }
 .slide-dots {
   position: absolute;
   left: 0;
@@ -2528,7 +2548,14 @@ body#layout .header-inner { display: block; }
     <b:section class='hero-side' id='hero-side' maxwidgets='1' showaddelement='yes'>
       <b:widget id='HTML7' locked='false' title='Hero slideshow' type='HTML' version='1'>
         <b:widget-settings>
-          <b:widget-setting name='content'><![CDATA[<img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgSpz5f3Aw2Z4ffK-TeMWqN7C4idGUAEvEhyphenhyphenky3E8kh43mzghrsZPAxEJwrEpCpH3lOFSdwidApSAZWp4gpY_Pom_MMQAlTU3n5vljxmngPlMSErkqwbanQXKTyjtEb8WsUe8ZeUxiCnSWq/s1600/slider-kenya-private-universities-workers-union5.png" alt="Kenya Private Universities Workers Union" />
+          <b:widget-setting name='content'><![CDATA[<!--
+  HERO SLIDESHOW: one slide per line, shown in this order.
+  Photo:  <img src="link to the picture" alt="what the picture shows" />
+  Video:  a YouTube link on its own line, optional title after |
+          https://www.youtube.com/watch?v=VIDEO_ID | Annual Delegates Conference 2026
+  A video slide shows its picture and a play button; it plays when tapped, and the slideshow waits.
+-->
+<img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgSpz5f3Aw2Z4ffK-TeMWqN7C4idGUAEvEhyphenhyphenky3E8kh43mzghrsZPAxEJwrEpCpH3lOFSdwidApSAZWp4gpY_Pom_MMQAlTU3n5vljxmngPlMSErkqwbanQXKTyjtEb8WsUe8ZeUxiCnSWq/s1600/slider-kenya-private-universities-workers-union5.png" alt="Kenya Private Universities Workers Union" />
 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhwbnjpCRdZtYuCW-sG62ErB5BlwKbWM3-Ur3u5-zf9iEhjXblXwq_ifJ_PKUw1qwTlrdyPsmfczuVxsdEznYU48DOqbenRek1XUTQMbMmZJ1GdEINdrbIQa6YPcmdJL0uGHBWxr7ZtCW8/s1920/Kenya-Private-Universities-Workers-Union-Slider-two.jpg" alt="Kenya Private Universities Workers Union" />
 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhNRP7UmTUF2M1Pu8dq-134XUMdNDmKh0DdxlPKkwYvIYOyxrn9govR1-9GswHQHhNG5J4WMj6deCN6BW6-NzyYoxEbXfRwmZf9HLLM7dJL-tSTgiJo1Lw4rwYYn9AVhUftqOf_WiHWclBI/s1600/slider-kenya-private-universities-workers-union6.png" alt="Kenya Private Universities Workers Union" />
 <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgYjhC27O1pBJ3otNZRsE4ukUlarei-M2u2GSGvxnSYKmL3hFRJvZaIKQqx3wRmJBQGtTeOVTn9J0EFvnAWhj3xgEvaR4uAWoI2DpghlNmwUkzNSgUBVQrhxFGZ9eFGIhlWiJKtJXkGVYOo/s1600/slider-kenya-private-universities-workers-union-one.png" alt="Kenya Private Universities Workers Union" />
@@ -4675,11 +4702,79 @@ A: Yes, members are welcome to write. Send your article to the union office (Wha
   }
 
   // ---------------------------------------------------------------- hero slideshow
+  // Layout > Hero slideshow holds <img> tags and YouTube links (one per line, optional title after |).
+  // A video slide shows the video's picture and a play button; the player loads only when tapped.
   var media = doc.querySelector('.hero-media');
-  var slides = media ? media.querySelectorAll('img') : [];
+  if (media) {
+    var videoSlide = function (id, title) {
+      title = (title || '').trim();
+      var label = title || 'Video';
+      var slide = el('div', { className: 'slide-video', 'data-video': id }, [
+        el('img', { className: 'slide-thumb', src: 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg', alt: label, loading: 'lazy' }),
+        el('button', { type: 'button', className: 'slide-play', 'aria-label': 'Play video: ' + label }, [el('span', { className: 'video-play', 'aria-hidden': 'true' })]),
+        title ? el('span', { className: 'slide-caption', text: title }) : null
+      ]);
+      return slide;
+    };
+    var topLevel = function (node) { while (node.parentNode && node.parentNode !== media) node = node.parentNode; return node; };
+    // YouTube links written as text lines
+    var walker = doc.createTreeWalker(media, 4, null, false);
+    var textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    textNodes.forEach(function (tn) {
+      if (!youtubeId(tn.nodeValue)) return;
+      var anchor = topLevel(tn);
+      var rest = [];
+      tn.nodeValue.split(/\r?\n/).forEach(function (line) {
+        var id = youtubeId(line);
+        if (id) media.insertBefore(videoSlide(id, line.split('|').slice(1).join('|')), anchor);
+        else rest.push(line);
+      });
+      tn.nodeValue = rest.join('\n');
+    });
+    // ...as links, or as pasted YouTube embed code
+    [].forEach.call(media.querySelectorAll('a[href], iframe[src]'), function (n) {
+      var id = youtubeId(n.getAttribute('href') || n.getAttribute('src'));
+      if (!id || n.querySelector('img')) return;
+      var title = n.tagName === 'A' ? n.textContent : n.getAttribute('title');
+      media.insertBefore(videoSlide(id, youtubeId(title) ? '' : title), topLevel(n));
+      n.parentNode.removeChild(n);
+    });
+    // drop what is left of those lines (empty paragraphs, line breaks)
+    [].slice.call(media.childNodes).forEach(function (n) {
+      if (n.nodeType === 3 && !n.nodeValue.trim()) return;
+      if (n.nodeType === 1 && !n.classList.contains('slide-video') && !n.querySelector('img, iframe, video') && n.tagName !== 'IMG' && !n.textContent.trim()) media.removeChild(n);
+    });
+  }
+  var slides = media ? [].filter.call(media.querySelectorAll('img, .slide-video'), function (n) { return !n.classList.contains('slide-thumb'); }) : [];
+  if (media && slides.length === 1 && slides[0].classList.contains('slide-video')) slides[0].classList.add('is-active');
+  // Play a video slide: the YouTube player replaces the picture; leaving the slide stops it
+  var stopVideos = function () {
+    if (!media) return;
+    [].forEach.call(media.querySelectorAll('.slide-video.is-playing'), function (v) {
+      var frame = v.querySelector('iframe');
+      if (frame) v.removeChild(frame);
+      v.classList.remove('is-playing');
+    });
+    media.classList.remove('is-playing');
+  };
+  if (media) {
+    media.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('.slide-play') : null;
+      if (!btn) return;
+      var v = btn.parentNode;
+      var label = v.querySelector('.slide-thumb').getAttribute('alt');
+      v.appendChild(el('iframe', { className: 'slide-frame', src: 'https://www.youtube-nocookie.com/embed/' + v.getAttribute('data-video') + '?autoplay=1&rel=0&playsinline=1',
+        title: label, allow: 'autoplay; encrypted-media; picture-in-picture; fullscreen', allowfullscreen: 'allowfullscreen' }));
+      v.classList.add('is-playing');
+      media.classList.add('is-playing');
+      media.dispatchEvent(new CustomEvent('slidevideo'));
+    });
+  }
   if (media && slides.length) {
     var mw = fit(media.clientWidth || 600, 200, 400, 1600);
     for (var si = 0; si < slides.length; si++) {
+      if (slides[si].tagName !== 'IMG') continue;
       var ss = slides[si].getAttribute('src') || '';
       var sb = scaled(ss, mw);
       if (sb !== ss) slides[si].setAttribute('src', sb);
@@ -4687,24 +4782,25 @@ A: Yes, members are welcome to write. Send your article to the union office (Wha
   }
   if (media && slides.length > 1) {
     media.classList.add('is-slideshow');
-    var current = 0;
+    var slideIndex = 0;
     var timer = null;
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var dots = el('div', { className: 'slide-dots' });
     var show = function (n) {
-      current = (n + slides.length) % slides.length;
+      stopVideos();
+      slideIndex = (n + slides.length) % slides.length;
       for (var i = 0; i < slides.length; i++) {
-        slides[i].classList.toggle('is-active', i === current);
-        dots.children[i].setAttribute('aria-current', i === current ? 'true' : 'false');
+        slides[i].classList.toggle('is-active', i === slideIndex);
+        dots.children[i].setAttribute('aria-current', i === slideIndex ? 'true' : 'false');
       }
     };
     var play = function () {
       if (reduced) return;
       clearInterval(timer);
-      timer = setInterval(function () { show(current + 1); }, 5500);
+      timer = setInterval(function () { show(slideIndex + 1); }, 5500);
     };
     for (var i = 0; i < slides.length; i++) {
-      if (i > 0) slides[i].setAttribute('loading', 'lazy');
+      if (i > 0 && slides[i].tagName === 'IMG') slides[i].setAttribute('loading', 'lazy');
       dots.appendChild(el('button', { type: 'button', 'aria-label': 'Show slide ' + (i + 1), 'data-slide': i }));
     }
     dots.addEventListener('click', function (e) {
@@ -4713,13 +4809,24 @@ A: Yes, members are welcome to write. Send your article to the union office (Wha
     });
     var prev = el('button', { type: 'button', className: 'slide-btn slide-prev', 'aria-label': 'Previous slide' }, [svg(CHEVRON_LEFT, 20)]);
     var next = el('button', { type: 'button', className: 'slide-btn slide-next', 'aria-label': 'Next slide' }, [svg(CHEVRON_RIGHT, 20)]);
-    prev.addEventListener('click', function () { show(current - 1); play(); });
-    next.addEventListener('click', function () { show(current + 1); play(); });
+    prev.addEventListener('click', function () { show(slideIndex - 1); play(); });
+    next.addEventListener('click', function () { show(slideIndex + 1); play(); });
     media.appendChild(prev);
     media.appendChild(next);
     media.appendChild(dots);
     media.addEventListener('mouseenter', function () { clearInterval(timer); });
-    media.addEventListener('mouseleave', play);
+    media.addEventListener('mouseleave', function () { if (!media.classList.contains('is-playing')) play(); });
+    // While a video plays, the slideshow waits
+    media.addEventListener('slidevideo', function () { clearInterval(timer); });
+    // Swipe left / right on touch screens
+    var touchX = null, touchY = null;
+    media.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, { passive: true });
+    media.addEventListener('touchend', function (e) {
+      if (touchX === null) return;
+      var dx = e.changedTouches[0].clientX - touchX, dy = e.changedTouches[0].clientY - touchY;
+      touchX = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) { show(slideIndex + (dx < 0 ? 1 : -1)); play(); }
+    }, { passive: true });
     show(0);
     play();
   }

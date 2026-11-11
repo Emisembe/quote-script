@@ -336,11 +336,79 @@
   }
 
   // ---------------------------------------------------------------- hero slideshow
+  // Layout > Hero slideshow holds <img> tags and YouTube links (one per line, optional title after |).
+  // A video slide shows the video's picture and a play button; the player loads only when tapped.
   var media = doc.querySelector('.hero-media');
-  var slides = media ? media.querySelectorAll('img') : [];
+  if (media) {
+    var videoSlide = function (id, title) {
+      title = (title || '').trim();
+      var label = title || 'Video';
+      var slide = el('div', { className: 'slide-video', 'data-video': id }, [
+        el('img', { className: 'slide-thumb', src: 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg', alt: label, loading: 'lazy' }),
+        el('button', { type: 'button', className: 'slide-play', 'aria-label': 'Play video: ' + label }, [el('span', { className: 'video-play', 'aria-hidden': 'true' })]),
+        title ? el('span', { className: 'slide-caption', text: title }) : null
+      ]);
+      return slide;
+    };
+    var topLevel = function (node) { while (node.parentNode && node.parentNode !== media) node = node.parentNode; return node; };
+    // YouTube links written as text lines
+    var walker = doc.createTreeWalker(media, 4, null, false);
+    var textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    textNodes.forEach(function (tn) {
+      if (!youtubeId(tn.nodeValue)) return;
+      var anchor = topLevel(tn);
+      var rest = [];
+      tn.nodeValue.split(/\r?\n/).forEach(function (line) {
+        var id = youtubeId(line);
+        if (id) media.insertBefore(videoSlide(id, line.split('|').slice(1).join('|')), anchor);
+        else rest.push(line);
+      });
+      tn.nodeValue = rest.join('\n');
+    });
+    // ...as links, or as pasted YouTube embed code
+    [].forEach.call(media.querySelectorAll('a[href], iframe[src]'), function (n) {
+      var id = youtubeId(n.getAttribute('href') || n.getAttribute('src'));
+      if (!id || n.querySelector('img')) return;
+      var title = n.tagName === 'A' ? n.textContent : n.getAttribute('title');
+      media.insertBefore(videoSlide(id, youtubeId(title) ? '' : title), topLevel(n));
+      n.parentNode.removeChild(n);
+    });
+    // drop what is left of those lines (empty paragraphs, line breaks)
+    [].slice.call(media.childNodes).forEach(function (n) {
+      if (n.nodeType === 3 && !n.nodeValue.trim()) return;
+      if (n.nodeType === 1 && !n.classList.contains('slide-video') && !n.querySelector('img, iframe, video') && n.tagName !== 'IMG' && !n.textContent.trim()) media.removeChild(n);
+    });
+  }
+  var slides = media ? [].filter.call(media.querySelectorAll('img, .slide-video'), function (n) { return !n.classList.contains('slide-thumb'); }) : [];
+  if (media && slides.length === 1 && slides[0].classList.contains('slide-video')) slides[0].classList.add('is-active');
+  // Play a video slide: the YouTube player replaces the picture; leaving the slide stops it
+  var stopVideos = function () {
+    if (!media) return;
+    [].forEach.call(media.querySelectorAll('.slide-video.is-playing'), function (v) {
+      var frame = v.querySelector('iframe');
+      if (frame) v.removeChild(frame);
+      v.classList.remove('is-playing');
+    });
+    media.classList.remove('is-playing');
+  };
+  if (media) {
+    media.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('.slide-play') : null;
+      if (!btn) return;
+      var v = btn.parentNode;
+      var label = v.querySelector('.slide-thumb').getAttribute('alt');
+      v.appendChild(el('iframe', { className: 'slide-frame', src: 'https://www.youtube-nocookie.com/embed/' + v.getAttribute('data-video') + '?autoplay=1&rel=0&playsinline=1',
+        title: label, allow: 'autoplay; encrypted-media; picture-in-picture; fullscreen', allowfullscreen: 'allowfullscreen' }));
+      v.classList.add('is-playing');
+      media.classList.add('is-playing');
+      media.dispatchEvent(new CustomEvent('slidevideo'));
+    });
+  }
   if (media && slides.length) {
     var mw = fit(media.clientWidth || 600, 200, 400, 1600);
     for (var si = 0; si < slides.length; si++) {
+      if (slides[si].tagName !== 'IMG') continue;
       var ss = slides[si].getAttribute('src') || '';
       var sb = scaled(ss, mw);
       if (sb !== ss) slides[si].setAttribute('src', sb);
@@ -348,24 +416,25 @@
   }
   if (media && slides.length > 1) {
     media.classList.add('is-slideshow');
-    var current = 0;
+    var slideIndex = 0;
     var timer = null;
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var dots = el('div', { className: 'slide-dots' });
     var show = function (n) {
-      current = (n + slides.length) % slides.length;
+      stopVideos();
+      slideIndex = (n + slides.length) % slides.length;
       for (var i = 0; i < slides.length; i++) {
-        slides[i].classList.toggle('is-active', i === current);
-        dots.children[i].setAttribute('aria-current', i === current ? 'true' : 'false');
+        slides[i].classList.toggle('is-active', i === slideIndex);
+        dots.children[i].setAttribute('aria-current', i === slideIndex ? 'true' : 'false');
       }
     };
     var play = function () {
       if (reduced) return;
       clearInterval(timer);
-      timer = setInterval(function () { show(current + 1); }, 5500);
+      timer = setInterval(function () { show(slideIndex + 1); }, 5500);
     };
     for (var i = 0; i < slides.length; i++) {
-      if (i > 0) slides[i].setAttribute('loading', 'lazy');
+      if (i > 0 && slides[i].tagName === 'IMG') slides[i].setAttribute('loading', 'lazy');
       dots.appendChild(el('button', { type: 'button', 'aria-label': 'Show slide ' + (i + 1), 'data-slide': i }));
     }
     dots.addEventListener('click', function (e) {
@@ -374,13 +443,24 @@
     });
     var prev = el('button', { type: 'button', className: 'slide-btn slide-prev', 'aria-label': 'Previous slide' }, [svg(CHEVRON_LEFT, 20)]);
     var next = el('button', { type: 'button', className: 'slide-btn slide-next', 'aria-label': 'Next slide' }, [svg(CHEVRON_RIGHT, 20)]);
-    prev.addEventListener('click', function () { show(current - 1); play(); });
-    next.addEventListener('click', function () { show(current + 1); play(); });
+    prev.addEventListener('click', function () { show(slideIndex - 1); play(); });
+    next.addEventListener('click', function () { show(slideIndex + 1); play(); });
     media.appendChild(prev);
     media.appendChild(next);
     media.appendChild(dots);
     media.addEventListener('mouseenter', function () { clearInterval(timer); });
-    media.addEventListener('mouseleave', play);
+    media.addEventListener('mouseleave', function () { if (!media.classList.contains('is-playing')) play(); });
+    // While a video plays, the slideshow waits
+    media.addEventListener('slidevideo', function () { clearInterval(timer); });
+    // Swipe left / right on touch screens
+    var touchX = null, touchY = null;
+    media.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, { passive: true });
+    media.addEventListener('touchend', function (e) {
+      if (touchX === null) return;
+      var dx = e.changedTouches[0].clientX - touchX, dy = e.changedTouches[0].clientY - touchY;
+      touchX = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) { show(slideIndex + (dx < 0 ? 1 : -1)); play(); }
+    }, { passive: true });
     show(0);
     play();
   }

@@ -133,7 +133,14 @@ def render(name, kind):
                  f"<p class='hero-eyebrow'>{esc(pg.title('HTML12'))}</p><h1 class='hero-title'>{blog_title}</h1>"
                  f"<div class='hero-text'>{content['HTML12']}</div></div></div>"
                  f"<div class='widget HTML' data-version='1' id='HTML26'><div class='widget-content hero-actions'>{content['HTML26']}</div></div>")
-    hero_side = f"<div class='widget HTML' data-version='1' id='HTML7'><div class='hero-media'>{content['HTML7']}</div></div>"
+    # Test-only (KPUWU preview): a YouTube video as the second slide, written as a line
+    slideshow = content['HTML7']
+    if name == 'kpuwu':
+        lines = slideshow.split('\n')
+        first_img = next(i for i, l in enumerate(lines) if l.startswith('<img'))
+        lines.insert(first_img + 1, 'https://www.youtube.com/watch?v=SlideVid001 | Annual Delegates Conference')
+        slideshow = '\n'.join(lines)
+    hero_side = f"<div class='widget HTML' data-version='1' id='HTML7'><div class='hero-media'>{slideshow}</div></div>"
     cta = (f"<div class='widget HTML' data-version='1' id='HTML29'><div class='cta-inner'><h2 class='cta-title'>{esc(pg.title('HTML29'))}</h2>"
            f"<div class='widget-content cta-body'>{content['HTML29']}</div></div></div>")
 

@@ -27,7 +27,7 @@ A rebuild of the BCorporate v3 theme used on kpuwuke.blogspot.com. It has the sa
 | Header | **Join button** | One link: the red button top right. The "Not a member yet?" box under every post reuses this link. |
 | Hero | **Our philosophy / Workers united** | Title = small line above the big heading; content = the paragraph. The big heading is the blog title. |
 | Hero | **Hero buttons** | A `<ul>` of links. The first one is red. |
-| Hero | **Hero slideshow** | One or more `<img>` tags. With two or more, they rotate with arrows and dots. |
+| Hero | **Hero slideshow** | One slide per line: `<img>` tags for photos, and YouTube links for videos (`https://www.youtube.com/watch?v=… | Title`, the title is optional). With two or more slides they rotate, with arrows, dots and swiping on phones. A video slide shows its picture and a ▶ button; the video plays inside the slideshow when tapped (the YouTube player loads only then, so the page stays fast) and the slideshow waits until the visitor moves on. Keep it to one or two videos. |
 | Donate (under the banner) | **Support the union** (Layout → *Donate*) | One or two sentences in `<p>`, then a `<ul>` of links: each link becomes a button, the first one big and red (`<li><a href="/p/donate.html">Donate now</a></li>`). Point it at your Donate page, a PayPal donate link or an M-Pesa page; put Paybill details in `<p class="donate-note">…</p>`. The gadget title is the heading. Remove or empty the gadget to hide the strip. |
 | What we do | **How we support members** | A `<ul>`: each `<li>` is a card, `<strong>` for the card title. |
 | Numbers (template only) | **Our union in numbers** | A `<ul>`: `<li><strong>10,000+</strong> members</li>`. Delete the gadget and the red band disappears. |
