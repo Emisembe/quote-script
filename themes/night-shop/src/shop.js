@@ -3299,7 +3299,8 @@
     return cfg;
   }
   function bestAnswers(cfg, question) {
-    var exact = cfg.qa.filter(function (x) { return x.q.toLowerCase() === question.trim().toLowerCase(); })[0];
+    var norm = function (q) { return String(q).toLowerCase().replace(/[\s?!.؟。]+$/, '').trim(); };   // "what is a kit" = "What is a kit?"
+    var exact = cfg.qa.filter(function (x) { return norm(x.q) === norm(question); })[0];
     if (exact) return [exact];
     var qw = words(question);
     if (!qw.length) return [];

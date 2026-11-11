@@ -108,7 +108,8 @@ Do these steps in this order; each one points to the section with the details. T
 | File | What it's for |
 |---|---|
 | `theme-night-shop.xml` (in the main folder) | The theme you upload to Blogger |
-| `samples/` | Seven ready-made product posts to copy (07 = digital download) |
+| `samples/` | Twelve ready-made product posts to copy (07 = digital download, 08–10 = kits, 11 = spares pack, 12 = universal template for any item: tractor, machine, vehicle, tool, appliance, furniture) |
+| `WHATSAPP-REPLIES.md` | Ready WhatsApp quick replies (English and Swahili): first contact, kits, objections, order, payment |
 | `pages/` | Page templates: shipping, delivery, returns, contact, impressum, privacy, team, fulfilment, kenya |
 | `apps-script/Code.gs` | The Google Sheet order inbox |
 | `GUIDE.md` | This guide |
@@ -291,6 +292,29 @@ Send order: Zahlungspflichtig bestellen
   Language codes: `es` Spanish, `sw` Swahili, `ar` Arabic, `am` Amharic, `ti` Tigrinya, `zh` Chinese,
   `so` Somali, `it` Italian, `pt` Portuguese, `tr` Turkish.
 - Product **titles** stay as you typed them (Blogger has one title per post).
+
+## 5a. Kits, spares and "new on request" (optional add-on)
+
+Nothing in the theme changes for this; it's content you add when you want it.
+
+- **Kits** are ordinary product posts with one price and a table of what's inside (`samples/08`, `09`, `10`).
+  Give them the label **Kits**, so `/search/label/Kits` lists them (the Kenya page links there). `data-stock`
+  = how many complete kits you can put together; `data-weight` = the whole kit. Mention that any item can be
+  swapped; the swap itself happens on WhatsApp and you send the new price.
+- **Spares pack** (`samples/11`) is a small add-on product with `data-options` for the appliance type. Mention
+  it in every appliance post ("Add the spares pack to your order"). Cheap in Germany, hard to get in Kenya.
+- **New on request**: the Kenya page (`pages/kenya.html`) has a section "Need something new? We buy it for you".
+  You buy only after the customer confirms your written quote (shop price + buying fee + shipping). No stock.
+- **"Buy once instead of three times"**: the argument is on the Kenya page, in the FAQ gadget and in the chat
+  helper (English and German). Add it to other languages in the same gadgets if you advertise there.
+- **Any other item** (tractor, excavator, concrete mixer, car, e-bike, furniture …): `samples/12-any-item-template.html`
+  is one template for everything. It has a condition grade (A/B/C), a key-facts table (keep the rows that fit:
+  hours, PTO and tyres for a tractor, voltage for a tool, energy class for an appliance), "What we tested" with
+  numbers and a date, "Known wear" (say it before the buyer finds it), what's included, photos, delivery
+  (Germany and Kenya, drained machines) and warranty. Delete the sections that don't fit and publish.
+- Ready WhatsApp replies for all of this: `WHATSAPP-REPLIES.md`.
+- **Leave out** tax advice, instalment plans and maintenance contracts unless you have a licence and a partner
+  in Kenya for them. The replies sheet already answers "no cash now" and "spare parts?" without them.
 
 ## 5b. Call and video buttons ("Talk to us")
 

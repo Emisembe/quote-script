@@ -79,7 +79,7 @@ A product is a post with a product block at the very top of the body (HTML view)
 
 `data-digital="yes"` makes it a download. Weight and size are entered by the **owner**, never the buyer.
 Labels are categories; SpotCommerce price labels (`_39`, `-49`, `!0`) work with `label_prices: yes`.
-Ready posts: `assets/samples/01–07`. Full reference: `references/products-and-orders.md` §1–2.
+Ready posts: `assets/samples/01–07`; kits (bundles at one price), spares pack and a universal template for any item (tractor, machine, vehicle, tool, appliance; condition grade, key facts, what was tested, known wear): `08–12`. Kits/new-on-request/"buy once" are content only (posts, Kenya page section, FAQ + chat lines, `night-shop/WHATSAPP-REPLIES.md`), never a tax-advice or instalment feature. Full reference: `references/products-and-orders.md` §1–2.
 
 ## 3. Orders and payments
 

@@ -3150,6 +3150,8 @@ Do you ship to Kenya? | Yes. We tell you the next shipping date and the full pri
 Can I return an item? | Yes, within 14 days of receiving it. You find the details in our returns policy.
 How do I get my digital product? | The download link arrives by email as soon as your payment is confirmed.
 Do you offer fulfilment for other sellers? | Yes. We store, pack and ship for online shops. Ask for a quote on our Fulfilment page.
+Can I change what is in a kit? | Yes. Swap any item for another from the shop, leave one out or add one. You get the new price before you pay.
+Can you buy something new for me in Germany? | Yes. Send us the product name or a link. You get one quote: German shop price + our buying fee + shipping, before you pay.
 </div>
 <div data-lang="de">
 Wie kann ich bezahlen? | Per Überweisung, PayPal oder bar bei Abholung. Sie wählen an der Kasse; die Zahlungsdaten kommen mit der Bestellbestätigung.
@@ -3158,6 +3160,8 @@ Liefern Sie nach Kenia? | Ja. Wir nennen Ihnen vor der Zahlung den nächsten Ver
 Kann ich etwas zurückgeben? | Ja, innerhalb von 14 Tagen nach Erhalt. Die Einzelheiten finden Sie in der Widerrufsbelehrung.
 Wie bekomme ich mein digitales Produkt? | Der Download-Link kommt per E-Mail, sobald Ihre Zahlung bestätigt ist.
 Bieten Sie Fulfillment für andere Händler an? | Ja. Wir lagern, verpacken und versenden für Online-Shops. Fragen Sie auf unserer Fulfillment-Seite ein Angebot an.
+Kann ich ein Set ändern? | Ja. Tauschen Sie jeden Artikel gegen einen anderen aus dem Shop, lassen Sie einen weg oder fügen Sie einen hinzu. Den neuen Preis bekommen Sie vor der Zahlung.
+Kaufen Sie auch Neuware für mich? | Ja. Schicken Sie uns den Produktnamen oder einen Link. Sie bekommen ein Angebot: deutscher Ladenpreis + unsere Einkaufsgebühr + Versand, vor der Zahlung.
 </div>
 <div data-lang="sw">
 Ninalipaje? | Kwa uhamisho wa benki, PayPal au taslimu unapochukua. Unachagua wakati wa kulipia; maelezo ya malipo yanakuja pamoja na uthibitisho wa oda yako.
@@ -3538,6 +3542,9 @@ Can I sell my things to you? | Maybe! Send us photos and a short description on 
 How much does shipping to Kenya cost? | It depends on size and weight. Tell us what you want and your city, and we send you the full price before you pay. More: /p/kenya.html | price cost mombasa nairobi container freight
 How do I track my order? | You get your order number by email. Send it to us on WhatsApp and we tell you where your parcel is. | tracking parcel status
 How do I contact you? | WhatsApp is fastest. You can also email us or call during opening hours. | phone call email reach talk
+What is a kit? | A kit is several tested items sold together at one price, with the spares you need in the first year: Home starter, Small workshop, Small farm. You can swap, leave out or add items. See /search/label/Kits | kit kits bundle package set starter
+Can you buy new things for me? | Yes. Send us the product name or a link and you get one quote: German shop price + our buying fee + shipping, before you pay. | new buy sourcing bauhaus obi bosch makita request
+Why buy second-hand from Germany instead of new locally? | A good German appliance or tool usually lasts 8–10 years; cheap new ones often 3–4. Over ten years the tested second-hand machine is usually cheaper, even with shipping, and the spares are in the box. | cheaper cheap expensive local locally nairobi mombasa quality last years compare worth
 </div>
 <div data-lang="de">
 name: Fragen Sie Kreislo
@@ -3553,6 +3560,9 @@ Kann ich Ihnen Sachen verkaufen? | Vielleicht! Schicken Sie uns Fotos und eine k
 Was kostet der Versand nach Kenia? | Das hängt von Größe und Gewicht ab. Sagen Sie uns, was Sie möchten und Ihre Stadt, dann nennen wir Ihnen vor der Zahlung den Gesamtpreis. Mehr: /p/kenya.html | preis kosten mombasa nairobi container fracht
 Wo ist meine Bestellung? | Ihre Bestellnummer kommt per E-Mail. Schicken Sie sie uns per WhatsApp, dann sagen wir Ihnen, wo Ihr Paket ist. | sendungsverfolgung paket status tracking
 Wie erreiche ich Sie? | Am schnellsten per WhatsApp. Sie können uns auch eine E-Mail schreiben oder während der Öffnungszeiten anrufen. | telefon anrufen email kontakt
+Was ist ein Set? | Ein Set sind mehrere geprüfte Artikel zu einem Preis, mit den Ersatzteilen fürs erste Jahr: Erstausstattung Zuhause, Kleine Werkstatt, Kleine Farm. Sie können Artikel tauschen, weglassen oder ergänzen. Siehe /search/label/Kits | set sets kit paket bundle starter
+Kaufen Sie auch Neuware für mich? | Ja. Schicken Sie uns den Produktnamen oder einen Link, Sie bekommen ein Angebot: deutscher Ladenpreis + Einkaufsgebühr + Versand, vor der Zahlung. | neu neuware kaufen bauhaus obi bosch makita anfrage besorgen
+Warum gebraucht aus Deutschland statt neu vor Ort? | Ein gutes deutsches Gerät hält meist 8–10 Jahre, billige Neuware oft 3–4. Über zehn Jahre ist die geprüfte Gebrauchtmaschine meist günstiger, auch mit Versand, und die Ersatzteile liegen bei. | billiger billig teurer vor ort lokal nairobi mombasa qualität hält jahre vergleich lohnt
 </div>
 <div data-lang="sw">
 name: Uliza Kreislo
@@ -7112,7 +7122,8 @@ log_unanswered: yes
     return cfg;
   }
   function bestAnswers(cfg, question) {
-    var exact = cfg.qa.filter(function (x) { return x.q.toLowerCase() === question.trim().toLowerCase(); })[0];
+    var norm = function (q) { return String(q).toLowerCase().replace(/[\s?!.؟。]+$/, '').trim(); };   // "what is a kit" = "What is a kit?"
+    var exact = cfg.qa.filter(function (x) { return norm(x.q) === norm(question); })[0];
     if (exact) return [exact];
     var qw = words(question);
     if (!qw.length) return [];
