@@ -14,15 +14,25 @@
  *     "Delivery options" gadget, so the shipping fee can't be changed in the browser either.
  *   - The browser's prices are never trusted: every price is re-read from the public Blogger feed of that post,
  *     and shipping, bank details and shop name are read from the blog's own "Shop settings" gadget.
+ *   - "Settings" tab in the sheet: your blog address, email, Telegram, report times. It survives script updates.
+ *   - "Recipients" tab: who gets order alerts, request alerts, the daily and the weekly report.
+ *   - Test mode: fill in "Test mode: send every email to" in Settings and every email goes there instead.
+ *   - Returning customers are marked in the Orders tab (same email or phone as an earlier order).
+ *   - Menu Shop -> Send payment reminder: a friendly reminder with the bank details for an unpaid order.
+ *   - Daily report (yesterday's orders, unpaid orders, new requests, sign-ups, unanswered chat questions) and
+ *     weekly report (revenue, top products, countries, methods). Times in Settings; setup makes the triggers.
  *
  * Setup (5 minutes) — full steps with pictures-free wording in the theme's GUIDE.md
- *   1. sheets.new -> Extensions -> Apps Script -> paste this file -> fill in SETTINGS -> Save.
- *   2. Run "setup" once (Run button) and allow the permissions. It creates the tabs, switches on the
- *      "Paid -> send download links" trigger and sends you a test email. (Run it again after updating this file.)
+ *   1. sheets.new -> Extensions -> Apps Script -> paste this file -> Save.
+ *   2. Run "setup" once (Run button) and allow the permissions. It creates the tabs (including Settings and
+ *      Recipients), the triggers, and sends you a test email. Then fill in the Settings tab: at least the blog
+ *      address. (Run setup again after updating this file or changing the report times.)
  *   3. Deploy -> New deployment -> type "Web app" -> Execute as: Me, Who has access: Anyone -> Deploy.
  *   4. Copy the /exec URL into the blog: Layout -> Shop settings ->  google_sheet: https://script.google.com/macros/s/.../exec
  *   After ANY code change: Deploy -> Manage deployments -> Edit (pencil) -> Version: New version -> Deploy.
  */
+// Defaults. The "Settings" tab in the sheet wins over these, so you never have to edit this file again:
+// run setup once, then fill in the Settings tab. (Values typed here are copied into the tab the first time.)
 var SETTINGS = {
   BLOG_URL: 'https://YOURBLOG.blogspot.com', // the shop's address
   OWNER_EMAIL: '',                          // where new orders are sent (blank = the Google account running this)
@@ -30,17 +40,45 @@ var SETTINGS = {
   EMAIL_OWNER_FOR_CHAT_ORDERS: false,       // also email you WhatsApp/Telegram/email/PayPal orders (they reach you in the chat anyway)
   TELEGRAM_BOT_TOKEN: '',                   // optional: from @BotFather, e.g. 123456:ABC-DEF...
   TELEGRAM_CHAT_ID: '',                     // optional: run "telegramFindChatId" after messaging your bot
+  TEST_EMAIL: '',                           // test mode: while filled in, EVERY email goes to this address instead
+  REPORT_DAILY: '07:00',                    // daily report time ('off' = none)
+  REPORT_WEEKLY_DAY: 'Monday',              // weekly report day ('off' = none)
+  REPORT_WEEKLY: '08:00',                   // weekly report time
+  TIMEZONE: '',                             // blank = the script's time zone (File > Project settings)
+  REMINDER_DAYS: 3,                         // unpaid orders older than this are listed in the daily report
   // Used only if the blog's Shop settings can't be read:
   SHOP_NAME: 'My Shop',
   CURRENCY: 'EUR',
   COLOR_DARK: '#111111',
   COLOR_ACCENT: '#FF3300'
 };
+// The Settings tab: [key, label shown in the tab, explanation]. Values are read by label, so the order can change.
+var SETTING_ROWS = [
+  ['BLOG_URL', 'Blog address', 'Your shop, e.g. https://yourshop.blogspot.com (needed)'],
+  ['OWNER_EMAIL', 'Owner email', 'Your address. Blank = the Google account that runs this script. See the Recipients tab for more people'],
+  ['EMAIL_BUYER', 'Email the buyer', 'yes / no: buyers get a confirmation email for website orders'],
+  ['EMAIL_OWNER_FOR_CHAT_ORDERS', 'Email me for chat orders', 'yes / no: also email WhatsApp, Telegram, email and PayPal orders (they reach you in the chat anyway)'],
+  ['TELEGRAM_BOT_TOKEN', 'Telegram bot token', 'Optional. From @BotFather, e.g. 123456:ABC-DEF…'],
+  ['TELEGRAM_CHAT_ID', 'Telegram chat id', 'Optional. Message your bot, then run telegramFindChatId in the script editor'],
+  ['TEST_EMAIL', 'Test mode: send every email to', 'While this has an address, EVERY email (buyers, alerts, reports) goes there instead; the real recipient is shown in the subject. Clear it to go live'],
+  ['REPORT_DAILY', 'Daily report time', 'e.g. 07:00 (whole hours are used); write off for no daily report. Run setup after changing'],
+  ['REPORT_WEEKLY_DAY', 'Weekly report day', 'Monday … Sunday; write off for no weekly report. Run setup after changing'],
+  ['REPORT_WEEKLY', 'Weekly report time', 'e.g. 08:00 (whole hours are used)'],
+  ['TIMEZONE', 'Time zone', 'e.g. Europe/Berlin or Africa/Nairobi. Blank = the script\'s time zone'],
+  ['REMINDER_DAYS', 'Payment reminder after (days)', 'Unpaid bank-transfer / PayPal orders older than this are listed in the daily report. Send the reminder from the Shop menu'],
+  ['SHOP_NAME', 'Shop name (fallback)', 'Only used if the blog\'s Shop settings can\'t be read'],
+  ['CURRENCY', 'Currency (fallback)', 'Only used if the blog\'s Shop settings can\'t be read'],
+  ['COLOR_DARK', 'Email colour: dark', 'Hex colour for email headers, e.g. #111111'],
+  ['COLOR_ACCENT', 'Email colour: accent', 'Hex colour for buttons and highlights, e.g. #FF3300']
+];
+var SETTINGS_HEADERS = ['Setting', 'Value', 'What it does'];
+var RECIPIENT_HEADERS = ['Email', 'Name', 'Active (yes/no)', 'New orders (yes/no)', 'New requests (yes/no)', 'Daily report (yes/no)', 'Weekly report (yes/no)'];
+var ORDER_STATUSES = ['New', 'Paid', 'Packed', 'Shipped', 'Delivered', 'Cancelled', 'Refunded'];
 
 // New columns are only ever added at the end, so an existing sheet is extended instead of replaced.
 var ORDER_HEADERS = ['Order ID', 'Received', 'Status', 'Method', 'Payment', 'Name', 'Phone', 'Email', 'Street', 'Postcode', 'City',
                      'Country', 'Note', 'Items', 'Subtotal', 'Shipping', 'Total', 'Currency', 'Language', 'Page',
-                     'Delivery', 'Delivery time', 'Weight (kg)', 'Downloads sent'];
+                     'Delivery', 'Delivery time', 'Weight (kg)', 'Downloads sent', 'Customer', 'Reminder sent'];
 var LINE_HEADERS = ['Order ID', 'Received', 'Product', 'Options', 'Qty', 'Price', 'Line total', 'Post ID', 'Link', 'Type'];
 var DOWNLOAD_HEADERS = ['Product', 'Post ID', 'Download link', 'Message to the buyer (optional)'];
 var PAID = /^(paid|bezahlt|payé|paye|pagado)$/i;
@@ -103,12 +141,13 @@ function doPost(e) {
     var book = SpreadsheetApp.getActiveSpreadsheet();
     var orders = sheet_(book, 'Orders', ORDER_HEADERS);
     var id = uniqueId_(orders, order.orderId, now);
+    var returning = returning_(orders, c);
     // A leading apostrophe keeps phone numbers and postcodes as text (no lost leading zeros).
     orders.appendRow([id, now, status, METHOD_NAMES[method], text_(c.payment), text_(c.name), "'" + c.phone, text_(c.email),
                       text_(c.street || c.address), "'" + (c.postcode || ''), text_(c.city), text_(c.country), text_(c.note),
                       text_(summary), sub, ship, total, shop.currency, text_(order.lang), text_(order.page),
                       option ? text_(option.name) : '', option ? text_(option.time) : '', physical && weight ? Math.round(weight * 1000) / 1000 : '',
-                      digital ? '' : 'n/a']);
+                      digital ? '' : 'n/a', returning.label, '']);
     var linesSheet = sheet_(book, 'Order lines', LINE_HEADERS);
     linesSheet.getRange(linesSheet.getLastRow() + 1, 1, lines.length, LINE_HEADERS.length).setValues(lines.map(function (l) {
       return [id, now, text_(l.title), text_(l.chosen.join(', ')), l.qty, l.price, l.total, "'" + l.id, l.url, l.digital ? 'Digital' : 'Physical'];
@@ -117,10 +156,10 @@ function doPost(e) {
     lock.releaseLock();
 
     var o = { id: id, method: method, customer: c, lines: lines, sub: sub, ship: ship, total: total, shop: shop,
-              option: option, weight: weight, physical: physical, digital: digital };
-    if (method === 'order' || SETTINGS.EMAIL_OWNER_FOR_CHAT_ORDERS) {
-      MailApp.sendEmail({
-        to: SETTINGS.OWNER_EMAIL || Session.getEffectiveUser().getEmail(),
+              option: option, weight: weight, physical: physical, digital: digital, returning: returning };
+    if (method === 'order' || S_('EMAIL_OWNER_FOR_CHAT_ORDERS')) {
+      mail_({
+        to: recipients_('orders'),
         replyTo: c.email || undefined,
         subject: '🛍️ New order #' + id + ' · ' + money_(total, shop.currency) + ' · ' + c.name + ' (' + METHOD_NAMES[method] + ')',
         body: plainText_(o),
@@ -128,8 +167,8 @@ function doPost(e) {
         name: shop.name
       });
     }
-    if (method === 'order' && SETTINGS.EMAIL_BUYER && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email || '')) {
-      MailApp.sendEmail({
+    if (method === 'order' && S_('EMAIL_BUYER') && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c.email || '')) {
+      mail_({
         to: c.email,
         subject: shop.name + ': order #' + id + ' received',
         body: plainText_(o),
@@ -194,14 +233,14 @@ function lead_(data) {
       news.appendRow([now, text_(email), 'Waiting for confirmation', '', text_(data.lang), text_(data.page), token]);
       lock.releaseLock();
       var url = ScriptApp.getService().getUrl();
-      var b = { name: shop.name, dark: SETTINGS.COLOR_DARK, accent: SETTINGS.COLOR_ACCENT, site: blog_() };
+      var b = { name: shop.name, dark: S_('COLOR_DARK'), accent: S_('COLOR_ACCENT'), site: blog_() };
       var body = '<div class="email-body" style="padding:26px 32px;">' +
         '<p style="font-size:15px;color:#222222;line-height:1.7;margin:0 0 14px;">Hello,</p>' +
         '<p style="font-size:15px;color:#222222;line-height:1.7;margin:0 0 6px;">please confirm that you want to receive news and offers from ' + esc_(shop.name) + ' by email.</p>' +
         button_(url + '?confirm=' + token, 'Yes, subscribe me', b) +
         '<p style="font-size:12px;color:#777777;line-height:1.7;margin:18px 0 0;">If you did not sign up, just ignore this email; you will not hear from us. ' +
         'You can unsubscribe at any time: <a href="' + esc_(url + '?unsubscribe=' + token) + '" style="color:#777777;">unsubscribe</a>.</p></div>';
-      MailApp.sendEmail({ to: email, subject: shop.name + ': please confirm your subscription', name: shop.name,
+      mail_({ to: email, subject: shop.name + ': please confirm your subscription', name: shop.name,
         body: 'Please confirm your subscription: ' + url + '?confirm=' + token,
         htmlBody: wrapEmail_(banner_('Newsletter', 'Please confirm', b, true) + body, b) });
       return reply_({ ok: true });
@@ -215,20 +254,20 @@ function lead_(data) {
     sheet_(book, 'Requests', REQUEST_HEADERS).appendRow([now, type, text_(name), text_(email), "'" + phone, text_(company),
       text_(details), 'New', text_(data.lang), text_(data.page)]);
     lock.releaseLock();
-    var b2 = { name: shop.name, dark: SETTINGS.COLOR_DARK, accent: SETTINGS.COLOR_ACCENT, site: blog_() };
+    var b2 = { name: shop.name, dark: S_('COLOR_DARK'), accent: S_('COLOR_ACCENT'), site: blog_() };
     var pairs = Object.keys(fields).filter(function (k) { return fields[k]; }).map(function (k) { return [k, fields[k]]; });
     var tel = String(phone).replace(/[^\d+]/g, '');
     var reply = /^(\+|00)\d{7,}$/.test(tel) ? button_('https://wa.me/' + tel.replace(/^\+|^00/, ''), 'Reply on WhatsApp', b2)
       : (email ? button_('mailto:' + email + '?subject=' + encodeURIComponent(shop.name + ': ' + type), 'Reply by email', b2) : '');
-    MailApp.sendEmail({ to: SETTINGS.OWNER_EMAIL || Session.getEffectiveUser().getEmail(), replyTo: email || undefined, name: shop.name,
+    mail_({ to: recipients_('requests'), replyTo: email || undefined, name: shop.name,
       subject: '📩 New request: ' + type + ' · ' + (company || name || email || phone),
       body: type + '\n\n' + pairs.map(function (x) { return x[0] + ': ' + x[1]; }).join('\n'),
       htmlBody: wrapEmail_(banner_('New request', type, b2, false) + '<div class="email-body" style="padding:26px 32px;">' +
         detailsTable_(pairs, b2) + reply + '</div>', b2) });
-    if (SETTINGS.TELEGRAM_BOT_TOKEN && SETTINGS.TELEGRAM_CHAT_ID) {
+    if (S_('TELEGRAM_BOT_TOKEN') && S_('TELEGRAM_CHAT_ID')) {
       try {
-        UrlFetchApp.fetch('https://api.telegram.org/bot' + SETTINGS.TELEGRAM_BOT_TOKEN + '/sendMessage', { method: 'post', muteHttpExceptions: true,
-          payload: { chat_id: SETTINGS.TELEGRAM_CHAT_ID, text: '📩 ' + type + '\n' + pairs.map(function (x) { return x[0] + ': ' + x[1]; }).join('\n') } });
+        UrlFetchApp.fetch('https://api.telegram.org/bot' + S_('TELEGRAM_BOT_TOKEN') + '/sendMessage', { method: 'post', muteHttpExceptions: true,
+          payload: { chat_id: S_('TELEGRAM_CHAT_ID'), text: '📩 ' + type + '\n' + pairs.map(function (x) { return x[0] + ': ' + x[1]; }).join('\n') } });
       } catch (x) { /* the sheet row and email are what count */ }
     }
     return reply_({ ok: true });
@@ -256,15 +295,15 @@ function newsletterLink_(action, token) {
   var msg = !ok ? 'This link is not valid any more.' : (action === 'confirm' ? 'Thank you! You are now subscribed.' : 'You are unsubscribed. You will not get any more emails.');
   var html = '<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc_(shop.name) + '</title></head>' +
     '<body style="margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f4f4;"><div style="max-width:520px;margin:60px auto;background:#fff;border-top:6px solid ' +
-    SETTINGS.COLOR_ACCENT + ';padding:36px 30px;text-align:center;"><h1 style="margin:0 0 12px;font-size:24px;">' + esc_(shop.name) + '</h1>' +
+    S_('COLOR_ACCENT') + ';padding:36px 30px;text-align:center;"><h1 style="margin:0 0 12px;font-size:24px;">' + esc_(shop.name) + '</h1>' +
     '<p style="font-size:16px;color:#333;line-height:1.6;">' + esc_(msg) + '</p><p style="margin-top:26px;"><a href="' + esc_(blog_()) +
-    '" style="background:' + SETTINGS.COLOR_ACCENT + ';color:#fff;padding:12px 22px;border-radius:6px;text-decoration:none;font-weight:bold;">Back to the shop</a></p></div></body></html>';
+    '" style="background:' + S_('COLOR_ACCENT') + ';color:#fff;padding:12px 22px;border-radius:6px;text-decoration:none;font-weight:bold;">Back to the shop</a></p></div></body></html>';
   return HtmlService.createHtmlOutput(html).setTitle(shop.name);
 }
 
 /** The blog address from SETTINGS, without a trailing slash. */
 function blog_() {
-  return String(SETTINGS.BLOG_URL || '').trim().replace(/\/+$/, '');
+  return String(S_('BLOG_URL') || '').trim().replace(/\/+$/, '');
 }
 
 function reply_(obj) {
@@ -342,8 +381,8 @@ function shopSettings_() {
     if (m && !s[m[1].toLowerCase()]) s[m[1].toLowerCase()] = m[2].trim();
   });
   return {
-    name: s.shop_name || SETTINGS.SHOP_NAME,
-    currency: (s.currency || SETTINGS.CURRENCY).toUpperCase(),
+    name: s.shop_name || S_('SHOP_NAME'),
+    currency: (s.currency || S_('CURRENCY')).toUpperCase(),
     shipping: num_(s.shipping) || 0,
     freeOver: num_(s.free_shipping_over) || 0,
     shipTo: shipTo,
@@ -486,7 +525,7 @@ function payBank_(payment) { return !payment || /bank|transfer|überweis|viremen
 function payPal_(payment) { return /paypal/i.test(payment || ''); }
 
 function brand_(o) {
-  return { name: o.shop.name, dark: SETTINGS.COLOR_DARK, accent: SETTINGS.COLOR_ACCENT, site: blog_() };
+  return { name: o.shop.name, dark: S_('COLOR_DARK'), accent: S_('COLOR_ACCENT'), site: blog_() };
 }
 
 function wrapEmail_(inner, b) {
@@ -580,6 +619,8 @@ function ownerEmail_(o) {
     ' · ' + esc_(Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd.MM.yyyy HH:mm')) + '</p>' +
     (o.method === 'order' ? '' : '<p style="font-size:13px;color:#7A5800;background:#FFF3CD;padding:10px 12px;margin:10px 0 0;">The buyer was sent to ' +
       esc_(METHOD_NAMES[o.method]) + ' to finish the order. Check that the message arrived.</p>') +
+    (o.returning && o.returning.count ? '<p style="font-size:13px;color:#1f4d40;background:#EEF6F3;padding:10px 12px;margin:10px 0 0;">↩︎ Returning customer: ' +
+      esc_(o.returning.label) + '</p>' : '') +
     section_('Products', b) + itemsTable_(o, b) +
     section_('Customer', b) + detailsTable_([['Name', c.name], ['Phone', c.phone], ['Email', c.email], ['Address', o.physical ? address_(c) : ''],
       ['Payment', c.payment], ['Delivery', o.option ? o.option.name + (o.option.time ? ' · ' + o.option.time : '') : ''],
@@ -663,7 +704,7 @@ function sendDownloads_(row, force) {
   }
 
   var shop = shopSettings_();
-  var b = { name: shop.name, dark: SETTINGS.COLOR_DARK, accent: SETTINGS.COLOR_ACCENT, site: blog_() };
+  var b = { name: shop.name, dark: S_('COLOR_DARK'), accent: S_('COLOR_ACCENT'), site: blog_() };
   var name = String(r[col('Name')]);
   var body = '<div class="email-body" style="padding:26px 32px;">' +
     '<p style="font-size:15px;color:#222222;line-height:1.7;margin:0 0 14px;">Hello ' + esc_(name) + ',</p>' +
@@ -679,9 +720,9 @@ function sendDownloads_(row, force) {
     '</div>';
   var text = 'Hello ' + name + ',\n\nyour payment for order #' + id + ' has arrived. Your download:\n\n' +
     items.map(function (it) { return it.title + ': ' + links[it.postId].link + (links[it.postId].message ? '\n' + links[it.postId].message : ''); }).join('\n\n');
-  MailApp.sendEmail({ to: email, subject: shop.name + ': your download for order #' + id, body: text,
+  mail_({ to: email, subject: shop.name + ': your download for order #' + id, body: text,
     htmlBody: wrapEmail_(banner_('Payment received', 'Your download', b, true) + body, b), name: shop.name,
-    replyTo: SETTINGS.OWNER_EMAIL || undefined });
+    replyTo: S_('OWNER_EMAIL') || undefined });
   sentCell.setValue(new Date());
   return 'Download links for order ' + id + ' sent to ' + email + '.';
 }
@@ -702,7 +743,13 @@ function onOrderEdit(e) {
 /** Adds the "Shop" menu to the sheet. */
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('Shop')
+    .addItem('Send payment reminder for the selected order', 'menuSendReminder')
     .addItem('Send download links for the selected order', 'menuSendDownloads')
+    .addSeparator()
+    .addItem('Send the daily report now', 'sendDailyReport')
+    .addItem('Send the weekly report now', 'sendWeeklyReport')
+    .addSeparator()
+    .addItem('Set up / update (after editing Settings or the script)', 'setup')
     .addToUi();
 }
 
@@ -716,11 +763,11 @@ function menuSendDownloads() {
 
 /** Instant alert in Telegram (optional). */
 function telegram_(o) {
-  if (!SETTINGS.TELEGRAM_BOT_TOKEN || !SETTINGS.TELEGRAM_CHAT_ID) return;
+  if (!S_('TELEGRAM_BOT_TOKEN') || !S_('TELEGRAM_CHAT_ID')) return;
   try {
-    UrlFetchApp.fetch('https://api.telegram.org/bot' + SETTINGS.TELEGRAM_BOT_TOKEN + '/sendMessage', {
+    UrlFetchApp.fetch('https://api.telegram.org/bot' + S_('TELEGRAM_BOT_TOKEN') + '/sendMessage', {
       method: 'post', muteHttpExceptions: true,
-      payload: { chat_id: SETTINGS.TELEGRAM_CHAT_ID, text: '🛍️ ' + plainText_(o) }
+      payload: { chat_id: S_('TELEGRAM_CHAT_ID'), text: '🛍️ ' + plainText_(o) }
     });
   } catch (x) { /* the sheet row and email are what count */ }
 }
@@ -744,28 +791,393 @@ function question_(fields, data) {
   }
 }
 
+// ---------------------------------------------------------------- settings, recipients, test mode
+
+var settingsCache_ = null;
+/** A setting: the Settings tab wins, then the SETTINGS defaults. Typed like the default (yes/no -> true/false, numbers). */
+function S_(key) {
+  if (settingsCache_ === null) {
+    settingsCache_ = {};
+    try {
+      var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Settings');
+      if (sheet && sheet.getLastRow() > 1) {
+        var byLabel = {};
+        SETTING_ROWS.forEach(function (r) { byLabel[r[1].toLowerCase()] = r[0]; });
+        sheet.getRange(2, 1, sheet.getLastRow() - 1, 2).getValues().forEach(function (r) {
+          var k = byLabel[String(r[0]).trim().toLowerCase()];
+          if (k && String(r[1]).trim() !== '') settingsCache_[k] = r[1];
+        });
+      }
+    } catch (x) { /* no sheet context (e.g. a test): defaults only */ }
+  }
+  var def = SETTINGS[key], v = settingsCache_[key];
+  if (v === undefined) return def;
+  if (typeof def === 'boolean') return /^(yes|true|on|1|ja|oui|sí|si)$/i.test(String(v).trim());
+  if (typeof def === 'number') { var n = parseFloat(String(v).replace(',', '.')); return isNaN(n) ? def : n; }
+  if (v instanceof Date) return Utilities.formatDate(v, tz_(), 'HH:mm');
+  return String(v).trim();
+}
+
+function tz_() { return S_('TIMEZONE') || Session.getScriptTimeZone(); }
+function ownerAddress_() { return S_('OWNER_EMAIL') || Session.getEffectiveUser().getEmail(); }
+
+/** Creates the Settings tab or adds missing rows; copies values typed into SETTINGS (code) into empty cells once. */
+function settingsSheet_(book) {
+  var sheet = book.getSheetByName('Settings');
+  if (!sheet) {
+    sheet = book.insertSheet('Settings');
+    sheet.appendRow(SETTINGS_HEADERS);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, 3).setFontWeight('bold').setBackground('#111111').setFontColor('#ffffff');
+  }
+  var rows = sheet.getLastRow() > 1 ? sheet.getRange(2, 1, sheet.getLastRow() - 1, 3).getValues() : [];
+  var have = {};
+  rows.forEach(function (r, i) { have[String(r[0]).trim().toLowerCase()] = i + 2; });
+  var placeholder = { BLOG_URL: 'https://YOURBLOG.blogspot.com' };
+  SETTING_ROWS.forEach(function (def) {
+    var key = def[0], label = def[1], help = def[2], codeValue = SETTINGS[key];
+    var typed = typeof codeValue === 'boolean' ? (codeValue ? 'yes' : 'no') : String(codeValue === undefined ? '' : codeValue);
+    if (placeholder[key] === typed) typed = '';
+    var row = have[label.toLowerCase()];
+    if (!row) {
+      sheet.appendRow([label, typed, help]);
+    } else if (typed && String(rows[row - 2][1]).trim() === '') {
+      sheet.getRange(row, 2).setValue(typed);
+    }
+  });
+  try { sheet.setColumnWidth(1, 240); sheet.setColumnWidth(2, 320); sheet.setColumnWidth(3, 560); } catch (x) {}
+  settingsCache_ = null;
+  return sheet;
+}
+
+/** Creates the Recipients tab with the owner as the first recipient. */
+function recipientsSheet_(book) {
+  var sheet = book.getSheetByName('Recipients');
+  var fresh = !sheet;
+  sheet = sheet_(book, 'Recipients', RECIPIENT_HEADERS);
+  if (fresh || sheet.getLastRow() < 2) sheet.appendRow([ownerAddress_(), 'Owner', 'yes', 'yes', 'yes', 'yes', 'yes']);
+  return sheet;
+}
+
+/** Comma-separated emails for one kind: 'orders', 'requests', 'daily', 'weekly'. Falls back to the owner. */
+function recipients_(kind) {
+  var col = { orders: 3, requests: 4, daily: 5, weekly: 6 }[kind];
+  var out = [];
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Recipients');
+    if (sheet && sheet.getLastRow() > 1) {
+      sheet.getRange(2, 1, sheet.getLastRow() - 1, RECIPIENT_HEADERS.length).getValues().forEach(function (r) {
+        var yes = function (v) { return /^(yes|true|on|1|ja|oui|sí|si|x)$/i.test(String(v).trim()); };
+        if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(r[0]).trim()) && yes(r[2]) && yes(r[col])) out.push(String(r[0]).trim());
+      });
+    }
+  } catch (x) { /* fall back to the owner */ }
+  return (out.length ? out : [ownerAddress_()]).join(',');
+}
+
+/** Every email goes through here: test mode redirects it and names the real recipient in the subject. */
+function mail_(m) {
+  var test = S_('TEST_EMAIL');
+  if (test && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(test)) {
+    m = JSON.parse(JSON.stringify(m));
+    m.subject = '[TEST → ' + m.to + '] ' + m.subject;
+    m.to = test;
+    delete m.cc; delete m.bcc;
+  }
+  MailApp.sendEmail(m);
+}
+
+// ---------------------------------------------------------------- returning customers, reminders
+
+/** Earlier orders by the same email or phone: { count, last, label }. */
+function returning_(orders, c) {
+  var email = String(c.email || '').trim().toLowerCase(), phone = String(c.phone || '').replace(/\D/g, '').replace(/^0+/, '');
+  var res = { count: 0, last: '', label: 'New customer' };
+  if (orders.getLastRow() < 2 || (!email && phone.length < 6)) return res;
+  var iE = ORDER_HEADERS.indexOf('Email'), iP = ORDER_HEADERS.indexOf('Phone'), iS = ORDER_HEADERS.indexOf('Status');
+  var width = Math.min(orders.getLastColumn(), ORDER_HEADERS.length);
+  orders.getRange(2, 1, orders.getLastRow() - 1, width).getValues().forEach(function (r) {
+    var e = String(r[iE] || '').trim().toLowerCase(), p = String(r[iP] || '').replace(/\D/g, '').replace(/^0+/, '');
+    var same = (email && e === email) || (phone.length >= 6 && p && (p === phone || p.slice(-9) === phone.slice(-9)));
+    if (same && !/cancel|refund/i.test(String(r[iS] || ''))) { res.count++; res.last = String(r[0]); }
+  });
+  if (res.count) {
+    var n = res.count + 1, suffix = n === 2 ? 'nd' : n === 3 ? 'rd' : 'th';
+    res.label = n + suffix + ' order · last ' + res.last;
+  }
+  return res;
+}
+
+/** Rebuilds an order object from its row in Orders (+ Order lines), for reminders and reports. */
+function orderFromRow_(book, row) {
+  var orders = sheet_(book, 'Orders', ORDER_HEADERS);
+  var col = function (name) { return ORDER_HEADERS.indexOf(name); };
+  var r = orders.getRange(row, 1, 1, ORDER_HEADERS.length).getValues()[0];
+  var id = String(r[col('Order ID')]);
+  if (!id) return null;
+  var lineSheet = sheet_(book, 'Order lines', LINE_HEADERS);
+  var lines = lineSheet.getLastRow() < 2 ? [] : lineSheet.getRange(2, 1, lineSheet.getLastRow() - 1, LINE_HEADERS.length).getValues()
+    .filter(function (l) { return String(l[0]) === id; })
+    .map(function (l) { return { title: String(l[2]), chosen: String(l[3] || '').split(', ').filter(Boolean), qty: Number(l[4]) || 1,
+      price: Number(l[5]) || 0, total: Number(l[6]) || 0, url: String(l[8] || ''), digital: l[9] === 'Digital', weight: 0 }; });
+  var shop = shopSettings_();
+  var sub = Number(r[col('Subtotal')]) || 0, ship = Number(r[col('Shipping')]) || 0, total = Number(r[col('Total')]) || sub + ship;
+  var methodName = String(r[col('Method')] || 'Website'), method = 'order';
+  Object.keys(METHOD_NAMES).forEach(function (k) { if (METHOD_NAMES[k] === methodName) method = k; });
+  return {
+    id: id, row: row, method: method, status: String(r[col('Status')] || ''), received: r[col('Received')], lines: lines,
+    customer: { name: String(r[col('Name')] || ''), phone: String(r[col('Phone')] || ''), email: String(r[col('Email')] || '').trim(),
+      street: String(r[col('Street')] || ''), postcode: String(r[col('Postcode')] || ''), city: String(r[col('City')] || ''),
+      country: String(r[col('Country')] || ''), note: String(r[col('Note')] || ''), payment: String(r[col('Payment')] || '') },
+    sub: sub, ship: ship, total: total, shop: shop,
+    option: r[col('Delivery')] ? { name: String(r[col('Delivery')]), time: String(r[col('Delivery time')] || '') } : null,
+    physical: lines.some(function (l) { return !l.digital; }) || !lines.length, digital: lines.some(function (l) { return l.digital; }),
+    weight: Number(r[col('Weight (kg)')]) || 0, reminded: r[col('Reminder sent')]
+  };
+}
+
+/** Unpaid website orders (bank transfer or PayPal) older than REMINDER_DAYS. */
+function unpaidOrders_(book, days) {
+  var orders = sheet_(book, 'Orders', ORDER_HEADERS);
+  if (orders.getLastRow() < 2) return [];
+  var col = function (name) { return ORDER_HEADERS.indexOf(name); };
+  var limit = new Date(); limit.setDate(limit.getDate() - days);
+  var out = [];
+  orders.getRange(2, 1, orders.getLastRow() - 1, ORDER_HEADERS.length).getValues().forEach(function (r, i) {
+    var status = String(r[col('Status')] || ''), received = r[col('Received')] instanceof Date ? r[col('Received')] : new Date(r[col('Received')]);
+    if (!/^new$/i.test(status) || r[col('Method')] !== 'Website') return;
+    if (!(payBank_(String(r[col('Payment')])) || payPal_(String(r[col('Payment')])))) return;
+    if (isNaN(received) || received > limit) return;
+    out.push({ row: i + 2, id: String(r[0]), name: String(r[col('Name')]), email: String(r[col('Email')]), total: Number(r[col('Total')]) || 0,
+      currency: String(r[col('Currency')] || ''), received: received, reminded: r[col('Reminder sent')] });
+  });
+  return out;
+}
+
+/** Emails a friendly payment reminder for one order row. Returns a short result text. */
+function sendReminder_(row) {
+  var book = SpreadsheetApp.getActiveSpreadsheet();
+  var o = orderFromRow_(book, row);
+  if (!o) return 'No order in row ' + row + '.';
+  if (PAID.test(o.status)) return 'Order ' + o.id + ' is already paid.';
+  if (/cancel|refund/i.test(o.status)) return 'Order ' + o.id + ' is ' + o.status + '.';
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(o.customer.email)) return 'Order ' + o.id + ' has no valid email address. Remind the customer on WhatsApp instead.';
+  var b = brand_(o), c = o.customer, days = Math.max(0, Math.round((new Date() - new Date(o.received)) / 86400000));
+  var contact = [];
+  if (o.shop.whatsapp) contact.push(['WhatsApp', 'https://wa.me/' + o.shop.whatsapp]);
+  if (o.shop.email) contact.push(['Email', 'mailto:' + o.shop.email]);
+  var body = '<div class="email-body" style="padding:26px 32px;">' +
+    '<p style="font-size:15px;color:#222222;line-height:1.7;margin:0 0 14px;">Hello ' + esc_(c.name) + ',</p>' +
+    '<p style="font-size:15px;color:#222222;line-height:1.7;margin:0 0 14px;">a quick reminder about your order <strong>#' + esc_(o.id) + '</strong> from ' +
+    (days ? days + ' day' + (days === 1 ? '' : 's') + ' ago' : 'today') + ': we have not seen your payment yet. ' +
+    'As soon as it arrives we ' + (o.digital && !o.physical ? 'send your download' : 'pack your order') + '. If you have already paid, please ignore this email, thank you!</p>' +
+    section_('Your order #' + o.id, b) + itemsTable_(o, b) + payment_(o, b) +
+    '<p style="font-size:14px;color:#444444;line-height:1.7;margin:18px 0 0;">Changed your mind or need more time? Just reply to this email' +
+    (contact.length ? ' or write to us on ' + contact.map(function (x) { return '<a href="' + esc_(x[1]) + '" style="color:' + b.accent + ';font-weight:700;text-decoration:none;">' + x[0] + '</a>'; }).join(' / ') : '') +
+    '. We keep the order for you for a few more days.</p></div>';
+  mail_({ to: c.email, subject: shop_(o) + ': reminder for order #' + o.id, name: shop_(o), replyTo: ownerAddress_(),
+    body: 'Hello ' + c.name + ',\n\na quick reminder: we have not seen the payment for order #' + o.id + ' (' + money_(o.total, o.shop.currency) + ') yet.\n\n' +
+      (o.shop.bank && payBank_(c.payment) ? 'Bank transfer: ' + o.shop.bank + '\nReference: ' + o.id + '\n\n' : '') + 'If you have already paid, please ignore this email.',
+    htmlBody: wrapEmail_(banner_('Reminder', 'Order #' + o.id, b, false) + body, b) });
+  sheet_(book, 'Orders', ORDER_HEADERS).getRange(row, ORDER_HEADERS.indexOf('Reminder sent') + 1).setValue(new Date());
+  return 'Reminder for order ' + o.id + ' sent to ' + c.email + '.';
+}
+function shop_(o) { return o.shop.name; }
+
+function menuSendReminder() {
+  var sheet = SpreadsheetApp.getActiveSheet(), ui = SpreadsheetApp.getUi();
+  if (sheet.getName() !== 'Orders') { ui.alert('Click a row in the "Orders" tab first.'); return; }
+  var row = sheet.getActiveRange().getRow();
+  if (row < 2) { ui.alert('Click the row of the order first.'); return; }
+  ui.alert(sendReminder_(row));
+}
+
+// ---------------------------------------------------------------- daily and weekly reports
+
+/** Rows of a tab as objects by header name, with a Date in `when` (column named `dateCol`). */
+function rowsOf_(book, name, headers, dateCol) {
+  var sheet = book.getSheetByName(name);
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  var width = Math.min(sheet.getLastColumn(), headers.length);
+  return sheet.getRange(2, 1, sheet.getLastRow() - 1, width).getValues().map(function (r, i) {
+    var o = { row: i + 2 };
+    headers.forEach(function (h, j) { o[h] = j < width ? r[j] : ''; });
+    var d = o[dateCol] instanceof Date ? o[dateCol] : new Date(o[dateCol]);
+    o.when = isNaN(d) ? null : d;
+    return o;
+  });
+}
+function between_(list, from, to) { return list.filter(function (x) { return x.when && x.when >= from && x.when < to; }); }
+function dayStart_(d) { var x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
+function countBy_(list, fn) {
+  var m = {};
+  list.forEach(function (x) { var k = fn(x) || '—'; m[k] = (m[k] || 0) + 1; });
+  return Object.keys(m).map(function (k) { return [k, m[k]]; }).sort(function (a, b) { return b[1] - a[1]; });
+}
+function sumBy_(list, keyFn, valFn) {
+  var m = {};
+  list.forEach(function (x) { var k = keyFn(x) || '—'; m[k] = (m[k] || 0) + (Number(valFn(x)) || 0); });
+  return Object.keys(m).map(function (k) { return [k, m[k]]; }).sort(function (a, b) { return b[1] - a[1]; });
+}
+function isSale_(o) { return o.Method === 'Website' && !/cancel|refund/i.test(String(o.Status || '')); }
+function revenue_(list) { return list.filter(isSale_).reduce(function (s, o) { return s + (Number(o.Total) || 0); }, 0); }
+
+function kpis_(cells, b) {
+  var td = function (c, i) {
+    var bg = i === 0 ? b.dark : i === 1 ? '#2A2A2A' : b.accent, fg = i === 2 ? b.dark : '#ffffff';
+    return '<td style="width:33%;background:' + bg + ';padding:18px 8px;text-align:center;vertical-align:top;">' +
+      '<div style="font-size:30px;font-weight:700;color:' + (i === 1 ? '#ffffff' : i === 0 ? b.accent : fg) + ';line-height:1.1;">' + esc_(c[0]) + '</div>' +
+      '<div style="font-size:11px;color:' + (i === 2 ? b.dark : '#C9C9C9') + ';margin-top:6px;text-transform:uppercase;letter-spacing:1px;">' + esc_(c[1]) + '</div></td>';
+  };
+  return '<table role="presentation" style="width:100%;border-collapse:collapse;"><tr>' + cells.map(td).join('') + '</tr></table>';
+}
+function countTable_(title, pairs, b, fmt) {
+  if (!pairs.length) return '';
+  return section_(title, b) + '<table role="presentation" style="width:100%;border-collapse:collapse;font-size:14px;">' +
+    pairs.slice(0, 10).map(function (p) {
+      return '<tr><td style="padding:7px 10px;border-bottom:1px solid #ECECEE;color:#333333;">' + esc_(p[0]) +
+        '</td><td style="padding:7px 10px;border-bottom:1px solid #ECECEE;text-align:right;font-weight:700;color:' + b.dark + ';white-space:nowrap;">' + esc_(fmt ? fmt(p[1]) : p[1]) + '</td></tr>';
+    }).join('') + '</table>';
+}
+function orderCards_(list, b, cur) {
+  return list.map(function (o) {
+    return '<div style="border:1px solid #ECECEE;border-radius:6px;padding:10px 14px;margin:0 0 8px;font-size:13px;line-height:1.7;color:#444444;">' +
+      '<strong style="color:' + b.dark + ';">#' + esc_(o['Order ID']) + '</strong> · ' + esc_(o.Method) + ' · <strong>' + esc_(money_(Number(o.Total) || 0, o.Currency || cur)) + '</strong>' +
+      ' <span style="background:#F0F0F0;border-radius:10px;padding:1px 8px;font-size:11px;">' + esc_(o.Status) + '</span>' +
+      (o.Customer && !/^new customer$/i.test(String(o.Customer)) ? ' <span style="color:#1f4d40;font-size:11px;">↩︎ ' + esc_(o.Customer) + '</span>' : '') +
+      '<br>' + esc_(o.Name) + (o.City ? ' · ' + esc_(o.City) : '') + (o.Country ? ', ' + esc_(o.Country) : '') +
+      '<br><span style="color:#777777;">' + esc_(String(o.Items || '').split('\n').join(' · ')) + '</span></div>';
+  }).join('');
+}
+
+/** Yesterday's orders and revenue, unpaid orders, new requests, sign-ups, unanswered questions. */
+function sendDailyReport() {
+  var book = SpreadsheetApp.getActiveSpreadsheet(), shop = shopSettings_(), tz = tz_();
+  var b = { name: shop.name, dark: S_('COLOR_DARK'), accent: S_('COLOR_ACCENT'), site: blog_() }, cur = shop.currency;
+  var today = dayStart_(new Date()), yday = new Date(today); yday.setDate(today.getDate() - 1);
+  var label = Utilities.formatDate(yday, tz, 'EEEE, d MMMM yyyy');
+  var orders = rowsOf_(book, 'Orders', ORDER_HEADERS, 'Received'), requests = rowsOf_(book, 'Requests', REQUEST_HEADERS, 'Received');
+  var news = rowsOf_(book, 'Newsletter', NEWS_HEADERS, 'Received'), questions = rowsOf_(book, 'Questions', QUESTION_HEADERS, 'Received');
+  var dayOrders = between_(orders, yday, today), dayReq = between_(requests, yday, today), daySubs = between_(news, yday, today);
+  var unpaid = unpaidOrders_(book, S_('REMINDER_DAYS'));
+  var openQ = questions.filter(function (q) { return !/^(yes|ja|oui|done)$/i.test(String(q['Added to the assistant?'] || '')); });
+  var started = dayOrders.filter(function (o) { return o.Method !== 'Website'; }).length;
+  var body = '<div class="email-body" style="padding:22px 32px 26px;">' +
+    '<p style="font-size:13px;color:#777777;margin:0 0 12px;">' + esc_(label) + '</p>' +
+    kpis_([[String(dayOrders.filter(isSale_).length), 'website orders'], [money_(revenue_(dayOrders), cur), 'revenue'], [String(dayReq.length), 'new requests']], b) +
+    (dayOrders.length ? section_('Orders yesterday', b) + orderCards_(dayOrders, b, cur) : section_('Orders yesterday', b) + '<p style="font-size:14px;color:#777777;margin:0;">None.</p>') +
+    (started ? '<p style="font-size:12px;color:#7A5800;background:#FFF3CD;padding:8px 12px;margin:8px 0 0;">' + started + ' order' + (started === 1 ? '' : 's') +
+      ' started on WhatsApp/Telegram/email: check that the message arrived and reply.</p>' : '') +
+    (unpaid.length ? section_('Unpaid for ' + S_('REMINDER_DAYS') + '+ days', b) + '<table role="presentation" style="width:100%;border-collapse:collapse;font-size:13px;">' +
+      unpaid.map(function (u) {
+        return '<tr><td style="padding:6px 8px;border-bottom:1px solid #ECECEE;"><strong>#' + esc_(u.id) + '</strong> · ' + esc_(u.name) +
+          '</td><td style="padding:6px 8px;border-bottom:1px solid #ECECEE;white-space:nowrap;">' + esc_(money_(u.total, u.currency || cur)) +
+          '</td><td style="padding:6px 8px;border-bottom:1px solid #ECECEE;text-align:right;color:#777777;white-space:nowrap;">' +
+          (u.reminded instanceof Date ? 'reminded ' + esc_(Utilities.formatDate(u.reminded, tz, 'd MMM')) : 'since ' + esc_(Utilities.formatDate(u.received, tz, 'd MMM'))) + '</td></tr>';
+      }).join('') + '</table><p style="font-size:12px;color:#777777;margin:8px 0 0;">Sheet → click the order → menu Shop → Send payment reminder.</p>' : '') +
+    (dayReq.length ? section_('New requests', b) + dayReq.map(function (r) {
+      return '<div style="border:1px solid #ECECEE;border-radius:6px;padding:10px 14px;margin:0 0 8px;font-size:13px;line-height:1.7;color:#444444;"><strong style="color:' + b.dark + ';">' +
+        esc_(r.Type) + '</strong> · ' + esc_(r.Name || r.Company || r.Email || r.Phone) + '<br><span style="color:#777777;">' + esc_(String(r.Details || '').slice(0, 220)) + '</span></div>';
+    }).join('') : '') +
+    section_('Also', b) + '<p style="font-size:14px;color:#444444;line-height:1.8;margin:0;">' +
+    'Newsletter: ' + daySubs.length + ' new sign-up' + (daySubs.length === 1 ? '' : 's') + ', ' + news.filter(function (n) { return n.Status === 'Subscribed'; }).length + ' subscribed in total.<br>' +
+    'Chat questions without an answer: ' + openQ.length + (openQ.length ? ' (latest: “' + esc_(String(openQ[openQ.length - 1].Question || '')) + '”). Add answers in Layout → Ask assistant.' : '.') +
+    '</p>' + button_(book.getUrl(), 'Open the sheet', b) + '</div>';
+  mail_({ to: recipients_('daily'), name: shop.name,
+    subject: '📊 ' + shop.name + ' daily: ' + dayOrders.filter(isSale_).length + ' orders, ' + money_(revenue_(dayOrders), cur) + (unpaid.length ? ', ' + unpaid.length + ' unpaid' : ''),
+    body: label + '\nOrders: ' + dayOrders.length + '\nRevenue: ' + money_(revenue_(dayOrders), cur) + '\nRequests: ' + dayReq.length + '\nUnpaid: ' + unpaid.length + '\n' + book.getUrl(),
+    htmlBody: wrapEmail_(banner_('Daily report', money_(revenue_(dayOrders), cur), b, revenue_(dayOrders) > 0) + body, b) });
+  return 'Daily report sent to ' + recipients_('daily');
+}
+
+/** Last 7 days against the 7 before: revenue, orders, top products, countries, methods, languages, requests, newsletter. */
+function sendWeeklyReport() {
+  var book = SpreadsheetApp.getActiveSpreadsheet(), shop = shopSettings_(), tz = tz_();
+  var b = { name: shop.name, dark: S_('COLOR_DARK'), accent: S_('COLOR_ACCENT'), site: blog_() }, cur = shop.currency;
+  var today = dayStart_(new Date()), from = new Date(today); from.setDate(today.getDate() - 7);
+  var prevFrom = new Date(from); prevFrom.setDate(from.getDate() - 7);
+  var orders = rowsOf_(book, 'Orders', ORDER_HEADERS, 'Received'), lines = rowsOf_(book, 'Order lines', LINE_HEADERS, 'Received');
+  var requests = rowsOf_(book, 'Requests', REQUEST_HEADERS, 'Received'), news = rowsOf_(book, 'Newsletter', NEWS_HEADERS, 'Received');
+  var questions = rowsOf_(book, 'Questions', QUESTION_HEADERS, 'Received');
+  var week = between_(orders, from, today), prev = between_(orders, prevFrom, from), sales = week.filter(isSale_);
+  var ids = {}; sales.forEach(function (o) { ids[String(o['Order ID'])] = true; });
+  var weekLines = lines.filter(function (l) { return ids[String(l['Order ID'])]; });
+  var rev = revenue_(week), prevRev = revenue_(prev);
+  var change = prevRev ? Math.round((rev - prevRev) / prevRev * 100) : (rev ? 100 : 0);
+  var range = Utilities.formatDate(from, tz, 'd MMM') + ' – ' + Utilities.formatDate(new Date(today - 1), tz, 'd MMM yyyy');
+  var returning = sales.filter(function (o) { return o.Customer && !/^new customer$/i.test(String(o.Customer)); }).length;
+  var body = '<div class="email-body" style="padding:22px 32px 26px;">' +
+    '<p style="font-size:13px;color:#777777;margin:0 0 12px;">' + esc_(range) + '</p>' +
+    kpis_([[money_(rev, cur), 'revenue (' + (change >= 0 ? '+' : '') + change + '% vs last week)'], [String(sales.length), 'website orders' + (returning ? ' · ' + returning + ' returning' : '')],
+      [sales.length ? money_(rev / sales.length, cur) : '–', 'average order']], b) +
+    countTable_('Top products', sumBy_(weekLines, function (l) { return l.Product; }, function (l) { return l.Qty; }), b, function (v) { return v + ' sold'; }) +
+    countTable_('Revenue by country', sumBy_(sales, function (o) { return o.Country; }, function (o) { return o.Total; }), b, function (v) { return money_(v, cur); }) +
+    countTable_('How people ordered', countBy_(week, function (o) { return o.Method; }), b) +
+    countTable_('Shop language', countBy_(week, function (o) { return String(o.Language || '').toUpperCase(); }), b) +
+    countTable_('Payment', countBy_(sales, function (o) { return o.Payment; }), b) +
+    countTable_('Requests this week', countBy_(between_(requests, from, today), function (r) { return r.Type; }), b) +
+    section_('Newsletter and chat', b) + '<p style="font-size:14px;color:#444444;line-height:1.8;margin:0;">' +
+    between_(news, from, today).length + ' new sign-ups this week, ' + news.filter(function (n) { return n.Status === 'Subscribed'; }).length + ' subscribed in total.<br>' +
+    between_(questions, from, today).length + ' chat questions the assistant could not answer this week.</p>' +
+    (unpaidOrders_(book, S_('REMINDER_DAYS')).length ? '<p style="font-size:13px;color:#7A5800;background:#FFF3CD;padding:8px 12px;margin:14px 0 0;">' +
+      unpaidOrders_(book, S_('REMINDER_DAYS')).length + ' order(s) still unpaid for ' + S_('REMINDER_DAYS') + '+ days: see the daily report or the Orders tab.</p>' : '') +
+    button_(book.getUrl(), 'Open the sheet', b) + '</div>';
+  mail_({ to: recipients_('weekly'), name: shop.name,
+    subject: '📈 ' + shop.name + ' weekly: ' + money_(rev, cur) + ' from ' + sales.length + ' orders (' + (change >= 0 ? '+' : '') + change + '%)',
+    body: range + '\nRevenue: ' + money_(rev, cur) + ' (' + change + '% vs last week)\nOrders: ' + sales.length + '\n' + book.getUrl(),
+    htmlBody: wrapEmail_(banner_('Weekly report', money_(rev, cur), b, change >= 0) + body, b) });
+  return 'Weekly report sent to ' + recipients_('weekly');
+}
+
+/** Replaces the report triggers according to Settings. Returns a short description. */
+function reportTriggers_() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (/^send(Daily|Weekly)Report$/.test(t.getHandlerFunction())) ScriptApp.deleteTrigger(t);
+  });
+  var tz = tz_(), out = [];
+  var hour = function (v) { var m = /^\s*(\d{1,2})/.exec(String(v || '')); return m ? Math.min(23, Math.max(0, parseInt(m[1], 10))) : NaN; };
+  var dh = hour(S_('REPORT_DAILY'));
+  if (!isNaN(dh)) { ScriptApp.newTrigger('sendDailyReport').timeBased().everyDays(1).atHour(dh).inTimezone(tz).create(); out.push('daily at ' + dh + ':00'); }
+  var days = { monday: 'MONDAY', tuesday: 'TUESDAY', wednesday: 'WEDNESDAY', thursday: 'THURSDAY', friday: 'FRIDAY', saturday: 'SATURDAY', sunday: 'SUNDAY',
+    montag: 'MONDAY', dienstag: 'TUESDAY', mittwoch: 'WEDNESDAY', donnerstag: 'THURSDAY', freitag: 'FRIDAY', samstag: 'SATURDAY', sonntag: 'SUNDAY' };
+  var wd = days[String(S_('REPORT_WEEKLY_DAY') || '').trim().toLowerCase()], wh = hour(S_('REPORT_WEEKLY'));
+  if (wd && !isNaN(wh)) { ScriptApp.newTrigger('sendWeeklyReport').timeBased().onWeekDay(ScriptApp.WeekDay[wd]).atHour(wh).inTimezone(tz).create(); out.push('weekly on ' + wd.toLowerCase() + ' at ' + wh + ':00'); }
+  return out.length ? out.join(', ') + ' (' + tz + ')' : 'off';
+}
+
 // ---------------------------------------------------------------- run these from the editor
 
 /** Run once: creates the tabs, asks for permissions and emails you a test. */
 function setup() {
   var book = SpreadsheetApp.getActiveSpreadsheet();
-  sheet_(book, 'Orders', ORDER_HEADERS);
+  settingsSheet_(book);
+  recipientsSheet_(book);
+  var orders = sheet_(book, 'Orders', ORDER_HEADERS);
   sheet_(book, 'Order lines', LINE_HEADERS);
   sheet_(book, 'Downloads', DOWNLOAD_HEADERS);
   sheet_(book, 'Requests', REQUEST_HEADERS);
   sheet_(book, 'Newsletter', NEWS_HEADERS);
   sheet_(book, 'Questions', QUESTION_HEADERS);
+  // Status dropdown (other texts such as "Sent via WhatsApp – check the chat" stay allowed).
+  try {
+    orders.getRange(2, ORDER_HEADERS.indexOf('Status') + 1, Math.max(orders.getMaxRows() - 1, 1), 1).setDataValidation(
+      SpreadsheetApp.newDataValidation().requireValueInList(ORDER_STATUSES, true).setAllowInvalid(true).build());
+  } catch (x) { /* cosmetic */ }
   var has = ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === 'onOrderEdit'; });
   if (!has) ScriptApp.newTrigger('onOrderEdit').forSpreadsheet(book).onEdit().create();
+  var reports = reportTriggers_();
   var shop = shopSettings_();
-  MailApp.sendEmail({ to: SETTINGS.OWNER_EMAIL || Session.getEffectiveUser().getEmail(),
-    subject: '✅ ' + shop.name + ' order inbox is ready', body: 'Orders from ' + blog_() + ' will arrive in this sheet: ' + book.getUrl() });
+  mail_({ to: ownerAddress_(),
+    subject: '✅ ' + shop.name + ' order inbox is ready',
+    body: 'Orders from ' + blog_() + ' will arrive in this sheet: ' + book.getUrl() + '\n\n' +
+      'Settings tab: blog address, emails, Telegram, report times, test mode.\nRecipients tab: who gets alerts and reports.\n' +
+      'Reports: ' + reports + '\n\nRun setup again after changing the report times.' });
   Logger.log('Shop settings read from the blog: ' + JSON.stringify(shop));
 }
 
 /** After sending /start to your bot in Telegram, run this and copy the chat id from the log. */
 function telegramFindChatId() {
-  var res = UrlFetchApp.fetch('https://api.telegram.org/bot' + SETTINGS.TELEGRAM_BOT_TOKEN + '/getUpdates', { muteHttpExceptions: true });
+  var res = UrlFetchApp.fetch('https://api.telegram.org/bot' + S_('TELEGRAM_BOT_TOKEN') + '/getUpdates', { muteHttpExceptions: true });
   var data = JSON.parse(res.getContentText());
   (data.result || []).forEach(function (u) {
     var chat = (u.message || u.channel_post || {}).chat;

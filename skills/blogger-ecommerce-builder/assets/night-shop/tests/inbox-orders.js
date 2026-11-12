@@ -1,13 +1,13 @@
 const fs=require('fs'),vm=require('vm');
 const sheets={}, mails=[], triggers=[];
 function mkSheet(name,rows){rows=rows||[];const sh={rows,getName:()=>sh.name,name,getLastRow:()=>rows.length,getLastColumn:()=>rows.reduce((m,r)=>Math.max(m,r.length),0),
-  appendRow:r=>rows.push(r.slice()),setFrozenRows(){},clear(){rows.length=0},setName(n){delete sheets[sh.name];sh.name=n;sheets[n]=sh},
+  appendRow:r=>rows.push(r.slice()),setFrozenRows(){},clear(){rows.length=0},getMaxRows:()=>Math.max(rows.length,50),setColumnWidth(){},setName(n){delete sheets[sh.name];sh.name=n;sheets[n]=sh},
   getActiveRange:()=>({getRow:()=>sh.active||2}),
   getRange:(r,c,n,w)=>{n=n||1;w=w||1;const rg={
     getValues:()=>{const out=[];for(let i=0;i<n;i++){const row=rows[r-1+i]||[];out.push(Array.from({length:w},(_,j)=>row[c-1+j]===undefined?'':row[c-1+j]))}return out},
     getValue:()=>rg.getValues()[0][0],
     setValues:v=>{v.forEach((x,i)=>{rows[r-1+i]=rows[r-1+i]||[];x.forEach((y,j)=>rows[r-1+i][c-1+j]=y)});return rg},
-    setValue:x=>rg.setValues([[x]]),setFontWeight(){return rg},setBackground(){return rg},setFontColor(){return rg},
+    setValue:x=>rg.setValues([[x]]),setFontWeight(){return rg},setBackground(){return rg},setFontColor(){return rg},setDataValidation(){return rg},
     getRow:()=>r,getColumn:()=>c,getNumRows:()=>n,getSheet:()=>sh};return rg}};return sh;}
 // an Orders tab from the previous version (20 columns, one order)
 const OLD=['Order ID','Received','Status','Method','Payment','Name','Phone','Email','Street','Postcode','City','Country','Note','Items','Subtotal','Shipping','Total','Currency','Language','Page'];
@@ -21,8 +21,10 @@ const cache={};
 const ctx={JSON,Date,Math,String,parseInt,parseFloat,isNaN,RegExp,Infinity,encodeURIComponent,
  LockService:{getScriptLock:()=>({waitLock(){},releaseLock(){}})},
  SpreadsheetApp:{getActiveSpreadsheet:()=>({getSheetByName:n=>sheets[n],insertSheet:n=>(sheets[n]=mkSheet(n)),getUrl:()=>'u'}),getActiveSheet:()=>sheets['Orders'],
-   getUi:()=>({alert:m=>console.log('  UI alert:',m),createMenu:()=>({addItem(){return this},addToUi(){}})})},
- ScriptApp:{getProjectTriggers:()=>triggers,newTrigger:f=>({forSpreadsheet:()=>({onEdit:()=>({create:()=>triggers.push({getHandlerFunction:()=>f})})})})},
+   getUi:()=>({alert:m=>console.log('  UI alert:',m),createMenu:()=>({addItem(){return this},addSeparator(){return this},addToUi(){}})}),
+   newDataValidation:()=>({requireValueInList(){return this},setAllowInvalid(){return this},build(){return {}}})},
+ ScriptApp:{getProjectTriggers:()=>triggers.slice(),deleteTrigger:t=>triggers.splice(triggers.indexOf(t),1),WeekDay:{MONDAY:'MONDAY'},
+   newTrigger:f=>{const tb={everyDays(){return tb},onWeekDay(){return tb},atHour(){return tb},inTimezone(){return tb},create:()=>triggers.push({getHandlerFunction:()=>f})};return {forSpreadsheet:()=>({onEdit:()=>({create:()=>triggers.push({getHandlerFunction:()=>f})})}),timeBased:()=>tb}}},
  MailApp:{sendEmail:m=>mails.push(m)}, Session:{getEffectiveUser:()=>({getEmail:()=>'owner@x'}),getScriptTimeZone:()=>'Europe/Berlin'},
  Utilities:{formatDate:()=>'261104-171500'}, CacheService:{getScriptCache:()=>({get:k=>cache[k]||null,put:(k,v)=>cache[k]=v})},
  UrlFetchApp:{fetch:(u)=>{ if(/feeds/.test(u)){const id=u.match(/default\/(\d+)/)[1];return {getResponseCode:()=>feed[id]?200:404,getContentText:()=>JSON.stringify(feed[id])}}
@@ -32,7 +34,7 @@ vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(process.argv[2],'utf8')+";SETTINGS.BLOG_URL='https://x.blogspot.com';",ctx);
 const post=o=>JSON.parse(ctx.doPost({postData:{contents:JSON.stringify(o)}}));
 const cust={name:'Ana',phone:'+49 157 1',email:'ana@example.com',street:'Weg 1',postcode:'10115',city:'Berlin',country:'Germany'};
-ctx.setup(); console.log('trigger made:', triggers.length, '| tabs:', Object.keys(sheets).join(', '));
+ctx.setup(); console.log('triggers made (edit + daily + weekly):', triggers.length, '| tabs:', Object.keys(sheets).join(', '));
 console.log('Orders header extended, old row kept:', sheets['Orders'].rows[0].length, sheets['Orders'].rows[1][0], '| no "(old" tab:', !Object.keys(sheets).some(k=>/old/.test(k)));
 // physical: 3 tees (1.2 kg) DHL; tampered price
 let r=post({orderId:'TEE-261104-171500',method:'order',customer:{...cust,delivery:'DHL Parcel',payment:'Bank transfer'},items:[{id:'111',qty:3,price:1}]});

@@ -3,13 +3,14 @@ const sheets={}, mails=[];
 function mkSheet(name,rows){rows=rows||[];const sh={rows,getName:()=>sh.name,name,getLastRow:()=>rows.length,getLastColumn:()=>rows.reduce((m,r)=>Math.max(m,r.length),0),
   appendRow:r=>rows.push(r.slice()),setFrozenRows(){},clear(){rows.length=0},setName(n){delete sheets[sh.name];sh.name=n;sheets[n]=sh},
   getRange:(r,c,n,w)=>{n=n||1;w=w||1;const rg={getValues:()=>{const out=[];for(let i=0;i<n;i++){const row=rows[r-1+i]||[];out.push(Array.from({length:w},(_,j)=>row[c-1+j]===undefined?'':row[c-1+j]))}return out},
-    setValues:v=>{v.forEach((x,i)=>{rows[r-1+i]=rows[r-1+i]||[];x.forEach((y,j)=>rows[r-1+i][c-1+j]=y)});return rg},setValue:x=>rg.setValues([[x]]),setFontWeight(){return rg},setBackground(){return rg},setFontColor(){return rg}};return rg}};return sh;}
+    setValues:v=>{v.forEach((x,i)=>{rows[r-1+i]=rows[r-1+i]||[];x.forEach((y,j)=>rows[r-1+i][c-1+j]=y)});return rg},setValue:x=>rg.setValues([[x]]),setFontWeight(){return rg},setBackground(){return rg},setFontColor(){return rg},setDataValidation(){return rg}};return rg},getMaxRows:()=>Math.max(rows.length,50),setColumnWidth(){}};return sh;}
 const home=`<div class='shop-settings'>shop_name: Kreislo<br/>currency: EUR</div>`;
 let uuid=0;
 const ctx={JSON,Date,Math,String,parseInt,parseFloat,isNaN,RegExp,Infinity,encodeURIComponent,Object,
  LockService:{getScriptLock:()=>({waitLock(){},releaseLock(){}})},
- SpreadsheetApp:{getActiveSpreadsheet:()=>({getSheetByName:n=>sheets[n],insertSheet:n=>(sheets[n]=mkSheet(n)),getUrl:()=>'u'})},
- ScriptApp:{getService:()=>({getUrl:()=>'https://script.google.com/macros/s/X/exec'}),getProjectTriggers:()=>[],newTrigger:()=>({forSpreadsheet:()=>({onEdit:()=>({create(){}})})})},
+ SpreadsheetApp:{getActiveSpreadsheet:()=>({getSheetByName:n=>sheets[n],insertSheet:n=>(sheets[n]=mkSheet(n)),getUrl:()=>'u'}),newDataValidation:()=>({requireValueInList(){return this},setAllowInvalid(){return this},build(){return {}}})},
+ ScriptApp:{getService:()=>({getUrl:()=>'https://script.google.com/macros/s/X/exec'}),getProjectTriggers:()=>[],deleteTrigger(){},WeekDay:{MONDAY:'MONDAY'},
+   newTrigger:()=>{const tb={everyDays(){return tb},onWeekDay(){return tb},atHour(){return tb},inTimezone(){return tb},create(){}};return {forSpreadsheet:()=>({onEdit:()=>({create(){}})}),timeBased:()=>tb}}},
  HtmlService:{createHtmlOutput:h=>({html:h,setTitle(){return this}})},
  MailApp:{sendEmail:m=>mails.push(m)}, Session:{getEffectiveUser:()=>({getEmail:()=>'owner@x'}),getScriptTimeZone:()=>'Europe/Berlin'},
  Utilities:{formatDate:()=>'x',getUuid:()=>'tok-'+String(++uuid).padStart(30,'0')}, CacheService:{getScriptCache:()=>({get:()=>null,put(){}})},

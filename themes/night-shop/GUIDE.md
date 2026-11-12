@@ -684,18 +684,19 @@ You can't paste a normal Sheet link into the shop: a sheet can't receive orders 
 script acts as the sheet's "inbox". **Where is it?** In the kit zip, folder `apps-script`, file `Code.gs`
 (Claude also sends it as its own file, already filled in with your blog address and email).
 
-**Paste the whole file, unchanged.** It is about 760 lines long. If you only have a short version
+**Paste the whole file, unchanged.** It is about 1,200 lines long. If you only have a short version
 (for example one an AI "tidied up"), orders fail with "Sorry, the order could not be sent", because
 the part that receives orders (`doPost`) is missing. Set it up once (about 5 minutes):
 
 1. Open **sheets.new** and name the sheet, e.g. "Night Shop orders".
 2. **Extensions → Apps Script.** Select everything in the editor (Ctrl+A), delete it, and paste all of `Code.gs`.
-3. At the top, change `BLOG_URL` to your blog address, e.g. `https://yourshop.blogspot.com`.
-   Optional: `OWNER_EMAIL` (where order emails go), `EMAIL_OWNER_FOR_CHAT_ORDERS: true` (also email
-   you WhatsApp/Telegram orders). Save (disk icon).
-4. Choose **setup** in the function list next to Run, press **Run**, and allow the permissions
+   Save (disk icon). You don't need to change anything in the code.
+3. Choose **setup** in the function list next to Run, press **Run**, and allow the permissions
    ("Advanced → Go to … (unsafe)" is normal for your own script). You get a test email, and the tabs
-   **Orders**, **Order lines**, **Downloads**, **Requests**, **Newsletter** and **Questions** appear.
+   **Settings**, **Recipients**, **Orders**, **Order lines**, **Downloads**, **Requests**, **Newsletter**
+   and **Questions** appear.
+4. Open the **Settings** tab and fill in **Blog address** (e.g. `https://yourshop.blogspot.com`) and
+   **Owner email**. Everything else can stay as it is. The third column explains each line.
 5. **Deploy → New deployment** → gear icon → **Web app** → Execute as **Me** → Who has access
    **Anyone** → Deploy. Copy the **Web app URL** (ends in `/exec`).
 6. Blogger: Layout → Shop settings → `google_sheet: ` + paste the URL → Save.
@@ -707,7 +708,44 @@ the part that receives orders (`doPost`) is missing. Set it up once (about 5 min
 columns are added at the end of your tabs and your orders stay; tabs from a completely different script
 are renamed "Orders (old …)", nothing is deleted), then **Deploy → Manage deployments →
 pencil → Version: New version → Deploy**. Without the new version, the shop keeps talking to the old
-script.
+script. If your old script had the blog address and email typed into the code, setup copies them into
+the Settings tab the first time, so you don't type them again.
+
+### 7a. The Settings tab (nothing to edit in the code)
+
+| Setting | What it does |
+|---|---|
+| Blog address | Your shop. Needed. |
+| Owner email | Where alerts go when the Recipients tab is empty; also the reply address of reminders. |
+| Email the buyer | yes/no: buyers get a confirmation for website orders. |
+| Email me for chat orders | yes/no: also email WhatsApp/Telegram/email/PayPal orders. |
+| Telegram bot token / chat id | Optional instant alerts (see below). |
+| Test mode: send every email to | While an address is here, **every** email (buyers, alerts, reports) goes there instead, with the real recipient in the subject. Use it while you test; clear it to go live. |
+| Daily report time / Weekly report day and time | When the reports are sent. `off` switches one off. Run **setup** again after changing. |
+| Time zone | e.g. `Europe/Berlin` or `Africa/Nairobi`. |
+| Payment reminder after (days) | Unpaid bank-transfer or PayPal orders older than this appear in the daily report. |
+| Email colours | Header and button colours of the emails. |
+
+### 7b. The Recipients tab (who gets what)
+
+One row per person: email, name, then yes/no for **Active**, **New orders**, **New requests**, **Daily
+report**, **Weekly report**. Set Active to `no` when someone leaves. If the tab is empty, everything goes
+to the Owner email.
+
+### 7c. What the sheet does for you now
+
+- **Returning customers:** the **Customer** column says "New customer" or "3rd order · last KR-…"
+  (same email or phone as an earlier order). The order alert shows it too.
+- **Status dropdown:** New, Paid, Packed, Shipped, Delivered, Cancelled, Refunded (other texts still allowed).
+- **Payment reminder:** click an unpaid order → menu **Shop → Send payment reminder**. The buyer gets a
+  friendly email with the items, amount, bank details or PayPal link and the order number as reference;
+  the **Reminder sent** column shows the date. Never sent twice by accident: it's a click, not automatic.
+- **Daily report** (default 07:00): yesterday's orders and revenue, orders started on WhatsApp/Telegram
+  that you should check, unpaid orders older than the reminder days, new requests, newsletter sign-ups,
+  chat questions without an answer.
+- **Weekly report** (default Monday 08:00): revenue and orders against the week before, average order,
+  returning customers, top products, revenue by country, how people ordered, shop language, payment
+  methods, requests, newsletter growth. Both can be sent any time from the **Shop** menu.
 
 What you get: every order, whichever way the buyer ordered. WhatsApp/Telegram/email/PayPal orders get
 the status "Sent via WhatsApp – check the chat", so you can see who started an order but didn't send
@@ -716,8 +754,9 @@ Shipping, currency and bank details are read from your Shop settings, so you onl
 place. Change the **Status** column by hand (Paid, Shipped…).
 
 **Telegram alert for every order (optional):** in Telegram, open **@BotFather** → `/newbot` → copy the
-token into `TELEGRAM_BOT_TOKEN`. Send your new bot any message, run **telegramFindChatId**, copy the
-number from the log into `TELEGRAM_CHAT_ID`, then redeploy (next step).
+token into Settings → **Telegram bot token**. Send your new bot any message, run **telegramFindChatId**
+in the script editor, copy the number from the log into **Telegram chat id**. No redeploy needed for
+Settings changes.
 
 **After changing the script:** Deploy → **Manage deployments** → pencil → Version: **New version** →
 Deploy. The link stays the same.
@@ -764,6 +803,9 @@ Impressum and Widerruf at all.
 | A homepage section is missing | "What customers say" stays hidden until it has a line without `#`. The newsletter is hidden without `google_sheet` |
 | "Stay in the loop" (newsletter) is gone, or sign-ups open an email instead of "Please confirm" | The `google_sheet:` line is missing in Shop settings, usually because a theme upload reset it. Paste it back (section 7). Without it, the newsletter box still shows, but each sign-up comes to you as an email (or WhatsApp) instead of landing in the Newsletter tab with double opt-in |
 | Request form or newsletter says "Something went wrong" | The newest Code.gs isn't deployed: paste it, run setup, Deploy → Manage deployments → New version |
+| No daily or weekly report arrives | Settings → report time not `off`, then run **setup** once (it makes the triggers); check the Recipients tab has a `yes` under Daily/Weekly report |
+| Customers get emails while I'm testing | Settings → **Test mode: send every email to** = your address. Clear it before you go live |
+| The returning-customer column is empty for old orders | It is filled from now on; old rows stay as they are |
 | Newsletter confirm link says "not valid" | The link was already used, or the row was deleted in the Newsletter tab |
 | No "Ask Kreislo" button | The assistant gadget (Layout, bottom) is empty or was reset by a theme upload: paste your saved text back |
 | The assistant gives the wrong answer | Add "other words" to the right question (3rd part), or make the question more specific. Test again with the same words |

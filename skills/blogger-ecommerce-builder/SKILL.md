@@ -131,8 +131,16 @@ Delivery options and Talk-to-us gadgets from the homepage (cached 10 min), recom
 customer text safely (no formulas), sends branded emails, and answers JSON. `doGet` serves newsletter
 confirm/unsubscribe pages. Owner steps: paste the **whole** file → run `setup` → Deploy as Web app (Me,
 Anyone) → `google_sheet: …/exec`. After every code change: **Manage deployments → New version** and run
-`setup` again when new tabs or triggers were added. Give the owner a copy with `BLOG_URL`/`OWNER_EMAIL`
-filled in, but never commit their email to a repository.
+`setup` again when new tabs or triggers were added. v2 adds a **Settings** tab (blog address, owner email,
+flags, Telegram, test-mode address, report times, time zone, reminder days; `S_(key)` reads it, code `SETTINGS`
+are defaults copied in once), a **Recipients** tab (per-person yes/no for orders, requests, daily, weekly;
+`recipients_(kind)`), `mail_()` as the single send path (test mode redirects everything and names the real
+recipient in the subject), a **Customer** column ("New customer" / "3rd order · last ID", matched by email or
+phone), menu **Send payment reminder** (bank/PayPal details, `Reminder sent` column), `sendDailyReport` /
+`sendWeeklyReport` with triggers rebuilt by `setup` from Settings (`off` disables), and a Status dropdown.
+Deliberately not built: tax advice, instalments, maintenance contracts, timestamp invoice numbers (German
+invoices need gapless sequential numbers). Give the owner a copy with `BLOG_URL`/`OWNER_EMAIL` filled in,
+but never commit their email to a repository.
 
 ## 6. Languages
 
@@ -161,8 +169,9 @@ controls; it warns on unknown emails/IBANs, vendor licence switches and third-pa
 - **Browser:** serve the project over http (`python3 -m http.server 8765`; feed-based features need http, not
   `file://`) and run `assets/night-shop/tests/browser-full.js`: four device sizes, every page, every
   checkout method, digital checkout, forms, newsletter, WhatsApp button. Look at the screenshots.
-- **Inbox:** `tests/inbox-orders.js` and `tests/inbox-requests.js` run Code.gs in Node with fake Google
-  services; a fake low cart price must come back as the feed price.
+- **Inbox:** `tests/inbox-orders.js`, `tests/inbox-requests.js` and `tests/inbox-reports.js` run Code.gs in Node
+  with fake Google services; a fake low cart price must come back as the feed price. Never define a second
+  function with an existing name in Code.gs (Apps Script keeps the last one silently).
 - A failing check can be the test: read the reason before changing shop code.
 - Say plainly what was not tested: the live blog, the real Apps Script deployment, real email delivery,
   real phones.
