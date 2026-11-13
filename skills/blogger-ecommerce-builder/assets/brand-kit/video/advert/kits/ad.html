@@ -1,0 +1,377 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Kreislo advert – kits</title>
+<style>
+@font-face { font-family: 'Oswald'; font-weight: 600; src: url('fonts/Oswald-600.ttf'); }
+@font-face { font-family: 'Open Sans'; font-weight: 600; src: url('fonts/OpenSans-600.ttf'); }
+@font-face { font-family: 'Open Sans'; font-weight: 400; src: url('fonts/OpenSans-400.ttf'); }
+html, body { margin: 0; background: #111; overflow: hidden; }
+svg { display: block; }
+</style></head>
+<body>
+<script>
+// ===== Words on screen. The spoken words and their timing come from timeline.js (made by build_voice.py). =====
+var CONFIG = {
+  site: 'kreislo.de',
+  handle: '@kreislo',
+  tagline: 'KEEP GOOD THINGS MOVING',
+  duration: 0            // set from the voice timeline below
+};
+</script>
+<script src="timeline.js"></script>
+<script src="logo.js"></script>
+<script src="engine.js"></script>
+<script>
+CONFIG.duration = TL.duration;
+Promise.all(['600 40px Oswald', '600 40px "Open Sans"', '400 40px "Open Sans"'].map(function (f) { return document.fonts.load(f); })).then(function () {
+  var q = new URLSearchParams(location.search), M = q.get('format') === 'mobile';
+  var W = M ? 1080 : 1920, H = M ? 1920 : 1080, CX = W / 2;
+  var e = K.ease, P = K.p, C = K.C;
+  var svg = K.el('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H }, document.body);
+  var bg = K.makeBackground(svg, W, H);
+  var LN = {}; TL.lines.forEach(function (l) { LN[l.key] = l; });
+
+  // time when word i of a line is spoken (estimated from the letters, good enough for on-screen words)
+  function wt(key, i) {
+    var l = LN[key], w = l.text.split(/\s+/), tot = 0, acc = 0;
+    w.forEach(function (x) { tot += x.length + 2; });
+    for (var k = 0; k < i; k++) acc += w[k].length + 2;
+    return l.start + (l.end - l.start) * acc / tot;
+  }
+  // ---------- small helpers
+  function T(parent, str, x, y, size, color, o) {
+    o = o || {};
+    return K.text(parent, str, { x: x, y: y, 'text-anchor': o.anchor || 'middle', fill: color,
+      'font-family': o.font || 'Oswald', 'font-weight': o.weight || 600, 'font-size': size, 'letter-spacing': o.ls == null ? 1 : o.ls });
+  }
+  function G(parent, attrs) { return K.el('g', attrs || {}, parent || svg); }
+  function show(g, a, dy, s, cx, cy) {   // opacity a (0..1), slide up dy*(1-a), optional scale around cx,cy
+    g.setAttribute('opacity', a);
+    var tr = 'translate(0,' + ((dy || 0) * (1 - a)) + ')';
+    if (s != null) tr += ' translate(' + cx + ',' + cy + ') scale(' + s + ') translate(' + (-cx) + ',' + (-cy) + ')';
+    g.setAttribute('transform', tr);
+  }
+  function pop(t, t0) { return Math.max(0.001, e.back(P(t, t0, t0 + 0.35))); }
+  function fadeIn(t, t0, d) { return e.out(P(t, t0, t0 + (d || 0.4))); }
+  // Line icons on a 24 grid (stroke), drawn centred at cx,cy with the given size
+  var IC = {
+    washer: 'M5 2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z M3 7h18 M6.5 4.5h.01 M9 4.5h.01 M12 19a5 5 0 1 0 0-10 5 5 0 0 0 0 10z M9.5 15.5a3 3 0 0 0 4 1',
+    fridge: 'M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z M5 10h14 M8.5 5.5v2 M8.5 13v3.5',
+    sofa: 'M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3 M3 11a2 2 0 0 1 2 2v2h14v-2a2 2 0 0 1 4 0v5H1v-5a2 2 0 0 1 2-2z M4 18v2 M20 18v2',
+    jacket: 'M9 3l3 3 3-3 5 3-1.5 5H17v10H7V11H5.5L4 6z M12 6v15 M9 3c0 2 1.5 3 3 3s3-1 3-3',
+    pin: 'M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+    truck: 'M1 5h13v11H1z M14 9h4.5L22 12.5V16h-8z M6 19.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z M18 19.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z',
+    ship: 'M2 15h20l-2.5 5h-15z M5 15V9h14v6 M8 9V6h4v3 M12 9V6h4v3 M7 12h2 M11 12h2 M15 12h2',
+    box: 'M12 2l9 4.5v11L12 22l-9-4.5v-11z M3 6.5l9 4.5 9-4.5 M12 11v11 M7.5 4.2l9 4.6',
+    shelf: 'M3 3v18 M21 3v18 M3 9h18 M3 15h18 M5.5 5h4v4h-4z M11 5h3.5v4H11z M6 11h5v4H6z M13 11h5v4h-5z M5.5 17h4.5v4H5.5z',
+    check: 'M5 12.5l4.5 4.5L19 7.5',
+    plane: 'M21.5 3.5L2.5 11l6.5 2.5 2.5 7 3.5-4.5 5 3.5z M9 13.5l12.5-10',
+    tag: 'M3 3h8l10 10-8 8L3 11z M7.5 7.5h.01',
+    house: 'M3 11l9-8 9 8 M5 9.5V21h14V9.5 M10 21v-6h4v6',
+    drill: 'M3 7h11v5H3z M14 8.5h4 M18 9.5h3.5 M6 12l-1.5 8h5L11 12 M7 15.5h2',
+    sprout: 'M12 21v-9 M12 12c0-4-3-6.5-7-6.5 0 4 3 6.5 7 6.5z M12 14.5c0-3.5 2.5-6 6.5-6 0 3.5-2.5 6-6.5 6z M5 21h14',
+    tractor: 'M4 17.5a3.5 3.5 0 1 0 7 0 3.5 3.5 0 0 0-7 0z M17 18.5a2 2 0 1 0 4 0 2 2 0 0 0-4 0z M7.5 14V7h6l2 7 M9 7V4 M15.5 14H20l1 3 M11 17.5h6',
+    micro: 'M2 5h20v14H2z M5 8h11v8H5z M19 9h.01 M19 12h.01 M19 15h.01',
+    grinder: 'M2 10h12a2 2 0 0 1 0 4H2z M14 12h3 M20 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0 M6 14v4',
+    cart: 'M2 3h3l2.5 12h11L21 7H6.2 M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z M18 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2z',
+    swap: 'M4 8h14l-3-3 M20 16H6l3 3',
+    x: 'M6 6l12 12 M18 6L6 18'
+  };
+  function icon(parent, name, cx, cy, size, color, sw) {
+    var g = G(parent, { transform: 'translate(' + (cx - size / 2) + ',' + (cy - size / 2) + ') scale(' + (size / 24) + ')' });
+    K.el('path', { d: IC[name], fill: 'none', stroke: color, 'stroke-width': sw || 1.6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+    return g;
+  }
+  function badge(parent, cx, cy, r) {   // orange round check badge
+    var g = G(parent);
+    K.el('circle', { cx: cx, cy: cy, r: r, fill: C.orange }, g);
+    icon(g, 'check', cx, cy, r * 1.25, C.white, 3);
+    return g;
+  }
+  function pill(parent, x, y, h, label, iconFn, opt) {   // returns {g, w}; x = centre
+    opt = opt || {};
+    var g = G(parent), size = opt.size || h * 0.36;
+    var txt = T(g, label, 0, 0, size, opt.color || C.white, { ls: 2 });
+    var tw = txt.getComputedTextLength(), iw = iconFn ? h * 0.5 + 18 : 0, w = tw + iw + h * 0.9;
+    K.el('rect', { x: x - w / 2, y: y - h / 2, width: w, height: h, rx: h / 2, fill: opt.fill || C.panel, stroke: opt.stroke || 'none', 'stroke-width': 3 }, g).parentNode.insertBefore(g.lastChild, g.firstChild);
+    K.set(txt, { x: x - w / 2 + h * 0.45 + iw + tw / 2, y: y + size * 0.36 });
+    if (iconFn) iconFn(g, x - w / 2 + h * 0.45 + h * 0.25, y, h * 0.5);
+    return { g: g, w: w };
+  }
+
+  // ---------- scene windows
+  var SC = {
+    hook: [0, LN.problem.start - 0.25],
+    problem: [LN.problem.start - 0.25, LN.kits.start - 0.3],
+    kits: [LN.kits.start - 0.3, LN.price.start - 0.3],
+    price: [LN.price.start - 0.3, LN.new.start - 0.3],
+    'new': [LN.new.start - 0.3, LN.order.start - 0.3],
+    order: [LN.order.start - 0.3, LN.brand.start - 0.45],
+    brand: [LN.brand.start - 0.45, TL.duration + 1]
+  };
+  function sceneAlpha(t, k) { var a = SC[k][0], b = SC[k][1]; return Math.min(P(t, a, a + 0.35), 1 - P(t, b - 0.3, b)); }
+  // orange wipe bar between scenes
+  var wipe = K.el('rect', { x: 0, y: 0, width: W, height: H, fill: C.orange, opacity: 0 }, svg);
+
+  // small wordmark in the corner during the middle scenes
+  var mini = K.makeWordmark(G());
+  var ms = (M ? 230 : 210) / (K.WORD.right - K.WORD.left);
+  var mx = M ? CX - ms * (K.WORD.left + K.WORD.right) / 2 : 70 - ms * K.WORD.left, my = (M ? 190 : 80) - ms * K.WORD.ringY;
+  mini.g.setAttribute('transform', 'translate(' + mx + ',' + my + ') scale(' + ms + ')');
+  mini.ring.update(0, 0, K.WORD.r, K.WORD.sw, 1);
+  mini.ringHolder.setAttribute('transform', 'translate(' + K.WORD.ringX + ',' + K.WORD.ringY + ')');
+  var miniWrap = G(); miniWrap.appendChild(mini.g);
+
+  // ================= Scene 1: hook – a home? a workshop? a small farm? =================
+  var s1 = G();
+  var lab1 = G(s1); T(lab1, 'STARTING…', CX, M ? 420 : 200, M ? 56 : 52, C.orange, { ls: 10 });
+  var hooks = [['house', 'A HOME?', 2], ['drill', 'A WORKSHOP?', 4], ['sprout', 'A SMALL FARM?', 7]].map(function (h, i) {
+    var cx = M ? CX - 250 : CX + (i - 1) * 560, cy = M ? 720 + i * 360 : 520;
+    var g = G(s1);
+    K.el('circle', { cx: cx, cy: cy, r: M ? 120 : 130, fill: C.panel, stroke: '#2A2A2A', 'stroke-width': 2 }, g);
+    icon(g, h[0], cx, cy, M ? 140 : 150, C.white, 1.4);
+    if (M) T(g, h[1], cx + 160, cy + 26, 72, C.white, { anchor: 'start', ls: 3 });
+    else T(g, h[1], cx, cy + 230, 66, C.white, { ls: 3 });
+    return { g: g, cx: cx, cy: cy, t: wt('hook', h[2]) - 0.25 };
+  });
+
+  // ================= Scene 2: buy once, not three times =================
+  var s2 = G();
+  var head2 = G(s2); T(head2, 'HOW LONG DOES IT LAST?', CX, M ? 400 : 190, M ? 84 : 84, C.white, { ls: 3 });
+  var x0 = M ? 110 : 360, x1 = M ? W - 110 : W - 220, yr = (x1 - x0) / 10;
+  var rowA = M ? 820 : 470, rowB = M ? 1160 : 690, barH = M ? 90 : 84;
+  var axis = G(s2);
+  for (var yy = 0; yy <= 10; yy++) {
+    K.el('line', { x1: x0 + yy * yr, y1: rowA - barH, x2: x0 + yy * yr, y2: rowB + barH * 0.9, stroke: '#2A2A2A', 'stroke-width': 2 }, axis);
+    if (yy % 2 === 0 || !M) T(axis, String(yy), x0 + yy * yr, rowB + barH + 50, M ? 30 : 28, C.stone, { font: 'Open Sans', ls: 0 });
+  }
+  T(axis, 'YEARS', x1, rowB + barH + 95, M ? 28 : 26, C.stone, { anchor: 'end', ls: 4 });
+  var labA = G(s2), labB = G(s2);
+  if (M) {
+    T(labA, 'CHEAP · BUY ×3', x0, rowA - barH * 0.5 - 30, 44, C.grey, { anchor: 'start', ls: 3 });
+    T(labB, 'GOOD GERMAN · BUY ×1', x0, rowB - barH * 0.5 - 30, 44, C.orange, { anchor: 'start', ls: 3 });
+  } else {
+    T(labA, 'CHEAP', x0 - 30, rowA + 8, 46, C.grey, { anchor: 'end', ls: 3 }); T(labA, 'BUY ×3', x0 - 30, rowA + 46, 26, C.stone, { anchor: 'end', ls: 3 });
+    T(labB, 'GOOD GERMAN', x0 - 30, rowB + 8, 46, C.orange, { anchor: 'end', ls: 3 }); T(labB, 'BUY ×1', x0 - 30, rowB + 46, 26, C.stone, { anchor: 'end', ls: 3 });
+  }
+  var cheap = [0, 1, 2].map(function (i) {
+    var g = G(s2), sx = x0 + i * 3.3 * yr + 4, w = 3.1 * yr;
+    var r = K.el('rect', { x: sx, y: rowA - barH / 2, width: 0, height: barH, rx: 10, fill: '#3A3A3A' }, g);
+    var bx = G(g);
+    K.el('circle', { cx: sx + w, cy: rowA, r: 30, fill: '#111111', stroke: C.grey, 'stroke-width': 3 }, bx);
+    icon(bx, 'x', sx + w, rowA, 34, C.grey, 3);
+    return { r: r, x: bx, w: w, sx: sx };
+  });
+  var good = G(s2);
+  var goodBar = K.el('rect', { x: x0 + 4, y: rowB - barH / 2, width: 0, height: barH, rx: 10, fill: C.orange }, good);
+  var goodTxt = G(s2); T(goodTxt, '10 YEARS', x0 + 5 * yr, rowB + 18, M ? 50 : 52, C.white, { ls: 4 });
+  var onceY = M ? 1560 : 960;
+  var once = G(s2); T(once, 'BUY ONCE, NOT THREE TIMES.', CX, onceY, M ? 72 : 80, C.orange, { ls: 3 });
+
+  // ================= Scene 3: kits =================
+  var s3 = G();
+  var lab3 = G(s3); T(lab3, 'THE RIGHT THINGS TOGETHER', CX, (M ? 400 : 190) - (M ? 118 : 108), M ? 36 : 34, C.orange, { ls: 8 });
+  var head3 = G(s3); T(head3, 'KREISLO KITS', CX, M ? 400 : 190, M ? 110 : 100, C.white, { ls: 4 });
+  var kitDefs = [['HOME STARTER', ['fridge', 'washer', 'micro'], 8], ['SMALL WORKSHOP', ['grinder', 'drill', 'shelf'], 12], ['SMALL FARM', ['tractor', 'sprout', 'truck'], 15]];
+  var kw = M ? 860 : 520, kh = M ? 300 : 430;
+  var kits = kitDefs.map(function (k, i) {
+    var cx = M ? CX : CX + (i - 1) * (kw + 40), cy = M ? 690 + i * (kh + 40) : 560;
+    var g = G(s3);
+    K.el('rect', { x: cx - kw / 2, y: cy - kh / 2, width: kw, height: kh, rx: 28, fill: C.panel, stroke: '#2A2A2A', 'stroke-width': 2 }, g);
+    if (M) {
+      T(g, k[0], cx - kw / 2 + 50, cy - 70, 58, C.white, { anchor: 'start', ls: 3 });
+      k[1].forEach(function (n, j) { icon(g, n, cx - kw / 2 + 110 + j * 170, cy + 55, 110, C.grey, 1.4); });
+    } else {
+      k[1].forEach(function (n, j) { icon(g, n, cx + (j - 1) * 150, cy - 50, 110, C.grey, 1.4); });
+      T(g, k[0], cx, cy + 120, 50, C.white, { ls: 3 });
+    }
+    var b = badge(G(s3), cx + kw / 2 - 48, cy - kh / 2 + 48, 36);
+    return { g: g, b: b, cx: cx, cy: cy, t: wt('kits', k[2]) - 0.3, bx: cx + kw / 2 - 48, by: cy - kh / 2 + 48 };
+  });
+  var testedY = M ? 1720 : 880;
+  var tested = G(s3), spares = G(s3), sparesX = CX;
+  (function () {
+    var h = M ? 92 : 88;
+    var p1 = pill(tested, 0, 0, h, 'TESTED BY HAND IN GERMANY', function (g, x, y, s) { icon(g, 'check', x, y, s, C.orange, 3); });
+    var p2 = pill(spares, 0, 0, h, '+ SPARES FOR YEAR ONE', function (g, x, y, s) { icon(g, 'box', x, y, s, C.white, 2); }, { fill: C.orange });
+    if (M) {
+      tested.setAttribute('transform', 'translate(' + CX + ',' + (testedY - 115) + ')');
+      spares.__x = CX; spares.__y = testedY;
+    } else {
+      var gap = 30, tot = p1.w + gap + p2.w;
+      tested.setAttribute('transform', 'translate(' + (CX - tot / 2 + p1.w / 2) + ',' + testedY + ')');
+      spares.__x = CX - tot / 2 + p1.w + gap + p2.w / 2; spares.__y = testedY;
+    }
+  })();
+
+  // ================= Scene 4: one price, in writing =================
+  var s4 = G();
+  var head4 = G(s4); T(head4, 'ONE PRICE. IN WRITING.', CX, M ? 400 : 170, 92, C.white, { ls: 3 });
+  var dw = M ? 860 : 820, dx = M ? CX - dw / 2 : CX - dw / 2 - 260, dy = M ? 520 : 250, dh = M ? 760 : 640;
+  var docG = G(s4);
+  K.el('rect', { x: dx, y: dy, width: dw, height: dh, rx: 18, fill: C.paper }, docG);
+  K.el('rect', { x: dx, y: dy, width: dw, height: 14, fill: C.orange }, docG);
+  T(docG, 'QUOTE · KENYA', dx + 50, dy + 90, M ? 44 : 40, C.ink, { anchor: 'start', ls: 4 });
+  T(docG, 'Nairobi · valid 14 days', dx + dw - 50, dy + 90, M ? 26 : 24, C.stone, { anchor: 'end', font: 'Open Sans', ls: 0 });
+  var lineDefs = [['Home starter kit, tested', '€ • • •'], ['Spares pack', 'included'], ['Packing', 'included'], ['Shipping to Mombasa', 'included']];
+  var docLines = lineDefs.map(function (l, i) {
+    var g = G(docG), y = dy + (M ? 200 : 190) + i * (M ? 96 : 82);
+    T(g, l[0], dx + 50, y, M ? 36 : 32, '#333333', { anchor: 'start', font: 'Open Sans', ls: 0 });
+    T(g, l[1], dx + dw - 50, y, M ? 36 : 32, l[1] === 'included' ? '#2f6f5e' : C.ink, { anchor: 'end', font: 'Open Sans', weight: 600, ls: 0 });
+    K.el('line', { x1: dx + 50, y1: y + 26, x2: dx + dw - 50, y2: y + 26, stroke: '#E0DDD8', 'stroke-width': 2 }, g);
+    return g;
+  });
+  var totalG = G(docG), ty = dy + dh - (M ? 110 : 100);
+  K.el('rect', { x: dx + 30, y: ty - 62, width: dw - 60, height: 96, rx: 12, fill: C.ink }, totalG);
+  T(totalG, 'ONE PRICE', dx + 70, ty + 2, M ? 44 : 40, C.white, { anchor: 'start', ls: 4 });
+  T(totalG, 'ALL INCLUDED', dx + dw - 70, ty + 2, M ? 44 : 40, C.orange, { anchor: 'end', ls: 3 });
+  var stamp = G(s4), stx = M ? CX + 220 : dx + dw + 300, sty = M ? 1520 : 560;
+  K.el('circle', { cx: stx, cy: sty, r: M ? 170 : 190, fill: '#111111', stroke: C.orange, 'stroke-width': 8 }, stamp);
+  K.el('circle', { cx: stx, cy: sty, r: M ? 150 : 168, fill: 'none', stroke: C.orange, 'stroke-width': 3 }, stamp);
+  T(stamp, 'BEFORE', stx, sty - 18, M ? 54 : 60, C.orange, { ls: 4 });
+  T(stamp, 'YOU PAY', stx, sty + 54, M ? 54 : 60, C.orange, { ls: 4 });
+
+  // ================= Scene 5: new on request =================
+  var s5 = G();
+  var lab5 = G(s5); T(lab5, 'NEED SOMETHING NEW?', CX, (M ? 400 : 190) - (M ? 118 : 108), M ? 40 : 36, C.orange, { ls: 8 });
+  var head5 = G(s5); T(head5, 'WE BUY IT FOR YOU', CX, M ? 400 : 190, M ? 104 : 100, C.white, { ls: 3 });
+  var flow5 = [['cart', 'BOUGHT NEW', 'IN GERMANY', 4], ['box', 'PACKED WITH', 'YOUR ORDER', 10], ['ship', 'SHIPPED', 'TO KENYA', 12]].map(function (f, i) {
+    var cx = M ? CX - 200 : CX + (i - 1) * 520, cy = M ? 720 + i * 330 : 520, r = M ? 120 : 130;
+    var g = G(s5);
+    K.el('circle', { cx: cx, cy: cy, r: r, fill: i === 0 ? C.orange : C.panel, stroke: '#2A2A2A', 'stroke-width': 2 }, g);
+    icon(g, f[0], cx, cy, r * 1.05, C.white, 1.5);
+    if (M) { T(g, f[1], cx + r + 40, cy - 6, 50, C.white, { anchor: 'start', ls: 3 }); T(g, f[2], cx + r + 40, cy + 50, 36, C.grey, { anchor: 'start', ls: 3 }); }
+    else { T(g, f[1], cx, cy + r + 70, 50, C.white, { ls: 3 }); T(g, f[2], cx, cy + r + 118, 34, C.grey, { ls: 3 }); }
+    return { g: g, cx: cx, cy: cy, r: r, t: wt('new', f[3]) - 0.3 };
+  });
+  var arrows5 = [0, 1].map(function (i) {
+    var a = flow5[i], b = flow5[i + 1];
+    var d = M ? 'M' + a.cx + ' ' + (a.cy + a.r + 14) + ' L' + b.cx + ' ' + (b.cy - b.r - 14) : 'M' + (a.cx + a.r + 24) + ' ' + a.cy + ' L' + (b.cx - b.r - 24) + ' ' + b.cy;
+    var p = K.el('path', { d: d, fill: 'none', stroke: C.orange, 'stroke-width': 6, 'stroke-linecap': 'round' }, s5);
+    var len = p.getTotalLength(); p.setAttribute('stroke-dasharray', len); p.setAttribute('stroke-dashoffset', len);
+    return { p: p, len: len, t: b.t - 0.1 };
+  });
+  var note5 = G(s5); T(note5, 'German shop price + our fee, in writing', CX, M ? 1720 : 970, M ? 38 : 36, C.grey, { font: 'Open Sans', ls: 0 });
+
+  // ================= Scene 6: swap any item, order on WhatsApp =================
+  var s6 = G();
+  var swapG = G(s6), swapY = M ? 720 : 400;
+  pill(swapG, CX, swapY, M ? 120 : 112, 'SWAP ANY ITEM', function (g, x, y, s) { icon(g, 'swap', x, y, s, C.orange, 2.4); }, { size: M ? 52 : 50 });
+  var waG = G(s6), waY = M ? 1000 : 640;
+  pill(waG, CX, waY, M ? 160 : 150, 'ORDER ON WHATSAPP', function (g, x, y, s) { K.icon(g, 'whatsapp', x - s / 2, y - s / 2, s, C.white); }, { fill: '#1DA851', size: M ? 62 : 60 });
+  var also6 = G(s6); T(also6, 'or online at kreislo.de', CX, M ? 1220 : 820, M ? 42 : 40, C.grey, { font: 'Open Sans', ls: 0 });
+
+  // ================= Scene 7: brand =================
+  var s7 = G();
+  var wm = K.makeWordmark(G(s7));
+  var bw = M ? 760 : 900, bs = bw / (K.WORD.right - K.WORD.left), by = M ? H * 0.40 : H * 0.40;
+  var bx = CX - bs * (K.WORD.left + K.WORD.right) / 2;
+  wm.g.setAttribute('transform', 'translate(' + bx + ',' + (by - bs * K.WORD.ringY) + ') scale(' + bs + ')');
+  var tag7 = G(s7); T(tag7, CONFIG.tagline, CX, by + (M ? 200 : 215), M ? 58 : 64, C.orange, { ls: M ? 6 : 10 });
+  var links7 = G(s7), ly = by + (M ? 360 : 350);
+  (function () {
+    var size = M ? 44 : 44;
+    var a = G(links7), b = G(links7);
+    K.icon(a, 'globe', 0, -size * 0.8, size, C.white);
+    T(a, CONFIG.site, size + 18, 0, size, C.white, { anchor: 'start', font: 'Open Sans', ls: 0 });
+    ['youtube', 'instagram', 'tiktok', 'facebook'].forEach(function (n, i) { K.icon(b, n, i * size * 1.25, -size * 0.8, size, C.white); });
+    T(b, CONFIG.handle, 4 * size * 1.25 + 8, 0, size, C.white, { anchor: 'start', font: 'Open Sans', ls: 0 });
+    var wa = a.getBBox().width, wb = b.getBBox().width;
+    if (M) {
+      a.setAttribute('transform', 'translate(' + (CX - wa / 2) + ',' + ly + ')');
+      b.setAttribute('transform', 'translate(' + (CX - wb / 2) + ',' + (ly + 90) + ')');
+    } else {
+      var gap = 90, tot = wa + gap + wb;
+      a.setAttribute('transform', 'translate(' + (CX - tot / 2) + ',' + ly + ')');
+      b.setAttribute('transform', 'translate(' + (CX - tot / 2 + wa + gap) + ',' + ly + ')');
+    }
+  })();
+
+  var fade = K.el('rect', { width: W, height: H, fill: '#000', opacity: 1 }, svg);
+
+  // ================= frame =================
+  window.renderFrame = function (t) {
+    var D = TL.duration;
+    fade.setAttribute('opacity', Math.max(1 - P(t, 0, 0.4), P(t, D - 0.9, D)));
+    bg.glow.setAttribute('opacity', 0.6 + 0.4 * e.out(P(t, 0, 2)));
+    var rx = M ? CX : W * (0.5 + 0.18 * Math.sin(t * 0.12)), ry = M ? H * (0.45 + 0.1 * Math.sin(t * 0.1)) : H * 0.5;
+    bg.big.update(rx, ry, M ? 760 : 620, 90, 1);
+    bg.big.g.setAttribute('transform', 'rotate(' + (t * 8) + ' ' + rx + ' ' + ry + ')');
+    var wa = 0;
+    ['kits', 'price', 'order'].forEach(function (k) { var a = SC[k][0]; wa = Math.max(wa, 0.12 * (1 - Math.abs(P(t, a - 0.25, a + 0.25) * 2 - 1))); });
+    wipe.setAttribute('opacity', wa);
+    miniWrap.setAttribute('opacity', 0.95 * Math.min(P(t, SC.problem[0], SC.problem[0] + 0.5), 1 - P(t, SC.order[1] - 0.4, SC.order[1])));
+
+    // --- 1 hook
+    s1.setAttribute('opacity', sceneAlpha(t, 'hook'));
+    show(lab1, fadeIn(t, 0.3), 20);
+    hooks.forEach(function (h) { show(h.g, P(t, h.t, h.t + 0.12), 0, pop(t, h.t), h.cx, h.cy); });
+
+    // --- 2 buy once
+    s2.setAttribute('opacity', sceneAlpha(t, 'problem'));
+    show(head2, fadeIn(t, SC.problem[0] + 0.05), 30);
+    axis.setAttribute('opacity', fadeIn(t, SC.problem[0] + 0.2));
+    labA.setAttribute('opacity', fadeIn(t, wt('problem', 0) - 0.1));
+    cheap.forEach(function (c, i) {
+      var t0 = wt('problem', 2) + i * 0.45, p = e.out(P(t, t0, t0 + 0.4));
+      c.r.setAttribute('width', Math.max(0, c.w * p));
+      show(c.x, P(t, t0 + 0.35, t0 + 0.45), 0, pop(t, t0 + 0.35), c.sx + c.w, rowA);
+    });
+    labB.setAttribute('opacity', fadeIn(t, wt('problem', 6) - 0.1));
+    var gp = e.inOut(P(t, wt('problem', 7), wt('problem', 11) + 0.2));
+    goodBar.setAttribute('width', Math.max(0, (10 * yr - 8) * gp));
+    goodTxt.setAttribute('opacity', P(t, wt('problem', 11) - 0.1, wt('problem', 11) + 0.2));
+    var ot = wt('problem', 13) - 0.2; show(once, P(t, ot, ot + 0.15), 0, pop(t, ot), CX, onceY - 20);
+
+    // --- 3 kits
+    s3.setAttribute('opacity', sceneAlpha(t, 'kits'));
+    show(lab3, fadeIn(t, SC.kits[0] + 0.05), 20); show(head3, fadeIn(t, SC.kits[0] + 0.1), 30);
+    kits.forEach(function (k, i) {
+      show(k.g, P(t, k.t, k.t + 0.12), 0, pop(t, k.t), k.cx, k.cy);
+      var bt = wt('kits', 18) - 0.2 + i * 0.15; show(k.b, P(t, bt, bt + 0.08), 0, pop(t, bt), k.bx, k.by);
+    });
+    tested.setAttribute('opacity', fadeIn(t, wt('kits', 17) - 0.2, 0.35));
+    var st = wt('kits', 25) - 0.25, sps = pop(t, st);
+    spares.setAttribute('opacity', P(t, st, st + 0.12));
+    spares.setAttribute('transform', 'translate(' + spares.__x + ',' + spares.__y + ') scale(' + sps + ')');
+
+    // --- 4 price
+    s4.setAttribute('opacity', sceneAlpha(t, 'price'));
+    show(head4, fadeIn(t, SC.price[0] + 0.05), 30);
+    show(docG, fadeIn(t, SC.price[0] + 0.15, 0.5), 50);
+    docLines.forEach(function (g, i) { show(g, fadeIn(t, wt('price', 1) + i * 0.32, 0.3), 14); });
+    var tot4 = wt('price', 5) - 0.1; show(totalG, P(t, tot4, tot4 + 0.15), 0, pop(t, tot4), CX, ty);
+    var stt = wt('price', 11) - 0.3, sp = P(t, stt, stt + 0.25);
+    stamp.setAttribute('opacity', sp);
+    var ss = sp > 0 ? 1.6 - 0.6 * e.out(sp) : 1;
+    stamp.setAttribute('transform', 'translate(' + stx + ',' + sty + ') scale(' + ss + ') rotate(' + (-12 * e.out(sp)) + ') translate(' + (-stx) + ',' + (-sty) + ')');
+
+    // --- 5 new on request
+    s5.setAttribute('opacity', sceneAlpha(t, 'new'));
+    show(lab5, fadeIn(t, SC['new'][0] + 0.05), 20); show(head5, fadeIn(t, wt('new', 3) - 0.3), 30);
+    flow5.forEach(function (f) { show(f.g, P(t, f.t, f.t + 0.12), 0, pop(t, f.t), f.cx, f.cy); });
+    arrows5.forEach(function (a) { a.p.setAttribute('stroke-dashoffset', a.len * (1 - e.out(P(t, a.t - 0.25, a.t)))); });
+    show(note5, fadeIn(t, LN['new'].end - 0.6), 20);
+
+    // --- 6 order
+    s6.setAttribute('opacity', sceneAlpha(t, 'order'));
+    var sw = wt('order', 0) - 0.2; show(swapG, P(t, sw, sw + 0.12), 0, pop(t, sw), CX, swapY);
+    var wo = wt('order', 3) - 0.2; show(waG, P(t, wo, wo + 0.12), 0, pop(t, wo) * (t > wo + 0.5 ? 1 + 0.025 * Math.sin((t - wo) * 6) : 1), CX, waY);
+    show(also6, fadeIn(t, LN.order.end - 0.2), 15);
+
+    // --- scene 7: wordmark like the intro, tagline, links
+    s7.setAttribute('opacity', P(t, SC.brand[0], SC.brand[0] + 0.3));
+    var b0 = SC.brand[0];
+    var spin = 360 * e.inOut(P(t, b0 + 0.2, b0 + 1.1));
+    wm.ring.update(0, 0, K.WORD.r, K.WORD.sw, Math.max(e.inOut(P(t, b0, b0 + 0.8)), 0.0001));
+    wm.ringHolder.setAttribute('transform', 'translate(' + K.WORD.ringX + ',' + K.WORD.ringY + ') rotate(' + spin + ')');
+    wm.letters.forEach(function (Lt, i) {
+      var a = e.out(P(t, b0 + 0.15 + i * 0.06, b0 + 0.6 + i * 0.06));
+      Lt.g.setAttribute('opacity', a); Lt.g.setAttribute('transform', 'translate(0,' + (40 * (1 - a)) + ')');
+    });
+    show(tag7, fadeIn(t, wt('brand', 1) - 0.1, 0.5), 30);
+    show(links7, fadeIn(t, LN.brand.end + 0.1, 0.5), 20);
+  };
+  window.renderFrame(0); window.__ready = true;
+});
+</script>
+</body></html>

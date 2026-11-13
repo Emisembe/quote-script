@@ -20,3 +20,12 @@ A 40-second brand advert (16:9 and 9:16) whose animation follows a spoken script
 
 Check every claim in the script is true for the business before it runs as a paid ad, keep phone numbers out
 of videos, and tell the owner to add the platform's automatic subtitles.
+
+## Second advert: kits (`kits/`)
+
+Same pipeline, different script: hook (a home? a workshop? a small farm?) → "buy once, not three times"
+(3 short bars against one 10-year bar) → three kit cards with check badges and "+ spares for year one" →
+a quote card with every line "included" and a "before you pay" stamp → "we buy it new for you" flow →
+swap any item / order on WhatsApp → logo. `kits/voice.py` holds the lines, `kits/ad.html` the scenes,
+`kits/timeline.js` the timing from `build_voice.py`. Never put a real price on the quote card unless it is
+the actual price including shipping; the card shows "€ • • •" on purpose.
