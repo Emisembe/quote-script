@@ -60,6 +60,8 @@ Every gadget is a standard Blogger gadget. The menu, social links, slideshow and
 
 **Page templates** in `page-templates/`: `downloads-page.html` (document cards with cover, type, description and Download button, by category), `about-team-page.html` (intro, values, team cards, call to action), `contact-page.html` (email/WhatsApp/Telegram/phone cards, optional Google Form, info box), `be-a-guest-page.html` (who we look for, topics, how it works, apply buttons), `events-page.html` (upcoming events with date badge, status, place, time and ticket button; past events; invite box) `faq-page.html` (questions that open on tap, grouped, no JavaScript) and `partners-page.html` (audience numbers, reasons to partner, three packages, partner logos, media kit and enquiry buttons). In Blogger: Pages → New page → HTML view → paste → edit the parts marked EDIT → Publish. Styles are scoped to the template, so they don't affect the rest of the site.
 
+**Business card:** `print/business-card/` has an Inkscape file with both sides (85 × 55 mm, 3 mm bleed), the Bebas Neue font to install, and instructions.
+
 **Colours:** go to **Theme → Customise → Advanced** to change the brand colours.
 
 ## Working on the theme
