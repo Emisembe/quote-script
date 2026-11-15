@@ -232,7 +232,7 @@ a.shop-logo-tile:hover, a.shop-logo-tile:focus-visible { transform: translateY(-
 .shop-logos.is-tiles .shop-logo-list { gap: 16px; }
 .shop-logos.is-tiles .shop-logo-tile { width: 180px; height: 90px; padding: 14px 18px; background: #fff; border: 1px solid #e8e3dc; border-radius: 12px; }
 .shop-logos.is-tiles a.shop-logo-tile:hover, .shop-logos.is-tiles a.shop-logo-tile:focus-visible { box-shadow: 0 6px 18px rgba(0,0,0,.08); border-color: $(shop.accent); }
-.shop-logo.is-text .shop-logo-tile, .shop-logos.is-tiles .shop-logo.is-text .shop-logo-tile { width: auto; height: auto; padding: 0; border: 0; background: none; box-shadow: none; transform: none; }
+.shop-logo.is-text .shop-logo-tile, .shop-logos.is-tiles .shop-logo.is-text .shop-logo-tile { width: auto !important; max-width: none !important; height: auto !important; padding: 0; border: 0; background: none; box-shadow: none; transform: none; }
 .shop-logo-name { display: inline-block; max-width: calc(100vw - 48px); box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 8px 14px; border: 1px solid #d6d6d6; border-radius: 999px; font-size: .85rem; font-weight: 600; color: #444; }
 a.shop-logo-tile:hover .shop-logo-name { border-color: $(shop.accent); color: $(shop.accent); }
 @media (max-width: 480px) {

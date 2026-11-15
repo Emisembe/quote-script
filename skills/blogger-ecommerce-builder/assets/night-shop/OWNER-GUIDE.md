@@ -803,6 +803,7 @@ Impressum and Widerruf at all.
 | A homepage section is missing | "What customers say" stays hidden until it has a line without `#`. The newsletter is hidden without `google_sheet` |
 | "Stay in the loop" (newsletter) is gone, or sign-ups open an email instead of "Please confirm" | The `google_sheet:` line is missing in Shop settings, usually because a theme upload reset it. Paste it back (section 7). Without it, the newsletter box still shows, but each sign-up comes to you as an email (or WhatsApp) instead of landing in the Newsletter tab with double opt-in |
 | Request form or newsletter says "Something went wrong" | The newest Code.gs isn't deployed: paste it, run setup, Deploy → Manage deployments → New version |
+| Menu on the phone seems to freeze, or opens nowhere | Fixed in this version: upload the new theme (Theme → ⋮ → Restore). The menu now opens under the header wherever you are on the page |
 | No daily or weekly report arrives | Settings → report time not `off`, then run **setup** once (it makes the triggers); check the Recipients tab has a `yes` under Daily/Weekly report |
 | Customers get emails while I'm testing | Settings → **Test mode: send every email to** = your address. Clear it before you go live |
 | The returning-customer column is empty for old orders | It is filled from now on; old rows stay as they are |

@@ -58,8 +58,12 @@ body {
   background: var(--rm-bg);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  overflow-x: clip; /* clip, not hidden: hidden would turn body into a scroll box and unpin the sticky header */
 }
-html.nav-locked, html.nav-locked body { overflow: hidden; }
+/* While the menu is open only <html> is locked. Locking <body> too (as before) turned body into its own
+   scroll box on phones: the sticky header came loose, the menu opened off-screen and the page looked frozen. */
+html.nav-locked { overflow: hidden; }
+html.nav-locked .shop-chat-bubble, html.nav-locked .shop-wa-float { display: none; }
 img, video, iframe, embed, object { max-width: 100%; }
 img { height: auto; border: 0; }
 a { color: inherit; text-decoration: none; }
@@ -238,18 +242,19 @@ a.badge:hover { background: var(--rm-primary); color: var(--rm-accent); }
 .nav-drawer { display: none; }
 .site-header.nav-open .nav-drawer {
   display: block;
-  position: absolute;
-  top: 100%;
+  position: fixed;               /* pinned under the header wherever the page is scrolled */
+  top: var(--rm-header-h);      /* theme.js sets the exact top: the header's bottom edge */
   left: 0;
   right: 0;
-  margin-top: 2px;
+  bottom: 0;
+  margin-top: 0;
   padding: 8px 20px 24px;
   background: var(--rm-primary);
-  border-bottom: 2px solid var(--rm-accent);
-  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
-  max-height: calc(100vh - var(--rm-header-h));
+  border-top: 2px solid var(--rm-accent);
   overflow-y: auto;
+  overscroll-behavior: contain;  /* scrolling the menu never scrolls the page behind it */
   -webkit-overflow-scrolling: touch;
+  z-index: 101;
 }
 .site-nav .widget > .title, .site-nav .widget > h2, .site-nav .widget > h3,
 .header-cta .widget > .title, .header-cta .widget > h2, .header-cta .widget > h3 { display: none; }
@@ -274,6 +279,9 @@ a.badge:hover { background: var(--rm-primary); color: var(--rm-accent); }
     align-items: center;
     gap: 28px;
     position: static;
+    top: auto;
+    bottom: auto;
+    border-top: 0;
     margin: 0;
     padding: 0;
     background: none;
@@ -1175,7 +1183,7 @@ a.shop-logo-tile:hover, a.shop-logo-tile:focus-visible { transform: translateY(-
 .shop-logos.is-tiles .shop-logo-list { gap: 16px; }
 .shop-logos.is-tiles .shop-logo-tile { width: 180px; height: 90px; padding: 14px 18px; background: #fff; border: 1px solid #e8e3dc; border-radius: 12px; }
 .shop-logos.is-tiles a.shop-logo-tile:hover, .shop-logos.is-tiles a.shop-logo-tile:focus-visible { box-shadow: 0 6px 18px rgba(0,0,0,.08); border-color: $(shop.accent); }
-.shop-logo.is-text .shop-logo-tile, .shop-logos.is-tiles .shop-logo.is-text .shop-logo-tile { width: auto; height: auto; padding: 0; border: 0; background: none; box-shadow: none; transform: none; }
+.shop-logo.is-text .shop-logo-tile, .shop-logos.is-tiles .shop-logo.is-text .shop-logo-tile { width: auto !important; max-width: none !important; height: auto !important; padding: 0; border: 0; background: none; box-shadow: none; transform: none; }
 .shop-logo-name { display: inline-block; max-width: calc(100vw - 48px); box-sizing: border-box; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 8px 14px; border: 1px solid #d6d6d6; border-radius: 999px; font-size: .85rem; font-weight: 600; color: #444; }
 a.shop-logo-tile:hover .shop-logo-name { border-color: $(shop.accent); color: $(shop.accent); }
 @media (max-width: 480px) {

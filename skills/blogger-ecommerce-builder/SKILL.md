@@ -172,6 +172,10 @@ controls; it warns on unknown emails/IBANs, vendor licence switches and third-pa
 - **Inbox:** `tests/inbox-orders.js`, `tests/inbox-requests.js` and `tests/inbox-reports.js` run Code.gs in Node
   with fake Google services; a fake low cart price must come back as the feed price. Never define a second
   function with an existing name in Code.gs (Apps Script keeps the last one silently).
+- **Mobile menu:** never lock scrolling with `overflow: hidden` on `body` (only on `html`), and keep `body` at
+  `overflow-x: clip`: a scrolling body unpins the sticky header, so the drawer opens off-screen and the page looks
+  frozen. The drawer is `position: fixed` under the header; `tests/browser-menu.js` checks it with real touch taps
+  (Playwright's `tap()` scrolls sticky elements and fakes a jump).
 - A failing check can be the test: read the reason before changing shop code.
 - Say plainly what was not tested: the live blog, the real Apps Script deployment, real email delivery,
   real phones.

@@ -11,12 +11,23 @@
   var drawer = doc.getElementById('site-nav');
   var desktop = window.matchMedia ? window.matchMedia('(min-width: 1024px)') : null;
 
+  // The drawer is position: fixed; place it right under the header's current bottom edge
+  // (the header is sticky, so that is 0 + header height once scrolled, lower above the ticker).
+  function placeDrawer() {
+    if (!drawer || !header) return;
+    var bottom = Math.max(0, Math.round(header.getBoundingClientRect().bottom));
+    drawer.style.top = bottom + 'px';
+  }
+
   function setMenu(open) {
     if (!header || !toggle) return;
     if (open) {
+      placeDrawer();
       header.classList.add('nav-open');
       root.classList.add('nav-locked');
+      placeDrawer();
     } else {
+      if (drawer) drawer.style.top = '';
       header.classList.remove('nav-open');
       root.classList.remove('nav-locked');
     }
@@ -42,6 +53,9 @@
         toggle.focus();
       }
     });
+    var replace = function () { if (header.classList.contains('nav-open')) placeDrawer(); };
+    window.addEventListener('resize', replace);
+    window.addEventListener('scroll', replace, { passive: true });
     if (desktop) {
       var onChange = function () { if (desktop.matches) setMenu(false); };
       if (desktop.addEventListener) desktop.addEventListener('change', onChange);
