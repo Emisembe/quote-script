@@ -1,0 +1,172 @@
+<!--
+  RIVER MUSA SHOW: ABOUT & TEAM PAGE TEMPLATE
+  How to use:
+  1. Blogger: Pages > + NEW PAGE. Title it "About" (gives /p/about.html, which the
+     "Learn More" button and footer already link to).
+  2. Switch to HTML view (the pencil icon at the top left > HTML view).
+  3. Paste this whole file, then change everything marked EDIT.
+  4. Publish.
+
+  Photos: each team card shows initials in a circle. To use a photo instead, replace
+     <span class="rmt-initials">ME</span>
+  with
+     <img src="YOUR-PHOTO-ADDRESS" alt="Name of the person">
+  Square photos work best. Get an image address by uploading it into a draft post and
+  copying its link. The wide picture in the intro works the same way (see below).
+
+  Social links: change the href="..." of each icon. Delete an icon line you don't need.
+  To add a team member: copy from "MEMBER START" to "MEMBER END" and paste it after.
+-->
+<style>
+.rmt { --rmt-navy: #0D1C2E; --rmt-teal: #00C0A8; --rmt-teal-dark: #00A892; --rmt-text: #2B3A4A; --rmt-muted: #6B7A8C; --rmt-line: #E3E8EF; font-family: Arial, Helvetica, sans-serif; color: var(--rmt-text); line-height: 1.7; }
+.rmt br { display: none; }
+.rmt * { box-sizing: border-box; }
+.rmt .rmt-eyebrow { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rmt-teal); }
+.rmt .rmt-heading { margin: 0 0 12px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 38px; letter-spacing: 1px; line-height: 1.05; color: var(--rmt-navy); }
+.rmt .rmt-section { margin: 0 0 44px; }
+.rmt .rmt-section-title { display: inline-block; margin: 0 0 8px; padding-bottom: 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 30px; letter-spacing: 1px; line-height: 1.1; color: var(--rmt-navy); border-bottom: 3px solid var(--rmt-teal); }
+.rmt .rmt-section-text { margin: 0 0 20px; font-size: 15.5px; color: var(--rmt-muted); }
+.rmt .rmt-intro p { margin: 0 0 14px; font-size: 17px; }
+.rmt .rmt-lead { font-size: 19px !important; color: var(--rmt-navy); }
+.rmt .rmt-picture { position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 7; margin: 22px 0 0; overflow: hidden; border-radius: 14px; background: linear-gradient(135deg, #0D1C2E 0%, #12324A 60%, #0E5E5A 100%); color: var(--rmt-teal); }
+.rmt .rmt-picture img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; margin: 0; object-fit: cover; border-radius: 0; }
+.rmt .rmt-picture svg { width: 64px; height: 64px; }
+.rmt .rmt-values { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+.rmt .rmt-value { padding: 22px 20px; background: var(--rmt-navy); border-radius: 14px; color: #D7DFEA; }
+.rmt .rmt-value-icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-bottom: 12px; border-radius: 12px; background: rgba(0,192,168,.15); color: var(--rmt-teal); }
+.rmt .rmt-value-icon svg { width: 22px; height: 22px; }
+.rmt .rmt-value-title { margin: 0 0 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 24px; letter-spacing: 1px; line-height: 1.1; color: #fff; }
+.rmt .rmt-value p { margin: 0; font-size: 14.5px; line-height: 1.6; }
+.rmt .rmt-team { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+.rmt .rmt-member { display: flex; flex-direction: column; align-items: center; min-width: 0; padding: 26px 18px 22px; text-align: center; background: #fff; border: 1px solid var(--rmt-line); border-radius: 14px; box-shadow: 0 2px 12px rgba(13,28,46,.07); transition: transform .2s, box-shadow .2s; }
+.rmt .rmt-member:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(13,28,46,.13); }
+.rmt .rmt-photo { display: flex; align-items: center; justify-content: center; width: 112px; height: 112px; margin: 0 0 14px; overflow: hidden; border: 4px solid var(--rmt-teal); border-radius: 50%; background: var(--rmt-navy); }
+.rmt .rmt-photo img { width: 100%; height: 100%; max-width: none; margin: 0; object-fit: cover; border-radius: 0; }
+.rmt .rmt-initials { font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-size: 38px; letter-spacing: 1px; color: var(--rmt-teal); }
+.rmt .rmt-name { margin: 0 0 2px; font-family: Arial, Helvetica, sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 0; line-height: 1.3; color: var(--rmt-navy); }
+.rmt .rmt-role { margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--rmt-teal-dark); }
+.rmt .rmt-bio { margin: 0 0 14px; font-size: 14.5px; line-height: 1.6; }
+.rmt .rmt-social { display: flex; justify-content: center; gap: 8px; margin-top: auto; }
+.rmt .rmt-social a { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1.5px solid var(--rmt-line); border-radius: 50%; color: var(--rmt-navy); text-decoration: none; transition: border-color .2s, color .2s, background .2s; }
+.rmt .rmt-social a:hover { border-color: var(--rmt-teal); background: var(--rmt-teal); color: var(--rmt-navy); }
+.rmt .rmt-social svg { width: 16px; height: 16px; }
+.rmt .rmt-cta { padding: 30px 28px; text-align: center; background: var(--rmt-navy); border-top: 4px solid var(--rmt-teal); border-radius: 14px; color: #D7DFEA; }
+.rmt .rmt-cta-title { margin: 0 0 8px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 32px; letter-spacing: 1px; line-height: 1.05; color: #fff; }
+.rmt .rmt-cta p { margin: 0 0 18px; font-size: 16px; }
+.rmt .rmt-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.rmt a.rmt-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 11px 22px; border: 2px solid var(--rmt-teal); border-radius: 8px; background: var(--rmt-teal); color: var(--rmt-navy); font-size: 15px; font-weight: 700; line-height: 1.2; text-decoration: none; transition: background .2s, border-color .2s, color .2s; }
+.rmt a.rmt-btn:hover { background: var(--rmt-teal-dark); border-color: var(--rmt-teal-dark); color: var(--rmt-navy); }
+.rmt a.rmt-btn-outline { background: transparent; border-color: rgba(255,255,255,.4); color: #fff; }
+.rmt a.rmt-btn-outline:hover { background: transparent; border-color: var(--rmt-teal); color: var(--rmt-teal); }
+@media (max-width: 600px) {
+  .rmt .rmt-intro, .rmt .rmt-section { text-align: center; }
+  .rmt .rmt-heading { font-size: 32px; }
+  .rmt .rmt-picture { aspect-ratio: 4 / 3; }
+  .rmt .rmt-value { text-align: center; }
+  .rmt .rmt-team { grid-template-columns: minmax(0, 1fr); }
+  .rmt .rmt-cta { padding: 26px 18px; }
+  .rmt .rmt-buttons a.rmt-btn { width: 100%; }
+}
+@media print {
+  .rmt .rmt-member, .rmt .rmt-value { break-inside: avoid; box-shadow: none; }
+  .rmt .rmt-social, .rmt .rmt-cta { display: none; }
+}
+</style>
+
+<div class="rmt">
+
+  <!-- ================= INTRO (EDIT the text) ================= -->
+  <div class="rmt-section rmt-intro">
+    <p class="rmt-eyebrow">About the show</p>
+    <h2 class="rmt-heading">Culture. Conversation. Connection.</h2>
+    <p class="rmt-lead">The River Musa Show explores governance, identity, and the lived experience of moving between African and European worlds.</p>
+    <p>Each episode brings honest conversations with people who live, work and build across borders: what they learned, what surprised them, and what they would tell someone just starting out.</p>
+    <!-- Wide picture: replace the <svg ...>...</svg> below with <img src="YOUR-IMAGE-ADDRESS" alt="..."> -->
+    <div class="rmt-picture">
+      <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
+    </div>
+  </div>
+
+  <!-- ================= VALUES (EDIT the three boxes) ================= -->
+  <div class="rmt-section">
+    <h2 class="rmt-section-title">What we stand for</h2>
+    <p class="rmt-section-text">Three ideas guide every episode.</p>
+    <div class="rmt-values">
+      <div class="rmt-value">
+        <span class="rmt-value-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></span>
+        <h3 class="rmt-value-title">Culture</h3>
+        <p>We celebrate where people come from and how it shapes where they go.</p>
+      </div>
+      <div class="rmt-value">
+        <span class="rmt-value-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></span>
+        <h3 class="rmt-value-title">Conversation</h3>
+        <p>Honest, respectful talks that go beyond headlines and easy answers.</p>
+      </div>
+      <div class="rmt-value">
+        <span class="rmt-value-icon"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
+        <h3 class="rmt-value-title">Connection</h3>
+        <p>Building bridges between people, ideas and two worlds.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TEAM ================= -->
+  <div class="rmt-section">
+    <h2 class="rmt-section-title">Meet the team</h2>
+    <p class="rmt-section-text">The people behind the microphone.</p>
+    <div class="rmt-team">
+
+      <!-- MEMBER START -->
+      <div class="rmt-member">
+        <div class="rmt-photo"><span class="rmt-initials">ME</span></div>
+        <h3 class="rmt-name">Murdock Emisembe</h3>
+        <p class="rmt-role">Host &amp; Creator</p>
+        <p class="rmt-bio">Governance professional, storyteller and bridge-builder between two worlds.</p>
+        <div class="rmt-social">
+          <a aria-label="LinkedIn" href="https://www.linkedin.com/" rel="noopener" target="_blank"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"></path><rect height="12" width="4" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+          <a aria-label="Instagram" href="https://www.instagram.com/" rel="noopener" target="_blank"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><rect height="20" rx="5" width="20" x="2" y="2"></rect><circle cx="12" cy="12" r="4"></circle><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg></a>
+          <a aria-label="Email" href="mailto:you@example.com"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><rect height="16" rx="2" width="20" x="2" y="4"></rect><polyline points="22 6 12 13 2 6"></polyline></svg></a>
+        </div>
+      </div>
+      <!-- MEMBER END -->
+
+      <!-- MEMBER START -->
+      <div class="rmt-member">
+        <div class="rmt-photo"><span class="rmt-initials">TM</span></div>
+        <h3 class="rmt-name">Team Member Name</h3>
+        <p class="rmt-role">Producer</p>
+        <p class="rmt-bio">One or two sentences about what this person does for the show.</p>
+        <div class="rmt-social">
+          <a aria-label="LinkedIn" href="https://www.linkedin.com/" rel="noopener" target="_blank"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"></path><rect height="12" width="4" x="2" y="9"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+          <a aria-label="Email" href="mailto:you@example.com"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><rect height="16" rx="2" width="20" x="2" y="4"></rect><polyline points="22 6 12 13 2 6"></polyline></svg></a>
+        </div>
+      </div>
+      <!-- MEMBER END -->
+
+      <!-- MEMBER START -->
+      <div class="rmt-member">
+        <div class="rmt-photo"><span class="rmt-initials">TM</span></div>
+        <h3 class="rmt-name">Team Member Name</h3>
+        <p class="rmt-role">Editor &amp; Social Media</p>
+        <p class="rmt-bio">One or two sentences about what this person does for the show.</p>
+        <div class="rmt-social">
+          <a aria-label="Instagram" href="https://www.instagram.com/" rel="noopener" target="_blank"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><rect height="20" rx="5" width="20" x="2" y="2"></rect><circle cx="12" cy="12" r="4"></circle><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg></a>
+          <a aria-label="Email" href="mailto:you@example.com"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><rect height="16" rx="2" width="20" x="2" y="4"></rect><polyline points="22 6 12 13 2 6"></polyline></svg></a>
+        </div>
+      </div>
+      <!-- MEMBER END -->
+
+    </div>
+  </div>
+
+  <!-- ================= CALL TO ACTION (EDIT the text and links) ================= -->
+  <div class="rmt-cta">
+    <h2 class="rmt-cta-title">Have a story to share?</h2>
+    <p>We are always looking for guests, partners and ideas for new episodes.</p>
+    <div class="rmt-buttons">
+      <a class="rmt-btn" href="mailto:you@example.com?subject=Guest%20suggestion">Suggest a guest</a>
+      <a class="rmt-btn rmt-btn-outline" href="/p/shop.html">Support the show</a>
+    </div>
+  </div>
+
+</div>

@@ -56,6 +56,8 @@ Every gadget is a standard Blogger gadget. The menu, social links, slideshow and
 
 **Placeholder links to replace:** the YouTube, TikTok, Instagram and LinkedIn links point to each site's homepage. "Learn More" and "Shop" go to `/p/about.html` and `/p/shop.html`, so create pages with those names or change the links.
 
+**Page templates:** `page-templates/downloads-page.html` (document cards with cover, type, description and Download button, grouped by category) and `page-templates/about-team-page.html` (intro, values, team cards with photo, role, bio and social icons, call to action). In Blogger: Pages → New page → HTML view → paste → edit the parts marked EDIT → Publish. Styles are scoped to the template, so they don't affect the rest of the site.
+
 **Colours:** go to **Theme → Customise → Advanced** to change the brand colours.
 
 ## Working on the theme
