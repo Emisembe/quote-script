@@ -1,0 +1,152 @@
+<!--
+  RIVER MUSA SHOW: BE A GUEST PAGE TEMPLATE
+  How to use:
+  1. Blogger: Pages > + NEW PAGE. Title it "Be a Guest" (gives /p/be-a-guest.html).
+  2. Switch to HTML view (the pencil icon at the top left > HTML view).
+  3. Paste this whole file, then change everything marked EDIT.
+  4. Publish, and link to it from the menu or the About page.
+
+  The "Apply" button: make a short Google Form (name, email, topic, why it fits the show,
+  links to their work), press Send > the link icon > Copy, and paste that link into the
+  button's href="...". The second button can stay as an email link.
+  Topics: edit, delete or copy the small topic pills (<span class="rmg-pill">...</span>).
+-->
+<style>
+.rmg { --rmg-navy: #0D1C2E; --rmg-teal: #00C0A8; --rmg-teal-dark: #00A892; --rmg-text: #2B3A4A; --rmg-muted: #6B7A8C; --rmg-line: #E3E8EF; font-family: Arial, Helvetica, sans-serif; color: var(--rmg-text); line-height: 1.65; }
+.rmg br { display: none; }
+.rmg * { box-sizing: border-box; }
+.rmg .rmg-hero { margin: 0 0 40px; padding: 32px 28px; background: var(--rmg-navy); border-top: 4px solid var(--rmg-teal); border-radius: 14px; color: #D7DFEA; }
+.rmg .rmg-eyebrow { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rmg-teal); }
+.rmg .rmg-hero-title { margin: 0 0 12px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 40px; letter-spacing: 1px; line-height: 1.05; color: #fff; }
+.rmg .rmg-hero p { margin: 0 0 20px; font-size: 17px; }
+.rmg .rmg-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+.rmg a.rmg-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 12px 24px; border: 2px solid var(--rmg-teal); border-radius: 8px; background: var(--rmg-teal); color: var(--rmg-navy); font-size: 15px; font-weight: 700; line-height: 1.2; text-decoration: none; transition: background .2s, border-color .2s, color .2s; }
+.rmg a.rmg-btn:hover { background: var(--rmg-teal-dark); border-color: var(--rmg-teal-dark); color: var(--rmg-navy); }
+.rmg a.rmg-btn-outline { background: transparent; border-color: rgba(255,255,255,.4); color: #fff; }
+.rmg a.rmg-btn-outline:hover { background: transparent; border-color: var(--rmg-teal); color: var(--rmg-teal); }
+.rmg .rmg-section { margin: 0 0 40px; }
+.rmg .rmg-section-title { display: inline-block; margin: 0 0 8px; padding-bottom: 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 30px; letter-spacing: 1px; line-height: 1.1; color: var(--rmg-navy); border-bottom: 3px solid var(--rmg-teal); }
+.rmg .rmg-section-text { margin: 0 0 18px; font-size: 15.5px; color: var(--rmg-muted); }
+.rmg .rmg-checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.rmg .rmg-check { display: flex; align-items: flex-start; gap: 12px; padding: 16px; background: #fff; border: 1px solid var(--rmg-line); border-radius: 12px; }
+.rmg .rmg-check-mark { display: inline-flex; flex: 0 0 28px; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--rmg-teal); color: var(--rmg-navy); }
+.rmg .rmg-check-mark svg { width: 15px; height: 15px; }
+.rmg .rmg-check p { margin: 0; font-size: 15px; line-height: 1.55; }
+.rmg .rmg-check b { color: var(--rmg-navy); }
+.rmg .rmg-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.rmg .rmg-pill { display: inline-block; padding: 7px 14px; border: 1.5px solid var(--rmg-line); border-radius: 20px; background: #fff; font-size: 14px; font-weight: 700; color: var(--rmg-navy); }
+.rmg .rmg-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+.rmg .rmg-step { position: relative; padding: 22px 18px 18px; background: #fff; border: 1px solid var(--rmg-line); border-radius: 14px; box-shadow: 0 2px 12px rgba(13,28,46,.07); }
+.rmg .rmg-step-number { display: block; margin: 0 0 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-size: 40px; line-height: 1; color: var(--rmg-teal); }
+.rmg .rmg-step-title { margin: 0 0 4px; font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0; line-height: 1.3; color: var(--rmg-navy); }
+.rmg .rmg-step p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--rmg-muted); }
+.rmg .rmg-cta { padding: 28px; text-align: center; background: #EEF9F7; border: 1px solid #C9EEE8; border-radius: 14px; }
+.rmg .rmg-cta-title { margin: 0 0 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 30px; letter-spacing: 1px; line-height: 1.1; color: var(--rmg-navy); }
+.rmg .rmg-cta p { margin: 0 0 16px; font-size: 15.5px; }
+.rmg .rmg-cta .rmg-buttons { justify-content: center; }
+.rmg .rmg-cta a.rmg-btn-outline { border-color: var(--rmg-line); color: var(--rmg-navy); }
+.rmg .rmg-cta a.rmg-btn-outline:hover { border-color: var(--rmg-teal); color: var(--rmg-navy); }
+@media (max-width: 600px) {
+  .rmg .rmg-hero { padding: 26px 18px; text-align: center; }
+  .rmg .rmg-hero-title { font-size: 34px; }
+  .rmg .rmg-buttons { flex-direction: column; }
+  .rmg a.rmg-btn { width: 100%; }
+  .rmg .rmg-section { text-align: center; }
+  .rmg .rmg-check { text-align: left; }
+  .rmg .rmg-pills { justify-content: center; }
+  .rmg .rmg-cta { padding: 24px 18px; }
+}
+@media print { .rmg .rmg-buttons { display: none; } .rmg .rmg-step, .rmg .rmg-check { break-inside: avoid; box-shadow: none; } }
+</style>
+
+<div class="rmg">
+
+  <!-- ================= INTRO (EDIT text; put your form link in the first button) ================= -->
+  <div class="rmg-hero">
+    <p class="rmg-eyebrow">Be a guest</p>
+    <h2 class="rmg-hero-title">Share your story on The River Musa Show</h2>
+    <p>We talk with people who live, work and lead between African and European worlds. If you have lived it, built it or studied it, we'd love to hear from you.</p>
+    <div class="rmg-buttons">
+      <a class="rmg-btn" href="#paste-your-google-form-link-here" rel="noopener" target="_blank">Apply to be a guest</a>
+      <a class="rmg-btn rmg-btn-outline" href="mailto:hello@yourdomain.com?subject=Guest%20suggestion">Suggest someone</a>
+    </div>
+  </div>
+
+  <!-- ================= WHO WE'RE LOOKING FOR (EDIT, copy or delete a box) ================= -->
+  <div class="rmg-section">
+    <h2 class="rmg-section-title">Who we're looking for</h2>
+    <p class="rmg-section-text">You don't need to be famous. You need a real experience and something to say.</p>
+    <div class="rmg-checks">
+      <div class="rmg-check">
+        <span class="rmg-check-mark"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+        <p><b>Professionals</b> who built a career across borders and can share what worked.</p>
+      </div>
+      <div class="rmg-check">
+        <span class="rmg-check-mark"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+        <p><b>Leaders and experts</b> in governance, policy, business or community work.</p>
+      </div>
+      <div class="rmg-check">
+        <span class="rmg-check-mark"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+        <p><b>Creators and storytellers</b> exploring identity, culture and belonging.</p>
+      </div>
+      <div class="rmg-check">
+        <span class="rmg-check-mark"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+        <p><b>Students and newcomers</b> with an honest story of starting over.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= TOPICS (EDIT the pills) ================= -->
+  <div class="rmg-section">
+    <h2 class="rmg-section-title">Topics that fit the show</h2>
+    <p class="rmg-section-text">Your idea doesn't have to be on this list; these are just examples.</p>
+    <div class="rmg-pills">
+      <span class="rmg-pill">Governance &amp; accountability</span>
+      <span class="rmg-pill">Careers abroad</span>
+      <span class="rmg-pill">Identity &amp; belonging</span>
+      <span class="rmg-pill">Diaspora &amp; home</span>
+      <span class="rmg-pill">Workplace culture</span>
+      <span class="rmg-pill">Entrepreneurship</span>
+      <span class="rmg-pill">Education &amp; migration</span>
+    </div>
+  </div>
+
+  <!-- ================= HOW IT WORKS (EDIT) ================= -->
+  <div class="rmg-section">
+    <h2 class="rmg-section-title">How it works</h2>
+    <p class="rmg-section-text">Simple, relaxed and fully online.</p>
+    <div class="rmg-steps">
+      <div class="rmg-step">
+        <span class="rmg-step-number">01</span>
+        <h3 class="rmg-step-title">Apply</h3>
+        <p>Fill in the short form. It takes about 5 minutes.</p>
+      </div>
+      <div class="rmg-step">
+        <span class="rmg-step-number">02</span>
+        <h3 class="rmg-step-title">Quick call</h3>
+        <p>A 15-minute chat to get to know you and plan the episode.</p>
+      </div>
+      <div class="rmg-step">
+        <span class="rmg-step-number">03</span>
+        <h3 class="rmg-step-title">Record</h3>
+        <p>About 45 minutes online. All you need is a quiet room and headphones.</p>
+      </div>
+      <div class="rmg-step">
+        <span class="rmg-step-number">04</span>
+        <h3 class="rmg-step-title">Go live</h3>
+        <p>We edit, publish and share it, and send you clips to post.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CLOSING CALL TO ACTION (EDIT) ================= -->
+  <div class="rmg-cta">
+    <h2 class="rmg-cta-title">Ready to share your story?</h2>
+    <p>Apply today. We read every application and reply within two weeks.</p>
+    <div class="rmg-buttons">
+      <a class="rmg-btn" href="#paste-your-google-form-link-here" rel="noopener" target="_blank">Apply to be a guest</a>
+      <a class="rmg-btn rmg-btn-outline" href="mailto:hello@yourdomain.com?subject=Guest%20question">Ask a question</a>
+    </div>
+  </div>
+
+</div>

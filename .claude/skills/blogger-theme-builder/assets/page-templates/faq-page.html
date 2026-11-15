@@ -1,0 +1,170 @@
+<!--
+  RIVER MUSA SHOW: FAQ PAGE TEMPLATE
+  How to use:
+  1. Blogger: Pages > + NEW PAGE. Title it "FAQ" (gives /p/faq.html).
+  2. Switch to HTML view (the pencil icon at the top left > HTML view).
+  3. Paste this whole file, then change the questions and answers (marked EDIT).
+  4. Publish.
+
+  Each question opens and closes when tapped; no code or setup needed.
+  To add a question: copy from "QUESTION START" to "QUESTION END" and change the text:
+     the question goes inside <summary>...</summary>,
+     the answer goes inside <div class="rmf-answer">...</div> (you can use several <p> lines and links).
+  To open a question by default, change <details class="rmf-item"> to <details class="rmf-item" open>.
+  To add a group: copy from "GROUP START" to "GROUP END".
+-->
+<style>
+.rmf { --rmf-navy: #0D1C2E; --rmf-teal: #00C0A8; --rmf-teal-dark: #00A892; --rmf-text: #2B3A4A; --rmf-muted: #6B7A8C; --rmf-line: #E3E8EF; font-family: Arial, Helvetica, sans-serif; color: var(--rmf-text); line-height: 1.65; }
+.rmf br { display: none; }
+.rmf .rmf-answer br { display: inline; }
+.rmf * { box-sizing: border-box; }
+.rmf .rmf-intro { margin: 0 0 30px; }
+.rmf .rmf-eyebrow { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rmf-teal-dark); }
+.rmf .rmf-heading { margin: 0 0 10px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 38px; letter-spacing: 1px; line-height: 1.05; color: var(--rmf-navy); }
+.rmf .rmf-intro p { margin: 0; font-size: 17px; }
+.rmf .rmf-group { margin: 0 0 34px; }
+.rmf .rmf-group-title { display: inline-block; margin: 0 0 14px; padding-bottom: 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 28px; letter-spacing: 1px; line-height: 1.1; color: var(--rmf-navy); border-bottom: 3px solid var(--rmf-teal); }
+.rmf .rmf-item { margin: 0 0 10px; background: #fff; border: 1px solid var(--rmf-line); border-radius: 12px; transition: border-color .2s, box-shadow .2s; }
+.rmf .rmf-item[open] { border-color: var(--rmf-teal); box-shadow: 0 8px 22px rgba(13,28,46,.08); }
+.rmf .rmf-item summary { position: relative; display: block; padding: 16px 56px 16px 18px; font-size: 16px; font-weight: 700; line-height: 1.4; color: var(--rmf-navy); cursor: pointer; list-style: none; }
+.rmf .rmf-item summary::-webkit-details-marker { display: none; }
+.rmf .rmf-item summary::marker { content: ""; }
+.rmf .rmf-item summary::after { content: "+"; position: absolute; top: 50%; right: 16px; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; margin-top: -14px; border-radius: 50%; background: var(--rmf-navy); color: var(--rmf-teal); font-size: 20px; font-weight: 400; line-height: 1; transition: transform .2s; }
+.rmf .rmf-item[open] summary::after { content: "−"; background: var(--rmf-teal); color: var(--rmf-navy); }
+.rmf .rmf-item summary:hover { color: var(--rmf-teal-dark); }
+.rmf .rmf-item summary:focus-visible { outline: 3px solid var(--rmf-teal); outline-offset: 2px; border-radius: 12px; }
+.rmf .rmf-answer { padding: 0 18px 18px; font-size: 15.5px; line-height: 1.7; }
+.rmf .rmf-answer p { margin: 0 0 10px; }
+.rmf .rmf-answer p:last-child { margin-bottom: 0; }
+.rmf .rmf-answer a { color: var(--rmf-navy); text-decoration: underline; text-decoration-color: var(--rmf-teal); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.rmf .rmf-more { padding: 26px; text-align: center; background: var(--rmf-navy); border-top: 4px solid var(--rmf-teal); border-radius: 14px; color: #D7DFEA; }
+.rmf .rmf-more-title { margin: 0 0 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 30px; letter-spacing: 1px; color: #fff; }
+.rmf .rmf-more p { margin: 0 0 16px; font-size: 15.5px; }
+.rmf a.rmf-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 11px 22px; border: 2px solid var(--rmf-teal); border-radius: 8px; background: var(--rmf-teal); color: var(--rmf-navy); font-size: 15px; font-weight: 700; line-height: 1.2; text-decoration: none; transition: background .2s, border-color .2s; }
+.rmf a.rmf-btn:hover { background: var(--rmf-teal-dark); border-color: var(--rmf-teal-dark); color: var(--rmf-navy); }
+@media (max-width: 600px) {
+  .rmf .rmf-intro, .rmf .rmf-group { text-align: center; }
+  .rmf .rmf-heading { font-size: 32px; }
+  .rmf .rmf-item { text-align: left; }
+  .rmf .rmf-item summary { font-size: 15.5px; padding: 15px 52px 15px 16px; }
+  .rmf .rmf-answer { padding: 0 16px 16px; }
+  .rmf .rmf-more { padding: 24px 18px; }
+  .rmf a.rmf-btn { width: 100%; }
+}
+@media print {
+  .rmf .rmf-item { break-inside: avoid; box-shadow: none; }
+  .rmf .rmf-item summary::after { display: none; }
+  .rmf .rmf-more { display: none; }
+}
+</style>
+
+<div class="rmf">
+
+  <!-- ================= INTRO (EDIT) ================= -->
+  <div class="rmf-intro">
+    <p class="rmf-eyebrow">Help</p>
+    <h2 class="rmf-heading">Frequently asked questions</h2>
+    <p>Quick answers about the show, our content and how to get involved. Tap a question to see the answer.</p>
+  </div>
+
+  <!-- ================= GROUP START ================= -->
+  <div class="rmf-group">
+    <h2 class="rmf-group-title">About the show</h2>
+
+    <!-- QUESTION START -->
+    <details class="rmf-item" open>
+      <summary>What is The River Musa Show about?</summary>
+      <div class="rmf-answer">
+        <p>We explore governance, identity, and the lived experience of moving between African and European worlds, through honest conversations with people who have lived it.</p>
+      </div>
+    </details>
+    <!-- QUESTION END -->
+
+    <!-- QUESTION START -->
+    <details class="rmf-item">
+      <summary>How often do new episodes come out?</summary>
+      <div class="rmf-answer">
+        <p>A new episode is published every Friday. Join the newsletter or follow us on YouTube to get it first.</p>
+      </div>
+    </details>
+    <!-- QUESTION END -->
+
+    <!-- QUESTION START -->
+    <details class="rmf-item">
+      <summary>Where can I listen or watch?</summary>
+      <div class="rmf-answer">
+        <p>On this website, on YouTube, and on the podcast platforms listed under "Listen on" on the homepage.</p>
+      </div>
+    </details>
+    <!-- QUESTION END -->
+
+  </div>
+  <!-- ================= GROUP END ================= -->
+
+  <!-- ================= GROUP START ================= -->
+  <div class="rmf-group">
+    <h2 class="rmf-group-title">Getting involved</h2>
+
+    <!-- QUESTION START -->
+    <details class="rmf-item">
+      <summary>Can I be a guest on the show?</summary>
+      <div class="rmf-answer">
+        <p>Yes! We're always looking for people with a real story. See the <a href="/p/be-a-guest.html">Be a Guest</a> page and apply there.</p>
+      </div>
+    </details>
+    <!-- QUESTION END -->
+
+    <!-- QUESTION START -->
+    <details class="rmf-item">
+      <summary>Can I suggest a topic?</summary>
+      <div class="rmf-answer">
+        <p>Please do. Send your idea through the <a href="/p/contact.html">Contact</a> page or a WhatsApp message.</p>
+      </div>
+    </details>
+    <!-- QUESTION END -->
+
+    <!-- QUESTION START -->
+    <details class="rmf-item">
+      <summary>How can I support the show?</summary>
+      <div class="rmf-answer">
+        <p>Share episodes with friends, leave a comment, subscribe on YouTube, or use the "Support the Show" button at the bottom of every page. Every bit helps us keep going.</p>
+      </div>
+    </details>
+    <!-- QUESTION END -->
+
+  </div>
+  <!-- ================= GROUP END ================= -->
+
+  <!-- ================= GROUP START ================= -->
+  <div class="rmf-group">
+    <h2 class="rmf-group-title">Downloads &amp; content</h2>
+
+    <!-- QUESTION START -->
+    <details class="rmf-item">
+      <summary>Are the downloads really free?</summary>
+      <div class="rmf-answer">
+        <p>Yes. All guides and checklists on the <a href="/p/downloads.html">Downloads</a> page are free to use and share. Please don't sell them.</p>
+      </div>
+    </details>
+    <!-- QUESTION END -->
+
+    <!-- QUESTION START -->
+    <details class="rmf-item">
+      <summary>Can I use clips from the show?</summary>
+      <div class="rmf-answer">
+        <p>Short clips with credit and a link back are welcome for non-commercial use. For anything else, please ask us first.</p>
+      </div>
+    </details>
+    <!-- QUESTION END -->
+
+  </div>
+  <!-- ================= GROUP END ================= -->
+
+  <!-- ================= STILL HAVE A QUESTION (EDIT) ================= -->
+  <div class="rmf-more">
+    <h2 class="rmf-more-title">Still have a question?</h2>
+    <p>We're happy to help. Get in touch and we'll reply as soon as we can.</p>
+    <a class="rmf-btn" href="/p/contact.html">Contact us</a>
+  </div>
+
+</div>
