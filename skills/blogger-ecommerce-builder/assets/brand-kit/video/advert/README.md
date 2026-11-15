@@ -7,6 +7,10 @@ A 40-second brand advert (16:9 and 9:16) whose animation follows a spoken script
    (set `KOKORO_DIR`). Fix names with phonemes in `FIX` (Kreislo → "KRICE-lo", Gießen → "GHEE-sen").
    Good male voices: `am_michael` (clear), `am_onyx` (very deep), `am_fenrir`, `bm_george` (British);
    female: `af_heart`, `af_bella`, `bf_emma`.
+   A blend averages two voices: `voice.py am_liam+am_echo vo 0.95` (50/50). **Kreislo's chosen voice is this blend,
+   `am_liam+am_echo`, speed 0.95, then `build_voice.py vo mix 0.877`** (pitch matched to a sample the owner liked,
+   about 102 Hz). To match another sample: compare pitch and long-term spectrum of each voice and blend
+   against it, then let the owner pick from 3 short samples by ear.
 2. `build_voice.py vo mix 0.9` – places the lines with pauses, lowers pitch about 2 semitones with formants kept
    (deeper, "powerful" sound), broadcast EQ + compression, writes `vo.wav` and `timeline.json`.
 3. `music.py mix/timeline.json mix/music.wav` – music bed made in code (needs `../sound.py`): tension under the hook,

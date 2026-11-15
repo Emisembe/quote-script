@@ -4,13 +4,12 @@ from kokoro_onnx import Kokoro
 # Kokoro model files (kokoro-v1.0.onnx, voices-v1.0.bin) from github.com/thewh1teagle/kokoro-onnx/releases
 TTS = os.environ.get('KOKORO_DIR', os.path.dirname(os.path.abspath(__file__)) + '/../tts') + '/'
 LINES = [
- ("hook",    "Good things don't belong in the bin."),
- ("second",  "They deserve a second life."),
- ("checked", "At Kreislo, every washing machine, fridge, sofa and jacket is checked by hand, cleaned, and honestly described."),
- ("germany", "Pick it up in Giessen, or we deliver across Germany."),
- ("kenya",   "Building a home or a business in Kenya? We test it, pack it, and ship it. And you know the full price before you pay."),
- ("sellers", "Selling online? We store, pack and ship your orders, so you can focus on selling."),
- ("order",   "Order online, on WhatsApp, or on Telegram."),
+ ("hook",    "Starting a home? A workshop? A small farm?"),
+ ("problem", "Cheap tools break in three years. Good German ones run for ten. So buy once, not three times."),
+ ("kits",    "Kreislo kits put the right things together: a home starter, a small workshop, a small farm. Every item tested by hand in Germany, with the spares you'll need in the first year."),
+ ("price",   "One price, shipping to Kenya included. You see it in writing before you pay."),
+ ("new",     "Need something new? We buy it in Germany and ship it with your order."),
+ ("order",   "Swap any item. Order on WhatsApp."),
  ("brand",   "Kreislo. Keep good things moving."),
 ]
 FIX = {'kɹˈeɪsloʊ': 'kɹˈaɪsloʊ', 'dʒˈiːsən': 'ɡˈiːsən'}
@@ -19,7 +18,7 @@ os.makedirs(out, exist_ok=True)
 k = Kokoro(TTS + 'kokoro-v1.0.onnx', TTS + 'voices-v1.0.bin')
 v = voice
 if '+' in voice:   # blend, e.g. am_michael+am_onyx
-    a, b = voice.split('+'); v = 0.6 * k.get_voice_style(a) + 0.4 * k.get_voice_style(b)
+    a, b = voice.split('+'); v = 0.5 * k.get_voice_style(a) + 0.5 * k.get_voice_style(b)
 info = []
 for key, text in LINES:
     ph = k.tokenizer.phonemize(text, 'en-us')

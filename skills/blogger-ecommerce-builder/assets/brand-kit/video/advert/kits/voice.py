@@ -18,7 +18,7 @@ os.makedirs(out, exist_ok=True)
 k = Kokoro(TTS + 'kokoro-v1.0.onnx', TTS + 'voices-v1.0.bin')
 v = voice
 if '+' in voice:   # blend, e.g. am_michael+am_onyx
-    a, b = voice.split('+'); v = 0.6 * k.get_voice_style(a) + 0.4 * k.get_voice_style(b)
+    a, b = voice.split('+'); v = 0.5 * k.get_voice_style(a) + 0.5 * k.get_voice_style(b)
 info = []
 for key, text in LINES:
     ph = k.tokenizer.phonemize(text, 'en-us')
