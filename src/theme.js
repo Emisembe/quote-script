@@ -448,6 +448,31 @@
   // ---------- Videos inside posts and pages ----------
   // YouTube videos added with Blogger's video button (or pasted embed code), and
   // YouTube links on their own line, become the same thumbnail player.
+  // "Own line" means only line breaks around it, even inside a bigger paragraph
+  // (Blogger's editor often joins lines with <br>); a link inside a sentence stays a link.
+  function isBlank(node) {
+    return node.nodeType === 3 ? !node.nodeValue.trim() : (node.nodeType === 1 && node.tagName !== 'BR' && node.tagName !== 'IMG' && !node.querySelector('img, iframe') && !node.textContent.trim());
+  }
+  function lineBoundary(node, dir) {
+    var sib = node[dir];
+    while (sib && isBlank(sib)) sib = sib[dir];
+    return sib;
+  }
+  function ownLine(node, root) {
+    // climb out of inline wrappers (<span>, <b>, <u> ...) that hold nothing else
+    var el = node;
+    while (el.parentNode && el.parentNode !== root && /^(SPAN|B|STRONG|I|EM|U|FONT|SMALL)$/.test(el.parentNode.tagName) &&
+      el.parentNode.textContent.trim() === el.textContent.trim()) el = el.parentNode;
+    var before = lineBoundary(el, 'previousSibling'), after = lineBoundary(el, 'nextSibling');
+    if ((before && before.tagName !== 'BR') || (after && after.tagName !== 'BR')) return null;
+    return { el: el, before: before, after: after };
+  }
+  function placeVideo(line, id, label) {
+    // the player is a block, so line breaks right next to it would only add empty lines
+    if (line.after) line.after.parentNode.removeChild(line.after);
+    if (line.before) line.before.parentNode.removeChild(line.before);
+    line.el.parentNode.replaceChild(makeVideo(id, label), line.el);
+  }
   var postBodies = doc.querySelectorAll('.post-single .post-body');
   for (var pb = 0; pb < postBodies.length; pb++) {
     var bodyEl = postBodies[pb];
@@ -458,11 +483,9 @@
     }
     var links = bodyEl.querySelectorAll('a[href]');
     for (var li2 = 0; li2 < links.length; li2++) {
-      var ln = links[li2];
-      var lid = ytId(ln.getAttribute('href'));
-      var holder = ln.parentNode;
-      if (!lid || !holder || holder.textContent.trim() !== ln.textContent.trim()) continue;
-      holder.replaceChild(makeVideo(lid, ln.textContent.trim()), ln);
+      var lid = ytId(links[li2].getAttribute('href'));
+      var lline = lid && links[li2].parentNode ? ownLine(links[li2], bodyEl) : null;
+      if (lline) placeVideo(lline, lid, links[li2].textContent.trim());
     }
     var tw = doc.createTreeWalker(bodyEl, 4, null, false);
     var bare = [];
@@ -472,7 +495,8 @@
       if (/^\s*https?:\/\/\S+\s*$/.test(tn.nodeValue) && ytId(tn.nodeValue)) bare.push(tn);
     }
     for (var bIdx = 0; bIdx < bare.length; bIdx++) {
-      bare[bIdx].parentNode.replaceChild(makeVideo(ytId(bare[bIdx].nodeValue), ''), bare[bIdx]);
+      var bline = ownLine(bare[bIdx], bodyEl);
+      if (bline) placeVideo(bline, ytId(bare[bIdx].nodeValue), '');
     }
   }
 
@@ -599,6 +623,96 @@
     }
   }
 
+  // ---------- Language menu (Google Translate) ----------
+  // Choosing a language opens this page through Google Translate's own address
+  // (<host>.translate.goog). Nothing loads from Google until a visitor picks a language.
+  var LANGUAGES = [
+    ['en', 'EN', 'English', 'English'],
+    ['fr', 'FR', 'Français', 'French'],
+    ['de', 'DE', 'Deutsch', 'German'],
+    ['sw', 'SW', 'Kiswahili', 'Swahili'],
+    ['ha', 'HA', 'Hausa', 'Hausa'],
+    ['yo', 'YO', 'Yorùbá', 'Yoruba'],
+    ['am', 'AM', 'አማርኛ', 'Amharic'],
+    ['om', 'OM', 'Afaan Oromoo', 'Oromo'],
+    ['pt', 'PT', 'Português', 'Portuguese'],
+    ['ar', 'AR', 'العربية', 'Arabic'],
+    ['zh-CN', '中文', '中文 (简体)', 'Chinese']
+  ];
+  var TRANSLATE_HOST = '.translate.goog';
+  function originalPageUrl() {
+    var h = location.hostname;
+    if (h.slice(-TRANSLATE_HOST.length) !== TRANSLATE_HOST) return location.href;
+    // "my--site-example-com" -> "my-site.example.com" ("--" stands for a real "-")
+    var host = h.slice(0, -TRANSLATE_HOST.length).replace(/--/g, '\u0000').replace(/-/g, '.').replace(/\u0000/g, '-');
+    var query = location.search.replace(/^\?/, '').split('&').filter(function (part) { return part && part.indexOf('_x_tr_') !== 0; }).join('&');
+    return 'https://' + host + location.pathname + (query ? '?' + query : '') + location.hash;
+  }
+  function translatedUrl(code) {
+    var a = doc.createElement('a');
+    a.href = originalPageUrl();
+    if (code === 'en') return a.href;
+    var host = a.hostname.replace(/-/g, '--').replace(/\./g, '-') + TRANSLATE_HOST;
+    var query = a.search.replace(/^\?/, '');
+    var params = '_x_tr_sl=en&_x_tr_tl=' + code + '&_x_tr_hl=' + code + '&_x_tr_pto=wapp';
+    return 'https://' + host + a.pathname + '?' + (query ? query + '&' : '') + params + a.hash;
+  }
+  var langBox = doc.getElementById('lang');
+  var langToggle = doc.getElementById('lang-toggle');
+  var langMenu = doc.getElementById('lang-menu');
+  if (langBox && langToggle && langMenu) {
+    var currentLang = (/[?&]_x_tr_tl=([^&#]+)/.exec(location.search) || [])[1] || 'en';
+    var langCode = langToggle.querySelector('.lang-code');
+    for (var lg = 0; lg < LANGUAGES.length; lg++) {
+      var L = LANGUAGES[lg];
+      var item = doc.createElement('a');
+      item.className = 'lang-item' + (L[0] === currentLang ? ' is-current' : '');
+      item.href = translatedUrl(L[0]);
+      item.setAttribute('hreflang', L[0]);
+      item.setAttribute('lang', L[0]);
+      if (L[0] === currentLang) {
+        item.setAttribute('aria-current', 'true');
+        if (langCode) langCode.textContent = L[1];
+      }
+      var native = doc.createElement('span');
+      native.className = 'lang-native';
+      native.textContent = L[2];
+      if (L[0] === 'ar') native.setAttribute('dir', 'rtl');
+      var english = doc.createElement('span');
+      english.className = 'lang-english';
+      english.setAttribute('lang', 'en');
+      english.textContent = L[3];
+      item.appendChild(native);
+      if (L[0] !== 'en') item.appendChild(english);
+      langMenu.appendChild(item);
+    }
+    if (currentLang !== 'en') langBox.classList.add('is-translated');
+    var langNote = doc.createElement('p');
+    langNote.className = 'lang-note';
+    langNote.textContent = 'Machine translation by Google';
+    langMenu.appendChild(langNote);
+    var setLang = function (open) {
+      langMenu.hidden = !open;
+      langToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      langBox.classList.toggle('is-open', open);
+      if (open && header && header.classList.contains('nav-open')) setMenu(false);
+    };
+    langToggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setLang(langMenu.hidden);
+    });
+    doc.addEventListener('click', function (e) {
+      if (!langMenu.hidden && !langBox.contains(e.target)) setLang(false);
+    });
+    doc.addEventListener('keydown', function (e) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && !langMenu.hidden) {
+        setLang(false);
+        langToggle.focus();
+      }
+    });
+    if (toggle) toggle.addEventListener('click', function () { setLang(false); });
+  }
+
   // Shadow under the sticky header once the page scrolls
   if (header) {
     var ticking = false;
@@ -677,6 +791,29 @@
     avatar.appendChild(hostImg);
   }
 
+  // Share bar: an icon on every button (text stays for screen readers and on wide screens)
+  var shareIcons = {
+    facebook: socialIcons.facebook, x: socialIcons.x, linkedin: socialIcons.linkedin,
+    whatsapp: socialIcons.whatsapp, telegram: socialIcons.telegram,
+    copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+    print: '<polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+    share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" x2="15.4" y1="13.5" y2="17.5"/><line x1="15.4" x2="8.6" y1="6.5" y2="10.5"/>'
+  };
+  var shareItems = doc.querySelectorAll('.post-share a, .post-share button');
+  for (var sh = 0; sh < shareItems.length; sh++) {
+    var sb = shareItems[sh];
+    var kind = sb.classList.contains('js-native-share') ? 'share' : sb.hasAttribute('data-copy-url') ? 'copy' : sb.classList.contains('js-print') ? 'print' : socialType(sb.getAttribute('href'));
+    if (!shareIcons[kind]) continue;
+    var sLabel = sb.textContent.trim();
+    sb.classList.add('share-' + kind);
+    sb.setAttribute('title', sLabel);
+    sb.innerHTML = '<svg aria-hidden="true" class="share-icon" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="18">' + shareIcons[kind] + '</svg>';
+    var sText = doc.createElement('span');
+    sText.className = 'share-text';
+    sText.textContent = kind === 'share' ? 'Share this episode' : sLabel;
+    sb.appendChild(sText);
+  }
+
   // Copy-link share button
   var copyBtns = doc.querySelectorAll('[data-copy-url]');
   for (var i = 0; i < copyBtns.length; i++) {
@@ -684,9 +821,20 @@
       var btn = this;
       var url = btn.getAttribute('data-copy-url');
       var done = function () {
-        var label = btn.textContent;
-        btn.textContent = 'Copied';
-        setTimeout(function () { btn.textContent = label; }, 1600);
+        var text = btn.querySelector('.share-text') || btn;
+        var label = text.textContent;
+        text.textContent = 'Copied';
+        btn.classList.add('is-done');
+        var toast = doc.createElement('div');
+        toast.className = 'share-toast';
+        toast.setAttribute('role', 'status');
+        toast.textContent = 'Link copied';
+        doc.body.appendChild(toast);
+        setTimeout(function () {
+          text.textContent = label;
+          btn.classList.remove('is-done');
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 1800);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link:', url); });

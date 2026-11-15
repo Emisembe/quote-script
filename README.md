@@ -8,6 +8,7 @@ A full-width, responsive Blogger theme for **The River Musa Show**. It works on 
 - YouTube links in posts become responsive players, and episode cards with a video play it right on the homepage.
 - "Listen on" platform badges in the hero, a newsletter signup box, related episodes under each post, and Impressum/Datenschutz links in the footer.
 - The heading font (Bebas Neue) is built into the theme, so visitors' browsers never contact Google Fonts.
+- A 🌐 language menu (English, Français, Deutsch, Kiswahili, Hausa, Yorùbá, አማርኛ, Afaan Oromoo, Português, العربية, 中文) that opens the page in Google Translate. Nothing loads from Google until a language is chosen.
 - Episode grid: 3 columns on desktop, 2 on tablet, 1 on phone.
 - Single-post layout with a sidebar, share buttons and Blogger comments.
 - Topics strip, three-column footer, and a 404 page with search.
@@ -45,7 +46,8 @@ Every gadget is a standard Blogger gadget. The menu, social links, slideshow and
 | Footer buttons | **Link List** (`LinkList7`, "Support the Show") | Big buttons above the copyright: starts with *Chat on WhatsApp* (`https://wa.me/`), *Join on Telegram* (`https://t.me/`) and *Support the Show* (`https://www.paypal.com/paypalme/`). Replace the links with yours (`https://wa.me/49151…`, `https://t.me/yourchannel`, your PayPal.me / Ko-fi / Buy Me a Coffee page). Donation links become the solid teal button. Full width on phones. |
 | 404 page | HTML (`HTML10`) | Under "Page not found": *Title* = heading, *Content* = a YouTube link (shown as the branded video player). The 3 newest episodes are added automatically. With no link, only the episodes show. |
 | Footer bar | **Link List** (`LinkList5`, "Legal") | Links next to the copyright. Starts with *Impressum* → `/p/impressum.html` and *Datenschutz* → `/p/datenschutz.html`: create pages with exactly those titles. |
-| Posts | (automatic) | **Share bar**: the phone's own Share menu (where supported), Facebook, X, LinkedIn, WhatsApp, Telegram, Copy link and **Print**. Printing gives a clean page: just the article, videos as links, and the post's address. |
+| Posts | (automatic) | **Share bar** with icons: a big "Share this episode" button for the phone's own share menu (where supported), then Facebook, X, LinkedIn, WhatsApp, Telegram, Copy link (with a "Link copied" message) and **Print**. Round icon buttons on phones, icon + name on computers. Printing gives a clean page: just the article, videos as links, and the post's address. |
+| Header | (automatic) | **Language menu**: the list lives in `src/theme.js` (`LANGUAGES`). Each entry links to the current page on `<host>.translate.goog`; on a translated page, "English" returns to the original address. The show name is marked `notranslate`. |
 | Posts | (automatic) | **Related episodes** under each post: up to 3 posts with the same first label, topped up with the newest posts. Video posts play in the card. |
 
 **Videos in posts:** paste a YouTube link on its own line in a post (in Compose view, or as a link), or add it with Blogger's video button, and it becomes the same branded player as the host card: the video's HD thumbnail with a teal play button, loading YouTube only when played. A link inside a sentence stays a normal link. On the homepage, a card whose post contains a video shows the video's thumbnail with a play button and plays the video in the card.

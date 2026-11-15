@@ -322,6 +322,64 @@ a.announce-item:hover .announce-arrow { transform: translateX(3px); }
 .site-header.nav-open .nav-toggle .icon-menu { display: none; }
 .site-header.nav-open .nav-toggle .icon-close { display: block; }
 
+/* Language menu (globe button; opens the page in Google Translate) */
+.lang { position: relative; flex: 0 0 auto; }
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 11px;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  color: #fff;
+  font: 700 13px/1 Arial, Helvetica, sans-serif;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.lang-toggle:hover, .lang.is-open .lang-toggle { border-color: $(accent.color); color: $(accent.color); }
+.lang-toggle svg { flex: 0 0 auto; }
+.lang-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 130;
+  width: 248px;
+  max-height: min(70vh, 470px);
+  overflow-y: auto;
+  padding: 6px;
+  background: #fff;
+  border-top: 3px solid $(accent.color);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+}
+.lang-menu[hidden] { display: none; }
+.lang-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: $(primary.color);
+}
+.lang-item:hover { background: #EEF9F7; color: $(primary.color); }
+.lang-item.is-current { background: $(primary.color); color: #fff; }
+.lang-english { flex: 0 0 auto; font-size: 12px; font-weight: 400; color: $(muted.color); }
+.lang-item.is-current .lang-english { color: $(accent.color); }
+.lang-note { margin: 6px 12px 4px; font-size: 11px; color: $(muted.color); }
+@media (min-width: 1024px) { .lang { order: 3; } }
+/* Phones: just the globe (plus the code once a page is translated), so the show name has room */
+@media (max-width: 600px) {
+  .lang-toggle { justify-content: center; min-width: 38px; padding: 0 9px; }
+  .lang:not(.is-translated) .lang-code { display: none; }
+}
+
 /* Dimmed page behind the open phone menu (tap to close) */
 .nav-backdrop {
   position: fixed;
@@ -1095,6 +1153,52 @@ body .widget .post-body li { margin: 0.3em 0; padding: 0; }
 }
 .post-share a:hover, .post-share button:hover { border-color: $(accent.color); color: $(accent.color); }
 .post-share [hidden] { display: none; }
+.post-share a, .post-share button { gap: 8px; }
+.post-share .share-icon { flex: 0 0 auto; color: $(accent.color); }
+.post-share .share-share { background: $(accent.color); border-color: $(accent.color); color: $(primary.color); }
+.post-share .share-share .share-icon { color: $(primary.color); }
+.post-share .share-share:hover { background: $(accent.hover.color); border-color: $(accent.hover.color); color: $(primary.color); }
+.post-share .is-done { border-color: $(accent.color); color: $(accent.color); }
+.share-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 200;
+  transform: translateX(-50%);
+  padding: 10px 18px;
+  border-radius: 20px;
+  background: $(primary.color);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+  animation: share-toast-in 0.25s ease-out;
+}
+@keyframes share-toast-in { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+/* Phones: one big "Share this episode" button, then a single row of round icon buttons */
+@media (max-width: 600px) {
+  .post-share { gap: 10px 6px; }
+  .post-share .share-share { flex: 1 1 100%; justify-content: center; min-height: 46px; margin-bottom: 4px; font-size: 15px; }
+  .post-share a:not(.share-share), .post-share button:not(.share-share) {
+    position: relative;
+    justify-content: center;
+    width: 38px;
+    min-height: 38px;
+    padding: 0;
+    border-radius: 50%;
+  }
+  .post-share a:not(.share-share) .share-text,
+  .post-share button:not(.share-share) .share-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
 
 /* Comments (Blogger's built-in markup) */
 .post-single .comments {
@@ -1592,7 +1696,7 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
               <b:else/>
                 <span aria-hidden='true' class='brand-mark'><img alt='' expr:src='data:sourceUrl'/></span>
                 <span class='brand-text'>
-                  <span class='brand-name'><data:title/></span>
+                  <span class='brand-name notranslate' translate='no'><data:title/></span>
                   <b:if cond='data:description != &quot;&quot;'>
                     <span class='brand-tagline'><data:description/></span>
                   </b:if>
@@ -1601,7 +1705,7 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
             <b:else/>
               <span aria-hidden='true' class='brand-mark'/>
               <span class='brand-text'>
-                <span class='brand-name'><data:title/></span>
+                <span class='brand-name notranslate' translate='no'><data:title/></span>
                 <b:if cond='data:description != &quot;&quot;'>
                   <span class='brand-tagline'><data:description/></span>
                 </b:if>
@@ -1612,6 +1716,14 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
       </b:widget>
     </b:section>
 
+    <!-- Language menu: opens the page in Google Translate (nothing loads from Google until a language is chosen) -->
+    <div class='lang notranslate' id='lang' translate='no'>
+      <button aria-controls='lang-menu' aria-expanded='false' aria-haspopup='true' aria-label='Choose language' class='lang-toggle' id='lang-toggle' type='button'>
+        <svg aria-hidden='true' fill='none' height='20' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='20'><circle cx='12' cy='12' r='10'/><line x1='2' x2='22' y1='12' y2='12'/><path d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'/></svg>
+        <span class='lang-code'>EN</span>
+      </button>
+      <div class='lang-menu' hidden='hidden' id='lang-menu'/>
+    </div>
     <button aria-controls='site-nav' aria-expanded='false' aria-label='Open menu' class='nav-toggle' id='nav-toggle' type='button'>
       <svg aria-hidden='true' class='icon-menu' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='3' x2='21' y1='6' y2='6'/><line x1='3' x2='21' y1='12' y2='12'/><line x1='3' x2='21' y1='18' y2='18'/></svg>
       <svg aria-hidden='true' class='icon-close' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='18' x2='6' y1='6' y2='18'/><line x1='6' x2='18' y1='6' y2='18'/></svg>
@@ -1684,7 +1796,7 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
               <b:if cond='data:title != &quot;&quot;'>
                 <p class='hero-eyebrow'><data:title/></p>
               </b:if>
-              <h1 class='hero-title'><data:blog.title/></h1>
+              <h1 class='hero-title notranslate' translate='no'><data:blog.title/></h1>
               <div class='hero-text'><data:content/></div>
             </div>
             <b:include name='quickedit'/>
@@ -3386,6 +3498,31 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
   // ---------- Videos inside posts and pages ----------
   // YouTube videos added with Blogger's video button (or pasted embed code), and
   // YouTube links on their own line, become the same thumbnail player.
+  // "Own line" means only line breaks around it, even inside a bigger paragraph
+  // (Blogger's editor often joins lines with <br>); a link inside a sentence stays a link.
+  function isBlank(node) {
+    return node.nodeType === 3 ? !node.nodeValue.trim() : (node.nodeType === 1 && node.tagName !== 'BR' && node.tagName !== 'IMG' && !node.querySelector('img, iframe') && !node.textContent.trim());
+  }
+  function lineBoundary(node, dir) {
+    var sib = node[dir];
+    while (sib && isBlank(sib)) sib = sib[dir];
+    return sib;
+  }
+  function ownLine(node, root) {
+    // climb out of inline wrappers (<span>, <b>, <u> ...) that hold nothing else
+    var el = node;
+    while (el.parentNode && el.parentNode !== root && /^(SPAN|B|STRONG|I|EM|U|FONT|SMALL)$/.test(el.parentNode.tagName) &&
+      el.parentNode.textContent.trim() === el.textContent.trim()) el = el.parentNode;
+    var before = lineBoundary(el, 'previousSibling'), after = lineBoundary(el, 'nextSibling');
+    if ((before && before.tagName !== 'BR') || (after && after.tagName !== 'BR')) return null;
+    return { el: el, before: before, after: after };
+  }
+  function placeVideo(line, id, label) {
+    // the player is a block, so line breaks right next to it would only add empty lines
+    if (line.after) line.after.parentNode.removeChild(line.after);
+    if (line.before) line.before.parentNode.removeChild(line.before);
+    line.el.parentNode.replaceChild(makeVideo(id, label), line.el);
+  }
   var postBodies = doc.querySelectorAll('.post-single .post-body');
   for (var pb = 0; pb < postBodies.length; pb++) {
     var bodyEl = postBodies[pb];
@@ -3396,11 +3533,9 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
     }
     var links = bodyEl.querySelectorAll('a[href]');
     for (var li2 = 0; li2 < links.length; li2++) {
-      var ln = links[li2];
-      var lid = ytId(ln.getAttribute('href'));
-      var holder = ln.parentNode;
-      if (!lid || !holder || holder.textContent.trim() !== ln.textContent.trim()) continue;
-      holder.replaceChild(makeVideo(lid, ln.textContent.trim()), ln);
+      var lid = ytId(links[li2].getAttribute('href'));
+      var lline = lid && links[li2].parentNode ? ownLine(links[li2], bodyEl) : null;
+      if (lline) placeVideo(lline, lid, links[li2].textContent.trim());
     }
     var tw = doc.createTreeWalker(bodyEl, 4, null, false);
     var bare = [];
@@ -3410,7 +3545,8 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
       if (/^\s*https?:\/\/\S+\s*$/.test(tn.nodeValue) && ytId(tn.nodeValue)) bare.push(tn);
     }
     for (var bIdx = 0; bIdx < bare.length; bIdx++) {
-      bare[bIdx].parentNode.replaceChild(makeVideo(ytId(bare[bIdx].nodeValue), ''), bare[bIdx]);
+      var bline = ownLine(bare[bIdx], bodyEl);
+      if (bline) placeVideo(bline, ytId(bare[bIdx].nodeValue), '');
     }
   }
 
@@ -3537,6 +3673,96 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
     }
   }
 
+  // ---------- Language menu (Google Translate) ----------
+  // Choosing a language opens this page through Google Translate's own address
+  // (<host>.translate.goog). Nothing loads from Google until a visitor picks a language.
+  var LANGUAGES = [
+    ['en', 'EN', 'English', 'English'],
+    ['fr', 'FR', 'Français', 'French'],
+    ['de', 'DE', 'Deutsch', 'German'],
+    ['sw', 'SW', 'Kiswahili', 'Swahili'],
+    ['ha', 'HA', 'Hausa', 'Hausa'],
+    ['yo', 'YO', 'Yorùbá', 'Yoruba'],
+    ['am', 'AM', 'አማርኛ', 'Amharic'],
+    ['om', 'OM', 'Afaan Oromoo', 'Oromo'],
+    ['pt', 'PT', 'Português', 'Portuguese'],
+    ['ar', 'AR', 'العربية', 'Arabic'],
+    ['zh-CN', '中文', '中文 (简体)', 'Chinese']
+  ];
+  var TRANSLATE_HOST = '.translate.goog';
+  function originalPageUrl() {
+    var h = location.hostname;
+    if (h.slice(-TRANSLATE_HOST.length) !== TRANSLATE_HOST) return location.href;
+    // "my--site-example-com" -> "my-site.example.com" ("--" stands for a real "-")
+    var host = h.slice(0, -TRANSLATE_HOST.length).replace(/--/g, '\u0000').replace(/-/g, '.').replace(/\u0000/g, '-');
+    var query = location.search.replace(/^\?/, '').split('&').filter(function (part) { return part && part.indexOf('_x_tr_') !== 0; }).join('&');
+    return 'https://' + host + location.pathname + (query ? '?' + query : '') + location.hash;
+  }
+  function translatedUrl(code) {
+    var a = doc.createElement('a');
+    a.href = originalPageUrl();
+    if (code === 'en') return a.href;
+    var host = a.hostname.replace(/-/g, '--').replace(/\./g, '-') + TRANSLATE_HOST;
+    var query = a.search.replace(/^\?/, '');
+    var params = '_x_tr_sl=en&_x_tr_tl=' + code + '&_x_tr_hl=' + code + '&_x_tr_pto=wapp';
+    return 'https://' + host + a.pathname + '?' + (query ? query + '&' : '') + params + a.hash;
+  }
+  var langBox = doc.getElementById('lang');
+  var langToggle = doc.getElementById('lang-toggle');
+  var langMenu = doc.getElementById('lang-menu');
+  if (langBox && langToggle && langMenu) {
+    var currentLang = (/[?&]_x_tr_tl=([^&#]+)/.exec(location.search) || [])[1] || 'en';
+    var langCode = langToggle.querySelector('.lang-code');
+    for (var lg = 0; lg < LANGUAGES.length; lg++) {
+      var L = LANGUAGES[lg];
+      var item = doc.createElement('a');
+      item.className = 'lang-item' + (L[0] === currentLang ? ' is-current' : '');
+      item.href = translatedUrl(L[0]);
+      item.setAttribute('hreflang', L[0]);
+      item.setAttribute('lang', L[0]);
+      if (L[0] === currentLang) {
+        item.setAttribute('aria-current', 'true');
+        if (langCode) langCode.textContent = L[1];
+      }
+      var native = doc.createElement('span');
+      native.className = 'lang-native';
+      native.textContent = L[2];
+      if (L[0] === 'ar') native.setAttribute('dir', 'rtl');
+      var english = doc.createElement('span');
+      english.className = 'lang-english';
+      english.setAttribute('lang', 'en');
+      english.textContent = L[3];
+      item.appendChild(native);
+      if (L[0] !== 'en') item.appendChild(english);
+      langMenu.appendChild(item);
+    }
+    if (currentLang !== 'en') langBox.classList.add('is-translated');
+    var langNote = doc.createElement('p');
+    langNote.className = 'lang-note';
+    langNote.textContent = 'Machine translation by Google';
+    langMenu.appendChild(langNote);
+    var setLang = function (open) {
+      langMenu.hidden = !open;
+      langToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      langBox.classList.toggle('is-open', open);
+      if (open && header && header.classList.contains('nav-open')) setMenu(false);
+    };
+    langToggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setLang(langMenu.hidden);
+    });
+    doc.addEventListener('click', function (e) {
+      if (!langMenu.hidden && !langBox.contains(e.target)) setLang(false);
+    });
+    doc.addEventListener('keydown', function (e) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && !langMenu.hidden) {
+        setLang(false);
+        langToggle.focus();
+      }
+    });
+    if (toggle) toggle.addEventListener('click', function () { setLang(false); });
+  }
+
   // Shadow under the sticky header once the page scrolls
   if (header) {
     var ticking = false;
@@ -3615,6 +3841,29 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
     avatar.appendChild(hostImg);
   }
 
+  // Share bar: an icon on every button (text stays for screen readers and on wide screens)
+  var shareIcons = {
+    facebook: socialIcons.facebook, x: socialIcons.x, linkedin: socialIcons.linkedin,
+    whatsapp: socialIcons.whatsapp, telegram: socialIcons.telegram,
+    copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+    print: '<polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+    share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" x2="15.4" y1="13.5" y2="17.5"/><line x1="15.4" x2="8.6" y1="6.5" y2="10.5"/>'
+  };
+  var shareItems = doc.querySelectorAll('.post-share a, .post-share button');
+  for (var sh = 0; sh < shareItems.length; sh++) {
+    var sb = shareItems[sh];
+    var kind = sb.classList.contains('js-native-share') ? 'share' : sb.hasAttribute('data-copy-url') ? 'copy' : sb.classList.contains('js-print') ? 'print' : socialType(sb.getAttribute('href'));
+    if (!shareIcons[kind]) continue;
+    var sLabel = sb.textContent.trim();
+    sb.classList.add('share-' + kind);
+    sb.setAttribute('title', sLabel);
+    sb.innerHTML = '<svg aria-hidden="true" class="share-icon" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="18">' + shareIcons[kind] + '</svg>';
+    var sText = doc.createElement('span');
+    sText.className = 'share-text';
+    sText.textContent = kind === 'share' ? 'Share this episode' : sLabel;
+    sb.appendChild(sText);
+  }
+
   // Copy-link share button
   var copyBtns = doc.querySelectorAll('[data-copy-url]');
   for (var i = 0; i < copyBtns.length; i++) {
@@ -3622,9 +3871,20 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
       var btn = this;
       var url = btn.getAttribute('data-copy-url');
       var done = function () {
-        var label = btn.textContent;
-        btn.textContent = 'Copied';
-        setTimeout(function () { btn.textContent = label; }, 1600);
+        var text = btn.querySelector('.share-text') || btn;
+        var label = text.textContent;
+        text.textContent = 'Copied';
+        btn.classList.add('is-done');
+        var toast = doc.createElement('div');
+        toast.className = 'share-toast';
+        toast.setAttribute('role', 'status');
+        toast.textContent = 'Link copied';
+        doc.body.appendChild(toast);
+        setTimeout(function () {
+          text.textContent = label;
+          btn.classList.remove('is-done');
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 1800);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link:', url); });

@@ -78,7 +78,7 @@ Page not found - <data:blog.title/>
               <b:else/>
                 <span aria-hidden='true' class='brand-mark'><img alt='' expr:src='data:sourceUrl'/></span>
                 <span class='brand-text'>
-                  <span class='brand-name'><data:title/></span>
+                  <span class='brand-name notranslate' translate='no'><data:title/></span>
                   <b:if cond='data:description != &quot;&quot;'>
                     <span class='brand-tagline'><data:description/></span>
                   </b:if>
@@ -87,7 +87,7 @@ Page not found - <data:blog.title/>
             <b:else/>
               <span aria-hidden='true' class='brand-mark'/>
               <span class='brand-text'>
-                <span class='brand-name'><data:title/></span>
+                <span class='brand-name notranslate' translate='no'><data:title/></span>
                 <b:if cond='data:description != &quot;&quot;'>
                   <span class='brand-tagline'><data:description/></span>
                 </b:if>
@@ -98,6 +98,14 @@ Page not found - <data:blog.title/>
       </b:widget>
     </b:section>
 
+    <!-- Language menu: opens the page in Google Translate (nothing loads from Google until a language is chosen) -->
+    <div class='lang notranslate' id='lang' translate='no'>
+      <button aria-controls='lang-menu' aria-expanded='false' aria-haspopup='true' aria-label='Choose language' class='lang-toggle' id='lang-toggle' type='button'>
+        <svg aria-hidden='true' fill='none' height='20' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='20'><circle cx='12' cy='12' r='10'/><line x1='2' x2='22' y1='12' y2='12'/><path d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'/></svg>
+        <span class='lang-code'>EN</span>
+      </button>
+      <div class='lang-menu' hidden='hidden' id='lang-menu'/>
+    </div>
     <button aria-controls='site-nav' aria-expanded='false' aria-label='Open menu' class='nav-toggle' id='nav-toggle' type='button'>
       <svg aria-hidden='true' class='icon-menu' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='3' x2='21' y1='6' y2='6'/><line x1='3' x2='21' y1='12' y2='12'/><line x1='3' x2='21' y1='18' y2='18'/></svg>
       <svg aria-hidden='true' class='icon-close' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='18' x2='6' y1='6' y2='18'/><line x1='6' x2='18' y1='6' y2='18'/></svg>
@@ -148,7 +156,7 @@ Page not found - <data:blog.title/>
               <b:if cond='data:title != &quot;&quot;'>
                 <p class='hero-eyebrow'><data:title/></p>
               </b:if>
-              <h1 class='hero-title'><data:blog.title/></h1>
+              <h1 class='hero-title notranslate' translate='no'><data:blog.title/></h1>
               <div class='hero-text'><data:content/></div>
             </div>
             <b:include name='quickedit'/>

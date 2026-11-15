@@ -85,6 +85,14 @@ Browser-tested (desktop and iPhone 13): badges get platform icons and open in a 
 
 SEO, server side with proven tags only: `og:site_name/type/title/url/description/image` and Twitter card tags; `noindex, follow` on archive and 404 pages (two new audit checks, mutation-tested). In the browser: JSON-LD `WebSite` + `Organization` (sameAs from Connect and Listen-on links) on the homepage; `BlogPosting`, `VideoObject` per YouTube video (thumbnails, embed URL, upload date) and `BreadcrumbList` on posts; all parsed as valid JSON in the test. Missing post image alt text is filled with the post title. Google runs JavaScript and reads JSON-LD added this way; other search engines may not.
 
+## Language menu, share bar, videos on their own line
+
+Language menu: 11 entries with native names; links point to the same page on `<host>.translate.goog` with `_x_tr_sl=en&_x_tr_tl=<code>` (path, query and anchor kept); on a translated page the current language is marked, the button shows its code, and "English" returns to the original address. Tested on a page served under the real blog address and under its translate.goog address. The menu opens and closes with click/tap, Escape and outside clicks, never overlaps the phone menu, and fits at 320–1440px; on phones the button is a globe only (plus the code once translated) so the show name keeps its room. The show name, hero title and menu are `notranslate`.
+
+Share bar: icons on every button; on phones a full-width "Share this episode" button plus one row of 38px round icon buttons (labels kept for screen readers); "Link copied" message on copy. The centring test now ignores screen-reader-only labels, which take no visible space.
+
+Videos in posts: a YouTube link or bare address counts as "on its own line" when only line breaks surround it, also inside a larger paragraph (Blogger's editor joins lines with `<br>`); the line breaks next to the player are removed. Links inside sentences stay links. Fixes a live post where the address showed as plain text.
+
 ## Browser checks (preview pages, Chromium)
 
 Homepage and post, at 1440px, 820px and 390px wide:
