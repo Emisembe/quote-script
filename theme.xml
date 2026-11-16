@@ -1536,6 +1536,52 @@ body .notfound-section .widget > h2.title {
 .notfound-latest { margin-top: 56px; }
 @media (max-width: 767px) { .notfound-latest { text-align: center; } }
 
+/* ---------- Support box (HTML gadget, moved under each post by the script) ---------- */
+.support-wrap { display: none; }
+.support-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 32px;
+  padding: 22px 24px;
+  background: #EEF9F7;
+  border: 1px solid #C9EEE8;
+  border-left: 4px solid $(accent.color);
+  border-radius: 14px;
+}
+.support-icon {
+  display: inline-flex;
+  flex: 0 0 46px;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: $(primary.color);
+  color: $(accent.color);
+}
+.support-inner { flex: 1 1 auto; min-width: 0; }
+.post-single .support-title {
+  margin: 2px 0 6px;
+  font-family: 'Bebas Neue', Impact, 'Arial Narrow', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 27px;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  color: $(primary.color);
+}
+.support-box .widget-content { font-size: 15.5px; line-height: 1.6; color: $(text.color); }
+.support-box .widget-content p { margin: 0 0 14px; }
+.support-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+.support-box a.support-btn { min-height: 44px; padding: 10px 22px; font-size: 15px; text-decoration: none; }
+.support-box a.support-btn-outline { background: transparent; border-color: $(border.color); color: $(primary.color); }
+.support-box a.support-btn-outline:hover { border-color: $(accent.color); color: $(primary.color); }
+@media (max-width: 600px) {
+  .support-box { flex-direction: column; align-items: center; padding: 22px 18px; text-align: center; border-left-width: 1px; border-top: 4px solid $(accent.color); }
+  .support-buttons { flex-direction: column; }
+  .support-box a.support-btn { width: 100%; }
+}
+
 /* ---------- Related episodes (under a post) ---------- */
 .related { margin-top: 40px; padding-top: 32px; border-top: 1px solid $(border.color); }
 .related-title {
@@ -1615,7 +1661,7 @@ body .notfound-section .widget > h2.title {
 
 /* ---------- Printing a post: just the article, with its address ---------- */
 @media print {
-  .announce, .site-header, .nav-backdrop, .hero, .showcase, .downloads, .topics, .sidebar,
+  .announce, .support-box, .site-header, .nav-backdrop, .hero, .showcase, .downloads, .topics, .sidebar,
   .newsletter, .site-footer, .post-share, .related, .comments, #comments,
   .blog-pager-nav, .yt-play-icon, .navbar, #navbar { display: none !important; }
   body { background: #fff; color: #000; font-size: 12pt; }
@@ -1636,7 +1682,7 @@ body#layout .site-header { position: static; }
 body#layout .hero, body#layout .topics, body#layout .sidebar,
 body#layout .showcase, body#layout .downloads,
 body#layout .newsletter, body#layout #LinkList6, body#layout .footer-actions,
-body#layout .announce, body#layout .notfound-extra { display: block; }
+body#layout .announce, body#layout .notfound-extra, body#layout .support-wrap { display: block; }
 body#layout .container { max-width: none; padding: 0; }
 body#layout .header-inner, body#layout .hero-grid, body#layout .main-grid,
 body#layout .footer-grid, body#layout .footer-bottom { display: block; }
@@ -2609,6 +2655,27 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
                     </b:includable>
         </b:widget>
       </b:section>
+      <!-- Support box: moved under each post by the theme's script (hidden everywhere else) -->
+      <div class='support-wrap' id='support-wrap'>
+        <b:section class='support-section' id='support-box' maxwidgets='1' showaddelement='no'>
+          <b:widget id='HTML11' locked='false' title='Enjoyed this episode?' type='HTML'>
+            <b:widget-settings>
+              <b:widget-setting name='content'><![CDATA[<p>The River Musa Show is independent. Your support keeps new episodes coming.</p>]]></b:widget-setting>
+            </b:widget-settings>
+            <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+          </b:widget>
+        </b:section>
+      </div>
       <!-- "Page not found" extras: shown only on the 404 page -->
       <div class='notfound-extra' id='notfound-extra'>
         <b:section class='notfound-section' id='notfound-video' maxwidgets='1' showaddelement='no'>
@@ -4016,6 +4083,64 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
     return grid;
   }
 
+  // ---------- Support box under each post (HTML gadget: title = heading, content = text + links) ----------
+  // First link = teal button with a heart, second link = outlined button. With no link,
+  // the button uses the donation link from the footer's "Support the Show" list.
+  var supportPost = doc.querySelector('.pt-item .post-single');
+  var supportGadget = doc.querySelector('#support-wrap .widget');
+  if (supportPost && supportGadget) {
+    var supportContent = supportGadget.querySelector('.widget-content');
+    var supportLinks = supportContent ? [].slice.call(supportContent.querySelectorAll('a[href]')) : [];
+    if (!supportLinks.length) {
+      var footerLinks = doc.querySelectorAll('#footer-actions .widget-content a[href]');
+      for (var fl = 0; fl < footerLinks.length; fl++) {
+        if (socialType(footerLinks[fl].getAttribute('href')) === 'donate') {
+          var borrowed = doc.createElement('a');
+          borrowed.href = footerLinks[fl].getAttribute('href');
+          borrowed.textContent = 'Support the Show';
+          supportContent.appendChild(borrowed);
+          supportLinks.push(borrowed);
+          break;
+        }
+      }
+    }
+    if (supportLinks.length && supportContent && supportContent.textContent.trim()) {
+      var supportButtons = doc.createElement('div');
+      supportButtons.className = 'support-buttons';
+      for (var sl2 = 0; sl2 < supportLinks.length && sl2 < 2; sl2++) {
+        var sLink = supportLinks[sl2];
+        var sParent = sLink.parentNode;
+        sLink.className = 'btn ' + (sl2 === 0 ? 'btn-primary support-btn' : 'support-btn support-btn-outline');
+        if (/^https?:/i.test(sLink.getAttribute('href')) && sLink.hostname !== location.hostname) {
+          sLink.setAttribute('target', '_blank');
+          sLink.setAttribute('rel', 'noopener');
+        }
+        if (sl2 === 0) sLink.insertAdjacentHTML('afterbegin', '<svg aria-hidden="true" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="18">' + socialIcons.donate + '</svg>');
+        supportButtons.appendChild(sLink);
+        // drop the paragraph the link came from if nothing else is left in it
+        if (sParent !== supportContent && sParent.parentNode && !sParent.textContent.trim()) sParent.parentNode.removeChild(sParent);
+      }
+      supportContent.appendChild(supportButtons);
+      var supportBox = doc.createElement('aside');
+      supportBox.className = 'support-box';
+      supportBox.setAttribute('aria-label', 'Support the show');
+      supportBox.innerHTML = '<span class="support-icon" aria-hidden="true"><svg fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="22">' + socialIcons.donate + '</svg></span>';
+      var supportInner = doc.createElement('div');
+      supportInner.className = 'support-inner';
+      var supportTitle = supportGadget.querySelector('.title');
+      if (supportTitle) {
+        var sHead = doc.createElement('h2');
+        sHead.className = 'support-title';
+        sHead.textContent = supportTitle.textContent;
+        supportInner.appendChild(sHead);
+      }
+      supportInner.appendChild(supportContent);
+      supportBox.appendChild(supportInner);
+      var supportAfter = supportPost.querySelector('.post-share') || supportPost.querySelector('.post-body');
+      supportAfter.parentNode.insertBefore(supportBox, supportAfter.nextSibling);
+    }
+  }
+
   // ---------- Related episodes under a post (same label first, then the newest posts) ----------
   var postArticle = doc.querySelector('.pt-item .post-single');
   if (postArticle && window.fetch && /^https?:$/.test(location.protocol)) {
@@ -4054,7 +4179,7 @@ body#layout .hero-inner { min-height: 0; padding: 0; }
       heading.textContent = sameLabel === picked.length && labelName ? 'More on ' + labelName : 'More episodes';
       section.appendChild(heading);
       section.appendChild(cardGrid(picked, 'post-grid related-grid'));
-      var share = postArticle.querySelector('.post-share') || postArticle.querySelector('.post-body');
+      var share = postArticle.querySelector('.support-box') || postArticle.querySelector('.post-share') || postArticle.querySelector('.post-body');
       share.parentNode.insertBefore(section, share.nextSibling);
     });
   }

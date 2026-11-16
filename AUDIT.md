@@ -93,6 +93,10 @@ Share bar: icons on every button; on phones a full-width "Share this episode" bu
 
 Videos in posts: a YouTube link or bare address counts as "on its own line" when only line breaks surround it, also inside a larger paragraph (Blogger's editor joins lines with `<br>`); the line breaks next to the player are removed. Links inside sentences stay links. Fixes a live post where the address showed as plain text.
 
+## Support box under posts
+
+`HTML11` (proven HTML gadget, non-blank default text) sits in an unconditional section that is hidden by CSS; on item pages the script moves it after the share bar, turns the first link into a teal button with a heart (new tab for other sites) and the second into an outlined button, and keeps related episodes after it. Browser-tested: default text borrows the footer's donation link; two links give two buttons; with no link anywhere the box stays hidden; never shown on the homepage; full-width buttons on phones; no empty paragraphs left; order share → support → related → comments.
+
 ## Browser checks (preview pages, Chromium)
 
 Homepage and post, at 1440px, 820px and 390px wide:

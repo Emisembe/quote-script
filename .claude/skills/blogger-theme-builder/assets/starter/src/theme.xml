@@ -449,6 +449,17 @@ Page not found - <data:blog.title/>
 @@BLOG_COMMENTS@@
         </b:widget>
       </b:section>
+      <!-- Support box: moved under each post by the theme's script (hidden everywhere else) -->
+      <div class='support-wrap' id='support-wrap'>
+        <b:section class='support-section' id='support-box' maxwidgets='1' showaddelement='no'>
+          <b:widget id='HTML11' locked='false' title='Enjoyed this episode?' type='HTML'>
+            <b:widget-settings>
+              <b:widget-setting name='content'><![CDATA[<p>The River Musa Show is independent. Your support keeps new episodes coming.</p>]]></b:widget-setting>
+            </b:widget-settings>
+            @@HTML_MAIN@@
+          </b:widget>
+        </b:section>
+      </div>
       <!-- "Page not found" extras: shown only on the 404 page -->
       <div class='notfound-extra' id='notfound-extra'>
         <b:section class='notfound-section' id='notfound-video' maxwidgets='1' showaddelement='no'>

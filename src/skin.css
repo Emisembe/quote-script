@@ -1510,6 +1510,52 @@ body .notfound-section .widget > h2.title {
 .notfound-latest { margin-top: 56px; }
 @media (max-width: 767px) { .notfound-latest { text-align: center; } }
 
+/* ---------- Support box (HTML gadget, moved under each post by the script) ---------- */
+.support-wrap { display: none; }
+.support-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 32px;
+  padding: 22px 24px;
+  background: #EEF9F7;
+  border: 1px solid #C9EEE8;
+  border-left: 4px solid var(--rm-accent);
+  border-radius: 14px;
+}
+.support-icon {
+  display: inline-flex;
+  flex: 0 0 46px;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--rm-primary);
+  color: var(--rm-accent);
+}
+.support-inner { flex: 1 1 auto; min-width: 0; }
+.post-single .support-title {
+  margin: 2px 0 6px;
+  font-family: var(--rm-display);
+  font-weight: 400;
+  font-size: 27px;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  color: var(--rm-primary);
+}
+.support-box .widget-content { font-size: 15.5px; line-height: 1.6; color: var(--rm-text); }
+.support-box .widget-content p { margin: 0 0 14px; }
+.support-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+.support-box a.support-btn { min-height: 44px; padding: 10px 22px; font-size: 15px; text-decoration: none; }
+.support-box a.support-btn-outline { background: transparent; border-color: var(--rm-border); color: var(--rm-primary); }
+.support-box a.support-btn-outline:hover { border-color: var(--rm-accent); color: var(--rm-primary); }
+@media (max-width: 600px) {
+  .support-box { flex-direction: column; align-items: center; padding: 22px 18px; text-align: center; border-left-width: 1px; border-top: 4px solid var(--rm-accent); }
+  .support-buttons { flex-direction: column; }
+  .support-box a.support-btn { width: 100%; }
+}
+
 /* ---------- Related episodes (under a post) ---------- */
 .related { margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--rm-border); }
 .related-title {
@@ -1589,7 +1635,7 @@ body .notfound-section .widget > h2.title {
 
 /* ---------- Printing a post: just the article, with its address ---------- */
 @media print {
-  .announce, .site-header, .nav-backdrop, .hero, .showcase, .downloads, .topics, .sidebar,
+  .announce, .support-box, .site-header, .nav-backdrop, .hero, .showcase, .downloads, .topics, .sidebar,
   .newsletter, .site-footer, .post-share, .related, .comments, #comments,
   .blog-pager-nav, .yt-play-icon, .navbar, #navbar { display: none !important; }
   body { background: #fff; color: #000; font-size: 12pt; }
@@ -1610,7 +1656,7 @@ body#layout .site-header { position: static; }
 body#layout .hero, body#layout .topics, body#layout .sidebar,
 body#layout .showcase, body#layout .downloads,
 body#layout .newsletter, body#layout #LinkList6, body#layout .footer-actions,
-body#layout .announce, body#layout .notfound-extra { display: block; }
+body#layout .announce, body#layout .notfound-extra, body#layout .support-wrap { display: block; }
 body#layout .container { max-width: none; padding: 0; }
 body#layout .header-inner, body#layout .hero-grid, body#layout .main-grid,
 body#layout .footer-grid, body#layout .footer-bottom { display: block; }
