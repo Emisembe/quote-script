@@ -18,44 +18,44 @@
   To add a team member: copy from "MEMBER START" to "MEMBER END" and paste it after.
 -->
 <style>
-.rmt { --rmt-navy: #0D1C2E; --rmt-teal: #00C0A8; --rmt-teal-dark: #00A892; --rmt-text: #2B3A4A; --rmt-muted: #6B7A8C; --rmt-line: #E3E8EF; font-family: Arial, Helvetica, sans-serif; color: var(--rmt-text); line-height: 1.7; }
+.rmt { --rmt-navy: #0D1C2E; --rmt-teal: #00C0A8; --rmt-teal-light: #33D4C0; --rmt-text: #1C2B3A; --rmt-muted: #6B7A8D; --rmt-line: #DDE2EA; font-family: Arial, Helvetica, sans-serif; color: var(--rmt-text); line-height: 1.7; }
 .rmt br { display: none; }
 .rmt * { box-sizing: border-box; }
 .rmt .rmt-eyebrow { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rmt-teal); }
-.rmt .rmt-heading { margin: 0 0 12px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 38px; letter-spacing: 1px; line-height: 1.05; color: var(--rmt-navy); }
+.rmt .rmt-heading { margin: 0 0 12px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 38px; letter-spacing: 2px; line-height: 1.05; color: var(--rmt-navy); }
 .rmt .rmt-section { margin: 0 0 44px; }
-.rmt .rmt-section-title { display: inline-block; margin: 0 0 8px; padding-bottom: 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 30px; letter-spacing: 1px; line-height: 1.1; color: var(--rmt-navy); border-bottom: 3px solid var(--rmt-teal); }
+.rmt .rmt-section-title { display: inline-block; margin: 0 0 8px; padding-bottom: 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 30px; letter-spacing: 2px; line-height: 1.1; color: var(--rmt-navy); border-bottom: 3px solid var(--rmt-teal); }
 .rmt .rmt-section-text { margin: 0 0 20px; font-size: 15.5px; color: var(--rmt-muted); }
 .rmt .rmt-intro p { margin: 0 0 14px; font-size: 17px; }
 .rmt .rmt-lead { font-size: 19px !important; color: var(--rmt-navy); }
-.rmt .rmt-picture { position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 7; margin: 22px 0 0; overflow: hidden; border-radius: 14px; background: linear-gradient(135deg, #0D1C2E 0%, #12324A 60%, #0E5E5A 100%); color: var(--rmt-teal); }
+.rmt .rmt-picture { position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 7; margin: 22px 0 0; overflow: hidden; border-radius: 10px; background: linear-gradient(135deg, #0D1C2E 55%, rgba(0, 192, 168, 0.35) 100%); color: var(--rmt-teal); }
 .rmt .rmt-picture img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; margin: 0; object-fit: cover; border-radius: 0; }
 .rmt .rmt-picture svg { width: 64px; height: 64px; }
 .rmt .rmt-values { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
-.rmt .rmt-value { padding: 22px 20px; background: var(--rmt-navy); border-radius: 14px; color: #D7DFEA; }
-.rmt .rmt-value-icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-bottom: 12px; border-radius: 12px; background: rgba(0,192,168,.15); color: var(--rmt-teal); }
+.rmt .rmt-value { padding: 22px 20px; background: var(--rmt-navy); border-radius: 10px; color: #C9D2E0; }
+.rmt .rmt-value-icon { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-bottom: 12px; border-radius: 10px; background: rgba(0,192,168,.15); color: var(--rmt-teal); }
 .rmt .rmt-value-icon svg { width: 22px; height: 22px; }
-.rmt .rmt-value-title { margin: 0 0 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 24px; letter-spacing: 1px; line-height: 1.1; color: #fff; }
+.rmt .rmt-value-title { margin: 0 0 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 24px; letter-spacing: 2px; line-height: 1.1; color: #fff; }
 .rmt .rmt-value p { margin: 0; font-size: 14.5px; line-height: 1.6; }
 .rmt .rmt-team { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-.rmt .rmt-member { display: flex; flex-direction: column; align-items: center; min-width: 0; padding: 26px 18px 22px; text-align: center; background: #fff; border: 1px solid var(--rmt-line); border-radius: 14px; box-shadow: 0 2px 12px rgba(13,28,46,.07); transition: transform .2s, box-shadow .2s; }
+.rmt .rmt-member { display: flex; flex-direction: column; align-items: center; min-width: 0; padding: 26px 18px 22px; text-align: center; background: #fff; border: 1px solid var(--rmt-line); border-radius: 10px; box-shadow: 0 2px 12px rgba(13,28,46,.07); transition: transform .2s, box-shadow .2s; }
 .rmt .rmt-member:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(13,28,46,.13); }
 .rmt .rmt-photo { display: flex; align-items: center; justify-content: center; width: 112px; height: 112px; margin: 0 0 14px; overflow: hidden; border: 4px solid var(--rmt-teal); border-radius: 50%; background: var(--rmt-navy); }
 .rmt .rmt-photo img { width: 100%; height: 100%; max-width: none; margin: 0; object-fit: cover; border-radius: 0; }
-.rmt .rmt-initials { font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-size: 38px; letter-spacing: 1px; color: var(--rmt-teal); }
+.rmt .rmt-initials { font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-size: 38px; letter-spacing: 2px; color: var(--rmt-teal); }
 .rmt .rmt-name { margin: 0 0 2px; font-family: Arial, Helvetica, sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 0; line-height: 1.3; color: var(--rmt-navy); }
-.rmt .rmt-role { margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--rmt-teal-dark); }
+.rmt .rmt-role { margin: 0 0 10px; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--rmt-teal); }
 .rmt .rmt-bio { margin: 0 0 14px; font-size: 14.5px; line-height: 1.6; }
 .rmt .rmt-social { display: flex; justify-content: center; gap: 8px; margin-top: auto; }
 .rmt .rmt-social a { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: 1.5px solid var(--rmt-line); border-radius: 50%; color: var(--rmt-navy); text-decoration: none; transition: border-color .2s, color .2s, background .2s; }
 .rmt .rmt-social a:hover { border-color: var(--rmt-teal); background: var(--rmt-teal); color: var(--rmt-navy); }
 .rmt .rmt-social svg { width: 16px; height: 16px; }
-.rmt .rmt-cta { padding: 30px 28px; text-align: center; background: var(--rmt-navy); border-top: 4px solid var(--rmt-teal); border-radius: 14px; color: #D7DFEA; }
-.rmt .rmt-cta-title { margin: 0 0 8px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 32px; letter-spacing: 1px; line-height: 1.05; color: #fff; }
+.rmt .rmt-cta { padding: 30px 28px; text-align: center; background: var(--rmt-navy); border-top: 4px solid var(--rmt-teal); border-radius: 10px; color: #C9D2E0; }
+.rmt .rmt-cta-title { margin: 0 0 8px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 32px; letter-spacing: 2px; line-height: 1.05; color: #fff; }
 .rmt .rmt-cta p { margin: 0 0 18px; font-size: 16px; }
 .rmt .rmt-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
 .rmt a.rmt-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 11px 22px; border: 2px solid var(--rmt-teal); border-radius: 8px; background: var(--rmt-teal); color: var(--rmt-navy); font-size: 15px; font-weight: 700; line-height: 1.2; text-decoration: none; transition: background .2s, border-color .2s, color .2s; }
-.rmt a.rmt-btn:hover { background: var(--rmt-teal-dark); border-color: var(--rmt-teal-dark); color: var(--rmt-navy); }
+.rmt a.rmt-btn:hover { background: var(--rmt-teal-light); border-color: var(--rmt-teal-light); color: var(--rmt-navy); }
 .rmt a.rmt-btn-outline { background: transparent; border-color: rgba(255,255,255,.4); color: #fff; }
 .rmt a.rmt-btn-outline:hover { background: transparent; border-color: var(--rmt-teal); color: var(--rmt-teal); }
 @media (max-width: 600px) {

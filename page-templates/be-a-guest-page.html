@@ -12,23 +12,23 @@
   Topics: edit, delete or copy the small topic pills (<span class="rmg-pill">...</span>).
 -->
 <style>
-.rmg { --rmg-navy: #0D1C2E; --rmg-teal: #00C0A8; --rmg-teal-dark: #00A892; --rmg-text: #2B3A4A; --rmg-muted: #6B7A8C; --rmg-line: #E3E8EF; font-family: Arial, Helvetica, sans-serif; color: var(--rmg-text); line-height: 1.65; }
+.rmg { --rmg-navy: #0D1C2E; --rmg-teal: #00C0A8; --rmg-teal-light: #33D4C0; --rmg-text: #1C2B3A; --rmg-muted: #6B7A8D; --rmg-line: #DDE2EA; font-family: Arial, Helvetica, sans-serif; color: var(--rmg-text); line-height: 1.65; }
 .rmg br { display: none; }
 .rmg * { box-sizing: border-box; }
-.rmg .rmg-hero { margin: 0 0 40px; padding: 32px 28px; background: var(--rmg-navy); border-top: 4px solid var(--rmg-teal); border-radius: 14px; color: #D7DFEA; }
+.rmg .rmg-hero { margin: 0 0 40px; padding: 32px 28px; background: var(--rmg-navy); border-top: 4px solid var(--rmg-teal); border-radius: 10px; color: #C9D2E0; }
 .rmg .rmg-eyebrow { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rmg-teal); }
-.rmg .rmg-hero-title { margin: 0 0 12px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 40px; letter-spacing: 1px; line-height: 1.05; color: #fff; }
+.rmg .rmg-hero-title { margin: 0 0 12px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 40px; letter-spacing: 2px; line-height: 1.05; color: #fff; }
 .rmg .rmg-hero p { margin: 0 0 20px; font-size: 17px; }
 .rmg .rmg-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
 .rmg a.rmg-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 12px 24px; border: 2px solid var(--rmg-teal); border-radius: 8px; background: var(--rmg-teal); color: var(--rmg-navy); font-size: 15px; font-weight: 700; line-height: 1.2; text-decoration: none; transition: background .2s, border-color .2s, color .2s; }
-.rmg a.rmg-btn:hover { background: var(--rmg-teal-dark); border-color: var(--rmg-teal-dark); color: var(--rmg-navy); }
+.rmg a.rmg-btn:hover { background: var(--rmg-teal-light); border-color: var(--rmg-teal-light); color: var(--rmg-navy); }
 .rmg a.rmg-btn-outline { background: transparent; border-color: rgba(255,255,255,.4); color: #fff; }
 .rmg a.rmg-btn-outline:hover { background: transparent; border-color: var(--rmg-teal); color: var(--rmg-teal); }
 .rmg .rmg-section { margin: 0 0 40px; }
-.rmg .rmg-section-title { display: inline-block; margin: 0 0 8px; padding-bottom: 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 30px; letter-spacing: 1px; line-height: 1.1; color: var(--rmg-navy); border-bottom: 3px solid var(--rmg-teal); }
+.rmg .rmg-section-title { display: inline-block; margin: 0 0 8px; padding-bottom: 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 30px; letter-spacing: 2px; line-height: 1.1; color: var(--rmg-navy); border-bottom: 3px solid var(--rmg-teal); }
 .rmg .rmg-section-text { margin: 0 0 18px; font-size: 15.5px; color: var(--rmg-muted); }
 .rmg .rmg-checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
-.rmg .rmg-check { display: flex; align-items: flex-start; gap: 12px; padding: 16px; background: #fff; border: 1px solid var(--rmg-line); border-radius: 12px; }
+.rmg .rmg-check { display: flex; align-items: flex-start; gap: 12px; padding: 16px; background: #fff; border: 1px solid var(--rmg-line); border-radius: 10px; }
 .rmg .rmg-check-mark { display: inline-flex; flex: 0 0 28px; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: var(--rmg-teal); color: var(--rmg-navy); }
 .rmg .rmg-check-mark svg { width: 15px; height: 15px; }
 .rmg .rmg-check p { margin: 0; font-size: 15px; line-height: 1.55; }
@@ -36,12 +36,12 @@
 .rmg .rmg-pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .rmg .rmg-pill { display: inline-block; padding: 7px 14px; border: 1.5px solid var(--rmg-line); border-radius: 20px; background: #fff; font-size: 14px; font-weight: 700; color: var(--rmg-navy); }
 .rmg .rmg-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
-.rmg .rmg-step { position: relative; padding: 22px 18px 18px; background: #fff; border: 1px solid var(--rmg-line); border-radius: 14px; box-shadow: 0 2px 12px rgba(13,28,46,.07); }
+.rmg .rmg-step { position: relative; padding: 22px 18px 18px; background: #fff; border: 1px solid var(--rmg-line); border-radius: 10px; box-shadow: 0 2px 12px rgba(13,28,46,.07); }
 .rmg .rmg-step-number { display: block; margin: 0 0 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-size: 40px; line-height: 1; color: var(--rmg-teal); }
 .rmg .rmg-step-title { margin: 0 0 4px; font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0; line-height: 1.3; color: var(--rmg-navy); }
 .rmg .rmg-step p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--rmg-muted); }
-.rmg .rmg-cta { padding: 28px; text-align: center; background: #EEF9F7; border: 1px solid #C9EEE8; border-radius: 14px; }
-.rmg .rmg-cta-title { margin: 0 0 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 30px; letter-spacing: 1px; line-height: 1.1; color: var(--rmg-navy); }
+.rmg .rmg-cta { padding: 28px; text-align: center; background: rgba(0, 192, 168, 0.07); border: 1px solid rgba(0, 192, 168, 0.15); border-radius: 10px; }
+.rmg .rmg-cta-title { margin: 0 0 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 30px; letter-spacing: 2px; line-height: 1.1; color: var(--rmg-navy); }
 .rmg .rmg-cta p { margin: 0 0 16px; font-size: 15.5px; }
 .rmg .rmg-cta .rmg-buttons { justify-content: center; }
 .rmg .rmg-cta a.rmg-btn-outline { border-color: var(--rmg-line); color: var(--rmg-navy); }

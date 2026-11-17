@@ -101,6 +101,17 @@ Videos in posts: a YouTube link or bare address counts as "on its own line" when
 
 New gadgets use only proven types and settings: `HTML12`–`HTML15` (non-blank default content; the numbers, rankings and tables defaults are `#` instruction lines that are never shown) and `LinkList9` (`sorting` = `NONE`, `text-0`/`link-0`). All sections are unconditional and editable in Layout; they are hidden by CSS and revealed only on the homepage (both homepage checks) once the script has content for them. The script only fetches feeds when the homepage sections are visible (no requests on posts). Browser-tested on desktop and phones (320–1440px): clock times per city with day/night icon; featured card from the newest `Featured` post (video plays in place, first other label as badge, 220-character excerpt); numbers count up once when scrolled into view (static for reduced motion); label sections from `/search/label/News` and from a bare `http://Interview` address, empty labels hidden; ranking rows with position, initials fallback, optional link and footer; data table with column header, green up / red down / neutral values, note and updated line; two columns on wide screens, one on phones; with only default content every box except the clock stays hidden. Post pages: reading time, progress bar from 0 to 1 while reading, back-to-top returns to the top.
 
+## Brand audit (River Musa Show design system)
+
+Every colour, `rgba()` tint and `font-family` in the built theme, the 7 page templates and the business card is compared with the brand sheet; `check.py` now fails on anything else (mutation-tested: a `#2B3A4A` text colour, an `#00A892` accent default and a Georgia font are each caught).
+
+- Exact brand values throughout: Navy `#0D1C2E`, Teal `#00C0A8`, Teal Light `#33D4C0` (hover), page `#F5F7FA`, card `#FFFFFF`, border `#DDE2EA`, text `#1C2B3A`, muted `#6B7A8D`, text on navy `#C9D2E0`, gradient `#1A7BC4 → #00C0A8`, zebra `#F7F9FB`, status amber `#FFF3CD`/`#7A5800`; teal and navy tints only as `rgba(0,192,168,…)` / `rgba(13,28,46,…)`.
+- Theme Designer variables (Customize › Advanced) default to these values.
+- Fixed drift: post text `#2B3A4A` → `#1C2B3A`; templates' muted `#6B7A8C` → `#6B7A8D`, borders `#E3E8EF` → `#DDE2EA`, text on navy `#D7DFEA` → `#C9D2E0`; off-brand dark teal `#00A892` → Signal Teal (text) / Teal Light (hover); clock strip `#0A1626` and overlay `rgb(5,12,22)` → Deep Navy; menu text `#E6ECF3` → white; footer muted `#8C99AB` → white at 65%; light teal tints → brand `rgba` tints; photo-frame gradient `#12324A/#0E5E5A` → Navy to Teal; events "sold out" red → brand amber status.
+- Card corners 12–16px → the brand's 10px; display headings now use the brand's 2px letter-spacing (numbers and clock digits keep 1px).
+- Deliberate extras, listed in `check.py` with their reason: `#17263A` (panels on navy, a Theme Designer variable), `#15803D` / `#DC2626` (market up/down in data tables), `#000` (video letterbox, print) and `#555` (print only).
+- Re-tested after the changes: no sideways scrolling at 320–768px, centring on phones, all homepage boxes, no JS errors.
+
 ## Browser checks (preview pages, Chromium)
 
 Homepage and post, at 1440px, 820px and 390px wide:

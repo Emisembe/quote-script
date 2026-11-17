@@ -70,7 +70,7 @@ Every gadget is a standard Blogger gadget. The menu, social links, slideshow and
 
 **Business card:** `print/business-card/` has an Inkscape file with both sides (85 × 55 mm, 3 mm bleed), the Bebas Neue font to install, and instructions.
 
-**Colours:** go to **Theme → Customise → Advanced** to change the brand colours.
+**Colours:** the theme uses only the River Musa Show palette: Deep Navy `#0D1C2E`, Signal Teal `#00C0A8` (Teal Light `#33D4C0` for hovers), page `#F5F7FA`, text `#1C2B3A`, muted `#6B7A8D`, borders `#DDE2EA`, with Bebas Neue (2px letter-spacing) for headings and Arial for text. `scripts/check.py` fails if any other colour or font appears in the theme, the page templates or the business card, or if the colours under **Theme → Customise → Advanced** no longer default to the brand. Only change colours there if you mean to rebrand; **Reset** brings back the brand colours.
 
 ## Working on the theme
 

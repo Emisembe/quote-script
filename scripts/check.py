@@ -184,6 +184,50 @@ check(not leftovers, 'no leftover content from other blogs/templates', str(lefto
 check('maximum-scale' not in text and 'user-scalable' not in text, 'pinch-zoom is not disabled')
 check(len(text.encode('utf-8')) < 900_000, 'theme file is well under Blogger size limits')
 
+# ---------------------------------------------------------------- Brand
+# The River Musa Show palette and fonts. A colour outside this list fails the audit,
+# so shades can't drift (e.g. #6B7A8C instead of #6B7A8D). To add a colour on purpose,
+# add it here with the reason.
+BRAND_HEX = {
+    '0D1C2E': 'Deep Navy', '00C0A8': 'Signal Teal', '33D4C0': 'Teal Light', '5A6273': 'Broadcast Slate',
+    'F5F7FA': 'Page background', 'FFFFFF': 'Card / white', 'DDE2EA': 'Border', '1C2B3A': 'Body text',
+    '6B7A8D': 'Muted text', '1A7BC4': 'Brand gradient start', 'C9D2E0': 'Text on navy',
+    'F7F9FB': 'Table zebra row', 'FFF3CD': 'Status amber background', '7A5800': 'Status amber text',
+    '17263A': 'Panels on navy (Theme Designer "primary.soft")',
+    '15803D': 'Data tables: up (green)', 'DC2626': 'Data tables: down (red)',
+    '000000': 'Video letterbox and print ink', '555555': 'Print only: grey link addresses',
+}
+BRAND_RGB = {'0, 192, 168', '13, 28, 46', '255, 255, 255', '0, 0, 0'}
+BRAND_VARS = {'primary.color': '#0D1C2E', 'accent.color': '#00C0A8', 'accent.hover.color': '#33D4C0',
+              'page.background.color': '#F5F7FA', 'text.color': '#1C2B3A', 'muted.color': '#6B7A8D',
+              'border.color': '#DDE2EA', 'primary.soft.color': '#17263A'}
+
+
+def off_brand(source):
+    source = re.sub(r'url\(data:[^)]*\)|&#\d+;', '', source)
+    hexes = {h.upper() if len(h) == 6 else ''.join(c * 2 for c in h).upper()
+             for h in re.findall(r'(?<![&\w])#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b', source)}
+    rgbs = {re.sub(r',\s*', ', ', m) for m in re.findall(r'rgba?\((\d+,\s*\d+,\s*\d+)', source)}
+    fonts = {f.strip() for f in re.findall(r'font-family\s*:\s*([^;}"\n]+)', source)}
+    bad_fonts = {f for f in fonts if not re.match(r"(var\(--[\w-]+\)|'Bebas Neue'|Arial\b|Consolas\b)", f)}
+    return sorted('#' + h for h in hexes - BRAND_HEX.keys()) + sorted(rgbs - BRAND_RGB) + sorted(bad_fonts)
+
+
+check(not off_brand(text), 'theme uses only brand colours and fonts (Navy #0D1C2E, Teal #00C0A8, Bebas Neue, Arial)',
+      str(off_brand(text)))
+var_defaults = dict(re.findall(r'<Variable name="([^"]+)"[^>]*default="([^"]+)"', skin))
+var_values = dict(re.findall(r'<Variable name="([^"]+)"[^>]*value="([^"]+)"', skin))
+wrong_vars = {k: (var_defaults.get(k), var_values.get(k)) for k, v in BRAND_VARS.items()
+              if var_defaults.get(k, '').upper() != v or var_values.get(k, '').upper() != v}
+check(not wrong_vars, 'Theme Designer colours (Customize > Advanced) default to the brand palette', str(wrong_vars))
+extra_files = sorted((ROOT / 'page-templates').glob('*.html')) + [ROOT / 'print' / 'business-card' / 'river-musa-business-card.svg']
+for extra in extra_files:
+    if extra.exists():
+        src = extra.read_text(encoding='utf-8')
+        if extra.suffix == '.svg':  # cut and safe-area guides (hidden layer) and Inkscape's own page settings
+            src = re.sub(r'<rect[^>]*stroke:#(?:FF00FF|00AEEF)[^>]*/>|<text[^>]*fill:#FF00FF[^>]*>.*?</text>|<sodipodi:namedview[^>]*>', '', src)
+        check(not off_brand(src), f'{extra.relative_to(ROOT)} uses only brand colours and fonts', str(off_brand(src)))
+
 # Behaviour that only shows up on a live blog
 check(not re.search(r"class='[^']*\bhentry\b", text),
       'no incomplete hentry microformat (Search Console reports missing author/updated)')

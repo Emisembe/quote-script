@@ -21,24 +21,24 @@
   right after. To add a category: copy from "CATEGORY START" to "CATEGORY END".
 -->
 <style>
-.rmd { --rmd-navy: #0D1C2E; --rmd-teal: #00C0A8; --rmd-teal-dark: #00A892; --rmd-text: #2B3A4A; --rmd-muted: #6B7A8C; --rmd-line: #E3E8EF; font-family: Arial, Helvetica, sans-serif; color: var(--rmd-text); line-height: 1.65; }
+.rmd { --rmd-navy: #0D1C2E; --rmd-teal: #00C0A8; --rmd-teal-light: #33D4C0; --rmd-text: #1C2B3A; --rmd-muted: #6B7A8D; --rmd-line: #DDE2EA; font-family: Arial, Helvetica, sans-serif; color: var(--rmd-text); line-height: 1.65; }
 .rmd br { display: none; }
 .rmd * { box-sizing: border-box; }
-.rmd .rmd-intro { margin: 0 0 32px; padding: 28px; background: var(--rmd-navy); border-left: 5px solid var(--rmd-teal); border-radius: 14px; color: #D7DFEA; }
+.rmd .rmd-intro { margin: 0 0 32px; padding: 28px; background: var(--rmd-navy); border-left: 5px solid var(--rmd-teal); border-radius: 10px; color: #C9D2E0; }
 .rmd .rmd-eyebrow { margin: 0 0 8px; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rmd-teal); }
-.rmd .rmd-intro-title { margin: 0 0 10px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 34px; letter-spacing: 1px; line-height: 1.05; color: #fff; }
+.rmd .rmd-intro-title { margin: 0 0 10px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 34px; letter-spacing: 2px; line-height: 1.05; color: #fff; }
 .rmd .rmd-intro p { margin: 0 0 10px; font-size: 16px; }
 .rmd .rmd-intro p:last-child { margin-bottom: 0; }
 .rmd .rmd-steps { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .rmd .rmd-step { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid rgba(255,255,255,.18); border-radius: 20px; font-size: 13px; color: #fff; }
 .rmd .rmd-step b { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--rmd-teal); color: var(--rmd-navy); font-size: 11px; }
 .rmd .rmd-category { margin: 0 0 36px; }
-.rmd .rmd-category-title { display: inline-block; margin: 0 0 6px; padding-bottom: 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 28px; letter-spacing: 1px; line-height: 1.1; color: var(--rmd-navy); border-bottom: 3px solid var(--rmd-teal); }
+.rmd .rmd-category-title { display: inline-block; margin: 0 0 6px; padding-bottom: 6px; font-family: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; font-weight: 400; font-size: 28px; letter-spacing: 2px; line-height: 1.1; color: var(--rmd-navy); border-bottom: 3px solid var(--rmd-teal); }
 .rmd .rmd-category-text { margin: 0 0 18px; font-size: 15px; color: var(--rmd-muted); }
 .rmd .rmd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-.rmd .rmd-card { display: flex; flex-direction: column; min-width: 0; overflow: hidden; background: #fff; border: 1px solid var(--rmd-line); border-radius: 14px; box-shadow: 0 2px 12px rgba(13,28,46,.07); transition: transform .2s, box-shadow .2s; }
+.rmd .rmd-card { display: flex; flex-direction: column; min-width: 0; overflow: hidden; background: #fff; border: 1px solid var(--rmd-line); border-radius: 10px; box-shadow: 0 2px 12px rgba(13,28,46,.07); transition: transform .2s, box-shadow .2s; }
 .rmd .rmd-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(13,28,46,.13); }
-.rmd .rmd-cover { position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 4 / 3; background: linear-gradient(135deg, #0D1C2E 0%, #12324A 60%, #0E5E5A 100%); color: var(--rmd-teal); overflow: hidden; }
+.rmd .rmd-cover { position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 4 / 3; background: linear-gradient(135deg, #0D1C2E 55%, rgba(0, 192, 168, 0.35) 100%); color: var(--rmd-teal); overflow: hidden; }
 .rmd .rmd-cover img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; margin: 0; object-fit: cover; border-radius: 0; }
 .rmd .rmd-cover svg { width: 56px; height: 56px; }
 .rmd .rmd-type { position: absolute; top: 12px; left: 12px; z-index: 1; padding: 3px 9px; border-radius: 6px; background: var(--rmd-teal); color: var(--rmd-navy); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
@@ -48,11 +48,11 @@
 .rmd .rmd-meta { margin: 0 0 16px; font-size: 12.5px; color: var(--rmd-muted); }
 .rmd .rmd-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
 .rmd a.rmd-btn { display: inline-flex; flex: 1 1 auto; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 10px 16px; border: 2px solid var(--rmd-teal); border-radius: 8px; background: var(--rmd-teal); color: var(--rmd-navy); font-size: 14px; font-weight: 700; line-height: 1.2; text-decoration: none; transition: background .2s, border-color .2s, color .2s; }
-.rmd a.rmd-btn:hover { background: var(--rmd-teal-dark); border-color: var(--rmd-teal-dark); color: var(--rmd-navy); }
+.rmd a.rmd-btn:hover { background: var(--rmd-teal-light); border-color: var(--rmd-teal-light); color: var(--rmd-navy); }
 .rmd a.rmd-btn-outline { flex: 0 1 auto; background: transparent; border-color: var(--rmd-line); color: var(--rmd-navy); }
 .rmd a.rmd-btn-outline:hover { background: transparent; border-color: var(--rmd-teal); color: var(--rmd-navy); }
 .rmd a.rmd-btn svg { width: 17px; height: 17px; flex: 0 0 auto; }
-.rmd .rmd-help { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin: 8px 0 0; padding: 22px 24px; background: #EEF9F7; border: 1px solid #C9EEE8; border-radius: 14px; }
+.rmd .rmd-help { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin: 8px 0 0; padding: 22px 24px; background: rgba(0, 192, 168, 0.07); border: 1px solid rgba(0, 192, 168, 0.15); border-radius: 10px; }
 .rmd .rmd-help-title { margin: 0 0 4px; font-family: Arial, Helvetica, sans-serif; font-size: 17px; font-weight: 700; letter-spacing: 0; color: var(--rmd-navy); }
 .rmd .rmd-help p { margin: 0; font-size: 14.5px; }
 .rmd .rmd-help a.rmd-btn { flex: 0 0 auto; }

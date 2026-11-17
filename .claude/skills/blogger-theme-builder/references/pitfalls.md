@@ -145,5 +145,6 @@ Typical in Sora/"premium" Blogger templates from around 2015–2019:
 - **Grounding beats guessing.** Every time something unproven was used, it was the thing that broke.
 - **Can't reach Blogger or its docs from the sandbox?** That's normal. Say so; don't claim live verification.
 - **Mutation-test new audit checks** with a broken copy. One regex check silently passed everything.
+- **Brand drift**: across many rounds of edits, near-miss shades creep in (`#6B7A8C` for `#6B7A8D`, a darker teal for hover, a slightly different navy). Put the client's palette in `check.py` as an allow-list (hex, `rgba()` triples, font families), each extra colour with its reason, and also check that the Theme Designer `<Variable>` defaults equal the brand. Run it over page templates and print files too. For small teal/light-accent text on white, use the brand accent rather than inventing a darker shade.
 - **Keep the repo reproducible**: `src/` → `build.py` → `theme.xml`, with CI running `build.py --check` and `check.py`.
 - **Name the delivered file like a Blogger backup** (`theme-<blog>.xml`) and send it as an attachment. Users struggle to download raw files from GitHub.
