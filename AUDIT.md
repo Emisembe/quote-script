@@ -97,6 +97,10 @@ Videos in posts: a YouTube link or bare address counts as "on its own line" when
 
 `HTML11` (proven HTML gadget, non-blank default text) sits in an unconditional section that is hidden by CSS; on item pages the script moves it after the share bar, turns the first link into a teal button with a heart (new tab for other sites) and the second into an outlined button, and keeps related episodes after it. Browser-tested: default text borrows the footer's donation link; two links give two buttons; with no link anywhere the box stays hidden; never shown on the homepage; full-width buttons on phones; no empty paragraphs left; order share → support → related → comments.
 
+## Homepage boxes: world clock, featured episode, numbers, label sections, rankings, data tables
+
+New gadgets use only proven types and settings: `HTML12`–`HTML15` (non-blank default content; the numbers, rankings and tables defaults are `#` instruction lines that are never shown) and `LinkList9` (`sorting` = `NONE`, `text-0`/`link-0`). All sections are unconditional and editable in Layout; they are hidden by CSS and revealed only on the homepage (both homepage checks) once the script has content for them. The script only fetches feeds when the homepage sections are visible (no requests on posts). Browser-tested on desktop and phones (320–1440px): clock times per city with day/night icon; featured card from the newest `Featured` post (video plays in place, first other label as badge, 220-character excerpt); numbers count up once when scrolled into view (static for reduced motion); label sections from `/search/label/News` and from a bare `http://Interview` address, empty labels hidden; ranking rows with position, initials fallback, optional link and footer; data table with column header, green up / red down / neutral values, note and updated line; two columns on wide screens, one on phones; with only default content every box except the clock stays hidden. Post pages: reading time, progress bar from 0 to 1 while reading, back-to-top returns to the top.
+
 ## Browser checks (preview pages, Chromium)
 
 Homepage and post, at 1440px, 820px and 390px wide:

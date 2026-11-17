@@ -44,10 +44,10 @@ Page not found - <data:blog.title/>
 </b:if>
 <b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .topics, .showcase.has-slides, .downloads.has-items { display: block; }</style>
+<style type='text/css'>.hero, .topics, .showcase.has-slides, .downloads.has-items, .worldclock.has-items, .featured.has-items, .numbers.has-items, .label-sections.has-items, .insights.has-items { display: block; }</style>
 </b:if>
 <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .topics, .showcase.has-slides, .downloads.has-items { display: block; }</style>
+<style type='text/css'>.hero, .topics, .showcase.has-slides, .downloads.has-items, .worldclock.has-items, .featured.has-items, .numbers.has-items, .label-sections.has-items, .insights.has-items { display: block; }</style>
 </b:if>
 </head>
 <body expr:class='&quot;rm pt-&quot; + data:blog.pageType'>
@@ -202,6 +202,20 @@ Page not found - <data:blog.title/>
   </div>
 </section>
 
+<!-- ================= World clock (homepage) ================= -->
+<section aria-label='World clock' class='worldclock' id='worldclock'>
+  <div class='container'>
+    <b:section class='worldclock-section' id='worldclock-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML12' locked='false' title='Two worlds, right now' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[Nairobi, Lagos, Addis Ababa, Berlin]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
 <!-- ================= Slideshow (homepage, shown once it has slides) ================= -->
 <section aria-label='Slideshow' class='showcase' id='showcase'>
   <div class='container'>
@@ -214,6 +228,11 @@ Page not found - <data:blog.title/>
       </b:widget>
     </b:section>
   </div>
+</section>
+
+<!-- ================= Featured episode (homepage; newest post labelled "Featured") ================= -->
+<section aria-label='Featured episode' class='featured' id='featured'>
+  <div class='container' id='featured-box'/>
 </section>
 
 <!-- ================= Posts ================= -->
@@ -498,6 +517,69 @@ Page not found - <data:blog.title/>
     </aside>
   </div>
 </div>
+
+<!-- ================= Numbers band (homepage, shown once it has numbers) ================= -->
+<section aria-label='In numbers' class='numbers' id='numbers'>
+  <div class='container'>
+    <b:section class='numbers-section' id='numbers-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML13' locked='false' title='The show in numbers' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[# One number per line:  number | label     for example:  120 | Episodes
+# Lines that start with # are ignored. Add your real numbers below this line.
+]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Sections from labels (homepage): heading + label, e.g. Latest News -> News ================= -->
+<section class='label-sections' id='label-sections'>
+  <div class='container'>
+    <b:section class='label-sections-section' id='label-sections-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='LinkList9' locked='false' title='Homepage sections' type='LinkList' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='sorting'>NONE</b:widget-setting>
+          <b:widget-setting name='text-0'>Latest News</b:widget-setting>
+          <b:widget-setting name='link-0'>/search/label/News</b:widget-setting>
+        </b:widget-settings>
+        @@LINKLIST_MAIN@@
+      </b:widget>
+    </b:section>
+    <div class='label-sections-out' id='label-sections-out'/>
+  </div>
+</section>
+
+<!-- ================= Rankings and data tables (homepage, shown once they have rows) ================= -->
+<section class='insights' id='insights'>
+  <div class='container insights-grid'>
+    <b:section class='rankings-section' id='rankings' showaddelement='yes'>
+      <b:widget id='HTML14' locked='false' title='Africa&apos;s Richest | Top net worth' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[# RANKING: one person per line, in order:  Name | Value | Detail | Photo address | Link
+# Detail, Photo and Link are optional. Lines that start with # are ignored.
+# Example (remove the # to use it):  Name Surname | $00.0B | Country · Industry
+# Optional extra lines:   Updated: November 2026      and      Link: See the rest | /p/your-page.html
+]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
+    <b:section class='tables-section' id='data-tables' showaddelement='yes'>
+      <b:widget id='HTML15' locked='false' title='African Markets' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[# TABLE: one row per line:  Name | Change | Link     (Link is optional)
+# Start the change with + for up (green) or - for down (red), e.g.  Cocoa | +12.4%
+# Optional extra lines:   Columns: Product | Change this month     Updated: 17 November 2026     Note: Prices in US dollars.
+# Lines that start with # are ignored.
+]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
 
 <!-- ================= Downloads (homepage, shown once it has items) ================= -->
 <section class='downloads' id='downloads'>

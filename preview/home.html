@@ -8,7 +8,7 @@
 <title>Preview: homepage</title>
 <link href="../dist/theme.css" rel="stylesheet">
 <!-- Blogger adds this rule on the homepage only -->
-<style>.hero, .topics, .showcase.has-slides, .downloads.has-items { display: block; }</style>
+<style>.hero, .topics, .showcase.has-slides, .downloads.has-items, .worldclock.has-items, .featured.has-items, .numbers.has-items, .label-sections.has-items, .insights.has-items { display: block; }</style>
 </head>
 <body class="rm pt-index">
 <a class="skip-link" href="#content">Skip to content</a>
@@ -85,6 +85,16 @@ https://youtu.be/dQw4w9WgXcQ</div>
   </section>
 
 
+  <!-- World clock: HTML gadget with city names -->
+  <section aria-label="World clock" class="worldclock" id="worldclock">
+    <div class="container">
+      <div class="worldclock-section section" id="worldclock-widgets"><div class="widget HTML" id="HTML12">
+        <h2 class="title">Two worlds, right now</h2>
+        <div class="widget-content">Nairobi, Lagos, Addis Ababa, Berlin</div>
+      </div></div>
+    </div>
+  </section>
+
   <!-- Slideshow: Blogger renders a Link List; the theme script turns it into slides -->
   <section aria-label="Slideshow" class="showcase" id="showcase">
     <div class="container">
@@ -96,6 +106,10 @@ https://youtu.be/dQw4w9WgXcQ</div>
       </ul></div></div></div>
     </div>
   </section>
+  <section aria-label="Featured episode" class="featured" id="featured">
+    <div class="container" id="featured-box"></div>
+  </section>
+
   <div class="page-main" id="episodes">
     <div class="container main-grid">
       <div class="main-col">
@@ -120,6 +134,57 @@ https://youtu.be/dQw4w9WgXcQ</div>
     </div>
   </div>
 
+
+  <section aria-label="In numbers" class="numbers" id="numbers">
+    <div class="container">
+      <div class="numbers-section section" id="numbers-widgets"><div class="widget HTML" id="HTML13">
+        <h2 class="title">The show in numbers</h2>
+        <div class="widget-content"># One number per line:  number | label
+120 | Episodes
+45+ | Guests
+18 | Countries
+2,500 | Newsletter readers
+</div>
+      </div></div>
+    </div>
+  </section>
+
+  <section class="label-sections" id="label-sections">
+    <div class="container">
+      <div class="label-sections-section section" id="label-sections-widgets"><div class="widget LinkList" id="LinkList9">
+        <h2 class="title">Homepage sections</h2>
+        <div class="widget-content"><ul><li><a href="/search/label/News">Latest News</a></li><li><a href="http://Interview">Interviews</a></li><li><a href="/search/label/Empty">Never shown</a></li></ul></div>
+      </div></div>
+      <div class="label-sections-out" id="label-sections-out"></div>
+    </div>
+  </section>
+
+  <section class="insights" id="insights">
+    <div class="container insights-grid">
+      <div class="rankings-section section" id="rankings"><div class="widget HTML" id="HTML14">
+        <h2 class="title">Africa's Richest | Top net worth</h2>
+        <div class="widget-content"># RANKING: Name | Value | Detail | Photo address | Link
+Person One | $00.0B | Country · Industry
+Person Two | $00.0B | Country · Industry | | /p/person-two.html
+Person Three | $00.0B | Country · Industry
+Updated: November 17, 2026
+Link: See the rest | /p/africas-richest.html
+</div>
+      </div></div>
+      <div class="tables-section section" id="data-tables"><div class="widget HTML" id="HTML15">
+        <h2 class="title">African Markets</h2>
+        <div class="widget-content"># TABLE: Name | Change | Link
+Columns: Product | Change this month
+Cocoa (Côte d'Ivoire) | +12.4% | /search/label/Cocoa
+Coffee (Ethiopia) | +3.1%
+Gold (Ghana) | -1.8%
+Tea (Kenya) | 0.0%
+Updated: November 17, 2026
+Note: Sample figures for the preview.
+</div>
+      </div></div>
+    </div>
+  </section>
 
   <!-- Downloads: Link List turned into download cards -->
   <section class="downloads" id="downloads">

@@ -890,17 +890,26 @@
       .then(function (data) { return (data && data.feed && data.feed.entry) || []; })
       .catch(function () { return []; });
   }
+  // Text of an HTML string without loading its images or running anything
+  function htmlText(html) {
+    if (window.DOMParser) return new DOMParser().parseFromString(html, 'text/html').body.textContent || '';
+    return html.replace(/<[^>]*>/g, ' ');
+  }
   function feedPost(entry) {
     var url = '';
     var links3 = entry.link || [];
     for (var k = 0; k < links3.length; k++) if (links3[k].rel === 'alternate') url = links3[k].href;
     var content = (entry.content && entry.content.$t) || (entry.summary && entry.summary.$t) || '';
     var img = /<img[^>]+src=["']([^"']+)["']/i.exec(content);
+    var labels = (entry.category || []).map(function (c) { return c.term; });
+    var plain = htmlText(content.replace(/<br\s*\/?>|<\/(p|div|h\d|li)>/gi, ' '));
     return {
       url: url,
       title: (entry.title && entry.title.$t) || 'Untitled post',
       date: entry.published && entry.published.$t,
-      label: entry.category && entry.category[0] ? entry.category[0].term : '',
+      label: labels[0] || '',
+      labels: labels,
+      text: plain.replace(/https?:\/\/\S+/g, '').replace(/\s+/g, ' ').trim(),
       video: ytId(content),
       image: img ? img[1] : (entry.media$thumbnail ? entry.media$thumbnail.url : '')
     };
@@ -965,6 +974,380 @@
     }
     return grid;
   }
+
+  // ---------- Homepage extras (only where the homepage sections are shown) ----------
+  var heroEl = doc.querySelector('.hero');
+  var isHome = !!heroEl && getComputedStyle(heroEl).display !== 'none';
+  var canFeed = window.fetch && /^https?:$/.test(location.protocol);
+  // Lines typed into an HTML gadget: one item per line, "#" lines are notes and are skipped
+  function gadgetLines(box) {
+    return htmlText(box.innerHTML.replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|li|h\d)>/gi, '\n')).split(/\n/).map(function (l) { return l.replace(/ /g, ' ').trim(); }).filter(function (l) { return l && l.charAt(0) !== '#'; });
+  }
+  function splitBar(line) { return line.split('|').map(function (x) { return x.trim(); }); }
+  function el(tag, cls, text) {
+    var e = doc.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function labelFromUrl(href) {
+    // "/search/label/News", a full blog address with it, or just "News" (Blogger may save it as "http://News")
+    var bare = /^https?:\/\/([^/?#.]+)\/?$/i.exec(href || '');
+    if (bare) return bare[1];
+    var h = (href || '').replace(/^https?:\/\/[^/]*/i, '');
+    var m = /\/search\/label\/([^?#]+)/.exec(h);
+    var raw = m ? m[1] : h.replace(/^\/+|\/+$/g, '');
+    try { return decodeURIComponent(raw.replace(/\+/g, ' ')); } catch (err) { return raw; }
+  }
+  function smallImage(src, size) {
+    return googleImage.test(src) ? src.replace(/\/(s|w)\d+[^/]*\//i, '/s' + size + '-c/').replace(/=(s|w)\d+[^/]*$/i, '=s' + size + '-c') : src;
+  }
+
+  // World clock (HTML gadget: cities separated by commas or new lines; "City (Area/Zone)" for others)
+  var CITY_ZONES = {
+    'nairobi': 'Africa/Nairobi', 'mombasa': 'Africa/Nairobi', 'kampala': 'Africa/Kampala', 'kigali': 'Africa/Kigali', 'dar es salaam': 'Africa/Dar_es_Salaam',
+    'dodoma': 'Africa/Dar_es_Salaam', 'addis ababa': 'Africa/Addis_Ababa', 'mogadishu': 'Africa/Mogadishu', 'khartoum': 'Africa/Khartoum', 'juba': 'Africa/Juba',
+    'lagos': 'Africa/Lagos', 'abuja': 'Africa/Lagos', 'accra': 'Africa/Accra', 'dakar': 'Africa/Dakar', 'abidjan': 'Africa/Abidjan', 'kinshasa': 'Africa/Kinshasa',
+    'luanda': 'Africa/Luanda', 'lusaka': 'Africa/Lusaka', 'harare': 'Africa/Harare', 'maputo': 'Africa/Maputo', 'johannesburg': 'Africa/Johannesburg',
+    'pretoria': 'Africa/Johannesburg', 'cape town': 'Africa/Johannesburg', 'cairo': 'Africa/Cairo', 'casablanca': 'Africa/Casablanca', 'tunis': 'Africa/Tunis',
+    'algiers': 'Africa/Algiers', 'berlin': 'Europe/Berlin', 'frankfurt': 'Europe/Berlin', 'munich': 'Europe/Berlin', 'hamburg': 'Europe/Berlin',
+    'cologne': 'Europe/Berlin', 'london': 'Europe/London', 'paris': 'Europe/Paris', 'brussels': 'Europe/Brussels', 'amsterdam': 'Europe/Amsterdam',
+    'zurich': 'Europe/Zurich', 'vienna': 'Europe/Vienna', 'rome': 'Europe/Rome', 'madrid': 'Europe/Madrid', 'lisbon': 'Europe/Lisbon', 'stockholm': 'Europe/Stockholm',
+    'new york': 'America/New_York', 'washington': 'America/New_York', 'toronto': 'America/Toronto', 'dubai': 'Asia/Dubai', 'beijing': 'Asia/Shanghai',
+    'shanghai': 'Asia/Shanghai', 'hong kong': 'Asia/Hong_Kong', 'delhi': 'Asia/Kolkata', 'mumbai': 'Asia/Kolkata', 'tokyo': 'Asia/Tokyo', 'sydney': 'Australia/Sydney'
+  };
+  var clockSection = doc.getElementById('worldclock');
+  var clockGadget = clockSection && clockSection.querySelector('.widget');
+  if (isHome && clockGadget && window.Intl) {
+    var clockBox = clockGadget.querySelector('.widget-content');
+    var cityList = gadgetLines(clockBox).join(',').split(',').map(function (c) { return c.trim(); }).filter(Boolean);
+    var clocks = [];
+    for (var ci = 0; ci < cityList.length && clocks.length < 6; ci++) {
+      var mz = /^(.*?)\s*\(([A-Za-z_]+\/[A-Za-z_\/]+)\)$/.exec(cityList[ci]);
+      var cityName = mz ? mz[1] : cityList[ci];
+      var zone = mz ? mz[2] : CITY_ZONES[cityName.toLowerCase()];
+      if (!zone) continue;
+      try { new Intl.DateTimeFormat('en-GB', { timeZone: zone }).format(new Date()); } catch (err) { continue; }
+      clocks.push({ name: cityName, zone: zone });
+    }
+    if (clocks.length) {
+      var clockRow = el('div', 'clock-row');
+      var clockTitle = clockGadget.querySelector('.title');
+      if (clockTitle) clockRow.appendChild(el('p', 'clock-title', clockTitle.textContent));
+      var clockCells = [];
+      for (var cc = 0; cc < clocks.length; cc++) {
+        var cell = el('div', 'clock-city');
+        var icon = el('span', 'clock-icon');
+        icon.setAttribute('aria-hidden', 'true');
+        var nm = el('span', 'clock-name', clocks[cc].name);
+        var tm = el('span', 'clock-time');
+        var dy = el('span', 'clock-day');
+        cell.appendChild(icon); cell.appendChild(nm); cell.appendChild(tm); cell.appendChild(dy);
+        clockRow.appendChild(cell);
+        clockCells.push({ icon: icon, time: tm, day: dy, zone: clocks[cc].zone });
+      }
+      var SUN = '<svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewBox="0 0 24 24" width="14"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+      var MOON = '<svg fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="14"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>';
+      var tick = function () {
+        var now = new Date();
+        for (var t = 0; t < clockCells.length; t++) {
+          var c = clockCells[t];
+          c.time.textContent = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: c.zone }).format(now);
+          c.day.textContent = new Intl.DateTimeFormat('en-GB', { weekday: 'short', timeZone: c.zone }).format(now);
+          var hour = parseInt(new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hour12: false, timeZone: c.zone }).format(now), 10);
+          var day = hour >= 6 && hour < 18;
+          if (c.icon.getAttribute('data-day') !== String(day)) { c.icon.innerHTML = day ? SUN : MOON; c.icon.setAttribute('data-day', String(day)); }
+        }
+      };
+      tick();
+      setInterval(tick, 20000);
+      clockBox.parentNode.replaceChild(clockRow, clockBox);
+      clockSection.classList.add('has-items');
+    }
+  }
+
+  // Featured episode: the newest post labelled "Featured"
+  var featuredSection = doc.getElementById('featured');
+  if (isHome && featuredSection && canFeed) {
+    feedEntries('/feeds/posts/default/-/Featured?alt=json&max-results=1').then(function (entries) {
+      if (!entries.length) return;
+      var post = feedPost(entries[0]);
+      var box = el('article', 'feature-card');
+      var media = el('div', 'feature-media');
+      if (post.video) media.appendChild(makeVideo(post.video, post.title));
+      else if (post.image) { var fi = el('img'); fi.alt = ''; fi.src = cardImageSize(post.image); media.appendChild(fi); }
+      else media.innerHTML = '<span class="post-card-placeholder"><svg aria-hidden="true" fill="none" height="48" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="48"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></span>';
+      box.appendChild(media);
+      var body = el('div', 'feature-body');
+      var top = el('div', 'feature-top');
+      top.appendChild(el('span', 'feature-eyebrow', 'Featured episode'));
+      var topic = post.labels.filter(function (l) { return l !== 'Featured'; })[0];
+      if (topic) { var fb = el('a', 'badge', topic); fb.href = '/search/label/' + encodeURIComponent(topic); top.appendChild(fb); }
+      body.appendChild(top);
+      var h = el('h2', 'feature-title'); var ha = el('a', '', post.title); ha.href = post.url; h.appendChild(ha); body.appendChild(h);
+      if (post.text) body.appendChild(el('p', 'feature-text', post.text.length > 220 ? post.text.slice(0, 217).replace(/\s+\S*$/, '') + '…' : post.text));
+      var meta = el('div', 'feature-meta');
+      if (post.date) { var ft = el('time'); ft.setAttribute('datetime', post.date); formatDate(ft); meta.appendChild(ft); }
+      var go = el('a', 'btn btn-primary feature-btn', post.video ? 'Watch the episode' : 'Read the episode'); go.href = post.url;
+      meta.appendChild(go);
+      body.appendChild(meta);
+      box.appendChild(body);
+      doc.getElementById('featured-box').appendChild(box);
+      featuredSection.classList.add('has-items');
+    });
+  }
+
+  // Numbers band (HTML gadget: "number | label" per line; counts up when it comes into view)
+  var numbersSection = doc.getElementById('numbers');
+  var numbersGadget = numbersSection && numbersSection.querySelector('.widget');
+  if (isHome && numbersGadget) {
+    var numBox = numbersGadget.querySelector('.widget-content');
+    var stats = gadgetLines(numBox).map(splitBar).filter(function (p) { return p.length >= 2 && /\d/.test(p[0]); }).slice(0, 6);
+    if (stats.length) {
+      var numGrid = el('div', 'numbers-grid');
+      var counters = [];
+      for (var ni = 0; ni < stats.length; ni++) {
+        var mnum = /^(\D*)([\d.,]+)(.*)$/.exec(stats[ni][0]);
+        var cellN = el('div', 'numbers-item');
+        var big = el('span', 'numbers-value', stats[ni][0]);
+        cellN.appendChild(big);
+        cellN.appendChild(el('span', 'numbers-label', stats[ni][1]));
+        numGrid.appendChild(cellN);
+        if (mnum) counters.push({ node: big, pre: mnum[1], target: parseFloat(mnum[2].replace(/,/g, '')), decimals: (mnum[2].split('.')[1] || '').length, comma: mnum[2].indexOf(',') >= 0, post: mnum[3] });
+      }
+      numBox.parentNode.replaceChild(numGrid, numBox);
+      numbersSection.classList.add('has-items');
+      var showNumber = function (c, v) {
+        var str = v.toFixed(c.decimals);
+        if (c.comma) str = str.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        c.node.textContent = c.pre + str + c.post;
+      };
+      var countUp = function () {
+        var start = null;
+        var step = function (ts) {
+          if (start === null) start = ts;
+          var k = Math.min(1, (ts - start) / 1400);
+          var ease = 1 - Math.pow(1 - k, 3);
+          for (var u = 0; u < counters.length; u++) showNumber(counters[u], counters[u].target * ease);
+          if (k < 1) window.requestAnimationFrame(step);
+        };
+        window.requestAnimationFrame(step);
+      };
+      if (!reduceMotion && 'IntersectionObserver' in window && counters.length) {
+        for (var z = 0; z < counters.length; z++) showNumber(counters[z], 0);
+        var seen = new IntersectionObserver(function (items) {
+          if (items[0].isIntersecting) { seen.disconnect(); countUp(); }
+        }, { threshold: 0.4 });
+        seen.observe(numGrid);
+      }
+    }
+  }
+
+  // Sections from labels (Link List: name = heading, address = /search/label/Name)
+  var labelSections = doc.getElementById('label-sections');
+  var labelOut = doc.getElementById('label-sections-out');
+  if (isHome && labelSections && labelOut && canFeed) {
+    var sectionLinks = labelSections.querySelectorAll('.widget-content li a');
+    var blocks = [];
+    for (var ls = 0; ls < sectionLinks.length; ls++) {
+      var lname = labelFromUrl(sectionLinks[ls].getAttribute('href'));
+      if (!lname) continue;
+      var block = el('div', 'label-block');
+      block.hidden = true;
+      labelOut.appendChild(block);
+      blocks.push({ el: block, heading: sectionLinks[ls].textContent.trim() || lname, label: lname });
+    }
+    blocks.forEach(function (b) {
+      feedEntries('/feeds/posts/default/-/' + encodeURIComponent(b.label) + '?alt=json&max-results=3').then(function (entries) {
+        if (!entries.length) return;
+        var head = el('div', 'section-head');
+        head.appendChild(el('h2', 'section-title', b.heading));
+        var all = el('a', 'label-all', 'See all'); all.href = '/search/label/' + encodeURIComponent(b.label);
+        all.insertAdjacentHTML('beforeend', ' <svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" viewBox="0 0 24 24" width="16"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>');
+        head.appendChild(all);
+        b.el.appendChild(head);
+        b.el.appendChild(cardGrid(entries.map(feedPost), 'post-grid'));
+        b.el.hidden = false;
+        labelSections.classList.add('has-items');
+      });
+    });
+    var lsGadget = labelSections.querySelector('.label-sections-section');
+    if (lsGadget) lsGadget.hidden = true;
+  }
+
+  // Rankings and data tables (HTML gadgets in the "Rankings" and "Data tables" areas of Layout)
+  var insights = doc.getElementById('insights');
+  if (isHome && insights) {
+    var INFO_LINE = /^(Updated|Note|Link|Columns)\s*:\s*/i;
+    var extras = function (lines) {
+      var out = { rows: [], updated: '', note: '', link: null, columns: null };
+      lines.forEach(function (line) {
+        var m = INFO_LINE.exec(line);
+        if (!m) { out.rows.push(splitBar(line)); return; }
+        var rest = line.slice(m[0].length);
+        var key = m[1].toLowerCase();
+        if (key === 'updated') out.updated = rest;
+        else if (key === 'note') out.note = rest;
+        else if (key === 'columns') out.columns = splitBar(rest);
+        else { var lp = splitBar(rest); out.link = lp.length > 1 ? { text: lp[0], href: lp[1] } : { text: 'See the rest', href: lp[0] }; }
+      });
+      return out;
+    };
+    var cardHead = function (gadget, iconSvg) {
+      var t = gadget.querySelector('.title');
+      var parts = t ? splitBar(t.textContent) : [];
+      var head = el('div', 'insight-head');
+      if (iconSvg) { var ic = el('span', 'insight-icon'); ic.setAttribute('aria-hidden', 'true'); ic.innerHTML = iconSvg; head.appendChild(ic); }
+      var txt = el('div', 'insight-headtext');
+      if (parts[0]) txt.appendChild(el('h2', 'insight-title', parts[0]));
+      if (parts[1]) txt.appendChild(el('p', 'insight-sub', parts[1]));
+      head.appendChild(txt);
+      return head;
+    };
+    var cardFoot = function (info) {
+      if (!info.updated && !info.link) return null;
+      var foot = el('div', 'insight-foot');
+      foot.appendChild(el('span', 'insight-updated', info.updated ? 'Updated: ' + info.updated : ''));
+      if (info.link && info.link.href) {
+        var a = el('a', 'insight-more', info.link.text); a.href = info.link.href;
+        a.insertAdjacentHTML('beforeend', ' <svg aria-hidden="true" fill="none" height="14" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" viewBox="0 0 24 24" width="14"><polyline points="9 18 15 12 9 6"/></svg>');
+        foot.appendChild(a);
+      }
+      return foot;
+    };
+    var TROPHY = '<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewBox="0 0 24 24" width="24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>';
+    var CHART = '<svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" viewBox="0 0 24 24" width="24"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg>';
+    var anyInsight = false;
+    // Rankings: Name | Value | Detail | Photo | Link
+    [].forEach.call(insights.querySelectorAll('#rankings .widget'), function (gadget) {
+      var content = gadget.querySelector('.widget-content');
+      if (!content) return;
+      var info = extras(gadgetLines(content));
+      var rows = info.rows.filter(function (r) { return r[0] && r.length >= 2; });
+      if (!rows.length) { gadget.hidden = true; return; }
+      var card = el('div', 'insight-card ranking');
+      card.appendChild(cardHead(gadget, TROPHY));
+      var list = el('ol', 'ranking-list');
+      rows.forEach(function (r, idx) {
+        var li = el('li', 'ranking-row');
+        var inner = r[4] ? el('a', 'ranking-link') : el('div', 'ranking-link');
+        if (r[4]) inner.href = r[4];
+        inner.appendChild(el('span', 'ranking-pos', '#' + (idx + 1)));
+        var ph = el('span', 'ranking-photo');
+        if (r[3]) { var pimg = el('img'); pimg.alt = ''; pimg.loading = 'lazy'; pimg.src = smallImage(r[3], 160); ph.appendChild(pimg); }
+        else ph.textContent = r[0].split(/\s+/).slice(0, 2).map(function (w) { return w.charAt(0); }).join('').toUpperCase();
+        inner.appendChild(ph);
+        var who = el('span', 'ranking-who');
+        who.appendChild(el('span', 'ranking-name', r[0]));
+        who.appendChild(el('span', 'ranking-value', r[1]));
+        if (r[2]) who.appendChild(el('span', 'ranking-detail', r[2]));
+        inner.appendChild(who);
+        li.appendChild(inner);
+        list.appendChild(li);
+      });
+      card.appendChild(list);
+      var f1 = cardFoot(info); if (f1) card.appendChild(f1);
+      content.parentNode.replaceChild(card, content);
+      var t1 = gadget.querySelector('.title'); if (t1) t1.hidden = true;
+      anyInsight = true;
+    });
+    // Data tables: Name | Change | Link   (+ green up, - red down)
+    [].forEach.call(insights.querySelectorAll('#data-tables .widget'), function (gadget) {
+      var content = gadget.querySelector('.widget-content');
+      if (!content) return;
+      var info = extras(gadgetLines(content));
+      var rows = info.rows.filter(function (r) { return r[0] && r.length >= 2; });
+      if (!rows.length) { gadget.hidden = true; return; }
+      var card = el('div', 'insight-card datatable');
+      card.appendChild(cardHead(gadget, CHART));
+      if (info.updated) card.querySelector('.insight-headtext').appendChild(el('p', 'insight-sub', 'Updated: ' + info.updated));
+      var table = el('table', 'data-table');
+      if (info.columns) {
+        var thead = el('thead'); var hr = el('tr');
+        hr.appendChild(el('th', '', info.columns[0] || ''));
+        hr.appendChild(el('th', 'data-num', info.columns[1] || ''));
+        thead.appendChild(hr); table.appendChild(thead);
+      }
+      var tbody = el('tbody');
+      rows.forEach(function (r) {
+        var tr = el('tr');
+        var nameCell = el('td', 'data-name');
+        if (r[2]) {
+          var na = el('a', '', r[0]); na.href = r[2];
+          na.insertAdjacentHTML('beforeend', ' <svg aria-hidden="true" fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" viewBox="0 0 24 24" width="13"><polyline points="9 18 15 12 9 6"/></svg>');
+          nameCell.appendChild(na);
+        } else nameCell.textContent = r[0];
+        tr.appendChild(nameCell);
+        var raw = r[1];
+        var dir = /^[+▲↑]/.test(raw) ? 'up' : /^[-−–▼↓]/.test(raw) ? 'down' : 'flat';
+        var valCell = el('td', 'data-num data-' + dir);
+        if (dir !== 'flat') {
+          var arrow = el('span', 'data-arrow', dir === 'up' ? '▲' : '▼');
+          arrow.setAttribute('aria-hidden', 'true');
+          valCell.appendChild(arrow);
+          valCell.appendChild(el('span', 'sr-only', dir === 'up' ? 'up ' : 'down '));
+        }
+        valCell.appendChild(doc.createTextNode(raw.replace(/^[+\-−–▲▼↑↓]\s*/, '')));
+        tr.appendChild(valCell);
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      card.appendChild(table);
+      if (info.note) card.appendChild(el('p', 'data-note', 'Note: ' + info.note));
+      if (info.link) { var f2 = cardFoot({ link: info.link }); if (f2) card.appendChild(f2); }
+      content.parentNode.replaceChild(card, content);
+      var t2 = gadget.querySelector('.title'); if (t2) t2.hidden = true;
+      anyInsight = true;
+    });
+    ['rankings', 'data-tables'].forEach(function (id) {
+      var area = doc.getElementById(id);
+      if (area && !area.querySelector('.insight-card')) area.hidden = true;
+    });
+    if (anyInsight) insights.classList.add('has-items');
+  }
+
+  // ---------- Post extras: reading time, reading progress bar ----------
+  var readPost = doc.querySelector('.pt-item .post-single');
+  if (readPost) {
+    var readBody = readPost.querySelector('.post-body');
+    var readMeta = readPost.querySelector('.post-meta');
+    if (readBody && readMeta) {
+      var words = (readBody.innerText || readBody.textContent).split(/\s+/).filter(Boolean).length;
+      if (words > 60) {
+        readMeta.appendChild(el('span', 'sep')).setAttribute('aria-hidden', 'true');
+        readMeta.appendChild(el('span', 'read-time', Math.max(1, Math.round(words / 200)) + ' min read'));
+      }
+    }
+    if (readBody) {
+      var bar = el('div', 'read-progress');
+      bar.setAttribute('aria-hidden', 'true');
+      doc.body.appendChild(bar);
+      var barTick = false;
+      var updateBar = function () {
+        barTick = false;
+        var r = readBody.getBoundingClientRect();
+        var total = r.height - window.innerHeight * 0.6;
+        var done = Math.min(1, Math.max(0, (-r.top + window.innerHeight * 0.3) / Math.max(1, total)));
+        bar.style.transform = 'scaleX(' + done.toFixed(3) + ')';
+      };
+      window.addEventListener('scroll', function () { if (!barTick) { barTick = true; window.requestAnimationFrame(updateBar); } }, { passive: true });
+      updateBar();
+    }
+  }
+
+  // Back-to-top button (appears after scrolling down)
+  var toTop = el('button', 'to-top');
+  toTop.type = 'button';
+  toTop.setAttribute('aria-label', 'Back to top');
+  toTop.innerHTML = '<svg aria-hidden="true" fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4" viewBox="0 0 24 24" width="20"><polyline points="18 15 12 9 6 15"/></svg>';
+  toTop.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); });
+  doc.body.appendChild(toTop);
+  var topTick = false;
+  window.addEventListener('scroll', function () {
+    if (topTick) return;
+    topTick = true;
+    window.requestAnimationFrame(function () { toTop.classList.toggle('is-visible', window.pageYOffset > 700); topTick = false; });
+  }, { passive: true });
 
   // ---------- Support box under each post (HTML gadget: title = heading, content = text + links) ----------
   // First link = teal button with a heart, second link = outlined button. With no link,
