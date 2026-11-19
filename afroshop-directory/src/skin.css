@@ -53,9 +53,10 @@ body {
   color: var(--d-text);
   background: var(--d-bg);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  /* clip (not hidden): hidden would make body a scroll box and break the sticky header */
+  overflow-x: clip;
 }
-html.nav-locked, html.nav-locked body { overflow: hidden; }
+html.nav-locked { overflow: hidden; }
 img, video, iframe, embed, object { max-width: 100%; }
 img { height: auto; border: 0; }
 a { color: inherit; text-decoration: none; }
@@ -246,6 +247,35 @@ a.badge:hover { background: var(--d-accent); color: #2A1A05; }
   .header-cta .widget-content a { display: inline-flex; width: auto; min-height: 40px; padding: 8px 18px; font-size: 14px; }
 }
 
+/* ---------- Announcement bar ---------- */
+.announce { background: #F3E3C3; color: #2A1A05; font-size: 14px; font-weight: 600; text-align: center; }
+.announce-inner { padding-top: 8px; padding-bottom: 8px; }
+.announce a { text-decoration: underline; text-underline-offset: 3px; }
+.announce p { margin: 0; }
+
+/* ---------- How it works ---------- */
+body .widget ol.howto { display: grid; gap: 12px; counter-reset: howto; }
+@media (min-width: 768px) { body .widget ol.howto { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; } }
+body .widget ol.howto li {
+  position: relative; counter-increment: howto;
+  padding: 18px 18px 18px 72px; min-height: 84px;
+  background: var(--d-card); border: 1px solid var(--d-border); border-radius: var(--d-radius);
+  color: var(--d-muted); font-size: 15px;
+}
+.howto li::before {
+  content: counter(howto); position: absolute; left: 18px; top: 18px;
+  width: 38px; height: 38px; border-radius: 50%; background: var(--d-accent); color: #2A1A05;
+  display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px;
+}
+.howto strong { display: block; color: var(--d-text); font-size: 17px; margin-bottom: 2px; }
+
+/* ---------- Partners ---------- */
+.block-partners { padding-bottom: 40px; }
+.block-partners .widget-content > p { color: var(--d-muted); }
+.block-partners a { color: var(--d-primary); text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
+body .widget .block-partners ul { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+.block-partners img { max-height: 56px; width: auto; filter: grayscale(1); opacity: 0.8; }
+
 /* ---------- Hero (homepage) ---------- */
 .hero {
   background-color: var(--d-primary);
@@ -386,8 +416,10 @@ body .widget ul.tiles {
 .tiles li:nth-child(6n+5) a::before { background-color: #DCEBE4; background-image: radial-gradient(circle, var(--d-primary) 0 3px, transparent 3.5px); background-size: 12px 12px; }
 .tiles li:nth-child(6n+6) a::before { background-color: #F7D9CC; background-image: repeating-linear-gradient(0deg, var(--d-clay) 0 3px, transparent 3px 8px); }
 .tiles .tile-count { display: block; margin-top: 2px; font-size: 13px; font-weight: 600; color: var(--d-muted); }
-.tiles-cities a { min-height: 64px; padding-left: 64px; justify-content: center; }
-.tiles-cities a::before { top: 50%; margin-top: -19px; }
+.tiles-cities a, .tiles-states a { min-height: 64px; padding-left: 64px; justify-content: center; }
+.tiles-states a { min-height: 56px; font-size: 14px; overflow-wrap: anywhere; }
+@media (min-width: 1024px) { body .widget ul.tiles-states { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tiles-cities a::before, .tiles-states a::before { top: 50%; margin-top: -19px; }
 
 /* ---------- Cards ---------- */
 .card-grid {
@@ -628,7 +660,8 @@ body .widget .plan li { position: relative; padding: 5px 0 5px 26px; }
 .site-footer { background: #0B3B2D; color: #CFE0D8; padding: 0 0 24px; }
 .site-footer::before { content: ''; display: block; height: 5px; margin-bottom: 40px; background: var(--d-stripe); }
 .footer-grid { display: grid; gap: 28px; }
-@media (min-width: 768px) { .footer-grid { grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; } }
+@media (min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px 40px; } }
+@media (min-width: 1024px) { .footer-grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
 .site-footer h2 { font-size: 15px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: #fff; margin: 0 0 12px; }
 .site-footer li a { display: inline-block; padding: 4px 0; }
 .site-footer a:hover { color: var(--d-accent); }
@@ -681,6 +714,7 @@ body .widget .plan li { position: relative; padding: 5px 0 5px 26px; }
 
 /* ---------- Blogger Layout editor ---------- */
 body#layout .home-only, body#layout .dir-admin { display: block; }
+body#layout .announce { display: block; }
 body#layout .site-header { position: static; }
 body#layout .nav-drawer { display: block; }
 body#layout .nav-toggle, body#layout .finder-band, body#layout .finder-results { display: none; }

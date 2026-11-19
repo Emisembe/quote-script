@@ -53,9 +53,10 @@ body {
   color: $(text.color);
   background: $(page.background.color);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  /* clip (not hidden): hidden would make body a scroll box and break the sticky header */
+  overflow-x: clip;
 }
-html.nav-locked, html.nav-locked body { overflow: hidden; }
+html.nav-locked { overflow: hidden; }
 img, video, iframe, embed, object { max-width: 100%; }
 img { height: auto; border: 0; }
 a { color: inherit; text-decoration: none; }
@@ -246,6 +247,35 @@ a.badge:hover { background: $(accent.color); color: #2A1A05; }
   .header-cta .widget-content a { display: inline-flex; width: auto; min-height: 40px; padding: 8px 18px; font-size: 14px; }
 }
 
+/* ---------- Announcement bar ---------- */
+.announce { background: #F3E3C3; color: #2A1A05; font-size: 14px; font-weight: 600; text-align: center; }
+.announce-inner { padding-top: 8px; padding-bottom: 8px; }
+.announce a { text-decoration: underline; text-underline-offset: 3px; }
+.announce p { margin: 0; }
+
+/* ---------- How it works ---------- */
+body .widget ol.howto { display: grid; gap: 12px; counter-reset: howto; }
+@media (min-width: 768px) { body .widget ol.howto { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; } }
+body .widget ol.howto li {
+  position: relative; counter-increment: howto;
+  padding: 18px 18px 18px 72px; min-height: 84px;
+  background: #ffffff; border: 1px solid $(border.color); border-radius: 14px;
+  color: $(muted.color); font-size: 15px;
+}
+.howto li::before {
+  content: counter(howto); position: absolute; left: 18px; top: 18px;
+  width: 38px; height: 38px; border-radius: 50%; background: $(accent.color); color: #2A1A05;
+  display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px;
+}
+.howto strong { display: block; color: $(text.color); font-size: 17px; margin-bottom: 2px; }
+
+/* ---------- Partners ---------- */
+.block-partners { padding-bottom: 40px; }
+.block-partners .widget-content > p { color: $(muted.color); }
+.block-partners a { color: $(primary.color); text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
+body .widget .block-partners ul { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+.block-partners img { max-height: 56px; width: auto; filter: grayscale(1); opacity: 0.8; }
+
 /* ---------- Hero (homepage) ---------- */
 .hero {
   background-color: $(primary.color);
@@ -386,8 +416,10 @@ body .widget ul.tiles {
 .tiles li:nth-child(6n+5) a::before { background-color: #DCEBE4; background-image: radial-gradient(circle, $(primary.color) 0 3px, transparent 3.5px); background-size: 12px 12px; }
 .tiles li:nth-child(6n+6) a::before { background-color: #F7D9CC; background-image: repeating-linear-gradient(0deg, $(clay.color) 0 3px, transparent 3px 8px); }
 .tiles .tile-count { display: block; margin-top: 2px; font-size: 13px; font-weight: 600; color: $(muted.color); }
-.tiles-cities a { min-height: 64px; padding-left: 64px; justify-content: center; }
-.tiles-cities a::before { top: 50%; margin-top: -19px; }
+.tiles-cities a, .tiles-states a { min-height: 64px; padding-left: 64px; justify-content: center; }
+.tiles-states a { min-height: 56px; font-size: 14px; overflow-wrap: anywhere; }
+@media (min-width: 1024px) { body .widget ul.tiles-states { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tiles-cities a::before, .tiles-states a::before { top: 50%; margin-top: -19px; }
 
 /* ---------- Cards ---------- */
 .card-grid {
@@ -628,7 +660,8 @@ body .widget .plan li { position: relative; padding: 5px 0 5px 26px; }
 .site-footer { background: #0B3B2D; color: #CFE0D8; padding: 0 0 24px; }
 .site-footer::before { content: ''; display: block; height: 5px; margin-bottom: 40px; background: repeating-linear-gradient(90deg, $(accent.color) 0 22px, $(clay.color) 22px 44px, $(primary.soft.color) 44px 66px, #F3E3C3 66px 72px); }
 .footer-grid { display: grid; gap: 28px; }
-@media (min-width: 768px) { .footer-grid { grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; } }
+@media (min-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px 40px; } }
+@media (min-width: 1024px) { .footer-grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
 .site-footer h2 { font-size: 15px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: #fff; margin: 0 0 12px; }
 .site-footer li a { display: inline-block; padding: 4px 0; }
 .site-footer a:hover { color: $(accent.color); }
@@ -681,6 +714,7 @@ body .widget .plan li { position: relative; padding: 5px 0 5px 26px; }
 
 /* ---------- Blogger Layout editor ---------- */
 body#layout .home-only, body#layout .dir-admin { display: block; }
+body#layout .announce { display: block; }
 body#layout .site-header { position: static; }
 body#layout .nav-drawer { display: block; }
 body#layout .nav-toggle, body#layout .finder-band, body#layout .finder-results { display: none; }
@@ -696,6 +730,19 @@ body#layout .nav-toggle, body#layout .finder-band, body#layout .finder-results {
 <a class='skip-link' href='#content'>Skip to content</a>
 
 <!-- ================= Header ================= -->
+<!-- ================= Announcement bar (remove the gadget in Layout to hide it) ================= -->
+<b:section class='announce-section' id='announce' maxwidgets='1' showaddelement='yes'>
+  <b:widget id='HTML13' locked='false' title='Announcement bar' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[New: a free listing for every African shop in Germany – <a href="/p/list-your-shop.html">add your shop</a>]]></b:widget-setting>
+    </b:widget-settings>
+    <b:includable id='main'>
+      <div class='announce'><div class='container announce-inner'><data:content/></div></div>
+      <b:include name='quickedit'/>
+    </b:includable>
+  </b:widget>
+</b:section>
+
 <header class='site-header' id='site-header'>
   <div class='container header-inner'>
     <b:section class='brand-section' id='header' maxwidgets='1' showaddelement='no'>
@@ -845,6 +892,26 @@ body#layout .nav-toggle, body#layout .finder-band, body#layout .finder-results {
 <!-- ================= Homepage blocks (top) ================= -->
 <div class='home-only home-blocks'>
   <b:section class='home-section' id='home-top' showaddelement='yes'>
+    <b:widget id='HTML14' locked='false' title='How it works' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<ol class="howto">
+<li><strong>Search</strong>Type the food, beauty product or service you need.</li>
+<li><strong>Find</strong>See the shops near you and which ones are open now.</li>
+<li><strong>Visit or message</strong>Call, write on WhatsApp or get directions in one tap.</li>
+</ol>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='block block-howto'>
+          <div class='container'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <h2 class='block-title'><data:title/></h2>
+            </b:if>
+            <div class='widget-content'><data:content/></div>
+          </div>
+        </div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
     <b:widget id='HTML4' locked='false' title='Browse by category' type='HTML'>
       <b:widget-settings>
         <b:widget-setting name='content'><![CDATA[<ul class="tiles" id="categories">
@@ -912,6 +979,39 @@ body#layout .nav-toggle, body#layout .finder-band, body#layout .finder-results {
                 <h2 class='block-title'><data:title/></h2>
               </b:if>
               <div class='widget-content js-cities'><data:content/></div>
+            </div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+      <b:widget id='HTML12' locked='false' title='Shops by state' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<ul class="tiles tiles-states" id="states">
+<li><a href="/search/label/Baden-W%C3%BCrttemberg">Baden-Württemberg</a></li>
+<li><a href="/search/label/Bayern">Bayern</a></li>
+<li><a href="/search/label/Berlin">Berlin</a></li>
+<li><a href="/search/label/Brandenburg">Brandenburg</a></li>
+<li><a href="/search/label/Bremen">Bremen</a></li>
+<li><a href="/search/label/Hamburg">Hamburg</a></li>
+<li><a href="/search/label/Hessen">Hessen</a></li>
+<li><a href="/search/label/Mecklenburg-Vorpommern">Mecklenburg-Vorpommern</a></li>
+<li><a href="/search/label/Niedersachsen">Niedersachsen</a></li>
+<li><a href="/search/label/Nordrhein-Westfalen">Nordrhein-Westfalen</a></li>
+<li><a href="/search/label/Rheinland-Pfalz">Rheinland-Pfalz</a></li>
+<li><a href="/search/label/Saarland">Saarland</a></li>
+<li><a href="/search/label/Sachsen">Sachsen</a></li>
+<li><a href="/search/label/Sachsen-Anhalt">Sachsen-Anhalt</a></li>
+<li><a href="/search/label/Schleswig-Holstein">Schleswig-Holstein</a></li>
+<li><a href="/search/label/Th%C3%BCringen">Thüringen</a></li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='block block-states'>
+            <div class='container'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <h2 class='block-title'><data:title/></h2>
+              </b:if>
+              <div class='widget-content js-states'><data:content/></div>
             </div>
           </div>
           <b:include name='quickedit'/>
@@ -1633,6 +1733,22 @@ body#layout .nav-toggle, body#layout .finder-band, body#layout .finder-results {
         <b:include name='quickedit'/>
       </b:includable>
     </b:widget>
+    <b:widget id='HTML15' locked='false' title='Partners and supporters' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<p>Wholesalers, importers and organisations who support African shops in Germany. <a href="/p/contact.html">Become a partner</a></p>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='block block-partners'>
+          <div class='container'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <h2 class='block-title'><data:title/></h2>
+            </b:if>
+            <div class='widget-content'><data:content/></div>
+          </div>
+        </div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
   </b:section>
 </div>
 
@@ -1695,6 +1811,30 @@ contact_page: /p/contact.html]]></b:widget-setting>
 <li><a href="/p/list-your-shop.html">List your shop</a></li>
 <li><a href="/search/label/Events">Seminars</a></li>
 <li><a href="/p/contact.html">Contact</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='footer-social' preferred='yes'>
+        <b:widget id='HTML16' locked='false' title='Follow us' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="https://www.instagram.com/">Instagram</a></li>
+<li><a href="https://www.facebook.com/">Facebook</a></li>
+<li><a href="https://www.youtube.com/">YouTube</a></li>
+<li><a href="https://www.linkedin.com/">LinkedIn</a></li>
+<li><a href="https://www.tiktok.com/">TikTok</a></li>
 </ul>]]></b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
@@ -2036,6 +2176,29 @@ contact_page: /p/contact.html]]></b:widget-setting>
     return out;
   }
   var CITIES = linksIn('.js-cities');
+  var STATES = linksIn('.js-states');
+  // Big cities -> federal state, so a shop is found under its state even without a data-state
+  var CITY_STATE = {
+    'berlin': 'Berlin', 'hamburg': 'Hamburg', 'bremen': 'Bremen', 'bremerhaven': 'Bremen',
+    'munchen': 'Bayern', 'nurnberg': 'Bayern', 'augsburg': 'Bayern', 'regensburg': 'Bayern', 'wurzburg': 'Bayern', 'ingolstadt': 'Bayern', 'erlangen': 'Bayern', 'furth': 'Bayern',
+    'stuttgart': 'Baden-Württemberg', 'mannheim': 'Baden-Württemberg', 'karlsruhe': 'Baden-Württemberg', 'freiburg': 'Baden-Württemberg', 'heidelberg': 'Baden-Württemberg', 'ulm': 'Baden-Württemberg', 'heilbronn': 'Baden-Württemberg', 'pforzheim': 'Baden-Württemberg', 'reutlingen': 'Baden-Württemberg',
+    'frankfurt': 'Hessen', 'frankfurt am main': 'Hessen', 'wiesbaden': 'Hessen', 'kassel': 'Hessen', 'darmstadt': 'Hessen', 'offenbach': 'Hessen', 'offenbach am main': 'Hessen', 'hanau': 'Hessen', 'giessen': 'Hessen', 'marburg': 'Hessen', 'fulda': 'Hessen',
+    'koln': 'Nordrhein-Westfalen', 'dusseldorf': 'Nordrhein-Westfalen', 'dortmund': 'Nordrhein-Westfalen', 'essen': 'Nordrhein-Westfalen', 'duisburg': 'Nordrhein-Westfalen', 'bochum': 'Nordrhein-Westfalen', 'wuppertal': 'Nordrhein-Westfalen', 'bielefeld': 'Nordrhein-Westfalen', 'bonn': 'Nordrhein-Westfalen', 'munster': 'Nordrhein-Westfalen', 'aachen': 'Nordrhein-Westfalen', 'gelsenkirchen': 'Nordrhein-Westfalen', 'monchengladbach': 'Nordrhein-Westfalen', 'krefeld': 'Nordrhein-Westfalen', 'oberhausen': 'Nordrhein-Westfalen', 'hagen': 'Nordrhein-Westfalen', 'hamm': 'Nordrhein-Westfalen', 'leverkusen': 'Nordrhein-Westfalen', 'solingen': 'Nordrhein-Westfalen', 'paderborn': 'Nordrhein-Westfalen', 'siegen': 'Nordrhein-Westfalen',
+    'hannover': 'Niedersachsen', 'braunschweig': 'Niedersachsen', 'oldenburg': 'Niedersachsen', 'osnabruck': 'Niedersachsen', 'wolfsburg': 'Niedersachsen', 'gottingen': 'Niedersachsen', 'hildesheim': 'Niedersachsen', 'salzgitter': 'Niedersachsen',
+    'leipzig': 'Sachsen', 'dresden': 'Sachsen', 'chemnitz': 'Sachsen', 'zwickau': 'Sachsen',
+    'halle': 'Sachsen-Anhalt', 'halle (saale)': 'Sachsen-Anhalt', 'magdeburg': 'Sachsen-Anhalt', 'dessau': 'Sachsen-Anhalt',
+    'erfurt': 'Thüringen', 'jena': 'Thüringen', 'gera': 'Thüringen', 'weimar': 'Thüringen',
+    'potsdam': 'Brandenburg', 'cottbus': 'Brandenburg', 'frankfurt (oder)': 'Brandenburg',
+    'rostock': 'Mecklenburg-Vorpommern', 'schwerin': 'Mecklenburg-Vorpommern', 'greifswald': 'Mecklenburg-Vorpommern',
+    'kiel': 'Schleswig-Holstein', 'lubeck': 'Schleswig-Holstein', 'flensburg': 'Schleswig-Holstein', 'neumunster': 'Schleswig-Holstein',
+    'mainz': 'Rheinland-Pfalz', 'ludwigshafen': 'Rheinland-Pfalz', 'koblenz': 'Rheinland-Pfalz', 'trier': 'Rheinland-Pfalz', 'kaiserslautern': 'Rheinland-Pfalz',
+    'saarbrucken': 'Saarland'
+  };
+  function stateOf(info) {
+    if (!info) return '';
+    if (info.state) return info.state;
+    return CITY_STATE[norm(info.city)] || CITY_STATE[norm(info.city).split(' ')[0]] || '';
+  }
   var CATEGORIES = linksIn('.js-categories');
   function findIn(arr, label) {
     var n = norm(label);
@@ -2056,6 +2219,7 @@ contact_page: /p/contact.html]]></b:widget-setting>
       return {
         type: 'shop',
         city: b.getAttribute('data-city') || '',
+        state: b.getAttribute('data-state') || '',
         address: b.getAttribute('data-address') || '',
         lat: parseFloat(b.getAttribute('data-lat')) || 0,
         lng: parseFloat(b.getAttribute('data-lng')) || 0,
@@ -2426,14 +2590,50 @@ contact_page: /p/contact.html]]></b:widget-setting>
     var clear = doc.getElementById('finder-clear');
     var here = null;
 
-    CITIES.forEach(function (c) {
-      var o = el('option', null, c.name);
-      o.value = c.label;
-      city.appendChild(o);
-    });
-    // On a city page, preselect that city
+    // Finder words can be translated in the Site words gadget like every other word
+    var wordOf = function (sel, key, attr) {
+      var n = form.querySelector(sel) || doc.querySelector(sel);
+      if (!n || !WORDS[key]) return;
+      if (attr) n.setAttribute(attr, WORDS[key]); else n.textContent = WORDS[key];
+    };
+    wordOf('label[for=finder-q]', 'What are you looking for?');
+    wordOf('label[for=finder-city]', 'Where?');
+    wordOf('#finder-q', 'Search example', 'placeholder');
+    wordOf('#finder-city option', 'All of Germany');
+    wordOf('#finder-near span', 'Near me');
+    wordOf('.finder-go span', 'Search');
+    wordOf('#finder-clear', 'Clear search');
+
+    function addGroup(label, items, prefix) {
+      if (!items.length) return;
+      var g = doc.createElement('optgroup');
+      g.label = t(label);
+      items.forEach(function (c) {
+        var o = el('option', null, c.name);
+        o.value = prefix + c.label;
+        g.appendChild(o);
+      });
+      city.appendChild(g);
+    }
+    addGroup('Cities', CITIES, 'c|');
+    addGroup('States', STATES, 's|');
+    function where() {
+      var v = city.value || '';
+      return v ? { kind: v.charAt(0), label: v.slice(2) } : null;
+    }
+    function whereName(w) {
+      var hit = findIn(w.kind === 's' ? STATES : CITIES, w.label);
+      return hit ? hit.name : w.label;
+    }
+    function selectWhere(kind, label) {
+      var list = kind === 's' ? STATES : CITIES;
+      var hit = findIn(list, label);
+      if (hit) { city.value = kind + '|' + hit.label; return true; }
+      return false;
+    }
+    // On a city or state page, preselect it
     var pageLabel = labelFromHref(location.pathname);
-    if (pageLabel && findIn(CITIES, pageLabel)) city.value = findIn(CITIES, pageLabel).label;
+    if (pageLabel) selectWhere('c', pageLabel) || selectWhere('s', pageLabel);
 
     function setNear(on) {
       near.classList.toggle('is-on', !!on);
@@ -2473,7 +2673,8 @@ contact_page: /p/contact.html]]></b:widget-setting>
     function writeHash() {
       var parts = [];
       if (q.value.trim()) parts.push('q=' + encodeURIComponent(q.value.trim()));
-      if (city.value) parts.push('city=' + encodeURIComponent(city.value));
+      var w0 = where();
+      if (w0) parts.push((w0.kind === 's' ? 'state=' : 'city=') + encodeURIComponent(w0.label));
       var hash = parts.length ? '#find?' + parts.join('&') : '';
       if (history.replaceState) history.replaceState(null, '', location.pathname + location.search + hash);
     }
@@ -2487,7 +2688,8 @@ contact_page: /p/contact.html]]></b:widget-setting>
       show(t('Searching...'));
       listEl.textContent = '';
       title.textContent = text ? t('Shops selling') + ' “' + text + '”' : t('Shops');
-      if (city.value) title.textContent += ' ' + t('in') + ' ' + (findIn(CITIES, city.value) || { name: city.value }).name;
+      var w1 = where();
+      if (w1) title.textContent += ' ' + t('in') + ' ' + whereName(w1);
       else if (here) title.textContent += ' ' + t('near you');
       if (scroll) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -2504,9 +2706,11 @@ contact_page: /p/contact.html]]></b:widget-setting>
             else { score = -1; break; } // every word must match somewhere
           }
           if (score < 0) return;
-          if (city.value) {
-            var inCity = sameCity(s.info.city, city.value) || s.labels.some(function (l) { return norm(l) === norm(city.value); });
-            if (!inCity) return;
+          var w = where();
+          if (w) {
+            var byLabel = s.labels.some(function (l) { return norm(l) === norm(w.label); });
+            var inside = w.kind === 's' ? (byLabel || norm(stateOf(s.info)) === norm(w.label)) : (byLabel || sameCity(s.info.city, w.label));
+            if (!inside) return;
           }
           var dist = null;
           if (here && s.info.lat && s.info.lng) dist = km(here, s.info);
@@ -2558,7 +2762,8 @@ contact_page: /p/contact.html]]></b:widget-setting>
         var v = '';
         try { v = decodeURIComponent((kv[1] || '').replace(/\+/g, ' ')); } catch (e) { v = kv[1] || ''; }
         if (kv[0] === 'q') q.value = v;
-        if (kv[0] === 'city') city.value = v;
+        if (kv[0] === 'city') { if (!selectWhere('c', v)) selectWhere('s', v); }
+        if (kv[0] === 'state') selectWhere('s', v);
       });
       run(true);
     }
@@ -2843,7 +3048,7 @@ contact_page: /p/contact.html]]></b:widget-setting>
     var h = doc.querySelector('.js-list-title');
     if (!h) return;
     var label = labelFromHref(location.pathname);
-    var city = label && findIn(CITIES, label);
+    var city = label && (findIn(CITIES, label) || findIn(STATES, label));
     if (city) h.textContent = t('African shops in') + ' ' + city.name;
     var cat = label && findIn(CATEGORIES, label);
     if (cat) h.textContent = cat.name;

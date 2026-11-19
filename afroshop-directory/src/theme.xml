@@ -27,6 +27,19 @@ Page not found - <data:blog.title/>
 <a class='skip-link' href='#content'>Skip to content</a>
 
 <!-- ================= Header ================= -->
+<!-- ================= Announcement bar (remove the gadget in Layout to hide it) ================= -->
+<b:section class='announce-section' id='announce' maxwidgets='1' showaddelement='yes'>
+  <b:widget id='HTML13' locked='false' title='Announcement bar' type='HTML'>
+    <b:widget-settings>
+      <b:widget-setting name='content'><![CDATA[New: a free listing for every African shop in Germany – <a href="/p/list-your-shop.html">add your shop</a>]]></b:widget-setting>
+    </b:widget-settings>
+    <b:includable id='main'>
+      <div class='announce'><div class='container announce-inner'><data:content/></div></div>
+      <b:include name='quickedit'/>
+    </b:includable>
+  </b:widget>
+</b:section>
+
 <header class='site-header' id='site-header'>
   <div class='container header-inner'>
     <b:section class='brand-section' id='header' maxwidgets='1' showaddelement='no'>
@@ -156,6 +169,26 @@ Page not found - <data:blog.title/>
 <!-- ================= Homepage blocks (top) ================= -->
 <div class='home-only home-blocks'>
   <b:section class='home-section' id='home-top' showaddelement='yes'>
+    <b:widget id='HTML14' locked='false' title='How it works' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<ol class="howto">
+<li><strong>Search</strong>Type the food, beauty product or service you need.</li>
+<li><strong>Find</strong>See the shops near you and which ones are open now.</li>
+<li><strong>Visit or message</strong>Call, write on WhatsApp or get directions in one tap.</li>
+</ol>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='block block-howto'>
+          <div class='container'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <h2 class='block-title'><data:title/></h2>
+            </b:if>
+            <div class='widget-content'><data:content/></div>
+          </div>
+        </div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
     <b:widget id='HTML4' locked='false' title='Browse by category' type='HTML'>
       <b:widget-settings>
         <b:widget-setting name='content'><![CDATA[<ul class="tiles" id="categories">
@@ -223,6 +256,39 @@ Page not found - <data:blog.title/>
                 <h2 class='block-title'><data:title/></h2>
               </b:if>
               <div class='widget-content js-cities'><data:content/></div>
+            </div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+      <b:widget id='HTML12' locked='false' title='Shops by state' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<ul class="tiles tiles-states" id="states">
+<li><a href="/search/label/Baden-W%C3%BCrttemberg">Baden-Württemberg</a></li>
+<li><a href="/search/label/Bayern">Bayern</a></li>
+<li><a href="/search/label/Berlin">Berlin</a></li>
+<li><a href="/search/label/Brandenburg">Brandenburg</a></li>
+<li><a href="/search/label/Bremen">Bremen</a></li>
+<li><a href="/search/label/Hamburg">Hamburg</a></li>
+<li><a href="/search/label/Hessen">Hessen</a></li>
+<li><a href="/search/label/Mecklenburg-Vorpommern">Mecklenburg-Vorpommern</a></li>
+<li><a href="/search/label/Niedersachsen">Niedersachsen</a></li>
+<li><a href="/search/label/Nordrhein-Westfalen">Nordrhein-Westfalen</a></li>
+<li><a href="/search/label/Rheinland-Pfalz">Rheinland-Pfalz</a></li>
+<li><a href="/search/label/Saarland">Saarland</a></li>
+<li><a href="/search/label/Sachsen">Sachsen</a></li>
+<li><a href="/search/label/Sachsen-Anhalt">Sachsen-Anhalt</a></li>
+<li><a href="/search/label/Schleswig-Holstein">Schleswig-Holstein</a></li>
+<li><a href="/search/label/Th%C3%BCringen">Thüringen</a></li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='block block-states'>
+            <div class='container'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <h2 class='block-title'><data:title/></h2>
+              </b:if>
+              <div class='widget-content js-states'><data:content/></div>
             </div>
           </div>
           <b:include name='quickedit'/>
@@ -458,6 +524,22 @@ Page not found - <data:blog.title/>
         <b:include name='quickedit'/>
       </b:includable>
     </b:widget>
+    <b:widget id='HTML15' locked='false' title='Partners and supporters' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<p>Wholesalers, importers and organisations who support African shops in Germany. <a href="/p/contact.html">Become a partner</a></p>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='block block-partners'>
+          <div class='container'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <h2 class='block-title'><data:title/></h2>
+            </b:if>
+            <div class='widget-content'><data:content/></div>
+          </div>
+        </div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
   </b:section>
 </div>
 
@@ -510,6 +592,20 @@ contact_page: /p/contact.html]]></b:widget-setting>
 <li><a href="/p/list-your-shop.html">List your shop</a></li>
 <li><a href="/search/label/Events">Seminars</a></li>
 <li><a href="/p/contact.html">Contact</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='footer-social' preferred='yes'>
+        <b:widget id='HTML16' locked='false' title='Follow us' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="https://www.instagram.com/">Instagram</a></li>
+<li><a href="https://www.facebook.com/">Facebook</a></li>
+<li><a href="https://www.youtube.com/">YouTube</a></li>
+<li><a href="https://www.linkedin.com/">LinkedIn</a></li>
+<li><a href="https://www.tiktok.com/">TikTok</a></li>
 </ul>]]></b:widget-setting>
           </b:widget-settings>
           @@HTML_MAIN@@

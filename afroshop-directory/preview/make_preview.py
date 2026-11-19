@@ -41,8 +41,8 @@ SHOPS = [
          sells='braiding hair, shea butter, black soap, wigs, edge control, hair extensions',
          origin='Senegal, Mali, Nigeria', services='braiding by appointment',
          text='Hair, skin care and braiding. Book your braids on WhatsApp.'),
-    dict(slug='lagos-taste', title='Lagos Taste Afroshop', labels=['Shop', 'Food', 'Frankfurt'],
-         city='Frankfurt am Main', address='Testgasse 21, 60311 Frankfurt am Main', lat=50.111, lng=8.682,
+    dict(slug='lagos-taste', title='Lagos Taste Afroshop', labels=['Shop', 'Food', 'Frankfurt', 'Hessen'],
+         city='Frankfurt am Main', state='Hessen', address='Testgasse 21, 60311 Frankfurt am Main', lat=50.111, lng=8.682,
          phone='+49 69 9876543', whatsapp='+49 152 9876543', hours='Mo-Sa 09:00-21:00',
          sells='egusi, ogbono, semovita, poundo yam, suya spice, zobo leaves, palm oil, malt drinks',
          origin='Nigeria', services='money transfer', text='Nigerian groceries, drinks and spices in the city centre.'),
@@ -89,7 +89,7 @@ EVENTS = [
 
 def shop_block(s):
     attrs = ' '.join('data-%s="%s"' % (k, html.escape(str(s[k]))) for k in
-                     ['city', 'address', 'lat', 'lng', 'phone', 'whatsapp', 'hours', 'sells', 'origin', 'services'] if s.get(k) != '')
+                     ['city', 'state', 'address', 'lat', 'lng', 'phone', 'whatsapp', 'hours', 'sells', 'origin', 'services'] if s.get(k, '') != '')
     fallback = '%s · %s · Tel. %s · %s' % (s['address'], s['hours'], s['phone'], s['sells'])
     return '<div class="shop-info" %s>%s</div>\n<p>%s</p>' % (attrs, html.escape(fallback), html.escape(s['text']))
 
@@ -127,6 +127,11 @@ def html_widget(wid, cls='widget-content'):
     return '<div class="widget HTML" id="%s">%s<div class="%s">%s</div></div>' % (wid, h, cls, content)
 
 
+def announce():
+    _, c = gadget('HTML13')
+    return '<div class="widget HTML" id="HTML13"><div class="announce"><div class="container announce-inner">%s</div></div></div>' % c
+
+
 def header():
     return '''<header class="site-header" id="site-header"><div class="container header-inner">
 <div class="brand-section section" id="header"><div class="widget Header" id="Header1"><a class="brand" href="home.html"><span aria-hidden="true" class="brand-mark brand-mark-svg"><svg aria-hidden='true' viewBox='0 0 76.0 70.5' width='40' height='37'><g transform='translate(0.000 0.000) scale(1.00000) translate(-12.0 -19.5)'><path d='M23 46 V40 A17 17 0 0 1 57 40 V46' fill='none' stroke='#E9A23B' stroke-width='7.5' stroke-linecap='round'/><path d='M43 46 V40 A17 17 0 0 1 77 40 V46' fill='none' stroke='#FBF6EE' stroke-width='7.5' stroke-linecap='round'/><defs><clipPath id='bagclip1'><path d='M23 40 L77 40 Q84 40 84.6 47 L87.4 83 Q88 90 81 90 L19 90 Q12 90 12.6 83 L15.4 47 Q16 40 23 40 Z'/></clipPath></defs><path d='M23 40 L77 40 Q84 40 84.6 47 L87.4 83 Q88 90 81 90 L19 90 Q12 90 12.6 83 L15.4 47 Q16 40 23 40 Z' fill='#FBF6EE'/><g clip-path='url(#bagclip1)'><rect x='10' y='59' width='9.5' height='12' fill='#E9A23B'/><rect x='19' y='59' width='9.5' height='12' fill='#0E4D3A'/><rect x='29' y='59' width='9.5' height='12' fill='#C4552D'/><rect x='38' y='59' width='9.5' height='12' fill='#E9A23B'/><rect x='48' y='59' width='9.5' height='12' fill='#0E4D3A'/><rect x='57' y='59' width='9.5' height='12' fill='#C4552D'/><rect x='67' y='59' width='9.5' height='12' fill='#E9A23B'/><rect x='76' y='59' width='9.5' height='12' fill='#0E4D3A'/><rect x='86' y='59' width='9.5' height='12' fill='#C4552D'/></g></g></svg></span><span class="brand-text"><span class="brand-name">AfroKauf</span><span class="brand-tagline">Afroshops in deiner Nähe</span></span></a></div></div>
@@ -162,9 +167,9 @@ def settings():
 
 def footer():
     return '''<footer class="site-footer"><div class="container"><div class="footer-grid">
-<div class="footer-col section">%s</div><div class="footer-col section">%s</div><div class="footer-col section">%s</div></div>
+<div class="footer-col section">%s</div><div class="footer-col section">%s</div><div class="footer-col section">%s</div><div class="footer-col section">%s</div></div>
 <div class="footer-bottom"><p class="copyright">&#169; <span class="js-year"></span> AfroKauf</p><p>Powered by Blogger</p></div></div></footer>''' % (
-        html_widget('HTML9'), html_widget('HTML10'), html_widget('HTML11'))
+        html_widget('HTML9'), html_widget('HTML10'), html_widget('HTML16'), html_widget('HTML11'))
 
 
 def card(item, body):
@@ -187,6 +192,7 @@ window.DIR_DEMO_FEED = function (label, max, start) {
 };</script>
 </head><body class="dir %s">
 <a class="skip-link" href="#content">Skip to content</a>
+<div class="announce-section section">%s</div>
 %s
 <main id="content">
 %s
@@ -194,7 +200,7 @@ window.DIR_DEMO_FEED = function (label, max, start) {
 </main>
 %s
 <script src="../dist/theme.js"></script><script src="../dist/directory.js"></script>
-</body></html>''' % (name, home_style, json.dumps(FEED), body_class, header(), main, settings(), footer())
+</body></html>''' % (name, home_style, json.dumps(FEED), body_class, announce(), header(), main, settings(), footer())
     (HERE / (name + '.html')).write_text(doc, encoding='utf-8')
 
 
@@ -204,20 +210,20 @@ def hero():
 
 
 def home():
-    top = '<div class="home-only home-blocks"><div class="home-section section">%s%s%s</div></div>' % (
-        block_tiles('HTML4', 'block-categories', 'js-categories'), block_feed('HTML5', 'featured', 6, 'See all'),
-        block_tiles('HTML6', 'block-cities', 'js-cities'))
+    top = '<div class="home-only home-blocks"><div class="home-section section">%s%s%s%s%s</div></div>' % (
+        block_tiles('HTML14', 'block-howto', ''), block_tiles('HTML4', 'block-categories', 'js-categories'), block_feed('HTML5', 'featured', 6, 'See all'),
+        block_tiles('HTML6', 'block-cities', 'js-cities'), block_tiles('HTML12', 'block-states', 'js-states'))
     newest = SHOPS[3:9]
     lst = '<div class="page-main"><div class="container"><div class="main section"><div class="widget Blog" id="Blog1"><div class="block-head list-head"><h2 class="block-title">Newest listings</h2></div><div class="card-grid">%s</div><nav aria-label="Pages" class="pager"><a class="btn btn-primary older" href="#">More &#8594;</a></nav></div></div></div></div>' % ''.join(card(s, shop_block(s)) for s in newest)
-    bottom = '<div class="home-only home-blocks"><div class="home-section section">%s%s</div></div>' % (
-        block_feed('HTML7', 'events', 4, 'All events', 'block-events'), block_owners())
+    bottom = '<div class="home-only home-blocks"><div class="home-section section">%s%s%s</div></div>' % (
+        block_feed('HTML7', 'events', 4, 'All events', 'block-events'), block_owners(), block_tiles('HTML15', 'block-partners', ''))
     page('home', 'pt-index', hero() + finder() + top + lst + bottom, home=True)
 
 
 def hidden_home_blocks():
     # On other pages Blogger still renders the homepage sections (hidden by CSS)
-    return '<div class="home-only home-blocks"><div class="home-section section">%s%s</div></div>' % (
-        block_tiles('HTML4', 'block-categories', 'js-categories'), block_tiles('HTML6', 'block-cities', 'js-cities'))
+    return '<div class="home-only home-blocks"><div class="home-section section">%s%s%s</div></div>' % (
+        block_tiles('HTML4', 'block-categories', 'js-categories'), block_tiles('HTML6', 'block-cities', 'js-cities'), block_tiles('HTML12', 'block-states', 'js-states'))
 
 
 def city():

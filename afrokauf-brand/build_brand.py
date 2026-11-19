@@ -586,7 +586,199 @@ def brand_guide():
     return write('afrokauf-brand-guide.svg', doc(W, H, ''.join(out), 'AfroKauf brand guide'))
 
 
+# ------------------------------------------------------------------ shop branding kit (for member shops)
+GREEN2 = '#17644D'
+SOFT_ON_DARK = '#CFE0D8'
+
+
+def member_tag(x, y, size, variant='reverse', label='Member of AfroKauf Verbund'):
+    """'Mitglied im' line + Verbund logo. (x, y) = top-left. Returns (svg, width, height)."""
+    line = T(x, y + size * 0.42, 'Mitglied im', size * 0.42, 600, GOLD if variant == 'reverse' else CLAY, label='Member line')
+    g, w, h = lockup(x, y + size * 0.62, size, variant, verbund=True)
+    return '<g inkscape:label="%s">%s%s</g>' % (escape(label), line, g), w, size * 0.62 + h + size * 0.45
+
+
+def shop_sign():
+    W, H = 300, 100  # mm; a print shop scales it to the real sign size
+    bg = ('<rect width="%d" height="%d" fill="%s"/>' % (W, H, GREEN) + dots(0, 0, W, H, 5, 0.35, '#FFFFFF', 0.08)
+          + '<circle cx="300" cy="0" r="70" fill="%s" fill-opacity="0.14"/>' % GOLD + stripe(0, H - 5, W, 5, 9))
+    tag, tw, th = member_tag(0, 0, 9)
+    tag, tw, th = member_tag(W - 14 - tw, 30, 9)
+    art = (T(14, 50, 'Dein Shopname', 26, 800, CREAM, label='Shop name')
+           + T(15, 64, 'Afrikanische Lebensmittel · Kosmetik · Mode', 7, 400, SOFT_ON_DARK, label='What you sell')
+           + T(15, 79, 'Tel. / WhatsApp 0151 1234567', 6.5, 700, GOLD, label='Phone')
+           + '<rect inkscape:label="Divider" x="%s" y="22" width="0.8" height="58" fill="%s"/>' % (fmt(W - 24 - tw), GOLD)
+           + tag)
+    return doc(W, H, '', 'Shop sign 3:1', units='mm', layers=[('Background', bg, True), ('Artwork and text', art, False)])
+
+
+def door_sign():
+    W, H = 148, 210  # A5
+    bg = ('<rect width="%d" height="%d" fill="%s"/>' % (W, H, CREAM)
+          + '<rect width="%d" height="60" fill="%s"/>' % (W, GREEN) + dots(0, 0, W, 60, 4, 0.3, '#FFFFFF', 0.08) + stripe(0, 60, W, 3, 6))
+    days = [('Montag', '10:00 – 20:00'), ('Dienstag', '10:00 – 20:00'), ('Mittwoch', '10:00 – 20:00'), ('Donnerstag', '10:00 – 20:00'),
+            ('Freitag', '10:00 – 20:00'), ('Samstag', '09:00 – 18:00'), ('Sonntag', 'geschlossen')]
+    rows = ''
+    for i, (d, tm) in enumerate(days):
+        y = 96 + i * 10.5
+        rows += ('<rect x="20" y="%s" width="108" height="0.3" fill="%s"/>' % (fmt(y + 3.2), SAND)
+                 + T(22, y, d, 5.2, 600, INK, label='Day %d' % (i + 1))
+                 + T(126, y, tm, 5.2, 700 if tm[0].isdigit() else 400, GREEN if tm[0].isdigit() else MUTED, 'end', label='Hours %d' % (i + 1)))
+    tag, tw, th = member_tag(62, 186, 5.2, 'color')
+    art = (T(W / 2, 30, 'Dein Shopname', 13, 800, CREAM, 'middle', label='Shop name')
+           + T(W / 2, 44, 'Willkommen · Welcome · Bienvenue · Karibu · Akwaaba', 4.2, 600, GOLD, 'middle', label='Welcome line')
+           + T(W / 2, 80, 'ÖFFNUNGSZEITEN · OPENING HOURS', 4.6, 800, CLAY, 'middle', spacing=0.5, label='Hours title')
+           + rows
+           + qr_box(20, 172, 34, 3.6)
+           + T(62, 177, 'Angebote & Bewertungen:', 3.8, 600, INK, label='QR line')
+           + T(62, 183, 'afrokauf.de', 4.4, 800, GREEN, label='Website')
+           + tag)
+    return doc(W, H, '', 'Opening hours door sign A5', units='mm', layers=[('Background', bg, True), ('Artwork and text', art, False)])
+
+
+def price_labels():
+    W, H = 210, 297
+    cw, ch = 105, 74.25
+    items = [('Egusi, gemahlen', 'aus Nigeria', '1 kg', '4,99 €', '1 kg = 4,99 €'),
+             ('Gari', 'aus Ghana', '2 kg', '5,49 €', '1 kg = 2,75 €'),
+             ('Palmöl', 'aus Ghana', '1 l', '3,99 €', '1 l = 3,99 €'),
+             ('Kochbananen', 'aus Kamerun', '1 kg', '2,49 €', '1 kg = 2,49 €'),
+             ('Shea-Butter', 'aus Burkina Faso', '250 g', '6,90 €', '1 kg = 27,60 €'),
+             ('Jollof-Gewürz', 'aus Nigeria', '100 g', '1,99 €', '1 kg = 19,90 €'),
+             ('Langkornreis', 'Import', '5 kg', '9,99 €', '1 kg = 2,00 €'),
+             ('Ndolé-Blätter', 'aus Kamerun', '200 g', '3,49 €', '1 kg = 17,45 €')]
+    bg = '<rect width="%d" height="%d" fill="#FFFFFF"/>' % (W, H)
+    cuts = ''.join('<line x1="%s" y1="0" x2="%s" y2="%d" stroke="#BBBBBB" stroke-width="0.2" stroke-dasharray="2 2"/>' % (fmt(cw), fmt(cw), H) for _ in [0])
+    cuts += ''.join('<line x1="0" y1="%s" x2="%d" y2="%s" stroke="#BBBBBB" stroke-width="0.2" stroke-dasharray="2 2"/>' % (fmt(ch * r), W, fmt(ch * r)) for r in (1, 2, 3))
+    art = ''
+    for i, (name, origin, size, price, unit) in enumerate(items):
+        x, y = (i % 2) * cw, (i // 2) * ch
+        m, _ = mark(x + cw - 15, y + 8, 7, 'color')
+        art += ('<g inkscape:label="Label %d">' % (i + 1)
+                + stripe(x + 7, y + 7, 60, 2, 5) + m
+                + T(x + 8, y + 22, name, 7, 800, INK, label='Label %d product' % (i + 1))
+                + T(x + 8, y + 30, origin, 4.2, 600, CLAY, label='Label %d origin' % (i + 1))
+                + T(x + 8, y + 44, size, 5, 400, MUTED, label='Label %d size' % (i + 1))
+                + '<rect x="%s" y="%s" width="44" height="22" rx="4" fill="%s"/>' % (fmt(x + cw - 52), fmt(y + 34), GOLD)
+                + T(x + cw - 30, y + 49.5, price, 11, 800, INK, 'middle', label='Label %d price' % (i + 1))
+                + T(x + 8, y + 64, 'Grundpreis: ' + unit, 3.8, 400, MUTED, label='Label %d unit price' % (i + 1)) + '</g>')
+    return doc(W, H, '', 'Price labels A4 (8 per sheet)', units='mm',
+               layers=[('Background', bg, True), ('Cut lines', cuts, True), ('Labels', art, False)])
+
+
+def shelf_badges():
+    W, H = 210, 297
+    badges = [(['NEU'], 'new in', GOLD, INK), (['FRISCH'], 'fresh', GREEN, CREAM), (['ANGEBOT'], 'special offer', CLAY, CREAM),
+              (['BELIEBT'], 'customer favourite', SAND, GREEN), (['AUS', 'GHANA'], 'from Ghana', GREEN2, CREAM), (['AUS', 'KAMERUN'], 'from Cameroon', INK, GOLD)]
+    bg = '<rect width="%d" height="%d" fill="#FFFFFF"/>' % (W, H)
+    art, cuts = '', ''
+    for i, (lines, sub, fill, txt) in enumerate(badges):
+        cx, cy = 55 + (i % 2) * 100, 58 + (i // 2) * 92
+        r = 40
+        cuts += '<circle cx="%d" cy="%d" r="%s" fill="none" stroke="#BBBBBB" stroke-width="0.2" stroke-dasharray="2 2"/>' % (cx, cy, fmt(r + 1.5))
+        size = 15 if len(lines) == 1 and len(lines[0]) <= 6 else 11
+        if len(lines) == 1:
+            words = T(cx, cy + size * 0.32, lines[0], size, 800, txt, 'middle', label='Badge %d word' % (i + 1))
+        else:
+            words = T(cx, cy - 2, '', size, 800, txt, 'middle', label='Badge %d words' % (i + 1), lines=lines, lh=1.05)
+        art += ('<g inkscape:label="Badge %d">' % (i + 1)
+                + '<circle cx="%d" cy="%d" r="%d" fill="%s"/>' % (cx, cy, r, fill)
+                + '<circle cx="%d" cy="%d" r="%d" fill="none" stroke="%s" stroke-width="0.8" stroke-opacity="0.6"/>' % (cx, cy, r - 4, txt)
+                + words + T(cx, cy + (size * 0.32 + 9 if len(lines) == 1 else 19), sub, 4.4, 600, txt, 'middle', label='Badge %d small line' % (i + 1)) + '</g>')
+    return doc(W, H, '', 'Shelf badges A4 (6 round)', units='mm',
+               layers=[('Background', bg, True), ('Cut lines', cuts, True), ('Badges', art, False)])
+
+
+def stamp_card_front():
+    W, H = 85, 55
+    m, mw = mark(0, 0, 13, 'reverse')
+    m, _ = mark(W - 7 - mw, 33, 13, 'reverse')
+    tag, tw, th = member_tag(7, 34, 4.4)
+    bg = ('<rect width="%d" height="%d" fill="%s"/>' % (W, H, GREEN) + dots(0, 0, W, H, 3, 0.2, '#FFFFFF', 0.08) + stripe(0, H - 2, W, 2, 4))
+    art = (T(7, 18, 'Dein Shopname', 6.4, 800, CREAM, label='Shop name')
+           + T(7, 24.5, 'Stempelkarte · Loyalty card', 3.2, 600, GOLD, label='Card title')
+           + m + tag)
+    return doc(W, H, '', 'Stamp card front (85 x 55 mm)', units='mm', layers=[('Background', bg, True), ('Artwork and text', art, False)])
+
+
+def stamp_card_back():
+    W, H = 85, 55
+    bg = '<rect width="%d" height="%d" fill="%s"/>' % (W, H, CREAM) + stripe(0, 0, W, 2, 4)
+    circles = ''
+    for i in range(10):
+        cx, cy = 11 + (i % 5) * 15.75, 25 + (i // 5) * 13
+        last = i == 9
+        circles += ('<circle cx="%s" cy="%s" r="5.2" fill="%s" stroke="%s" stroke-width="0.35"%s/>' % (
+            fmt(cx), fmt(cy), GOLD if last else '#FFFFFF', GOLD if last else '#9AA79F', '' if last else ' stroke-dasharray="1 0.8"')
+            + T(cx, cy + 1.1, str(i + 1), 3.1, 800 if last else 400, INK if last else MUTED, 'middle'))
+    art = (T(6, 10.5, '10 Stempel = 1 Geschenk', 4.4, 800, GREEN, label='Reward line')
+           + T(6, 15, '10 stamps = 1 gift', 2.9, 600, CLAY, label='Reward line English')
+           + '<g inkscape:label="Stamp circles">%s</g>' % circles
+           + T(6, 50, 'Name: ______________________', 2.8, 400, MUTED, label='Name line')
+           + T(79, 50, 'afrokauf.de', 2.8, 700, GREEN, 'end', label='Website'))
+    return doc(W, H, '', 'Stamp card back (85 x 55 mm)', units='mm', layers=[('Background', bg, True), ('Artwork and text', art, False)])
+
+
+def product_card():
+    W = H = 1080
+    bg = '<rect width="%d" height="%d" fill="%s"/>' % (W, H, GREEN)
+    art = (photo(0, 0, W, 850, 0, 'product photo', 34, dark=True)
+           + stripe(0, 850, W, 14, 64)
+           + T(56, 940, 'Egusi, gemahlen · 1 kg', 56, 800, CREAM, label='Product name')
+           + T(58, 995, 'Lagos Taste Afroshop · Frankfurt', 32, 400, SOFT_ON_DARK, label='Shop and city')
+           + T(58, 1045, 'Mitglied im AfroKauf Verbund', 24, 700, GOLD, label='Member line')
+           + '<g inkscape:label="Price"><circle cx="920" cy="830" r="120" fill="%s"/>' % GOLD
+           + T(920, 845, '4,99 €', 60, 800, INK, 'middle', label='Price')
+           + T(920, 890, '1 kg = 4,99 €', 22, 600, INK, 'middle', label='Unit price') + '</g>')
+    return doc(W, H, '', 'Product photo card 1080 x 1080 (WhatsApp catalogue)', layers=[('Background', bg, True), ('Artwork and text', art, False)])
+
+
+def presentation_ideas():
+    W, H = 210, 297
+    ideas = [('Clear sign outside', ['Your shop name, big and easy to read,', 'with the AfroKauf member badge.']),
+             ('Hours on the door', ['Large opening hours and a welcome', 'in several languages.']),
+             ('A price on everything', ['Price labels with the unit price', '(Grundpreis) – it is the law.']),
+             ('Shelves by category', ['Rice & grains, flours, spices, frozen,', 'beauty – each with a shelf sign.']),
+             ('A “new & fresh” corner', ['This week’s arrivals near the door,', 'marked with NEU and FRISCH badges.']),
+             ('Bright and tidy', ['Good light, a clean floor, a free', 'entrance. People decide in seconds.']),
+             ('Show where it is from', ['“Aus Ghana”, “Aus Kamerun” badges', 'help people find home products.']),
+             ('Reward regulars', ['A stamp card: 10 stamps = 1 small', 'gift. It brings people back.']),
+             ('QR code at the till', ['Link to your AfroKauf page and', 'ask happy customers for a review.']),
+             ('Same look everywhere', ['Sign, labels, cards, WhatsApp posts:', 'same colours, so people remember.'])]
+    bg = ('<rect width="%d" height="%d" fill="%s"/>' % (W, H, CREAM)
+          + '<rect width="%d" height="52" fill="%s"/>' % (W, GREEN) + dots(0, 0, W, 52, 4, 0.3, '#FFFFFF', 0.08) + stripe(0, 52, W, 3, 6))
+    cw, chh, x0, y0, gx, gy = 87, 39, 14, 64, 8, 4.5
+    cards = ''
+    for i, (title, lines) in enumerate(ideas):
+        x = x0 + (i % 2) * (cw + gx)
+        y = y0 + (i // 2) * (chh + gy)
+        cards += ('<g inkscape:label="Idea %d"><rect x="%s" y="%s" width="%s" height="%s" rx="3.5" fill="#FFFFFF" stroke="%s" stroke-width="0.3"/>' % (
+            i + 1, fmt(x), fmt(y), cw, chh, '#E6DCCB')
+            + '<circle cx="%s" cy="%s" r="5" fill="%s"/>' % (fmt(x + 10.0), fmt(y + 11.0), GOLD)
+            + T(x + 10.0, y + 12.6, str(i + 1), 4.6, 800, INK, 'middle')
+            + T(x + 19.0, y + 12.6, title, 4.8, 800, GREEN, label='Idea %d title' % (i + 1))
+            + T(x + 8.0, y + 23.5, '', 3.6, 400, INK, label='Idea %d text' % (i + 1), lines=lines, lh=1.45) + '</g>')
+    logo, lw, lh = lockup(0, 0, 8, 'color', verbund=True)
+    logo, lw, lh = lockup(14, 280, 8, 'color', verbund=True)
+    art = (T(14, 24, 'Your shop, beautifully presented', 11, 800, CREAM, label='Title')
+           + T(15, 36, 'So präsentiert sich Ihr Shop – 10 ideas for AfroKauf members', 4.6, 600, GOLD, label='Subtitle')
+           + cards + logo
+           + T(196, 287, 'Templates: Drive › AfroKauf › 10 Shop branding', 3.2, 400, MUTED, 'end', label='Footer'))
+    return doc(W, H, '', 'Shop presentation ideas', units='mm', layers=[('Background', bg, True), ('Artwork and text', art, False)])
+
+
+def build_shop_kit():
+    return [write('shop-kit/shop-sign-3x1.svg', shop_sign()),
+            write('shop-kit/door-sign-opening-hours-A5.svg', door_sign()),
+            write('shop-kit/price-labels-A4.svg', price_labels()),
+            write('shop-kit/shelf-badges-A4.svg', shelf_badges()),
+            write('shop-kit/stamp-card-front-85x55.svg', stamp_card_front()),
+            write('shop-kit/stamp-card-back-85x55.svg', stamp_card_back()),
+            write('shop-kit/product-photo-card-1080.svg', product_card()),
+            write('shop-kit/shop-presentation-ideas-A4.svg', presentation_ideas())]
+
+
 if __name__ == '__main__':
-    files = build_logos() + build_member() + build_templates() + build_social() + [brand_guide()]
+    files = build_logos() + build_member() + build_templates() + build_social() + build_shop_kit() + [brand_guide()]
     for f in files:
         print(f.relative_to(ROOT))

@@ -242,6 +242,7 @@ table(['Folder', 'What is inside', 'When you use it'], [
     ['07 Brand guide', 'One page with colours, font and logo rules', 'Send it to printers and helpers'],
     ['08 Fonts', 'The brand font Bricolage Grotesque (free)', 'Install it once (section 2)'],
     ['09 Website', 'The Blogger theme file and its instructions', 'Setting up the website (section 7)'],
+    ['10 Shop branding', 'Shop sign, door sign, price labels, shelf badges, stamp card, product photo card, presentation ideas', 'For every member shop (section 14)'],
 ], widths=[3.5, 7, 6])
 image(IMG / 'overview.png', 16, 'The logo family and templates at a glance.')
 
@@ -416,14 +417,40 @@ h2('7.2 Add a shop')
 steps(['New post. Title = the shop’s name.',
        'Switch to HTML view and paste the shop block from the website README. Fill in address, opening hours, phone, WhatsApp and the products the shop sells.',
        'Go back to the normal view: write 2–3 sentences about the shop and add 2–5 photos.',
-       'Labels: Shop, the category (for example Food) and the city (for example Frankfurt). Add Featured for Premium members.',
+       'Labels: Shop, the category (for example Food), the city (for example Frankfurt) and the state (for example Hessen). Add Featured for Premium members.',
        'Publish and check the page on your phone.'])
 note('The product list is what customers search. Write the words people really type: egusi, gari, plantain, braiding hair, also German names.')
 h2('7.3 Add a seminar or event')
 para('A post with the label Events and the event block (date, time, place, price, registration link). It appears on the homepage automatically and disappears after the date.')
 h2('7.4 Things you change in Layout')
 para('Menu, homepage text, categories, cities, plans and prices, footer and the German words for buttons are all gadgets in Blogger’s Layout page. Click the pencil icon on a gadget to edit it.')
-h2('7.5 Before going live')
+h2('7.5 Everything you can change in Layout')
+para('Open Blogger → Layout. Every box is a gadget: click its pencil icon, change the text or links, click Save. The changes are live straight away.')
+table(['Gadget', 'What it changes'], [
+    ['Announcement bar', 'The thin bar above the header (news, a seminar date). Remove the gadget to hide the bar.'],
+    ['Site name (Header)', 'Blog name and tagline. You can also upload a logo picture here instead of the text.'],
+    ['Menu and “List your shop” button', 'The links in the header.'],
+    ['African shops across Germany', 'The homepage title line and intro text.'],
+    ['How it works', 'The three steps for customers on the homepage.'],
+    ['Browse by category', 'The category tiles. Each link is /search/label/<Category>.'],
+    ['Featured shops', 'The intro text. The shops shown are the posts with the label Featured.'],
+    ['Shops by city', 'The city tiles. They also fill the “Where?” list in the search. Add a city when its first shop joins.'],
+    ['Shops by state', 'All 16 Bundesländer, also in the “Where?” list.'],
+    ['Seminars & events', 'The intro text. The events shown are the posts with the label Events.'],
+    ['Own an African shop?', 'Plans and prices for shop owners.'],
+    ['Partners and supporters', 'Text and partner logos.'],
+    ['Directory settings', 'Label names and page addresses the site uses. Add “date_language: de-DE” for German dates.'],
+    ['Site words', 'Translate any button or message, one per line, for example “Near me: In meiner Nähe”.'],
+    ['Footer: About us, For shop owners, Follow us, Legal', 'The four footer columns.'],
+    ['Favicon (top of the Layout page)', 'The small icon in the browser tab (section 7.6).'],
+], widths=[5.5, 10.5])
+note('Never delete the gadget called “Blog posts” (it shows the shops) or “Directory settings”.')
+h2('7.6 Favicon (the icon in the browser tab)')
+steps(['Download favicon.ico from 03 Logo → Favicons (website tab icon).',
+       'Blogger → Layout → Favicon (top of the page) → Edit.',
+       'Upload favicon.ico (if Blogger asks for a picture, use the 32×32 PNG) and click Save.',
+       'Open your site in a new tab: the green bag icon appears next to the page title. Browsers sometimes take a day to show a new favicon.'])
+h2('7.7 Before going live')
 bullets(['Pages: List your shop, Contact, Impressum, Datenschutz, Terms for shop owners.',
          'Connect your own domain (afrokauf.de) in Settings → Custom domain.',
          'Test: homepage, a shop page, a city page, a search, the phone menu, a test comment.'])
@@ -442,7 +469,8 @@ bullets(['Shop name, address, phone, WhatsApp number', 'Opening hours for every 
          'For Premium: billing name, address and email'])
 h2('8.3 Within 48 hours')
 steps(['Create the shop page (section 7.2).', 'Make the member lockup (5.1) and the window sticker (5.5).',
-       'Send both on WhatsApp with the link to their page.', 'Add the owner to the members’ WhatsApp community.'])
+       'Send both on WhatsApp with the link to their page.', 'Add the owner to the members’ WhatsApp community.',
+       'Offer the shop branding kit (section 14): sign, door sign, price labels, stamp cards.'])
 h2('8.4 Keep the information fresh')
 para('Every three months, send each shop a short message: “Are your opening hours, phone and products still right?” Wrong opening hours lose trust fast.')
 
@@ -516,7 +544,29 @@ bullets([('Business registration: ', 'register a trade (Gewerbeanmeldung) at you
          ('Brand protection: ', 'consider registering “AfroKauf” as a trademark at the DPMA, and keep the domain afrokauf.de.'),
          ('Music: ', 'use only free or licensed music in videos and lives.')])
 
-h1('14. Words used in this guide')
+h1('14. Shop branding kit for member shops')
+para('Folder 10 Shop branding has a ready design for everything a shop shows its customers. Each folder holds the picture (.png), '
+     'the Inkscape project (.svg) and a print file (.pdf). Change the shop’s name, phone and prices in Inkscape (section 4), then print or post.')
+image(IMG / 'shop-kit.png', 16, 'Shop sign, door sign, price labels, shelf badges, stamp card, product photo card and the ideas page.')
+table(['Design', 'Size', 'How the shop uses it'], [
+    ['Shop sign', '3 : 1 (300 × 100 mm, printers scale it)', 'Over the door or in the window. Change the name, what they sell and the phone number.'],
+    ['Door sign: opening hours', 'A5', 'On the door. Change the name, the hours for each day, and add a QR code to the shop’s page.'],
+    ['Price labels', 'A4 sheet, 8 labels', 'On shelves. Product, origin, price and the unit price (Grundpreis).'],
+    ['Shelf badges', 'A4 sheet, 6 round badges', 'NEU, FRISCH, ANGEBOT, BELIEBT and “Aus …” badges for shelves and the new-arrivals corner.'],
+    ['Stamp card (front and back)', '85 × 55 mm (business card)', 'Loyalty card: 10 stamps = 1 small gift. Print front and back.'],
+    ['Product photo card', '1080 × 1080 px', 'For the WhatsApp Business catalogue, Status and Instagram: product photo, price, shop.'],
+    ['Shop presentation ideas', 'A4', 'Ten ideas to give every member shop when they join.'],
+], widths=[4, 4.5, 7.5])
+h2('14.1 Prices and the law')
+para('In Germany, shops must show the unit price (Grundpreis: the price per kg, per litre or per 100 g) next to the selling price '
+     'for goods sold by weight or volume. That is why every price label has a Grundpreis line. Ask the IHK if you are unsure.')
+h2('14.2 Printing tips')
+bullets(['Online printers (for example for signs, stickers and cards) want PDF files: use the (print).pdf in each folder, or Save a Copy as PDF from Inkscape.',
+         'Signs: tell the printer the real size (for example 150 × 50 cm). The design scales without losing quality.',
+         'Price labels and badges: print on thick paper or sticker paper and cut along the dashed lines.',
+         'Stamp cards: order as business cards, printed on both sides.'])
+
+h1('15. Words used in this guide')
 table(['Word', 'Meaning'], [
     ['SVG', 'The editable Inkscape file of a design'], ['PNG', 'A finished picture, ready to post or send'],
     ['PDF', 'A finished file for printing'], ['Layer', 'A sheet inside a design; some are locked so you don’t move them by accident'],

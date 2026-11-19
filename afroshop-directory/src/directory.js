@@ -116,6 +116,29 @@
     return out;
   }
   var CITIES = linksIn('.js-cities');
+  var STATES = linksIn('.js-states');
+  // Big cities -> federal state, so a shop is found under its state even without a data-state
+  var CITY_STATE = {
+    'berlin': 'Berlin', 'hamburg': 'Hamburg', 'bremen': 'Bremen', 'bremerhaven': 'Bremen',
+    'munchen': 'Bayern', 'nurnberg': 'Bayern', 'augsburg': 'Bayern', 'regensburg': 'Bayern', 'wurzburg': 'Bayern', 'ingolstadt': 'Bayern', 'erlangen': 'Bayern', 'furth': 'Bayern',
+    'stuttgart': 'Baden-Württemberg', 'mannheim': 'Baden-Württemberg', 'karlsruhe': 'Baden-Württemberg', 'freiburg': 'Baden-Württemberg', 'heidelberg': 'Baden-Württemberg', 'ulm': 'Baden-Württemberg', 'heilbronn': 'Baden-Württemberg', 'pforzheim': 'Baden-Württemberg', 'reutlingen': 'Baden-Württemberg',
+    'frankfurt': 'Hessen', 'frankfurt am main': 'Hessen', 'wiesbaden': 'Hessen', 'kassel': 'Hessen', 'darmstadt': 'Hessen', 'offenbach': 'Hessen', 'offenbach am main': 'Hessen', 'hanau': 'Hessen', 'giessen': 'Hessen', 'marburg': 'Hessen', 'fulda': 'Hessen',
+    'koln': 'Nordrhein-Westfalen', 'dusseldorf': 'Nordrhein-Westfalen', 'dortmund': 'Nordrhein-Westfalen', 'essen': 'Nordrhein-Westfalen', 'duisburg': 'Nordrhein-Westfalen', 'bochum': 'Nordrhein-Westfalen', 'wuppertal': 'Nordrhein-Westfalen', 'bielefeld': 'Nordrhein-Westfalen', 'bonn': 'Nordrhein-Westfalen', 'munster': 'Nordrhein-Westfalen', 'aachen': 'Nordrhein-Westfalen', 'gelsenkirchen': 'Nordrhein-Westfalen', 'monchengladbach': 'Nordrhein-Westfalen', 'krefeld': 'Nordrhein-Westfalen', 'oberhausen': 'Nordrhein-Westfalen', 'hagen': 'Nordrhein-Westfalen', 'hamm': 'Nordrhein-Westfalen', 'leverkusen': 'Nordrhein-Westfalen', 'solingen': 'Nordrhein-Westfalen', 'paderborn': 'Nordrhein-Westfalen', 'siegen': 'Nordrhein-Westfalen',
+    'hannover': 'Niedersachsen', 'braunschweig': 'Niedersachsen', 'oldenburg': 'Niedersachsen', 'osnabruck': 'Niedersachsen', 'wolfsburg': 'Niedersachsen', 'gottingen': 'Niedersachsen', 'hildesheim': 'Niedersachsen', 'salzgitter': 'Niedersachsen',
+    'leipzig': 'Sachsen', 'dresden': 'Sachsen', 'chemnitz': 'Sachsen', 'zwickau': 'Sachsen',
+    'halle': 'Sachsen-Anhalt', 'halle (saale)': 'Sachsen-Anhalt', 'magdeburg': 'Sachsen-Anhalt', 'dessau': 'Sachsen-Anhalt',
+    'erfurt': 'Thüringen', 'jena': 'Thüringen', 'gera': 'Thüringen', 'weimar': 'Thüringen',
+    'potsdam': 'Brandenburg', 'cottbus': 'Brandenburg', 'frankfurt (oder)': 'Brandenburg',
+    'rostock': 'Mecklenburg-Vorpommern', 'schwerin': 'Mecklenburg-Vorpommern', 'greifswald': 'Mecklenburg-Vorpommern',
+    'kiel': 'Schleswig-Holstein', 'lubeck': 'Schleswig-Holstein', 'flensburg': 'Schleswig-Holstein', 'neumunster': 'Schleswig-Holstein',
+    'mainz': 'Rheinland-Pfalz', 'ludwigshafen': 'Rheinland-Pfalz', 'koblenz': 'Rheinland-Pfalz', 'trier': 'Rheinland-Pfalz', 'kaiserslautern': 'Rheinland-Pfalz',
+    'saarbrucken': 'Saarland'
+  };
+  function stateOf(info) {
+    if (!info) return '';
+    if (info.state) return info.state;
+    return CITY_STATE[norm(info.city)] || CITY_STATE[norm(info.city).split(' ')[0]] || '';
+  }
   var CATEGORIES = linksIn('.js-categories');
   function findIn(arr, label) {
     var n = norm(label);
@@ -136,6 +159,7 @@
       return {
         type: 'shop',
         city: b.getAttribute('data-city') || '',
+        state: b.getAttribute('data-state') || '',
         address: b.getAttribute('data-address') || '',
         lat: parseFloat(b.getAttribute('data-lat')) || 0,
         lng: parseFloat(b.getAttribute('data-lng')) || 0,
@@ -506,14 +530,50 @@
     var clear = doc.getElementById('finder-clear');
     var here = null;
 
-    CITIES.forEach(function (c) {
-      var o = el('option', null, c.name);
-      o.value = c.label;
-      city.appendChild(o);
-    });
-    // On a city page, preselect that city
+    // Finder words can be translated in the Site words gadget like every other word
+    var wordOf = function (sel, key, attr) {
+      var n = form.querySelector(sel) || doc.querySelector(sel);
+      if (!n || !WORDS[key]) return;
+      if (attr) n.setAttribute(attr, WORDS[key]); else n.textContent = WORDS[key];
+    };
+    wordOf('label[for=finder-q]', 'What are you looking for?');
+    wordOf('label[for=finder-city]', 'Where?');
+    wordOf('#finder-q', 'Search example', 'placeholder');
+    wordOf('#finder-city option', 'All of Germany');
+    wordOf('#finder-near span', 'Near me');
+    wordOf('.finder-go span', 'Search');
+    wordOf('#finder-clear', 'Clear search');
+
+    function addGroup(label, items, prefix) {
+      if (!items.length) return;
+      var g = doc.createElement('optgroup');
+      g.label = t(label);
+      items.forEach(function (c) {
+        var o = el('option', null, c.name);
+        o.value = prefix + c.label;
+        g.appendChild(o);
+      });
+      city.appendChild(g);
+    }
+    addGroup('Cities', CITIES, 'c|');
+    addGroup('States', STATES, 's|');
+    function where() {
+      var v = city.value || '';
+      return v ? { kind: v.charAt(0), label: v.slice(2) } : null;
+    }
+    function whereName(w) {
+      var hit = findIn(w.kind === 's' ? STATES : CITIES, w.label);
+      return hit ? hit.name : w.label;
+    }
+    function selectWhere(kind, label) {
+      var list = kind === 's' ? STATES : CITIES;
+      var hit = findIn(list, label);
+      if (hit) { city.value = kind + '|' + hit.label; return true; }
+      return false;
+    }
+    // On a city or state page, preselect it
     var pageLabel = labelFromHref(location.pathname);
-    if (pageLabel && findIn(CITIES, pageLabel)) city.value = findIn(CITIES, pageLabel).label;
+    if (pageLabel) selectWhere('c', pageLabel) || selectWhere('s', pageLabel);
 
     function setNear(on) {
       near.classList.toggle('is-on', !!on);
@@ -553,7 +613,8 @@
     function writeHash() {
       var parts = [];
       if (q.value.trim()) parts.push('q=' + encodeURIComponent(q.value.trim()));
-      if (city.value) parts.push('city=' + encodeURIComponent(city.value));
+      var w0 = where();
+      if (w0) parts.push((w0.kind === 's' ? 'state=' : 'city=') + encodeURIComponent(w0.label));
       var hash = parts.length ? '#find?' + parts.join('&') : '';
       if (history.replaceState) history.replaceState(null, '', location.pathname + location.search + hash);
     }
@@ -567,7 +628,8 @@
       show(t('Searching...'));
       listEl.textContent = '';
       title.textContent = text ? t('Shops selling') + ' “' + text + '”' : t('Shops');
-      if (city.value) title.textContent += ' ' + t('in') + ' ' + (findIn(CITIES, city.value) || { name: city.value }).name;
+      var w1 = where();
+      if (w1) title.textContent += ' ' + t('in') + ' ' + whereName(w1);
       else if (here) title.textContent += ' ' + t('near you');
       if (scroll) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -584,9 +646,11 @@
             else { score = -1; break; } // every word must match somewhere
           }
           if (score < 0) return;
-          if (city.value) {
-            var inCity = sameCity(s.info.city, city.value) || s.labels.some(function (l) { return norm(l) === norm(city.value); });
-            if (!inCity) return;
+          var w = where();
+          if (w) {
+            var byLabel = s.labels.some(function (l) { return norm(l) === norm(w.label); });
+            var inside = w.kind === 's' ? (byLabel || norm(stateOf(s.info)) === norm(w.label)) : (byLabel || sameCity(s.info.city, w.label));
+            if (!inside) return;
           }
           var dist = null;
           if (here && s.info.lat && s.info.lng) dist = km(here, s.info);
@@ -638,7 +702,8 @@
         var v = '';
         try { v = decodeURIComponent((kv[1] || '').replace(/\+/g, ' ')); } catch (e) { v = kv[1] || ''; }
         if (kv[0] === 'q') q.value = v;
-        if (kv[0] === 'city') city.value = v;
+        if (kv[0] === 'city') { if (!selectWhere('c', v)) selectWhere('s', v); }
+        if (kv[0] === 'state') selectWhere('s', v);
       });
       run(true);
     }
@@ -923,7 +988,7 @@
     var h = doc.querySelector('.js-list-title');
     if (!h) return;
     var label = labelFromHref(location.pathname);
-    var city = label && findIn(CITIES, label);
+    var city = label && (findIn(CITIES, label) || findIn(STATES, label));
     if (city) h.textContent = t('African shops in') + ' ' + city.name;
     var cat = label && findIn(CATEGORIES, label);
     if (cat) h.textContent = cat.name;

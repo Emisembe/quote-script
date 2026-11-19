@@ -32,6 +32,7 @@ A shop is a normal post.
 ```html
 <div class="shop-info"
   data-city="Frankfurt am Main"
+  data-state="Hessen"
   data-address="Musterstraße 12, 60311 Frankfurt am Main"
   data-lat="50.1109" data-lng="8.6821"
   data-phone="+49 69 1234567"
@@ -46,16 +47,23 @@ Musterstraße 12, 60311 Frankfurt · Mo-Fr 10-20, Sa 9-18 · Tel. 069 1234567
 ```
 
 3. Below it, in the normal editor: a short description and 2–5 photos (the first photo is the card picture).
-4. **Labels**: `Shop`, the **category** (`Food`, `Hair & Beauty`, `Fashion`, `Restaurant`, `Services`, `Wholesale`)
-   and the **city** exactly as in the "Shops by city" gadget (`Frankfurt`). Add `Featured` for paying members.
+4. **Labels**: `Shop`, the **category** (`Food`, `Hair & Beauty`, `Fashion`, `Restaurant`, `Services`, `Wholesale`),
+   the **city** exactly as in the "Shops by city" gadget (`Frankfurt`) and the **state** (Bundesland) exactly as in the
+   "Shops by state" gadget (`Hessen`). Add `Featured` for paying members.
 
 | Field | How to fill it |
 |---|---|
 | `data-lat` / `data-lng` | On Google Maps, right-click the shop → the first line is "lat, lng". Needed for "Near me". |
 | `data-hours` | Days `Mo Tu We Th Fr Sa Su` (or German `Mo Di Mi Do Fr Sa So`), ranges with `-`, days separated by `;`. Two shifts: `Mo-Fr 10:00-14:00, 15:00-19:00`. `So closed` is allowed. Times are German time. |
 | `data-sells` | Comma-separated. **This is what search finds**, so use the words customers type, in English, German or local names (`egusi, Melonenkerne`). |
+| `data-state` | The Bundesland, e.g. `Hessen`, `Bayern`, `Nordrhein-Westfalen`. For big cities the site works it out itself, but fill it in for small towns. |
 | `data-whatsapp` | Any format; `0151…` is turned into `+49 151…`. Leave empty if the shop has no WhatsApp. |
 | text inside the block | Shown only if the visitor's browser has no JavaScript. Keep it short. |
+
+## Favicon (the small icon in the browser tab)
+
+Layout → **Favicon** (at the top of the Layout page) → Edit → upload `favicon.ico`
+from Drive › AfroKauf › 03 Logo › Favicons. If Blogger asks for a picture instead, use the 32 × 32 PNG.
 
 ## Add a seminar or event
 
@@ -73,13 +81,19 @@ Upcoming events appear on the homepage automatically, nearest date first. Past e
 
 | Gadget | What it does |
 |---|---|
+| Announcement bar | The thin bar above the header. Change the text for news; remove the gadget to hide the bar |
+| Site name (Header) | Blog title and tagline, or upload a logo image instead of the text |
 | Menu, "List your shop" button | Header links |
 | African shops across Germany | Homepage intro text |
 | Browse by category | Category tiles. **Also feeds the search's category names.** Each link is `/search/label/<Label>` |
 | Featured shops | Intro text; shows posts with the `Featured` label |
+| How it works | Three steps for customers on the homepage |
 | Shops by city | City tiles. **Also fills the "Where?" list in the search.** Add a city here when its first shop joins |
+| Shops by state | All 16 Bundesländer. Also in the "Where?" list. A link is `/search/label/<State>` |
 | Seminars & events | Intro text; shows upcoming `Events` posts |
 | Own an African shop? | The plans and prices (plain HTML; keep the `plan` classes) |
+| Partners and supporters | Text and partner logos (`<ul><li><img src="..."></li></ul>`) |
+| Follow us (footer) | Links to your social media pages |
 | Directory settings | Label names and page addresses the script uses. Add `date_language: de-DE` for German dates |
 | Site words | Translate any button or message, one per line: `Open now: Jetzt geöffnet` |
 | Footer gadgets | About, owner links, legal links |
