@@ -22,6 +22,25 @@ The **logo files don't need the font**: their letters are shapes. The **template
 | `templates/` | window sticker A6, weekly offers flyer A4, seminar poster A4 | Print |
 | `afrokauf-brand-guide.svg` | one page | Colours, font and rules, to send to printers and helpers |
 
+## Social media (`social/`, ready PNGs in `exports/social/`)
+
+| Platform | Profile picture | Header / cover |
+|---|---|---|
+| LinkedIn company page | `profile-1080-green` | `linkedin-company-cover-4200x700` (Verbund, for partners and shop owners) |
+| LinkedIn personal profile | your own photo | `linkedin-personal-banner-1584x396` |
+| YouTube | `profile-1080-green` | `youtube-banner-2560x1440` + `youtube-watermark-150` (Customisation → Branding) |
+| Facebook page | `profile-1080-green` | `facebook-cover-1640x624` |
+| X | `profile-1080-green` | `x-header-1500x500` |
+| Instagram, WhatsApp Business, WhatsApp channel, TikTok | `profile-1080-green` (shown as a circle) | no header |
+
+- One profile picture for every platform: the logo sits inside the circle that every app cuts out.
+  Use `profile-1080-cream` if you want a light look.
+- Every header has a hidden **Safe zone guide** layer. Switch it on (eye icon in the Layers panel) to see
+  the part that every phone, tablet and TV shows, and where your profile photo covers the header. Keep
+  text and logo inside the dashed box. Switch the guide off again before you export.
+- Platforms change their sizes from time to time. If an upload is cropped strangely, check the platform's help page
+  for the current size and move the content inside its safe zone.
+
 Which colour version: on cream or white use **colour**; on green or photos use **reverse**;
 for one-colour printing (stamps, receipts, engraving) use **mono-dark** or **mono-white**.
 

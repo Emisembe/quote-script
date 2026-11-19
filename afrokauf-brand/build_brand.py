@@ -182,9 +182,12 @@ def doc(w, h, body, title, units='px', layers=None):
            '<title>%s</title>' % escape(title),
            '<sodipodi:namedview id="namedview" pagecolor="#ffffff" bordercolor="#999999" inkscape:document-units="%s" showgrid="false"/>' % units]
     if layers:
-        for name, content, locked in layers:
-            out.append('<g inkscape:groupmode="layer" inkscape:label="%s" id="%s"%s>%s</g>' % (
-                escape(name), uid('layer'), ' sodipodi:insensitive="true"' if locked else '', content))
+        for layer in layers:
+            name, content, locked = layer[:3]
+            hidden = len(layer) > 3 and layer[3]
+            out.append('<g inkscape:groupmode="layer" inkscape:label="%s" id="%s"%s%s>%s</g>' % (
+                escape(name), uid('layer'), ' sodipodi:insensitive="true"' if locked else '',
+                ' style="display:none"' if hidden else '', content))
     else:
         out.append(body)
     out.append('</svg>')
@@ -469,6 +472,83 @@ def build_templates():
             write('templates/seminar-poster-A4.svg', seminar_poster())]
 
 
+# ------------------------------------------------------------------ social media profiles and headers
+# Sizes as recommended by the platforms in 2026. Each header has a hidden "Safe zone" layer:
+# show it in Inkscape (Layers panel, eye icon) to see what every phone and computer shows.
+def safe_zone(x, y, w, h, note, size):
+    return ('<rect x="%s" y="%s" width="%s" height="%s" fill="none" stroke="#FF2D55" stroke-width="%s" stroke-dasharray="%s"/>'
+            % (fmt(x), fmt(y), fmt(w), fmt(h), fmt(size * 0.12), fmt(size * 0.6))
+            + T(x + size * 0.4, y + size * 1.2, note, size, 700, '#FF2D55'))
+
+
+def header(W, H, safe, audience, title, line, avatar=None):
+    """safe = (x, y, w, h) of the area every device shows. avatar = (cx, cy, r) where the profile photo overlaps."""
+    sx, sy, sw, sh = safe
+    verbund = audience == 'owners'
+    size = sh * 0.3
+    while True:  # shrink until logo + message fit the safe zone, then centre them
+        g, lw, lh = lockup(0, 0, size, 'reverse', verbund=verbund)
+        gap = size * 0.9
+        text_w = max(XB.paths(title, size * 0.62)[1], RG.paths(line, size * 0.36)[1])
+        total = lw + gap + text_w
+        if total <= sw * 0.92 or size < 10:
+            break
+        size *= 0.94
+    lx = sx + (sw - total) / 2
+    g, lw, lh = lockup(lx, sy + sh / 2 - lh / 2 - (size * 0.18 if verbund else 0), size, 'reverse', verbund=verbund)
+    tx = lx + lw + gap
+    bg = ('<rect width="%d" height="%d" fill="%s"/>' % (W, H, GREEN) + dots(0, 0, W, H, H / 18.0, H / 260.0, '#FFFFFF', 0.08)
+          + '<circle cx="%s" cy="%s" r="%s" fill="%s" fill-opacity="0.16"/>' % (fmt(W * 0.86), fmt(H * 0.1), fmt(H * 0.75), GOLD)
+          + stripe(0, H - H * 0.04, W, H * 0.04, H * 0.12))
+    divider = '<rect x="%s" y="%s" width="%s" height="%s" fill="%s"/>' % (fmt(tx - gap / 2), fmt(sy + sh * 0.22), fmt(max(2.0, H / 300.0)), fmt(sh * 0.56), GOLD)
+    art = (g + divider
+           + T(tx, sy + sh * 0.47, title, size * 0.62, 800, CREAM, label='Header title')
+           + T(tx, sy + sh * 0.47 + size * 0.62, line, size * 0.36, 400, '#CFE0D8', label='Header line'))
+    guide = safe_zone(sx, sy, sw, sh, 'SAFE ZONE – keep text and logo inside', H / 40.0)
+    if avatar:
+        cx, cy, r = avatar
+        guide += ('<circle cx="%s" cy="%s" r="%s" fill="#FF2D55" fill-opacity="0.25" stroke="#FF2D55" stroke-width="%s"/>' % (fmt(cx), fmt(cy), fmt(r), fmt(H / 300.0))
+                  + T(cx, cy, 'Profile photo', H / 30.0, 700, '#FF2D55', 'middle'))
+    return bg, art, guide
+
+
+def build_social():
+    files = []
+    # Profile picture: one square file for every platform. The mark sits inside the circle crop.
+    for name, bg, variant in [('profile-1080-green', GREEN, 'reverse'), ('profile-1080-cream', CREAM, 'color')]:
+        m, mw = mark(0, 0, 520, variant)
+        m, _ = mark(540 - mw / 2, 540 - 260 - 14, 520, variant)
+        guide = '<circle cx="540" cy="540" r="540" fill="none" stroke="#FF2D55" stroke-width="4" stroke-dasharray="20"/>'
+        files.append(write('social/%s.svg' % name, doc(1080, 1080, '', 'Profile picture (all platforms)', layers=[
+            ('Background', '<rect width="1080" height="1080" fill="%s"/>' % bg, True), ('Logo', m, False),
+            ('Circle crop guide (hidden)', guide, True, True)])))
+
+    specs = [
+        # file, W, H, safe zone, audience, title, line, avatar overlap
+        ('linkedin-company-cover-4200x700', 4200, 700, (700, 110, 3200, 480), 'owners',
+         'Gemeinsam stark', 'Der Verbund für Afroshops in Deutschland', None),
+        ('linkedin-personal-banner-1584x396', 1584, 396, (520, 40, 1010, 300), 'owners',
+         'Gemeinsam stark', 'Der Verbund für Afroshops in Deutschland', (260, 396, 200)),
+        ('youtube-banner-2560x1440', 2560, 1440, (507, 508, 1546, 423), 'customers',
+         'Afroshops in deiner Nähe', 'Live jeden Freitag · afrokauf.de', None),
+        ('facebook-cover-1640x624', 1640, 624, (250, 70, 1140, 420), 'customers',
+         'Afroshops in deiner Nähe', 'Angebote, Live-Videos und Seminare · afrokauf.de', None),
+        ('x-header-1500x500', 1500, 500, (360, 60, 1080, 300), 'customers',
+         'Afroshops in deiner Nähe', 'Angebote und Live-Videos · afrokauf.de', (150, 500, 140)),
+    ]
+    for name, W, H, safe, aud, title, line, avatar in specs:
+        bg, art, guide = header(W, H, safe, aud, title, line, avatar)
+        files.append(write('social/%s.svg' % name, doc(W, H, '', name, layers=[
+            ('Background', bg, True), ('Logo and text', art, False), ('Safe zone guide (hidden)', guide, True, True)])))
+
+    # YouTube watermark (shown on every video), 150 x 150, transparent
+    m, mw = mark(0, 0, 112, 'reverse')
+    m, _ = mark(75 - mw / 2, 75 - 56 - 2, 112, 'reverse')
+    files.append(write('social/youtube-watermark-150.svg', doc(150, 150,
+                 '<circle inkscape:label="Background" cx="75" cy="75" r="75" fill="%s" fill-opacity="0.9"/>%s' % (GREEN, m), 'YouTube watermark')))
+    return files
+
+
 # ------------------------------------------------------------------ brand guide (one page)
 def brand_guide():
     W, H = 1600, 2000
@@ -507,6 +587,6 @@ def brand_guide():
 
 
 if __name__ == '__main__':
-    files = build_logos() + build_member() + build_templates() + [brand_guide()]
+    files = build_logos() + build_member() + build_templates() + build_social() + [brand_guide()]
     for f in files:
         print(f.relative_to(ROOT))
