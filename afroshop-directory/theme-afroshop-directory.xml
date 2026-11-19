@@ -785,6 +785,9 @@ body#layout .announce { display: block; }
 body#layout .site-header { position: static; }
 body#layout .nav-drawer { display: block; }
 body#layout .nav-toggle, body#layout .finder-band, body#layout .finder-results { display: none; }
+
+/* "Powered by Blogger" is not shown. The Attribution gadget stays in the theme so Blogger does not add it back. */
+body .footer-credit { display: none; }
 ]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
 <style type='text/css'>.home-only { display: block; } .finder-band { margin-top: -64px; padding-top: 0; }</style>
@@ -1803,7 +1806,7 @@ body#layout .nav-toggle, body#layout .finder-band, body#layout .finder-results {
       <b:widget-settings>
         <b:widget-setting name='content'><![CDATA[<p>Get found by customers who are already looking for what you sell. Choose a plan:</p>
 <div class="plans">
-<div class="plan"><h3>Basic</h3><p class="plan-price">Free</p><ul><li>Shop page with address, hours and phone</li><li>Shown in search and on the map</li><li>WhatsApp button</li></ul><a href="/p/list-your-shop.html">Add my shop</a></div>
+<div class="plan"><h3>Basic</h3><p class="plan-price">Free</p><ul><li>Shop page with address, hours and phone</li><li>Shown in search and in “Near me”</li><li>WhatsApp button</li></ul><a href="/p/list-your-shop.html">Add my shop</a></div>
 <div class="plan plan-highlight"><h3>Premium</h3><p class="plan-price">19 &euro; / month</p><ul><li>Everything in Basic</li><li>Top of search results in your city</li><li>Photos, product list and weekly offers</li><li>Featured on the homepage</li></ul><a href="/p/list-your-shop.html">Go Premium</a></div>
 <div class="plan"><h3>Seminars</h3><p class="plan-price">From 29 &euro;</p><ul><li>Marketing, food safety and import rules</li><li>Meet other shop owners and suppliers</li><li>Members get discounts</li></ul><a href="/search/label/Events">See dates</a></div>
 </div>]]></b:widget-setting>
@@ -1968,12 +1971,6 @@ contact_page: /p/contact.html]]></b:widget-setting>
             <b:widget-setting name='copyright'/>
           </b:widget-settings>
           <b:includable id='main'>
-  <div class='widget-content' style='text-align: center;'>
-    <b:if cond='data:attribution != &quot;&quot;'>
-     <data:attribution/>
-    </b:if>
-  </div>
-
   <b:include name='quickedit'/>
 </b:includable>
         </b:widget>

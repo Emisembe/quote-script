@@ -785,3 +785,6 @@ body#layout .announce { display: block; }
 body#layout .site-header { position: static; }
 body#layout .nav-drawer { display: block; }
 body#layout .nav-toggle, body#layout .finder-band, body#layout .finder-results { display: none; }
+
+/* "Powered by Blogger" is not shown. The Attribution gadget stays in the theme so Blogger does not add it back. */
+body .footer-credit { display: none; }

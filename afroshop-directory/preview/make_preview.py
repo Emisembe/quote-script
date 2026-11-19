@@ -174,7 +174,7 @@ def settings():
 def footer():
     return '''<footer class="site-footer"><div class="container"><div class="footer-grid">
 <div class="footer-col section">%s</div><div class="footer-col section">%s</div><div class="footer-col section">%s</div><div class="footer-col section">%s</div></div>
-<div class="footer-bottom"><p class="copyright">&#169; <span class="js-year"></span> AfroKauf</p><p>Powered by Blogger</p></div></div></footer>''' % (
+<div class="footer-bottom"><p class="copyright">&#169; <span class="js-year"></span> AfroKauf</p></div></div></footer>''' % (
         html_widget('HTML9'), html_widget('HTML10'), html_widget('HTML16'), html_widget('HTML11'))
 
 
