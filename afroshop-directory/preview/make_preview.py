@@ -146,6 +146,12 @@ def block_tiles(wid, cls, js):
         wid, cls, html.escape(title), js, content)
 
 
+def slides_block():
+    _, content = gadget('HTML17')
+    return ('<div class="widget HTML" id="HTML17"><div class="block block-slides"><div class="container">'
+            '<div class="widget-content slideshow js-slides" role="region" aria-roledescription="carousel" aria-label="Highlights">%s</div></div></div></div>') % content
+
+
 def block_feed(wid, kind, mx, more, extra=''):
     title, content = gadget(wid)
     return ('<div class="widget HTML" id="%s"><div class="block block-feed %s" data-feed="%s" data-max="%d"><div class="container">'
@@ -210,8 +216,8 @@ def hero():
 
 
 def home():
-    top = '<div class="home-only home-blocks"><div class="home-section section">%s%s%s%s%s</div></div>' % (
-        block_tiles('HTML14', 'block-howto', ''), block_tiles('HTML4', 'block-categories', 'js-categories'), block_feed('HTML5', 'featured', 6, 'See all'),
+    top = '<div class="home-only home-blocks"><div class="home-section section">%s%s%s%s%s%s</div></div>' % (
+        slides_block(), block_tiles('HTML14', 'block-howto', ''), block_tiles('HTML4', 'block-categories', 'js-categories'), block_feed('HTML5', 'featured', 6, 'See all'),
         block_tiles('HTML6', 'block-cities', 'js-cities'), block_tiles('HTML12', 'block-states', 'js-states'))
     newest = SHOPS[3:9]
     lst = '<div class="page-main"><div class="container"><div class="main section"><div class="widget Blog" id="Blog1"><div class="block-head list-head"><h2 class="block-title">Newest listings</h2></div><div class="card-grid">%s</div><nav aria-label="Pages" class="pager"><a class="btn btn-primary older" href="#">More &#8594;</a></nav></div></div></div></div>' % ''.join(card(s, shop_block(s)) for s in newest)

@@ -169,6 +169,26 @@ Page not found - <data:blog.title/>
 <!-- ================= Homepage blocks (top) ================= -->
 <div class='home-only home-blocks'>
   <b:section class='home-section' id='home-top' showaddelement='yes'>
+    <b:widget id='HTML17' locked='false' title='' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<ul class="slides">
+<li data-tone="green"><h3>All African shops in Germany, in one place</h3><p>Search by product, city or state, and see who is open right now.</p><a href="/#find">Find a shop</a></li>
+<li data-tone="gold"><h3>Own a shop? Get listed for free</h3><p>Your own page with opening hours, products and a WhatsApp button within 48 hours.</p><a href="/p/list-your-shop.html">Add my shop</a></li>
+<li data-tone="clay"><h3>Seminars for shop owners</h3><p>Marketing, import rules and more. Meet other shop owners and suppliers.</p><a href="/search/label/Events">See dates</a></li>
+</ul>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='block block-slides'>
+          <div class='container'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <h2 class='block-title'><data:title/></h2>
+            </b:if>
+            <div aria-label='Highlights' aria-roledescription='carousel' class='widget-content slideshow js-slides' role='region'><data:content/></div>
+          </div>
+        </div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
     <b:widget id='HTML14' locked='false' title='How it works' type='HTML'>
       <b:widget-settings>
         <b:widget-setting name='content'><![CDATA[<ol class="howto">
@@ -280,7 +300,8 @@ Page not found - <data:blog.title/>
 <li><a href="/search/label/Sachsen-Anhalt">Sachsen-Anhalt</a></li>
 <li><a href="/search/label/Schleswig-Holstein">Schleswig-Holstein</a></li>
 <li><a href="/search/label/Th%C3%BCringen">Thüringen</a></li>
-</ul>]]></b:widget-setting>
+</ul>
+<p class="credit">State outlines: <a href="https://github.com/VictorCazanave/svg-maps">SVG Maps</a> based on MapSVG, CC BY 4.0</p>]]></b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
           <div class='block block-states'>

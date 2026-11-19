@@ -87,6 +87,7 @@ Upcoming events appear on the homepage automatically, nearest date first. Past e
 | African shops across Germany | Homepage intro text |
 | Browse by category | Category tiles. **Also feeds the search's category names.** Each link is `/search/label/<Label>` |
 | Featured shops | Intro text; shows posts with the `Featured` label |
+| Slideshow (gadget with no title, first on the homepage) | The sliding banners. One `<li>` per slide: `<li data-tone="green"><h3>Title</h3><p>Text</p><a href="/link">Button</a></li>`. Tones: `green`, `gold`, `clay`. Add a photo with `<img src="...">` inside the `<li>` |
 | How it works | Three steps for customers on the homepage |
 | Shops by city | City tiles. **Also fills the "Where?" list in the search.** Add a city here when its first shop joins |
 | Shops by state | All 16 Bundesländer. Also in the "Where?" list. A link is `/search/label/<State>` |

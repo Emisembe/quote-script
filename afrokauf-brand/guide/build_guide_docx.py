@@ -431,11 +431,12 @@ table(['Gadget', 'What it changes'], [
     ['Site name (Header)', 'Blog name and tagline. You can also upload a logo picture here instead of the text.'],
     ['Menu and “List your shop” button', 'The links in the header.'],
     ['African shops across Germany', 'The homepage title line and intro text.'],
+    ['Slideshow (the gadget with no title, first in the homepage section)', 'The sliding banners on the homepage (section 7.7).'],
     ['How it works', 'The three steps for customers on the homepage.'],
     ['Browse by category', 'The category tiles. Each link is /search/label/<Category>.'],
     ['Featured shops', 'The intro text. The shops shown are the posts with the label Featured.'],
     ['Shops by city', 'The city tiles. They also fill the “Where?” list in the search. Add a city when its first shop joins.'],
-    ['Shops by state', 'All 16 Bundesländer, also in the “Where?” list.'],
+    ['Shops by state', 'All 16 Bundesländer with their outline shapes, also in the “Where?” list. Keep the credit line under the tiles: the outlines are free to use only with it.'],
     ['Seminars & events', 'The intro text. The events shown are the posts with the label Events.'],
     ['Own an African shop?', 'Plans and prices for shop owners.'],
     ['Partners and supporters', 'Text and partner logos.'],
@@ -450,7 +451,16 @@ steps(['Download favicon.ico from 03 Logo → Favicons (website tab icon).',
        'Blogger → Layout → Favicon (top of the page) → Edit.',
        'Upload favicon.ico (if Blogger asks for a picture, use the 32×32 PNG) and click Save.',
        'Open your site in a new tab: the green bag icon appears next to the page title. Browsers sometimes take a day to show a new favicon.'])
-h2('7.7 Before going live')
+h2('7.7 Edit the slideshow')
+para('The slideshow changes slide every few seconds. Each slide is one line in the gadget, like this:')
+para('<li data-tone="green"><h3>Title</h3><p>One or two sentences.</p><a href="/p/list-your-shop.html">Button text</a></li>')
+steps(['Layout → the first gadget in the homepage section (it has no title) → pencil icon.',
+       'Change the title, text, button text or link of a slide. Copy a whole <li>…</li> line to add a slide; delete one to remove it.',
+       'Colour: data-tone="green", "gold" or "clay".',
+       'Photo (optional): upload the photo into a draft post, click it, copy its address, and add <img src="paste address here"> inside the <li>. The text stays on top of the photo.',
+       'Save. Use 2–5 slides: more than five and nobody sees the last ones.'])
+note('Good slides: offer of the week, next seminar, a new member shop, “list your shop for free”.')
+h2('7.8 Before going live')
 bullets(['Pages: List your shop, Contact, Impressum, Datenschutz, Terms for shop owners.',
          'Connect your own domain (afrokauf.de) in Settings → Custom domain.',
          'Test: homepage, a shop page, a city page, a search, the phone menu, a test comment.'])
