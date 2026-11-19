@@ -88,18 +88,33 @@ steps(['In the new sheet, click Extensions › Apps Script. A new tab opens with
        'In the editor you see a file called Code.gs with a few lines in it. Click into it, press Ctrl+A (Mac: Cmd+A) and Delete.',
        'Open the file “Apps Script code (Code.gs).txt” from Drive, select everything (Ctrl+A), copy (Ctrl+C) and paste it into the empty editor (Ctrl+V).',
        'Click the Save icon (the small disk) or press Ctrl+S.'])
-note('Want the sign-up emails at another address? In the code, find NOTIFY_EMAIL: \'\' near the top and write the address between the two quote marks. Save again.')
 
 h2('2.3 Run the setup and give permission')
 steps(['Above the code there is a drop-down list next to “Debug”. Choose setup in it.',
        'Click Run.',
        'Google asks for permission. Click Review permissions and choose your account.',
        'Google says “Google hasn’t verified this app”. This is normal for your own script. Click Advanced, then “Go to AfroKauf sign-ups (unsafe)”.',
-       'Google lists what the script may do: use this sheet, save the photos in your Drive, send you emails and find map positions. Click Allow.',
-       'Go back to the sheet tab. You now see a green header row in a tab called Sign-ups, and a message box. Click OK.'])
-para('The script made a Drive folder called “AfroKauf shop photos”. Every sign-up with photos gets its own folder inside it.')
+       'Google lists what the script may do: use this sheet, save the photos in your Drive, send you emails, put message drafts in your Gmail, '
+       'run by itself once a day, and find map positions. Click Allow.',
+       'Go back to the sheet tab. You now see two new tabs, Sign-ups and Settings, and a message box. Click OK.'])
+para('The script also made a Drive folder called “AfroKauf shop photos”. Every sign-up with photos gets its own folder inside it. '
+     'You can run setup again at any time (menu AfroKauf › Set up the sheet): it only adds what is missing and never deletes your rows, columns or settings.')
 
-h2('2.4 Publish the script as a web app')
+h2('2.4 Fill in the Settings tab')
+para('Everything you may want to change is on the Settings tab, not in the code. Column A is the setting, column B is your value.')
+table(['Setting', 'What to write'], [
+    ['Notify email', 'Where new sign-ups and the daily list go. Already filled with your Google email.'],
+    ['Your name', 'How messages to shops are signed, e.g. “Ada, AfroKauf team”.'],
+    ['Your WhatsApp number', 'With country code, no + or spaces: 4915112345678.'],
+    ['“List your shop” page address', 'The full address of the page from part 2.6, e.g. https://afrokauf.blogspot.com/p/list-your-shop.html. Messages to shops use it.'],
+    ['Send daily summary email?', 'Yes or No. When Yes, you get one email a day, only on days when sign-ups are waiting.'],
+    ['Daily email time', 'The hour, 0–23. 8 means between 8 and 9 in the morning.'],
+    ['Follow up — New / Checking / Waiting for shop', 'After how many days a sign-up in that status is marked ⚠ FOLLOW UP. Defaults 2, 3 and 7 days. The website promises 2 working days.'],
+    ['Page live / Missing info texts', 'The messages to shops, in English, Deutsch and Français. Change the words as you like. Keep the {{…}} words: they are filled in for each shop.'],
+], widths=[5.3, 11.2])
+note('After you change “Send daily summary email?” or the email time, run AfroKauf › Set up the sheet once, so the daily timer is updated.')
+
+h2('2.5 Publish the script as a web app')
 steps(['In the Apps Script tab, click the blue Deploy button (top right) › New deployment.',
        'Click the gear icon next to “Select type” and choose Web app.',
        'Description: Sign-up form. Execute as: Me. Who has access: Anyone.',
@@ -108,7 +123,7 @@ steps(['In the Apps Script tab, click the blue Deploy button (top right) › New
        'Test it: paste that address into a new browser tab. You should see: “AfroKauf sign-up form is connected.”'])
 note('“Anyone” only means the website form can send to it. Nobody can read your sheet through this address.')
 
-h2('2.5 Make the “List your shop” page in Blogger')
+h2('2.6 Make the “List your shop” page in Blogger')
 steps(['Open the file “List your shop – page code (paste in Blogger).txt” from Drive and copy everything.',
        'In Blogger, click Pages › New page.',
        'Title: List your shop (exactly like this, so the address becomes /p/list-your-shop.html and all buttons find it).',
@@ -120,18 +135,18 @@ steps(['Open the file “List your shop – page code (paste in Blogger).txt” 
 code("var ENDPOINT = 'https://script.google.com/macros/s/AKfy...your-code.../exec';\nvar WHATSAPP = '4915112345678';")
 note('Do not switch the page back to “Compose view” after pasting. Compose view can break the form code. If you need to change the text, do it in HTML view.')
 
-h2('2.6 Test it')
+h2('2.7 Test it')
 steps(['Open your website and click “List your shop”.',
        'Fill in a test shop with your own details and one photo. Tick the two boxes. Click Send my shop.',
        'You see “Thank you! We have your details” and a reference like AK-261119-X7QD.',
        'Check: a new row in the sheet, an email to you, and a photos folder in Drive.',
        'Set the test row’s Status to Spam, or delete the row.'])
 
-h2('2.7 When you change the script later')
+h2('2.8 When you change the script later')
 para('After any change to the code you must publish a new version, or the website keeps using the old one:')
 steps(['Deploy › Manage deployments.', 'Click the pencil icon.', 'Version: New version.', 'Click Deploy. The web app address stays the same.'])
 
-h2('2.8 Add the form to your Datenschutz page')
+h2('2.9 Add the form to your Datenschutz page')
 para('Your Datenschutzerklärung must say what happens with the form data. Add a section like this to the Datenschutz page '
      '(and have it checked, for example by the IHK or a lawyer, before you go live):')
 code('Anmeldeformular „List your shop“\n'
@@ -151,12 +166,17 @@ h2('3.1 A new sign-up arrives')
 steps(['You get an email “AfroKauf sign-up: <shop name> (AK-…)”.',
        'Open the sheet. The new row is at the bottom. Set Status to Checking, so you know you are on it.',
        'The first time you open the sheet after setup, reload the page. A new menu AfroKauf appears next to Help.'])
+para('When you change the Status (with the drop-down), “Status since” gets today’s date by itself. The column “Follow-up” then shows '
+     '⚠ FOLLOW UP when a sign-up waits too long in New, Checking or Waiting for shop, and the row turns red. Green rows are done. Grey rows are rejected or spam.')
 
 h2('3.2 Check the shop')
 bullets(['Call the contact number. Say thank you and check the address and opening hours.',
          'Look the address up on Google Maps. Does the shop exist there? Is the street right?',
          'Look at the photos: they must be the shop’s own photos. No photos from the internet, and no people who can be recognised unless they agreed.',
-         'Something missing? Set Status to “Waiting for shop” and write what is missing in “Your notes”.',
+         'Something missing? Set Status to “Waiting for shop”, then menu AfroKauf › Message: missing information. '
+         'A draft appears in your Gmail with the text from Settings. Write what is missing where it says [write here what is missing], then press Send. '
+         'The window also has a WhatsApp link with the same text.',
+         'After each call: AfroKauf › Add a dated note. Type what was said. It goes to the top of “Your notes” with today’s date, so you always see the history.',
          'Not a real shop, or spam? Set Status to Rejected or Spam.'])
 
 h2('3.3 Get the ready code')
@@ -198,13 +218,18 @@ bullets(['Open the post on the website (View post). Do you see the photo, the ad
          'New posts can take up to 20 minutes to appear in the search, because visitors’ browsers keep the shop list for 20 minutes.'])
 
 h2('3.7 Finish in the sheet and tell the shop')
-steps(['Paste the page address into “Shop page link”. Write today’s date in “Done on”. Set Status to Live.',
-       'Send the owner the link by email or WhatsApp. They asked for it in the form, so this is allowed.'])
-code('Hello [name], your shop page on AfroKauf is live: [link]\n'
-     'Please check it and tell us if anything is wrong. Share the link with your customers, on WhatsApp status and Instagram.\n'
-     'Changes? Use the form again and choose “Change my existing shop page”. Thank you! – AfroKauf')
+steps(['Paste the page address into “Shop page link”.',
+       'Set Status to Live. “Done on” gets today’s date by itself.',
+       'Menu AfroKauf › Message: page is live. A ready email is now in your Gmail Drafts, in the language the owner chose on the form '
+       '(English, Deutsch or Français). Open Gmail, check it, press Send. Or click the WhatsApp link in the window to send the same text on WhatsApp.',
+       'Nothing is ever sent by itself: you always check and press Send. The owner asked for the link in the form, so sending it is allowed.'])
 
-h2('3.8 Premium shops')
+h2('3.8 Your daily list')
+bullets([('AfroKauf › What needs me today: ', 'every open sign-up, overdue ones first, with how many days it has waited and who wants Premium.'),
+         ('Daily email: ', 'the same list by email each morning, only on days when something is open (Settings: Send daily summary email?).'),
+         ('AfroKauf › Email me the list now: ', 'sends that email straight away.')])
+
+h2('3.9 Premium shops')
 bullets(['Send an invoice (bank transfer or PayPal). Blogger has no payment system.',
          'After the first payment: open the post, add the label Featured, click Update. The shop now shows in “Featured shops” on the homepage.',
          'Premium also means: more photos, a full product list and weekly offers (part 5).',
@@ -304,8 +329,8 @@ bullets(['Towns still to check: Rüsselsheim, Bad Homburg, Limburg, Friedberg, B
 # ------------------------------------------------------------------ 7
 h1('7. Problems and fixes')
 table(['What you see', 'Why', 'Fix'], [
-    ['The form says “The form is not connected yet”', 'The ENDPOINT line still has PASTE_YOUR_WEB_APP_URL_HERE', 'Part 2.5, step 6'],
-    ['“Sorry, sending did not work”', 'The web app is not set to “Anyone”, or the script was changed without a new version', 'Part 2.4 (Who has access: Anyone), then part 2.7'],
+    ['The form says “The form is not connected yet”', 'The ENDPOINT line still has PASTE_YOUR_WEB_APP_URL_HERE', 'Part 2.6, step 6'],
+    ['“Sorry, sending did not work”', 'The web app is not set to “Anyone”, or the script was changed without a new version', 'Part 2.5 (Who has access: Anyone), then part 2.8'],
     ['No email arrives', 'Spam folder, or another address is set in NOTIFY_EMAIL', 'Check spam; check the line NOTIFY_EMAIL in the script'],
     ['No AfroKauf menu in the sheet', 'The sheet was not reloaded after setup', 'Reload the sheet tab (F5)'],
     ['“No map position found”', 'Google could not find the address', 'Copy lat and lng from Google Maps into the row (or into data-lat and data-lng)'],
@@ -313,7 +338,10 @@ table(['What you see', 'Why', 'Fix'], [
     ['The shop is not in the search', 'Label “Shop” missing; feed not set to Full; 20-minute delay', 'Check the labels; Settings › Site feed › Full; wait 20 minutes'],
     ['The shop is not on its city page', 'The city label is spelled differently from the tile', 'Make the label exactly like the “Shops by city” tile'],
     ['“Open now” is wrong', 'Mistake in data-hours', 'Part 4.2: days Mo Tu We Th Fr Sa Su, times 10:00-20:00, ; between days'],
-    ['The form looks broken after editing the page', 'The page was opened in Compose view', 'Paste the page code again in HTML view (part 2.5)'],
+    ['The form looks broken after editing the page', 'The page was opened in Compose view', 'Paste the page code again in HTML view (part 2.6)'],
+    ['“Status since” or the ⚠ flag does not change', 'Setup was not run after pasting the script, so the edit timer is missing', 'Run AfroKauf › Set up the sheet once'],
+    ['The message is in the wrong language', 'The Language column of that row', 'Change Language in the row, then make the message again'],
+    ['“Could not do this” when using the menu', 'You were not on the Sign-ups tab, or clicked the header row', 'Open the Sign-ups tab, click the shop’s row, try again'],
 ], widths=[4.8, 5.6, 6.1])
 
 fix_numbering()

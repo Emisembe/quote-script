@@ -117,6 +117,8 @@
       <div class="ak-row"><label for="ak-person">Your name *</label><input id="ak-person" name="person" required maxlength="80" autocomplete="name"><small>Not shown on the website.</small></div>
       <div class="ak-row"><label for="ak-mobile">Best number to reach you</label><input id="ak-mobile" name="mobile" type="tel" maxlength="30"><small>Not shown on the website.</small></div>
     </div>
+    <div class="ak-row"><label for="ak-lang">We write to you in</label>
+      <select id="ak-lang" name="language"><option>English</option><option>Deutsch</option><option>Français</option></select></div>
     <div class="ak-row"><label for="ak-note">Anything else</label><textarea id="ak-note" name="note" maxlength="800" rows="3"></textarea></div>
     <div class="ak-trap" aria-hidden="true"><label>Leave empty <input name="company2" tabindex="-1" autocomplete="off"></label></div>
   </fieldset>
@@ -254,7 +256,7 @@
       phone: val('phone'), whatsapp: val('whatsapp'), email: val('email'), showEmail: all('showEmail').length > 0,
       website: val('website'), social: val('social'), hours: hoursText(),
       sells: val('sells'), origin: val('origin'), services: all('services'), about: val('about'),
-      plan: val('plan'), person: val('person'), mobile: val('mobile'), note: val('note'),
+      plan: val('plan'), person: val('person'), mobile: val('mobile'), language: val('language'), note: val('note'),
       company2: val('company2'), photos: photos.filter(Boolean), page_url: location.href
     };
   }
