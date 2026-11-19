@@ -1,0 +1,311 @@
+<!--
+  AfroKauf: "List your shop" page.
+  Paste ALL of this into Blogger: Pages > New page (title "List your shop") > switch to HTML view (the < > icon) > paste > Publish.
+  Before that, put your Apps Script web app address between the quotes of ENDPOINT below (see the guide, part 2).
+-->
+<div class="ak-form" id="ak-form">
+<p class="ak-lead">Get your shop on AfroKauf. The Basic listing is <b>free</b>. Fill in this form (about 5 minutes). We check the details, build your shop page and send you the link, usually within 2 working days.</p>
+
+<form id="ak-signup" novalidate>
+  <fieldset>
+    <legend>1. What do you want to do?</legend>
+    <label class="ak-choice"><input type="radio" name="kind" value="new" checked> List my shop for the first time</label>
+    <label class="ak-choice"><input type="radio" name="kind" value="update"> Change my existing shop page</label>
+    <div class="ak-row ak-update" hidden>
+      <label for="ak-page">Link to your shop page on AfroKauf</label>
+      <input id="ak-page" name="page" type="url" placeholder="https://...">
+      <small>Fill in only what changed below. You can leave everything else empty.</small>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>2. Your shop</legend>
+    <div class="ak-row"><label for="ak-name">Shop name *</label><input id="ak-name" name="name" required maxlength="120"></div>
+    <div class="ak-row"><span class="ak-label">What kind of shop? * <small>(tick all that fit)</small></span>
+      <div class="ak-checks" data-group="categories">
+        <label><input type="checkbox" name="categories" value="Food"> Food &amp; groceries</label>
+        <label><input type="checkbox" name="categories" value="Hair & Beauty"> Hair &amp; beauty</label>
+        <label><input type="checkbox" name="categories" value="Fashion"> Fashion &amp; fabrics</label>
+        <label><input type="checkbox" name="categories" value="Restaurant"> Restaurant</label>
+        <label><input type="checkbox" name="categories" value="Services"> Shipping &amp; money transfer</label>
+        <label><input type="checkbox" name="categories" value="Wholesale"> Wholesale</label>
+      </div>
+    </div>
+    <div class="ak-row"><label for="ak-street">Street and number *</label><input id="ak-street" name="street" required maxlength="120" autocomplete="street-address"></div>
+    <div class="ak-grid">
+      <div class="ak-row"><label for="ak-zip">Postcode *</label><input id="ak-zip" name="zip" required inputmode="numeric" pattern="[0-9]{5}" maxlength="5" autocomplete="postal-code"></div>
+      <div class="ak-row"><label for="ak-city">City *</label><input id="ak-city" name="city" required maxlength="60" autocomplete="address-level2"></div>
+    </div>
+    <div class="ak-row"><label for="ak-state">Bundesland *</label>
+      <select id="ak-state" name="state" required>
+        <option value="">Choose…</option>
+        <option>Baden-Württemberg</option><option>Bayern</option><option>Berlin</option><option>Brandenburg</option>
+        <option>Bremen</option><option>Hamburg</option><option>Hessen</option><option>Mecklenburg-Vorpommern</option>
+        <option>Niedersachsen</option><option>Nordrhein-Westfalen</option><option>Rheinland-Pfalz</option><option>Saarland</option>
+        <option>Sachsen</option><option>Sachsen-Anhalt</option><option>Schleswig-Holstein</option><option>Thüringen</option>
+      </select>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>3. How customers reach you</legend>
+    <div class="ak-grid">
+      <div class="ak-row"><label for="ak-phone">Shop phone *</label><input id="ak-phone" name="phone" type="tel" required maxlength="30" autocomplete="tel"></div>
+      <div class="ak-row"><label for="ak-wa">WhatsApp number</label><input id="ak-wa" name="whatsapp" type="tel" maxlength="30"><label class="ak-small"><input type="checkbox" id="ak-wa-same"> <span>Same as phone</span></label></div>
+    </div>
+    <div class="ak-row"><label for="ak-email">Email *</label><input id="ak-email" name="email" type="email" required maxlength="120" autocomplete="email"><small>We send your shop link here. Shown on your page only if you tick the box below.</small>
+      <label class="ak-small"><input type="checkbox" name="showEmail" value="yes"> <span>Show this email on my shop page</span></label></div>
+    <div class="ak-grid">
+      <div class="ak-row"><label for="ak-web">Website</label><input id="ak-web" name="website" type="url" maxlength="200" placeholder="https://"></div>
+      <div class="ak-row"><label for="ak-insta">Instagram, Facebook or TikTok</label><input id="ak-insta" name="social" maxlength="200" placeholder="@yourshop or link"></div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>4. Opening hours</legend>
+    <table class="ak-hours">
+      <thead><tr><th>Day</th><th>Opens</th><th>Closes</th><th>Closed</th></tr></thead>
+      <tbody>
+        <tr data-day="Mo"><td>Monday</td><td><input type="time" value="10:00"></td><td><input type="time" value="20:00"></td><td><input type="checkbox"></td></tr>
+        <tr data-day="Tu"><td>Tuesday</td><td><input type="time" value="10:00"></td><td><input type="time" value="20:00"></td><td><input type="checkbox"></td></tr>
+        <tr data-day="We"><td>Wednesday</td><td><input type="time" value="10:00"></td><td><input type="time" value="20:00"></td><td><input type="checkbox"></td></tr>
+        <tr data-day="Th"><td>Thursday</td><td><input type="time" value="10:00"></td><td><input type="time" value="20:00"></td><td><input type="checkbox"></td></tr>
+        <tr data-day="Fr"><td>Friday</td><td><input type="time" value="10:00"></td><td><input type="time" value="20:00"></td><td><input type="checkbox"></td></tr>
+        <tr data-day="Sa"><td>Saturday</td><td><input type="time" value="10:00"></td><td><input type="time" value="18:00"></td><td><input type="checkbox"></td></tr>
+        <tr data-day="Su"><td>Sunday</td><td><input type="time"></td><td><input type="time"></td><td><input type="checkbox" checked></td></tr>
+      </tbody>
+    </table>
+    <small>Lunch break or other special times? Write them in "Anything else" at the end.</small>
+  </fieldset>
+
+  <fieldset>
+    <legend>5. What you sell</legend>
+    <div class="ak-row"><label for="ak-sells">Products and services customers search for *</label>
+      <textarea id="ak-sells" name="sells" required maxlength="1500" rows="4" placeholder="gari, egusi, plantain, palm oil, stockfish, yam, braids, wigs, shea butter …"></textarea>
+      <small>Separate with commas. Use the words your customers use, also local names (e.g. "ogbono", "attiéké", "kenkey"). This is what the search finds.</small></div>
+    <div class="ak-row"><label for="ak-origin">Products come mainly from</label><input id="ak-origin" name="origin" maxlength="200" placeholder="Nigeria, Ghana, Cameroon …"></div>
+    <div class="ak-row"><span class="ak-label">Extra services</span>
+      <div class="ak-checks">
+        <label><input type="checkbox" name="services" value="delivery"> Delivery</label>
+        <label><input type="checkbox" name="services" value="online shop"> Online shop</label>
+        <label><input type="checkbox" name="services" value="money transfer"> Money transfer</label>
+        <label><input type="checkbox" name="services" value="shipping to Africa"> Shipping to Africa</label>
+        <label><input type="checkbox" name="services" value="hair styling"> Hair styling in the shop</label>
+        <label><input type="checkbox" name="services" value="catering"> Catering</label>
+        <label><input type="checkbox" name="services" value="card payment"> Card payment</label>
+      </div></div>
+    <div class="ak-row"><label for="ak-about">Tell customers about your shop</label>
+      <textarea id="ak-about" name="about" maxlength="800" rows="4" placeholder="Since when, what you are known for, what is special …"></textarea></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>6. Photos</legend>
+    <div class="ak-row"><label for="ak-photos">Up to 4 photos: shop front, inside, best products</label>
+      <input id="ak-photos" type="file" accept="image/*" multiple>
+      <small>The first photo becomes your shop's picture. Only send photos you took yourself, and no photos where people can be recognised unless they agree.</small>
+      <div class="ak-thumbs" id="ak-thumbs"></div></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>7. Plan and contact person</legend>
+    <div class="ak-checks ak-plans">
+      <label><input type="radio" name="plan" value="Basic (free)" checked> Basic: free</label>
+      <label><input type="radio" name="plan" value="Premium (19 € / month)"> Premium: 19 € / month</label>
+      <label><input type="radio" name="plan" value="Not sure"> Not sure yet, please call me</label>
+    </div>
+    <div class="ak-grid">
+      <div class="ak-row"><label for="ak-person">Your name *</label><input id="ak-person" name="person" required maxlength="80" autocomplete="name"><small>Not shown on the website.</small></div>
+      <div class="ak-row"><label for="ak-mobile">Best number to reach you</label><input id="ak-mobile" name="mobile" type="tel" maxlength="30"><small>Not shown on the website.</small></div>
+    </div>
+    <div class="ak-row"><label for="ak-note">Anything else</label><textarea id="ak-note" name="note" maxlength="800" rows="3"></textarea></div>
+    <div class="ak-trap" aria-hidden="true"><label>Leave empty <input name="company2" tabindex="-1" autocomplete="off"></label></div>
+  </fieldset>
+
+  <fieldset>
+    <legend>8. Your OK</legend>
+    <label class="ak-small"><input type="checkbox" name="owner" value="yes" required> <span>I own this shop or I am allowed to list it. *</span></label>
+    <label class="ak-small"><input type="checkbox" name="consent" value="yes" required> <span>I agree that AfroKauf stores these details to build my shop page and to contact me about it. The shop details and photos will be public; my name and private number will not. I can ask for deletion at any time. More in the <a href="/p/datenschutz.html">Datenschutz</a> page. *</span></label>
+  </fieldset>
+
+  <p class="ak-error" id="ak-error" role="alert" hidden></p>
+  <button type="submit" class="ak-send" id="ak-send">Send my shop</button>
+  <p class="ak-alt">Problems with the form? <a href="#" id="ak-wa-link">Send the details on WhatsApp instead</a>.</p>
+</form>
+
+<div class="ak-done" id="ak-done" hidden>
+  <h3>Thank you! We have your details.</h3>
+  <p>Your reference: <b id="ak-ref"></b>. We check everything and send the link to your shop page to <b id="ak-mail"></b>, usually within 2 working days.</p>
+</div>
+</div>
+
+<style>
+.ak-form { max-width: 720px; margin: 0 auto; font-size: 16px; }
+.ak-form .ak-lead { font-size: 17px; }
+.ak-form fieldset { margin: 0 0 18px; padding: 18px; border: 1px solid #E5DCCB; border-radius: 14px; background: #fff; }
+.ak-form legend { padding: 0 8px; font-weight: 800; font-size: 17px; color: #1F4D3A; }
+.ak-form .ak-row { margin: 0 0 14px; }
+.ak-form label, .ak-form .ak-label { display: block; font-weight: 700; margin: 0 0 6px; }
+.ak-form input[type=text], .ak-form input:not([type]), .ak-form input[type=tel], .ak-form input[type=email], .ak-form input[type=url],
+.ak-form input[type=time], .ak-form select, .ak-form textarea {
+  width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid #CFC3AE; border-radius: 9px; font: inherit; background: #FBF6EE; color: inherit;
+}
+.ak-form input:focus, .ak-form select:focus, .ak-form textarea:focus { outline: 2px solid #E0A43A; outline-offset: 1px; background: #fff; }
+.ak-form small { display: block; margin-top: 4px; color: #6B6F68; font-size: 13px; }
+.ak-form .ak-grid { display: grid; grid-template-columns: 1fr; gap: 0 14px; }
+@media (min-width: 600px) { .ak-form .ak-grid { grid-template-columns: 1fr 1fr; } }
+.ak-form .ak-checks { display: flex; flex-wrap: wrap; gap: 8px; }
+.ak-form .ak-checks label, .ak-form .ak-choice { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 9px 12px; border: 1px solid #E5DCCB; border-radius: 999px; font-weight: 600; cursor: pointer; }
+.ak-form .ak-choice { display: flex; margin: 0 0 8px; border-radius: 9px; }
+.ak-form .ak-small { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; margin: 8px 0 0; }
+.ak-form .ak-small input { margin-top: 4px; flex: none; }
+.ak-form .ak-hours { width: 100%; border-collapse: collapse; }
+.ak-form .ak-hours th { text-align: left; font-size: 13px; color: #6B6F68; padding: 0 6px 6px 0; }
+.ak-form .ak-hours td { padding: 4px 6px 4px 0; }
+.ak-form .ak-hours td:first-child { font-weight: 700; white-space: nowrap; }
+.ak-form .ak-hours tr.is-closed input[type=time] { opacity: 0.35; }
+.ak-form .ak-thumbs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.ak-form .ak-thumbs img { width: 84px; height: 84px; object-fit: cover; border-radius: 9px; border: 1px solid #E5DCCB; }
+.ak-form .ak-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.ak-form .ak-send { display: block; width: 100%; padding: 15px; border: 0; border-radius: 999px; background: #E0A43A; color: #1F2420; font: inherit; font-weight: 800; font-size: 17px; cursor: pointer; }
+.ak-form .ak-send[disabled] { opacity: 0.6; cursor: wait; }
+.ak-form .ak-error { padding: 12px 14px; border-radius: 9px; background: #F7D9CC; color: #7A2615; font-weight: 600; }
+.ak-form .ak-alt { text-align: center; font-size: 14px; }
+.ak-form .ak-alt a, .ak-form .ak-small a { text-decoration: underline; }
+.ak-form .ak-plans { margin: 0 0 16px; }
+.ak-form .ak-done { padding: 24px; border-radius: 14px; background: #DCEBE4; }
+.ak-form [hidden] { display: none !important; }
+</style>
+
+<script>
+(function () {
+  // ---- SETTINGS: change these two lines ----
+  var ENDPOINT = 'PASTE_YOUR_WEB_APP_URL_HERE';   // Apps Script web app address, ends with /exec
+  var WHATSAPP = '';                              // your WhatsApp number for the fallback, e.g. '4915112345678' (no + or spaces)
+  // -------------------------------------------
+
+  var form = document.getElementById('ak-signup');
+  if (!form) return;
+  var MAX_PHOTOS = 4, MAX_SIDE = 1600;
+  var photos = [];
+
+  function q(sel) { return form.querySelector(sel); }
+  function all(name) { return [].slice.call(form.querySelectorAll('[name="' + name + '"]:checked')).map(function (x) { return x.value; }); }
+  function val(name) { var el = form.elements[name]; return el ? String(el.value || '').trim() : ''; }
+
+  // new / update
+  [].forEach.call(form.querySelectorAll('[name=kind]'), function (r) {
+    r.addEventListener('change', function () {
+      var upd = val('kind') === 'update';
+      q('.ak-update').hidden = !upd;
+      // for updates only the name and contact are required
+      ['street', 'zip', 'city', 'state', 'phone', 'sells'].forEach(function (n) { form.elements[n].required = !upd; });
+    });
+  });
+  document.getElementById('ak-wa-same').addEventListener('change', function () {
+    if (this.checked) form.elements.whatsapp.value = form.elements.phone.value;
+  });
+
+  // hours
+  [].forEach.call(form.querySelectorAll('.ak-hours tbody tr'), function (tr) {
+    var box = tr.querySelector('input[type=checkbox]');
+    function sync() { tr.classList.toggle('is-closed', box.checked); }
+    box.addEventListener('change', sync); sync();
+  });
+  function hoursText() {
+    var rows = [].slice.call(form.querySelectorAll('.ak-hours tbody tr')).map(function (tr) {
+      var t = tr.querySelectorAll('input[type=time]');
+      var closed = tr.querySelector('input[type=checkbox]').checked || !t[0].value || !t[1].value;
+      return { d: tr.getAttribute('data-day'), v: closed ? 'closed' : t[0].value + '-' + t[1].value };
+    });
+    var out = [], i = 0;
+    while (i < rows.length) {           // group days with the same times: Mo-Fr 10:00-20:00
+      var j = i;
+      while (j + 1 < rows.length && rows[j + 1].v === rows[i].v) j++;
+      out.push((j > i ? rows[i].d + '-' + rows[j].d : rows[i].d) + ' ' + rows[i].v);
+      i = j + 1;
+    }
+    return out.join('; ');
+  }
+
+  // photos: shrink in the browser so they upload fast
+  document.getElementById('ak-photos').addEventListener('change', function () {
+    var files = [].slice.call(this.files || []).slice(0, MAX_PHOTOS);
+    photos = []; var thumbs = document.getElementById('ak-thumbs'); thumbs.innerHTML = '';
+    files.forEach(function (f, n) {
+      var img = new Image(), url = URL.createObjectURL(f);
+      img.onload = function () {
+        var s = Math.min(1, MAX_SIDE / Math.max(img.width, img.height));
+        var c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        var data = c.toDataURL('image/jpeg', 0.82);
+        photos[n] = { name: (n + 1) + '.jpg', data: data.split(',')[1] };
+        var t = document.createElement('img'); t.src = data; t.alt = ''; thumbs.appendChild(t);
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    });
+    if ((this.files || []).length > MAX_PHOTOS) showError('Only the first ' + MAX_PHOTOS + ' photos will be sent.');
+  });
+
+  function collect() {
+    return {
+      kind: val('kind'), page: val('page'), name: val('name'), categories: all('categories'),
+      street: val('street'), zip: val('zip'), city: val('city'), state: val('state'),
+      phone: val('phone'), whatsapp: val('whatsapp'), email: val('email'), showEmail: all('showEmail').length > 0,
+      website: val('website'), social: val('social'), hours: hoursText(),
+      sells: val('sells'), origin: val('origin'), services: all('services'), about: val('about'),
+      plan: val('plan'), person: val('person'), mobile: val('mobile'), note: val('note'),
+      company2: val('company2'), photos: photos.filter(Boolean), page_url: location.href
+    };
+  }
+  function showError(msg) { var e = document.getElementById('ak-error'); e.textContent = msg; e.hidden = !msg; if (msg) e.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+  function check(d) {
+    var upd = d.kind === 'update';
+    if (!d.name) return 'Please write the shop name.';
+    if (!upd && !d.categories.length) return 'Please tick at least one kind of shop.';
+    if (!upd && (!d.street || !d.city || !d.state)) return 'Please fill in the full address and the Bundesland.';
+    if (!upd && !/^\d{5}$/.test(d.zip)) return 'The postcode has 5 numbers.';
+    if (!upd && !d.phone) return 'Please add the shop phone number.';
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email)) return 'Please check the email address.';
+    if (!upd && !d.sells) return 'Please write what you sell.';
+    if (!d.person) return 'Please write your name.';
+    if (!form.elements.owner.checked || !form.elements.consent.checked) return 'Please tick the two boxes under "Your OK".';
+    return '';
+  }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var d = collect(), err = check(d);
+    if (err) { showError(err); return; }
+    if (ENDPOINT.indexOf('https://script.google.com/') !== 0) { showError('The form is not connected yet. Please use the WhatsApp link below.'); return; }
+    showError('');
+    var btn = document.getElementById('ak-send'); btn.disabled = true; btn.textContent = 'Sending…';
+    fetch(ENDPOINT, { method: 'POST', body: JSON.stringify(d), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (!res || !res.ok) throw new Error(res && res.error || 'error');
+        document.getElementById('ak-ref').textContent = res.ref;
+        document.getElementById('ak-mail').textContent = d.email;
+        form.hidden = true; document.getElementById('ak-done').hidden = false;
+        document.getElementById('ak-form').scrollIntoView({ behavior: 'smooth' });
+      })
+      .catch(function (e) {
+        btn.disabled = false; btn.textContent = 'Send my shop';
+        showError((e && e.message && e.message !== 'error' && e.message.indexOf('fetch') < 0 ? e.message + ' ' : '') +
+          'Sorry, sending did not work. Please try again, or use the WhatsApp link below.');
+      });
+  });
+
+  // fallback: the same details as a WhatsApp message (without photos)
+  document.getElementById('ak-wa-link').addEventListener('click', function (ev) {
+    ev.preventDefault();
+    var d = collect();
+    var txt = ['AfroKauf: ' + (d.kind === 'update' ? 'change my shop page' : 'list my shop'),
+      'Shop: ' + d.name, 'Kind: ' + d.categories.join(', '), 'Address: ' + d.street + ', ' + d.zip + ' ' + d.city + ' (' + d.state + ')',
+      'Phone: ' + d.phone, 'WhatsApp: ' + d.whatsapp, 'Email: ' + d.email, 'Hours: ' + d.hours, 'Sells: ' + d.sells,
+      'From: ' + d.origin, 'Services: ' + d.services.join(', '), 'Plan: ' + d.plan, 'Name: ' + d.person,
+      'I agree that AfroKauf stores these details for my shop page.'].join('\n');
+    location.href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(txt);
+  });
+})();
+</script>
