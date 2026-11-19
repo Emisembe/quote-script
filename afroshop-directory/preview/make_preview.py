@@ -129,7 +129,7 @@ def html_widget(wid, cls='widget-content'):
 
 def header():
     return '''<header class="site-header" id="site-header"><div class="container header-inner">
-<div class="brand-section section" id="header"><div class="widget Header" id="Header1"><a class="brand" href="home.html"><span aria-hidden="true" class="brand-mark"></span><span class="brand-text"><span class="brand-name">Afroshop Finder</span><span class="brand-tagline">African shops in Germany</span></span></a></div></div>
+<div class="brand-section section" id="header"><div class="widget Header" id="Header1"><a class="brand" href="home.html"><span aria-hidden="true" class="brand-mark brand-mark-svg"><svg aria-hidden='true' viewBox='0 0 76.0 70.5' width='40' height='37'><g transform='translate(0.000 0.000) scale(1.00000) translate(-12.0 -19.5)'><path d='M23 46 V40 A17 17 0 0 1 57 40 V46' fill='none' stroke='#E9A23B' stroke-width='7.5' stroke-linecap='round'/><path d='M43 46 V40 A17 17 0 0 1 77 40 V46' fill='none' stroke='#FBF6EE' stroke-width='7.5' stroke-linecap='round'/><defs><clipPath id='bagclip1'><path d='M23 40 L77 40 Q84 40 84.6 47 L87.4 83 Q88 90 81 90 L19 90 Q12 90 12.6 83 L15.4 47 Q16 40 23 40 Z'/></clipPath></defs><path d='M23 40 L77 40 Q84 40 84.6 47 L87.4 83 Q88 90 81 90 L19 90 Q12 90 12.6 83 L15.4 47 Q16 40 23 40 Z' fill='#FBF6EE'/><g clip-path='url(#bagclip1)'><rect x='10' y='59' width='9.5' height='12' fill='#E9A23B'/><rect x='19' y='59' width='9.5' height='12' fill='#0E4D3A'/><rect x='29' y='59' width='9.5' height='12' fill='#C4552D'/><rect x='38' y='59' width='9.5' height='12' fill='#E9A23B'/><rect x='48' y='59' width='9.5' height='12' fill='#0E4D3A'/><rect x='57' y='59' width='9.5' height='12' fill='#C4552D'/><rect x='67' y='59' width='9.5' height='12' fill='#E9A23B'/><rect x='76' y='59' width='9.5' height='12' fill='#0E4D3A'/><rect x='86' y='59' width='9.5' height='12' fill='#C4552D'/></g></g></svg></span><span class="brand-text"><span class="brand-name">AfroKauf</span><span class="brand-tagline">Afroshops in deiner Nähe</span></span></a></div></div>
 <button aria-controls="site-nav" aria-expanded="false" aria-label="Open menu" class="nav-toggle" id="nav-toggle" type="button">%s</button>
 <nav aria-label="Main" class="nav-drawer" id="site-nav"><div class="site-nav section" id="menu">%s</div><div class="header-cta section" id="header-cta">%s</div></nav>
 </div></header>''' % (ICON_MENU, html_widget('HTML1'), html_widget('HTML2'))
@@ -163,7 +163,7 @@ def settings():
 def footer():
     return '''<footer class="site-footer"><div class="container"><div class="footer-grid">
 <div class="footer-col section">%s</div><div class="footer-col section">%s</div><div class="footer-col section">%s</div></div>
-<div class="footer-bottom"><p class="copyright">&#169; <span class="js-year"></span> Afroshop Finder</p><p>Powered by Blogger</p></div></div></footer>''' % (
+<div class="footer-bottom"><p class="copyright">&#169; <span class="js-year"></span> AfroKauf</p><p>Powered by Blogger</p></div></div></footer>''' % (
         html_widget('HTML9'), html_widget('HTML10'), html_widget('HTML11'))
 
 
@@ -200,7 +200,7 @@ window.DIR_DEMO_FEED = function (label, max, start) {
 
 def hero():
     title, content = gadget('HTML3')
-    return '''<section class="hero home-only"><div class="container"><div class="hero-main section"><div class="widget HTML" id="HTML3"><div class="hero-copy"><p class="hero-eyebrow">%s</p><h1 class="hero-title">Afroshop Finder</h1><div class="hero-text">%s</div></div></div></div></div></section>''' % (html.escape(title), content)
+    return '''<section class="hero home-only"><div class="container"><div class="hero-main section"><div class="widget HTML" id="HTML3"><div class="hero-copy"><p class="hero-eyebrow">%s</p><h1 class="hero-title">AfroKauf</h1><div class="hero-text">%s</div></div></div></div></div></section>''' % (html.escape(title), content)
 
 
 def home():

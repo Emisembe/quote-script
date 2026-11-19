@@ -180,6 +180,9 @@ a.badge:hover { background: $(accent.color); color: #2A1A05; }
   transform: rotate(-4deg);
 }
 .brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+.brand-mark-svg { flex: 0 0 42px; width: 42px; height: 40px; background: none; border-radius: 0; transform: none; }
+.brand-mark-svg svg { display: block; width: 100%; height: 100%; }
+.brand-name .accent, .hero-title .accent { color: $(accent.color); }
 .brand-logo img { display: block; max-height: 44px; width: auto; }
 .brand-text { display: flex; flex-direction: column; min-width: 0; }
 .brand-name {
@@ -712,7 +715,7 @@ body#layout .nav-toggle, body#layout .finder-band, body#layout .finder-results {
                 </span>
               </b:if>
             <b:else/>
-              <span aria-hidden='true' class='brand-mark'/>
+              <span aria-hidden='true' class='brand-mark brand-mark-svg'><svg aria-hidden='true' viewBox='0 0 76.0 70.5' width='40' height='37'><g transform='translate(0.000 0.000) scale(1.00000) translate(-12.0 -19.5)'><path d='M23 46 V40 A17 17 0 0 1 57 40 V46' fill='none' stroke='#E9A23B' stroke-width='7.5' stroke-linecap='round'/><path d='M43 46 V40 A17 17 0 0 1 77 40 V46' fill='none' stroke='#FBF6EE' stroke-width='7.5' stroke-linecap='round'/><defs><clipPath id='bagclip1'><path d='M23 40 L77 40 Q84 40 84.6 47 L87.4 83 Q88 90 81 90 L19 90 Q12 90 12.6 83 L15.4 47 Q16 40 23 40 Z'/></clipPath></defs><path d='M23 40 L77 40 Q84 40 84.6 47 L87.4 83 Q88 90 81 90 L19 90 Q12 90 12.6 83 L15.4 47 Q16 40 23 40 Z' fill='#FBF6EE'/><g clip-path='url(#bagclip1)'><rect x='10' y='59' width='9.5' height='12' fill='#E9A23B'/><rect x='19' y='59' width='9.5' height='12' fill='#0E4D3A'/><rect x='29' y='59' width='9.5' height='12' fill='#C4552D'/><rect x='38' y='59' width='9.5' height='12' fill='#E9A23B'/><rect x='48' y='59' width='9.5' height='12' fill='#0E4D3A'/><rect x='57' y='59' width='9.5' height='12' fill='#C4552D'/><rect x='67' y='59' width='9.5' height='12' fill='#E9A23B'/><rect x='76' y='59' width='9.5' height='12' fill='#0E4D3A'/><rect x='86' y='59' width='9.5' height='12' fill='#C4552D'/></g></g></svg></span>
               <span class='brand-text'>
                 <span class='brand-name'><data:title/></span>
                 <b:if cond='data:description != &quot;&quot;'>
@@ -1824,13 +1827,28 @@ contact_page: /p/contact.html]]></b:widget-setting>
   // Initials in the round brand mark when no logo image is set ("Afroshop Finder" -> "AF")
   var mark = doc.querySelector('.brand-mark');
   var name = doc.querySelector('.brand-name');
-  if (mark && name && !mark.querySelector('img')) {
+  if (mark && name && !mark.querySelector('img') && !mark.querySelector('svg')) {
     var skip = { the: 1, a: 1, an: 1 };
     var words = name.textContent.trim().split(/\s+/).filter(function (w) {
       return w && !skip[w.toLowerCase()];
     });
     mark.textContent = words.slice(0, 2).map(function (w) { return w.charAt(0); }).join('').toUpperCase();
   }
+
+  // Two-part names written as one word ("AfroKauf"): second part in the accent colour
+  function accentCamel(el) {
+    if (!el || el.children.length) return false;
+    var m = /^([A-ZÄÖÜ][a-zäöüß]+)([A-ZÄÖÜ][\wäöüß]*)$/.exec(el.textContent.trim());
+    if (!m) return false;
+    el.textContent = m[1];
+    var s = doc.createElement('span');
+    s.className = 'accent';
+    s.textContent = m[2];
+    el.appendChild(s);
+    return true;
+  }
+  accentCamel(name);
+  accentCamel(doc.querySelector('.hero-title'));
 
   // Hero title: the last word in the accent colour
   var title = doc.querySelector('.hero-title');

@@ -162,6 +162,9 @@ a.badge:hover { background: #E9A23B; color: #2A1A05; }
   transform: rotate(-4deg);
 }
 .brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+.brand-mark-svg { flex: 0 0 42px; width: 42px; height: 40px; background: none; border-radius: 0; transform: none; }
+.brand-mark-svg svg { display: block; width: 100%; height: 100%; }
+.brand-name .accent, .hero-title .accent { color: #E9A23B; }
 .brand-logo img { display: block; max-height: 44px; width: auto; }
 .brand-text { display: flex; flex-direction: column; min-width: 0; }
 .brand-name {

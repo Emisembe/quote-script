@@ -68,13 +68,28 @@
   // Initials in the round brand mark when no logo image is set ("Afroshop Finder" -> "AF")
   var mark = doc.querySelector('.brand-mark');
   var name = doc.querySelector('.brand-name');
-  if (mark && name && !mark.querySelector('img')) {
+  if (mark && name && !mark.querySelector('img') && !mark.querySelector('svg')) {
     var skip = { the: 1, a: 1, an: 1 };
     var words = name.textContent.trim().split(/\s+/).filter(function (w) {
       return w && !skip[w.toLowerCase()];
     });
     mark.textContent = words.slice(0, 2).map(function (w) { return w.charAt(0); }).join('').toUpperCase();
   }
+
+  // Two-part names written as one word ("AfroKauf"): second part in the accent colour
+  function accentCamel(el) {
+    if (!el || el.children.length) return false;
+    var m = /^([A-ZÄÖÜ][a-zäöüß]+)([A-ZÄÖÜ][\wäöüß]*)$/.exec(el.textContent.trim());
+    if (!m) return false;
+    el.textContent = m[1];
+    var s = doc.createElement('span');
+    s.className = 'accent';
+    s.textContent = m[2];
+    el.appendChild(s);
+    return true;
+  }
+  accentCamel(name);
+  accentCamel(doc.querySelector('.hero-title'));
 
   // Hero title: the last word in the accent colour
   var title = doc.querySelector('.hero-title');

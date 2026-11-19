@@ -46,7 +46,7 @@ Page not found - <data:blog.title/>
                 </span>
               </b:if>
             <b:else/>
-              <span aria-hidden='true' class='brand-mark'/>
+              <span aria-hidden='true' class='brand-mark brand-mark-svg'><svg aria-hidden='true' viewBox='0 0 76.0 70.5' width='40' height='37'><g transform='translate(0.000 0.000) scale(1.00000) translate(-12.0 -19.5)'><path d='M23 46 V40 A17 17 0 0 1 57 40 V46' fill='none' stroke='#E9A23B' stroke-width='7.5' stroke-linecap='round'/><path d='M43 46 V40 A17 17 0 0 1 77 40 V46' fill='none' stroke='#FBF6EE' stroke-width='7.5' stroke-linecap='round'/><defs><clipPath id='bagclip1'><path d='M23 40 L77 40 Q84 40 84.6 47 L87.4 83 Q88 90 81 90 L19 90 Q12 90 12.6 83 L15.4 47 Q16 40 23 40 Z'/></clipPath></defs><path d='M23 40 L77 40 Q84 40 84.6 47 L87.4 83 Q88 90 81 90 L19 90 Q12 90 12.6 83 L15.4 47 Q16 40 23 40 Z' fill='#FBF6EE'/><g clip-path='url(#bagclip1)'><rect x='10' y='59' width='9.5' height='12' fill='#E9A23B'/><rect x='19' y='59' width='9.5' height='12' fill='#0E4D3A'/><rect x='29' y='59' width='9.5' height='12' fill='#C4552D'/><rect x='38' y='59' width='9.5' height='12' fill='#E9A23B'/><rect x='48' y='59' width='9.5' height='12' fill='#0E4D3A'/><rect x='57' y='59' width='9.5' height='12' fill='#C4552D'/><rect x='67' y='59' width='9.5' height='12' fill='#E9A23B'/><rect x='76' y='59' width='9.5' height='12' fill='#0E4D3A'/><rect x='86' y='59' width='9.5' height='12' fill='#C4552D'/></g></g></svg></span>
               <span class='brand-text'>
                 <span class='brand-name'><data:title/></span>
                 <b:if cond='data:description != &quot;&quot;'>
