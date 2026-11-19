@@ -152,7 +152,8 @@ Show more: Mehr anzeigen
   "Directions" opens Google Maps only when tapped.
 - No Google Fonts are loaded (German courts have fined sites for that without consent); the theme uses system fonts.
 - Stock and offers are what the post says. Shop owners can't edit their own page unless you add them as
-  Blogger authors (max. 100); usually you update pages from their WhatsApp messages or a Google Form.
+  Blogger authors (max. 100). Instead, owners use the site's own "List your shop" page (`signup/`): it sends their
+  details straight into your Google Sheet, and you update the page from there.
 
 ## For developers
 
