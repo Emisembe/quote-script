@@ -1,0 +1,2843 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:version='2' expr:dir='data:blog.languageDirection' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<meta content='width=device-width, initial-scale=1' name='viewport'/>
+<b:include data='blog' name='all-head-content'/>
+<title>
+<b:if cond='data:blog.pageType == &quot;index&quot;'>
+<data:blog.pageTitle/>
+<b:else/>
+<b:if cond='data:blog.pageType != &quot;error_page&quot;'>
+<data:blog.pageName/> - <data:blog.title/>
+<b:else/>
+Page not found - <data:blog.title/>
+</b:if>
+</b:if>
+</title>
+<b:skin><![CDATA[
+/*
+-----------------------------------------------
+Blogger Template Style
+Name:     Afroshop Directory
+Version:  1.0.0
+License:  Free to use on any Blogger blog
+----------------------------------------------- */
+
+/* Variable definitions (editable in Theme > Customise > Advanced)
+====================
+<Variable name="primary.color" description="Primary (header, hero, footer)" type="color" default="#0E4D3A" value="#0E4D3A"/>
+<Variable name="primary.soft.color" description="Primary, lighter" type="color" default="#17644D" value="#17644D"/>
+<Variable name="accent.color" description="Accent (gold: buttons, highlights)" type="color" default="#E9A23B" value="#E9A23B"/>
+<Variable name="clay.color" description="Second accent (clay: badges, open-now)" type="color" default="#C4552D" value="#C4552D"/>
+<Variable name="page.background.color" description="Page background" type="color" default="#FBF6EE" value="#FBF6EE"/>
+<Variable name="text.color" description="Body text" type="color" default="#1F2420" value="#1F2420"/>
+<Variable name="muted.color" description="Muted text" type="color" default="#646A63" value="#646A63"/>
+<Variable name="border.color" description="Borders and dividers" type="color" default="#E6DCCB" value="#E6DCCB"/>
+*/
+
+
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(66px + 12px);
+}
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: $(text.color);
+  background: $(page.background.color);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+html.nav-locked, html.nav-locked body { overflow: hidden; }
+img, video, iframe, embed, object { max-width: 100%; }
+img { height: auto; border: 0; }
+a { color: inherit; text-decoration: none; }
+p { margin: 0 0 1em; }
+h1, h2, h3, h4, h5, h6 { margin: 0 0 0.5em; line-height: 1.15; color: inherit; letter-spacing: -0.015em; }
+button, input, select, textarea { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+/* "body" prefix: Blogger injects its own widget stylesheet, sometimes after this skin */
+body .section, body .widget { margin: 0; padding: 0; }
+body .widget ul, body .widget ol { list-style: none; margin: 0; padding: 0; }
+body .widget li { margin: 0; padding: 0; }
+body .widget .post-body ul { list-style: disc; padding-left: 1.4em; margin: 0 0 1em; }
+body .widget .post-body ol { list-style: decimal; padding-left: 1.4em; margin: 0 0 1em; }
+body .widget .post-body li { padding: 0.15em 0; }
+:focus-visible { outline: 3px solid $(accent.color); outline-offset: 2px; }
+
+.container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+@media (min-width: 768px) { .container { padding: 0 32px; } }
+
+.skip-link {
+  position: absolute; left: -9999px; top: 12px; z-index: 300;
+  background: #fff; color: $(primary.color); font-weight: 700;
+  padding: 10px 16px; border-radius: 9px;
+}
+.skip-link:focus { left: 16px; }
+
+.home-only { display: none; }
+.dir-admin { display: none; }
+
+.badge {
+  display: inline-block;
+  background: #F3E3C3;
+  color: #6B3A12;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 6px 10px;
+  border-radius: 999px;
+  transition: background 0.2s, color 0.2s;
+}
+a.badge:hover { background: $(accent.color); color: #2A1A05; }
+
+/* ---------- Buttons ---------- */
+.btn,
+.header-cta .widget-content a,
+.plan a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 11px 22px;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary, .header-cta .widget-content a, .plan a {
+  background: $(accent.color);
+  color: #2A1A05;
+}
+.btn-primary:hover, .header-cta .widget-content a:hover, .plan a:hover { background: #F2B65A; }
+.btn-ghost {
+  background: transparent;
+  border-color: currentColor;
+  color: $(primary.color);
+}
+.btn-ghost:hover { background: rgba(14, 77, 58, 0.06); }
+.btn-link {
+  min-height: 0;
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  color: $(primary.color);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.btn-whatsapp { background: #1E8A5A; color: #fff; }
+.btn-whatsapp:hover { background: #18734B; }
+.btn-call { background: $(primary.color); color: #fff; }
+.btn-call:hover { background: $(primary.soft.color); }
+.btn-sm { min-height: 38px; padding: 7px 14px; font-size: 14px; }
+
+/* ---------- Header ---------- */
+.site-header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: $(primary.color);
+  transition: box-shadow 0.2s;
+}
+.site-header::before { content: ''; display: block; height: 5px; background: repeating-linear-gradient(90deg, $(accent.color) 0 22px, $(clay.color) 22px 44px, $(primary.soft.color) 44px 66px, #F3E3C3 66px 72px); }
+.site-header.is-scrolled { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22); }
+.header-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 66px;
+}
+.brand-section { flex: 1 1 auto; min-width: 0; }
+.brand { display: flex; align-items: center; gap: 10px; color: #fff; }
+.brand-mark {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: $(accent.color);
+  color: $(primary.color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 900;
+  overflow: hidden;
+  transform: rotate(-4deg);
+}
+.brand-mark img { width: 100%; height: 100%; object-fit: cover; }
+.brand-logo img { display: block; max-height: 44px; width: auto; }
+.brand-text { display: flex; flex-direction: column; min-width: 0; }
+.brand-name {
+  font-size: 18px; font-weight: 800; line-height: 1.2; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.brand-tagline {
+  font-size: 12px; line-height: 1.35; color: #F3D9A8;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.nav-toggle {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; margin-right: -8px; padding: 0;
+  background: none; border: 0; border-radius: 9px;
+  color: #fff; cursor: pointer;
+}
+.nav-toggle svg { display: block; }
+.nav-toggle .icon-close { display: none; }
+.site-header.nav-open .nav-toggle .icon-menu { display: none; }
+.site-header.nav-open .nav-toggle .icon-close { display: block; }
+
+.nav-drawer { display: none; }
+.site-header.nav-open .nav-drawer {
+  display: block;
+  position: absolute;
+  top: 100%; left: 0; right: 0;
+  padding: 8px 16px 24px;
+  background: $(primary.color);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+  max-height: calc(100vh - 66px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.site-nav .widget > h2, .header-cta .widget > h2 { display: none; }
+.site-nav li a {
+  display: block;
+  padding: 14px 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #EAF2EE;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.site-nav li a:hover { color: $(accent.color); }
+.header-cta .widget-content { margin-top: 18px; }
+.header-cta .widget-content a { display: flex; width: 100%; }
+
+@media (min-width: 1024px) {
+  .nav-toggle { display: none; }
+  .nav-drawer,
+  .site-header.nav-open .nav-drawer {
+    display: flex; align-items: center; gap: 28px;
+    position: static; margin: 0; padding: 0;
+    background: none; box-shadow: none; max-height: none; overflow: visible;
+  }
+  .site-nav .widget-content ul { display: flex; align-items: center; gap: 24px; }
+  .site-nav li a { padding: 6px 0; font-size: 15px; border-bottom: 2px solid transparent; }
+  .site-nav li a:hover { border-bottom-color: $(accent.color); color: #fff; }
+  .header-cta .widget-content { margin: 0; }
+  .header-cta .widget-content a { display: inline-flex; width: auto; min-height: 40px; padding: 8px 18px; font-size: 14px; }
+}
+
+/* ---------- Hero (homepage) ---------- */
+.hero {
+  background-color: $(primary.color);
+  background-image:
+    radial-gradient(circle at 85% 20%, rgba(233, 162, 59, 0.22), transparent 42%),
+    radial-gradient(rgba(255, 255, 255, 0.07) 1.5px, transparent 1.6px);
+  background-size: auto, 22px 22px;
+  color: #fff;
+  padding: 44px 0 92px;
+}
+.hero-copy { max-width: 760px; }
+.hero-eyebrow {
+  display: inline-block;
+  margin: 0 0 14px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(233, 162, 59, 0.16);
+  color: #F6C97E;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.hero-title {
+  font-size: clamp(34px, 7vw, 60px);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  margin: 0 0 16px;
+}
+.hero-title .accent { color: $(accent.color); }
+.hero-text { font-size: 18px; line-height: 1.6; color: #D7E6DF; max-width: 640px; }
+.hero-text p:last-child { margin-bottom: 0; }
+
+/* ---------- Finder ---------- */
+.finder-band { padding: 20px 0 4px; }
+.finder {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid $(border.color);
+  border-radius: 20px;
+  box-shadow: 0 18px 40px rgba(14, 77, 58, 0.14);
+}
+.finder-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.finder-label { font-size: 12px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: $(muted.color); padding-left: 4px; }
+.finder input, .finder select {
+  width: 100%;
+  min-height: 50px;
+  padding: 10px 14px;
+  border: 1.5px solid $(border.color);
+  border-radius: 12px;
+  background: #FFFCF7;
+  font-size: 16px;
+}
+.finder input:focus, .finder select:focus { border-color: $(primary.color); outline: none; box-shadow: 0 0 0 3px rgba(14, 77, 58, 0.15); }
+.finder-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-self: end; }
+.finder-buttons .btn { min-height: 50px; }
+.finder-near.is-on { background: $(primary.color); color: #fff; border-color: $(primary.color); }
+@media (min-width: 900px) {
+  .finder { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) auto; align-items: end; padding: 18px; }
+  .finder-buttons { display: flex; }
+}
+
+.finder-results { padding: 28px 0 8px; }
+.finder-status { color: $(muted.color); margin: 0 0 16px; }
+
+/* ---------- Blocks ---------- */
+.home-blocks .widget { margin: 0; }
+.block { padding: 40px 0 8px; }
+.block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.block-title, .block .widget-content > h2 {
+  font-size: clamp(24px, 3.4vw, 32px);
+  font-weight: 850;
+  margin: 0 0 14px;
+}
+.block-head .block-title { margin: 0; }
+.block-title::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 5px;
+  margin-top: 10px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(90deg, $(accent.color) 0 22px, $(clay.color) 22px 44px, $(primary.soft.color) 44px 66px, #F3E3C3 66px 72px);
+}
+.block-intro { color: $(muted.color); margin-top: -4px; margin-bottom: 18px; }
+.block-intro p { margin: 0; }
+.block-feed.is-empty { display: none; }
+
+/* Tiles: categories and cities */
+body .widget ul.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (min-width: 640px) { body .widget ul.tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { body .widget ul.tiles { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.tiles a {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 108px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid $(border.color);
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1.25;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+.tiles a:hover { transform: translateY(-2px); box-shadow: 0 1px 2px rgba(31, 36, 32, 0.06), 0 6px 18px rgba(31, 36, 32, 0.06); border-color: $(accent.color); }
+.tiles a::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: #F3E3C3;
+  background-image: radial-gradient(circle at 50% 50%, $(clay.color) 0 5px, transparent 6px);
+}
+.tiles li:nth-child(6n+2) a::before { background-color: #DCEBE4; background-image: linear-gradient(45deg, $(primary.color) 25%, transparent 25% 75%, $(primary.color) 75%); background-size: 12px 12px; }
+.tiles li:nth-child(6n+3) a::before { background-color: #F7D9CC; background-image: repeating-linear-gradient(90deg, $(clay.color) 0 4px, transparent 4px 9px); }
+.tiles li:nth-child(6n+4) a::before { background-color: #F3E3C3; background-image: linear-gradient(135deg, $(accent.color) 50%, transparent 50%); }
+.tiles li:nth-child(6n+5) a::before { background-color: #DCEBE4; background-image: radial-gradient(circle, $(primary.color) 0 3px, transparent 3.5px); background-size: 12px 12px; }
+.tiles li:nth-child(6n+6) a::before { background-color: #F7D9CC; background-image: repeating-linear-gradient(0deg, $(clay.color) 0 3px, transparent 3px 8px); }
+.tiles .tile-count { display: block; margin-top: 2px; font-size: 13px; font-weight: 600; color: $(muted.color); }
+.tiles-cities a { min-height: 64px; padding-left: 64px; justify-content: center; }
+.tiles-cities a::before { top: 50%; margin-top: -19px; }
+
+/* ---------- Cards ---------- */
+.card-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+@media (min-width: 640px) { .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.dcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid $(border.color);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(31, 36, 32, 0.06), 0 6px 18px rgba(31, 36, 32, 0.06);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.dcard:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(31, 36, 32, 0.12); }
+.dcard-media {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  background: #EFE5D3;
+  overflow: hidden;
+}
+.dcard-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.dcard-ph, .dcard-initials {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $(primary.color);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1.5px, transparent 1.6px);
+  background-size: 18px 18px;
+  color: $(accent.color);
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+.dcard-initials.tone-1 { background-color: #8E3B1F; color: #F6C97E; }
+.dcard-initials.tone-2 { background-color: #3B2A1A; color: #E9A23B; }
+.dcard-initials.tone-3 { background-color: #1D5C7A; color: #F6C97E; }
+.dcard-flag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: $(accent.color);
+  color: #2A1A05;
+  font-size: 12px;
+  font-weight: 800;
+}
+.dcard-date {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 58px;
+  padding: 6px 0 7px;
+  border-radius: 12px;
+  background: #fff;
+  color: $(text.color);
+  text-align: center;
+  line-height: 1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+.dcard-date b { display: block; font-size: 24px; font-weight: 900; }
+.dcard-date span { display: block; margin-top: 3px; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: $(clay.color); }
+.dcard-body { display: flex; flex-direction: column; gap: 6px; flex: 1 1 auto; padding: 14px 16px 16px; }
+.dcard-kicker { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; font-size: 13px; font-weight: 700; color: $(clay.color); }
+.dcard-label { display: none; }
+.dcard-label.is-shown { display: inline; }
+.dcard-label.is-shown + .dcard-label.is-shown::before { content: '\00B7'; margin-right: 6px; color: $(muted.color); }
+.dcard-title { margin: 0; font-size: 19px; font-weight: 800; line-height: 1.25; }
+.dcard-title a::after { content: ''; position: absolute; inset: 0; }
+.dcard-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin: 0; font-size: 14px; color: $(muted.color); }
+.dcard-extra:empty { display: none; }
+.dcard-actions { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 10px; }
+.dcard.is-rich .dcard-meta time { display: none; }
+
+.status { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+.status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #9AA09A; }
+.status.is-open { color: #1E8A5A; }
+.status.is-open::before { background: #1E8A5A; box-shadow: 0 0 0 3px rgba(30, 138, 90, 0.18); }
+.status.is-closed { color: $(muted.color); }
+.distance { font-weight: 700; color: $(text.color); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 0; padding: 0; list-style: none; }
+body .widget .chips { list-style: none; padding: 0; margin: 4px 0 0; }
+body .widget .chips li, .chips li {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #F5EEE2;
+  font-size: 13px;
+  color: #4C4232;
+}
+.chips li.is-match { background: $(accent.color); color: #2A1A05; font-weight: 700; }
+.chips a { display: block; }
+
+/* ---------- Main list and single post ---------- */
+.page-main { padding: 36px 0 48px; }
+.list-head { margin-bottom: 18px; }
+.empty-state, .not-found {
+  max-width: 560px;
+  margin: 24px auto;
+  padding: 36px 24px;
+  text-align: center;
+  background: #ffffff;
+  border: 1px solid $(border.color);
+  border-radius: 14px;
+}
+.not-found-code { font-size: 64px; font-weight: 900; line-height: 1; margin: 0 0 8px; color: $(accent.color); }
+.pager { display: flex; justify-content: center; gap: 12px; margin-top: 28px; }
+
+.entry { max-width: 1000px; margin: 0 auto; }
+.entry-head { margin-bottom: 18px; }
+.entry-labels { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.entry-title { font-size: clamp(30px, 5vw, 46px); font-weight: 900; letter-spacing: -0.025em; margin: 0 0 8px; }
+.entry-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; color: $(muted.color); font-size: 14px; }
+.entry-panel:empty, .entry-more:empty { display: none; }
+
+.panel {
+  display: grid;
+  gap: 16px;
+  margin: 0 0 24px;
+}
+@media (min-width: 860px) { .panel { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); align-items: start; } }
+.panel-card {
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid $(border.color);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(31, 36, 32, 0.06), 0 6px 18px rgba(31, 36, 32, 0.06);
+}
+.panel-card h2 { font-size: 15px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: $(muted.color); margin: 0 0 10px; }
+.panel-card + .panel-card { margin-top: 0; }
+.panel-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.facts { margin: 0; display: grid; gap: 12px; }
+.facts div { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; }
+.facts dt { color: $(clay.color); padding-top: 2px; }
+.facts dd { margin: 0; overflow-wrap: anywhere; }
+.facts dd a { text-decoration: underline; text-underline-offset: 3px; }
+.hours { width: 100%; border-collapse: collapse; font-size: 15px; }
+.hours td { padding: 6px 0; border-bottom: 1px dashed $(border.color); }
+.hours td:last-child { text-align: right; }
+.hours tr.is-today td { font-weight: 800; color: $(primary.color); }
+.hours-status { margin: 0 0 8px; }
+.panel-note { margin: 14px 0 0; font-size: 14px; color: $(muted.color); }
+.panel-note a { text-decoration: underline; text-underline-offset: 3px; }
+
+.entry-body {
+  font-size: 17px;
+  line-height: 1.75;
+  overflow-wrap: break-word;
+}
+.entry-body h2 { font-size: 24px; margin: 1.4em 0 0.5em; }
+.entry-body h3 { font-size: 20px; margin: 1.3em 0 0.5em; }
+.entry-body a { color: $(primary.color); text-decoration: underline; text-underline-offset: 3px; }
+.entry-body img { border-radius: 12px; }
+.entry-body blockquote { margin: 1.4em 0; padding: 4px 0 4px 18px; border-left: 4px solid $(accent.color); color: $(muted.color); }
+.entry-body .shop-info, .entry-body .event-info {
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  border-radius: 12px;
+  background: #F5EEE2;
+  font-size: 15px;
+}
+.entry.is-shop .entry-body .shop-info, .entry.is-event .entry-body .event-info { display: none; }
+.entry-more { margin-top: 36px; }
+.entry-more .block-title { font-size: 24px; }
+.entry-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 32px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid $(border.color);
+}
+.entry-share-label { font-weight: 800; margin-right: 6px; }
+.entry-share a, .entry-share button {
+  padding: 7px 14px;
+  border: 1px solid $(border.color);
+  border-radius: 999px;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.entry-share a:hover, .entry-share button:hover { border-color: $(primary.color); }
+.entry-reviews { margin-top: 32px; }
+.entry-reviews h4 { font-size: 22px; }
+.entry-reviews .comments .comment-block, .entry-reviews .comment-content { overflow-wrap: break-word; }
+
+/* ---------- Plans (for shop owners) ---------- */
+.block-owners { padding-bottom: 56px; }
+.block-owners .widget-content > p { color: $(muted.color); }
+.plans {
+  display: grid;
+  gap: 16px;
+  margin-top: 8px;
+}
+@media (min-width: 860px) { .plans { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.plan {
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid $(border.color);
+}
+.plan h3 { margin: 0 0 4px; font-size: 20px; font-weight: 850; }
+.plan-price { margin: 0 0 12px; font-size: 26px; font-weight: 900; color: $(primary.color); }
+body .widget .plan ul { list-style: none; padding: 0; margin: 0 0 18px; }
+body .widget .plan li { position: relative; padding: 5px 0 5px 26px; }
+.plan li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 11px;
+  width: 12px;
+  height: 7px;
+  border-left: 2.5px solid #1E8A5A;
+  border-bottom: 2.5px solid #1E8A5A;
+  transform: rotate(-45deg);
+}
+.plan a { margin-top: auto; }
+.plan-highlight { background: $(primary.color); color: #fff; border-color: $(primary.color); box-shadow: 0 18px 40px rgba(14, 77, 58, 0.25); }
+.plan-highlight .plan-price { color: $(accent.color); }
+.plan-highlight li::before { border-color: $(accent.color); }
+
+/* ---------- Footer ---------- */
+.site-footer { background: #0B3B2D; color: #CFE0D8; padding: 0 0 24px; }
+.site-footer::before { content: ''; display: block; height: 5px; margin-bottom: 40px; background: repeating-linear-gradient(90deg, $(accent.color) 0 22px, $(clay.color) 22px 44px, $(primary.soft.color) 44px 66px, #F3E3C3 66px 72px); }
+.footer-grid { display: grid; gap: 28px; }
+@media (min-width: 768px) { .footer-grid { grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; } }
+.site-footer h2 { font-size: 15px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: #fff; margin: 0 0 12px; }
+.site-footer li a { display: inline-block; padding: 4px 0; }
+.site-footer a:hover { color: $(accent.color); }
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 32px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 14px;
+  color: #9DB8AC;
+}
+.footer-bottom p { margin: 0; }
+
+/* ---------- Phones: compact list cards (picture left, details right) ---------- */
+@media (max-width: 639px) {
+  .card-grid { gap: 12px; }
+  .dcard { display: grid; grid-template-columns: 92px minmax(0, 1fr); align-items: start; }
+  .dcard-media { aspect-ratio: auto; width: 80px; height: 80px; margin: 12px 0 0 12px; border-radius: 12px; }
+  .dcard-initials, .dcard-ph { font-size: 24px; background-size: 12px 12px; }
+  .dcard-body { padding: 12px 14px 14px 10px; gap: 4px; }
+  .dcard-title { font-size: 17px; }
+  .dcard-flag { top: auto; bottom: 4px; left: 4px; right: 4px; padding: 3px 0; font-size: 10px; text-align: center; }
+  .dcard-date { top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; border-radius: 0; box-shadow: none; }
+  .dcard-meta { font-size: 13px; }
+  .chips li, body .widget .chips li { font-size: 12px; padding: 3px 8px; }
+  .dcard-actions { padding-top: 8px; }
+  /* Shop and event pages: the shop comes first; the finder is one tap away in the menu */
+  .pt-item .finder-band { display: none; }
+  .pt-item .page-main { padding-top: 20px; }
+  .panel-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); }
+  .panel-actions .btn { padding-left: 10px; padding-right: 10px; }
+}
+
+/* ---------- Small screens: centre the short blocks ---------- */
+@media (max-width: 639px) {
+  .hero { text-align: center; padding: 34px 0 84px; }
+  .hero-copy { margin: 0 auto; }
+  .block-head { justify-content: center; text-align: center; }
+  .block-title::after { margin-left: auto; margin-right: auto; }
+  .block-intro { text-align: center; }
+  .block-categories .block-title, .block-cities .block-title, .block-owners .block-title, .block-owners .widget-content > p { text-align: center; }
+  .site-footer { text-align: center; }
+  .footer-bottom { justify-content: center; text-align: center; }
+  .pager .btn { flex: 1 1 0; }
+  .post-body .separator a { float: none !important; margin-left: 0 !important; margin-right: 0 !important; }
+}
+
+/* ---------- Blogger Layout editor ---------- */
+body#layout .home-only, body#layout .dir-admin { display: block; }
+body#layout .site-header { position: static; }
+body#layout .nav-drawer { display: block; }
+body#layout .nav-toggle, body#layout .finder-band, body#layout .finder-results { display: none; }
+]]></b:skin>
+<b:if cond='data:blog.url == data:blog.homepageUrl'>
+<style type='text/css'>.home-only { display: block; } .finder-band { margin-top: -64px; padding-top: 0; }</style>
+</b:if>
+<b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+<style type='text/css'>.home-only { display: block; } .finder-band { margin-top: -64px; padding-top: 0; }</style>
+</b:if>
+</head>
+<body expr:class='&quot;dir pt-&quot; + data:blog.pageType'>
+<a class='skip-link' href='#content'>Skip to content</a>
+
+<!-- ================= Header ================= -->
+<header class='site-header' id='site-header'>
+  <div class='container header-inner'>
+    <b:section class='brand-section' id='header' maxwidgets='1' showaddelement='no'>
+      <b:widget id='Header1' locked='true' title='Site name (Header)' type='Header' version='1'>
+        <b:includable id='main'>
+          <a class='brand' expr:href='data:blog.homepageUrl'>
+            <b:if cond='data:useImage'>
+              <b:if cond='data:imagePlacement == &quot;REPLACE&quot;'>
+                <span class='brand-logo'><img expr:alt='data:title' expr:src='data:sourceUrl'/></span>
+              <b:else/>
+                <span aria-hidden='true' class='brand-mark'><img alt='' expr:src='data:sourceUrl'/></span>
+                <span class='brand-text'>
+                  <span class='brand-name'><data:title/></span>
+                  <b:if cond='data:description != &quot;&quot;'>
+                    <span class='brand-tagline'><data:description/></span>
+                  </b:if>
+                </span>
+              </b:if>
+            <b:else/>
+              <span aria-hidden='true' class='brand-mark'/>
+              <span class='brand-text'>
+                <span class='brand-name'><data:title/></span>
+                <b:if cond='data:description != &quot;&quot;'>
+                  <span class='brand-tagline'><data:description/></span>
+                </b:if>
+              </span>
+            </b:if>
+          </a>
+        </b:includable>
+      </b:widget>
+    </b:section>
+
+    <button aria-controls='site-nav' aria-expanded='false' aria-label='Open menu' class='nav-toggle' id='nav-toggle' type='button'>
+      <svg aria-hidden='true' class='icon-menu' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='3' x2='21' y1='6' y2='6'/><line x1='3' x2='21' y1='12' y2='12'/><line x1='3' x2='21' y1='18' y2='18'/></svg>
+      <svg aria-hidden='true' class='icon-close' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='18' x2='6' y1='6' y2='18'/><line x1='6' x2='18' y1='6' y2='18'/></svg>
+    </button>
+
+    <nav aria-label='Main' class='nav-drawer' id='site-nav'>
+      <b:section class='site-nav' id='menu' maxwidgets='1' showaddelement='no'>
+        <b:widget id='HTML1' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/#find">Find a shop</a></li>
+<li><a href="/#categories">Categories</a></li>
+<li><a href="/#cities">Cities</a></li>
+<li><a href="/search/label/Events">Events</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='header-cta' id='header-cta' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML2' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<a href="/p/list-your-shop.html">List your shop</a>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </nav>
+  </div>
+</header>
+
+<main id='content'>
+
+<!-- ================= Hero (homepage only) ================= -->
+<section class='hero home-only'>
+  <div class='container'>
+    <b:section class='hero-main' id='hero-main' showaddelement='no'>
+      <b:widget id='HTML3' locked='false' title='African shops across Germany' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<p>Find the foods, hair and beauty products, fabrics and services you grew up with, in a shop near you. Search by product, choose your city or let us find the closest shops.</p>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='hero-copy'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <p class='hero-eyebrow'><data:title/></p>
+            </b:if>
+            <h1 class='hero-title'><data:blog.title/></h1>
+            <div class='hero-text'><data:content/></div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Finder (every page) ================= -->
+<section aria-label='Find a shop' class='finder-band' id='find'>
+  <div class='container'>
+    <form class='finder' id='finder' role='search'>
+      <div class='finder-field finder-q'>
+        <label class='finder-label' for='finder-q'>What are you looking for?</label>
+        <input autocomplete='off' id='finder-q' name='q' placeholder='e.g. egusi, gari, braiding hair, kente' type='search'/>
+      </div>
+      <div class='finder-field finder-city'>
+        <label class='finder-label' for='finder-city'>Where?</label>
+        <select id='finder-city' name='city'>
+          <option value=''>All of Germany</option>
+        </select>
+      </div>
+      <div class='finder-buttons'>
+        <button class='btn btn-ghost finder-near' id='finder-near' type='button'>
+          <svg aria-hidden='true' fill='none' height='18' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='18'><path d='M12 22s7-7.2 7-12a7 7 0 0 0-14 0c0 4.8 7 12 7 12z'/><circle cx='12' cy='10' r='2.5'/></svg>
+          <span>Near me</span>
+        </button>
+        <button class='btn btn-primary finder-go' type='submit'>
+          <svg aria-hidden='true' fill='none' height='18' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.2' viewBox='0 0 24 24' width='18'><circle cx='11' cy='11' r='7'/><line x1='20' x2='16' y1='20' y2='16'/></svg>
+          <span>Search</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+<section aria-live='polite' class='finder-results' hidden='hidden' id='finder-results'>
+  <div class='container'>
+    <div class='block-head'>
+      <h2 class='block-title' id='finder-title'>Results</h2>
+      <button class='btn btn-link' id='finder-clear' type='button'>Clear search</button>
+    </div>
+    <p class='finder-status' id='finder-status'/>
+    <div class='card-grid' id='finder-list'/>
+  </div>
+</section>
+
+<!-- ================= Homepage blocks (top) ================= -->
+<div class='home-only home-blocks'>
+  <b:section class='home-section' id='home-top' showaddelement='yes'>
+    <b:widget id='HTML4' locked='false' title='Browse by category' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<ul class="tiles" id="categories">
+<li><a href="/search/label/Food">Food &amp; groceries</a></li>
+<li><a href="/search/label/Hair%20%26%20Beauty">Hair &amp; beauty</a></li>
+<li><a href="/search/label/Fashion">Fashion &amp; fabrics</a></li>
+<li><a href="/search/label/Restaurant">Restaurants</a></li>
+<li><a href="/search/label/Services">Shipping &amp; money transfer</a></li>
+<li><a href="/search/label/Wholesale">Wholesale</a></li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='block block-categories'>
+            <div class='container'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <h2 class='block-title'><data:title/></h2>
+              </b:if>
+              <div class='widget-content js-categories'><data:content/></div>
+            </div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+      <b:widget id='HTML5' locked='false' title='Featured shops' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<p>Hand-picked shops from our members.</p>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='block block-feed' data-feed='featured' data-max='6'>
+            <div class='container'>
+              <div class='block-head'>
+                <b:if cond='data:title != &quot;&quot;'>
+                  <h2 class='block-title'><data:title/></h2>
+                </b:if>
+                <a class='btn btn-link js-feed-more' href='/search/label/Featured'>See all</a>
+              </div>
+              <div class='block-intro'><data:content/></div>
+              <div class='card-grid js-feed-list'/>
+            </div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+      <b:widget id='HTML6' locked='false' title='Shops by city' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<ul class="tiles tiles-cities" id="cities">
+<li><a href="/search/label/Berlin">Berlin</a></li>
+<li><a href="/search/label/Hamburg">Hamburg</a></li>
+<li><a href="/search/label/M%C3%BCnchen">München</a></li>
+<li><a href="/search/label/K%C3%B6ln">Köln</a></li>
+<li><a href="/search/label/Frankfurt">Frankfurt</a></li>
+<li><a href="/search/label/Stuttgart">Stuttgart</a></li>
+<li><a href="/search/label/D%C3%BCsseldorf">Düsseldorf</a></li>
+<li><a href="/search/label/Dortmund">Dortmund</a></li>
+<li><a href="/search/label/Essen">Essen</a></li>
+<li><a href="/search/label/Leipzig">Leipzig</a></li>
+<li><a href="/search/label/Bremen">Bremen</a></li>
+<li><a href="/search/label/Hannover">Hannover</a></li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='block block-cities'>
+            <div class='container'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <h2 class='block-title'><data:title/></h2>
+              </b:if>
+              <div class='widget-content js-cities'><data:content/></div>
+            </div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+
+<!-- ================= Posts (shops, events, articles) ================= -->
+<div class='page-main'>
+  <div class='container'>
+    <b:section class='main' id='main' showaddelement='no'>
+      <b:widget id='Blog1' locked='true' title='Newest listings' type='Blog' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='showDateHeader'>false</b:widget-setting>
+          <b:widget-setting name='showShareButtons'>false</b:widget-setting>
+          <b:widget-setting name='authorLabel'>By</b:widget-setting>
+          <b:widget-setting name='showCommentLink'>true</b:widget-setting>
+          <b:widget-setting name='showAuthor'>false</b:widget-setting>
+          <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
+          <b:widget-setting name='reactionsLabel'/>
+          <b:widget-setting name='showAuthorProfile'>false</b:widget-setting>
+          <b:widget-setting name='style.layout'>1x1</b:widget-setting>
+          <b:widget-setting name='showLabels'>true</b:widget-setting>
+          <b:widget-setting name='showLocation'>false</b:widget-setting>
+          <b:widget-setting name='showTimestamp'>true</b:widget-setting>
+          <b:widget-setting name='postsPerAd'>3</b:widget-setting>
+          <b:widget-setting name='showBacklinks'>false</b:widget-setting>
+          <b:widget-setting name='showInlineAds'>false</b:widget-setting>
+          <b:widget-setting name='showReactions'>false</b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main' var='top'>
+          <b:if cond='data:blog.pageType == &quot;error_page&quot;'>
+            <b:include name='dirNotFound'/>
+          <b:else/>
+            <b:if cond='data:blog.pageType == &quot;item&quot;'>
+              <b:loop values='data:posts' var='post'>
+                <b:include data='post' name='dirSingle'/>
+              </b:loop>
+            <b:else/>
+              <b:if cond='data:blog.pageType == &quot;static_page&quot;'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='dirSingle'/>
+                </b:loop>
+              <b:else/>
+                <b:include name='dirList'/>
+              </b:if>
+            </b:if>
+          </b:if>
+        </b:includable>
+
+        <b:includable id='dirList'>
+          <div class='block-head list-head'>
+            <b:if cond='data:blog.url == data:blog.homepageUrl'>
+              <h2 class='block-title'><data:title/></h2>
+            <b:else/>
+            <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+              <h2 class='block-title'><data:title/></h2>
+            <b:else/>
+              <h1 class='block-title js-list-title'>
+                <b:if cond='data:blog.searchQuery'>
+                  Search: <data:blog.searchQuery/>
+                <b:else/>
+                  <b:if cond='data:blog.pageName != &quot;&quot;'>
+                    <data:blog.pageName/>
+                  <b:else/>
+                    <data:title/>
+                  </b:if>
+                </b:if>
+              </h1>
+            </b:if>
+            </b:if>
+          </div>
+          <b:if cond='data:numPosts != 0'>
+            <div class='card-grid'>
+              <b:loop values='data:posts' var='post'>
+                <b:include data='post' name='dirCard'/>
+              </b:loop>
+            </div>
+          <b:else/>
+            <div class='empty-state'>
+              <p>Nothing listed here yet.</p>
+              <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+            </div>
+          </b:if>
+          <b:if cond='data:newerPageUrl'>
+            <b:include name='dirListPager'/>
+          <b:else/>
+            <b:if cond='data:olderPageUrl'>
+              <b:include name='dirListPager'/>
+            </b:if>
+          </b:if>
+        </b:includable>
+
+        <b:includable id='dirCard' var='post'>
+          <article class='dcard' expr:data-url='data:post.url'>
+            <a aria-hidden='true' class='dcard-media' expr:href='data:post.url' tabindex='-1'>
+              <b:if cond='data:post.firstImageUrl'>
+                <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
+              <b:else/>
+                <b:if cond='data:post.thumbnailUrl'>
+                  <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
+                <b:else/>
+                  <span class='dcard-ph'/>
+                </b:if>
+              </b:if>
+            </a>
+            <div class='dcard-body'>
+              <p class='dcard-kicker'>
+                <b:loop values='data:post.labels' var='label'>
+                  <span class='dcard-label' expr:data-label='data:label.name'><data:label.name/></span>
+                </b:loop>
+              </p>
+              <h3 class='dcard-title'><a expr:href='data:post.url'><b:if cond='data:post.title'><data:post.title/><b:else/>Untitled</b:if></a></h3>
+              <p class='dcard-meta'><time class='js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time></p>
+              <div class='dcard-extra'/>
+            </div>
+            <!-- The post body carries the shop or event details. Inside <template> it is
+                 inert: no images download and no scripts run until the script reads it. -->
+            <template class='dcard-src'><data:post.body/></template>
+          </article>
+        </b:includable>
+
+        <b:includable id='dirSingle' var='post'>
+          <article class='entry post' expr:data-url='data:post.url'>
+            <a expr:name='data:post.id'/>
+            <header class='entry-head'>
+              <b:if cond='data:post.labels'>
+                <div class='entry-labels'>
+                  <b:loop values='data:post.labels' var='label'>
+                    <a class='badge' expr:data-label='data:label.name' expr:href='data:label.url' rel='tag'><data:label.name/></a>
+                  </b:loop>
+                </div>
+              </b:if>
+              <b:if cond='data:post.title'>
+                <h1 class='entry-title'><data:post.title/></h1>
+              </b:if>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                <p class='entry-meta'>
+                  <span class='entry-updated'>Listed <time class='js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time></span>
+                  <b:include data='post' name='postQuickEdit'/>
+                </p>
+              </b:if>
+            </header>
+            <div class='entry-panel'/>
+            <div class='entry-body post-body' expr:id='&quot;post-body-&quot; + data:post.id'>
+              <data:post.body/>
+            </div>
+            <div class='entry-more'/>
+            <b:if cond='data:blog.pageType == &quot;item&quot;'>
+              <div class='entry-share'>
+                <span class='entry-share-label'>Share</span>
+                <a expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+                <a expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+                <a expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
+                <button expr:data-copy-url='data:post.url' type='button'>Copy link</button>
+              </div>
+              <div class='entry-reviews'>
+                <b:include data='post' name='comment_picker'/>
+              </div>
+            </b:if>
+          </article>
+        </b:includable>
+
+        <b:includable id='dirListPager'>
+          <nav aria-label='Pages' class='pager'>
+            <b:if cond='data:newerPageUrl'>
+              <a class='btn btn-ghost newer' expr:href='data:newerPageUrl'>&#8592; Newer</a>
+            </b:if>
+            <b:if cond='data:olderPageUrl'>
+              <a class='btn btn-primary older' expr:href='data:olderPageUrl'>More &#8594;</a>
+            </b:if>
+          </nav>
+        </b:includable>
+
+        <b:includable id='dirNotFound'>
+          <div class='not-found'>
+            <p class='not-found-code'>404</p>
+            <h1>Page not found</h1>
+            <p>This page has moved or no longer exists. Try the search above.</p>
+            <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+          </div>
+        </b:includable>
+
+        <!-- Comment includables below are Blogger's own, taken from a theme Blogger accepted -->
+                    <b:includable id='backlinkDeleteIcon' var='backlink'>
+                      <span expr:class='&quot;item-control &quot; + data:backlink.adminClass'>
+                        <a expr:href='data:backlink.deleteUrl' expr:title='data:top.deleteBacklinkMsg'>
+                          <img src='//www.blogger.com/img/icon_delete13.gif'/>
+                        </a>
+                      </span>
+                    </b:includable>
+                    <b:includable id='backlinks' var='post'>
+                      <a name='links'/>
+                      <h4>
+                        <data:post.backlinksLabel/>
+                      </h4>
+                      <b:if cond='data:post.numBacklinks != 0'>
+                        <dl class='comments-block' id='comments-block'>
+                          <b:loop values='data:post.backlinks' var='backlink'>
+                            <div class='collapsed-backlink backlink-control'>
+                              <dt class='comment-title'>
+                                <span class='backlink-toggle-zippy'>
+                                  &#160;
+                                </span>
+                                <a expr:href='data:backlink.url' rel='nofollow'>
+                                  <data:backlink.title/>
+                                </a>
+                                <b:include data='backlink' name='backlinkDeleteIcon'/>
+                              </dt>
+                              <dd class='comment-body collapseable'>
+                                <data:backlink.snippet/>
+                              </dd>
+                              <dd class='comment-footer collapseable'>
+                                <span class='comment-author'>
+                                  <data:post.authorLabel/>
+                                  <data:backlink.author/>
+                                </span>
+                                <span class='comment-timestamp'>
+                                  <data:post.timestampLabel/>
+                                  <data:backlink.timestamp/>
+                                </span>
+                              </dd>
+                            </div>
+                          </b:loop>
+                        </dl>
+                      </b:if>
+                      <p class='comment-footer'>
+                        <a class='comment-link' expr:href='data:post.createLinkUrl' expr:id='data:widget.instanceId + &quot;_backlinks-create-link&quot;' target='_blank'>
+                          <data:post.createLinkLabel/>
+                        </a>
+                      </p>
+                    </b:includable>
+                    <b:includable id='comment-form' var='post'>
+                      <div class='comment-form'>
+                        <a name='comment-form'/>
+                        <b:if cond='data:mobile'>
+                          <h4 id='comment-post-message'>
+                            <a expr:id='data:widget.instanceId + &quot;_comment-editor-toggle-link&quot;' href='javascript:void(0)'>
+                              <data:postCommentMsg/>
+                            </a>
+                          </h4>
+                          <div class='pesan-komentar'>
+                            <p>
+                              <data:blogCommentMessage/>
+                            </p>
+                          </div>
+                          <data:blogTeamBlogMessage/>
+                          <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+                          <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' style='display: none' width='100%'/>
+                          <b:else/>
+                          <h4 id='comment-post-message'>
+                            <data:postCommentMsg/>
+                          </h4>
+                          <div class='pesan-komentar'>
+                            <p>
+                              <data:blogCommentMessage/>
+                            </p>
+                          </div>
+                          <data:blogTeamBlogMessage/>
+                          <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+                          <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' width='100%'/>
+                        </b:if>
+                        <data:post.friendConnectJs/>
+                        <data:post.cmtfpIframe/>
+                        <script type='text/javascript'>
+                          BLOG_CMT_createIframe(&#39;<data:post.appRpcRelayPath/>&#39;, &#39;<data:post.communityId/>&#39;);
+                        </script>
+                      </div>
+                    </b:includable>
+                    <b:includable id='commentDeleteIcon' var='comment'>
+                      <span expr:class='&quot;item-control &quot; + data:comment.adminClass'>
+                        <b:if cond='data:showCmtPopup'>
+                          <div class='goog-toggle-button'>
+                            <div class='goog-inline-block comment-action-icon'/>
+                          </div>
+                          <b:else/>
+                          <a class='comment-delete' expr:href='data:comment.deleteUrl' expr:title='data:top.deleteCommentMsg'>
+                            <img src='//www.blogger.com/img/icon_delete13.gif'/>
+                          </a>
+                        </b:if>
+                      </span>
+                    </b:includable>
+                    <b:includable id='comment_picker' var='post'>
+                      <b:if cond='data:post.commentSource == 1'>
+                        <b:include data='post' name='iframe_comments'/>
+                        <b:else/>
+                        <b:if cond='data:post.showThreadedComments'>
+                          <b:include data='post' name='threaded_comments'/>
+                          <b:else/>
+                          <b:include data='post' name='comments'/>
+                        </b:if>
+                      </b:if>
+                    </b:includable>
+                    <b:includable id='comments' var='post'>
+  <div class='comments' id='comments'>
+
+    <a name='comments'/>
+    <b:if cond='data:post.allowComments'>
+      <h4 class='comments-title'>
+        <b:if cond='data:post.numComments == 1'>
+          1 <data:commentLabel/>:
+        <b:else/>
+          <data:post.numComments/> <data:commentLabelPlural/>:
+        </b:if>
+      </h4>
+      <b:if cond='data:post.commentPagingRequired'>
+        <span class='paging-control-container'>
+          <a expr:class='data:post.oldLinkClass' expr:href='data:post.oldestLinkUrl'><data:post.oldestLinkText/></a>
+          &#160;
+          <a expr:class='data:post.oldLinkClass' expr:href='data:post.olderLinkUrl'><data:post.olderLinkText/></a>
+          &#160;
+          <data:post.commentRangeText/>
+          &#160;
+          <a expr:class='data:post.newLinkClass' expr:href='data:post.newerLinkUrl'><data:post.newerLinkText/></a>
+          &#160;
+          <a expr:class='data:post.newLinkClass' expr:href='data:post.newestLinkUrl'><data:post.newestLinkText/></a>
+        </span>
+      </b:if>
+
+      <div expr:id='data:widget.instanceId + &quot;_comments-block-wrapper&quot;'>
+        <dl expr:class='data:post.avatarIndentClass' id='comments-block'>
+          <b:loop values='data:post.comments' var='comment'>
+            <dt expr:class='&quot;comment-author &quot; + data:comment.authorClass' expr:id='data:comment.anchorName'>
+              <b:if cond='data:comment.favicon'>
+                <img expr:src='data:comment.favicon' height='16px' style='margin-bottom:-2px;' width='16px'/>
+              </b:if>
+              <a expr:name='data:comment.anchorName'/>
+              <b:if cond='data:blog.enabledCommentProfileImages'>
+                <data:comment.authorAvatarImage/>
+              </b:if>
+              <b:if cond='data:comment.authorUrl'>
+                <a expr:href='data:comment.authorUrl' rel='nofollow'><data:comment.author/></a>
+              <b:else/>
+                <data:comment.author/>
+              </b:if>
+              <data:commentPostedByMsg/>
+            </dt>
+            <dd class='comment-body' expr:id='data:widget.instanceId + data:comment.cmtBodyIdPostfix'>
+              <b:if cond='data:comment.isDeleted'>
+                <span class='deleted-comment'><data:comment.body/></span>
+              <b:else/>
+                <p>
+                  <data:comment.body/>
+                </p>
+              </b:if>
+            </dd>
+            <dd class='comment-footer'>
+              <span class='comment-timestamp'>
+                <a expr:href='data:comment.url' title='comment permalink'>
+                  <data:comment.timestamp/>
+                </a>
+                <b:include data='comment' name='commentDeleteIcon'/>
+              </span>
+            </dd>
+          </b:loop>
+        </dl>
+      </div>
+
+      <b:if cond='data:post.commentPagingRequired'>
+        <span class='paging-control-container'>
+          <a expr:class='data:post.oldLinkClass' expr:href='data:post.oldestLinkUrl'>
+            <data:post.oldestLinkText/>
+          </a>
+          <a expr:class='data:post.oldLinkClass' expr:href='data:post.olderLinkUrl'>
+            <data:post.olderLinkText/>
+          </a>
+          &#160;
+          <data:post.commentRangeText/>
+          &#160;
+          <a expr:class='data:post.newLinkClass' expr:href='data:post.newerLinkUrl'>
+            <data:post.newerLinkText/>
+          </a>
+          <a expr:class='data:post.newLinkClass' expr:href='data:post.newestLinkUrl'>
+            <data:post.newestLinkText/>
+          </a>
+        </span>
+      </b:if>
+
+      <p class='comment-footer'>
+        <b:if cond='data:post.embedCommentForm'>
+          <b:if cond='data:post.allowNewComments'>
+            <b:include data='post' name='comment-form'/>
+          <b:else/>
+            <data:post.noNewCommentsText/>
+          </b:if>
+        <b:else/>
+          <b:if cond='data:post.allowComments'>
+            <a expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'><data:postCommentMsg/></a>
+          </b:if>
+        </b:if>
+
+      </p>
+    </b:if>
+    <b:if cond='data:showCmtPopup'>
+      <div id='comment-popup'>
+        <iframe allowtransparency='true' frameborder='0' id='comment-actions' name='comment-actions' scrolling='no'>
+        </iframe>
+      </div>
+    </b:if>
+
+    <div id='backlinks-container'>
+    <div expr:id='data:widget.instanceId + &quot;_backlinks-container&quot;'>
+       <b:if cond='data:post.showBacklinks'>
+         <b:include data='post' name='backlinks'/>
+       </b:if>
+    </div>
+    </div>
+  </div>
+                    </b:includable>
+                    <b:includable id='iframe_comments' var='post'>
+                      <b:if cond='data:post.allowIframeComments'>
+                        <script expr:src='data:post.iframeCommentSrc' type='text/javascript'/>
+                        <div class='cmt_iframe_holder' expr:data-href='data:post.canonicalUrl' expr:data-viewtype='data:post.viewType'/>
+                        <b:if cond='data:post.embedCommentForm == &quot;false&quot;'>
+                          <a expr:href='data:post.addCommentUrl' expr:onclick='data:post.addCommentOnclick'>
+                            <data:postCommentMsg/>
+                          </a>
+                        </b:if>
+                      </b:if>
+                    </b:includable>
+                    <b:includable id='postQuickEdit' var='post'>
+                      <b:if cond='data:post.editUrl'>
+                        <span expr:class='&quot;item-control &quot; + data:post.adminClass'>
+                          <a expr:href='data:post.editUrl' expr:title='data:top.editPostMsg'>
+                            <span class='quick-edit-link'>Edit</span>
+                          </a>
+                        </span>
+                      </b:if>
+                    </b:includable>
+                    <b:includable id='threaded-comment-form' var='post'>
+                      <div class='comment-form'>
+                        <a name='comment-form'/>
+                        <b:if cond='data:mobile'>
+                          <div class='pesan-komentar'>
+                            <p>
+                              <data:blogCommentMessage/>
+                            </p>
+                          </div>
+                          <data:blogTeamBlogMessage/>
+                          <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+                          <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' style='display: none' width='100%'/>
+                          <b:else/>
+                          <div class='pesan-komentar'>
+                            <p>
+                              <data:blogCommentMessage/>
+                            </p>
+                          </div>
+                          <data:blogTeamBlogMessage/>
+                          <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+                          <iframe allowtransparency='true' class='blogger-iframe-colorize blogger-comment-from-post' frameborder='0' height='410' id='comment-editor' name='comment-editor' src='' width='100%'/>
+                        </b:if>
+                        <data:post.friendConnectJs/>
+                        <data:post.cmtfpIframe/>
+                        <script type='text/javascript'>
+                          BLOG_CMT_createIframe(&#39;<data:post.appRpcRelayPath/>&#39;, &#39;<data:post.communityId/>&#39;);
+                        </script>
+                      </div>
+                    </b:includable>
+                    <b:includable id='threaded_comment_js' var='post'>
+                      <script async='async' expr:src='data:post.commentSrc' type='text/javascript'/>
+                      <script type='text/javascript'>
+                        (function() {
+                          var items = <data:post.commentJso/>;
+                          var msgs = <data:post.commentMsgs/>;
+                          var config = <data:post.commentConfig/>;
+                          // <![CDATA[
+                          var cursor = null;
+                          if (items && items.length > 0) {
+                            cursor = parseInt(items[items.length - 1].timestamp) + 1;
+                          }
+                          var bodyFromEntry = function(entry) {
+                            if (entry.gd$extendedProperty) {
+                              for (var k in entry.gd$extendedProperty) {
+                                if (entry.gd$extendedProperty[k].name == 'blogger.contentRemoved') {
+                                  return '<span class="deleted-comment">' + entry.content.$t + '</span>';
+                                }
+                              }
+                            }
+                            return entry.content.$t;
+                          }
+                          var parse = function(data) {
+                            cursor = null;
+                            var comments = [];
+                            if (data && data.feed && data.feed.entry) {
+                              for (var i = 0, entry; entry = data.feed.entry[i]; i++) {
+                                var comment = {};
+                                // comment ID, parsed out of the original id format
+                                var id = /blog-(\d+).post-(\d+)/.exec(entry.id.$t);
+                                comment.id = id ? id[2] : null;
+                                comment.body = bodyFromEntry(entry);
+                                comment.timestamp = Date.parse(entry.published.$t) + '';
+                                if (entry.author && entry.author.constructor === Array) {
+                                  var auth = entry.author[0];
+                                  if (auth) {
+                                    comment.author = {
+                                      name: (auth.name ? auth.name.$t : undefined),
+                                      profileUrl: (auth.uri ? auth.uri.$t : undefined),
+                                      avatarUrl: (auth.gd$image ? auth.gd$image.src : undefined)
+                                    };
+                                  }
+                                }
+                                if (entry.link) {
+                                  if (entry.link[2]) {
+                                    comment.link = comment.permalink = entry.link[2].href;
+                                  }
+                                  if (entry.link[3]) {
+                                    var pid = /.*comments\/default\/(\d+)\?.*/.exec(entry.link[3].href);
+                                    if (pid && pid[1]) {
+                                      comment.parentId = pid[1];
+                                    }
+                                  }
+                                }
+                                comment.deleteclass = 'item-control blog-admin';
+                                if (entry.gd$extendedProperty) {
+                                  for (var k in entry.gd$extendedProperty) {
+                                    if (entry.gd$extendedProperty[k].name == 'blogger.itemClass') {
+                                      comment.deleteclass += ' ' + entry.gd$extendedProperty[k].value;
+                                    } else if (entry.gd$extendedProperty[k].name == 'blogger.displayTime') {
+                                      comment.displayTime = entry.gd$extendedProperty[k].value;
+                                    }
+                                  }
+                                }
+                                comments.push(comment);
+                              }
+                            }
+                            return comments;
+                          };
+                          var paginator = function(callback) {
+                            if (hasMore()) {
+                              var url = config.feed + '?alt=json&v=2&orderby=published&reverse=false&max-results=50';
+                              if (cursor) {
+                                url += '&published-min=' + new Date(cursor).toISOString();
+                              }
+                              window.bloggercomments = function(data) {
+                                var parsed = parse(data);
+                                cursor = parsed.length < 50 ? null
+                                : parseInt(parsed[parsed.length - 1].timestamp) + 1
+                                callback(parsed);
+                                window.bloggercomments = null;
+                              }
+                              url += '&callback=bloggercomments';
+                              var script = document.createElement('script');
+                              script.type = 'text/javascript';
+                              script.src = url;
+                              document.getElementsByTagName('head')[0].appendChild(script);
+                            }
+                          };
+                          var hasMore = function() {
+                            return !!cursor;
+                          };
+                          var getMeta = function(key, comment) {
+                            if ('iswriter' == key) {
+                              var matches = !!comment.author
+                              && comment.author.name == config.authorName
+                              && comment.author.profileUrl == config.authorUrl;
+                              return matches ? 'true' : '';
+                            } else if ('deletelink' == key) {
+                              return config.baseUri + '/delete-comment.g?blogID='
+                              + config.blogId + '&postID=' + comment.id;
+                            } else if ('deleteclass' == key) {
+                              return comment.deleteclass;
+                            }
+                            return '';
+                          };
+                          var replybox = null;
+                          var replyUrlParts = null;
+                          var replyParent = undefined;
+                          var onReply = function(commentId, domId) {
+                            if (replybox == null) {
+                              // lazily cache replybox, and adjust to suit this style:
+                              replybox = document.getElementById('comment-editor');
+                              if (replybox != null) {
+                                replybox.height = '250px';
+                                replybox.style.display = 'block';
+                                replyUrlParts = replybox.src.split('#');
+                              }
+                            }
+                            if (replybox && (commentId !== replyParent)) {
+                              document.getElementById(domId).insertBefore(replybox.parentNode, null);
+                              replybox.src = replyUrlParts[0]
+                              + (commentId ? '&parentID=' + commentId : '')
+                              + '#' + replyUrlParts[1];
+                              replyParent = commentId;
+                            }
+                          };
+                          var hash = (window.location.hash || '#').substring(1);
+                          var startThread, targetComment;
+                          if (/^comment-form_/.test(hash)) {
+                            startThread = hash.substring('comment-form_'.length);
+                          } else if (/^c[0-9]+$/.test(hash)) {
+                            targetComment = hash.substring(1);
+                          }
+                          // Configure commenting API:
+                          var configJso = {
+                            'maxDepth': config.maxThreadDepth
+                          };
+                          var provider = {
+                            'id': config.postId,
+                            'data': items,
+                            'loadNext': paginator,
+                            'hasMore': hasMore,
+                            'getMeta': getMeta,
+                            'onReply': onReply,
+                            'rendered': true,
+                            'initComment': targetComment,
+                            'initReplyThread': startThread,
+                            'config': configJso,
+                            'messages': msgs
+                          };
+                          var render = function() {
+                            if (window.goog && window.goog.comments) {
+                              var holder = document.getElementById('comment-holder');
+                              window.goog.comments.render(holder, provider);
+                            }
+                          };
+                          // render now, or queue to render when library loads:
+                          if (window.goog && window.goog.comments) {
+                            render();
+                          } else {
+                            window.goog = window.goog || {};
+                            window.goog.comments = window.goog.comments || {};
+                            window.goog.comments.loadQueue = window.goog.comments.loadQueue || [];
+                            window.goog.comments.loadQueue.push(render);
+                          }
+                        })();
+                        // ]]>
+                      </script>
+                    </b:includable>
+                    <b:includable id='threaded_comments' var='post'>
+  <div class='comments' id='comments'>
+    <a name='comments'/>
+    <h4 class='comments-title'>
+      <b:if cond='data:post.numComments == 1'>
+        1 <data:commentLabel/>:
+      <b:else/>
+        <data:post.numComments/> <data:commentLabelPlural/>:
+      </b:if>
+    </h4>
+    <div class='comments-content'>
+      <b:if cond='data:post.embedCommentForm'>
+        <b:include data='post' name='threaded_comment_js'/>
+      </b:if>
+      <div id='comment-holder'>
+         <data:post.commentHtml/>
+      </div>
+    </div>
+
+    <p class='comment-footer'>
+      <b:if cond='data:post.allowNewComments'>
+        <b:include data='post' name='threaded-comment-form'/>
+      <b:else/>
+        <data:post.noNewCommentsText/>
+      </b:if>
+    </p>
+
+    <b:if cond='data:showCmtPopup'>
+      <div id='comment-popup'>
+        <iframe allowtransparency='true' frameborder='0' id='comment-actions' name='comment-actions' scrolling='no'>
+        </iframe>
+      </div>
+    </b:if>
+
+    <div id='backlinks-container'>
+    <div expr:id='data:widget.instanceId + &quot;_backlinks-container&quot;'>
+       <b:if cond='data:post.showBacklinks'>
+         <b:include data='post' name='backlinks'/>
+       </b:if>
+    </div>
+    </div>
+  </div>
+                    </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</div>
+
+<!-- ================= Homepage blocks (bottom) ================= -->
+<div class='home-only home-blocks'>
+  <b:section class='home-section' id='home-bottom' showaddelement='yes'>
+    <b:widget id='HTML7' locked='false' title='Seminars &amp; events' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<p>Workshops for shop owners and community events across Germany.</p>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='block block-feed block-events' data-feed='events' data-max='4'>
+          <div class='container'>
+            <div class='block-head'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <h2 class='block-title'><data:title/></h2>
+              </b:if>
+              <a class='btn btn-link js-feed-more' href='/search/label/Events'>All events</a>
+            </div>
+            <div class='block-intro'><data:content/></div>
+            <div class='card-grid js-feed-list'/>
+          </div>
+        </div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML8' locked='false' title='Own an African shop?' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<p>Get found by customers who are already looking for what you sell. Choose a plan:</p>
+<div class="plans">
+<div class="plan"><h3>Basic</h3><p class="plan-price">Free</p><ul><li>Shop page with address, hours and phone</li><li>Shown in search and on the map</li><li>WhatsApp button</li></ul><a href="/p/list-your-shop.html">Add my shop</a></div>
+<div class="plan plan-highlight"><h3>Premium</h3><p class="plan-price">19 &euro; / month</p><ul><li>Everything in Basic</li><li>Top of search results in your city</li><li>Photos, product list and weekly offers</li><li>Featured on the homepage</li></ul><a href="/p/list-your-shop.html">Go Premium</a></div>
+<div class="plan"><h3>Seminars</h3><p class="plan-price">From 29 &euro;</p><ul><li>Marketing, food safety and import rules</li><li>Meet other shop owners and suppliers</li><li>Members get discounts</li></ul><a href="/search/label/Events">See dates</a></div>
+</div>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='block block-owners'>
+          <div class='container'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <h2 class='block-title'><data:title/></h2>
+            </b:if>
+            <div class='widget-content'><data:content/></div>
+          </div>
+        </div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</div>
+
+<!-- ================= Settings (hidden on the site, editable in Layout) ================= -->
+<div class='dir-admin'>
+  <b:section class='dir-settings-section' id='dir-settings' showaddelement='no'>
+    <b:widget id='HTML90' locked='true' title='Directory settings' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[shop_label: Shop
+featured_label: Featured
+events_label: Events
+list_page: /p/list-your-shop.html
+contact_page: /p/contact.html]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='dir-settings'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML91' locked='false' title='Site words (optional translations)' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[Open now: Open now]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='dir-words'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</div>
+
+</main>
+
+<!-- ================= Footer ================= -->
+<footer class='site-footer'>
+  <div class='container'>
+    <div class='footer-grid'>
+      <b:section class='footer-col' id='footer-about' preferred='yes'>
+        <b:widget id='HTML9' locked='false' title='About us' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<p>One place for African shops in Germany: groceries, beauty, fashion, restaurants and services, with seminars for the people who run them.</p>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='footer-owners' preferred='yes'>
+        <b:widget id='HTML10' locked='false' title='For shop owners' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/p/list-your-shop.html">List your shop</a></li>
+<li><a href="/search/label/Events">Seminars</a></li>
+<li><a href="/p/contact.html">Contact</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='footer-legal' preferred='yes'>
+        <b:widget id='HTML11' locked='false' title='Legal' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/p/impressum.html">Impressum</a></li>
+<li><a href="/p/datenschutz.html">Datenschutz</a></li>
+<li><a href="/p/agb.html">Terms for shop owners</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <!-- only display title if it's non-empty -->
+  <b:if cond='data:title != &quot;&quot;'>
+    <h2 class='title'><data:title/></h2>
+  </b:if>
+  <div class='widget-content'>
+    <data:content/>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+    <div class='footer-bottom'>
+      <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/></p>
+      <b:section class='footer-credit' id='footer-credit' maxwidgets='1' showaddelement='no'>
+        <b:widget id='Attribution1' locked='false' title='' type='Attribution'>
+          <b:widget-settings>
+            <b:widget-setting name='copyright'/>
+          </b:widget-settings>
+          <b:includable id='main'>
+  <div class='widget-content' style='text-align: center;'>
+    <b:if cond='data:attribution != &quot;&quot;'>
+     <data:attribution/>
+    </b:if>
+  </div>
+
+  <b:include name='quickedit'/>
+</b:includable>
+        </b:widget>
+      </b:section>
+    </div>
+  </div>
+</footer>
+
+<script type='text/javascript'>
+//<![CDATA[
+// Theme behaviour: mobile menu, sticky-header shadow, brand initials, hero title accent,
+// card image sizes, dates, copy-link button and footer year. No dependencies.
+(function () {
+  'use strict';
+  var doc = document;
+  var root = doc.documentElement;
+
+  // Mobile menu
+  var header = doc.getElementById('site-header');
+  var toggle = doc.getElementById('nav-toggle');
+  var drawer = doc.getElementById('site-nav');
+  var desktop = window.matchMedia ? window.matchMedia('(min-width: 1024px)') : null;
+
+  function setMenu(open) {
+    if (!header || !toggle) return;
+    if (open) {
+      header.classList.add('nav-open');
+      root.classList.add('nav-locked');
+    } else {
+      header.classList.remove('nav-open');
+      root.classList.remove('nav-locked');
+    }
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+
+  if (header && toggle && drawer) {
+    toggle.addEventListener('click', function () {
+      setMenu(!header.classList.contains('nav-open'));
+    });
+    // Close after choosing a link (also covers same-page #anchors)
+    drawer.addEventListener('click', function (e) {
+      var t = e.target;
+      while (t && t !== drawer) {
+        if (t.tagName === 'A') { setMenu(false); return; }
+        t = t.parentNode;
+      }
+    });
+    doc.addEventListener('keydown', function (e) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && header.classList.contains('nav-open')) {
+        setMenu(false);
+        toggle.focus();
+      }
+    });
+    if (desktop) {
+      var onChange = function () { if (desktop.matches) setMenu(false); };
+      if (desktop.addEventListener) desktop.addEventListener('change', onChange);
+      else if (desktop.addListener) desktop.addListener(onChange);
+    }
+  }
+
+  // Shadow under the sticky header once the page scrolls
+  if (header) {
+    var ticking = false;
+    var onScroll = function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        if (window.pageYOffset > 8) header.classList.add('is-scrolled');
+        else header.classList.remove('is-scrolled');
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // Initials in the round brand mark when no logo image is set ("Afroshop Finder" -> "AF")
+  var mark = doc.querySelector('.brand-mark');
+  var name = doc.querySelector('.brand-name');
+  if (mark && name && !mark.querySelector('img')) {
+    var skip = { the: 1, a: 1, an: 1 };
+    var words = name.textContent.trim().split(/\s+/).filter(function (w) {
+      return w && !skip[w.toLowerCase()];
+    });
+    mark.textContent = words.slice(0, 2).map(function (w) { return w.charAt(0); }).join('').toUpperCase();
+  }
+
+  // Hero title: the last word in the accent colour
+  var title = doc.querySelector('.hero-title');
+  if (title && title.children.length === 0) {
+    var parts = title.textContent.trim().split(/\s+/);
+    if (parts.length > 1) {
+      title.textContent = parts.slice(0, -1).join(' ') + ' ';
+      var accent = doc.createElement('span');
+      accent.className = 'accent';
+      accent.textContent = parts[parts.length - 1];
+      title.appendChild(accent);
+    }
+  }
+
+  // Card images: ask Blogger/YouTube for a 16:9 size instead of the full image or a 72px thumbnail
+  var googleImage = /^https?:\/\/([a-z0-9-]+\.)*(googleusercontent\.com|blogspot\.com|bp\.blogspot\.com|ggpht\.com)\//i;
+  var youtubeThumb = /^(https?:\/\/(img\.youtube\.com|i\.ytimg\.com)\/vi\/[^/]+\/)[a-z]*default\.jpg$/i;
+  var cardImgs = doc.querySelectorAll('img.js-resize');
+  for (var c = 0; c < cardImgs.length; c++) {
+    var src = cardImgs[c].getAttribute('src') || '';
+    var sized = src;
+    if (googleImage.test(src)) {
+      sized = src
+        .replace(/\/s\d+(-[a-z]+)*\//i, '/w720-h405-c/')
+        .replace(/\/w\d+-h\d+(-[a-z]+)*\//i, '/w720-h405-c/')
+        .replace(/=s\d+(-[a-z]+)*$/i, '=w720-h405-c')
+        .replace(/=w\d+-h\d+(-[a-z]+)*$/i, '=w720-h405-c');
+    } else if (youtubeThumb.test(src)) {
+      sized = src.replace(youtubeThumb, '$1hqdefault.jpg');
+    }
+    if (sized !== src) cardImgs[c].setAttribute('src', sized);
+  }
+
+  // Dates: show "12 October 2026" style dates whatever the blog's timestamp format is
+  var dates = doc.querySelectorAll('time.js-date');
+  for (var d = 0; d < dates.length; d++) {
+    var when = new Date(dates[d].getAttribute('datetime'));
+    if (!isNaN(when.getTime())) {
+      dates[d].textContent = when.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+  }
+
+  // Copy-link share button
+  var copyBtns = doc.querySelectorAll('[data-copy-url]');
+  for (var i = 0; i < copyBtns.length; i++) {
+    copyBtns[i].addEventListener('click', function () {
+      var btn = this;
+      var url = btn.getAttribute('data-copy-url');
+      var done = function () {
+        var label = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = label; }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link:', url); });
+      } else {
+        window.prompt('Copy this link:', url);
+      }
+    });
+  }
+
+  // Footer year
+  var years = doc.querySelectorAll('.js-year');
+  for (var y = 0; y < years.length; y++) years[y].textContent = String(new Date().getFullYear());
+})();
+//]]>
+</script>
+<script type='text/javascript'>
+//<![CDATA[
+// Directory behaviour. Shops and events are ordinary Blogger posts with a details block
+// (<div class="shop-info" ...> or <div class="event-info" ...>) at the top of the body.
+// This script reads those blocks to power: the finder (search by product, city, near me),
+// open-now status, shop and event pages (contact buttons, hours, structured data for Google),
+// and the homepage feeds (featured shops, upcoming events). No dependencies.
+(function () {
+  'use strict';
+  var doc = document;
+
+  // ------------------------------------------------------------------ settings & words
+  function readPairs(selector) {
+    var out = {};
+    var el = doc.querySelector(selector);
+    if (!el) return out;
+    var tmp = doc.createElement('div');
+    tmp.innerHTML = el.innerHTML.replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|li)>/gi, '\n');
+    (tmp.textContent || '').split('\n').forEach(function (line) {
+      var i = line.indexOf(':');
+      if (i > 0) {
+        var key = line.slice(0, i).trim();
+        if (key) out[key] = line.slice(i + 1).trim();
+      }
+    });
+    return out;
+  }
+
+  var S = readPairs('.dir-settings');
+  var SET = {
+    shop: S.shop_label || 'Shop',
+    featured: S.featured_label || 'Featured',
+    events: S.events_label || 'Events',
+    listPage: S.list_page || '/p/list-your-shop.html',
+    contactPage: S.contact_page || '/p/contact.html',
+    lang: S.date_language || undefined,
+    country: S.country || 'DE'
+  };
+  var WORDS = readPairs('.dir-words');
+  function t(key) { return WORDS[key] || key; }
+
+  var DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  var DAY_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  var SCHEMA_DAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+
+  // ------------------------------------------------------------------ helpers
+  function el(tag, cls, text) {
+    var n = doc.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function norm(s) {
+    s = String(s || '').toLowerCase();
+    if (s.normalize) s = s.normalize('NFD').replace(/[̀-ͯ]/g, '');
+    return s.replace(/ß/g, 'ss').replace(/\s+/g, ' ').trim();
+  }
+  function list(s) {
+    return String(s || '').split(/[,;|]/).map(function (x) { return x.trim(); }).filter(Boolean);
+  }
+  function safeUrl(u) {
+    u = String(u || '').trim();
+    if (!u) return '';
+    if (/^www\./i.test(u)) u = 'https://' + u;
+    return /^https?:\/\//i.test(u) ? u : '';
+  }
+  function telUrl(phone) {
+    var p = String(phone || '').replace(/[^\d+]/g, '');
+    return p.length > 4 ? 'tel:' + p : '';
+  }
+  function waUrl(number, text) {
+    var n = String(number || '').replace(/\D/g, '');
+    if (!n) return '';
+    if (n.indexOf('00') === 0) n = n.slice(2);
+    else if (n.charAt(0) === '0') n = '49' + n.slice(1); // German national number
+    return 'https://wa.me/' + n + (text ? '?text=' + encodeURIComponent(text) : '');
+  }
+  function mapsUrl(info) {
+    if (info.lat && info.lng) return 'https://www.google.com/maps/dir/?api=1&destination=' + info.lat + ',' + info.lng;
+    if (info.address) return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(info.address);
+    return '';
+  }
+  function labelFromHref(href) {
+    var m = /\/search\/label\/([^?#]+)/.exec(href || '');
+    if (!m) return '';
+    try { return decodeURIComponent(m[1].replace(/\+/g, ' ')); } catch (e) { return m[1]; }
+  }
+  function labelUrl(label) { return '/search/label/' + encodeURIComponent(label); }
+  function siteName() {
+    var n = doc.querySelector('.brand-name') || doc.querySelector('.brand-logo img');
+    return n ? (n.textContent || n.getAttribute('alt') || '').trim() : '';
+  }
+  var googleImage = /^https?:\/\/([a-z0-9-]+\.)*(googleusercontent\.com|blogspot\.com|ggpht\.com)\//i;
+  function sizedImage(src) {
+    if (!src || !googleImage.test(src)) return src;
+    return src
+      .replace(/\/s\d+(-[a-z]+)*\//i, '/w720-h405-c/')
+      .replace(/\/w\d+-h\d+(-[a-z]+)*\//i, '/w720-h405-c/')
+      .replace(/=s\d+(-[a-z]+)*$/i, '=w720-h405-c')
+      .replace(/=w\d+-h\d+(-[a-z]+)*$/i, '=w720-h405-c');
+  }
+  function initials(title) {
+    var words = String(title || '').replace(/[^A-Za-z0-9À-ɏ\s]/g, ' ').split(/\s+/).filter(Boolean);
+    return words.slice(0, 2).map(function (w) { return w.charAt(0); }).join('').toUpperCase() || '•';
+  }
+  function storage(kind) {
+    try { var s = window[kind]; var k = '__dir'; s.setItem(k, k); s.removeItem(k); return s; } catch (e) { return null; }
+  }
+
+  // Category and city names come from the homepage gadgets, so the owner edits them in one place.
+  function linksIn(selector) {
+    var out = [];
+    var links = doc.querySelectorAll(selector + ' a');
+    for (var i = 0; i < links.length; i++) {
+      var label = labelFromHref(links[i].getAttribute('href'));
+      if (label) out.push({ label: label, name: links[i].textContent.trim() || label });
+    }
+    return out;
+  }
+  var CITIES = linksIn('.js-cities');
+  var CATEGORIES = linksIn('.js-categories');
+  function findIn(arr, label) {
+    var n = norm(label);
+    for (var i = 0; i < arr.length; i++) if (norm(arr[i].label) === n) return arr[i];
+    return null;
+  }
+  function sameCity(a, b) {
+    a = norm(a); b = norm(b);
+    if (!a || !b) return false;
+    return a === b || a.indexOf(b + ' ') === 0 || b.indexOf(a + ' ') === 0;
+  }
+
+  // ------------------------------------------------------------------ reading details blocks
+  function readBlock(root) {
+    if (!root || !root.querySelector) return null;
+    var b = root.querySelector('.shop-info');
+    if (b) {
+      return {
+        type: 'shop',
+        city: b.getAttribute('data-city') || '',
+        address: b.getAttribute('data-address') || '',
+        lat: parseFloat(b.getAttribute('data-lat')) || 0,
+        lng: parseFloat(b.getAttribute('data-lng')) || 0,
+        phone: b.getAttribute('data-phone') || '',
+        whatsapp: b.getAttribute('data-whatsapp') || '',
+        hours: b.getAttribute('data-hours') || '',
+        sells: list(b.getAttribute('data-sells')),
+        origin: list(b.getAttribute('data-origin')),
+        services: list(b.getAttribute('data-services')),
+        website: safeUrl(b.getAttribute('data-website')),
+        instagram: b.getAttribute('data-instagram') || '',
+        email: b.getAttribute('data-email') || ''
+      };
+    }
+    b = root.querySelector('.event-info');
+    if (b) {
+      return {
+        type: 'event',
+        date: b.getAttribute('data-date') || '',
+        time: b.getAttribute('data-time') || '',
+        place: b.getAttribute('data-place') || '',
+        city: b.getAttribute('data-city') || '',
+        price: b.getAttribute('data-price') || '',
+        register: safeUrl(b.getAttribute('data-register'))
+      };
+    }
+    return null;
+  }
+  function htmlRoot(html) {
+    var d = doc.implementation.createHTMLDocument('');
+    d.body.innerHTML = html || ''; // inert document: no scripts run, no images load
+    return d.body;
+  }
+  function firstImage(root) {
+    var img = root && root.querySelector('img');
+    return img ? img.getAttribute('src') || '' : '';
+  }
+
+  // ------------------------------------------------------------------ opening hours
+  var DAY_KEYS = { mo: 0, tu: 1, di: 1, we: 2, mi: 2, th: 3, do: 3, fr: 4, sa: 5, su: 6, so: 6 };
+  function minutes(s) {
+    var m = /^(\d{1,2})(?:[:.](\d{2}))?$/.exec(s.trim());
+    if (!m) return null;
+    var h = +m[1], mm = +(m[2] || 0);
+    if (h > 24 || mm > 59) return null;
+    return h * 60 + mm;
+  }
+  // "Mo-Fr 10:00-20:00; Sa 09:00-18:00; So closed"  (English or German day names)
+  function parseHours(str) {
+    if (!str) return null;
+    var week = [[], [], [], [], [], [], []];
+    var any = false;
+    str.split(/[;\n]/).forEach(function (seg) {
+      var m = /^\s*([A-Za-z]{2}[a-z]*\.?(?:\s*[-–,]\s*[A-Za-z]{2}[a-z]*\.?)*)\s*:?\s+(.+)$/.exec(seg);
+      if (!m) return;
+      var days = [];
+      m[1].split(',').forEach(function (part) {
+        var r = part.split(/[-–]/).map(function (d) { return DAY_KEYS[d.trim().slice(0, 2).toLowerCase()]; });
+        if (r[0] == null) return;
+        if (r.length === 1 || r[1] == null) { days.push(r[0]); return; }
+        for (var d = r[0], n = 0; n < 7; d = (d + 1) % 7, n++) { days.push(d); if (d === r[1]) break; }
+      });
+      if (/closed|geschlossen|ferm/i.test(m[2])) { any = any || days.length > 0; return; }
+      m[2].split(/[,&]|\s+und\s+|\s+and\s+/).forEach(function (range) {
+        var p = range.split(/\s*[-–]\s*/);
+        if (p.length !== 2) return;
+        var a = minutes(p[0]), b = minutes(p[1]);
+        if (a == null || b == null) return;
+        if (b <= a) b = 24 * 60;
+        days.forEach(function (d) { week[d].push([a, b]); any = true; });
+      });
+    });
+    return any ? week : null;
+  }
+  function berlinNow() {
+    try {
+      var parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Berlin', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date());
+      var o = {};
+      parts.forEach(function (p) { o[p.type] = p.value; });
+      return { day: DAY_SHORT.indexOf(o.weekday), min: (+o.hour % 24) * 60 + (+o.minute) };
+    } catch (e) {
+      var d = new Date();
+      return { day: (d.getDay() + 6) % 7, min: d.getHours() * 60 + d.getMinutes() };
+    }
+  }
+  function hhmm(min) {
+    var h = Math.floor(min / 60) % 24, m = min % 60;
+    return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+  }
+  function openStatus(week) {
+    if (!week) return null;
+    var now = berlinNow();
+    if (now.day < 0) return null;
+    var today = week[now.day];
+    for (var i = 0; i < today.length; i++) {
+      if (now.min >= today[i][0] && now.min < today[i][1]) {
+        return { open: true, text: t('Open now') + ' · ' + t('until') + ' ' + hhmm(today[i][1]) };
+      }
+    }
+    for (var n = 0; n < 7; n++) {
+      var d = (now.day + n) % 7;
+      var ranges = week[d].slice().sort(function (a, b) { return a[0] - b[0]; });
+      for (var j = 0; j < ranges.length; j++) {
+        if (n > 0 || ranges[j][0] > now.min) {
+          var when = n === 0 ? t('today') : n === 1 ? t('tomorrow') : t(DAY_SHORT[d]);
+          return { open: false, text: t('Closed') + ' · ' + t('opens') + ' ' + when + ' ' + hhmm(ranges[j][0]) };
+        }
+      }
+    }
+    return { open: false, text: t('Closed') };
+  }
+  function statusNode(week) {
+    var st = openStatus(week);
+    if (!st) return null;
+    return el('span', 'status ' + (st.open ? 'is-open' : 'is-closed'), st.text);
+  }
+
+  // ------------------------------------------------------------------ distance
+  function km(a, b) {
+    var R = 6371, rad = Math.PI / 180;
+    var dLat = (b.lat - a.lat) * rad, dLng = (b.lng - a.lng) * rad;
+    var x = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 2 * R * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+  }
+  function kmText(d) {
+    return (d < 10 ? d.toFixed(1) : Math.round(d)) + ' km';
+  }
+
+  // ------------------------------------------------------------------ cards
+  function specialLabel(l) {
+    var n = norm(l);
+    return n === norm(SET.shop) || n === norm(SET.featured) || n === norm(SET.events);
+  }
+  function kickerFor(item) {
+    var out = [];
+    var cat = null;
+    for (var i = 0; i < item.labels.length && !cat; i++) cat = findIn(CATEGORIES, item.labels[i]);
+    if (cat) out.push(cat.label);
+    else {
+      for (var j = 0; j < item.labels.length; j++) {
+        var l = item.labels[j];
+        if (!specialLabel(l) && !findIn(CITIES, l) && !sameCity(l, item.info && item.info.city)) { out.push(l); break; }
+      }
+    }
+    if (item.info && item.info.city) out.push(item.info.city);
+    else {
+      for (var k = 0; k < item.labels.length; k++) if (findIn(CITIES, item.labels[k])) { out.push(item.labels[k]); break; }
+    }
+    return out;
+  }
+  function isFeatured(item) {
+    for (var i = 0; i < item.labels.length; i++) if (norm(item.labels[i]) === norm(SET.featured)) return true;
+    return false;
+  }
+  function eventDate(info) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(info && info.date || '');
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+  }
+
+  // Build a card skeleton like the theme's own (used for feed and search results)
+  function buildCard(item) {
+    var a = el('article', 'dcard');
+    var media = el('a', 'dcard-media');
+    media.href = item.url;
+    media.setAttribute('aria-hidden', 'true');
+    media.tabIndex = -1;
+    if (item.img) {
+      var img = el('img');
+      img.src = sizedImage(item.img);
+      img.alt = '';
+      img.loading = 'lazy';
+      media.appendChild(img);
+    } else {
+      media.appendChild(el('span', 'dcard-ph'));
+    }
+    a.appendChild(media);
+    var body = el('div', 'dcard-body');
+    body.appendChild(el('p', 'dcard-kicker'));
+    var h = el('h3', 'dcard-title');
+    var link = el('a', null, item.title);
+    link.href = item.url;
+    h.appendChild(link);
+    body.appendChild(h);
+    body.appendChild(el('p', 'dcard-meta'));
+    body.appendChild(el('div', 'dcard-extra'));
+    a.appendChild(body);
+    enhanceCard(a, item);
+    return a;
+  }
+
+  // Fill a card with shop or event details. opts: { match: [tokens], distance: km }
+  function enhanceCard(card, item, opts) {
+    opts = opts || {};
+    var info = item.info;
+    var kicker = card.querySelector('.dcard-kicker');
+    var meta = card.querySelector('.dcard-meta');
+    var extra = card.querySelector('.dcard-extra');
+    var media = card.querySelector('.dcard-media');
+    var ph = card.querySelector('.dcard-ph');
+    if (ph) { ph.className = 'dcard-initials tone-' + (Math.abs(hash(item.title || '')) % 4); ph.textContent = initials(item.title); }
+
+    if (kicker) {
+      var server = kicker.querySelectorAll('.dcard-label');
+      var want = kickerFor(item);
+      if (server.length) {
+        // theme-rendered card: reveal only the category and city labels
+        for (var i = 0; i < server.length; i++) {
+          var lab = server[i].getAttribute('data-label');
+          if (want.indexOf(lab) >= 0 || (info && sameCity(lab, info.city))) server[i].classList.add('is-shown');
+        }
+        if (!kicker.querySelector('.is-shown') && info && info.city) {
+          var c = el('span', 'dcard-label is-shown', info.city);
+          kicker.appendChild(c);
+        }
+      } else {
+        want.forEach(function (w) { kicker.appendChild(el('span', 'dcard-label is-shown', w)); });
+      }
+    }
+    if (!info) return;
+    card.classList.add('is-rich', 'is-' + info.type);
+
+    if (info.type === 'event') {
+      var d = eventDate(info);
+      if (d && media) {
+        var badge = el('span', 'dcard-date');
+        badge.appendChild(el('b', null, String(d.getDate())));
+        badge.appendChild(el('span', null, d.toLocaleDateString(SET.lang, { month: 'short' }).replace('.', '')));
+        media.appendChild(badge);
+      }
+      if (meta) {
+        meta.textContent = '';
+        var bits = [];
+        if (d) bits.push(d.toLocaleDateString(SET.lang, { weekday: 'short', day: 'numeric', month: 'long' }));
+        if (info.time) bits.push(info.time);
+        if (info.city || info.place) bits.push(info.city || info.place);
+        meta.appendChild(el('span', null, bits.join(' · ')));
+      }
+      if (extra && info.price) extra.appendChild(el('p', 'dcard-meta', info.price));
+      return;
+    }
+
+    // shop
+    if (isFeatured(item) && media && !media.querySelector('.dcard-flag')) media.appendChild(el('span', 'dcard-flag', t('Featured')));
+    if (meta) {
+      meta.textContent = '';
+      var st = statusNode(parseHours(info.hours));
+      if (st) meta.appendChild(st);
+      if (opts.distance != null) meta.appendChild(el('span', 'distance', kmText(opts.distance)));
+    }
+    if (!extra) return;
+    extra.textContent = '';
+    if (info.sells.length) {
+      var match = opts.match || [];
+      var chips = el('ul', 'chips');
+      var sorted = info.sells.slice().sort(function (a, b) { return matches(b, match) - matches(a, match); });
+      sorted.slice(0, 6).forEach(function (s) {
+        chips.appendChild(el('li', matches(s, match) ? 'is-match' : '', s));
+      });
+      if (info.sells.length > 6) chips.appendChild(el('li', '', '+' + (info.sells.length - 6)));
+      extra.appendChild(chips);
+    }
+    var actions = el('div', 'dcard-actions');
+    var tel = telUrl(info.phone);
+    if (tel) { var call = el('a', 'btn btn-call btn-sm', t('Call')); call.href = tel; actions.appendChild(call); }
+    var wa = waUrl(info.whatsapp, t('Hello, I found your shop on') + ' ' + siteName() + '.');
+    if (wa) { var w = el('a', 'btn btn-whatsapp btn-sm', 'WhatsApp'); w.href = wa; w.target = '_blank'; w.rel = 'noopener'; actions.appendChild(w); }
+    if (actions.children.length) extra.appendChild(actions);
+  }
+  function matches(text, tokens) {
+    var n = norm(text);
+    for (var i = 0; i < tokens.length; i++) if (n.indexOf(tokens[i]) >= 0) return 1;
+    return 0;
+  }
+
+  // Theme-rendered cards on list pages: details come from the inert <template>
+  function enhanceListCards() {
+    var cards = doc.querySelectorAll('.page-main .dcard');
+    for (var i = 0; i < cards.length; i++) {
+      var tpl = cards[i].querySelector('template.dcard-src');
+      var root = tpl && tpl.content ? tpl.content : htmlRoot(tpl ? tpl.innerHTML : '');
+      var labels = [];
+      var ls = cards[i].querySelectorAll('.dcard-label');
+      for (var j = 0; j < ls.length; j++) labels.push(ls[j].getAttribute('data-label'));
+      var titleLink = cards[i].querySelector('.dcard-title a');
+      enhanceCard(cards[i], {
+        title: titleLink ? titleLink.textContent : '',
+        url: cards[i].getAttribute('data-url') || '',
+        labels: labels,
+        info: readBlock(root)
+      });
+      if (tpl) tpl.parentNode.removeChild(tpl);
+    }
+  }
+
+  // ------------------------------------------------------------------ feeds
+  function fetchFeed(label, max, start) {
+    // Preview pages answer feed requests with demo entries in Blogger's feed format
+    if (typeof window.DIR_DEMO_FEED === 'function') return Promise.resolve(window.DIR_DEMO_FEED(label, max, start || 1).map(fromEntry));
+    var url = '/feeds/posts/default' + (label ? '/-/' + encodeURIComponent(label) : '') +
+      '?alt=json&max-results=' + (max || 25) + '&start-index=' + (start || 1);
+    return fetch(url, { credentials: 'same-origin' })
+      .then(function (r) { return r.ok ? r.json() : {}; })
+      .then(function (json) { return ((json.feed || {}).entry || []).map(fromEntry); })
+      .catch(function () { return []; });
+  }
+  function fromEntry(e) {
+    var link = (e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0];
+    var root = htmlRoot((e.content || e.summary || {}).$t || '');
+    var info = readBlock(root);
+    var thumb = e.media$thumbnail ? e.media$thumbnail.url : '';
+    var item = {
+      title: (e.title || {}).$t || '',
+      url: link ? link.href : '#',
+      labels: (e.category || []).map(function (c) { return c.term; }),
+      img: thumb || firstImage(root),
+      info: info,
+      text: ''
+    };
+    if (info && info.type === 'shop') {
+      var block = root.querySelector('.shop-info');
+      if (block) block.parentNode.removeChild(block);
+      item.text = norm([item.title, info.sells.join(' '), info.origin.join(' '), info.services.join(' '),
+        item.labels.join(' '), info.city, (root.textContent || '').slice(0, 1500)].join(' '));
+      item.sellsText = norm(info.sells.join(' | '));
+    }
+    return item;
+  }
+
+  // All shops (for search). Cached for 20 minutes in the visitor's own browser.
+  var shopsPromise = null;
+  function loadShops() {
+    if (shopsPromise) return shopsPromise;
+    var store = storage('sessionStorage');
+    var KEY = 'dir-shops-v1';
+    if (store) {
+      try {
+        var cached = JSON.parse(store.getItem(KEY) || 'null');
+        if (cached && Date.now() - cached.at < 20 * 60 * 1000) return (shopsPromise = Promise.resolve(cached.items));
+      } catch (e) { /* ignore */ }
+    }
+    var PAGE = 150, MAX = 1500, all = [];
+    function page(start) {
+      return fetchFeed(SET.shop, PAGE, start).then(function (items) {
+        all = all.concat(items);
+        if (items.length === PAGE && all.length < MAX) return page(start + PAGE);
+        return all;
+      });
+    }
+    shopsPromise = page(1).then(function (items) {
+      items = items.filter(function (i) { return i.info && i.info.type === 'shop'; });
+      if (store) { try { store.setItem(KEY, JSON.stringify({ at: Date.now(), items: items })); } catch (e) { /* full */ } }
+      return items;
+    });
+    return shopsPromise;
+  }
+
+  // ------------------------------------------------------------------ finder
+  function initFinder() {
+    var form = doc.getElementById('finder');
+    if (!form) return;
+    var q = doc.getElementById('finder-q');
+    var city = doc.getElementById('finder-city');
+    var near = doc.getElementById('finder-near');
+    var box = doc.getElementById('finder-results');
+    var title = doc.getElementById('finder-title');
+    var status = doc.getElementById('finder-status');
+    var listEl = doc.getElementById('finder-list');
+    var clear = doc.getElementById('finder-clear');
+    var here = null;
+
+    CITIES.forEach(function (c) {
+      var o = el('option', null, c.name);
+      o.value = c.label;
+      city.appendChild(o);
+    });
+    // On a city page, preselect that city
+    var pageLabel = labelFromHref(location.pathname);
+    if (pageLabel && findIn(CITIES, pageLabel)) city.value = findIn(CITIES, pageLabel).label;
+
+    function setNear(on) {
+      near.classList.toggle('is-on', !!on);
+      near.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    setNear(false);
+
+    near.addEventListener('click', function () {
+      if (here) { here = null; setNear(false); run(); return; }
+      if (!navigator.geolocation) { show(t('Your browser cannot share its location. Choose a city instead.')); return; }
+      near.disabled = true;
+      show(t('Finding your location...'));
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        near.disabled = false;
+        here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setNear(true);
+        city.value = '';
+        run();
+      }, function () {
+        near.disabled = false;
+        show(t('Location was not shared. Choose a city instead.'));
+      }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
+    });
+    form.addEventListener('submit', function (e) { e.preventDefault(); run(true); });
+    city.addEventListener('change', function () { if (city.value) { here = null; setNear(false); } run(); });
+    clear.addEventListener('click', function () {
+      q.value = ''; city.value = ''; here = null; setNear(false);
+      box.hidden = true;
+      writeHash();
+      q.focus();
+    });
+
+    function show(msg) {
+      box.hidden = false;
+      status.textContent = msg;
+    }
+    function writeHash() {
+      var parts = [];
+      if (q.value.trim()) parts.push('q=' + encodeURIComponent(q.value.trim()));
+      if (city.value) parts.push('city=' + encodeURIComponent(city.value));
+      var hash = parts.length ? '#find?' + parts.join('&') : '';
+      if (history.replaceState) history.replaceState(null, '', location.pathname + location.search + hash);
+    }
+
+    var runId = 0;
+    function run(scroll) {
+      var text = q.value.trim();
+      if (!text && !city.value && !here) { box.hidden = true; writeHash(); return; }
+      writeHash();
+      var id = ++runId;
+      show(t('Searching...'));
+      listEl.textContent = '';
+      title.textContent = text ? t('Shops selling') + ' “' + text + '”' : t('Shops');
+      if (city.value) title.textContent += ' ' + t('in') + ' ' + (findIn(CITIES, city.value) || { name: city.value }).name;
+      else if (here) title.textContent += ' ' + t('near you');
+      if (scroll) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      loadShops().then(function (shops) {
+        if (id !== runId) return;
+        var tokens = norm(text).split(' ').filter(function (x) { return x.length > 1; });
+        var stems = tokens.map(function (x) { return x.length > 4 ? x.replace(/(es|s|n)$/, '') : x; });
+        var results = [];
+        shops.forEach(function (s) {
+          var score = 0;
+          for (var i = 0; i < stems.length; i++) {
+            if (s.sellsText && s.sellsText.indexOf(stems[i]) >= 0) score += 3;
+            else if (s.text.indexOf(stems[i]) >= 0) score += 1;
+            else { score = -1; break; } // every word must match somewhere
+          }
+          if (score < 0) return;
+          if (city.value) {
+            var inCity = sameCity(s.info.city, city.value) || s.labels.some(function (l) { return norm(l) === norm(city.value); });
+            if (!inCity) return;
+          }
+          var dist = null;
+          if (here && s.info.lat && s.info.lng) dist = km(here, s.info);
+          if (here && dist == null) return;
+          results.push({ s: s, score: score + (isFeatured(s) ? 0.5 : 0), dist: dist });
+        });
+        results.sort(function (a, b) {
+          if (here) return a.dist - b.dist;
+          return b.score - a.score || a.s.title.localeCompare(b.s.title);
+        });
+        render(results, stems);
+      });
+    }
+
+    function render(results, stems) {
+      listEl.textContent = '';
+      if (!results.length) {
+        status.textContent = t('No shops found. Try another word or a nearby city.');
+        return;
+      }
+      status.textContent = results.length + ' ' + (results.length === 1 ? t('shop found') : t('shops found'));
+      var shown = 0;
+      function more() {
+        results.slice(shown, shown + 18).forEach(function (r) {
+          var card = buildCard(r.s);
+          enhanceCard(card, r.s, { match: stems, distance: r.dist });
+          listEl.appendChild(card);
+        });
+        shown += 18;
+        var old = box.querySelector('.finder-more');
+        if (old) old.parentNode.removeChild(old);
+        if (shown < results.length) {
+          var b = el('button', 'btn btn-ghost finder-more', t('Show more'));
+          b.type = 'button';
+          b.style.marginTop = '18px';
+          b.addEventListener('click', more);
+          listEl.parentNode.appendChild(b);
+        }
+      }
+      more();
+    }
+
+    // Links like /#find?q=egusi&city=Berlin (used by the "We sell" chips on shop pages)
+    function fromHash() {
+      var m = /^#find\?(.*)$/.exec(location.hash);
+      if (!m) return;
+      m[1].split('&').forEach(function (p) {
+        var kv = p.split('=');
+        var v = '';
+        try { v = decodeURIComponent((kv[1] || '').replace(/\+/g, ' ')); } catch (e) { v = kv[1] || ''; }
+        if (kv[0] === 'q') q.value = v;
+        if (kv[0] === 'city') city.value = v;
+      });
+      run(true);
+    }
+    fromHash();
+    window.addEventListener('hashchange', fromHash);
+  }
+
+  // ------------------------------------------------------------------ homepage feeds
+  function initFeeds() {
+    var blocks = doc.querySelectorAll('.block-feed');
+    for (var i = 0; i < blocks.length; i++) (function (block) {
+      var kind = block.getAttribute('data-feed');
+      var max = parseInt(block.getAttribute('data-max'), 10) || 6;
+      var label = kind === 'events' ? SET.events : SET.featured;
+      var listEl = block.querySelector('.js-feed-list');
+      var moreLink = block.querySelector('.js-feed-more');
+      if (moreLink) moreLink.href = labelUrl(label);
+      // Only load when the block is about to be seen (the homepage blocks are hidden elsewhere)
+      if (!block.offsetParent && block.getClientRects().length === 0) return;
+      fetchFeed(label, kind === 'events' ? 50 : max, 1).then(function (items) {
+        if (kind === 'events') {
+          var today = new Date(); today.setHours(0, 0, 0, 0);
+          items = items.filter(function (it) {
+            var d = it.info && it.info.type === 'event' && eventDate(it.info);
+            return d && d >= today;
+          }).sort(function (a, b) { return eventDate(a.info) - eventDate(b.info); });
+        }
+        items = items.slice(0, max);
+        if (!items.length) { block.classList.add('is-empty'); return; }
+        items.forEach(function (it) { listEl.appendChild(buildCard(it)); });
+      });
+    })(blocks[i]);
+  }
+
+  // ------------------------------------------------------------------ single post (shop or event)
+  function fact(icon, content) {
+    var row = el('div');
+    var dt = el('dt');
+    dt.innerHTML = icon; // fixed SVG strings defined below, never blog text
+    row.appendChild(dt);
+    var dd = el('dd');
+    if (typeof content === 'string') dd.textContent = content; else dd.appendChild(content);
+    row.appendChild(dd);
+    return row;
+  }
+  var ICON = {
+    pin: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.2 7-12a7 7 0 0 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+    phone: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
+    globe: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>',
+    flag: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4M4 4h13l-2 4 2 4H4"/></svg>',
+    box: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/></svg>',
+    cal: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+    ticket: '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a3 3 0 0 0 0 6v3h18v-3a3 3 0 0 0 0-6V6H3z"/></svg>'
+  };
+  function link(text, href, cls, blank) {
+    var a = el('a', cls || '', text);
+    a.href = href;
+    if (blank) { a.target = '_blank'; a.rel = 'noopener'; }
+    return a;
+  }
+  function addJsonLd(data) {
+    var s = doc.createElement('script');
+    s.type = 'application/ld+json';
+    s.textContent = JSON.stringify(data);
+    doc.head.appendChild(s);
+  }
+  function splitAddress(address, city) {
+    var out = { '@type': 'PostalAddress', addressCountry: SET.country };
+    var parts = String(address || '').split(',');
+    if (parts.length > 1) {
+      out.streetAddress = parts[0].trim();
+      var m = /(\d{5})\s+(.+)/.exec(parts.slice(1).join(',').trim());
+      if (m) { out.postalCode = m[1]; out.addressLocality = m[2].trim(); }
+    } else if (address) {
+      out.streetAddress = address.trim();
+    }
+    if (!out.addressLocality && city) out.addressLocality = city;
+    return out;
+  }
+
+  function initSingle() {
+    var entry = doc.querySelector('.pt-item .entry') || doc.querySelector('.entry');
+    if (!entry) return;
+    var body = entry.querySelector('.entry-body');
+    var info = readBlock(body);
+    if (!info) return;
+    var panel = entry.querySelector('.entry-panel');
+    var titleEl = entry.querySelector('.entry-title');
+    var name = titleEl ? titleEl.textContent.trim() : '';
+    var labels = [];
+    var ls = entry.querySelectorAll('.entry-labels [data-label]');
+    for (var i = 0; i < ls.length; i++) labels.push(ls[i].getAttribute('data-label'));
+    var image = firstImage(body);
+    var url = location.href.split('#')[0].split('?')[0];
+    entry.classList.add('is-' + info.type);
+
+    if (info.type === 'shop') shopPanel(entry, panel, info, name, labels, image, url);
+    else eventPanel(panel, info, name, image, url);
+  }
+
+  function shopPanel(entry, panel, info, name, labels, image, url) {
+    var week = parseHours(info.hours);
+    var wrap = el('div', 'panel');
+
+    // Contact card
+    var c = el('section', 'panel-card');
+    c.appendChild(el('h2', null, t('Contact & location')));
+    var actions = el('div', 'panel-actions');
+    var tel = telUrl(info.phone);
+    if (tel) actions.appendChild(link(t('Call'), tel, 'btn btn-call'));
+    var wa = waUrl(info.whatsapp, t('Hello, I found your shop on') + ' ' + siteName() + '.');
+    if (wa) actions.appendChild(link('WhatsApp', wa, 'btn btn-whatsapp', true));
+    var maps = mapsUrl(info);
+    if (maps) actions.appendChild(link(t('Directions'), maps, 'btn btn-ghost', true));
+    if (actions.children.length) c.appendChild(actions);
+
+    var facts = el('dl', 'facts');
+    if (info.address) facts.appendChild(fact(ICON.pin, maps ? link(info.address, maps, '', true) : info.address));
+    if (info.phone) facts.appendChild(fact(ICON.phone, tel ? link(info.phone, tel) : info.phone));
+    if (info.website) facts.appendChild(fact(ICON.globe, link(info.website.replace(/^https?:\/\/(www\.)?/i, '').replace(/\/$/, ''), info.website, '', true)));
+    if (info.instagram) {
+      var handle = info.instagram.replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/.*$/, '');
+      if (/^[\w.]+$/.test(handle)) facts.appendChild(fact(ICON.globe, link('@' + handle, 'https://www.instagram.com/' + handle + '/', '', true)));
+    }
+    if (info.origin.length) facts.appendChild(fact(ICON.flag, t('Products from') + ': ' + info.origin.join(', ')));
+    if (info.services.length) facts.appendChild(fact(ICON.box, t('Services') + ': ' + info.services.join(', ')));
+    c.appendChild(facts);
+
+    if (info.sells.length) {
+      var h = el('h2', null, t('We sell'));
+      h.style.marginTop = '18px';
+      c.appendChild(h);
+      var chips = el('ul', 'chips');
+      info.sells.forEach(function (s) {
+        var li = el('li');
+        li.appendChild(link(s, '/#find?q=' + encodeURIComponent(s) + (info.city ? '&city=' + encodeURIComponent(cityLabel(info.city, labels)) : '')));
+        chips.appendChild(li);
+      });
+      c.appendChild(chips);
+    }
+    wrap.appendChild(c);
+
+    // Hours card
+    var hcard = el('section', 'panel-card');
+    hcard.appendChild(el('h2', null, t('Opening hours')));
+    if (week) {
+      var st = statusNode(week);
+      if (st) { var p = el('p', 'hours-status'); p.appendChild(st); hcard.appendChild(p); }
+      var table = el('table', 'hours');
+      var today = berlinNow().day;
+      for (var d = 0; d < 7; d++) {
+        var tr = el('tr', d === today ? 'is-today' : '');
+        tr.appendChild(el('td', null, t(DAY_NAMES[d])));
+        tr.appendChild(el('td', null, week[d].length ? week[d].map(function (r) { return hhmm(r[0]) + '–' + hhmm(r[1]); }).join(', ') : t('Closed')));
+        table.appendChild(tr);
+      }
+      hcard.appendChild(table);
+    } else {
+      hcard.appendChild(el('p', null, info.hours || t('Please call the shop for opening hours.')));
+    }
+    var note = el('p', 'panel-note');
+    note.appendChild(doc.createTextNode(t('Is this your shop?') + ' '));
+    note.appendChild(link(t('Update your listing'), SET.listPage));
+    note.appendChild(doc.createTextNode(' · '));
+    note.appendChild(link(t('Report wrong information'), SET.contactPage + '?about=' + encodeURIComponent(name)));
+    hcard.appendChild(note);
+    wrap.appendChild(hcard);
+    panel.appendChild(wrap);
+
+    // Structured data so Google can show the shop with address, hours and phone
+    var type = 'Store';
+    labels.forEach(function (l) {
+      var n = norm(l);
+      if (n.indexOf('restaurant') >= 0) type = 'Restaurant';
+      else if (n === 'food' || n.indexOf('grocer') >= 0 || n.indexOf('lebensmittel') >= 0) type = 'GroceryStore';
+    });
+    var ld = { '@context': 'https://schema.org', '@type': type, name: name, url: url, address: splitAddress(info.address, info.city) };
+    if (image) ld.image = image;
+    if (info.phone) ld.telephone = info.phone;
+    if (info.lat && info.lng) ld.geo = { '@type': 'GeoCoordinates', latitude: info.lat, longitude: info.lng };
+    if (week) {
+      var oh = [];
+      week.forEach(function (ranges, d) { ranges.forEach(function (r) { oh.push(SCHEMA_DAYS[d] + ' ' + hhmm(r[0]) + '-' + hhmm(r[1])); }); });
+      if (oh.length) ld.openingHours = oh;
+    }
+    if (info.website) ld.sameAs = [info.website];
+    addJsonLd(ld);
+
+    // More shops in the same city
+    var cl = cityLabel(info.city, labels);
+    var more = entry.querySelector('.entry-more');
+    if (!cl || !more) return;
+    fetchFeed(cl, 8, 1).then(function (items) {
+      items = items.filter(function (it) { return pathOf(it.url) !== pathOf(url) && it.info && it.info.type === 'shop'; }).slice(0, 3);
+      if (!items.length) return;
+      var head = el('div', 'block-head');
+      head.appendChild(el('h2', 'block-title', t('More shops in') + ' ' + ((findIn(CITIES, cl) || {}).name || cl)));
+      head.appendChild(link(t('See all'), labelUrl(cl), 'btn btn-link'));
+      more.appendChild(head);
+      var grid = el('div', 'card-grid');
+      items.forEach(function (it) { grid.appendChild(buildCard(it)); });
+      more.appendChild(grid);
+    });
+  }
+  function pathOf(u) {
+    try { return new URL(u, location.href).pathname; } catch (e) { return String(u).split(/[?#]/)[0]; }
+  }
+  function cityLabel(city, labels) {
+    for (var i = 0; i < labels.length; i++) if (findIn(CITIES, labels[i]) || sameCity(labels[i], city)) return labels[i];
+    var c = null;
+    CITIES.forEach(function (x) { if (!c && sameCity(x.label, city)) c = x.label; });
+    return c || '';
+  }
+
+  function eventPanel(panel, info, name, image, url) {
+    var d = eventDate(info);
+    var wrap = el('div', 'panel');
+    var c = el('section', 'panel-card');
+    c.appendChild(el('h2', null, t('Event details')));
+    var facts = el('dl', 'facts');
+    if (d) facts.appendChild(fact(ICON.cal, d.toLocaleDateString(SET.lang, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + (info.time ? ' · ' + info.time : '')));
+    if (info.place || info.city) {
+      var where = [info.place, info.city].filter(Boolean).join(', ');
+      facts.appendChild(fact(ICON.pin, link(where, 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(where), '', true)));
+    }
+    if (info.price) facts.appendChild(fact(ICON.ticket, info.price));
+    c.appendChild(facts);
+    var actions = el('div', 'panel-actions');
+    actions.style.marginTop = '16px';
+    actions.style.marginBottom = '0';
+    if (info.register) actions.appendChild(link(t('Register'), info.register, 'btn btn-primary', true));
+    var times = /(\d{1,2}[:.]\d{2})\s*[-–]\s*(\d{1,2}[:.]\d{2})/.exec(info.time || '');
+    if (d) {
+      var ics = icsFile(name, d, times, [info.place, info.city].filter(Boolean).join(', '), url);
+      var a = null;
+      try { a = link(t('Add to calendar'), URL.createObjectURL(new Blob([ics], { type: 'text/calendar' })), 'btn btn-ghost'); } catch (e) { a = null; }
+    }
+    if (a) {
+      a.setAttribute('download', 'event.ics');
+      actions.appendChild(a);
+    }
+    if (actions.children.length) c.appendChild(actions);
+    wrap.appendChild(c);
+    panel.appendChild(wrap);
+
+    if (d) {
+      var ymd = info.date.slice(0, 10);
+      var ld = {
+        '@context': 'https://schema.org', '@type': 'Event', name: name, url: url,
+        startDate: ymd + (times ? 'T' + times[1].replace('.', ':') : ''),
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        eventStatus: 'https://schema.org/EventScheduled',
+        location: { '@type': 'Place', name: info.place || info.city, address: splitAddress(info.place, info.city) }
+      };
+      if (times) ld.endDate = ymd + 'T' + times[2].replace('.', ':');
+      if (image) ld.image = image;
+      addJsonLd(ld);
+    }
+  }
+  function icsFile(name, d, times, where, url) {
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    var ymd = d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+    function stamp(t2) { return ymd + 'T' + t2.replace(/[:.]/, '').replace(/^(\d{3})$/, '0$1') + '00'; }
+    function esc(s) { return String(s || '').replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n'); }
+    var now = new Date();
+    var lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Directory//Events//EN', 'BEGIN:VEVENT',
+      'UID:' + ymd + '-' + Math.abs(hash(url)) + '@directory',
+      'DTSTAMP:' + now.getUTCFullYear() + pad(now.getUTCMonth() + 1) + pad(now.getUTCDate()) + 'T' + pad(now.getUTCHours()) + pad(now.getUTCMinutes()) + '00Z'];
+    if (times) { lines.push('DTSTART:' + stamp(times[1])); lines.push('DTEND:' + stamp(times[2])); }
+    else lines.push('DTSTART;VALUE=DATE:' + ymd);
+    lines.push('SUMMARY:' + esc(name), 'LOCATION:' + esc(where), 'URL:' + url, 'END:VEVENT', 'END:VCALENDAR');
+    return lines.join('\r\n');
+  }
+  function hash(s) {
+    var h = 0;
+    for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    return h;
+  }
+
+  // ------------------------------------------------------------------ list page titles
+  function initListTitle() {
+    var h = doc.querySelector('.js-list-title');
+    if (!h) return;
+    var label = labelFromHref(location.pathname);
+    var city = label && findIn(CITIES, label);
+    if (city) h.textContent = t('African shops in') + ' ' + city.name;
+    var cat = label && findIn(CATEGORIES, label);
+    if (cat) h.textContent = cat.name;
+  }
+
+  enhanceListCards();
+  initListTitle();
+  initFinder();
+  initFeeds();
+  initSingle();
+})();
+//]]>
+</script>
+</body>
+</html>

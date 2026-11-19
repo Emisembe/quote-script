@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:version='2' expr:dir='data:blog.languageDirection' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+<meta content='width=device-width, initial-scale=1' name='viewport'/>
+<b:include data='blog' name='all-head-content'/>
+<title>
+<b:if cond='data:blog.pageType == &quot;index&quot;'>
+<data:blog.pageTitle/>
+<b:else/>
+<b:if cond='data:blog.pageType != &quot;error_page&quot;'>
+<data:blog.pageName/> - <data:blog.title/>
+<b:else/>
+Page not found - <data:blog.title/>
+</b:if>
+</b:if>
+</title>
+<b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
+<b:if cond='data:blog.url == data:blog.homepageUrl'>
+<style type='text/css'>.home-only { display: block; } .finder-band { margin-top: -64px; padding-top: 0; }</style>
+</b:if>
+<b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+<style type='text/css'>.home-only { display: block; } .finder-band { margin-top: -64px; padding-top: 0; }</style>
+</b:if>
+</head>
+<body expr:class='&quot;dir pt-&quot; + data:blog.pageType'>
+<a class='skip-link' href='#content'>Skip to content</a>
+
+<!-- ================= Header ================= -->
+<header class='site-header' id='site-header'>
+  <div class='container header-inner'>
+    <b:section class='brand-section' id='header' maxwidgets='1' showaddelement='no'>
+      <b:widget id='Header1' locked='true' title='Site name (Header)' type='Header' version='1'>
+        <b:includable id='main'>
+          <a class='brand' expr:href='data:blog.homepageUrl'>
+            <b:if cond='data:useImage'>
+              <b:if cond='data:imagePlacement == &quot;REPLACE&quot;'>
+                <span class='brand-logo'><img expr:alt='data:title' expr:src='data:sourceUrl'/></span>
+              <b:else/>
+                <span aria-hidden='true' class='brand-mark'><img alt='' expr:src='data:sourceUrl'/></span>
+                <span class='brand-text'>
+                  <span class='brand-name'><data:title/></span>
+                  <b:if cond='data:description != &quot;&quot;'>
+                    <span class='brand-tagline'><data:description/></span>
+                  </b:if>
+                </span>
+              </b:if>
+            <b:else/>
+              <span aria-hidden='true' class='brand-mark'/>
+              <span class='brand-text'>
+                <span class='brand-name'><data:title/></span>
+                <b:if cond='data:description != &quot;&quot;'>
+                  <span class='brand-tagline'><data:description/></span>
+                </b:if>
+              </span>
+            </b:if>
+          </a>
+        </b:includable>
+      </b:widget>
+    </b:section>
+
+    <button aria-controls='site-nav' aria-expanded='false' aria-label='Open menu' class='nav-toggle' id='nav-toggle' type='button'>
+      <svg aria-hidden='true' class='icon-menu' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='3' x2='21' y1='6' y2='6'/><line x1='3' x2='21' y1='12' y2='12'/><line x1='3' x2='21' y1='18' y2='18'/></svg>
+      <svg aria-hidden='true' class='icon-close' fill='none' height='26' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='26'><line x1='18' x2='6' y1='6' y2='18'/><line x1='6' x2='18' y1='6' y2='18'/></svg>
+    </button>
+
+    <nav aria-label='Main' class='nav-drawer' id='site-nav'>
+      <b:section class='site-nav' id='menu' maxwidgets='1' showaddelement='no'>
+        <b:widget id='HTML1' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/#find">Find a shop</a></li>
+<li><a href="/#categories">Categories</a></li>
+<li><a href="/#cities">Cities</a></li>
+<li><a href="/search/label/Events">Events</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='header-cta' id='header-cta' maxwidgets='1' showaddelement='yes'>
+        <b:widget id='HTML2' locked='false' title='' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<a href="/p/list-your-shop.html">List your shop</a>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+    </nav>
+  </div>
+</header>
+
+<main id='content'>
+
+<!-- ================= Hero (homepage only) ================= -->
+<section class='hero home-only'>
+  <div class='container'>
+    <b:section class='hero-main' id='hero-main' showaddelement='no'>
+      <b:widget id='HTML3' locked='false' title='African shops across Germany' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<p>Find the foods, hair and beauty products, fabrics and services you grew up with, in a shop near you. Search by product, choose your city or let us find the closest shops.</p>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='hero-copy'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <p class='hero-eyebrow'><data:title/></p>
+            </b:if>
+            <h1 class='hero-title'><data:blog.title/></h1>
+            <div class='hero-text'><data:content/></div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Finder (every page) ================= -->
+<section aria-label='Find a shop' class='finder-band' id='find'>
+  <div class='container'>
+    <form class='finder' id='finder' role='search'>
+      <div class='finder-field finder-q'>
+        <label class='finder-label' for='finder-q'>What are you looking for?</label>
+        <input autocomplete='off' id='finder-q' name='q' placeholder='e.g. egusi, gari, braiding hair, kente' type='search'/>
+      </div>
+      <div class='finder-field finder-city'>
+        <label class='finder-label' for='finder-city'>Where?</label>
+        <select id='finder-city' name='city'>
+          <option value=''>All of Germany</option>
+        </select>
+      </div>
+      <div class='finder-buttons'>
+        <button class='btn btn-ghost finder-near' id='finder-near' type='button'>
+          <svg aria-hidden='true' fill='none' height='18' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='18'><path d='M12 22s7-7.2 7-12a7 7 0 0 0-14 0c0 4.8 7 12 7 12z'/><circle cx='12' cy='10' r='2.5'/></svg>
+          <span>Near me</span>
+        </button>
+        <button class='btn btn-primary finder-go' type='submit'>
+          <svg aria-hidden='true' fill='none' height='18' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.2' viewBox='0 0 24 24' width='18'><circle cx='11' cy='11' r='7'/><line x1='20' x2='16' y1='20' y2='16'/></svg>
+          <span>Search</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+<section aria-live='polite' class='finder-results' hidden='hidden' id='finder-results'>
+  <div class='container'>
+    <div class='block-head'>
+      <h2 class='block-title' id='finder-title'>Results</h2>
+      <button class='btn btn-link' id='finder-clear' type='button'>Clear search</button>
+    </div>
+    <p class='finder-status' id='finder-status'/>
+    <div class='card-grid' id='finder-list'/>
+  </div>
+</section>
+
+<!-- ================= Homepage blocks (top) ================= -->
+<div class='home-only home-blocks'>
+  <b:section class='home-section' id='home-top' showaddelement='yes'>
+    <b:widget id='HTML4' locked='false' title='Browse by category' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<ul class="tiles" id="categories">
+<li><a href="/search/label/Food">Food &amp; groceries</a></li>
+<li><a href="/search/label/Hair%20%26%20Beauty">Hair &amp; beauty</a></li>
+<li><a href="/search/label/Fashion">Fashion &amp; fabrics</a></li>
+<li><a href="/search/label/Restaurant">Restaurants</a></li>
+<li><a href="/search/label/Services">Shipping &amp; money transfer</a></li>
+<li><a href="/search/label/Wholesale">Wholesale</a></li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='block block-categories'>
+            <div class='container'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <h2 class='block-title'><data:title/></h2>
+              </b:if>
+              <div class='widget-content js-categories'><data:content/></div>
+            </div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+      <b:widget id='HTML5' locked='false' title='Featured shops' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<p>Hand-picked shops from our members.</p>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='block block-feed' data-feed='featured' data-max='6'>
+            <div class='container'>
+              <div class='block-head'>
+                <b:if cond='data:title != &quot;&quot;'>
+                  <h2 class='block-title'><data:title/></h2>
+                </b:if>
+                <a class='btn btn-link js-feed-more' href='/search/label/Featured'>See all</a>
+              </div>
+              <div class='block-intro'><data:content/></div>
+              <div class='card-grid js-feed-list'/>
+            </div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+      <b:widget id='HTML6' locked='false' title='Shops by city' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<ul class="tiles tiles-cities" id="cities">
+<li><a href="/search/label/Berlin">Berlin</a></li>
+<li><a href="/search/label/Hamburg">Hamburg</a></li>
+<li><a href="/search/label/M%C3%BCnchen">München</a></li>
+<li><a href="/search/label/K%C3%B6ln">Köln</a></li>
+<li><a href="/search/label/Frankfurt">Frankfurt</a></li>
+<li><a href="/search/label/Stuttgart">Stuttgart</a></li>
+<li><a href="/search/label/D%C3%BCsseldorf">Düsseldorf</a></li>
+<li><a href="/search/label/Dortmund">Dortmund</a></li>
+<li><a href="/search/label/Essen">Essen</a></li>
+<li><a href="/search/label/Leipzig">Leipzig</a></li>
+<li><a href="/search/label/Bremen">Bremen</a></li>
+<li><a href="/search/label/Hannover">Hannover</a></li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <div class='block block-cities'>
+            <div class='container'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <h2 class='block-title'><data:title/></h2>
+              </b:if>
+              <div class='widget-content js-cities'><data:content/></div>
+            </div>
+          </div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+
+<!-- ================= Posts (shops, events, articles) ================= -->
+<div class='page-main'>
+  <div class='container'>
+    <b:section class='main' id='main' showaddelement='no'>
+      <b:widget id='Blog1' locked='true' title='Newest listings' type='Blog' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='showDateHeader'>false</b:widget-setting>
+          <b:widget-setting name='showShareButtons'>false</b:widget-setting>
+          <b:widget-setting name='authorLabel'>By</b:widget-setting>
+          <b:widget-setting name='showCommentLink'>true</b:widget-setting>
+          <b:widget-setting name='showAuthor'>false</b:widget-setting>
+          <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
+          <b:widget-setting name='reactionsLabel'/>
+          <b:widget-setting name='showAuthorProfile'>false</b:widget-setting>
+          <b:widget-setting name='style.layout'>1x1</b:widget-setting>
+          <b:widget-setting name='showLabels'>true</b:widget-setting>
+          <b:widget-setting name='showLocation'>false</b:widget-setting>
+          <b:widget-setting name='showTimestamp'>true</b:widget-setting>
+          <b:widget-setting name='postsPerAd'>3</b:widget-setting>
+          <b:widget-setting name='showBacklinks'>false</b:widget-setting>
+          <b:widget-setting name='showInlineAds'>false</b:widget-setting>
+          <b:widget-setting name='showReactions'>false</b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main' var='top'>
+          <b:if cond='data:blog.pageType == &quot;error_page&quot;'>
+            <b:include name='dirNotFound'/>
+          <b:else/>
+            <b:if cond='data:blog.pageType == &quot;item&quot;'>
+              <b:loop values='data:posts' var='post'>
+                <b:include data='post' name='dirSingle'/>
+              </b:loop>
+            <b:else/>
+              <b:if cond='data:blog.pageType == &quot;static_page&quot;'>
+                <b:loop values='data:posts' var='post'>
+                  <b:include data='post' name='dirSingle'/>
+                </b:loop>
+              <b:else/>
+                <b:include name='dirList'/>
+              </b:if>
+            </b:if>
+          </b:if>
+        </b:includable>
+
+        <b:includable id='dirList'>
+          <div class='block-head list-head'>
+            <b:if cond='data:blog.url == data:blog.homepageUrl'>
+              <h2 class='block-title'><data:title/></h2>
+            <b:else/>
+            <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
+              <h2 class='block-title'><data:title/></h2>
+            <b:else/>
+              <h1 class='block-title js-list-title'>
+                <b:if cond='data:blog.searchQuery'>
+                  Search: <data:blog.searchQuery/>
+                <b:else/>
+                  <b:if cond='data:blog.pageName != &quot;&quot;'>
+                    <data:blog.pageName/>
+                  <b:else/>
+                    <data:title/>
+                  </b:if>
+                </b:if>
+              </h1>
+            </b:if>
+            </b:if>
+          </div>
+          <b:if cond='data:numPosts != 0'>
+            <div class='card-grid'>
+              <b:loop values='data:posts' var='post'>
+                <b:include data='post' name='dirCard'/>
+              </b:loop>
+            </div>
+          <b:else/>
+            <div class='empty-state'>
+              <p>Nothing listed here yet.</p>
+              <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+            </div>
+          </b:if>
+          <b:if cond='data:newerPageUrl'>
+            <b:include name='dirListPager'/>
+          <b:else/>
+            <b:if cond='data:olderPageUrl'>
+              <b:include name='dirListPager'/>
+            </b:if>
+          </b:if>
+        </b:includable>
+
+        <b:includable id='dirCard' var='post'>
+          <article class='dcard' expr:data-url='data:post.url'>
+            <a aria-hidden='true' class='dcard-media' expr:href='data:post.url' tabindex='-1'>
+              <b:if cond='data:post.firstImageUrl'>
+                <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
+              <b:else/>
+                <b:if cond='data:post.thumbnailUrl'>
+                  <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.thumbnailUrl' loading='lazy'/>
+                <b:else/>
+                  <span class='dcard-ph'/>
+                </b:if>
+              </b:if>
+            </a>
+            <div class='dcard-body'>
+              <p class='dcard-kicker'>
+                <b:loop values='data:post.labels' var='label'>
+                  <span class='dcard-label' expr:data-label='data:label.name'><data:label.name/></span>
+                </b:loop>
+              </p>
+              <h3 class='dcard-title'><a expr:href='data:post.url'><b:if cond='data:post.title'><data:post.title/><b:else/>Untitled</b:if></a></h3>
+              <p class='dcard-meta'><time class='js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time></p>
+              <div class='dcard-extra'/>
+            </div>
+            <!-- The post body carries the shop or event details. Inside <template> it is
+                 inert: no images download and no scripts run until the script reads it. -->
+            <template class='dcard-src'><data:post.body/></template>
+          </article>
+        </b:includable>
+
+        <b:includable id='dirSingle' var='post'>
+          <article class='entry post' expr:data-url='data:post.url'>
+            <a expr:name='data:post.id'/>
+            <header class='entry-head'>
+              <b:if cond='data:post.labels'>
+                <div class='entry-labels'>
+                  <b:loop values='data:post.labels' var='label'>
+                    <a class='badge' expr:data-label='data:label.name' expr:href='data:label.url' rel='tag'><data:label.name/></a>
+                  </b:loop>
+                </div>
+              </b:if>
+              <b:if cond='data:post.title'>
+                <h1 class='entry-title'><data:post.title/></h1>
+              </b:if>
+              <b:if cond='data:blog.pageType == &quot;item&quot;'>
+                <p class='entry-meta'>
+                  <span class='entry-updated'>Listed <time class='js-date' expr:datetime='data:post.timestampISO8601'><data:post.timestamp/></time></span>
+                  <b:include data='post' name='postQuickEdit'/>
+                </p>
+              </b:if>
+            </header>
+            <div class='entry-panel'/>
+            <div class='entry-body post-body' expr:id='&quot;post-body-&quot; + data:post.id'>
+              <data:post.body/>
+            </div>
+            <div class='entry-more'/>
+            <b:if cond='data:blog.pageType == &quot;item&quot;'>
+              <div class='entry-share'>
+                <span class='entry-share-label'>Share</span>
+                <a expr:href='&quot;https://api.whatsapp.com/send?text=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>WhatsApp</a>
+                <a expr:href='&quot;https://www.facebook.com/sharer/sharer.php?u=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>Facebook</a>
+                <a expr:href='&quot;https://www.linkedin.com/sharing/share-offsite/?url=&quot; + data:post.url' rel='nofollow noopener' target='_blank'>LinkedIn</a>
+                <button expr:data-copy-url='data:post.url' type='button'>Copy link</button>
+              </div>
+              <div class='entry-reviews'>
+                <b:include data='post' name='comment_picker'/>
+              </div>
+            </b:if>
+          </article>
+        </b:includable>
+
+        <b:includable id='dirListPager'>
+          <nav aria-label='Pages' class='pager'>
+            <b:if cond='data:newerPageUrl'>
+              <a class='btn btn-ghost newer' expr:href='data:newerPageUrl'>&#8592; Newer</a>
+            </b:if>
+            <b:if cond='data:olderPageUrl'>
+              <a class='btn btn-primary older' expr:href='data:olderPageUrl'>More &#8594;</a>
+            </b:if>
+          </nav>
+        </b:includable>
+
+        <b:includable id='dirNotFound'>
+          <div class='not-found'>
+            <p class='not-found-code'>404</p>
+            <h1>Page not found</h1>
+            <p>This page has moved or no longer exists. Try the search above.</p>
+            <a class='btn btn-primary' expr:href='data:blog.homepageUrl'>Back to home</a>
+          </div>
+        </b:includable>
+
+        <!-- Comment includables below are Blogger's own, taken from a theme Blogger accepted -->
+@@BLOG_COMMENTS@@
+      </b:widget>
+    </b:section>
+  </div>
+</div>
+
+<!-- ================= Homepage blocks (bottom) ================= -->
+<div class='home-only home-blocks'>
+  <b:section class='home-section' id='home-bottom' showaddelement='yes'>
+    <b:widget id='HTML7' locked='false' title='Seminars &amp; events' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<p>Workshops for shop owners and community events across Germany.</p>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='block block-feed block-events' data-feed='events' data-max='4'>
+          <div class='container'>
+            <div class='block-head'>
+              <b:if cond='data:title != &quot;&quot;'>
+                <h2 class='block-title'><data:title/></h2>
+              </b:if>
+              <a class='btn btn-link js-feed-more' href='/search/label/Events'>All events</a>
+            </div>
+            <div class='block-intro'><data:content/></div>
+            <div class='card-grid js-feed-list'/>
+          </div>
+        </div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML8' locked='false' title='Own an African shop?' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<p>Get found by customers who are already looking for what you sell. Choose a plan:</p>
+<div class="plans">
+<div class="plan"><h3>Basic</h3><p class="plan-price">Free</p><ul><li>Shop page with address, hours and phone</li><li>Shown in search and on the map</li><li>WhatsApp button</li></ul><a href="/p/list-your-shop.html">Add my shop</a></div>
+<div class="plan plan-highlight"><h3>Premium</h3><p class="plan-price">19 &euro; / month</p><ul><li>Everything in Basic</li><li>Top of search results in your city</li><li>Photos, product list and weekly offers</li><li>Featured on the homepage</li></ul><a href="/p/list-your-shop.html">Go Premium</a></div>
+<div class="plan"><h3>Seminars</h3><p class="plan-price">From 29 &euro;</p><ul><li>Marketing, food safety and import rules</li><li>Meet other shop owners and suppliers</li><li>Members get discounts</li></ul><a href="/search/label/Events">See dates</a></div>
+</div>]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='block block-owners'>
+          <div class='container'>
+            <b:if cond='data:title != &quot;&quot;'>
+              <h2 class='block-title'><data:title/></h2>
+            </b:if>
+            <div class='widget-content'><data:content/></div>
+          </div>
+        </div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</div>
+
+<!-- ================= Settings (hidden on the site, editable in Layout) ================= -->
+<div class='dir-admin'>
+  <b:section class='dir-settings-section' id='dir-settings' showaddelement='no'>
+    <b:widget id='HTML90' locked='true' title='Directory settings' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[shop_label: Shop
+featured_label: Featured
+events_label: Events
+list_page: /p/list-your-shop.html
+contact_page: /p/contact.html]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='dir-settings'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML91' locked='false' title='Site words (optional translations)' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[Open now: Open now]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='dir-words'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+  </b:section>
+</div>
+
+</main>
+
+<!-- ================= Footer ================= -->
+<footer class='site-footer'>
+  <div class='container'>
+    <div class='footer-grid'>
+      <b:section class='footer-col' id='footer-about' preferred='yes'>
+        <b:widget id='HTML9' locked='false' title='About us' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<p>One place for African shops in Germany: groceries, beauty, fashion, restaurants and services, with seminars for the people who run them.</p>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='footer-owners' preferred='yes'>
+        <b:widget id='HTML10' locked='false' title='For shop owners' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/p/list-your-shop.html">List your shop</a></li>
+<li><a href="/search/label/Events">Seminars</a></li>
+<li><a href="/p/contact.html">Contact</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+      <b:section class='footer-col' id='footer-legal' preferred='yes'>
+        <b:widget id='HTML11' locked='false' title='Legal' type='HTML'>
+          <b:widget-settings>
+            <b:widget-setting name='content'><![CDATA[<ul>
+<li><a href="/p/impressum.html">Impressum</a></li>
+<li><a href="/p/datenschutz.html">Datenschutz</a></li>
+<li><a href="/p/agb.html">Terms for shop owners</a></li>
+</ul>]]></b:widget-setting>
+          </b:widget-settings>
+          @@HTML_MAIN@@
+        </b:widget>
+      </b:section>
+    </div>
+    <div class='footer-bottom'>
+      <p class='copyright'>&#169; <span class='js-year'/> <data:blog.title/></p>
+      <b:section class='footer-credit' id='footer-credit' maxwidgets='1' showaddelement='no'>
+        <b:widget id='Attribution1' locked='false' title='' type='Attribution'>
+          <b:widget-settings>
+            <b:widget-setting name='copyright'/>
+          </b:widget-settings>
+          @@ATTRIBUTION_MAIN@@
+        </b:widget>
+      </b:section>
+    </div>
+  </div>
+</footer>
+
+<script type='text/javascript'>
+//<![CDATA[
+@@THEME_JS@@
+//]]>
+</script>
+<script type='text/javascript'>
+//<![CDATA[
+@@DIR_JS@@
+//]]>
+</script>
+</body>
+</html>
