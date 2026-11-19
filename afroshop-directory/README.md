@@ -85,12 +85,12 @@ Upcoming events appear on the homepage automatically, nearest date first. Past e
 | Site name (Header) | Blog title and tagline, or upload a logo image instead of the text |
 | Menu, "List your shop" button | Header links |
 | African shops across Germany | Homepage intro text |
-| Browse by category | Category tiles. **Also feeds the search's category names.** Each link is `/search/label/<Label>` |
+| Browse by category | Category tiles. **Also feeds the search's category names.** Each link is `/search/label/<Label>`. Each tile gets an icon; for a new category pick one with `data-icon="food"` (`beauty`, `fashion`, `restaurant`, `services`, `wholesale`) on the link |
 | Featured shops | Intro text; shows posts with the `Featured` label |
 | Slideshow (gadget with no title, first on the homepage) | The sliding banners. One `<li>` per slide: `<li data-tone="green"><h3>Title</h3><p>Text</p><a href="/link">Button</a></li>`. Tones: `green`, `gold`, `clay`. Add a photo with `<img src="...">` inside the `<li>` |
 | How it works | Three steps for customers on the homepage |
-| Shops by city | City tiles. **Also fills the "Where?" list in the search.** Add a city here when its first shop joins |
-| Shops by state | All 16 Bundesländer. Also in the "Where?" list. A link is `/search/label/<State>` |
+| Shops by city | City tiles. **Also fills the "Where?" list in the search.** Add a city here when its first shop joins. The icon is the city's Bundesland with a dot on the city (about 90 cities are built in). For a smaller town: `<a href="/search/label/Gotha" data-state="Thüringen" data-lat="50.95" data-lng="10.70">Gotha</a>` |
+| Shops by state | All 16 Bundesländer with their outlines. Also in the "Where?" list. A link is `/search/label/<State>`. Outlines: Natural Earth (public domain), so no credit is needed |
 | Seminars & events | Intro text; shows upcoming `Events` posts |
 | Own an African shop? | The plans and prices (plain HTML; keep the `plan` classes) |
 | Partners and supporters | Text and partner logos (`<ul><li><img src="..."></li></ul>`) |
