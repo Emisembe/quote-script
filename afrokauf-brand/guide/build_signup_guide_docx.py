@@ -47,7 +47,8 @@ table(['Part', 'What you do', 'How often'], [
     ['4', 'Change a shop page', 'When a shop asks'],
     ['5', 'Add products, photos and weekly offers', 'Often, mostly for Premium shops'],
     ['6', 'Find shops: the Hessen list', 'Weekly'],
-    ['7', 'Problems and fixes', 'When something does not work'],
+    ['7', 'Newsletters and announcements', 'When you have news for the shops'],
+    ['8', 'Problems and fixes', 'When something does not work'],
 ], widths=[1.3, 11, 4.2])
 
 para('Your files in Google Drive:', bold_lead='')
@@ -96,7 +97,7 @@ steps(['Above the code there is a drop-down list next to “Debug”. Choose set
        'Google says “Google hasn’t verified this app”. This is normal for your own script. Click Advanced, then “Go to AfroKauf sign-ups (unsafe)”.',
        'Google lists what the script may do: use this sheet, save the photos in your Drive, send you emails, put message drafts in your Gmail, '
        'run by itself once a day, and find map positions. Click Allow.',
-       'Go back to the sheet tab. You now see two new tabs, Sign-ups and Settings, and a message box. Click OK.'])
+       'Go back to the sheet tab. You now see four new tabs, Sign-ups, Settings, Campaigns and Send log, and a message box. Click OK.'])
 para('The script also made a Drive folder called “AfroKauf shop photos”. Every sign-up with photos gets its own folder inside it. '
      'You can run setup again at any time (menu AfroKauf › Set up the sheet): it only adds what is missing and never deletes your rows, columns or settings.')
 
@@ -110,8 +111,28 @@ table(['Setting', 'What to write'], [
     ['Send daily summary email?', 'Yes or No. When Yes, you get one email a day, only on days when sign-ups are waiting.'],
     ['Daily email time', 'The hour, 0–23. 8 means between 8 and 9 in the morning.'],
     ['Follow up — New / Checking / Waiting for shop', 'After how many days a sign-up in that status is marked ⚠ FOLLOW UP. Defaults 2, 3 and 7 days. The website promises 2 working days.'],
-    ['Page live / Missing info texts', 'The messages to shops, in English, Deutsch and Français. Change the words as you like. Keep the {{…}} words: they are filled in for each shop.'],
+    ['Web app address', 'Filled in by setup. If it is empty, paste the address from part 2.5 here. The “confirm newsletter” and “unsubscribe” links in emails need it.'],
+    ['Send confirmation to the shop after sign-up?', 'Yes: every shop gets a designed “Sign-up received” email with its reference, right after sending the form.'],
+    ['Sender name', 'The name shops see in their inbox: AfroKauf Verbund.'],
+    ['Brand name, Taglines', 'Shown in the email header and footer, one tagline per language.'],
+    ['Logo', 'Already set to “AfroKauf email logo.png” in Drive › 09 Website › Sign-up form. To change it, paste the Drive link of another PNG.'],
+    ['Website, Contact email, Phone, Address', 'Shown in the email header and footer. Replies from shops go to the contact email.'],
+    ['Primary / Accent / Clay colour', 'The brand colours: #0E4D3A green, #E9A23B gold, #C4552D clay. Leave them unless the brand changes.'],
+    ['Instagram, Facebook, YouTube, TikTok, LinkedIn link', 'Full addresses starting with https://. Only the ones you fill in appear in the emails.'],
+    ['Seminars, Contact, Impressum, Datenschutz page', 'The addresses of those pages on your blog. They are linked at the bottom of every email.'],
+    ['Confirmation / Page live / Missing info texts', 'The messages to shops, in English, Deutsch and Français. Change the words as you like. Keep the {{…}} words: they are filled in for each shop.'],
 ], widths=[5.3, 11.2])
+para('How to write the message texts (the same works in newsletters):', bold_lead='')
+table(['You write', 'In the email'], [
+    ['An empty line', 'A new paragraph'],
+    ['**two stars around words**', 'Bold words'],
+    ['- at the start of lines', 'A list with dots'],
+    ['# Title (own line)', 'A big green title'],
+    ['## Small heading (own line)', 'A small heading with a gold line under it'],
+    ['[Button text](https://link) on its own line', 'A gold button'],
+    ['[Words](https://link) inside a sentence', 'A link on those words'],
+    ['{{ShopName}}, {{City}}, {{Reference}}, {{Greeting}}, {{ShopPageLink}}', 'Filled in for each shop. Every column name without spaces works'],
+], widths=[7.5, 9])
 note('After you change “Send daily summary email?” or the email time, run AfroKauf › Set up the sheet once, so the daily timer is updated.')
 
 h2('2.5 Publish the script as a web app')
@@ -120,7 +141,8 @@ steps(['In the Apps Script tab, click the blue Deploy button (top right) › New
        'Description: Sign-up form. Execute as: Me. Who has access: Anyone.',
        'Click Deploy. Allow again if Google asks.',
        'Copy the Web app URL. It starts with https://script.google.com/macros/s/ and ends with /exec.',
-       'Test it: paste that address into a new browser tab. You should see: “AfroKauf sign-up form is connected.”'])
+       'Test it: paste that address into a new browser tab. You should see: “AfroKauf sign-up form is connected.”',
+       'If Settings › Web app address is empty, paste the same address there.'])
 note('“Anyone” only means the website form can send to it. Nobody can read your sheet through this address.')
 
 h2('2.6 Make the “List your shop” page in Blogger')
@@ -139,10 +161,14 @@ h2('2.7 Test it')
 steps(['Open your website and click “List your shop”.',
        'Fill in a test shop with your own details and one photo. Tick the two boxes. Click Send my shop.',
        'You see “Thank you! We have your details” and a reference like AK-261119-X7QD.',
-       'Check: a new row in the sheet, an email to you, and a photos folder in Drive.',
+       'Check: a new row in the sheet, an email to you, a “Sign-up received” email to the address you used, and a photos folder in Drive.',
+       'Menu AfroKauf › Send me a sample of every email: you get the three shop emails, so you can see the design in Gmail and on your phone.',
        'Set the test row’s Status to Spam, or delete the row.'])
 
 h2('2.8 When you change the script later')
+para('Updating from an older version of the script: paste the new code over the old one, Save, run setup once (menu AfroKauf › Set up the sheet). '
+     'It adds the new tabs, columns and settings. Message texts you never changed are swapped for the new designed ones; texts you edited stay as they are. '
+     'Then publish a new version:')
 para('After any change to the code you must publish a new version, or the website keeps using the old one:')
 steps(['Deploy › Manage deployments.', 'Click the pencil icon.', 'Version: New version.', 'Click Deploy. The web app address stays the same.'])
 
@@ -163,9 +189,12 @@ h1('3. From sign-up to live shop page')
 image(IMG / 'form-done.png', 6.5, 'What the shop owner sees after sending.')
 
 h2('3.1 A new sign-up arrives')
-steps(['You get an email “AfroKauf sign-up: <shop name> (AK-…)”.',
+steps(['You get an email “AfroKauf sign-up: <shop name> (AK-…)”. The shop gets its own “Sign-up received” email at the same moment.',
        'Open the sheet. The new row is at the bottom. Set Status to Checking, so you know you are on it.',
        'The first time you open the sheet after setup, reload the page. A new menu AfroKauf appears next to Help.'])
+para('Every sign-up gets its own reference, made from the shop’s initials, the date, the time and the milliseconds: AK-MAF-20261121-015412-347 '
+     'is “Mama Ada Foods”, 21 November 2026, 01:54:12 and 347 milliseconds. The script checks every reference in the sheet before it uses a new one, '
+     'so two references are never the same, even if two shops send the form at the same moment. Newsletters get NL-… and announcements AN-… the same way.')
 para('When you change the Status (with the drop-down), “Status since” gets today’s date by itself. The column “Follow-up” then shows '
      '⚠ FOLLOW UP when a sign-up waits too long in New, Checking or Waiting for shop, and the row turns red. Green rows are done. Grey rows are rejected or spam.')
 
@@ -220,9 +249,11 @@ bullets(['Open the post on the website (View post). Do you see the photo, the ad
 h2('3.7 Finish in the sheet and tell the shop')
 steps(['Paste the page address into “Shop page link”.',
        'Set Status to Live. “Done on” gets today’s date by itself.',
-       'Menu AfroKauf › Message: page is live. A ready email is now in your Gmail Drafts, in the language the owner chose on the form '
+       'Menu AfroKauf › Message: page is live. A ready, designed email (logo, gold “Open my shop page” button, links) is now in your Gmail Drafts, in the language the owner chose on the form '
        '(English, Deutsch or Français). Open Gmail, check it, press Send. Or click the WhatsApp link in the window to send the same text on WhatsApp.',
        'Nothing is ever sent by itself: you always check and press Send. The owner asked for the link in the form, so sending it is allowed.'])
+
+image(IMG / 'emails.png', 16, 'The new emails on a phone: sign-up received (German, with the newsletter button), page live, and a newsletter.')
 
 h2('3.8 Your daily list')
 bullets([('AfroKauf › What needs me today: ', 'every open sign-up, overdue ones first, with how many days it has waited and who wants Premium.'),
@@ -327,7 +358,47 @@ bullets(['Towns still to check: Rüsselsheim, Bad Homburg, Limburg, Friedberg, B
          'The next states use the same sheet layout: Nordrhein-Westfalen, Berlin, Hamburg, Bayern, Baden-Württemberg.'])
 
 # ------------------------------------------------------------------ 7
-h1('7. Problems and fixes')
+
+# ------------------------------------------------------------------ 7
+h1('7. Newsletters and announcements')
+para('You can send news to the shops in two ways. The difference matters, because in Germany advertising by email needs the person’s clear “yes”.')
+table(['', 'Newsletter', 'Announcement'], [
+    ['What it is for', 'News, seminars, buying offers, tips: anything that promotes something', 'Information about their listing and the service: new features, changes, holidays of the team'],
+    ['Who gets it', 'Only shops that ticked the newsletter box on the form AND clicked “Yes, send me the newsletter” in their email (double opt-in)', 'All shops with Status Live or Update done'],
+    ['How they stop it', '“Unsubscribe” link in every newsletter', '“Unsubscribe” link in every announcement (their shop page stays online)'],
+    ['Reference', 'NL-20261121-140512-123', 'AN-20261121-140512-456'],
+], widths=[3.4, 6.6, 6.5])
+note('Never put a promotion into an announcement to reach everyone. If it sells something (a seminar, an offer), it is a newsletter.')
+
+h2('7.1 Write a campaign')
+steps(['Menu Newsletter & announcements › New newsletter (or New announcement). A new row appears on the Campaigns tab with an example text.',
+       'Write the Subject and the Text in English. Use the same format as the message texts (part 2.4): # title, ## headings, lists, [Button](link).',
+       'Optional: fill Subject and Text in Deutsch and Français. Each shop gets its own language; when a language is empty, it gets English.',
+       'Optional: a picture. Upload it to a Blogger post or page, right-click it › Copy image address, and paste that into “Picture link”. Drive links do not work in emails.',
+       'Optional: “Only Bundesland” (e.g. Hessen) or “Only city” (e.g. Frankfurt) to send to one area only.'])
+
+h2('7.2 Preview, then send to everyone (bulk)')
+steps(['Click the campaign row. Menu Newsletter & announcements › Preview the selected campaign. It comes to your email, filled in for the first shop on its list, and tells you how many shops will get it.',
+       'Check it on your phone too. Fix the text in the row if needed and preview again.',
+       'Menu › Send the selected campaign to its whole list. A window shows how many shops get it and how many emails you can still send today. Click Yes.',
+       'Every email is written into the Send log tab. The campaign’s Status becomes Sent and “Sent” shows the number.'])
+para('Limits: a free Gmail account can send to about 100 people a day from a script (Google Workspace: about 1,500). If the list is longer, '
+     'the send stops cleanly at the limit and the Status stays “Sending”. Run Send again the next day: shops in the Send log are skipped, so nobody gets it twice. '
+     'Menu › How many emails can I still send today? shows the number.')
+
+h2('7.3 Send to one shop or a few shops')
+bullets([('To the selected shops: ', 'on the Sign-ups tab, select the shop rows (hold Ctrl or Cmd to pick several). Menu › Send a campaign to the selected shop(s). '
+          'Type the Campaign ID, or leave it empty for the newest. Shops without the right permission are skipped, and the window says why.'),
+         ('As a Gmail draft for one shop: ', 'click one shop row › Make a Gmail draft of a campaign for the selected shop. You can add a personal line in Gmail before you press Send.')])
+
+h2('7.4 Confirm and unsubscribe')
+bullets(['When a shop ticks the newsletter box, “Newsletter” shows “Waiting for confirmation”. Their “Sign-up received” email has a gold button “Yes, send me the newsletter”. '
+         'After the click, it shows “Confirmed” with date and time, and “Newsletter consent” keeps the proof (when the box was ticked and when the link was clicked).',
+         'An unsubscribe click sets Newsletter to “Unsubscribed” or Announcements to “Off”, with the date. Nothing else changes.',
+         'Someone asks you by phone or email to stop? Set Newsletter to “Unsubscribed” or Announcements to “Off” yourself.',
+         'Shops from the Hessen list are NOT on these lists. They join only through the form.'])
+
+h1('8. Problems and fixes')
 table(['What you see', 'Why', 'Fix'], [
     ['The form says “The form is not connected yet”', 'The ENDPOINT line still has PASTE_YOUR_WEB_APP_URL_HERE', 'Part 2.6, step 6'],
     ['“Sorry, sending did not work”', 'The web app is not set to “Anyone”, or the script was changed without a new version', 'Part 2.5 (Who has access: Anyone), then part 2.8'],
@@ -342,6 +413,10 @@ table(['What you see', 'Why', 'Fix'], [
     ['“Status since” or the ⚠ flag does not change', 'Setup was not run after pasting the script, so the edit timer is missing', 'Run AfroKauf › Set up the sheet once'],
     ['The message is in the wrong language', 'The Language column of that row', 'Change Language in the row, then make the message again'],
     ['“Could not do this” when using the menu', 'You were not on the Sign-ups tab, or clicked the header row', 'Open the Sign-ups tab, click the shop’s row, try again'],
+    ['A link in an email says “This link does not work”', 'Settings › Web app address is empty or wrong', 'Paste the /exec address from part 2.5'],
+    ['No logo at the top of the emails', 'The Logo link in Settings is empty, or the file was moved to the bin', 'Paste the Drive link of “AfroKauf email logo.png”'],
+    ['A shop is skipped when sending a newsletter', 'It did not confirm the newsletter, or unsubscribed', 'That is correct: only confirmed subscribers get newsletters'],
+    ['The send stops at about 100 emails', 'Google’s daily email limit', 'Run Send again tomorrow: nobody gets it twice'],
 ], widths=[4.8, 5.6, 6.1])
 
 fix_numbering()

@@ -127,6 +127,7 @@
     <legend>8. Your OK</legend>
     <label class="ak-small"><input type="checkbox" name="owner" value="yes" required> <span>I own this shop or I am allowed to list it. *</span></label>
     <label class="ak-small"><input type="checkbox" name="consent" value="yes" required> <span>I agree that AfroKauf stores these details to build my shop page and to contact me about it. The shop details and photos will be public; my name and private number will not. I can ask for deletion at any time. More in the <a href="/p/datenschutz.html">Datenschutz</a> page. *</span></label>
+    <label class="ak-small"><input type="checkbox" name="newsletter" value="yes"> <span>Yes, send me the AfroKauf newsletter for shop owners (news, seminars, buying offers). We send you a link to confirm it first. You can unsubscribe at any time with one click. (optional)</span></label>
   </fieldset>
 
   <p class="ak-error" id="ak-error" role="alert" hidden></p>
@@ -257,6 +258,7 @@
       website: val('website'), social: val('social'), hours: hoursText(),
       sells: val('sells'), origin: val('origin'), services: all('services'), about: val('about'),
       plan: val('plan'), person: val('person'), mobile: val('mobile'), language: val('language'), note: val('note'),
+      newsletter: all('newsletter').length > 0,
       company2: val('company2'), photos: photos.filter(Boolean), page_url: location.href
     };
   }
