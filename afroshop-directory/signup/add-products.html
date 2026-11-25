@@ -1,0 +1,156 @@
+<!--
+  AfroKauf: "Add products" page for listed shops.
+  Paste ALL of this into Blogger: Pages > New page (title "Add products") > pencil icon > HTML view > paste > Publish.
+  Put the same Apps Script web app address as on "List your shop" between the quotes of ENDPOINT below.
+-->
+<div class="ak-form" id="ak-prod">
+<p class="ak-lead">Show your products in the AfroKauf shop. Customers order online and pick up and pay in your shop. Add up to 10 products at a time. We check them and put them online, usually within 2 working days.</p>
+
+<form id="ak-products" novalidate>
+  <fieldset>
+    <legend>1. Your shop</legend>
+    <div class="ak-grid">
+      <div class="ak-row"><label for="ak-ref">Your reference *</label><input id="ak-ref" name="ref" required maxlength="60" placeholder="AK-MAF-20261121-015412-347"><small>It is in the email "We received your sign-up".</small></div>
+      <div class="ak-row"><label for="ak-mail">Your shop's email *</label><input id="ak-mail" name="email" type="email" required maxlength="120" autocomplete="email"><small>The same email you used to list your shop.</small></div>
+    </div>
+  </fieldset>
+
+  <div id="ak-list"></div>
+  <button type="button" class="ak-more" id="ak-add">+ Add another product</button>
+
+  <fieldset>
+    <legend>Your OK</legend>
+    <label class="ak-small"><input type="checkbox" name="ok1"> <span>The prices are correct and include VAT. An old price is a price we really charged in the last 30 days. *</span></label>
+    <label class="ak-small"><input type="checkbox" name="ok2"> <span>The photos are our own, and we may show them on AfroKauf. *</span></label>
+  </fieldset>
+  <div class="ak-trap" aria-hidden="true"><label>Leave empty <input name="company2" tabindex="-1" autocomplete="off"></label></div>
+  <p class="ak-error" id="ak-error" role="alert" hidden></p>
+  <button type="submit" class="ak-send" id="ak-send">Send my products</button>
+</form>
+
+<div class="ak-done" id="ak-done" hidden>
+  <h3>Thank you! We have your products.</h3>
+  <p>We check them and put them online, usually within 2 working days.</p>
+</div>
+</div>
+
+<template id="ak-row-tpl">
+  <fieldset class="ak-prod">
+    <legend>Product <span class="ak-n"></span></legend>
+    <div class="ak-row"><label>Product name *</label><input data-f="name" maxlength="120" placeholder="Gari Ijebu, 1 kg"></div>
+    <div class="ak-grid3">
+      <div class="ak-row"><label>Price in € *</label><input data-f="price" inputmode="decimal" maxlength="10" placeholder="3,49"></div>
+      <div class="ak-row"><label>Size *</label><input data-f="unit" maxlength="40" placeholder="1 kg, 500 g, 1 l, 3 packs"></div>
+      <div class="ak-row"><label>Category</label>
+        <select data-f="category"><option>Food</option><option>Hair &amp; Beauty</option><option>Fashion</option><option>Restaurant</option><option>Services</option><option>Wholesale</option></select></div>
+    </div>
+    <div class="ak-grid3">
+      <div class="ak-row"><label>Old price (offer)</label><input data-f="old_price" inputmode="decimal" maxlength="10" placeholder="3,99"></div>
+      <div class="ak-row"><label>Offer until</label><input data-f="until" type="date"></div>
+      <div class="ak-row"><label>Photo</label><input data-f="photo" type="file" accept="image/*"></div>
+    </div>
+    <div class="ak-row"><label>Short description</label><textarea data-f="description" rows="2" maxlength="600" placeholder="What it is, how people use it"></textarea></div>
+    <button type="button" class="ak-remove">Remove this product</button>
+  </fieldset>
+</template>
+
+<style>
+.ak-form { max-width: 760px; margin: 0 auto; font-size: 16px; }
+.ak-form .ak-lead { font-size: 17px; }
+.ak-form fieldset { margin: 0 0 18px; padding: 18px; border: 1px solid #E5DCCB; border-radius: 14px; background: #fff; }
+.ak-form legend { padding: 0 8px; font-weight: 800; font-size: 17px; color: #0E4D3A; }
+.ak-form .ak-row { margin: 0 0 12px; }
+.ak-form label { display: block; font-weight: 700; margin: 0 0 6px; }
+.ak-form input:not([type=checkbox]):not([type=file]), .ak-form select, .ak-form textarea {
+  width: 100%; box-sizing: border-box; padding: 11px 12px; border: 1px solid #CFC3AE; border-radius: 9px; font: inherit; background: #FBF6EE; color: inherit;
+}
+.ak-form input:focus, .ak-form select:focus, .ak-form textarea:focus { outline: 2px solid #E9A23B; outline-offset: 1px; background: #fff; }
+.ak-form small { display: block; margin-top: 4px; color: #6B6F68; font-size: 13px; }
+.ak-form .ak-grid, .ak-form .ak-grid3 { display: grid; grid-template-columns: 1fr; gap: 0 14px; }
+@media (min-width: 600px) { .ak-form .ak-grid { grid-template-columns: 1fr 1fr; } .ak-form .ak-grid3 { grid-template-columns: 1fr 1fr 1fr; } }
+.ak-form .ak-small { display: flex; gap: 10px; align-items: flex-start; font-weight: 500; margin: 8px 0 0; }
+.ak-form .ak-small input { margin-top: 4px; flex: none; }
+.ak-form .ak-more { display: block; width: 100%; margin: 0 0 18px; padding: 12px; border: 2px dashed #CFC3AE; border-radius: 12px; background: none; font: inherit; font-weight: 800; color: #0E4D3A; cursor: pointer; }
+.ak-form .ak-remove { border: 0; background: none; color: #A33; font: inherit; font-size: 14px; text-decoration: underline; cursor: pointer; padding: 0; }
+.ak-form .ak-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.ak-form .ak-send { display: block; width: 100%; padding: 15px; border: 0; border-radius: 999px; background: #E9A23B; color: #1F2420; font: inherit; font-weight: 800; font-size: 17px; cursor: pointer; }
+.ak-form .ak-send[disabled] { opacity: 0.6; cursor: wait; }
+.ak-form .ak-error { padding: 12px 14px; border-radius: 9px; background: #F7D9CC; color: #7A2615; font-weight: 600; }
+.ak-form .ak-done { padding: 24px; border-radius: 14px; background: #DCEBE4; }
+.ak-form [hidden] { display: none !important; }
+</style>
+
+<script>
+(function () {
+  // ---- SETTINGS: the same address as on the "List your shop" page ----
+  var ENDPOINT = 'PASTE_YOUR_WEB_APP_URL_HERE';
+  // ---------------------------------------------------------------------
+  var form = document.getElementById('ak-products');
+  if (!form) return;
+  var list = document.getElementById('ak-list'), tpl = document.getElementById('ak-row-tpl');
+  var MAX = 10, photos = new WeakMap();
+
+  function renumber() {
+    [].forEach.call(list.querySelectorAll('.ak-prod'), function (f, i) { f.querySelector('.ak-n').textContent = i + 1; });
+    document.getElementById('ak-add').hidden = list.children.length >= MAX;
+  }
+  function addRow() {
+    if (list.children.length >= MAX) return;
+    var f = tpl.content.firstElementChild.cloneNode(true);
+    f.querySelector('.ak-remove').addEventListener('click', function () { if (list.children.length > 1) { f.remove(); renumber(); } });
+    f.querySelector('[data-f=photo]').addEventListener('change', function () {
+      var file = this.files && this.files[0];
+      if (!file) return;
+      var img = new Image(), url = URL.createObjectURL(file);
+      img.onload = function () {
+        var s = Math.min(1, 1400 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        photos.set(f, { name: 'product.jpg', data: c.toDataURL('image/jpeg', 0.85).split(',')[1] });
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    });
+    list.appendChild(f);
+    renumber();
+  }
+  document.getElementById('ak-add').addEventListener('click', addRow);
+  addRow();
+
+  function showError(msg) { var e = document.getElementById('ak-error'); e.textContent = msg; e.hidden = !msg; if (msg) e.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+  function v(f, n) { var el = f.querySelector('[data-f=' + n + ']'); return el ? String(el.value || '').trim() : ''; }
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var ref = form.elements.ref.value.trim(), email = form.elements.email.value.trim();
+    if (!/^AK-/i.test(ref)) return showError('Please write your reference. It starts with AK-.');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return showError('Please check the email address.');
+    var products = [], bad = '';
+    [].forEach.call(list.querySelectorAll('.ak-prod'), function (f, i) {
+      var p = { name: v(f, 'name'), price: v(f, 'price'), old_price: v(f, 'old_price'), unit: v(f, 'unit'), category: v(f, 'category'),
+        until: v(f, 'until'), description: v(f, 'description'), photo: photos.get(f) || null };
+      if (!p.name && !p.price) return;
+      if (!p.name || !/^\d+([.,]\d{1,2})?$/.test(p.price) || !p.unit) bad = bad || 'Product ' + (i + 1) + ': please write the name, the price (e.g. 3,49) and the size.';
+      products.push(p);
+    });
+    if (bad) return showError(bad);
+    if (!products.length) return showError('Please add at least one product.');
+    if (!form.elements.ok1.checked || !form.elements.ok2.checked) return showError('Please tick the two boxes under "Your OK".');
+    if (ENDPOINT.indexOf('https://script.google.com/') !== 0) return showError('The form is not connected yet.');
+    showError('');
+    var btn = document.getElementById('ak-send'); btn.disabled = true; btn.textContent = 'Sending…';
+    fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ kind: 'products', ref: ref, email: email, products: products, confirm: true, company2: form.elements.company2.value }) })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (!res || !res.ok) throw new Error(res && res.error || 'error');
+        form.hidden = true; document.getElementById('ak-done').hidden = false;
+        document.getElementById('ak-prod').scrollIntoView({ behavior: 'smooth' });
+      })
+      .catch(function (e) {
+        btn.disabled = false; btn.textContent = 'Send my products';
+        showError((e && e.message && e.message !== 'error' && e.message.indexOf('fetch') < 0 ? e.message + ' ' : '') + 'Sending did not work. Please try again.');
+      });
+  });
+})();
+</script>

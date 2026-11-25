@@ -42,6 +42,16 @@ def resolve_custom_properties(css):
     return css
 
 
+MODULES = ['blocks.js', 'shop.js']   # merged into directory.js, so they share its helpers
+
+
+def directory_js():
+    js = read('directory.js')
+    if '/* @@MODULES@@ */' not in js:
+        sys.exit('build: /* @@MODULES@@ */ missing from src/directory.js')
+    return js.replace('/* @@MODULES@@ */', '\n'.join(read(m).rstrip('\n') for m in MODULES))
+
+
 def skin_css():
     return resolve_custom_properties(read('skin.css'))
 
@@ -51,7 +61,7 @@ def build():
     parts = {
         '@@SKIN_CSS@@': '\n' + skin_css(),
         '@@THEME_JS@@': read('theme.js').rstrip('\n'),
-        '@@DIR_JS@@': read('directory.js').rstrip('\n'),
+        '@@DIR_JS@@': directory_js().rstrip('\n'),
     }
     for marker, path in INCLUDABLES.items():
         parts[marker] = read(path).rstrip('\n')
@@ -85,7 +95,7 @@ def main():
     DIST.mkdir(exist_ok=True)
     (DIST / 'theme.css').write_text(preview_css(skin_css()), encoding='utf-8')
     (DIST / 'theme.js').write_text(read('theme.js'), encoding='utf-8')
-    (DIST / 'directory.js').write_text(read('directory.js'), encoding='utf-8')
+    (DIST / 'directory.js').write_text(directory_js(), encoding='utf-8')
     print(f'built {OUT.relative_to(ROOT)} ({len(theme.encode("utf-8")):,} bytes)')
 
 

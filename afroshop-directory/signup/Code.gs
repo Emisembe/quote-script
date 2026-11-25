@@ -38,6 +38,13 @@ var CAMPAIGN_COLS = ['Campaign ID', 'Type', 'Status', 'Only Bundesland', 'Only c
   'Subject (English)', 'Text (English)', 'Subject (Deutsch)', 'Text (Deutsch)', 'Subject (Français)', 'Text (Français)',
   'Picture link (optional)', 'Created', 'Sent', 'Last sent', 'Notes'];
 var LOG_COLS = ['Sent at', 'Campaign ID', 'Reference', 'Shop name', 'Email', 'Language', 'How', 'Result'];
+var ORDERS = 'Orders', SUBS = 'Subscribers', PRODUCTS = 'Products';
+var ORDER_COLS = ['Order ID', 'Received', 'Status', 'Shop', 'Shop email', 'Customer', 'Phone', 'Email', 'Pick-up', 'Note',
+  'Items', 'Total', 'Price check', 'Language', 'Page', 'Your notes'];
+var ORDER_STATUSES = ['New', 'Confirmed', 'Ready', 'Collected', 'Cancelled'];
+var SUB_COLS = ['Reference', 'Received', 'Email', 'Language', 'Newsletter', 'Newsletter consent', 'Source page'];
+var PRODUCT_COLS = ['Product ID', 'Received', 'Status', 'Shop reference', 'Shop name', 'Product', 'Price', 'Old price', 'Unit',
+  'Category', 'Offer until', 'Description', 'Photo', 'Post title', 'Post labels', 'Post code (paste in HTML view)', 'Product page link', 'Your notes'];
 var STATUSES = ['New', 'Checking', 'Waiting for shop', 'Live', 'Update done', 'Rejected', 'Spam'];
 var CATEGORY_LABELS = ['Food', 'Hair & Beauty', 'Fashion', 'Restaurant', 'Services', 'Wholesale'];
 var STATES = ['Baden-Württemberg', 'Bayern', 'Berlin', 'Brandenburg', 'Bremen', 'Hamburg', 'Hessen', 'Mecklenburg-Vorpommern',
@@ -53,6 +60,7 @@ var SETTING_DEFAULTS = [
   ['"List your shop" page address', SITE + '/p/list-your-shop.html'],
   ['Web app address (ends with /exec)', ''],
   ['Send confirmation to the shop after sign-up?', 'Yes'],
+  ['Send me a copy of every order?', 'Yes'],
   ['Send daily summary email?', 'Yes'],
   ['Daily email time (hour 0-23)', 8],
   ['Follow up — New (days)', 2],
@@ -199,6 +207,7 @@ function onOpen() {
   ui.createMenu('AfroKauf')
     .addItem('Show post code for the selected row', 'showPostCode')
     .addItem('Remake post code for the selected row', 'remakeSelected')
+    .addItem('Show product post code (Products tab, selected row)', 'showProductCode')
     .addSeparator()
     .addItem('Message: page is live (selected row)', 'messageLive')
     .addItem('Message: missing information (selected row)', 'messageMissing')
@@ -213,6 +222,7 @@ function onOpen() {
   ui.createMenu('Newsletter & announcements')
     .addItem('New newsletter', 'newNewsletter')
     .addItem('New announcement', 'newAnnouncement')
+    .addItem('New customer newsletter', 'newCustomerNewsletter')
     .addSeparator()
     .addItem('Preview the selected campaign (sends it to me)', 'previewCampaign')
     .addItem('Send the selected campaign to its whole list', 'sendCampaignBulk')
@@ -278,10 +288,15 @@ function setup() {
   // Campaigns and Send log
   var c = ensureSheet_(CAMPAIGNS, CAMPAIGN_COLS);
   var crows = Math.max(c.sh.getMaxRows() - 1, 1);
-  c.sh.getRange(2, c.map['Type'], crows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['Newsletter', 'Announcement'], true).build());
+  c.sh.getRange(2, c.map['Type'], crows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['Newsletter', 'Announcement', 'Customer newsletter'], true).build());
   c.sh.getRange(2, c.map['Status'], crows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['Draft', 'Sending', 'Sent'], true).build());
   [c.map['Text (English)'], c.map['Text (Deutsch)'], c.map['Text (Français)']].forEach(function (col) { c.sh.setColumnWidth(col, 360); });
   ensureSheet_(LOG, LOG_COLS);
+  var o = ensureSheet_(ORDERS, ORDER_COLS);
+  o.sh.getRange(2, o.map['Status'], Math.max(o.sh.getMaxRows() - 1, 1), 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(ORDER_STATUSES, true).build());
+  ensureSheet_(SUBS, SUB_COLS);
+  var pr = ensureSheet_(PRODUCTS, PRODUCT_COLS);
+  pr.sh.getRange(2, pr.map['Status'], Math.max(pr.sh.getMaxRows() - 1, 1), 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['New', 'Published', 'Rejected'], true).build());
 
   photoFolder_();
   secret_();
@@ -384,6 +399,9 @@ function newReference_(sh, shopName) { return uniqueId_('AK-' + initials_(shopNa
 function doPost(e) {
   try {
     var d = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    if (d.kind === 'order') return json_(handleOrder_(d));
+    if (d.kind === 'subscribe') return json_(handleSubscribe_(d));
+    if (d.kind === 'products') return json_(handleProducts_(d));
     if (d.company2) return json_({ ok: true, ref: 'AK-0' });            // bot filled the hidden field: pretend OK, store nothing
     var problem = validate_(d);
     if (problem) return json_({ ok: false, error: problem });
@@ -446,7 +464,7 @@ function doGet(e) {
   var lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
-    var sh = sheet_(SHEET);
+    var sh = sheet_(/^SUB-/.test(p.r) ? SUBS : SHEET);
     var row = findRow_(sh, p.r);
     if (!row) return page_(cfg, T.badTitle, T.badText, T.back);
     var map = headerMap_(sh);
@@ -987,14 +1005,17 @@ var EXAMPLE = {
   Newsletter: ['AfroKauf news for shop owners', '# News from AfroKauf\n\n{{Greeting}}\n\nhere is what is new this month.\n\n## Next seminar\n' +
     '**More customers with your phone**, Saturday 10:00–13:00 in Frankfurt.\n\n[Book my seat](' + SITE + '/search/label/Events)\n\n## Good to know\n' +
     '- First point\n- Second point\n\nSee you soon!\n{{YourName}}'],
+  'Customer newsletter': ['New offers in African shops near you', '# This month at AfroKauf\n\n{{Greeting}}\n\nhere are the best offers from our member shops.\n\n' +
+    '[See the deals](' + SITE + '/search/label/Product)\n\n## New shops\n- First new shop\n- Second new shop\n\n## Recipe of the month\nWrite a short intro and link the article.\n\nSee you soon!\n{{YourName}}'],
   Announcement: ['Important information about your AfroKauf page', '# A short update\n\n{{Greeting}}\n\nwrite your announcement here.\n\n' +
     '[Open my shop page]({{ShopPageLink}})\n\nThank you!\n{{YourName}}']
 };
 function newNewsletter() { run_(function () { newCampaign_('Newsletter'); }); }
 function newAnnouncement() { run_(function () { newCampaign_('Announcement'); }); }
+function newCustomerNewsletter() { run_(function () { newCampaign_('Customer newsletter'); }); }
 function newCampaign_(type) {
   var c = ensureSheet_(CAMPAIGNS, CAMPAIGN_COLS);
-  var id = uniqueId_(type === 'Newsletter' ? 'NL' : 'AN', existingIds_(c.sh, 'Campaign ID'));
+  var id = uniqueId_(type === 'Newsletter' ? 'NL' : type === 'Customer newsletter' ? 'CN' : 'AN', existingIds_(c.sh, 'Campaign ID'));
   var vals = { 'Campaign ID': id, 'Type': type, 'Status': 'Draft', 'Subject (English)': EXAMPLE[type][0], 'Text (English)': EXAMPLE[type][1],
     'Created': new Date(), 'Sent': 0 };
   var row = new Array(c.sh.getLastColumn());
@@ -1007,7 +1028,9 @@ function newCampaign_(type) {
   c.sh.setActiveSelection(c.sh.getRange(r, 1));
   SpreadsheetApp.getUi().alert(type + ' ' + id + ' created',
     'Write the subject and the text in row ' + r + ' (English; add Deutsch and Français if you like: shops get their own language, or English when that text is empty).\n\n' +
-    (type === 'Newsletter' ? 'Goes to: shops that ticked the newsletter box and confirmed it by email.\n' : 'Goes to: all listed (Live) shops that did not switch announcements off.\n') +
+    (type === 'Newsletter' ? 'Goes to: shops that ticked the newsletter box and confirmed it by email.\n' :
+     type === 'Customer newsletter' ? 'Goes to: customers who signed up in the website footer and confirmed by email (Subscribers tab).\n' :
+     'Goes to: all listed (Live) shops that did not switch announcements off.\n') +
     'Optional: "Only Bundesland" or "Only city" to send to one area.\n\nThen: Preview (sends it to you) › Send.', SpreadsheetApp.getUi().ButtonSet.OK);
 }
 function campaignRow_(id) {
@@ -1024,18 +1047,20 @@ function campaignRow_(id) {
   if (!found) throw new Error('No campaign with the ID ' + id + '.');
   return { c: c, row: found };
 }
-function campaignType_(row) { return String(row.get('Type')) === 'Newsletter' ? 'Newsletter' : 'Announcement'; }
+function campaignType_(row) { var t = String(row.get('Type')); return t === 'Newsletter' || t === 'Customer newsletter' ? t : 'Announcement'; }
 // Who may get this campaign: newsletter = confirmed subscribers only; announcement = live shops that did not switch it off.
 function allowed_(type, get) {
   if (!/@/.test(String(get('Email')))) return 'no email';
-  if (type === 'Newsletter') return /^Confirmed/.test(String(get('Newsletter'))) ? '' : 'no confirmed newsletter consent';
+  if (type === 'Customer newsletter' && !/^SUB-/.test(String(get('Reference')))) return 'not a customer subscriber';
+  if (type !== 'Announcement') return /^Confirmed/.test(String(get('Newsletter'))) ? '' : 'no confirmed newsletter consent';
   if (['Live', 'Update done'].indexOf(String(get('Status'))) < 0) return 'shop not live';
   return String(get('Announcements')) === 'Off' ? 'switched announcements off' : '';
 }
 function audience_(camp) {
   var type = campaignType_(camp);
   var onlyState = String(camp.get('Only Bundesland') || '').trim().toLowerCase(), onlyCity = String(camp.get('Only city') || '').trim().toLowerCase();
-  var s = rowObjects_(sheet_(SHEET));
+  var s = rowObjects_(sheet_(type === 'Customer newsletter' ? SUBS : SHEET));
+  if (type === 'Customer newsletter') onlyState = onlyCity = '';
   var seen = {};
   return { map: s.map, rows: s.rows.filter(function (x) {
     if (allowed_(type, x.get)) return false;
@@ -1059,13 +1084,13 @@ function buildCampaign_(cfg, camp, map, v) {
   var body = renderText_(fill_(textT, t), b);
   var pic = String(camp.get('Picture link (optional)') || '').trim();
   var picHtml = /^https:\/\//.test(pic) ? '<img src="' + esc_(pic) + '" width="536" alt="" style="display:block;width:100%;max-width:536px;height:auto;border-radius:8px;margin:0 0 20px;">' : '';
-  var unsub = link_(cfg, type === 'Newsletter' ? 'unsub-nl' : 'unsub-an', ref, useLang) ||
+  var unsub = link_(cfg, type !== 'Announcement' ? 'unsub-nl' : 'unsub-an', ref, useLang) ||
     (b.email ? 'mailto:' + b.email + '?subject=' + encodeURIComponent(W.unsubscribe + ' ' + ref) : '');
   var html = wrapEmail_(b, { lang: useLang, preheader: fill_(subjectT, t), ref: ref, unsubscribe: unsub,
-    why: type === 'Newsletter' ? W.whyNL : W.whyAN,
-    body: sectionLabel_(b, (type === 'Newsletter' ? W.newsletter : W.announcement) + ' · ' + stamp_(new Date(), 'dd.MM.yyyy')).replace('margin:24px 0 14px', 'margin:0 0 18px') + picHtml + body.html });
+    why: type !== 'Announcement' ? W.whyNL : W.whyAN,
+    body: sectionLabel_(b, (type !== 'Announcement' ? W.newsletter : W.announcement) + ' · ' + stamp_(new Date(), 'dd.MM.yyyy')).replace('margin:24px 0 14px', 'margin:0 0 18px') + picHtml + body.html });
   return { to: String(get('Email')).trim(), subject: fill_(subjectT, t), html: html, brand: b, lang: useLang,
-    plain: body.plain + '\n\n' + (type === 'Newsletter' ? W.whyNL : W.whyAN) + (unsub ? '\n' + W.unsubscribe + ': ' + unsub : '') };
+    plain: body.plain + '\n\n' + (type !== 'Announcement' ? W.whyNL : W.whyAN) + (unsub ? '\n' + W.unsubscribe + ': ' + unsub : '') };
 }
 function sentSet_(id) {
   var set = {};
@@ -1118,7 +1143,8 @@ function sendCampaignBulk() {
     var ui = SpreadsheetApp.getUi(), cfg = config_(), cr = campaignRow_(), camp = cr.row;
     var id = String(camp.get('Campaign ID'));
     var done = sentSet_(id);
-    var todo = audience_(camp).rows.filter(function (x) { return !done[String(x.get('Reference'))]; });
+    var aud = audience_(camp);
+    var todo = aud.rows.filter(function (x) { return !done[String(x.get('Reference'))]; });
     var quota = MailApp.getRemainingDailyQuota();
     if (!todo.length) { updateCampaign_(camp, 0, 'Sent'); ui.alert('Nothing to send', 'Everyone on the list already got ' + id + '.', ui.ButtonSet.OK); return; }
     var ok = ui.alert('Send ' + campaignType_(camp).toLowerCase() + ' ' + id + '?',
@@ -1127,15 +1153,15 @@ function sendCampaignBulk() {
       (quota < todo.length ? '\n\nToday only ' + quota + ' can go out. Run Send again tomorrow for the rest: nobody gets it twice.' : '') +
       '\n\nDid you check the preview?', ui.ButtonSet.YES_NO);
     if (ok !== ui.Button.YES) return;
-    var res = sendTo_(cfg, camp, todo, 'Bulk');
+    var res = sendTo_(cfg, camp, todo, 'Bulk', aud.map);
     updateCampaign_(camp, res.sent, res.sent === todo.length && !res.stopped ? 'Sent' : 'Sending');
     ui.alert('Sent ' + res.sent + ' of ' + todo.length, (res.failed ? res.failed + ' failed (see Send log). ' : '') +
       (res.stopped ? res.stopped + '\nRun "Send the selected campaign" again to continue: nobody gets it twice.' : 'Done.'), ui.ButtonSet.OK);
   });
 }
-function sendTo_(cfg, camp, rows, how) {
+function sendTo_(cfg, camp, rows, how, map) {
   var start = Date.now(), log = [], sent = 0, failed = 0, stopped = '';
-  var map = headerMap_(sheet_(SHEET));
+  map = map || headerMap_(sheet_(SHEET));
   for (var i = 0; i < rows.length; i++) {
     if (Date.now() - start > SEND_TIME_LIMIT) { stopped = 'Stopped after ' + sent + ' emails to stay inside Google\'s time limit.'; break; }
     if (MailApp.getRemainingDailyQuota() < 1) { stopped = 'Today\'s email limit is reached.'; break; }
@@ -1177,7 +1203,7 @@ function sendCampaignToSelected() {
       if (why) skipped.push(x.get('Shop name') + ': ' + why);
       return !why;
     });
-    var res = sendTo_(cfg, camp, rows, 'Selected');
+    var res = sendTo_(cfg, camp, rows, 'Selected', headerMap_(sel.sh));
     if (res.sent) updateCampaign_(camp, res.sent, null);
     SpreadsheetApp.getUi().alert('Sent ' + res.sent + ' of ' + sel.rows.length, (skipped.length ? 'Skipped:\n' + skipped.join('\n') + '\n\n' : '') +
       (res.stopped || '') + (res.failed ? '\n' + res.failed + ' failed (see Send log).' : ''), SpreadsheetApp.getUi().ButtonSet.OK);
@@ -1272,5 +1298,283 @@ function emailNow() {
     var n = openItems_().length;
     sendDailySummary();
     SpreadsheetApp.getUi().alert(n ? 'Sent: ' + n + ' open sign-up' + (n === 1 ? '' : 's') + ' to ' + notifyTo_(config_()) + '.' : 'Nothing open, so no email was sent.');
+  });
+}
+
+// ================================================================== ORDERS FROM THE WEBSITE SHOP
+// One order = one shop. Every price is read again from the blog's own feed, so a changed cart cannot change the total.
+// The shop gets a designed email (you get a copy), the customer gets a confirmation. Pay and pick up in the shop.
+var ORDER_WORDS = {
+  English: { newOrder: 'New order', customer: 'Customer', phone: 'Phone', pickup: 'Pick-up', note: 'Note', total: 'Total', product: 'Product',
+    qty: 'Qty', price: 'Price', reply: 'Reply on WhatsApp', call: 'Call the customer', sent: 'Order request sent', order: 'Order',
+    shopIntro: 'A customer ordered through AfroKauf. Please confirm the order with the customer by WhatsApp or phone, and get it ready for pick-up. The customer pays in your shop.',
+    custIntro: 'thank you for your order request. {{shop}} confirms it soon by phone or WhatsApp. You pay when you pick it up.',
+    subjShop: 'New order {{ref}}: {{total}}', subjCust: 'Your order request at {{shop}} ({{ref}})',
+    why: 'You get this email because you sent an order on our website.', whyShop: 'You get this email because your shop is listed on AfroKauf.',
+    note2: 'Prices incl. VAT. Pay and pick up in the shop.', hello: 'Hello' },
+  Deutsch: { newOrder: 'Neue Bestellung', customer: 'Kunde', phone: 'Telefon', pickup: 'Abholung', note: 'Hinweis', total: 'Summe', product: 'Produkt',
+    qty: 'Menge', price: 'Preis', reply: 'Auf WhatsApp antworten', call: 'Kunden anrufen', sent: 'Bestellanfrage gesendet', order: 'Bestellung',
+    shopIntro: 'Ein Kunde hat über AfroKauf bestellt. Bitte bestätigen Sie die Bestellung per WhatsApp oder Telefon und legen Sie die Ware zur Abholung bereit. Der Kunde bezahlt bei Ihnen im Geschäft.',
+    custIntro: 'vielen Dank für Ihre Bestellanfrage. {{shop}} bestätigt sie bald per Telefon oder WhatsApp. Sie bezahlen bei der Abholung.',
+    subjShop: 'Neue Bestellung {{ref}}: {{total}}', subjCust: 'Ihre Bestellanfrage bei {{shop}} ({{ref}})',
+    why: 'Sie erhalten diese E-Mail, weil Sie auf unserer Website bestellt haben.', whyShop: 'Sie erhalten diese E-Mail, weil Ihr Geschäft bei AfroKauf eingetragen ist.',
+    note2: 'Preise inkl. MwSt. Bezahlung und Abholung im Geschäft.', hello: 'Hallo' },
+  'Français': { newOrder: 'Nouvelle commande', customer: 'Client', phone: 'Téléphone', pickup: 'Retrait', note: 'Remarque', total: 'Total', product: 'Produit',
+    qty: 'Qté', price: 'Prix', reply: 'Répondre sur WhatsApp', call: 'Appeler le client', sent: 'Demande de commande envoyée', order: 'Commande',
+    shopIntro: 'Un client a commandé via AfroKauf. Merci de confirmer la commande par WhatsApp ou téléphone et de la préparer pour le retrait. Le client paie dans votre boutique.',
+    custIntro: 'merci pour votre demande de commande. {{shop}} la confirme bientôt par téléphone ou WhatsApp. Vous payez au retrait.',
+    subjShop: 'Nouvelle commande {{ref}} : {{total}}', subjCust: 'Votre demande de commande chez {{shop}} ({{ref}})',
+    why: 'Vous recevez cet e-mail parce que vous avez commandé sur notre site.', whyShop: 'Vous recevez cet e-mail parce que votre boutique est inscrite sur AfroKauf.',
+    note2: 'Prix TTC. Paiement et retrait en boutique.', hello: 'Bonjour' }
+};
+function langFromCode_(code) { return /^de/i.test(code || '') ? 'Deutsch' : /^fr/i.test(code || '') ? 'Français' : lang_(code); }
+function euro_(n) { return (Math.round(n * 100) / 100).toFixed(2).replace('.', ',') + ' €'; }
+function num_(v) {
+  if (v === undefined || v === null || v === '') return NaN;
+  var s = String(v).replace(/[^\d.,-]/g, '');
+  if (s.indexOf(',') > -1 && s.indexOf('.') > -1) s = s.lastIndexOf(',') > s.lastIndexOf('.') ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
+  else s = s.replace(',', '.');
+  return parseFloat(s);
+}
+function decode_(s) { return String(s || '').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'); }
+function attrOf_(tag, name) { var m = new RegExp('data-' + name + '\\s*=\\s*"([^"]*)"', 'i').exec(tag) || new RegExp('data-' + name + "\\s*=\\s*'([^']*)'", 'i').exec(tag); return m ? decode_(m[1]).trim() : ''; }
+// Reads one product from the blog's public feed (Settings › Website). Cached 10 minutes.
+function productFromFeed_(cfg, id) {
+  if (!/^\d{5,25}$/.test(String(id || ''))) return null;
+  var cache = CacheService.getScriptCache(), hit = cache.get('p' + id);
+  if (hit) return JSON.parse(hit);
+  var site = String(cfg['Website'] || '').replace(/\/$/, '');
+  var res = UrlFetchApp.fetch(site + '/feeds/posts/default/' + id + '?alt=json', { muteHttpExceptions: true });
+  if (res.getResponseCode() !== 200) return null;
+  var entry = JSON.parse(res.getContentText()).entry;
+  var html = (entry.content && entry.content.$t) || '';
+  var tag = /<[a-z]+\b[^>]*class=["'][^"']*\bproduct-info\b[^"']*["'][^>]*>/i.exec(html);
+  if (!tag) return null;
+  var link = (entry.link || []).filter(function (l) { return l.rel === 'alternate'; })[0];
+  var p = { title: entry.title.$t, url: link ? link.href : '', price: num_(attrOf_(tag[0], 'price')), unit: attrOf_(tag[0], 'unit'),
+    shop: attrOf_(tag[0], 'shop'), shopPage: attrOf_(tag[0], 'shop-page'), whatsapp: attrOf_(tag[0], 'whatsapp'),
+    inStock: !/^(no|0|sold ?out|nein|ausverkauft)$/i.test(attrOf_(tag[0], 'stock')), payLink: attrOf_(tag[0], 'pay-link') };
+  if (!(p.price >= 0)) return null;
+  cache.put('p' + id, JSON.stringify(p), 600);
+  return p;
+}
+function shopRow_(shopName, shopPage) {
+  var s = rowObjects_(sheet_(SHEET)), n = String(shopName || '').trim().toLowerCase(), page = String(shopPage || '').trim();
+  var hit = null;
+  s.rows.forEach(function (x) {
+    if (['Live', 'Update done'].indexOf(String(x.get('Status'))) < 0) return;
+    if ((page && String(x.get('Shop page link')).trim() === page) || String(x.get('Shop name')).trim().toLowerCase() === n) hit = x;
+  });
+  return hit;
+}
+function handleOrder_(d) {
+  if (d.company2) return { ok: true, ref: 'OR-0', total: 0 };
+  if (!clean_(d.name)) return { ok: false, error: 'Name is missing.' };
+  if (clean_(d.phone).replace(/\D/g, '').length < 6) return { ok: false, error: 'Phone number is missing.' };
+  if (clean_(d.email) && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(clean_(d.email))) return { ok: false, error: 'Email address is not valid.' };
+  if (d.consent !== true) return { ok: false, error: 'Please agree to the privacy note.' };
+  if (!Array.isArray(d.items) || !d.items.length || d.items.length > 50) return { ok: false, error: 'The order is empty.' };
+  if (!underLimit_()) return { ok: false, error: 'Too many orders right now. Please try again later or use WhatsApp.' };
+  var cfg = config_(), lines = [], total = 0, changed = false, shop = null;
+  for (var i = 0; i < d.items.length; i++) {
+    var it = d.items[i], p = productFromFeed_(cfg, it.id);
+    if (!p || p.payLink) return { ok: false, error: '"' + clean_(it.title, 80) + '" is no longer available.' };
+    if (!p.inStock) return { ok: false, error: '"' + p.title + '" is sold out.' };
+    if (shop === null) shop = { name: p.shop, page: p.shopPage, whatsapp: p.whatsapp };
+    else if (String(p.shop).toLowerCase() !== String(shop.name).toLowerCase()) return { ok: false, error: 'One order can only contain products from one shop.' };
+    var qty = Math.max(1, Math.min(99, parseInt(it.qty, 10) || 1));
+    if (Math.abs(num_(it.price) - p.price) > 0.005) changed = true;
+    total += p.price * qty;
+    lines.push({ title: p.title, unit: p.unit, qty: qty, price: p.price, url: p.url });
+  }
+  total = Math.round(total * 100) / 100;
+  var sr = shopRow_(shop.name, shop.page);
+  var shopEmail = sr ? String(sr.get('Email') || '').trim() : '';
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  var ref;
+  try {
+    var o = ensureSheet_(ORDERS, ORDER_COLS);
+    ref = uniqueId_('OR-' + initials_(shop.name), existingIds_(o.sh, 'Order ID'));
+    var vals = { 'Order ID': ref, 'Received': new Date(), 'Status': 'New', 'Shop': shop.name, 'Shop email': shopEmail || '(none: forward on WhatsApp)',
+      'Customer': clean_(d.name, 80), 'Phone': clean_(d.phone, 30), 'Email': clean_(d.email, 120), 'Pick-up': clean_(d.pickup, 120), 'Note': clean_(d.note, 500),
+      'Items': lines.map(function (l) { return l.qty + ' × ' + l.title + ' à ' + euro_(l.price); }).join('\n'), 'Total': total,
+      'Price check': changed ? 'Prices updated from the shop page' : 'OK', 'Language': langFromCode_(d.language), 'Page': clean_(d.page_url, 200) };
+    var row = new Array(o.sh.getLastColumn());
+    for (var k = 0; k < row.length; k++) row[k] = '';
+    Object.keys(vals).forEach(function (h) { if (o.map[h]) row[o.map[h] - 1] = safeCell_(vals[h]); });
+    o.sh.appendRow(row);
+  } finally {
+    lock.releaseLock();
+  }
+  try { orderEmails_(cfg, ref, d, lines, total, shop, sr, shopEmail); } catch (e) { console.error('order mail failed', e); }
+  return { ok: true, ref: ref, total: total, changed: changed };
+}
+function itemsTable_(b, lines, OW, total) {
+  var th = function (align) { return 'style="' + F_ + 'text-align:' + align + ';padding:8px 10px;background:#FBF6EE;color:' + b.primary + ';font-size:11px;text-transform:uppercase;letter-spacing:.04em;"'; };
+  var td = function (s, x) { return '<td style="' + F_ + 'padding:9px 10px;border-bottom:1px solid #ECECEE;font-size:14px;color:#222;' + (x || '') + '">' + s + '</td>'; };
+  return '<table role="presentation" style="width:100%;border-collapse:collapse;margin:0 0 6px;"><tr><th ' + th('left') + '>' + esc_(OW.product) + '</th><th ' + th('center') +
+    '>' + esc_(OW.qty) + '</th><th ' + th('right') + '>' + esc_(OW.price) + '</th></tr>' +
+    lines.map(function (l) {
+      return '<tr>' + td('<strong>' + esc_(l.title) + '</strong>' + (l.unit ? '<br><span style="color:#9A9AA2;font-size:12px;">' + esc_(l.unit) + '</span>' : '')) +
+        td(String(l.qty), 'text-align:center;') + td(euro_(l.price * l.qty), 'text-align:right;white-space:nowrap;') + '</tr>';
+    }).join('') +
+    '<tr>' + td('<strong>' + esc_(OW.total) + '</strong>', 'border-bottom:0;') + td('', 'border-bottom:0;') + td('<strong>' + euro_(total) + '</strong>', 'text-align:right;border-bottom:0;font-size:16px;') + '</tr></table>' +
+    '<p style="' + F_ + 'font-size:12px;color:#9A9AA2;margin:0 0 18px;">' + esc_(OW.note2) + '</p>';
+}
+function orderEmails_(cfg, ref, d, lines, total, shop, sr, shopEmail) {
+  var copy = cfgYes_(cfg, 'Send me a copy of every order?') ? notifyTo_(cfg) : '';
+  // to the shop (in the shop's language)
+  var sLang = sr ? lang_(sr.get('Language')) : 'English';
+  var b = brand_(cfg, sLang), OW = ORDER_WORDS[sLang];
+  var wa = waNumber_(d.phone);
+  var custRows = [[OW.customer, clean_(d.name)], [OW.phone, '<a href="tel:' + esc_(clean_(d.phone).replace(/[^\d+]/g, '')) + '" style="color:' + b.primary + ';">' + esc_(clean_(d.phone)) + '</a>', true],
+    ['Email', clean_(d.email)], [OW.pickup, clean_(d.pickup)], [OW.note, clean_(d.note)], [OW.order, ref]];
+  var shopBody = '<p style="' + F_ + 'font-size:15px;color:#222222;line-height:1.7;margin:0 0 16px;">' + esc_(OW.shopIntro) + '</p>' +
+    itemsTable_(b, lines, OW, total) + detailsTable_(b, custRows) +
+    (wa ? button_(b, OW.reply, 'https://wa.me/' + wa + '?text=' + encodeURIComponent(OW.hello + ' ' + clean_(d.name) + ', ' + shop.name + ' – ' + OW.order + ' ' + ref)) : '');
+  var subject = OW.subjShop.replace('{{ref}}', ref).replace('{{total}}', euro_(total));
+  var plain = lines.map(function (l) { return l.qty + ' x ' + l.title + ' = ' + euro_(l.price * l.qty); }).join('\n') + '\n' + OW.total + ': ' + euro_(total) +
+    '\n\n' + OW.customer + ': ' + clean_(d.name) + ' · ' + clean_(d.phone) + (d.pickup ? '\n' + OW.pickup + ': ' + clean_(d.pickup) : '') + (d.note ? '\n' + OW.note + ': ' + clean_(d.note) : '');
+  var html = wrapEmail_(b, { lang: sLang, banner: ['ok', shop.name, OW.newOrder], body: shopBody, ref: ref, why: OW.whyShop, preheader: subject });
+  if (shopEmail) {
+    var o = mailOptions_(b, html, { to: shopEmail, subject: subject, body: plain });
+    if (copy && copy !== shopEmail) o.bcc = copy;
+    MailApp.sendEmail(o);
+  } else if (copy) {
+    var waShop = waNumber_(shop.whatsapp);
+    var note = '<p style="' + F_ + 'font-size:14px;background:#FFF3CD;color:#7A5800;padding:10px 12px;border-radius:6px;margin:0 0 16px;">This shop has no email in the sheet. ' +
+      (waShop ? 'Forward the order on WhatsApp: <a href="https://wa.me/' + waShop + '?text=' + encodeURIComponent(plain) + '">open WhatsApp</a>' : 'Call the shop.') + '</p>';
+    MailApp.sendEmail(mailOptions_(b, html.replace('<div class="ak-body" style="padding:28px 32px;">', '<div class="ak-body" style="padding:28px 32px;">' + note),
+      { to: copy, subject: '[No shop email] ' + subject, body: plain }));
+  }
+  // to the customer (optional email)
+  if (/@/.test(clean_(d.email))) {
+    var cLang = langFromCode_(d.language), cb = brand_(cfg, cLang), CW = ORDER_WORDS[cLang];
+    var first = clean_(d.name).split(/\s+/)[0];
+    var cBody = '<p style="' + F_ + 'font-size:15px;color:#222222;line-height:1.7;margin:0 0 14px;">' + esc_(CW.hello + ' ' + first + ',') + '</p>' +
+      '<p style="' + F_ + 'font-size:15px;color:#222222;line-height:1.7;margin:0 0 18px;">' + esc_(CW.custIntro.replace('{{shop}}', shop.name)) + '</p>' +
+      itemsTable_(cb, lines, CW, total) + detailsTable_(cb, [[CW.order, ref], [CW.pickup, clean_(d.pickup)], ['', '']]) +
+      (shop.page ? button_(cb, shop.name, shop.page) : '');
+    var cSubj = CW.subjCust.replace('{{shop}}', shop.name).replace('{{ref}}', ref);
+    MailApp.sendEmail(mailOptions_(cb, wrapEmail_(cb, { lang: cLang, banner: ['info', shop.name, CW.sent], body: cBody, ref: ref, why: CW.why, preheader: cSubj }),
+      { to: clean_(d.email), subject: cSubj, body: CW.hello + ' ' + first + ',\n\n' + CW.custIntro.replace('{{shop}}', shop.name) + '\n\n' + plain }));
+  }
+}
+
+// ================================================================== CUSTOMER NEWSLETTER (footer form, double opt-in)
+function handleSubscribe_(d) {
+  if (d.company2) return { ok: true };
+  var mail = clean_(d.email, 120).toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) return { ok: false, error: 'Email address is not valid.' };
+  if (!underLimit_()) return { ok: false, error: 'Please try again later.' };
+  var cfg = config_(), lang = lang_(d.language);
+  var s = ensureSheet_(SUBS, SUB_COLS);
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  var ref, existing = null;
+  try {
+    rowObjects_(s.sh).rows.forEach(function (x) { if (String(x.get('Email')).toLowerCase() === mail) existing = x; });
+    if (existing && /^Confirmed/.test(String(existing.get('Newsletter')))) return { ok: true };   // already in: say nothing more
+    if (existing) {
+      ref = String(existing.get('Reference'));
+      s.sh.getRange(existing.r, s.map['Newsletter']).setValue('Waiting for confirmation');
+    } else {
+      ref = uniqueId_('SUB-' + initials_(mail.split('@')[0].replace(/[._-]+/g, ' ')), existingIds_(s.sh, 'Reference'));
+      var now = new Date();
+      var vals = { 'Reference': ref, 'Received': now, 'Email': mail, 'Language': lang, 'Newsletter': 'Waiting for confirmation',
+        'Newsletter consent': 'Box ticked in the website footer ' + stamp_(now, 'dd.MM.yyyy HH:mm'), 'Source page': clean_(d.page_url, 200) };
+      var row = new Array(s.sh.getLastColumn());
+      for (var i = 0; i < row.length; i++) row[i] = '';
+      Object.keys(vals).forEach(function (h) { if (s.map[h]) row[s.map[h] - 1] = safeCell_(vals[h]); });
+      s.sh.appendRow(row);
+    }
+  } finally {
+    lock.releaseLock();
+  }
+  var nl = link_(cfg, 'nl', ref, lang);
+  if (!nl) return { ok: false, error: 'Newsletter sign-up is not set up yet.' };
+  var b = brand_(cfg, lang), W = b.words;
+  var body = '<p style="' + F_ + 'font-size:15px;color:#222222;line-height:1.7;margin:0 0 6px;">' + esc_(W.helloAll + ',') + '</p>' +
+    '<p style="' + F_ + 'font-size:15px;color:#222222;line-height:1.7;margin:0 0 6px;">' + esc_(W.nlAsk.replace(/ für Geschäftsinhaber| for shop owners| pour les commerçants/, '')) + '</p>' + button_(b, W.nlBtn, nl);
+  MailApp.sendEmail(mailOptions_(b, wrapEmail_(b, { lang: lang, banner: ['info', b.name, W.newsletter], body: body, ref: ref, why: W.whyTx }),
+    { to: mail, subject: b.name + ': ' + W.nlBtn, body: W.nlAsk + '\n' + nl }));
+  return { ok: true };
+}
+
+// ================================================================== PRODUCTS FROM SHOPS ("Add products" page)
+// A listed shop sends products with its reference (AK-…) and its email. You check them and publish them as posts.
+function handleProducts_(d) {
+  if (d.company2) return { ok: true, count: 0 };
+  if (!underLimit_()) return { ok: false, error: 'Please try again later.' };
+  var ref = clean_(d.ref, 60), mail = clean_(d.email, 120).toLowerCase();
+  var s = rowObjects_(sheet_(SHEET)), shop = null;
+  s.rows.forEach(function (x) { if (String(x.get('Reference')).trim().toUpperCase() === ref.toUpperCase() && String(x.get('Email')).trim().toLowerCase() === mail) shop = x; });
+  if (!shop) return { ok: false, error: 'We could not find a shop with this reference and email. Use the reference from your sign-up email.' };
+  if (['Live', 'Update done'].indexOf(String(shop.get('Status'))) < 0) return { ok: false, error: 'Your shop page is not live yet. You can add products once it is online.' };
+  var list = (Array.isArray(d.products) ? d.products : []).slice(0, 10).filter(function (p) { return clean_(p.name) && num_(p.price) > 0; });
+  if (!list.length) return { ok: false, error: 'Please add at least one product with a name and a price.' };
+  if (d.confirm !== true) return { ok: false, error: 'Please confirm the two boxes.' };
+  var cfg = config_(), pr = ensureSheet_(PRODUCTS, PRODUCT_COLS);
+  var shopName = String(shop.get('Shop name')), page = String(shop.get('Shop page link') || ''), city = cityLabel_(shop.get('City'));
+  var whats = String(shop.get('WhatsApp') || shop.get('Phone') || '').replace(/^'/, '');
+  var lock = LockService.getScriptLock();
+  lock.waitLock(25000);
+  var ids = [];
+  try {
+    var existing = existingIds_(pr.sh, 'Product ID');
+    list.forEach(function (p) {
+      var id = uniqueId_('PR-' + initials_(shopName), existing);
+      var photo = '';
+      if (p.photo && p.photo.data) {
+        var bytes = Utilities.base64Decode(String(p.photo.data));
+        if (bytes.length <= 4 * 1024 * 1024) photo = photoFolder_().createFile(Utilities.newBlob(bytes, 'image/jpeg', id + '.jpg')).getUrl();
+      }
+      var price = num_(p.price), old = num_(p.old_price), cat = CATEGORY_LABELS.indexOf(clean_(p.category)) > -1 ? clean_(p.category) : '';
+      var until = /^\d{4}-\d{2}-\d{2}$/.test(clean_(p.until)) ? clean_(p.until) : '';
+      var a = { price: price.toFixed(2), unit: clean_(p.unit, 40), shop: shopName, 'shop-page': page, whatsapp: whats, city: city };
+      if (old > price) a['old-price'] = old.toFixed(2);
+      if (until && old > price) a.until = until;
+      var code = '<div class="product-info"\n' + Object.keys(a).map(function (k) { return '  data-' + k + '="' + attr_(a[k]) + '"'; }).join('\n') + '>\n' +
+        text_(euro_(price) + (a.unit ? ' · ' + a.unit : '') + ' · ' + shopName) + '\n</div>\n' +
+        (clean_(p.description, 600) ? '\n<p>' + text_(clean_(p.description, 600)) + '</p>\n' : '') +
+        '\n<!-- Photo: add it below this line with the picture button. -->';
+      var vals = { 'Product ID': id, 'Received': new Date(), 'Status': 'New', 'Shop reference': ref, 'Shop name': shopName, 'Product': clean_(p.name, 120),
+        'Price': price, 'Old price': old > price ? old : '', 'Unit': clean_(p.unit, 40), 'Category': cat, 'Offer until': until,
+        'Description': clean_(p.description, 600), 'Photo': photo, 'Post title': clean_(p.name, 120),
+        'Post labels': ['Product', cat, city].filter(String).join(', '), 'Post code (paste in HTML view)': code };
+      var row = new Array(pr.sh.getLastColumn());
+      for (var i = 0; i < row.length; i++) row[i] = '';
+      Object.keys(vals).forEach(function (h) { if (pr.map[h]) row[pr.map[h] - 1] = safeCell_(vals[h]); });
+      pr.sh.appendRow(row);
+      ids.push(id);
+    });
+  } finally {
+    lock.releaseLock();
+  }
+  try {
+    var b = brand_(cfg, 'English');
+    var html = wrapEmail_(b, { lang: 'English', banner: ['info', 'Products', list.length + ' new product' + (list.length === 1 ? '' : 's')], ref: ref,
+      body: '<p style="' + F_ + 'font-size:15px;color:#222;line-height:1.7;">' + esc_(shopName) + ' sent products. Check them on the Products tab, then publish them as posts.</p>' +
+        detailsTable_(b, list.map(function (p, i) { return [ids[i], clean_(p.name) + ' · ' + euro_(num_(p.price)) + (p.unit ? ' · ' + clean_(p.unit) : '')]; })) +
+        button_(b, 'Open the sheet', SpreadsheetApp.getActive().getUrl()) });
+    send_(notifyTo_(cfg), 'AfroKauf: ' + list.length + ' new product(s) from ' + shopName, ids.join(', '), b, html);
+  } catch (e) { console.error(e); }
+  return { ok: true, count: list.length };
+}
+function showProductCode() {
+  run_(function () {
+    var sh = SpreadsheetApp.getActive().getActiveSheet();
+    if (sh.getName() !== PRODUCTS) throw new Error('Open the "' + PRODUCTS + '" tab and click a product row first.');
+    var r = sh.getActiveRange().getRow();
+    if (r < 2) throw new Error('Click a product row first (not the header).');
+    var map = headerMap_(sh), v = sh.getRange(r, 1, 1, sh.getLastColumn()).getValues()[0];
+    var g = function (n) { return map[n] ? v[map[n] - 1] : ''; };
+    var html = '<style>body{font:14px system-ui,sans-serif}textarea{width:100%;font:12px monospace}b{display:block;margin:12px 0 4px}</style>' +
+      '<b>1. Title</b><textarea rows="1" onclick="this.select()">' + text_(g('Post title')) + '</textarea>' +
+      '<b>2. Labels</b><textarea rows="1" onclick="this.select()">' + text_(g('Post labels')) + '</textarea>' +
+      '<b>3. Post code: paste in HTML view</b><textarea rows="14" onclick="this.select()">' + text_(g('Post code (paste in HTML view)')) + '</textarea>' +
+      (g('Photo') ? '<b>4. Photo</b><a href="' + attr_(g('Photo')) + '" target="_blank">Open the photo</a>' : '');
+    SpreadsheetApp.getUi().showModalDialog(HtmlService.createHtmlOutput(html).setWidth(720).setHeight(600), 'Product post: ' + g('Product'));
   });
 }

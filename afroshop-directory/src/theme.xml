@@ -83,6 +83,7 @@ Page not found - <data:blog.title/>
           <b:widget-settings>
             <b:widget-setting name='content'><![CDATA[<ul>
 <li><a href="/#find">Find a shop</a></li>
+<li><a href="/search/label/Product">Shop</a></li>
 <li><a href="/#categories">Categories</a></li>
 <li><a href="/#cities">Cities</a></li>
 <li><a href="/search/label/Events">Events</a></li>
@@ -189,6 +190,26 @@ Page not found - <data:blog.title/>
         <b:include name='quickedit'/>
       </b:includable>
     </b:widget>
+    <b:widget id='HTML18' locked='false' title='' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<ul class="benefits">
+<li data-icon="free"><strong>Free for customers</strong>Search, call and message shops at no cost.</li>
+<li data-icon="check"><strong>Every shop checked</strong>We talk to each shop before its page goes live.</li>
+<li data-icon="clock"><strong>Open now</strong>See which shops are open before you go.</li>
+<li data-icon="bag"><strong>Order and pick up</strong>Choose products online, collect them in the shop.</li>
+</ul>]]></b:widget-setting>
+      </b:widget-settings>
+      @@HTML_MAIN@@
+    </b:widget>
+    <b:widget id='HTML19' locked='false' title='' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<ul class="banners">
+<li data-tone="green"><p class="kicker">Seminar</p><h3>More customers with your phone</h3><p>A Saturday workshop for shop owners: WhatsApp, Google and photos that sell.</p><a href="/search/label/Events">Book a seat</a></li>
+<li data-tone="gold"><p class="kicker">New</p><h3>Order from your favourite shop</h3><p>Choose products online, send the order, pick it up in the shop.</p><a href="/search/label/Product">Open the shop</a></li>
+</ul>]]></b:widget-setting>
+      </b:widget-settings>
+      @@HTML_MAIN@@
+    </b:widget>
     <b:widget id='HTML14' locked='false' title='How it works' type='HTML'>
       <b:widget-settings>
         <b:widget-setting name='content'><![CDATA[<ol class="howto">
@@ -232,6 +253,20 @@ Page not found - <data:blog.title/>
           <b:include name='quickedit'/>
         </b:includable>
       </b:widget>
+      <b:widget id='HTML20' locked='false' title='Deals of the week' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<p>Offers from our member shops. Order online and pick up in the shop.</p>
+<div class="deals" data-max="8"></div>]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+      <b:widget id='HTML26' locked='false' title='Products from our shops' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<p>Order from African shops near you and pick up in the shop. <a href="/search/label/Product">All products</a></p>
+<div class="feed-row" data-kind="products" data-label="Product" data-max="10"></div>]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
       <b:widget id='HTML5' locked='false' title='Featured shops' type='HTML'>
         <b:widget-settings>
           <b:widget-setting name='content'><![CDATA[<p>Hand-picked shops from our members.</p>]]></b:widget-setting>
@@ -251,6 +286,14 @@ Page not found - <data:blog.title/>
           </div>
           <b:include name='quickedit'/>
         </b:includable>
+      </b:widget>
+      <b:widget id='HTML21' locked='false' title='Our member shops' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<ul class="logos">
+<li><a href="/p/list-your-shop.html">Your shop logo here</a></li>
+</ul>]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
       </b:widget>
       <b:widget id='HTML6' locked='false' title='Shops by city' type='HTML'>
         <b:widget-settings>
@@ -404,7 +447,7 @@ Page not found - <data:blog.title/>
         </b:includable>
 
         <b:includable id='dirCard' var='post'>
-          <article class='dcard' expr:data-url='data:post.url'>
+          <article class='dcard' expr:data-id='data:post.id' expr:data-url='data:post.url'>
             <a aria-hidden='true' class='dcard-media' expr:href='data:post.url' tabindex='-1'>
               <b:if cond='data:post.firstImageUrl'>
                 <img class='js-resize' expr:alt='data:post.title' expr:src='data:post.firstImageUrl' loading='lazy'/>
@@ -433,7 +476,7 @@ Page not found - <data:blog.title/>
         </b:includable>
 
         <b:includable id='dirSingle' var='post'>
-          <article class='entry post' expr:data-url='data:post.url'>
+          <article class='entry post' expr:data-id='data:post.id' expr:data-url='data:post.url'>
             <a expr:name='data:post.id'/>
             <header class='entry-head'>
               <b:if cond='data:post.labels'>
@@ -503,6 +546,30 @@ Page not found - <data:blog.title/>
 <!-- ================= Homepage blocks (bottom) ================= -->
 <div class='home-only home-blocks'>
   <b:section class='home-section' id='home-bottom' showaddelement='yes'>
+    <b:widget id='HTML22' locked='false' title='' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<div class="spotlight" data-tone="gold">
+<h3>Everything for your kitchen</h3>
+<ul>
+<li><a href="/#find?q=gari">Gari &amp; cassava</a></li>
+<li><a href="/#find?q=palm%20oil">Palm oil</a></li>
+<li><a href="/#find?q=egusi">Egusi &amp; seeds</a></li>
+<li><a href="/#find?q=stockfish">Fish &amp; stockfish</a></li>
+<li><a href="/#find?q=spices">Spices</a></li>
+<li><a href="/#find?q=plantain">Plantain &amp; yam</a></li>
+</ul>
+<div class="feed-row" data-kind="shops" data-label="Food" data-max="8"></div>
+</div>]]></b:widget-setting>
+      </b:widget-settings>
+      @@HTML_MAIN@@
+    </b:widget>
+    <b:widget id='HTML23' locked='false' title='AfroKauf Magazine' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<p>Recipes, shop stories and tips from the community. <a href="/search/label/Magazine">All articles</a></p>
+<div class="feed-row" data-kind="posts" data-label="Magazine" data-max="8"></div>]]></b:widget-setting>
+      </b:widget-settings>
+      @@HTML_MAIN@@
+    </b:widget>
     <b:widget id='HTML7' locked='false' title='Seminars &amp; events' type='HTML'>
       <b:widget-settings>
         <b:widget-setting name='content'><![CDATA[<p>Workshops for shop owners and community events across Germany.</p>]]></b:widget-setting>
@@ -544,6 +611,23 @@ Page not found - <data:blog.title/>
         <b:include name='quickedit'/>
       </b:includable>
     </b:widget>
+    <b:widget id='HTML24' locked='false' title='Questions and answers' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[<dl class="faq">
+<dt>Is AfroKauf free for customers?</dt>
+<dd>Yes. Searching, calling and messaging shops is free. You pay the shop for what you buy, as always.</dd>
+<dt>How does ordering work?</dt>
+<dd>Put products from one shop in your order and send it, on WhatsApp or with the order form. The shop confirms, and you pick up and pay in the shop.</dd>
+<dt>Who runs the shops?</dt>
+<dd>Every shop is independent. AfroKauf checks each shop before its page goes live and shows it in one place.</dd>
+<dt>I own a shop. How do I get listed?</dt>
+<dd>Fill in the form on <a href="/p/list-your-shop.html">List your shop</a>. The basic listing is free and usually live within 2 working days.</dd>
+<dt>Something on a shop page is wrong. What can I do?</dt>
+<dd>Tap "Report wrong information" on the shop page, or <a href="/p/contact.html">write to us</a>. We fix it quickly.</dd>
+</dl>]]></b:widget-setting>
+      </b:widget-settings>
+      @@HTML_MAIN@@
+    </b:widget>
     <b:widget id='HTML15' locked='false' title='Partners and supporters' type='HTML'>
       <b:widget-settings>
         <b:widget-setting name='content'><![CDATA[<p>Wholesalers, importers and organisations who support African shops in Germany. <a href="/p/contact.html">Become a partner</a></p>]]></b:widget-setting>
@@ -572,7 +656,11 @@ Page not found - <data:blog.title/>
 featured_label: Featured
 events_label: Events
 list_page: /p/list-your-shop.html
-contact_page: /p/contact.html]]></b:widget-setting>
+contact_page: /p/contact.html
+product_label: Product
+magazine_label: Magazine
+crm_endpoint: 
+price_note: Prices incl. VAT. Pay and pick up in the shop.]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
         <div class='dir-settings'><data:content/></div>
@@ -596,6 +684,17 @@ contact_page: /p/contact.html]]></b:widget-setting>
 <!-- ================= Footer ================= -->
 <footer class='site-footer'>
   <div class='container'>
+    <b:section class='footer-news' id='footer-news' maxwidgets='2' showaddelement='yes'>
+      <b:widget id='HTML25' locked='false' title='' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div class="newsletter-signup">
+<h3>Never miss an offer</h3>
+<p>Offers from African shops near you, new shops, seminars and recipes. About once a month, free.</p>
+</div>]]></b:widget-setting>
+        </b:widget-settings>
+        @@HTML_MAIN@@
+      </b:widget>
+    </b:section>
     <div class='footer-grid'>
       <b:section class='footer-col' id='footer-about' preferred='yes'>
         <b:widget id='HTML9' locked='false' title='About us' type='HTML'>

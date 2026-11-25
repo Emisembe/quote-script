@@ -262,6 +262,8 @@
         email: b.getAttribute('data-email') || ''
       };
     }
+    b = root.querySelector('.product-info');
+    if (b) return readProduct(b);
     b = root.querySelector('.event-info');
     if (b) {
       return {
@@ -466,8 +468,9 @@
         want.forEach(function (w) { kicker.appendChild(el('span', 'dcard-label is-shown', w)); });
       }
     }
-    if (!info) return;
+    if (!info) { if (item.snippet && extra && !extra.textContent) extra.appendChild(el('p', 'dcard-snippet', item.snippet + '…')); return; }
     card.classList.add('is-rich', 'is-' + info.type);
+    if (info.type === 'product') { productCard(card, item, opts); return; }
 
     if (info.type === 'event') {
       var d = eventDate(info);
@@ -532,7 +535,10 @@
       var ls = cards[i].querySelectorAll('.dcard-label');
       for (var j = 0; j < ls.length; j++) labels.push(ls[j].getAttribute('data-label'));
       var titleLink = cards[i].querySelector('.dcard-title a');
+      var media0 = cards[i].querySelector('.dcard-media img');
       enhanceCard(cards[i], {
+        id: cards[i].getAttribute('data-id') || '',
+        img: media0 ? media0.getAttribute('src') : '',
         title: titleLink ? titleLink.textContent : '',
         url: cards[i].getAttribute('data-url') || '',
         labels: labels,
@@ -559,6 +565,9 @@
     var info = readBlock(root);
     var thumb = e.media$thumbnail ? e.media$thumbnail.url : '';
     var item = {
+      id: (/post-(\d+)/.exec((e.id || {}).$t || '') || [])[1] || '',
+      date: (e.published || {}).$t || '',
+      snippet: '',
       title: (e.title || {}).$t || '',
       url: link ? link.href : '#',
       labels: (e.category || []).map(function (c) { return c.term; }),
@@ -573,6 +582,7 @@
         item.labels.join(' '), info.city, (root.textContent || '').slice(0, 1500)].join(' '));
       item.sellsText = norm(info.sells.join(' | '));
     }
+    if (!info) item.snippet = (root.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 140);
     return item;
   }
 
@@ -889,6 +899,7 @@
     entry.classList.add('is-' + info.type);
 
     if (info.type === 'shop') shopPanel(entry, panel, info, name, labels, image, url);
+    else if (info.type === 'product') productPanel(entry, panel, info, name, labels, image, url);
     else eventPanel(panel, info, name, image, url);
   }
 
@@ -1253,6 +1264,8 @@
     })(boxes[b]);
   }
 
+  /* @@MODULES@@ */
+
   initSlides();
   initTileIcons();
   enhanceListCards();
@@ -1260,4 +1273,6 @@
   initFinder();
   initFeeds();
   initSingle();
+  initBlocks();
+  initShop();
 })();

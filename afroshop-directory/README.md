@@ -60,6 +60,22 @@ Musterstraße 12, 60311 Frankfurt · Mo-Fr 10-20, Sa 9-18 · Tel. 069 1234567
 | `data-whatsapp` | Any format; `0151…` is turned into `+49 151…`. Leave empty if the shop has no WhatsApp. |
 | text inside the block | Shown only if the visitor's browser has no JavaScript. Keep it short. |
 
+## Shop (products from member shops)
+
+A product is a post with the labels `Product`, a category and a city, and this block at the top:
+
+```html
+<div class="product-info" data-price="3.49" data-old-price="" data-unit="1 kg"
+  data-shop="Lagos Taste Afroshop" data-shop-page="https://…/lagos-taste.html"
+  data-whatsapp="+49 152 9876543" data-city="Frankfurt" data-stock="yes" data-until="">3,49 € · 1 kg</div>
+```
+
+The price per kg/l is calculated from `data-unit`. The cart sends one order per shop: on WhatsApp, or (with
+`crm_endpoint` in Directory settings) to the Apps Script in `signup/Code.gs`, which re-reads every price from the
+blog feed, writes the Orders tab and emails the shop and the customer. AfroKauf's own products use
+`data-pay-link` (PayPal.me or a Stripe payment link) and a "Buy now" button. Shops can send products through the
+"Add products" page (`signup/add-products.html`).
+
 ## Favicon (the small icon in the browser tab)
 
 Layout → **Favicon** (at the top of the Layout page) → Edit → upload `favicon.ico`
@@ -94,6 +110,9 @@ Upcoming events appear on the homepage automatically, nearest date first. Past e
 | Seminars & events | Intro text; shows upcoming `Events` posts |
 | Own an African shop? | The plans and prices (plain HTML; keep the `plan` classes) |
 | Partners and supporters | Text and partner logos (`<ul><li><img src="..."></li></ul>`) |
+| Benefits strip, promo banners, logo row, spotlight, FAQ (gadgets without title or with their own title) | Homepage sections. Any HTML gadget added to a homepage area gets the AfroKauf look; section codes (`ul.benefits`, `ul.banners`, `ul.logos`, `div.spotlight`, `dl.faq`, `div.feed-row`, `div.deals`) are listed in the guide "AfroKauf – Homepage sections and the shop" |
+| Deals of the week, Products from our shops, AfroKauf Magazine | Fill themselves from posts labelled `Product` (with an old price for deals) and `Magazine`; hidden while empty |
+| Newsletter band (footer) | Customer newsletter sign-up; shown when `crm_endpoint` is set in Directory settings |
 | Follow us (footer) | Links to your social media pages |
 | Directory settings | Label names and page addresses the script uses. Add `date_language: de-DE` for German dates |
 | Site words | Translate any button or message, one per line: `Open now: Jetzt geöffnet` |
