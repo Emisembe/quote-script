@@ -135,8 +135,8 @@
       for (var a = 0; a < attrs.length; a++) {
         var v = els[i].getAttribute(attrs[a]);
         if (!v) continue;
-        var tr = trText(v);
-        if (tr) els[i].setAttribute(attrs[a], tr);
+        var at = trText(v);
+        if (at) els[i].setAttribute(attrs[a], at);
       }
     }
   }
