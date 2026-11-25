@@ -194,6 +194,76 @@ def end_card(v=False):
     return W, H, T, L
 
 
+# ---------------------------------------------------------------- 5. news-style lower third: title block + headline + QR + ticker
+QR_TICKER_TEXT = ('Free listing for every African shop in Germany   •   Order online, pick up in the shop   •   '
+                  'Seminars for shop owners   •   afrokauf.blogspot.com   •   Follow us: @afrokauf')
+
+
+def qr_third(v=False, qr=True):
+    """Two rows, like a TV news bar. Top: clay title block + cream headline strip (+ gold-framed QR square).
+    Bottom: AfroKauf tab + scrolling ticker. The QR square is a placeholder: in Camtasia put your QR image on top of it."""
+    W, H = dims(v)
+    T = 600                       # 20 s on screen; the ticker makes one full pass
+    E = T - 24
+    if v:
+        x, w = 40, W - 80
+        sy, top_h, head_h, tick_h = 1290, 84, 156, 80
+        title_w = 640                                 # a tab on top of the headline, like the desktop block
+        ty = sy + 8                                   # title block row
+        hx, hy, hw = x, ty + top_h, w                 # headline row under it
+        qs = 128
+        tab_w = 270
+    else:
+        x, w = 60, W - 120
+        sy, top_h, head_h, tick_h = 856, 120, 120, 72
+        title_w = 540
+        ty = sy + 8
+        hx, hy, hw = x + title_w, ty, w - title_w     # headline row beside the title block
+        qs = 100
+        tab_w = 330
+    tick_y = (hy + head_h) if v else (ty + top_h)
+    L = []
+    # kente stripe on top
+    L += stripe(x, sy, title_w if v else w, 8, E, 0, -(x + w), 0, seg=48)
+    # title block (clay) with the programme name
+    L.append(rect(x, ty, title_w, top_h, CLAY, slot='Title Block Colour', **mv(2, -(x + title_w), 0, E + 4)))
+    L.append(Matte((x, ty, title_w, top_h),
+                   text(x + 28, ty + 12, title_w - 56, top_h - 24, 'AFROKAUF LIVE', CREAM, weight=800,
+                        align='left' if v else 'center', prop='Title', **mv(12, 0, top_h, E - 2))))
+    # headline strip (cream)
+    L.append(rect(hx, hy, hw, head_h, CREAM, slot='Headline Strip Colour', **mv(8, -(hx + hw), 0, E + 2)))
+    text_w = hw - 56 - ((qs + 48) if qr else 0)
+    L.append(Matte((hx, hy, hw, head_h),
+                   text(hx + 28, hy + 14, text_w, head_h - 28, 'Shop owner Ada asks this question', GREEN, weight=600,
+                        align='left', prop='Headline', **mv(18, 0, -head_h, E - 4))))
+    if qr:
+        qx, qy = hx + hw - qs - 24, hy + (head_h - qs) // 2
+        L.append(rect(qx - 6, qy - 6, qs + 12, qs + 12, GOLD, slot='QR Frame Colour', **mv(22, 0, head_h + 40, E - 6)))
+        L.append(rect(qx, qy, qs, qs, (255, 255, 255), **mv(22, 0, head_h + 40, E - 6)))
+        L.append(text(qx + 8, qy + qs // 2 - 18, qs - 16, 36, 'QR', (190, 190, 190), weight=700, prop='QR placeholder (hide)',
+                      **mv(22, 0, head_h + 40, E - 6)))
+    # ticker row: AfroKauf tab (green) + cream strip with scrolling text
+    L.append(rect(x, tick_y, w, tick_h, CREAM, slot='Ticker Colour', **mv(4, 0, tick_h + 160, E + 4)))
+    L.append(rect(x, tick_y, w, 3, SAND, **mv(4, 0, tick_h + 160, E + 4)))
+    win = (x + tab_w, tick_y, w - tab_w, tick_h)
+    th = 40 if not v else 44
+    tw = 2700 if not v else 2500
+    L.append(Matte(win, text(win[0], tick_y + (tick_h - th) // 2, tw, th, QR_TICKER_TEXT, INK, weight=600, align='left',
+                             prop='Ticker Text', start=24, dur=T - 24, scroll=(win[2], -tw))))
+    L.append(rect(x, tick_y, tab_w, tick_h, GREEN, slot='Tab Colour', **mv(4, 0, tick_h + 160, E + 4)))
+    L.append(rect(x + tab_w - 6, tick_y, 6, tick_h, CLAY, **mv(4, 0, tick_h + 160, E + 4)))
+    half = (tab_w - 6) // 2
+    L.append(text(x + 14, tick_y + 10, half - 10, tick_h - 20, 'Afro', CREAM, weight=800, align='right', prop='Tab first part',
+                  **mv(4, 0, tick_h + 160, E + 4)))
+    L.append(text(x + 6 + half, tick_y + 10, half - 14, tick_h - 20, 'Kauf', GOLD, weight=800, align='left', prop='Tab second part',
+                  **mv(4, 0, tick_h + 160, E + 4)))
+    return W, H, T, L
+
+
+def qr_third_plain(v=False):
+    return qr_third(v, qr=False)
+
+
 ASSETS = [
     ('AfroKauf - Ticker - Offers and details', ticker),
     ('AfroKauf - Lower Third - Name and shop', lower_third),
@@ -201,6 +271,8 @@ ASSETS = [
     ('AfroKauf - Lower Third - Interview guest (right)', interview_third_right),
     ('AfroKauf - LIVE Badge and Show Title', live_title),
     ('AfroKauf - End Card - Find shops and follow', end_card),
+    ('AfroKauf - News Bar - Title, headline, QR and ticker', qr_third),
+    ('AfroKauf - News Bar - Title, headline and ticker (no QR)', qr_third_plain),
 ]
 
 
