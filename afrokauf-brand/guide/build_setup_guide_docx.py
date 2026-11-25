@@ -241,10 +241,10 @@ h1('9. Languages')
 img('languages.png', 16, 'The globe button in the header: visitors choose their language.')
 para('The website speaks several languages. Visitors tap the globe button in the header (EN, DE, FR …) and choose. '
      'The first time, the site uses the language of their phone or computer, and afterwards it remembers their choice.')
-h2('9.1 Which languages, and why in two steps')
+h2('9.1 Which languages')
 table(['Step', 'Languages', 'Status'], [
-    ['Step 1', 'English, Deutsch, Français', 'Ready. Switched on from the start'],
-    ['Step 2', 'Kiswahili, Amharic (አማርኛ), Tigrinya (ትግርኛ)', 'Drafts. Already in the theme, but switched off until a native speaker has checked them'],
+    ['Ready', 'English, Deutsch, Français', 'Switched on and checked'],
+    ['Drafts', 'Kiswahili, Amharic (አማርኛ), Tigrinya (ትግርኛ)', 'Switched on, but a native speaker should check them soon (part 9.3)'],
 ], widths=[2.2, 7, 7.3])
 para('Why these: German is the language of the country, English and French reach most African communities in Germany '
      '(Nigeria, Ghana, Cameroon, Congo, Togo …). Eritreans and Ethiopians are among the largest African communities in Germany, '
@@ -252,15 +252,15 @@ para('Why these: German is the language of the country, English and French reach
      'so use those languages in your social media and videos instead of on the website.')
 h2('9.2 Where the languages are set')
 steps(['Layout › Directory settings (bottom) › pencil icon.',
-       'Find the line languages: en, de, fr. These are the languages visitors can choose. The codes: en English, de Deutsch, fr Français, sw Kiswahili, am Amharic, ti Tigrinya.',
+       'Find the line languages: en, de, fr, sw, am, ti. These are the languages visitors can choose. The codes: en English, de Deutsch, fr Français, sw Kiswahili, am Amharic, ti Tigrinya.',
        'The first code in the line is the language for visitors whose phone speaks none of them. Leave en first.',
+       'To hide a language, remove its code from the line (e.g. languages: en, de, fr). To show it again, add the code back.',
        'Save.'])
-h2('9.3 Switch on step 2 (after the check)')
+h2('9.3 Get the drafts checked')
 steps(['Find a native speaker for each language: a shop owner, a community member or a translator. Allow about 1 hour each.',
        'Layout › Language: Amharic (draft …) › pencil icon › copy all the text into an email or a Google Doc and send it to them. '
        'Ask them to correct only the part after “ = ” on each line, and to keep the English part and the “ = ” as they are.',
        'Paste the corrected text back into the gadget and Save. You may also remove “(draft, needs a native-speaker check)” from the gadget title.',
-       'Directory settings › add the code to the line, e.g. languages: en, de, fr, am › Save.',
        'Open the website, choose the new language with the globe button and click through the homepage, a shop page, a product and the order form.'])
 h2('9.4 Correct or add a word')
 para('Every language is one gadget at the bottom of Layout, for example “Language: Deutsch”. The first line is lang: de. '

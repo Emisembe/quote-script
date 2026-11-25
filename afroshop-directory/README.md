@@ -124,11 +124,10 @@ Upcoming events appear on the homepage automatically, nearest date first. Past e
 Visitors choose the language with the globe button in the header (EN, DE, FR, ...). The site also
 picks the visitor's browser language the first time, and remembers their choice.
 
-- **Step 1, ready:** English, Deutsch, Français. Switched on with this line in **Directory settings**:
-  `languages: en, de, fr`
-- **Step 2, drafts:** Kiswahili (`sw`), Amharic (`am`), Tigrinya (`ti`). The texts are in their gadgets
-  but **must be checked by a native speaker** before you switch them on. Then add them to the line:
+- All six are switched on with this line in **Directory settings**:
   `languages: en, de, fr, sw, am, ti`
+- English, Deutsch and Français are ready. Kiswahili (`sw`), Amharic (`am`) and Tigrinya (`ti`) are **drafts**:
+  have a native speaker check each one. To hide a language until then, remove its code from the line.
 - Each language is one gadget in Layout, e.g. **Language: Deutsch**. First line `lang: de`, then one line per text:
   `English text = Translation`. To correct a word, change the part after ` = ` and save.
 - Your own labels (categories, e.g. `Food`) can be translated too: add a line `Food = Lebensmittel`.

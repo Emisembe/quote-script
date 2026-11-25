@@ -660,7 +660,7 @@ contact_page: /p/contact.html
 product_label: Product
 magazine_label: Magazine
 crm_endpoint: 
-languages: en, de, fr
+languages: en, de, fr, sw, am, ti
 price_note: Prices incl. VAT. Pay and pick up in the shop.]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
