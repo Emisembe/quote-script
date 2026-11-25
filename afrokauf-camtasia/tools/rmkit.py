@@ -128,8 +128,9 @@ class Builder:
             if isinstance(L, Matte):
                 for ch in L.children:
                     x, y, w, h = L.window
-                    m = self._callout(rect(x, y, w, h, WHITE)); c = self._callout(ch)
-                    tracks.append(_track(len(tracks), [self._group([_track(0, [c]), _track(1, [m], matte=1)], "Reveal")]))
+                    # a child can be one element or a list of back-to-back elements on one track (e.g. ticker copies)
+                    m = self._callout(rect(x, y, w, h, WHITE)); cs = [self._callout(e) for e in (ch if isinstance(ch, list) else [ch])]
+                    tracks.append(_track(len(tracks), [self._group([_track(0, cs), _track(1, [m], matte=1)], "Reveal")]))
                 continue
             items = L if isinstance(L, list) else [L]
             tracks.append(_track(len(tracks), [self._callout(e) for e in items]))
@@ -173,6 +174,7 @@ def _font(weight, size):
     return _FONTS[(path, size)]
 
 def _wrap(s, ft, w):
+    if ft.getlength(s) <= w: return [s]      # fits on one line: keep every space (tickers use spaced separators)
     lines, cur = [], ""
     for wd in s.split(" "):
         t = (cur + " " + wd).strip()
@@ -224,7 +226,8 @@ def render(layers, W, H, total, f, bg=None):
     img = bg.copy().convert("RGBA") if bg is not None else Image.new("RGBA", (W, H), (0, 0, 0, 0))
     for L in layers:
         if isinstance(L, Matte):
-            for ch in L.children: _draw_el(img, ch, f, total, clip=L.window)
+            for ch in L.children:
+                for e in (ch if isinstance(ch, list) else [ch]): _draw_el(img, e, f, total, clip=L.window)
         else:
             for e in (L if isinstance(L, list) else [L]): _draw_el(img, e, f, total)
     return img

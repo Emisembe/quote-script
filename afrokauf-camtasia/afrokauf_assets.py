@@ -12,7 +12,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, 'tools'))
-from rmkit import rect, text, Matte, render  # noqa: E402
+from rmkit import rect, text, Matte, render, _font  # noqa: E402
+import math  # noqa: E402
 
 # ---------------------------------------------------------------- brand
 GREEN = (14, 77, 58)      # #0E4D3A
@@ -23,6 +24,31 @@ SAND = (243, 227, 195)    # #F3E3C3
 CREAM = (251, 246, 238)   # #FBF6EE
 INK = (31, 36, 32)        # #1F2420
 SOFT = (207, 224, 216)    # #CFE0D8 text on green
+
+
+LONG = 18000                      # 10 minutes at 30 fps: "stay" assets; trim them on the timeline
+
+
+def loop_text(win, y, h, s, color, start, end, prop, speed=3.5, weight=600, sep='   |   '):
+    """Endless ticker. One clip = one pass from the right edge of the window until fully gone on the left
+    (one movement per clip, the proven Camtasia 4.0 rule). The next copy starts as soon as the previous copy's end
+    has entered the window, so copies overlap in time: they alternate between two lanes (tracks).
+    Returns (laneA, laneB) for Matte(win, laneA, laneB). The box width is measured from the text, so the
+    copies follow each other with one separator gap."""
+    wx, wy, ww, wh = win
+    s = s.rstrip() + sep                         # same separator as between the messages, so the join is invisible
+    tw = math.ceil(_font(weight, round(h * 0.6)).getlength(s)) + 2   # never narrower than the text (no wrapping)
+    tw = max(tw, int(ww + 4 * speed))            # a lane must be free again before its next copy starts
+    one = math.ceil((ww + tw) / speed)
+    step = math.ceil(tw / speed)
+    lanes, k, t0 = ([], []), 0, start
+    while t0 < end:
+        dur = min(one, end - t0)
+        lanes[k % 2].append(text(wx, y, tw, h, s, color, weight=weight, align='left', prop=prop, start=t0, dur=dur,
+                                 scroll=(ww, round(ww - (ww + tw) * dur / one))))
+        t0 += step
+        k += 1
+    return lanes
 
 
 def dims(v):
@@ -56,7 +82,7 @@ TICKER_TEXT = ('THIS WEEK: Gari Ijebu 1 kg 3,49 EUR at Lagos Taste Frankfurt  ++
 
 def ticker(v=False):
     W, H = dims(v)
-    T = 1800                      # 60 s; three back-to-back passes of 20 s
+    T = LONG                      # stays 10 minutes, the text loops the whole time; trim on the timeline
     E = T - 24
     if v:
         bar_y, bar_h, lab_w, lab_h = 1452, 92, 300, 64
@@ -71,18 +97,13 @@ def ticker(v=False):
     L = []
     L += stripe(0, bar_y - 6, W, 6, E, 0, 0, bar_h + 120)
     L.append(rect(0, bar_y, W, bar_h, GREEN, slot='Bar Colour', **mv(0, 0, bar_h + 120, E)))
+    # endless scrolling text, visible only inside the bar (matte); runs until the bar leaves
+    wx, wy, ww, wh = win
+    L.append(Matte(win, *loop_text(win, wy + (wh - txt_h) // 2, txt_h, TICKER_TEXT, CREAM, 24, E, 'Ticker Text', sep='  +++  ')))
     # label: gold box with green text
     L.append(rect(lab_x, lab_y, lab_w, lab_h, GOLD, slot='Label Colour', **mv(8, -(lab_x + lab_w), 0, E - 6)))
     L.append(text(lab_x + 16, lab_y + 8, lab_w - 32, lab_h - 16, 'OFFERS', GREEN, weight=800, prop='Ticker Label',
                   **mv(8, -(lab_x + lab_w), 0, E - 6)))
-    # scrolling text: copies of one pass, back to back, visible only inside the bar (matte)
-    wx, wy, ww, wh = win
-    tw = 2600 if not v else 2400
-    passes, one = [], (T - 24) // 3
-    for k in range(3):
-        passes.append(text(wx, wy + (wh - txt_h) // 2, tw, txt_h, TICKER_TEXT, CREAM, weight=600, align='left',
-                           prop='Ticker Text', start=24 + k * one, dur=one, scroll=(ww, -tw)))
-    L.append(Matte(win, *passes))
     return W, H, T, L
 
 
@@ -142,7 +163,7 @@ def interview_third_right(v=False):
 # ---------------------------------------------------------------- 3. LIVE badge + show title
 def live_title(v=False):
     W, H = dims(v)
-    T = 900                       # 30 s; place it again later in the live if needed
+    T = LONG                      # stays 10 minutes; trim on the timeline
     E = T - 24
     if v:
         x, y, bw, bh, tw, th = 60, 260, 200, 76, 960, 84
@@ -194,6 +215,83 @@ def end_card(v=False):
     return W, H, T, L
 
 
+# ---------------------------------------------------------------- 6. location: where we are filming
+def location_tag(v=False):
+    """Gold tag (LIVE FROM / WE ARE AT) + green panel with the place + cream strip with street/city.
+    Desktop: top right (the LIVE badge sits top left). Mobile: top, below the phone's status area."""
+    W, H = dims(v)
+    T = LONG                      # stays; trim on the timeline
+    E = T - 24
+    if v:
+        x, y, w, tag_w, tag_h, h1, h2 = 60, 250, 960, 300, 56, 112, 64
+        dx = -(x + w)
+    else:
+        x, y, w, tag_w, tag_h, h1, h2 = 1280, 60, 580, 250, 48, 88, 54
+        dx = W - x
+    L = []
+    L.append(rect(x, y, tag_w, tag_h, GOLD, slot='Tag Colour', **mv(0, dx, 0, E + 6)))
+    L.append(text(x + 16, y + 6, tag_w - 32, tag_h - 12, 'LIVE FROM', GREEN, weight=800, prop='Tag', **mv(0, dx, 0, E + 6)))
+    L.append(rect(x, y + tag_h, w, h1, GREEN, slot='Panel Colour', **mv(6, dx, 0, E + 4)))
+    L.append(rect(x, y + tag_h + h1, w, h2, CREAM, slot='Strip Colour', **mv(12, dx, 0, E)))
+    L += stripe(x, y + tag_h + h1 + h2, w, 8, E, 16, dx, 0, seg=40)
+    L.append(Matte((x, y + tag_h, w, h1),
+                   text(x + 28, y + tag_h + 12, w - 56, h1 - 24, 'Lagos Taste Afroshop', CREAM, weight=800, align='left',
+                        prop='Place', **mv(18, 0, h1, E - 4))))
+    L.append(Matte((x, y + tag_h + h1, w, h2),
+                   text(x + 28, y + tag_h + h1 + 10, w - 56, h2 - 20, 'Frankfurt am Main, Hessen', GREEN, weight=600,
+                        align='left', prop='Street and city', **mv(24, 0, -h2, E - 8))))
+    return W, H, T, L
+
+
+# ---------------------------------------------------------------- 7. interview: who I am talking to
+def interview_bar(v=False):
+    """IN CONVERSATION tag + green panel with HOST and GUEST side by side (stacked on mobile) + topic strip.
+    Placeholders: write your own name as host; the guest's name, shop and city; the topic."""
+    W, H = dims(v)
+    T = LONG                      # stays during the interview; trim on the timeline
+    E = T - 24
+    L = []
+    if v:
+        x, y, w, tag_w, tag_h, ph, th = 40, 1100, 1000, 420, 56, 320, 84
+        dx = -(x + w)
+        blocks = [(x, y + tag_h, w, ph // 2), (x, y + tag_h + ph // 2, w, ph // 2)]
+    else:
+        x, y, w, tag_w, tag_h, ph, th = 80, 770, 1760, 380, 50, 150, 60
+        dx = -(x + w)
+        blocks = [(x, y + tag_h, w // 2, ph), (x + w // 2, y + tag_h, w - w // 2, ph)]
+    L.append(rect(x, y, tag_w, tag_h, CLAY, slot='Tag Colour', **mv(0, dx, 0, E + 6)))
+    L.append(text(x + 16, y + 6, tag_w - 32, tag_h - 12, 'IN CONVERSATION', CREAM, weight=800, prop='Tag', **mv(0, dx, 0, E + 6)))
+    L.append(rect(x, y + tag_h, w, ph, GREEN, slot='Panel Colour', **mv(6, dx, 0, E + 4)))
+    # divider between host and guest
+    if v:
+        L.append(rect(x + 28, y + tag_h + ph // 2 - 2, w - 56, 4, GREEN2, **mv(10, dx, 0, E + 2)))
+    else:
+        L.append(rect(x + w // 2 - 2, y + tag_h + 20, 4, ph - 40, GREEN2, **mv(10, dx, 0, E + 2)))
+    people = [('HOST', CLAY, CREAM, 'Host name', 'AfroKauf Live', 'Host'),
+              ('GUEST', GOLD, GREEN, 'Ada Obi', 'Owner, Lagos Taste Afroshop, Frankfurt', 'Guest')]
+    for (bx, by, bw, bh), (lab, lab_col, lab_ink, name, role, key) in zip(blocks, people):
+        lh = 34 if not v else 38
+        nh = 52 if not v else 54
+        rh = 34 if not v else 36
+        pad = 28
+        top = by + (bh - (lh + 6 + nh + rh)) // 2
+        L.append(rect(bx + pad, top, 130 if not v else 150, lh, lab_col, **mv(14, dx, 0, E)))
+        L.append(text(bx + pad + 8, top + 4, (130 if not v else 150) - 16, lh - 8, lab, lab_ink, weight=800,
+                      prop=key + ' label', **mv(14, dx, 0, E)))
+        L.append(Matte((bx, top + lh + 6, bw, nh + rh),
+                       text(bx + pad, top + lh + 6, bw - 2 * pad, nh, name, CREAM, weight=800, align='left',
+                            prop=key + ' name', **mv(20, 0, nh + rh, E - 4))))
+        L.append(Matte((bx, top + lh + 6, bw, nh + rh),
+                       text(bx + pad, top + lh + 6 + nh, bw - 2 * pad, rh, role, SOFT, weight=600, align='left',
+                            prop=key + ' role', **mv(24, 0, nh + rh, E - 6))))
+    L.append(rect(x, y + tag_h + ph, w, th, CREAM, slot='Topic Strip Colour', **mv(12, dx, 0, E)))
+    L += stripe(x, y + tag_h + ph + th, w, 8, E, 16, dx, 0, seg=48)
+    L.append(Matte((x, y + tag_h + ph, w, th),
+                   text(x + 28, y + tag_h + ph + 10, w - 56, th - 20, 'Topic: how to get more customers with WhatsApp',
+                        GREEN, weight=600, align='left', prop='Topic', **mv(28, 0, -th, E - 8))))
+    return W, H, T, L
+
+
 # ---------------------------------------------------------------- 5. news-style lower third: title block + headline + QR + ticker
 QR_TICKER_TEXT = ('Free listing for every African shop in Germany   |   Order online, pick up in the shop   |   '
                   'Seminars for shop owners   |   afrokauf.blogspot.com   |   Follow us: @afrokauf')
@@ -203,7 +301,7 @@ def qr_third(v=False, qr=True):
     """Two rows, like a TV news bar. Top: clay title block + cream headline strip (+ gold-framed QR square).
     Bottom: AfroKauf tab + scrolling ticker. The QR square is a placeholder: in Camtasia put your QR image on top of it."""
     W, H = dims(v)
-    T = 600                       # 20 s on screen; the ticker makes one full pass
+    T = LONG                      # stays 10 minutes (trim on the timeline); the ticker loops the whole time
     E = T - 24
     if v:
         x, w = 40, W - 80
@@ -246,10 +344,8 @@ def qr_third(v=False, qr=True):
     L.append(rect(x, tick_y, w, tick_h, CREAM, slot='Ticker Colour', **mv(4, 0, tick_h + 160, E + 4)))
     L.append(rect(x, tick_y, w, 3, SAND, **mv(4, 0, tick_h + 160, E + 4)))
     win = (x + tab_w, tick_y, w - tab_w, tick_h)
-    th = 40 if not v else 44
-    tw = 2700 if not v else 2500
-    L.append(Matte(win, text(win[0], tick_y + (tick_h - th) // 2, tw, th, QR_TICKER_TEXT, INK, weight=600, align='left',
-                             prop='Ticker Text', start=24, dur=T - 24, scroll=(win[2], -tw))))
+    th = 50 if not v else 52            # 0.6 x height = whole font size (30 / 31 px)
+    L.append(Matte(win, *loop_text(win, tick_y + (tick_h - th) // 2, th, QR_TICKER_TEXT, INK, 24, E, 'Ticker Text')))
     L.append(rect(x, tick_y, tab_w, tick_h, GREEN, slot='Tab Colour', **mv(4, 0, tick_h + 160, E + 4)))
     L.append(rect(x + tab_w - 6, tick_y, 6, tick_h, CLAY, **mv(4, 0, tick_h + 160, E + 4)))
     half = (tab_w - 6) // 2
@@ -275,6 +371,8 @@ ASSETS = [
     ('AK End Card', end_card),
     ('AK News Bar QR', qr_third),
     ('AK News Bar', qr_third_plain),
+    ('AK Location', location_tag),
+    ('AK Interview', interview_bar),
 ]
 
 
