@@ -10,7 +10,13 @@ import base64
 import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent
-NAMES = {'news-bar.html': 'AfroKauf Live - News Bar (title, headline, QR, ticker).html'}
+# (source, output name, text replacements for this version)
+FILES = [
+    ('news-bar.html', 'AfroKauf Live - News Bar - desktop 16x9.html', [('layout: "auto"', 'layout: "wide"')]),
+    ('news-bar.html', 'AfroKauf Live - News Bar - mobile 9x16.html', [('layout: "auto"', 'layout: "tall"')]),
+    ('break.html', 'AfroKauf Live - Break screen - desktop 16x9.html', [('layout: "auto"', 'layout: "wide"')]),
+    ('break.html', 'AfroKauf Live - Break screen - mobile 9x16.html', [('layout: "auto"', 'layout: "tall"')]),
+]
 
 
 def main():
@@ -20,8 +26,14 @@ def main():
     if '</script' in lib.lower():
         raise SystemExit('vendor library contains </script>')
     (ROOT / 'dist').mkdir(exist_ok=True)
-    for src, out in NAMES.items():
+    for old in (ROOT / 'dist').glob('*.html'):
+        old.unlink()
+    for src, out, reps in FILES:
         s = (ROOT / 'src' / src).read_text(encoding='utf-8')
+        for a, b in reps:
+            if a not in s:
+                raise SystemExit(f'{src}: {a!r} not found')
+            s = s.replace(a, b, 1)
         for k, v in (('@@FONT_600@@', f600), ('@@FONT_800@@', f800), ('@@QRLIB@@', lib)):
             if k not in s:
                 raise SystemExit(f'{src}: marker {k} missing')

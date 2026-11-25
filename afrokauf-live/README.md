@@ -5,7 +5,11 @@ generator inside the file (works offline), adapts to 16:9 and 9:16.
 
 | File (in `dist/`) | What it shows |
 |---|---|
-| AfroKauf Live - News Bar (title, headline, QR, ticker).html | Clay title block, headline strip, QR card, AfroKauf tab with running ticker |
+| AfroKauf Live - News Bar - desktop 16x9.html / mobile 9x16.html | Clay title block, headline strip, QR card, AfroKauf tab with running ticker |
+| AfroKauf Live - Break screen - desktop 16x9.html / mobile 9x16.html | Starting soon / be right back / thanks: countdown, rotating adverts with QR codes, ticker |
+| Transition (stinger) .webm / .mov (made by `stinger.py`) | AfroKauf colour wipe with logo; transition point 633 ms (16:9), 683 ms (9:16) |
+
+**The full user guide is [GUIDE.md](GUIDE.md)** (also in Drive as a Google Doc). Short version below.
 
 ## How to use it in XSplit Broadcaster
 
@@ -52,5 +56,5 @@ or `?layout=tall` for the phone version.
 
 ## For developers
 
-`python3 build.py` builds `dist/` from `src/`: it puts the Poppins fonts (SIL Open Font License, `fonts/OFL.txt`) and the
+`python3 build.py` builds `dist/` from `src/`; `python3 stinger.py OUTDIR` renders the transition videos (needs ffmpeg): it puts the Poppins fonts (SIL Open Font License, `fonts/OFL.txt`) and the
 QR code generator (Kazuhiko Arase, MIT license, `vendor/qrcode-generator.js`) inside each file.

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AfroKauf Live – Break screen</title>
+<!--
+  AfroKauf Live – Break screen: "Starting soon", "We'll be right back" (commercial break) or "Thanks for watching".
+  Full screen: countdown, adverts that change by themselves (each with a QR code) and the running ticker.
+
+  =====================  EDIT HERE  =====================
+  Open this file with Notepad (right-click › Open with › Notepad).
+  Change only the text between the quotes "..." below, then save (Ctrl+S).
+  In XSplit: right-click the source › Refresh. The countdown starts again every time the page is loaded or refreshed.
+-->
+<script>
+var SETTINGS = {
+  heading:    "WE’LL BE RIGHT BACK",          // or "STARTING SOON", "THANKS FOR WATCHING"
+  subheading: "AfroKauf Live – African shops in Germany",
+
+  countdown_minutes: 3,                       // 0 = no countdown
+  countdown_label:   "until we continue",     // small text under the clock
+  countdown_end:     "Back in a moment",      // shown when the clock reaches 0
+
+  // The adverts on the right. They change every few seconds. Copy a block { ... }, to add one; delete one to remove it.
+  promo_label:   "ADVERT",
+  promo_seconds: 10,
+  promos: [
+    { title: "List your shop for free",
+      text:  "Your own page with opening hours, products and a WhatsApp button.",
+      qr_link: "https://afrokauf.blogspot.com/p/list-your-shop.html" },
+    { title: "Deals of the week",
+      text:  "Gari Ijebu 1 kg for 3,49 € at Lagos Taste Afroshop, Frankfurt.",
+      qr_link: "https://afrokauf.blogspot.com/search/label/Product" },
+    { title: "Seminar for shop owners",
+      text:  "More customers with your phone: WhatsApp, Google and photos that sell.",
+      qr_link: "https://afrokauf.blogspot.com/search/label/Events" }
+  ],
+
+  ticker: [
+    "Free listing for every African shop in Germany",
+    "Order online, pick up in the shop",
+    "Seminars for shop owners",
+    "afrokauf.blogspot.com",
+    "Follow us: @afrokauf"
+  ],
+  ticker_speed: 110,
+
+  layout: "auto"      // "auto" = follows the screen shape; "wide" = 16:9 computer; "tall" = 9:16 phone / TikTok
+};
+</script>
+<!-- =====================  END OF EDIT  ===================== -->
+<style>
+@font-face { font-family: 'AK Poppins'; font-weight: 600; src: url(data:font/ttf;base64,@@FONT_600@@) format('truetype'); }
+@font-face { font-family: 'AK Poppins'; font-weight: 800; src: url(data:font/ttf;base64,@@FONT_800@@) format('truetype'); }
+:root { --green: #0E4D3A; --green2: #17644D; --gold: #E9A23B; --clay: #C4552D; --sand: #F3E3C3; --cream: #FBF6EE; --ink: #1F2420; --soft: #CFE0D8; }
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: var(--green); }
+body { font-family: 'AK Poppins', 'Poppins', 'Segoe UI', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+#stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; overflow: hidden;
+  background: radial-gradient(circle at 78% 30%, rgba(233, 162, 59, 0.22), transparent 45%),
+              radial-gradient(rgba(255, 255, 255, 0.07) 2px, transparent 2.5px) 0 0 / 34px 34px, var(--green); }
+.wide #stage { width: 1920px; height: 1080px; }
+.tall #stage { width: 1080px; height: 1920px; }
+.part { position: absolute; }
+.stripe { display: flex; overflow: hidden; }
+.stripe i { flex: 0 0 64px; }
+.stripe i:nth-child(4n+1) { background: var(--gold); } .stripe i:nth-child(4n+2) { background: var(--clay); }
+.stripe i:nth-child(4n+3) { background: var(--green2); } .stripe i:nth-child(4n+4) { background: var(--sand); }
+
+.brand { font-weight: 800; line-height: 1; display: flex; align-items: center; gap: 22px; }
+.brand b { color: var(--cream); } .brand b + b { color: var(--gold); } .brand .wm { display: inline-flex; }
+.brand .live { font-size: 0.42em; background: var(--clay); color: var(--cream); padding: 0.32em 0.6em 0.26em; border-radius: 8px; letter-spacing: 0.06em; display: inline-flex; align-items: center; gap: 0.4em; }
+.brand .live::before { content: ''; width: 0.5em; height: 0.5em; border-radius: 50%; background: var(--cream); animation: blink 1.2s infinite; }
+@keyframes blink { 50% { opacity: 0.25; } }
+.heading { color: var(--cream); font-weight: 800; line-height: 1.04; letter-spacing: -0.01em; }
+.sub { color: var(--soft); font-weight: 600; line-height: 1.3; }
+.clock { color: var(--gold); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+.clock-label { color: var(--soft); font-weight: 600; }
+.clock-box { border-left: 10px solid var(--gold); padding-left: 34px; }
+
+.card { background: var(--cream); border-radius: 26px; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3); overflow: hidden; }
+.promo { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 44px 48px; box-sizing: border-box;
+  transition: transform 0.6s cubic-bezier(.2,.8,.2,1), opacity 0.5s; }
+.promo.is-next { transform: translateX(110%); opacity: 0; }
+.promo.is-gone { transform: translateX(-110%); opacity: 0; }
+.pill { align-self: flex-start; background: var(--clay); color: var(--cream); font-weight: 800; letter-spacing: 0.08em; border-radius: 999px; padding: 8px 20px 6px; font-size: 22px; }
+.p-title { color: var(--green); font-weight: 800; line-height: 1.08; margin-top: 26px; }
+.p-text { color: var(--ink); font-weight: 600; line-height: 1.35; margin-top: 16px; }
+.p-qr { margin-top: auto; display: flex; align-items: center; gap: 28px; }
+.p-qr .q { background: #fff; border: 8px solid var(--gold); border-radius: 12px; padding: 6px; line-height: 0; }
+.p-qr canvas { display: block; image-rendering: pixelated; }
+.p-qr .scan { color: var(--green); font-weight: 800; font-size: 30px; line-height: 1.2; }
+.p-qr .scan small { display: block; color: #5b6a63; font-weight: 600; font-size: 22px; }
+.bar { position: absolute; left: 0; bottom: 0; height: 8px; background: var(--gold); width: 0; }
+.dots { position: absolute; display: flex; gap: 10px; }
+.dots i { width: 14px; height: 14px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); }
+.dots i.on { background: var(--gold); }
+
+.ticker { background: var(--cream); border-top: 3px solid var(--sand); overflow: hidden; box-sizing: border-box; }
+.tab { position: absolute; left: 0; top: 0; bottom: 0; background: var(--green); border-right: 6px solid var(--clay);
+  display: flex; align-items: center; justify-content: center; font-weight: 800; z-index: 2; }
+.tab b { color: var(--cream); } .tab b + b { color: var(--gold); }
+.run { position: absolute; top: 0; bottom: 0; right: 0; overflow: hidden; }
+.track { position: absolute; top: 0; bottom: 0; left: 0; display: flex; align-items: center; white-space: nowrap; will-change: transform; }
+.track .msg { color: var(--ink); font-weight: 600; padding: 0 30px; }
+.track .sep { width: 6px; align-self: stretch; margin: 14px 0; background: var(--clay); flex: none; }
+
+.in { animation: rise 0.7s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes rise { from { transform: translateY(40px); opacity: 0; } }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+/* QR Code Generator for JavaScript – Copyright (c) 2009 Kazuhiko Arase – MIT license – http://www.d-project.com/
+   "QR Code" is a registered trademark of DENSO WAVE INCORPORATED. */
+@@QRLIB@@
+</script>
+<script>
+(function () {
+  'use strict';
+  var S = window.SETTINGS || {};
+  var q = new URLSearchParams(location.search);
+  ['heading', 'subheading', 'countdown_label', 'countdown_end', 'promo_label', 'layout'].forEach(function (k) { if (q.has(k)) S[k] = q.get(k); });
+  if (q.has('countdown_minutes')) S.countdown_minutes = +q.get('countdown_minutes');
+  var stage = document.getElementById('stage');
+  var tall = false, timers = [];
+  var startedAt = Date.now();
+
+  function part(cls, x, y, w, h, html) {
+    var d = document.createElement('div');
+    d.className = 'part ' + cls;
+    d.style.left = x + 'px'; d.style.top = y + 'px';
+    if (w) d.style.width = w + 'px';
+    if (h) d.style.height = h + 'px';
+    if (html != null) d.innerHTML = html;
+    stage.appendChild(d);
+    return d;
+  }
+  function txt(el, s) { el.textContent = s == null ? '' : String(s); return el; }
+  function fit(el, size, min, maxH) {
+    el.style.fontSize = size + 'px';
+    while (size > min && (el.scrollHeight > maxH + 2 || el.scrollWidth > el.clientWidth + 2)) { size -= 2; el.style.fontSize = size + 'px'; }
+  }
+  function qrCanvas(link, size) {
+    var qr = qrcode(0, 'M');
+    qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+    qr.addData(String(link), 'Byte'); qr.make();
+    var n = qr.getModuleCount(), quiet = 2, cell = Math.max(1, Math.floor(size / (n + quiet * 2))), px = cell * (n + quiet * 2);
+    var c = document.createElement('canvas'); c.width = c.height = px;
+    var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, px, px); g.fillStyle = '#0E4D3A';
+    for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (qr.isDark(r, k)) g.fillRect((k + quiet) * cell, (r + quiet) * cell, cell, cell);
+    return c;
+  }
+  function stripe(x, y, w, h) {
+    var d = part('stripe', x, y, w, h);
+    for (var i = 0; i < Math.ceil(w / 64); i++) { var e = document.createElement('i'); e.style.height = h + 'px'; d.appendChild(e); }
+  }
+
+  function ticker(x, y, w, h, tabW, font) {
+    var t = part('ticker', x, y, w, h);
+    var tab = document.createElement('div'); tab.className = 'tab'; tab.style.width = tabW + 'px'; tab.style.fontSize = font + 6 + 'px';
+    tab.innerHTML = '<b>Afro</b><b>Kauf</b>'; t.appendChild(tab);
+    var run = document.createElement('div'); run.className = 'run'; run.style.left = tabW + 'px';
+    var track = document.createElement('div'); track.className = 'track'; track.style.fontSize = font + 'px';
+    var items = (S.ticker || []).filter(function (s) { return String(s).trim(); });
+    if (!items.length) items = [' '];
+    function addAll() { items.forEach(function (s) {
+      var m = document.createElement('span'); m.className = 'msg'; m.textContent = s; track.appendChild(m);
+      var sep = document.createElement('span'); sep.className = 'sep'; track.appendChild(sep);
+    }); }
+    addAll(); addAll();
+    run.appendChild(track); t.appendChild(run);
+    var speed = Math.max(20, +S.ticker_speed || 110), start = null, half = 0;
+    requestAnimationFrame(function () {
+      while (track.scrollWidth / 2 < run.clientWidth + 200) { addAll(); addAll(); }
+      half = track.scrollWidth / 2;
+      (function step(ts) {
+        if (start === null) start = ts;
+        track.style.transform = 'translateX(' + (-(((ts - start) / 1000 * speed) % half)) + 'px)';
+        requestAnimationFrame(step);
+      })(performance.now());
+    });
+  }
+
+  // countdown: counts from the moment the page was loaded (refresh the source to start again)
+  function clock(el) {
+    var total = Math.round((+S.countdown_minutes || 0) * 60);
+    function tick() {
+      var left = total - Math.floor((Date.now() - startedAt) / 1000);
+      if (left <= 0) { el.textContent = S.countdown_end || ''; el.classList.add('done'); el.style.fontSize = el.dataset.small + 'px'; if (el.nextSibling) el.nextSibling.style.display = 'none'; return; }
+      var m = Math.floor(left / 60), s = left % 60;
+      el.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
+    tick();
+    timers.push(setInterval(tick, 250));
+  }
+
+  function promos(x, y, w, h, G) {
+    var list = (S.promos || []).filter(function (p) { return p && (p.title || p.text); });
+    if (!list.length) return;
+    var card = part('card in', x, y, w, h);
+    card.style.animationDelay = '0.25s';
+    var slides = list.map(function (p, i) {
+      var d = document.createElement('div'); d.className = 'promo' + (i ? ' is-next' : '');
+      if (S.promo_label) d.appendChild(txt(Object.assign(document.createElement('div'), { className: 'pill' }), S.promo_label));
+      var t = txt(Object.assign(document.createElement('div'), { className: 'p-title' }), p.title);
+      var x2 = txt(Object.assign(document.createElement('div'), { className: 'p-text' }), p.text);
+      d.appendChild(t); d.appendChild(x2);
+      if (p.qr_link) {
+        var row = document.createElement('div'); row.className = 'p-qr';
+        var qb = document.createElement('div'); qb.className = 'q'; qb.appendChild(qrCanvas(p.qr_link, G.qr)); row.appendChild(qb);
+        var sc = document.createElement('div'); sc.className = 'scan';
+        sc.innerHTML = 'SCAN ME<small></small>'; sc.lastChild.textContent = String(p.qr_link).replace(/^https?:\/\//, '').replace(/\/$/, '');
+        row.appendChild(sc); d.appendChild(row);
+      }
+      card.appendChild(d);
+      // fit the words into the space above the QR code
+      t.style.fontSize = G.pt + 'px'; x2.style.fontSize = G.px + 'px';
+      return { d: d, t: t, x: x2 };
+    });
+    var bar = document.createElement('div'); bar.className = 'bar'; card.appendChild(bar);
+    var dots = part('dots', x, y + h + 24, w, 14);
+    dots.style.justifyContent = 'center';
+    list.forEach(function () { dots.appendChild(document.createElement('i')); });
+    requestAnimationFrame(function () {
+      slides.forEach(function (s) {
+        var room = s.d.clientHeight - 88 - (s.d.querySelector('.p-qr') ? s.d.querySelector('.p-qr').offsetHeight + 30 : 0) - 70;
+        var size = G.pt, small = G.px;
+        while ((s.t.offsetHeight + s.x.offsetHeight + 16) > room && size > 30) { size -= 2; small = Math.max(22, small - 1); s.t.style.fontSize = size + 'px'; s.x.style.fontSize = small + 'px'; }
+      });
+    });
+    var cur = 0, secs = Math.max(3, +S.promo_seconds || 10);
+    function show(i) {
+      slides.forEach(function (s, k) { s.d.className = 'promo' + (k === i ? '' : (k === cur && k !== i ? ' is-gone' : ' is-next')); });
+      [].forEach.call(dots.children, function (dot, k) { dot.className = k === i ? 'on' : ''; });
+      cur = i;
+      bar.style.transition = 'none'; bar.style.width = '0';
+      void bar.offsetWidth;
+      bar.style.transition = 'width ' + secs + 's linear'; bar.style.width = '100%';
+    }
+    show(0);
+    if (slides.length > 1) timers.push(setInterval(function () {
+      var next = (cur + 1) % slides.length;
+      slides[next].d.className = 'promo is-next';
+      void slides[next].d.offsetWidth;
+      show(next);
+    }, secs * 1000));
+  }
+
+  function build() {
+    timers.forEach(clearInterval); timers = [];
+    stage.innerHTML = '';
+    var hasClock = (+S.countdown_minutes || 0) > 0;
+    if (!tall) {
+      stripe(0, 0, 1920, 12);
+      var b = part('brand in', 120, 110, 900, 80, '<span class="wm"><b>Afro</b><b>Kauf</b></span><span class="live">LIVE</span>'); b.style.fontSize = '68px';
+      var h = txt(part('heading in', 120, 250, 880, null), S.heading); h.style.animationDelay = '0.1s';
+      fit(h, 118, 60, 260);
+      var sb = txt(part('sub in', 120, 250 + h.offsetHeight + 24, 880, null), S.subheading); sb.style.animationDelay = '0.15s';
+      fit(sb, 38, 24, 110);
+      if (hasClock) {
+        var cb = part('clock-box in', 120, 640, 820, 250); cb.style.animationDelay = '0.2s';
+        var c = document.createElement('div'); c.className = 'clock'; c.style.fontSize = '170px'; c.dataset.small = 84; cb.appendChild(c);
+        var cl = document.createElement('div'); cl.className = 'clock-label'; cl.style.fontSize = '34px'; cl.style.marginTop = '14px'; txt(cl, S.countdown_label); cb.appendChild(cl);
+        clock(c);
+      }
+      promos(1100, 120, 700, 780, { qr: 230, pt: 64, px: 34 });
+      ticker(0, 1008, 1920, 72, 330, 34);
+    } else {
+      stripe(0, 0, 1080, 12);
+      var b2 = part('brand in', 80, 110, 920, 80, '<span class="wm"><b>Afro</b><b>Kauf</b></span><span class="live">LIVE</span>'); b2.style.fontSize = '64px';
+      var h2 = txt(part('heading in', 80, 240, 920, null), S.heading); h2.style.animationDelay = '0.1s';
+      fit(h2, 112, 60, 250);
+      var sb2 = txt(part('sub in', 80, 240 + h2.offsetHeight + 20, 920, null), S.subheading); sb2.style.animationDelay = '0.15s';
+      fit(sb2, 38, 24, 110);
+      var cardY = 640;
+      if (hasClock) {
+        var cb2 = part('clock-box in', 80, 600, 920, 230); cb2.style.animationDelay = '0.2s';
+        var c2 = document.createElement('div'); c2.className = 'clock'; c2.style.fontSize = '150px'; c2.dataset.small = 76; cb2.appendChild(c2);
+        var cl2 = document.createElement('div'); cl2.className = 'clock-label'; cl2.style.fontSize = '32px'; cl2.style.marginTop = '12px'; txt(cl2, S.countdown_label); cb2.appendChild(cl2);
+        clock(c2);
+        cardY = 880;
+      }
+      promos(80, cardY, 920, 1640 - cardY - 60, { qr: 250, pt: 62, px: 34 });
+      ticker(0, 1724, 1080, 84, 270, 36);
+    }
+  }
+
+  function layout() {
+    var W = window.innerWidth, H = window.innerHeight;
+    var want = S.layout === 'tall' ? true : S.layout === 'wide' ? false : H > W;
+    if (want !== tall || !stage.firstChild) { tall = want; document.body.className = tall ? 'tall' : 'wide'; build(); }
+    var sw = tall ? 1080 : 1920, sh = tall ? 1920 : 1080;
+    var sc = Math.min(W / sw, H / sh);
+    stage.style.transform = 'translate(' + (W - sw * sc) / 2 + 'px,' + (H - sh * sc) / 2 + 'px) scale(' + sc + ')';
+  }
+  window.addEventListener('resize', layout);
+  function go() { layout(); }
+  if (document.fonts && document.fonts.load) {
+    Promise.all([document.fonts.load('600 40px "AK Poppins"'), document.fonts.load('800 40px "AK Poppins"')]).then(go, go);
+  } else window.addEventListener('load', go);
+})();
+</script>
+</body>
+</html>
