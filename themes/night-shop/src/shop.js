@@ -58,6 +58,7 @@
   // ------------------------------------------------------------ languages
   var PACKS = {
     de: {
+      "See all": "Alle ansehen", "Guides & tips": "Ratgeber & Tipps", "Products": "Produkte",
       'Newsletter sign-up': 'Anmeldung zum Newsletter', 'Your email app opened. Press send there to finish signing up.': 'Ihr E-Mail-Programm wurde geöffnet. Tippen Sie dort auf Senden, um die Anmeldung abzuschließen.', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp wurde geöffnet. Tippen Sie dort auf Senden, um die Anmeldung abzuschließen.',
       'Add to cart': 'In den Warenkorb', 'Choose options': 'Optionen wählen', 'Out of stock': 'Ausverkauft', 'Sale': 'Angebot',
       'Quantity': 'Menge', 'Choose': 'Bitte wählen', 'Please choose': 'Bitte wählen Sie', 'Cart': 'Warenkorb',
@@ -152,6 +153,7 @@
       'Talk to us': "Sprechen Sie mit uns"
     },
     fr: {
+      "See all": "Tout voir", "Guides & tips": "Guides et conseils", "Products": "Produits",
       'Newsletter sign-up': 'Inscription à la newsletter', 'Your email app opened. Press send there to finish signing up.': 'Votre messagerie s’est ouverte. Appuyez sur Envoyer pour terminer l’inscription.', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp s’est ouvert. Appuyez sur Envoyer pour terminer l’inscription.',
       'Add to cart': 'Ajouter au panier', 'Choose options': 'Choisir les options', 'Out of stock': 'Épuisé', 'Sale': 'Promo',
       'Quantity': 'Quantité', 'Choose': 'Choisir', 'Please choose': 'Veuillez choisir', 'Cart': 'Panier',
@@ -246,6 +248,7 @@
       'Talk to us': "Parlez-nous"
     },
     sw: {
+      "See all": "Tazama zote", "Guides & tips": "Miongozo na vidokezo", "Products": "Bidhaa",
       'Newsletter sign-up': 'Usajili wa jarida', 'Your email app opened. Press send there to finish signing up.': 'Programu yako ya barua pepe imefunguka. Bonyeza tuma huko ili kukamilisha usajili.', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp imefunguka. Bonyeza tuma huko ili kukamilisha usajili.',
       'Add to cart': "Weka kwenye kikapu",
       'Choose options': "Chagua chaguo",
@@ -456,6 +459,7 @@
       'Stay in the loop': "Pata habari zetu"
     },
     ar: {
+      "See all": "عرض الكل", "Guides & tips": "أدلة ونصائح", "Products": "المنتجات",
       'Newsletter sign-up': 'الاشتراك في النشرة البريدية', 'Your email app opened. Press send there to finish signing up.': 'تم فتح تطبيق البريد. اضغط إرسال هناك لإتمام الاشتراك.', 'WhatsApp opened. Press send there to finish signing up.': 'تم فتح واتساب. اضغط إرسال هناك لإتمام الاشتراك.',
       'Add to cart': "أضف إلى السلة",
       'Choose options': "اختر الخيارات",
@@ -666,6 +670,7 @@
       'Stay in the loop': "ابقَ على اطلاع"
     },
     am: {
+      "See all": "ሁሉንም ይመልከቱ", "Guides & tips": "መመሪያዎች እና ምክሮች", "Products": "ምርቶች",
       'Newsletter sign-up': 'የዜና መጽሔት ምዝገባ', 'Your email app opened. Press send there to finish signing up.': 'የኢሜይል መተግበሪያዎ ተከፍቷል። ምዝገባውን ለማጠናቀቅ እዚያ ላክ ይጫኑ።', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp ተከፍቷል። ምዝገባውን ለማጠናቀቅ እዚያ ላክ ይጫኑ።',
       'Add to cart': "ወደ ጋሪ ጨምር",
       'Choose options': "አማራጮችን ይምረጡ",
@@ -876,6 +881,7 @@
       'Stay in the loop': "መረጃ ያግኙ"
     },
     ti: {
+      "See all": "ኩሉ ርአ", "Guides & tips": "መምርሒታትን ምኽርታትን", "Products": "ፍርያት",
       'Newsletter sign-up': 'ምዝገባ ጋዜጣ', 'Your email app opened. Press send there to finish signing up.': 'መተግበሪ ኢመይልኩም ተኸፊቱ ኣሎ። ምዝገባ ንምዝዛም ኣብኡ ስደድ ጠውቑ።', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp ተኸፊቱ ኣሎ። ምዝገባ ንምዝዛም ኣብኡ ስደድ ጠውቑ።',
       'Add to cart': "ናብ ዘንቢል ወስኽ",
       'Choose options': "ምርጫታት ምረጽ",
@@ -1086,6 +1092,7 @@
       'Stay in the loop': "ሓበሬታ ርኸቡ"
     },
     es: {
+      "See all": "Ver todo", "Guides & tips": "Guías y consejos", "Products": "Productos",
       "Newsletter sign-up": "Suscripción al boletín",
       "Your email app opened. Press send there to finish signing up.": "Se abrió tu aplicación de correo. Pulsa enviar para terminar la suscripción.",
       "WhatsApp opened. Press send there to finish signing up.": "Se abrió WhatsApp. Pulsa enviar para terminar la suscripción.",
@@ -1298,6 +1305,7 @@
       "Stay in the loop": "Mantente al día"
     },
     zh: {
+      "See all": "查看全部", "Guides & tips": "指南与技巧", "Products": "商品",
       "Newsletter sign-up": "订阅新闻简报",
       "Your email app opened. Press send there to finish signing up.": "邮件应用已打开。请在那里点击发送以完成订阅。",
       "WhatsApp opened. Press send there to finish signing up.": "WhatsApp 已打开。请在那里点击发送以完成订阅。",
@@ -3508,6 +3516,241 @@
     });
   }
 
+  // ------------------------------------------------------------ homepage rows, campaign band, category tiles, guides
+  // Posts of one Blogger label (or the newest posts) from the blog's public feed, read once per page view.
+  var FEEDS = {};
+  function feedPosts(label, count) {
+    if (!window.fetch || !window.DOMParser || !/^https?:$/.test(location.protocol)) return Promise.resolve([]);
+    var url = location.origin + '/feeds/posts/default' + (label ? '/-/' + encodeURIComponent(label) : '') +
+      '?alt=json&max-results=' + Math.min(50, Math.max(1, count || 20));
+    if (!FEEDS[url]) {
+      FEEDS[url] = fetch(url).then(function (r) { return r.json(); }).then(function (data) {
+        return ((data.feed || {}).entry || []).map(function (e) {
+          var link = ((e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0] || {}).href || '';
+          var html = (e.content || e.summary || {}).$t || '';
+          var dom = new DOMParser().parseFromString(html, 'text/html');
+          var labels = (e.category || []).map(function (c) { return c.term; });
+          var first = dom.querySelector('img');
+          var img = (e.media$thumbnail || {}).url || (first ? first.getAttribute('src') : '') || '';
+          img = img.replace(/\/s\d+(-c)?\//, '/s600/').replace(/=s\d+(-c)?$/, '=s600');
+          each(dom.querySelectorAll('.product, script, style'), function (n) { n.parentNode.removeChild(n); });
+          var text = (dom.body.textContent || '').replace(/\s+/g, ' ').trim();
+          return { title: (e.title || {}).$t || '', link: link, img: img, labels: labels,
+                   p: productFrom(new DOMParser().parseFromString(html, 'text/html').body, labels),
+                   text: text.length > 150 ? text.slice(0, 147).replace(/\s+\S*$/, '') + '…' : text };
+        }).filter(function (x) { return x.link && x.title; });
+      }).catch(function () { return []; });
+    }
+    return FEEDS[url];
+  }
+
+  // "sale" = only reduced items, "max 50" / "under 50" / "bis 50" = only up to that price.
+  function rowFilter(spec) {
+    spec = String(spec || '').toLowerCase();
+    var max = /(?:max|under|unter|bis|up to|≤|<)\s*([\d.,]+)/.exec(spec);
+    return function (x) {
+      if (!x.p || x.p.stock === 0) return false;
+      if (/sale|reduced|angebot|promo/.test(spec) && !(x.p.oldPrice > x.p.price)) return false;
+      if (max && !(x.p.price <= parseNumber(max[1]))) return false;
+      return true;
+    };
+  }
+
+  function productCard(x) {
+    var p = x.p, off = p.oldPrice > p.price ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+    return el('a', { 'class': 'shop-pcard', href: x.link, role: 'listitem' }, [
+      el('span', { 'class': 'shop-pcard-img' }, [
+        x.img ? el('img', { src: x.img, alt: x.title, loading: 'lazy', decoding: 'async' }) : null,
+        off ? el('span', { 'class': 'shop-pcard-badge', text: '−' + off + ' %' }) : null,
+        p.digital ? el('span', { 'class': 'shop-pcard-badge is-digital', text: t('Digital') }) : null]),
+      el('span', { 'class': 'shop-pcard-title', text: x.title }),
+      priceNode(p)]);
+  }
+  function guideCard(x) {
+    return el('a', { 'class': 'shop-pcard is-guide', href: x.link, role: 'listitem' }, [
+      el('span', { 'class': 'shop-pcard-img is-wide' }, [x.img ? el('img', { src: x.img, alt: '', loading: 'lazy', decoding: 'async' }) : null]),
+      el('span', { 'class': 'shop-pcard-title', text: x.title }),
+      x.text ? el('span', { 'class': 'shop-pcard-text', text: x.text }) : null,
+      el('span', { 'class': 'shop-pcard-more', text: t('Learn more') + (doc.documentElement.dir === 'rtl' ? ' ←' : ' →') })]);
+  }
+
+  // One row: title + "See all", a track that swipes on phones, arrow buttons on wide screens.
+  // Shows grey placeholder cards while the feed loads; removes itself when nothing matches.
+  function shopRow(opts) {
+    var track = el('div', { 'class': 'shop-lane-track', role: 'list', tabindex: '0', 'aria-label': opts.title || t('Products') });
+    for (var i = 0; i < 4; i++) track.appendChild(el('span', { 'class': 'shop-pcard is-loading', 'aria-hidden': 'true' }));
+    var prev = el('button', { type: 'button', 'class': 'shop-lane-arrow is-prev', 'aria-label': t('Previous'), hidden: true }, [svg('M15 18l-6-6 6-6', 'stroke')]);
+    var next = el('button', { type: 'button', 'class': 'shop-lane-arrow is-next', 'aria-label': t('Next'), hidden: true }, [svg('M9 18l6-6-6-6', 'stroke')]);
+    var head = el('div', { 'class': 'shop-lane-head' }, [
+      opts.title ? el('h3', { 'class': 'shop-lane-title', text: opts.title }) : null,
+      opts.more ? el('a', { 'class': 'shop-lane-more', href: opts.more, text: (opts.moreText || t('See all')) + (doc.documentElement.dir === 'rtl' ? ' ←' : ' →') }) : null]);
+    var row = el('div', { 'class': 'shop-lane' + (opts.guides ? ' is-guides' : '') }, [head, el('div', { 'class': 'shop-lane-frame' }, [prev, track, next])]);
+    var arrows = function () {
+      var max = track.scrollWidth - track.clientWidth, pos = Math.abs(track.scrollLeft);   // right to left: scrollLeft is negative
+      prev.hidden = pos < 4 || max < 4; next.hidden = pos > max - 4 || max < 4;
+    };
+    var step = function (dir) {
+      var rtl = doc.documentElement.dir === 'rtl';
+      track.scrollBy({ left: dir * (rtl ? -1 : 1) * track.clientWidth * 0.85, behavior: 'smooth' });
+    };
+    prev.addEventListener('click', function () { step(-1); });
+    next.addEventListener('click', function () { step(1); });
+    track.addEventListener('scroll', arrows, { passive: true });
+    window.addEventListener('resize', arrows);
+    row.fill = function (items) {
+      track.textContent = '';
+      items.forEach(function (x) { track.appendChild(opts.guides ? guideCard(x) : productCard(x)); });
+      if (!items.length) { row.parentNode && row.parentNode.removeChild(row); return false; }
+      setTimeout(arrows, 0);
+      return true;
+    };
+    return row;
+  }
+  function loadRow(row, label, spec, count, guides) {
+    return feedPosts(label, guides ? count : Math.max(20, count * 3)).then(function (posts) {
+      var items = guides ? posts.slice(0, count) : posts.filter(rowFilter(spec)).slice(0, count);
+      return row.fill(items);
+    });
+  }
+  // Keys like "label: Sale" from the lines of a gadget; everything else is returned as rows.
+  function keyLines(lines, keys) {
+    var out = { _rows: [] };
+    lines.forEach(function (line) {
+      var m = /^\s*([a-z_]+)\s*:\s*(.*)$/i.exec(line);
+      if (m && keys.indexOf(m[1].toLowerCase()) > -1) out[m[1].toLowerCase()] = m[2].trim();
+      else out._rows.push(line);
+    });
+    return out;
+  }
+  function labelLink(label) { return label ? '/search/label/' + encodeURIComponent(label) : '/search'; }
+
+  // Product rows: <div class='shop-rows'>, one row per line:  Title | Blogger label | sale  or  max 50
+  //   New in |                          (empty label = the newest products)
+  //   Under 50 € | | max 50
+  //   count: 10                         (products per row, default 10)
+  function renderRows() {
+    each(doc.querySelectorAll('.shop-rows'), function (box) {
+      var cfg = keyLines(langLines(box), ['count']), count = Math.min(20, parseInt(cfg.count, 10) || 10);
+      var defs = cfg._rows.map(function (line) {
+        var parts = line.split('|').map(function (x) { return x.trim(); });
+        return parts[0] ? { title: parts[0], label: parts[1] || '', spec: parts[2] || '' } : null;
+      }).filter(Boolean);
+      if (!defs.length) { hideEmpty(box); return; }
+      box.textContent = '';
+      box.classList.add('is-ready');
+      Promise.all(defs.map(function (d) {
+        var row = shopRow({ title: d.title, more: labelLink(d.label) });
+        box.appendChild(row);
+        return loadRow(row, d.label, d.spec, count);
+      })).then(function (shown) { if (shown.indexOf(true) === -1) hideEmpty(box); });
+    });
+  }
+
+  // Campaign band: <div class='shop-campaign'>
+  //   title: Black Friday          text: …          label: Sale          filter: sale  (or: max 50)
+  //   button: See all deals | /search/label/Sale    until: 2026-12-01    style: dark  (or: accent, light)
+  // Hidden after the "until" date, and whenever no product matches (no empty promises).
+  function renderCampaign() {
+    each(doc.querySelectorAll('.shop-campaign'), function (box) {
+      var c = keyLines(langLines(box), ['title', 'text', 'label', 'filter', 'button', 'until', 'style', 'count', 'eyebrow']);
+      var until = /^\d{4}-\d{2}-\d{2}$/.test(c.until || '') ? new Date(c.until + 'T23:59:59') : null;
+      if (!c.title || (until && new Date() > until)) { hideEmpty(box); return; }
+      var sec = box.closest('section') || box;
+      sec.classList.add('is-' + (/^(accent|light)$/i.test(c.style || '') ? c.style.toLowerCase() : 'dark'));
+      var btn = (c.button || '').split('|').map(function (x) { return x.trim(); });
+      var href = /^(https:\/\/|\/)/.test(btn[1] || '') ? btn[1] : labelLink(c.label);
+      var row = shopRow({ title: '', more: '' });
+      box.textContent = '';
+      box.classList.add('is-ready');
+      box.appendChild(el('div', { 'class': 'shop-campaign-head' }, [
+        c.eyebrow ? el('p', { 'class': 'shop-campaign-eyebrow', text: c.eyebrow }) : null,
+        el('h2', { 'class': 'shop-campaign-title', text: c.title }),
+        c.text ? el('p', { 'class': 'shop-campaign-text', text: c.text }) : null,
+        el('a', { 'class': 'btn btn-primary shop-campaign-btn', href: href, text: btn[0] || t('See all') })]));
+      box.appendChild(row);
+      loadRow(row, c.label || '', c.filter || '', Math.min(20, parseInt(c.count, 10) || 10)).then(function (ok) { if (!ok) hideEmpty(box); });
+    });
+  }
+
+  // Category tiles: <div class='shop-cats'>, one tile per line:  Name | icon or picture link | link
+  //   Appliances | fridge | /search/label/Appliances
+  // Icons: fridge, washer, sofa, tools, shirt, kit, kenya, digital, bike, baby, laptop, sale, warehouse.
+  var CAT_ICONS = {
+    fridge: 'M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM5 10h14M8.5 5.5v2M8.5 13v3.5',
+    washer: 'M5 2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM3 7h18M7 4.5h.01M10 4.5h.01M12 19a5 5 0 1 0 0-10 5 5 0 0 0 0 10z',
+    sofa: 'M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M3 11a2 2 0 0 1 2 2v2h14v-2a2 2 0 0 1 4 0v5H1v-5a2 2 0 0 1 2-2zM4 18v2M20 18v2',
+    tools: 'M3 7h11v5H3zM14 8.5h4M18 9.5h3.5M6 12l-1.5 8h5L11 12M7 15.5h2',
+    shirt: 'M9 3l3 3 3-3 5 3-1.5 5H17v10H7V11H5.5L4 6zM12 6v15',
+    kit: 'M12 2l9 4.5v11L12 22l-9-4.5v-11zM3 6.5l9 4.5 9-4.5M12 11v11M7.5 4.2l9 4.6',
+    kenya: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9s1.3-6.3 3.8-9z',
+    digital: 'M12 3v12M7 10l5 5 5-5M5 21h14',
+    bike: 'M5.5 17.5a3.5 3.5 0 1 0 0-.01zM18.5 17.5a3.5 3.5 0 1 0 0-.01zM5.5 17.5 9 9h6l3.5 8.5M12 17.5 9 9M14 6h3',
+    baby: 'M9 12h.01M15 12h.01M10 16c.6.5 1.3.8 2 .8s1.4-.3 2-.8M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0zM12 5c1 0 2-1 2-2',
+    laptop: 'M4 5h16v10H4zM2 19h20',
+    sale: 'M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01',
+    warehouse: 'M3 21V9l9-5 9 5v12M7 21v-7h10v7M7 17h10'
+  };
+  function renderCats() {
+    each(doc.querySelectorAll('.shop-cats'), function (box) {
+      var items = langLines(box).map(function (line) {
+        var parts = line.split('|').map(function (x) { return x.trim(); });
+        if (!parts[0]) return null;
+        var pic = parts[1] || '';
+        return { name: parts[0], img: /^https:\/\//.test(pic) ? sized(pic, 300) : '', icon: CAT_ICONS[pic.toLowerCase()] || (pic ? '' : CAT_ICONS.kit),
+                 link: /^(https:\/\/|\/)/.test(parts[2] || '') ? parts[2] : labelLink(parts[0]) };
+      }).filter(Boolean);
+      var widget = box.closest('.widget');
+      if (!items.length) { if (widget) widget.hidden = true; return; }
+      box.textContent = '';
+      box.classList.add('is-ready');
+      var ul = el('ul', { 'class': 'shop-cat-list' });
+      items.forEach(function (it) {
+        var pic = it.img ? el('img', { src: it.img, alt: '', loading: 'lazy', decoding: 'async' }) : svg(it.icon || CAT_ICONS.kit, 'stroke');
+        ul.appendChild(el('li', {}, [el('a', { 'class': 'shop-cat-tile', href: it.link }, [
+          el('span', { 'class': 'shop-cat-pic' + (it.img ? ' has-img' : '') }, [pic]),
+          el('span', { 'class': 'shop-cat-name', text: it.name })])]));
+      });
+      box.appendChild(ul);
+      // the plain label list in the same section is not needed any more
+      var sec = box.closest('section');
+      if (sec) each(sec.querySelectorAll('.widget.Label'), function (w) { w.hidden = true; });
+    });
+  }
+
+  // Guides row: <div class='shop-guides'>   label: Guide   count: 6   button: All guides | /search/label/Guide
+  function renderGuides() {
+    each(doc.querySelectorAll('.shop-guides'), function (box) {
+      var c = keyLines(langLines(box), ['label', 'count', 'button']);
+      var btn = (c.button || '').split('|').map(function (x) { return x.trim(); });
+      var label = c.label || 'Guide';
+      var row = shopRow({ title: '', more: /^(https:\/\/|\/)/.test(btn[1] || '') ? btn[1] : labelLink(label), moreText: btn[0] || '', guides: true });
+      box.textContent = '';
+      box.classList.add('is-ready');
+      box.appendChild(row);
+      loadRow(row, label, '', Math.min(12, parseInt(c.count, 10) || 6), true).then(function (ok) { if (!ok) hideEmpty(box); });
+    });
+  }
+
+  // Benefit strip under the hero: the first promises of the trust row gadget, small, near the top.
+  // "top_strip: no" in the trust gadget switches it off.
+  function renderBenefits() {
+    var strip = doc.querySelector('.shop-benefits'), trust = doc.querySelector('.shop-trust');
+    if (!strip) return;
+    var src = trust ? gadgetLinesOf(trust).join('\n') : '';
+    var off = /^\s*top_strip\s*:\s*(no|off|false|0|nein)\s*$/im.test(src);
+    var items = trust && !off ? Array.prototype.slice.call(trust.querySelectorAll('.shop-trust-item'), 0, 4) : [];
+    if (!items.length) { hideEmpty(strip); return; }
+    var ul = el('ul', { 'class': 'shop-benefit-list' });
+    items.forEach(function (li) {
+      var a = li.querySelector('a'), icon = li.querySelector('.shop-trust-icon svg'), strong = li.querySelector('strong'), small = li.querySelector('.shop-trust-text span');
+      var body = [el('span', { 'class': 'shop-benefit-icon' }, [icon ? icon.cloneNode(true) : null]),
+        el('span', { 'class': 'shop-benefit-text' }, [el('strong', { text: strong ? strong.textContent : '' }), small ? el('span', { text: small.textContent }) : null])];
+      ul.appendChild(el('li', { 'class': 'shop-benefit' }, [a ? el('a', { href: a.getAttribute('href') }, body) : el('div', {}, body)]));
+    });
+    strip.textContent = '';
+    strip.appendChild(ul);
+  }
+
   function start() {
     applyLanguage();
     hidePriceLabels();
@@ -3518,6 +3761,7 @@
     renderLogos();
     renderAnnounce();
     renderTrust();
+    renderBenefits();
     renderTeam();
     renderServices();
     renderSteps();
@@ -3526,6 +3770,10 @@
     renderFaq();
     renderTicker();
     renderBranches();
+    renderCats();
+    renderCampaign();
+    renderRows();
+    renderGuides();
     renderNewsletter();
     renderLeadForms();
     if (ASK) buildAssistant(ASK);

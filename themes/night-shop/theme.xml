@@ -1404,11 +1404,81 @@ body .shop-ticker-list > li.shop-ticker-item { margin: 0; padding: 0 28px 0 0; w
 [dir="rtl"] .shop-badge { left: auto; right: 10px; }
 /* Ethiopic and Arabic letters are a little taller: give lines room */
 .lang-am, .lang-ti, .lang-ar { line-height: 1.75; }
-.lang-zh { line-height: 1.75; }
-.lang-zh h1, .lang-zh h2, .lang-zh h3 { line-height: 1.35; letter-spacing: 0.02em; }
 .lang-am h1, .lang-am h2, .lang-am h3, .lang-ti h1, .lang-ti h2, .lang-ti h3, .lang-ar h1, .lang-ar h2, .lang-ar h3 { line-height: 1.35; letter-spacing: 0; }
 /* Phone numbers, prices with symbols and web addresses always read left to right, also inside Arabic text */
 .shop-contact-detail, a[href^="tel:"], a[href^="mailto:"], .shop-branch-line a, .shop-chat-msg a, .shop-price, .shop-ticker-item strong { unicode-bidi: isolate; direction: ltr; }
+
+/* ---------- homepage: product rows, campaign band, category tiles, guides, benefit strip ---------- */
+.shop-lane { margin: 0 0 34px; }
+.shop-lane-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 12px; }
+.shop-lane-title { margin: 0; font-size: 1.35rem; line-height: 1.2; }
+.shop-lane-more { font-weight: 700; font-size: .92rem; color: $(shop.accent); text-decoration: none; white-space: nowrap; }
+.shop-lane-more:hover { text-decoration: underline; }
+.shop-lane-more:only-child { margin-inline-start: auto; }
+.shop-lane-frame { position: relative; }
+.shop-lane-track { display: flex; gap: 14px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; padding: 4px 2px 12px; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+.shop-lane-track > * { flex: 0 0 calc((100% - 42px) / 4); min-width: 0; scroll-snap-align: start; }
+.shop-lane.is-guides .shop-lane-track > * { flex-basis: calc((100% - 28px) / 3); }
+@media (max-width: 900px) { .shop-lane-track > *, .shop-lane.is-guides .shop-lane-track > * { flex-basis: calc((100% - 28px) / 2.6); } }
+@media (max-width: 560px) { .shop-lane-track > * { flex-basis: 44%; } .shop-lane.is-guides .shop-lane-track > * { flex-basis: 78%; } .shop-lane-title { font-size: 1.15rem; } }
+.shop-pcard { display: flex; flex-direction: column; gap: 6px; padding: 10px; background: #fff; border: 1px solid #ece8e2; border-radius: 12px; color: $(shop.ink); text-decoration: none; transition: box-shadow .15s ease, transform .15s ease; box-sizing: border-box; }
+.shop-pcard:hover, .shop-pcard:focus-visible { box-shadow: 0 6px 18px rgba(0,0,0,.08); transform: translateY(-2px); }
+.shop-pcard-img { position: relative; display: block; aspect-ratio: 1 / 1; background: $(shop.tile); border-radius: 8px; overflow: hidden; }
+.shop-pcard-img.is-wide { aspect-ratio: 16 / 10; }
+.shop-pcard-img img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.shop-pcard.is-guide .shop-pcard-img img { object-fit: cover; }
+.shop-pcard-badge { position: absolute; top: 8px; left: 8px; padding: 3px 8px; border-radius: 999px; background: $(shop.accent); color: #fff; font-size: .78rem; font-weight: 700; line-height: 1.3; }
+.shop-pcard-badge.is-digital { left: auto; right: 8px; background: #2f6f5e; }
+.shop-pcard-badge { direction: ltr; unicode-bidi: isolate; }
+[dir="rtl"] .shop-pcard-badge { left: auto; right: 8px; }
+[dir="rtl"] .shop-pcard-badge.is-digital { right: auto; left: 8px; }
+.shop-pcard-title { font-weight: 600; font-size: .95rem; line-height: 1.3; min-height: 2.6em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.shop-pcard .shop-price { margin-top: auto; font-size: .98rem; }
+.shop-pcard-text { font-size: .88rem; line-height: 1.45; color: #666; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.shop-pcard-more { margin-top: auto; font-size: .88rem; font-weight: 700; color: $(shop.accent); }
+.shop-pcard.is-loading { min-height: 250px; border-color: transparent; background: linear-gradient(90deg, #f1eee9 25%, #f8f6f3 50%, #f1eee9 75%); background-size: 200% 100%; animation: shop-shimmer 1.2s linear infinite; }
+@keyframes shop-shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .shop-pcard.is-loading { animation: none; } }
+.shop-lane-arrow { position: absolute; top: 38%; z-index: 2; width: 42px; height: 42px; display: none; align-items: center; justify-content: center; padding: 0; border: 1px solid #e0dbd4; border-radius: 50%; background: #fff; color: #111; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,.12); transform: translateY(-50%); }
+.shop-lane-arrow.is-prev { left: -16px; }
+.shop-lane-arrow.is-next { right: -16px; }
+.shop-lane-arrow:hover { color: $(shop.accent); border-color: $(shop.accent); }
+@media (hover: hover) and (min-width: 900px) { .shop-lane-arrow { display: flex; } }
+[dir="rtl"] .shop-lane-arrow.is-prev { left: auto; right: -16px; }
+[dir="rtl"] .shop-lane-arrow.is-next { right: auto; left: -16px; }
+[dir="rtl"] .shop-lane-arrow svg { transform: scaleX(-1); }
+.shop-campaign-head { display: grid; grid-template-columns: 1fr auto; column-gap: 24px; align-items: end; margin: 0 0 22px; }
+.shop-campaign-head > * { grid-column: 1; }
+.shop-campaign-eyebrow { margin: 0 0 4px; font-size: .8rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.shop-campaign-title { margin: 0; font-size: 2.6rem; line-height: 1.05; text-transform: uppercase; letter-spacing: .02em; }
+.shop-campaign-text { margin: 8px 0 0; max-width: 46em; font-size: 1.02rem; line-height: 1.5; opacity: .9; }
+.shop-campaign-btn { grid-column: 2; grid-row: 1 / span 3; align-self: end; white-space: nowrap; }
+@media (max-width: 700px) { .shop-campaign-head { grid-template-columns: 1fr; } .shop-campaign-btn { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 14px; } .shop-campaign-title { font-size: 2rem; } }
+.shop-cat-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 12px; }
+body .shop-cat-list > li { margin: 0; padding: 0; list-style: none; }
+.shop-cat-tile { display: flex; flex-direction: column; align-items: center; gap: 10px; color: $(shop.ink); text-align: center; text-decoration: none; }
+.shop-cat-pic { display: flex; align-items: center; justify-content: center; width: 96px; height: 96px; border: 2px solid #ece8e2; border-radius: 50%; background: #fff; color: $(shop.accent); overflow: hidden; transition: border-color .15s ease, transform .15s ease; box-sizing: border-box; }
+.shop-cat-pic svg { width: 40px; height: 40px; }
+.shop-cat-pic.has-img img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.shop-cat-tile:hover .shop-cat-pic, .shop-cat-tile:focus-visible .shop-cat-pic { border-color: $(shop.accent); transform: translateY(-2px); }
+.shop-cat-name { font-size: .95rem; font-weight: 700; line-height: 1.25; }
+@media (max-width: 560px) {
+  .shop-cat-list { display: flex; gap: 14px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; padding: 2px 2px 8px; }
+  body .shop-cat-list > li { flex: 0 0 82px; scroll-snap-align: start; }
+  .shop-cat-pic { width: 74px; height: 74px; }
+  .shop-cat-pic svg { width: 32px; height: 32px; }
+  .shop-cat-name { font-size: .82rem; }
+}
+.shop-benefit-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 18px; }
+body .shop-benefit-list > li { margin: 0; padding: 0; list-style: none; }
+.shop-benefit a, .shop-benefit > div { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
+.shop-benefit-icon { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: #fff3ee; color: $(shop.accent); }
+.shop-benefit-icon svg { width: 19px; height: 19px; }
+.shop-benefit-text { display: flex; flex-direction: column; min-width: 0; font-size: .85rem; line-height: 1.3; }
+.shop-benefit-text strong { font-size: .9rem; }
+.shop-benefit-text span { color: #777; }
+@media (max-width: 900px) { .shop-benefit-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 420px) { .shop-benefit-text span { display: none; } }
 
 .shop-admin { display: none; }
 body#layout .shop-admin { display: block; }
@@ -1581,6 +1651,39 @@ body#layout .talk { display: block; }
 .site-footer .footer-badges .widget-content li { margin: 0; }
 body#layout .partners, body#layout .footer-badges { display: block; }
 
+/* Homepage sections from the zooplus review: benefit strip, campaign band, product rows, guides */
+.benefits, .campaign, .rows, .guides { display: none; }
+.benefits { background: #ffffff; border-bottom: 1px solid #ece8e2; }
+.benefits .container { padding-top: 14px; padding-bottom: 14px; }
+.topics .shop-cats { margin-top: 6px; }
+.rows .container { padding-top: 44px; padding-bottom: 12px; }
+.campaign .container { padding-top: 46px; padding-bottom: 30px; }
+.campaign.is-dark { background: #111111; color: #ffffff; }
+.campaign.is-dark .shop-campaign-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; color: #ffffff; }
+.campaign.is-dark .shop-campaign-eyebrow { color: $(accent.color); }
+.campaign.is-accent { background: $(accent.color); color: #ffffff; }
+.campaign.is-accent .shop-campaign-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; color: #ffffff; }
+.campaign.is-accent .shop-campaign-btn { background: #111111; border-color: #111111; color: #ffffff; }
+.campaign.is-light { background: #f7f5f2; }
+.campaign.is-light .shop-campaign-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; }
+.campaign .shop-lane-track .shop-pcard { border-color: transparent; }
+.guides .container { padding-top: 44px; padding-bottom: 20px; }
+.guides .widget > h2.title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; letter-spacing: 0.02em; }
+.guides .widget > h2.title::after { content: '.'; color: $(accent.color); }
+.shop-lane-title { font-family: 'Oswald', 'Noto Sans Arabic', 'Noto Sans Ethiopic', 'Arial Narrow', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', 'Noto Sans SC', sans-serif; text-transform: uppercase; letter-spacing: 0.02em; }
+body#layout .benefits, body#layout .campaign, body#layout .rows, body#layout .guides { display: block; }
+
+/* Search under the header (magnifier next to the cart) */
+.search-toggle { order: 3; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; margin-left: 4px; background: none; border: 0; border-radius: 50%; color: #fff; cursor: pointer; flex: 0 0 auto; }
+.search-toggle:hover, .search-toggle[aria-expanded='true'] { color: $(accent.color); }
+@media (min-width: 1024px) { .search-toggle { order: 4; } }
+.header-search { position: absolute; top: 100%; left: 0; right: 0; z-index: 102; margin-top: 2px; padding: 12px 20px 14px; background: $(primary.color); border-bottom: 2px solid $(accent.color); box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3); }
+.header-search[hidden] { display: none; }
+.header-search form { display: flex; gap: 10px; max-width: 720px; margin: 0 auto; }
+.header-search input { flex: 1 1 auto; min-width: 0; padding: 12px 14px; border: 0; border-radius: 8px; font: inherit; font-size: 16px; color: #111111; background: #ffffff; }
+.header-search .btn { flex: 0 0 auto; }
+
+
 /* Announcement bar (above the sticky header, scrolls away) */
 .announce { background: $(accent.color); color: #fff; }
 .announce .widget { margin: 0; }
@@ -1637,10 +1740,10 @@ body#layout .services, body#layout .steps, body#layout .testimonials, body#layou
 body#layout .ticker, body#layout .branches { display: block; }
 ]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter, .ticker, .branches { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter, .ticker, .branches, .benefits, .campaign, .rows, .guides { display: block; }</style>
 </b:if>
 <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter, .ticker, .branches { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter, .ticker, .branches, .benefits, .campaign, .rows, .guides { display: block; }</style>
 </b:if>
 </head>
 <body expr:class='&quot;rm shop pt-&quot; + data:blog.pageType'>
@@ -1667,6 +1770,9 @@ Fulfilment for online sellers, from Gießen | /p/fulfilment.html]]></b:widget-se
 <header class='site-header' id='site-header'>
   <div class='container header-inner'>
 <div class='lang-switch' data-lang-switch='' hidden='hidden'/>
+<button aria-controls='header-search' aria-expanded='false' aria-label='Search' class='search-toggle' data-i18n-label='' id='search-toggle' type='button'>
+  <svg aria-hidden='true' fill='none' height='22' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='22'><circle cx='11' cy='11' r='7.5'/><line x1='21' x2='16.4' y1='21' y2='16.4'/></svg>
+</button>
 <a aria-label='Cart' class='cart-button' data-cart-open='' data-i18n-label='' href='#cart'>
   <svg aria-hidden='true' height='22' viewBox='0 0 24 24' width='22'><path d='M6 6h15l-1.5 9h-12z' fill='none' stroke='currentColor' stroke-width='2'/><circle cx='9' cy='20' fill='currentColor' r='1.5'/><circle cx='18' cy='20' fill='currentColor' r='1.5'/><path d='M6 6L5 2H2' fill='none' stroke='currentColor' stroke-width='2'/></svg>
   <span data-cart-count='' hidden='hidden'>0</span>
@@ -1750,6 +1856,12 @@ Fulfilment for online sellers, from Gießen | /p/fulfilment.html]]></b:widget-se
         </b:widget>
       </b:section>
     </nav>
+    <div class='header-search' id='header-search' hidden='hidden'>
+      <form action='/search' method='get' role='search'>
+        <input aria-label='Search' data-i18n-label='' data-i18n-placeholder='' name='q' placeholder='Search products...' type='search'/>
+        <button class='btn btn-primary' data-i18n='' type='submit'>Search</button>
+      </form>
+    </div>
   </div>
 </header>
 
@@ -1931,6 +2043,323 @@ Envío gratis en Alemania desde *50 €* | /p/shipping.html
         </b:widget>
       </b:section>
     </div>
+  </div>
+</section>
+
+<!-- ================= Benefit strip under the hero: the first promises of the trust row (homepage) ================= -->
+<section class='benefits' id='benefits'>
+  <div class='container'>
+    <div class='shop-benefits'/>
+  </div>
+</section>
+
+<!-- ================= Categories (shown on the homepage) ================= -->
+<section class='topics' id='categories'>
+  <div class='container'>
+    <b:section class='topics-section' id='topics-widgets' showaddelement='yes'>
+      <b:widget id='HTML24' locked='false' title='Shop by category' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+# One tile per line: name | icon or picture link (https://…) | link. Icons: fridge, washer, sofa, tools, shirt, kit, kenya, digital, bike, baby, laptop, sale, warehouse
+Appliances | fridge | /search/label/Appliances
+Furniture | sofa | /search/label/Furniture
+Tools | tools | /search/label/Tools
+Clothes | shirt | /search/label/Clothes
+Kits | kit | /search/label/Kits
+Kenya | kenya | /p/kenya.html
+Digital | digital | /search/label/Digital
+</div>
+<div data-lang="de">
+Geräte | fridge | /search/label/Appliances
+Möbel | sofa | /search/label/Furniture
+Werkzeug | tools | /search/label/Tools
+Kleidung | shirt | /search/label/Clothes
+Sets | kit | /search/label/Kits
+Kenia | kenya | /p/kenya.html
+Digital | digital | /search/label/Digital
+</div>
+<div data-lang="fr">
+Électroménager | fridge | /search/label/Appliances
+Meubles | sofa | /search/label/Furniture
+Outils | tools | /search/label/Tools
+Vêtements | shirt | /search/label/Clothes
+Kits | kit | /search/label/Kits
+Kenya | kenya | /p/kenya.html
+Numérique | digital | /search/label/Digital
+</div>
+<div data-lang="es">
+Electrodomésticos | fridge | /search/label/Appliances
+Muebles | sofa | /search/label/Furniture
+Herramientas | tools | /search/label/Tools
+Ropa | shirt | /search/label/Clothes
+Kits | kit | /search/label/Kits
+Kenia | kenya | /p/kenya.html
+Digital | digital | /search/label/Digital
+</div>
+<div data-lang="sw">
+Vifaa vya nyumbani | fridge | /search/label/Appliances
+Samani | sofa | /search/label/Furniture
+Zana | tools | /search/label/Tools
+Nguo | shirt | /search/label/Clothes
+Vifurushi | kit | /search/label/Kits
+Kenya | kenya | /p/kenya.html
+Kidijitali | digital | /search/label/Digital
+</div>
+<div data-lang="ar">
+أجهزة منزلية | fridge | /search/label/Appliances
+أثاث | sofa | /search/label/Furniture
+أدوات | tools | /search/label/Tools
+ملابس | shirt | /search/label/Clothes
+أطقم | kit | /search/label/Kits
+كينيا | kenya | /p/kenya.html
+رقمي | digital | /search/label/Digital
+</div>
+<div data-lang="am">
+የቤት መሣሪያዎች | fridge | /search/label/Appliances
+የቤት ዕቃዎች | sofa | /search/label/Furniture
+መሳሪያዎች | tools | /search/label/Tools
+ልብሶች | shirt | /search/label/Clothes
+ኪቶች | kit | /search/label/Kits
+ኬንያ | kenya | /p/kenya.html
+ዲጂታል | digital | /search/label/Digital
+</div>
+<div data-lang="ti">
+ናውቲ ገዛ | fridge | /search/label/Appliances
+ኣቑሑት ገዛ | sofa | /search/label/Furniture
+መሳርሒታት | tools | /search/label/Tools
+ክዳውንቲ | shirt | /search/label/Clothes
+ኪታት | kit | /search/label/Kits
+ኬንያ | kenya | /p/kenya.html
+ዲጂታል | digital | /search/label/Digital
+</div>
+<div data-lang="zh">
+家电 | fridge | /search/label/Appliances
+家具 | sofa | /search/label/Furniture
+工具 | tools | /search/label/Tools
+服装 | shirt | /search/label/Clothes
+套装 | kit | /search/label/Kits
+肯尼亚 | kenya | /p/kenya.html
+数字商品 | digital | /search/label/Digital
+</div>]]>      </b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-cats'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+      <b:widget id='Label1' locked='false' title='Shop by category' type='Label' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+          <b:widget-setting name='display'>LIST</b:widget-setting>
+          <b:widget-setting name='selectedLabelsList'/>
+          <b:widget-setting name='showType'>ALL</b:widget-setting>
+          <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+  <b:if cond='data:title'>
+    <h2>
+      <data:title/>
+    </h2>
+  </b:if>
+  <div expr:class='&quot;widget-content &quot; + data:display + &quot;-label-widget-content&quot;'>
+    <b:if cond='data:display == &quot;list&quot;'>
+      <ul>
+        <b:loop values='data:labels' var='label'>
+          <li>
+            <b:if cond='data:blog.url == data:label.url'>
+              <span expr:dir='data:blog.languageDirection'>
+                <data:label.name/>
+              </span>
+              <b:else/>
+              <a expr:dir='data:blog.languageDirection' expr:href='data:label.url'>
+                <data:label.name/>
+              </a>
+            </b:if>
+            <b:if cond='data:showFreqNumbers'>
+              <span dir='ltr'>
+                (
+                <data:label.count/>
+                )
+              </span>
+            </b:if>
+          </li>
+        </b:loop>
+      </ul>
+      <b:else/>
+      <b:loop values='data:labels' var='label'>
+        <span expr:class='&quot;label-size label-size-&quot; + data:label.cssSize'>
+          <b:if cond='data:blog.url == data:label.url'>
+            <span expr:dir='data:blog.languageDirection'>
+              <data:label.name/>
+            </span>
+            <b:else/>
+            <a expr:dir='data:blog.languageDirection' expr:href='data:label.url'>
+              <data:label.name/>
+            </a>
+          </b:if>
+          <b:if cond='data:showFreqNumbers'>
+            <span class='label-count' dir='ltr'>
+              (
+              <data:label.count/>
+              )
+            </span>
+          </b:if>
+        </span>
+      </b:loop>
+    </b:if>
+    <b:include name='quickedit'/>
+  </div>
+</b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Campaign band, e.g. Black Friday (homepage; ends by itself on its "until" date) ================= -->
+<section class='campaign' id='deals'>
+  <div class='container'>
+    <b:section class='campaign-section' id='campaign-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML26' locked='false' title='' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[# Campaign band: shown only until the "until" date and only while products with this label (and filter) exist.
+# label: Blogger label · filter: sale or max 50 · style: dark, accent or light · until: last day (YYYY-MM-DD)
+label: Sale
+filter: sale
+style: dark
+until: 2026-11-30
+<div data-lang="en">
+title: Black Friday
+text: Tested appliances, tools and kits at reduced prices – until 30 November.
+button: See all deals | /search/label/Sale
+</div>
+<div data-lang="de">
+title: Black Friday
+text: Geprüfte Geräte, Werkzeuge und Sets zu reduzierten Preisen – bis 30. November.
+button: Alle Angebote | /search/label/Sale
+</div>
+<div data-lang="fr">
+title: Black Friday
+text: Appareils, outils et kits testés à prix réduits – jusqu’au 30 novembre.
+button: Voir toutes les offres | /search/label/Sale
+</div>
+<div data-lang="es">
+title: Black Friday
+text: Electrodomésticos, herramientas y kits revisados a precios rebajados, hasta el 30 de noviembre.
+button: Ver todas las ofertas | /search/label/Sale
+</div>
+<div data-lang="sw">
+title: Black Friday
+text: Vifaa vya nyumbani, zana na vifurushi vilivyojaribiwa kwa bei iliyopunguzwa – hadi 30 Novemba.
+button: Tazama ofa zote | /search/label/Sale
+</div>
+<div data-lang="ar">
+title: الجمعة السوداء
+text: أجهزة وأدوات وأطقم مفحوصة بأسعار مخفّضة – حتى 30 نوفمبر.
+button: شاهد كل العروض | /search/label/Sale
+</div>
+<div data-lang="am">
+title: ብላክ ፍራይዴይ
+text: የተፈተሹ የቤት መሣሪያዎች፣ መሳሪያዎች እና ኪቶች በቅናሽ ዋጋ – እስከ 30 ኖቬምበር።
+button: ሁሉንም ቅናሾች ይመልከቱ | /search/label/Sale
+</div>
+<div data-lang="ti">
+title: ብላክ ፍራይደይ
+text: ዝተፈተኑ ናውቲ ገዛ፡ መሳርሒታትን ኪታትን ብዝተቐነሰ ዋጋ – ክሳብ 30 ኖቬምበር።
+button: ኩሉ ቅናሻት ርአ | /search/label/Sale
+</div>
+<div data-lang="zh">
+title: 黑色星期五
+text: 已检测的家电、工具和套装特价 – 截至11月30日。
+button: 查看全部优惠 | /search/label/Sale
+</div>]]>      </b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-campaign'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Product rows by label (homepage) ================= -->
+<section class='rows' id='products'>
+  <div class='container'>
+    <b:section class='rows-section' id='rows-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML25' locked='false' title='' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[count: 10
+<div data-lang="en">
+# One row per line: title | Blogger label (empty = newest) | sale (only reduced) or max 50 (only up to 50 €). A row with no products hides itself.
+New in |
+Kits for a fresh start | Kits
+Appliances, tested | Appliances
+Under 50 € |  | max 50
+</div>
+<div data-lang="de">
+Neu eingetroffen |
+Sets für den Start | Kits
+Geräte, geprüft | Appliances
+Unter 50 € |  | max 50
+</div>
+<div data-lang="fr">
+Nouveautés |
+Kits pour bien démarrer | Kits
+Électroménager testé | Appliances
+Moins de 50 € |  | max 50
+</div>
+<div data-lang="es">
+Novedades |
+Kits para empezar | Kits
+Electrodomésticos revisados | Appliances
+Menos de 50 € |  | max 50
+</div>
+<div data-lang="sw">
+Vipya |
+Vifurushi vya kuanzia | Kits
+Vifaa vya nyumbani, vimejaribiwa | Appliances
+Chini ya 50 € |  | max 50
+</div>
+<div data-lang="ar">
+وصل حديثًا |
+أطقم لبداية جديدة | Kits
+أجهزة مفحوصة | Appliances
+أقل من 50 € |  | max 50
+</div>
+<div data-lang="am">
+አዲስ የደረሱ |
+ለአዲስ ጅምር ኪቶች | Kits
+የተፈተሹ የቤት መሣሪያዎች | Appliances
+ከ50 € በታች |  | max 50
+</div>
+<div data-lang="ti">
+ሓደሽቲ |
+ንሓድሽ መጀመርታ ኪታት | Kits
+ዝተፈተኑ ናውቲ ገዛ | Appliances
+ትሕቲ 50 € |  | max 50
+</div>
+<div data-lang="zh">
+新品 |
+开局套装 | Kits
+已检测家电 | Appliances
+50 € 以下 |  | max 50
+</div>]]>      </b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-rows'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
   </div>
 </section>
 
@@ -3073,73 +3502,23 @@ Recíbelo | Recogida en Gießen, entrega en Alemania o envío a Kenia.
   </div>
 </section>
 
-<!-- ================= Categories (shown on the homepage) ================= -->
-<section class='topics' id='categories'>
+<!-- ================= Guides row: posts labelled Guide (homepage) ================= -->
+<section class='guides' id='guides'>
   <div class='container'>
-    <b:section class='topics-section' id='topics-widgets' showaddelement='yes'>
-      <b:widget id='Label1' locked='false' title='Shop by category' type='Label' version='1'>
+    <b:section class='guides-section' id='guides-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML27' locked='false' title='Guides &amp; tips' type='HTML'>
         <b:widget-settings>
-          <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
-          <b:widget-setting name='display'>LIST</b:widget-setting>
-          <b:widget-setting name='selectedLabelsList'/>
-          <b:widget-setting name='showType'>ALL</b:widget-setting>
-          <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+          <b:widget-setting name='content'><![CDATA[# Posts with this Blogger label appear as article cards (picture, title, first lines).
+label: Guide
+count: 6]]>      </b:widget-setting>
         </b:widget-settings>
         <b:includable id='main'>
-  <b:if cond='data:title'>
-    <h2>
-      <data:title/>
-    </h2>
-  </b:if>
-  <div expr:class='&quot;widget-content &quot; + data:display + &quot;-label-widget-content&quot;'>
-    <b:if cond='data:display == &quot;list&quot;'>
-      <ul>
-        <b:loop values='data:labels' var='label'>
-          <li>
-            <b:if cond='data:blog.url == data:label.url'>
-              <span expr:dir='data:blog.languageDirection'>
-                <data:label.name/>
-              </span>
-              <b:else/>
-              <a expr:dir='data:blog.languageDirection' expr:href='data:label.url'>
-                <data:label.name/>
-              </a>
-            </b:if>
-            <b:if cond='data:showFreqNumbers'>
-              <span dir='ltr'>
-                (
-                <data:label.count/>
-                )
-              </span>
-            </b:if>
-          </li>
-        </b:loop>
-      </ul>
-      <b:else/>
-      <b:loop values='data:labels' var='label'>
-        <span expr:class='&quot;label-size label-size-&quot; + data:label.cssSize'>
-          <b:if cond='data:blog.url == data:label.url'>
-            <span expr:dir='data:blog.languageDirection'>
-              <data:label.name/>
-            </span>
-            <b:else/>
-            <a expr:dir='data:blog.languageDirection' expr:href='data:label.url'>
-              <data:label.name/>
-            </a>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
           </b:if>
-          <b:if cond='data:showFreqNumbers'>
-            <span class='label-count' dir='ltr'>
-              (
-              <data:label.count/>
-              )
-            </span>
-          </b:if>
-        </span>
-      </b:loop>
-    </b:if>
-    <b:include name='quickedit'/>
-  </div>
-</b:includable>
+          <div class='shop-guides'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
       </b:widget>
     </b:section>
   </div>
@@ -3744,6 +4123,33 @@ log_unanswered: yes
     }
   }
 
+  // Search box under the header (the magnifier next to the cart)
+  var searchBtn = doc.getElementById('search-toggle');
+  var searchBox = doc.getElementById('header-search');
+  function setSearch(open) {
+    if (!searchBtn || !searchBox) return;
+    searchBox.hidden = !open;
+    searchBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) {
+      if (header && header.classList.contains('nav-open')) setMenu(false);
+      var input = searchBox.querySelector('input');
+      if (input) input.focus();
+    }
+  }
+  if (searchBtn && searchBox) {
+    searchBtn.addEventListener('click', function () { setSearch(searchBox.hidden); });
+    doc.addEventListener('keydown', function (e) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && !searchBox.hidden) { setSearch(false); searchBtn.focus(); }
+    });
+    if (toggle) toggle.addEventListener('click', function () { if (!searchBox.hidden) setSearch(false); });
+    // an empty search would list every post: stay put instead
+    var form = searchBox.querySelector('form');
+    if (form) form.addEventListener('submit', function (e) {
+      var q = form.querySelector('input');
+      if (q && !q.value.trim()) { e.preventDefault(); q.focus(); }
+    });
+  }
+
   // Shadow under the sticky header once the page scrolls
   if (header) {
     var ticking = false;
@@ -3903,6 +4309,7 @@ log_unanswered: yes
   // ------------------------------------------------------------ languages
   var PACKS = {
     de: {
+      "See all": "Alle ansehen", "Guides & tips": "Ratgeber & Tipps", "Products": "Produkte",
       'Newsletter sign-up': 'Anmeldung zum Newsletter', 'Your email app opened. Press send there to finish signing up.': 'Ihr E-Mail-Programm wurde geöffnet. Tippen Sie dort auf Senden, um die Anmeldung abzuschließen.', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp wurde geöffnet. Tippen Sie dort auf Senden, um die Anmeldung abzuschließen.',
       'Add to cart': 'In den Warenkorb', 'Choose options': 'Optionen wählen', 'Out of stock': 'Ausverkauft', 'Sale': 'Angebot',
       'Quantity': 'Menge', 'Choose': 'Bitte wählen', 'Please choose': 'Bitte wählen Sie', 'Cart': 'Warenkorb',
@@ -3997,6 +4404,7 @@ log_unanswered: yes
       'Talk to us': "Sprechen Sie mit uns"
     },
     fr: {
+      "See all": "Tout voir", "Guides & tips": "Guides et conseils", "Products": "Produits",
       'Newsletter sign-up': 'Inscription à la newsletter', 'Your email app opened. Press send there to finish signing up.': 'Votre messagerie s’est ouverte. Appuyez sur Envoyer pour terminer l’inscription.', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp s’est ouvert. Appuyez sur Envoyer pour terminer l’inscription.',
       'Add to cart': 'Ajouter au panier', 'Choose options': 'Choisir les options', 'Out of stock': 'Épuisé', 'Sale': 'Promo',
       'Quantity': 'Quantité', 'Choose': 'Choisir', 'Please choose': 'Veuillez choisir', 'Cart': 'Panier',
@@ -4091,6 +4499,7 @@ log_unanswered: yes
       'Talk to us': "Parlez-nous"
     },
     sw: {
+      "See all": "Tazama zote", "Guides & tips": "Miongozo na vidokezo", "Products": "Bidhaa",
       'Newsletter sign-up': 'Usajili wa jarida', 'Your email app opened. Press send there to finish signing up.': 'Programu yako ya barua pepe imefunguka. Bonyeza tuma huko ili kukamilisha usajili.', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp imefunguka. Bonyeza tuma huko ili kukamilisha usajili.',
       'Add to cart': "Weka kwenye kikapu",
       'Choose options': "Chagua chaguo",
@@ -4301,6 +4710,7 @@ log_unanswered: yes
       'Stay in the loop': "Pata habari zetu"
     },
     ar: {
+      "See all": "عرض الكل", "Guides & tips": "أدلة ونصائح", "Products": "المنتجات",
       'Newsletter sign-up': 'الاشتراك في النشرة البريدية', 'Your email app opened. Press send there to finish signing up.': 'تم فتح تطبيق البريد. اضغط إرسال هناك لإتمام الاشتراك.', 'WhatsApp opened. Press send there to finish signing up.': 'تم فتح واتساب. اضغط إرسال هناك لإتمام الاشتراك.',
       'Add to cart': "أضف إلى السلة",
       'Choose options': "اختر الخيارات",
@@ -4511,6 +4921,7 @@ log_unanswered: yes
       'Stay in the loop': "ابقَ على اطلاع"
     },
     am: {
+      "See all": "ሁሉንም ይመልከቱ", "Guides & tips": "መመሪያዎች እና ምክሮች", "Products": "ምርቶች",
       'Newsletter sign-up': 'የዜና መጽሔት ምዝገባ', 'Your email app opened. Press send there to finish signing up.': 'የኢሜይል መተግበሪያዎ ተከፍቷል። ምዝገባውን ለማጠናቀቅ እዚያ ላክ ይጫኑ።', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp ተከፍቷል። ምዝገባውን ለማጠናቀቅ እዚያ ላክ ይጫኑ።',
       'Add to cart': "ወደ ጋሪ ጨምር",
       'Choose options': "አማራጮችን ይምረጡ",
@@ -4721,6 +5132,7 @@ log_unanswered: yes
       'Stay in the loop': "መረጃ ያግኙ"
     },
     ti: {
+      "See all": "ኩሉ ርአ", "Guides & tips": "መምርሒታትን ምኽርታትን", "Products": "ፍርያት",
       'Newsletter sign-up': 'ምዝገባ ጋዜጣ', 'Your email app opened. Press send there to finish signing up.': 'መተግበሪ ኢመይልኩም ተኸፊቱ ኣሎ። ምዝገባ ንምዝዛም ኣብኡ ስደድ ጠውቑ።', 'WhatsApp opened. Press send there to finish signing up.': 'WhatsApp ተኸፊቱ ኣሎ። ምዝገባ ንምዝዛም ኣብኡ ስደድ ጠውቑ።',
       'Add to cart': "ናብ ዘንቢል ወስኽ",
       'Choose options': "ምርጫታት ምረጽ",
@@ -4931,6 +5343,7 @@ log_unanswered: yes
       'Stay in the loop': "ሓበሬታ ርኸቡ"
     },
     es: {
+      "See all": "Ver todo", "Guides & tips": "Guías y consejos", "Products": "Productos",
       "Newsletter sign-up": "Suscripción al boletín",
       "Your email app opened. Press send there to finish signing up.": "Se abrió tu aplicación de correo. Pulsa enviar para terminar la suscripción.",
       "WhatsApp opened. Press send there to finish signing up.": "Se abrió WhatsApp. Pulsa enviar para terminar la suscripción.",
@@ -5143,6 +5556,7 @@ log_unanswered: yes
       "Stay in the loop": "Mantente al día"
     },
     zh: {
+      "See all": "查看全部", "Guides & tips": "指南与技巧", "Products": "商品",
       "Newsletter sign-up": "订阅新闻简报",
       "Your email app opened. Press send there to finish signing up.": "邮件应用已打开。请在那里点击发送以完成订阅。",
       "WhatsApp opened. Press send there to finish signing up.": "WhatsApp 已打开。请在那里点击发送以完成订阅。",
@@ -7353,6 +7767,241 @@ log_unanswered: yes
     });
   }
 
+  // ------------------------------------------------------------ homepage rows, campaign band, category tiles, guides
+  // Posts of one Blogger label (or the newest posts) from the blog's public feed, read once per page view.
+  var FEEDS = {};
+  function feedPosts(label, count) {
+    if (!window.fetch || !window.DOMParser || !/^https?:$/.test(location.protocol)) return Promise.resolve([]);
+    var url = location.origin + '/feeds/posts/default' + (label ? '/-/' + encodeURIComponent(label) : '') +
+      '?alt=json&max-results=' + Math.min(50, Math.max(1, count || 20));
+    if (!FEEDS[url]) {
+      FEEDS[url] = fetch(url).then(function (r) { return r.json(); }).then(function (data) {
+        return ((data.feed || {}).entry || []).map(function (e) {
+          var link = ((e.link || []).filter(function (l) { return l.rel === 'alternate'; })[0] || {}).href || '';
+          var html = (e.content || e.summary || {}).$t || '';
+          var dom = new DOMParser().parseFromString(html, 'text/html');
+          var labels = (e.category || []).map(function (c) { return c.term; });
+          var first = dom.querySelector('img');
+          var img = (e.media$thumbnail || {}).url || (first ? first.getAttribute('src') : '') || '';
+          img = img.replace(/\/s\d+(-c)?\//, '/s600/').replace(/=s\d+(-c)?$/, '=s600');
+          each(dom.querySelectorAll('.product, script, style'), function (n) { n.parentNode.removeChild(n); });
+          var text = (dom.body.textContent || '').replace(/\s+/g, ' ').trim();
+          return { title: (e.title || {}).$t || '', link: link, img: img, labels: labels,
+                   p: productFrom(new DOMParser().parseFromString(html, 'text/html').body, labels),
+                   text: text.length > 150 ? text.slice(0, 147).replace(/\s+\S*$/, '') + '…' : text };
+        }).filter(function (x) { return x.link && x.title; });
+      }).catch(function () { return []; });
+    }
+    return FEEDS[url];
+  }
+
+  // "sale" = only reduced items, "max 50" / "under 50" / "bis 50" = only up to that price.
+  function rowFilter(spec) {
+    spec = String(spec || '').toLowerCase();
+    var max = /(?:max|under|unter|bis|up to|≤|<)\s*([\d.,]+)/.exec(spec);
+    return function (x) {
+      if (!x.p || x.p.stock === 0) return false;
+      if (/sale|reduced|angebot|promo/.test(spec) && !(x.p.oldPrice > x.p.price)) return false;
+      if (max && !(x.p.price <= parseNumber(max[1]))) return false;
+      return true;
+    };
+  }
+
+  function productCard(x) {
+    var p = x.p, off = p.oldPrice > p.price ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+    return el('a', { 'class': 'shop-pcard', href: x.link, role: 'listitem' }, [
+      el('span', { 'class': 'shop-pcard-img' }, [
+        x.img ? el('img', { src: x.img, alt: x.title, loading: 'lazy', decoding: 'async' }) : null,
+        off ? el('span', { 'class': 'shop-pcard-badge', text: '−' + off + ' %' }) : null,
+        p.digital ? el('span', { 'class': 'shop-pcard-badge is-digital', text: t('Digital') }) : null]),
+      el('span', { 'class': 'shop-pcard-title', text: x.title }),
+      priceNode(p)]);
+  }
+  function guideCard(x) {
+    return el('a', { 'class': 'shop-pcard is-guide', href: x.link, role: 'listitem' }, [
+      el('span', { 'class': 'shop-pcard-img is-wide' }, [x.img ? el('img', { src: x.img, alt: '', loading: 'lazy', decoding: 'async' }) : null]),
+      el('span', { 'class': 'shop-pcard-title', text: x.title }),
+      x.text ? el('span', { 'class': 'shop-pcard-text', text: x.text }) : null,
+      el('span', { 'class': 'shop-pcard-more', text: t('Learn more') + (doc.documentElement.dir === 'rtl' ? ' ←' : ' →') })]);
+  }
+
+  // One row: title + "See all", a track that swipes on phones, arrow buttons on wide screens.
+  // Shows grey placeholder cards while the feed loads; removes itself when nothing matches.
+  function shopRow(opts) {
+    var track = el('div', { 'class': 'shop-lane-track', role: 'list', tabindex: '0', 'aria-label': opts.title || t('Products') });
+    for (var i = 0; i < 4; i++) track.appendChild(el('span', { 'class': 'shop-pcard is-loading', 'aria-hidden': 'true' }));
+    var prev = el('button', { type: 'button', 'class': 'shop-lane-arrow is-prev', 'aria-label': t('Previous'), hidden: true }, [svg('M15 18l-6-6 6-6', 'stroke')]);
+    var next = el('button', { type: 'button', 'class': 'shop-lane-arrow is-next', 'aria-label': t('Next'), hidden: true }, [svg('M9 18l6-6-6-6', 'stroke')]);
+    var head = el('div', { 'class': 'shop-lane-head' }, [
+      opts.title ? el('h3', { 'class': 'shop-lane-title', text: opts.title }) : null,
+      opts.more ? el('a', { 'class': 'shop-lane-more', href: opts.more, text: (opts.moreText || t('See all')) + (doc.documentElement.dir === 'rtl' ? ' ←' : ' →') }) : null]);
+    var row = el('div', { 'class': 'shop-lane' + (opts.guides ? ' is-guides' : '') }, [head, el('div', { 'class': 'shop-lane-frame' }, [prev, track, next])]);
+    var arrows = function () {
+      var max = track.scrollWidth - track.clientWidth, pos = Math.abs(track.scrollLeft);   // right to left: scrollLeft is negative
+      prev.hidden = pos < 4 || max < 4; next.hidden = pos > max - 4 || max < 4;
+    };
+    var step = function (dir) {
+      var rtl = doc.documentElement.dir === 'rtl';
+      track.scrollBy({ left: dir * (rtl ? -1 : 1) * track.clientWidth * 0.85, behavior: 'smooth' });
+    };
+    prev.addEventListener('click', function () { step(-1); });
+    next.addEventListener('click', function () { step(1); });
+    track.addEventListener('scroll', arrows, { passive: true });
+    window.addEventListener('resize', arrows);
+    row.fill = function (items) {
+      track.textContent = '';
+      items.forEach(function (x) { track.appendChild(opts.guides ? guideCard(x) : productCard(x)); });
+      if (!items.length) { row.parentNode && row.parentNode.removeChild(row); return false; }
+      setTimeout(arrows, 0);
+      return true;
+    };
+    return row;
+  }
+  function loadRow(row, label, spec, count, guides) {
+    return feedPosts(label, guides ? count : Math.max(20, count * 3)).then(function (posts) {
+      var items = guides ? posts.slice(0, count) : posts.filter(rowFilter(spec)).slice(0, count);
+      return row.fill(items);
+    });
+  }
+  // Keys like "label: Sale" from the lines of a gadget; everything else is returned as rows.
+  function keyLines(lines, keys) {
+    var out = { _rows: [] };
+    lines.forEach(function (line) {
+      var m = /^\s*([a-z_]+)\s*:\s*(.*)$/i.exec(line);
+      if (m && keys.indexOf(m[1].toLowerCase()) > -1) out[m[1].toLowerCase()] = m[2].trim();
+      else out._rows.push(line);
+    });
+    return out;
+  }
+  function labelLink(label) { return label ? '/search/label/' + encodeURIComponent(label) : '/search'; }
+
+  // Product rows: <div class='shop-rows'>, one row per line:  Title | Blogger label | sale  or  max 50
+  //   New in |                          (empty label = the newest products)
+  //   Under 50 € | | max 50
+  //   count: 10                         (products per row, default 10)
+  function renderRows() {
+    each(doc.querySelectorAll('.shop-rows'), function (box) {
+      var cfg = keyLines(langLines(box), ['count']), count = Math.min(20, parseInt(cfg.count, 10) || 10);
+      var defs = cfg._rows.map(function (line) {
+        var parts = line.split('|').map(function (x) { return x.trim(); });
+        return parts[0] ? { title: parts[0], label: parts[1] || '', spec: parts[2] || '' } : null;
+      }).filter(Boolean);
+      if (!defs.length) { hideEmpty(box); return; }
+      box.textContent = '';
+      box.classList.add('is-ready');
+      Promise.all(defs.map(function (d) {
+        var row = shopRow({ title: d.title, more: labelLink(d.label) });
+        box.appendChild(row);
+        return loadRow(row, d.label, d.spec, count);
+      })).then(function (shown) { if (shown.indexOf(true) === -1) hideEmpty(box); });
+    });
+  }
+
+  // Campaign band: <div class='shop-campaign'>
+  //   title: Black Friday          text: …          label: Sale          filter: sale  (or: max 50)
+  //   button: See all deals | /search/label/Sale    until: 2026-12-01    style: dark  (or: accent, light)
+  // Hidden after the "until" date, and whenever no product matches (no empty promises).
+  function renderCampaign() {
+    each(doc.querySelectorAll('.shop-campaign'), function (box) {
+      var c = keyLines(langLines(box), ['title', 'text', 'label', 'filter', 'button', 'until', 'style', 'count', 'eyebrow']);
+      var until = /^\d{4}-\d{2}-\d{2}$/.test(c.until || '') ? new Date(c.until + 'T23:59:59') : null;
+      if (!c.title || (until && new Date() > until)) { hideEmpty(box); return; }
+      var sec = box.closest('section') || box;
+      sec.classList.add('is-' + (/^(accent|light)$/i.test(c.style || '') ? c.style.toLowerCase() : 'dark'));
+      var btn = (c.button || '').split('|').map(function (x) { return x.trim(); });
+      var href = /^(https:\/\/|\/)/.test(btn[1] || '') ? btn[1] : labelLink(c.label);
+      var row = shopRow({ title: '', more: '' });
+      box.textContent = '';
+      box.classList.add('is-ready');
+      box.appendChild(el('div', { 'class': 'shop-campaign-head' }, [
+        c.eyebrow ? el('p', { 'class': 'shop-campaign-eyebrow', text: c.eyebrow }) : null,
+        el('h2', { 'class': 'shop-campaign-title', text: c.title }),
+        c.text ? el('p', { 'class': 'shop-campaign-text', text: c.text }) : null,
+        el('a', { 'class': 'btn btn-primary shop-campaign-btn', href: href, text: btn[0] || t('See all') })]));
+      box.appendChild(row);
+      loadRow(row, c.label || '', c.filter || '', Math.min(20, parseInt(c.count, 10) || 10)).then(function (ok) { if (!ok) hideEmpty(box); });
+    });
+  }
+
+  // Category tiles: <div class='shop-cats'>, one tile per line:  Name | icon or picture link | link
+  //   Appliances | fridge | /search/label/Appliances
+  // Icons: fridge, washer, sofa, tools, shirt, kit, kenya, digital, bike, baby, laptop, sale, warehouse.
+  var CAT_ICONS = {
+    fridge: 'M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM5 10h14M8.5 5.5v2M8.5 13v3.5',
+    washer: 'M5 2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM3 7h18M7 4.5h.01M10 4.5h.01M12 19a5 5 0 1 0 0-10 5 5 0 0 0 0 10z',
+    sofa: 'M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M3 11a2 2 0 0 1 2 2v2h14v-2a2 2 0 0 1 4 0v5H1v-5a2 2 0 0 1 2-2zM4 18v2M20 18v2',
+    tools: 'M3 7h11v5H3zM14 8.5h4M18 9.5h3.5M6 12l-1.5 8h5L11 12M7 15.5h2',
+    shirt: 'M9 3l3 3 3-3 5 3-1.5 5H17v10H7V11H5.5L4 6zM12 6v15',
+    kit: 'M12 2l9 4.5v11L12 22l-9-4.5v-11zM3 6.5l9 4.5 9-4.5M12 11v11M7.5 4.2l9 4.6',
+    kenya: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9s1.3-6.3 3.8-9z',
+    digital: 'M12 3v12M7 10l5 5 5-5M5 21h14',
+    bike: 'M5.5 17.5a3.5 3.5 0 1 0 0-.01zM18.5 17.5a3.5 3.5 0 1 0 0-.01zM5.5 17.5 9 9h6l3.5 8.5M12 17.5 9 9M14 6h3',
+    baby: 'M9 12h.01M15 12h.01M10 16c.6.5 1.3.8 2 .8s1.4-.3 2-.8M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0zM12 5c1 0 2-1 2-2',
+    laptop: 'M4 5h16v10H4zM2 19h20',
+    sale: 'M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01',
+    warehouse: 'M3 21V9l9-5 9 5v12M7 21v-7h10v7M7 17h10'
+  };
+  function renderCats() {
+    each(doc.querySelectorAll('.shop-cats'), function (box) {
+      var items = langLines(box).map(function (line) {
+        var parts = line.split('|').map(function (x) { return x.trim(); });
+        if (!parts[0]) return null;
+        var pic = parts[1] || '';
+        return { name: parts[0], img: /^https:\/\//.test(pic) ? sized(pic, 300) : '', icon: CAT_ICONS[pic.toLowerCase()] || (pic ? '' : CAT_ICONS.kit),
+                 link: /^(https:\/\/|\/)/.test(parts[2] || '') ? parts[2] : labelLink(parts[0]) };
+      }).filter(Boolean);
+      var widget = box.closest('.widget');
+      if (!items.length) { if (widget) widget.hidden = true; return; }
+      box.textContent = '';
+      box.classList.add('is-ready');
+      var ul = el('ul', { 'class': 'shop-cat-list' });
+      items.forEach(function (it) {
+        var pic = it.img ? el('img', { src: it.img, alt: '', loading: 'lazy', decoding: 'async' }) : svg(it.icon || CAT_ICONS.kit, 'stroke');
+        ul.appendChild(el('li', {}, [el('a', { 'class': 'shop-cat-tile', href: it.link }, [
+          el('span', { 'class': 'shop-cat-pic' + (it.img ? ' has-img' : '') }, [pic]),
+          el('span', { 'class': 'shop-cat-name', text: it.name })])]));
+      });
+      box.appendChild(ul);
+      // the plain label list in the same section is not needed any more
+      var sec = box.closest('section');
+      if (sec) each(sec.querySelectorAll('.widget.Label'), function (w) { w.hidden = true; });
+    });
+  }
+
+  // Guides row: <div class='shop-guides'>   label: Guide   count: 6   button: All guides | /search/label/Guide
+  function renderGuides() {
+    each(doc.querySelectorAll('.shop-guides'), function (box) {
+      var c = keyLines(langLines(box), ['label', 'count', 'button']);
+      var btn = (c.button || '').split('|').map(function (x) { return x.trim(); });
+      var label = c.label || 'Guide';
+      var row = shopRow({ title: '', more: /^(https:\/\/|\/)/.test(btn[1] || '') ? btn[1] : labelLink(label), moreText: btn[0] || '', guides: true });
+      box.textContent = '';
+      box.classList.add('is-ready');
+      box.appendChild(row);
+      loadRow(row, label, '', Math.min(12, parseInt(c.count, 10) || 6), true).then(function (ok) { if (!ok) hideEmpty(box); });
+    });
+  }
+
+  // Benefit strip under the hero: the first promises of the trust row gadget, small, near the top.
+  // "top_strip: no" in the trust gadget switches it off.
+  function renderBenefits() {
+    var strip = doc.querySelector('.shop-benefits'), trust = doc.querySelector('.shop-trust');
+    if (!strip) return;
+    var src = trust ? gadgetLinesOf(trust).join('\n') : '';
+    var off = /^\s*top_strip\s*:\s*(no|off|false|0|nein)\s*$/im.test(src);
+    var items = trust && !off ? Array.prototype.slice.call(trust.querySelectorAll('.shop-trust-item'), 0, 4) : [];
+    if (!items.length) { hideEmpty(strip); return; }
+    var ul = el('ul', { 'class': 'shop-benefit-list' });
+    items.forEach(function (li) {
+      var a = li.querySelector('a'), icon = li.querySelector('.shop-trust-icon svg'), strong = li.querySelector('strong'), small = li.querySelector('.shop-trust-text span');
+      var body = [el('span', { 'class': 'shop-benefit-icon' }, [icon ? icon.cloneNode(true) : null]),
+        el('span', { 'class': 'shop-benefit-text' }, [el('strong', { text: strong ? strong.textContent : '' }), small ? el('span', { text: small.textContent }) : null])];
+      ul.appendChild(el('li', { 'class': 'shop-benefit' }, [a ? el('a', { href: a.getAttribute('href') }, body) : el('div', {}, body)]));
+    });
+    strip.textContent = '';
+    strip.appendChild(ul);
+  }
+
   function start() {
     applyLanguage();
     hidePriceLabels();
@@ -7363,6 +8012,7 @@ log_unanswered: yes
     renderLogos();
     renderAnnounce();
     renderTrust();
+    renderBenefits();
     renderTeam();
     renderServices();
     renderSteps();
@@ -7371,6 +8021,10 @@ log_unanswered: yes
     renderFaq();
     renderTicker();
     renderBranches();
+    renderCats();
+    renderCampaign();
+    renderRows();
+    renderGuides();
     renderNewsletter();
     renderLeadForms();
     if (ASK) buildAssistant(ASK);

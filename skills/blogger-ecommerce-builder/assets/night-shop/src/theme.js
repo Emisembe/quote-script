@@ -63,6 +63,33 @@
     }
   }
 
+  // Search box under the header (the magnifier next to the cart)
+  var searchBtn = doc.getElementById('search-toggle');
+  var searchBox = doc.getElementById('header-search');
+  function setSearch(open) {
+    if (!searchBtn || !searchBox) return;
+    searchBox.hidden = !open;
+    searchBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) {
+      if (header && header.classList.contains('nav-open')) setMenu(false);
+      var input = searchBox.querySelector('input');
+      if (input) input.focus();
+    }
+  }
+  if (searchBtn && searchBox) {
+    searchBtn.addEventListener('click', function () { setSearch(searchBox.hidden); });
+    doc.addEventListener('keydown', function (e) {
+      if ((e.key === 'Escape' || e.key === 'Esc') && !searchBox.hidden) { setSearch(false); searchBtn.focus(); }
+    });
+    if (toggle) toggle.addEventListener('click', function () { if (!searchBox.hidden) setSearch(false); });
+    // an empty search would list every post: stay put instead
+    var form = searchBox.querySelector('form');
+    if (form) form.addEventListener('submit', function (e) {
+      var q = form.querySelector('input');
+      if (q && !q.value.trim()) { e.preventDefault(); q.focus(); }
+    });
+  }
+
   // Shadow under the sticky header once the page scrolls
   if (header) {
     var ticking = false;

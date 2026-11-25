@@ -172,6 +172,12 @@ controls; it warns on unknown emails/IBANs, vendor licence switches and third-pa
 - **Inbox:** `tests/inbox-orders.js`, `tests/inbox-requests.js` and `tests/inbox-reports.js` run Code.gs in Node
   with fake Google services; a fake low cart price must come back as the feed price. Never define a second
   function with an existing name in Code.gs (Apps Script keeps the last one silently).
+- **Homepage shop blocks** (zooplus-style): `.shop-rows` (`title | label | sale|max N`, `count:`), `.shop-campaign`
+  (`title/text/label/filter/button/until/style`; hides after `until` and when no product matches), `.shop-cats`
+  (`name | icon|https picture | link`; hides the Label widget), `.shop-guides` (`label: Guide`), `.shop-benefits`
+  (copies the first 4 trust-row items; `top_strip: no`), header search toggle. All read `/feeds/posts/default/-/Label`
+  once per page (`feedPosts` cache). New class names must not collide: `.shop-card` and `.shop-row` already exist
+  (product grid, checkout rows), so the rows use `.shop-lane*` and `.shop-pcard*`.
 - **Mobile menu:** never lock scrolling with `overflow: hidden` on `body` (only on `html`), and keep `body` at
   `overflow-x: clip`: a scrolling body unpins the sticky header, so the drawer opens off-screen and the page looks
   frozen. The drawer is `position: fixed` under the header; `tests/browser-menu.js` checks it with real touch taps

@@ -21,10 +21,10 @@ Page not found - <data:blog.title/>
 <link href='https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&amp;family=Open+Sans:wght@400;600;700&amp;family=Noto+Sans+Arabic:wght@400;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;600;700&amp;display=swap' rel='stylesheet'/>
 <b:skin><![CDATA[@@SKIN_CSS@@]]></b:skin>
 <b:if cond='data:blog.url == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter, .ticker, .branches { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter, .ticker, .branches, .benefits, .campaign, .rows, .guides { display: block; }</style>
 </b:if>
 <b:if cond='data:blog.canonicalUrl == data:blog.homepageUrl'>
-<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter, .ticker, .branches { display: block; }</style>
+<style type='text/css'>.hero, .talk, .topics, .promo, .partners, .services, .steps, .testimonials, .faq, .newsletter, .ticker, .branches, .benefits, .campaign, .rows, .guides { display: block; }</style>
 </b:if>
 </head>
 <body expr:class='&quot;rm shop pt-&quot; + data:blog.pageType'>
@@ -51,6 +51,9 @@ Fulfilment for online sellers, from Gießen | /p/fulfilment.html]]></b:widget-se
 <header class='site-header' id='site-header'>
   <div class='container header-inner'>
 <div class='lang-switch' data-lang-switch='' hidden='hidden'/>
+<button aria-controls='header-search' aria-expanded='false' aria-label='Search' class='search-toggle' data-i18n-label='' id='search-toggle' type='button'>
+  <svg aria-hidden='true' fill='none' height='22' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' width='22'><circle cx='11' cy='11' r='7.5'/><line x1='21' x2='16.4' y1='21' y2='16.4'/></svg>
+</button>
 <a aria-label='Cart' class='cart-button' data-cart-open='' data-i18n-label='' href='#cart'>
   <svg aria-hidden='true' height='22' viewBox='0 0 24 24' width='22'><path d='M6 6h15l-1.5 9h-12z' fill='none' stroke='currentColor' stroke-width='2'/><circle cx='9' cy='20' fill='currentColor' r='1.5'/><circle cx='18' cy='20' fill='currentColor' r='1.5'/><path d='M6 6L5 2H2' fill='none' stroke='currentColor' stroke-width='2'/></svg>
   <span data-cart-count='' hidden='hidden'>0</span>
@@ -114,6 +117,12 @@ Fulfilment for online sellers, from Gießen | /p/fulfilment.html]]></b:widget-se
         </b:widget>
       </b:section>
     </nav>
+    <div class='header-search' id='header-search' hidden='hidden'>
+      <form action='/search' method='get' role='search'>
+        <input aria-label='Search' data-i18n-label='' data-i18n-placeholder='' name='q' placeholder='Search products...' type='search'/>
+        <button class='btn btn-primary' data-i18n='' type='submit'>Search</button>
+      </form>
+    </div>
   </div>
 </header>
 
@@ -285,6 +294,269 @@ Envío gratis en Alemania desde *50 €* | /p/shipping.html
         </b:widget>
       </b:section>
     </div>
+  </div>
+</section>
+
+<!-- ================= Benefit strip under the hero: the first promises of the trust row (homepage) ================= -->
+<section class='benefits' id='benefits'>
+  <div class='container'>
+    <div class='shop-benefits'/>
+  </div>
+</section>
+
+<!-- ================= Categories (shown on the homepage) ================= -->
+<section class='topics' id='categories'>
+  <div class='container'>
+    <b:section class='topics-section' id='topics-widgets' showaddelement='yes'>
+      <b:widget id='HTML24' locked='false' title='Shop by category' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[<div data-lang="en">
+# One tile per line: name | icon or picture link (https://…) | link. Icons: fridge, washer, sofa, tools, shirt, kit, kenya, digital, bike, baby, laptop, sale, warehouse
+Appliances | fridge | /search/label/Appliances
+Furniture | sofa | /search/label/Furniture
+Tools | tools | /search/label/Tools
+Clothes | shirt | /search/label/Clothes
+Kits | kit | /search/label/Kits
+Kenya | kenya | /p/kenya.html
+Digital | digital | /search/label/Digital
+</div>
+<div data-lang="de">
+Geräte | fridge | /search/label/Appliances
+Möbel | sofa | /search/label/Furniture
+Werkzeug | tools | /search/label/Tools
+Kleidung | shirt | /search/label/Clothes
+Sets | kit | /search/label/Kits
+Kenia | kenya | /p/kenya.html
+Digital | digital | /search/label/Digital
+</div>
+<div data-lang="fr">
+Électroménager | fridge | /search/label/Appliances
+Meubles | sofa | /search/label/Furniture
+Outils | tools | /search/label/Tools
+Vêtements | shirt | /search/label/Clothes
+Kits | kit | /search/label/Kits
+Kenya | kenya | /p/kenya.html
+Numérique | digital | /search/label/Digital
+</div>
+<div data-lang="es">
+Electrodomésticos | fridge | /search/label/Appliances
+Muebles | sofa | /search/label/Furniture
+Herramientas | tools | /search/label/Tools
+Ropa | shirt | /search/label/Clothes
+Kits | kit | /search/label/Kits
+Kenia | kenya | /p/kenya.html
+Digital | digital | /search/label/Digital
+</div>
+<div data-lang="sw">
+Vifaa vya nyumbani | fridge | /search/label/Appliances
+Samani | sofa | /search/label/Furniture
+Zana | tools | /search/label/Tools
+Nguo | shirt | /search/label/Clothes
+Vifurushi | kit | /search/label/Kits
+Kenya | kenya | /p/kenya.html
+Kidijitali | digital | /search/label/Digital
+</div>
+<div data-lang="ar">
+أجهزة منزلية | fridge | /search/label/Appliances
+أثاث | sofa | /search/label/Furniture
+أدوات | tools | /search/label/Tools
+ملابس | shirt | /search/label/Clothes
+أطقم | kit | /search/label/Kits
+كينيا | kenya | /p/kenya.html
+رقمي | digital | /search/label/Digital
+</div>
+<div data-lang="am">
+የቤት መሣሪያዎች | fridge | /search/label/Appliances
+የቤት ዕቃዎች | sofa | /search/label/Furniture
+መሳሪያዎች | tools | /search/label/Tools
+ልብሶች | shirt | /search/label/Clothes
+ኪቶች | kit | /search/label/Kits
+ኬንያ | kenya | /p/kenya.html
+ዲጂታል | digital | /search/label/Digital
+</div>
+<div data-lang="ti">
+ናውቲ ገዛ | fridge | /search/label/Appliances
+ኣቑሑት ገዛ | sofa | /search/label/Furniture
+መሳርሒታት | tools | /search/label/Tools
+ክዳውንቲ | shirt | /search/label/Clothes
+ኪታት | kit | /search/label/Kits
+ኬንያ | kenya | /p/kenya.html
+ዲጂታል | digital | /search/label/Digital
+</div>
+<div data-lang="zh">
+家电 | fridge | /search/label/Appliances
+家具 | sofa | /search/label/Furniture
+工具 | tools | /search/label/Tools
+服装 | shirt | /search/label/Clothes
+套装 | kit | /search/label/Kits
+肯尼亚 | kenya | /p/kenya.html
+数字商品 | digital | /search/label/Digital
+</div>]]>      </b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-cats'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+      <b:widget id='Label1' locked='false' title='Shop by category' type='Label' version='1'>
+        <b:widget-settings>
+          <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
+          <b:widget-setting name='display'>LIST</b:widget-setting>
+          <b:widget-setting name='selectedLabelsList'/>
+          <b:widget-setting name='showType'>ALL</b:widget-setting>
+          <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+        </b:widget-settings>
+        @@LABEL_MAIN@@
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Campaign band, e.g. Black Friday (homepage; ends by itself on its "until" date) ================= -->
+<section class='campaign' id='deals'>
+  <div class='container'>
+    <b:section class='campaign-section' id='campaign-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML26' locked='false' title='' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[# Campaign band: shown only until the "until" date and only while products with this label (and filter) exist.
+# label: Blogger label · filter: sale or max 50 · style: dark, accent or light · until: last day (YYYY-MM-DD)
+label: Sale
+filter: sale
+style: dark
+until: 2026-11-30
+<div data-lang="en">
+title: Black Friday
+text: Tested appliances, tools and kits at reduced prices – until 30 November.
+button: See all deals | /search/label/Sale
+</div>
+<div data-lang="de">
+title: Black Friday
+text: Geprüfte Geräte, Werkzeuge und Sets zu reduzierten Preisen – bis 30. November.
+button: Alle Angebote | /search/label/Sale
+</div>
+<div data-lang="fr">
+title: Black Friday
+text: Appareils, outils et kits testés à prix réduits – jusqu’au 30 novembre.
+button: Voir toutes les offres | /search/label/Sale
+</div>
+<div data-lang="es">
+title: Black Friday
+text: Electrodomésticos, herramientas y kits revisados a precios rebajados, hasta el 30 de noviembre.
+button: Ver todas las ofertas | /search/label/Sale
+</div>
+<div data-lang="sw">
+title: Black Friday
+text: Vifaa vya nyumbani, zana na vifurushi vilivyojaribiwa kwa bei iliyopunguzwa – hadi 30 Novemba.
+button: Tazama ofa zote | /search/label/Sale
+</div>
+<div data-lang="ar">
+title: الجمعة السوداء
+text: أجهزة وأدوات وأطقم مفحوصة بأسعار مخفّضة – حتى 30 نوفمبر.
+button: شاهد كل العروض | /search/label/Sale
+</div>
+<div data-lang="am">
+title: ብላክ ፍራይዴይ
+text: የተፈተሹ የቤት መሣሪያዎች፣ መሳሪያዎች እና ኪቶች በቅናሽ ዋጋ – እስከ 30 ኖቬምበር።
+button: ሁሉንም ቅናሾች ይመልከቱ | /search/label/Sale
+</div>
+<div data-lang="ti">
+title: ብላክ ፍራይደይ
+text: ዝተፈተኑ ናውቲ ገዛ፡ መሳርሒታትን ኪታትን ብዝተቐነሰ ዋጋ – ክሳብ 30 ኖቬምበር።
+button: ኩሉ ቅናሻት ርአ | /search/label/Sale
+</div>
+<div data-lang="zh">
+title: 黑色星期五
+text: 已检测的家电、工具和套装特价 – 截至11月30日。
+button: 查看全部优惠 | /search/label/Sale
+</div>]]>      </b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-campaign'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </div>
+</section>
+
+<!-- ================= Product rows by label (homepage) ================= -->
+<section class='rows' id='products'>
+  <div class='container'>
+    <b:section class='rows-section' id='rows-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML25' locked='false' title='' type='HTML'>
+        <b:widget-settings>
+          <b:widget-setting name='content'><![CDATA[count: 10
+<div data-lang="en">
+# One row per line: title | Blogger label (empty = newest) | sale (only reduced) or max 50 (only up to 50 €). A row with no products hides itself.
+New in |
+Kits for a fresh start | Kits
+Appliances, tested | Appliances
+Under 50 € |  | max 50
+</div>
+<div data-lang="de">
+Neu eingetroffen |
+Sets für den Start | Kits
+Geräte, geprüft | Appliances
+Unter 50 € |  | max 50
+</div>
+<div data-lang="fr">
+Nouveautés |
+Kits pour bien démarrer | Kits
+Électroménager testé | Appliances
+Moins de 50 € |  | max 50
+</div>
+<div data-lang="es">
+Novedades |
+Kits para empezar | Kits
+Electrodomésticos revisados | Appliances
+Menos de 50 € |  | max 50
+</div>
+<div data-lang="sw">
+Vipya |
+Vifurushi vya kuanzia | Kits
+Vifaa vya nyumbani, vimejaribiwa | Appliances
+Chini ya 50 € |  | max 50
+</div>
+<div data-lang="ar">
+وصل حديثًا |
+أطقم لبداية جديدة | Kits
+أجهزة مفحوصة | Appliances
+أقل من 50 € |  | max 50
+</div>
+<div data-lang="am">
+አዲስ የደረሱ |
+ለአዲስ ጅምር ኪቶች | Kits
+የተፈተሹ የቤት መሣሪያዎች | Appliances
+ከ50 € በታች |  | max 50
+</div>
+<div data-lang="ti">
+ሓደሽቲ |
+ንሓድሽ መጀመርታ ኪታት | Kits
+ዝተፈተኑ ናውቲ ገዛ | Appliances
+ትሕቲ 50 € |  | max 50
+</div>
+<div data-lang="zh">
+新品 |
+开局套装 | Kits
+已检测家电 | Appliances
+50 € 以下 |  | max 50
+</div>]]>      </b:widget-setting>
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-rows'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
+      </b:widget>
+    </b:section>
   </div>
 </section>
 
@@ -797,19 +1069,23 @@ Recíbelo | Recogida en Gießen, entrega en Alemania o envío a Kenia.
   </div>
 </section>
 
-<!-- ================= Categories (shown on the homepage) ================= -->
-<section class='topics' id='categories'>
+<!-- ================= Guides row: posts labelled Guide (homepage) ================= -->
+<section class='guides' id='guides'>
   <div class='container'>
-    <b:section class='topics-section' id='topics-widgets' showaddelement='yes'>
-      <b:widget id='Label1' locked='false' title='Shop by category' type='Label' version='1'>
+    <b:section class='guides-section' id='guides-widgets' maxwidgets='1' showaddelement='no'>
+      <b:widget id='HTML27' locked='false' title='Guides &amp; tips' type='HTML'>
         <b:widget-settings>
-          <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
-          <b:widget-setting name='display'>LIST</b:widget-setting>
-          <b:widget-setting name='selectedLabelsList'/>
-          <b:widget-setting name='showType'>ALL</b:widget-setting>
-          <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
+          <b:widget-setting name='content'><![CDATA[# Posts with this Blogger label appear as article cards (picture, title, first lines).
+label: Guide
+count: 6]]>      </b:widget-setting>
         </b:widget-settings>
-        @@LABEL_MAIN@@
+        <b:includable id='main'>
+          <b:if cond='data:title != &quot;&quot;'>
+            <h2 class='title'><data:title/></h2>
+          </b:if>
+          <div class='shop-guides'><data:content/></div>
+          <b:include name='quickedit'/>
+        </b:includable>
       </b:widget>
     </b:section>
   </div>

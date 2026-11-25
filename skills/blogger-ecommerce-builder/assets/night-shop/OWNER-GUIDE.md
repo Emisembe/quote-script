@@ -15,6 +15,7 @@ is the "Night Shop: complete setup guide" document.
 3. Shop settings: every line explained
 4. Adding a product
 5. Languages
+5a. Kits, spares and "new on request"
 5b. Call and video buttons ("Talk to us")
 5c. Our partners and accreditation symbols
 5d. Delivery partners, delivery time and weight
@@ -29,6 +30,7 @@ is the "Night Shop: complete setup guide" document.
 5m. "Ask Kreislo" chat assistant (questions and answers you edit in Layout)
 5n. News ticker on the homepage (announcements and figures)
 5o. Our branches (addresses, phone numbers, WhatsApp, directions)
+5p. Homepage shop blocks: product rows, campaign band (Black Friday), category tiles, guides, benefit strip, search
 6. How orders reach you
 7. Saving every order in a Google Sheet
 8. Reviews
@@ -657,6 +659,64 @@ Kreislo Mombasa | Moi Avenue 1, Mombasa, Kenya | +254 700 000000 | +254 700 0000
 - **Replace the example address** (Musterstraße) before you go live: a wrong address on Google is worse
   than none. Only list addresses where customers may come or call.
 
+## 5p. Homepage shop blocks: product rows, campaign band, category tiles, guides, benefit strip, search
+
+The homepage now reads like a shop window: from top to bottom you see the **benefit strip**, the **category tiles**,
+the **campaign band** (e.g. Black Friday) and the **product rows**; further down, the **guides** row. Every block
+fills itself from your posts and their labels, and **hides itself when it has nothing to show**. Each is a gadget
+in Layout; empty the gadget to switch a block off. All of them work in every language of the shop.
+
+**Product rows** (Layout → the gadget in the "rows" section): one row per line, `title | label | filter`:
+
+```
+New in |
+Kits for a fresh start | Kits
+Appliances, tested | Appliances
+Under 50 € | | max 50
+count: 10
+```
+
+- An empty label = your newest products. `sale` = only reduced products (with an old price); `max 50` = only up to 50 €.
+- Sold-out products are left out. A row with no products disappears by itself.
+- Phones swipe the rows sideways; computers get arrow buttons. "See all" opens the label page.
+- Other languages: the same lines inside `<div data-lang="de">…</div>` with translated titles (the labels stay the same).
+
+**Campaign band** (the gadget in the "campaign" section): a big band in your colours with a product row.
+
+```
+label: Sale
+filter: sale
+style: dark            (or accent = Kreislo orange, or light)
+until: 2026-11-30      (the band disappears by itself after this day)
+title: Black Friday
+text: Tested appliances, tools and kits at reduced prices – until 30 November.
+button: See all deals | /search/label/Sale
+```
+
+- It only shows while products with that label (and filter) exist, so it never promises a sale that isn't there.
+- For a sale: give the products an old price (`data-old-price`, see section 4) and the label **Sale**.
+- Re-use it all year: "Next container to Kenya" (label Kenya, style accent), "Moving-out sale", "New kits".
+
+**Category tiles** (the first gadget in "Shop by category"): `name | icon or picture link | link`.
+
+```
+Appliances | fridge | /search/label/Appliances
+Kenya | kenya | /p/kenya.html
+```
+
+- Icons: fridge, washer, sofa, tools, shirt, kit, kenya, digital, bike, baby, laptop, sale, warehouse.
+- Or a photo: paste a picture link (`https://…`) instead of the icon word; a square photo works best.
+- When the tiles are there, the old plain list of labels is hidden. Phones swipe the tiles sideways.
+
+**Guides row** (the gadget "Guides & tips" before the FAQ): posts with the label **Guide** appear as article cards
+(picture, title, first lines). Write a few: how shipping to Kenya works, what we test, buying a used washing
+machine. They help people trust you and bring visitors from Google. `label:` and `count:` can be changed.
+
+**Benefit strip** under the banner: shows the first four promises of the **trust row** (section 5h), so you edit
+them in one place. To switch the strip off, add the line `top_strip: no` to the trust row gadget.
+
+**Search**: the magnifier next to the cart opens a search box under the header; it uses Blogger's own search.
+
 ## 6. How orders reach you
 
 | The buyer picks | What happens |
@@ -804,6 +864,7 @@ Impressum and Widerruf at all.
 | "Stay in the loop" (newsletter) is gone, or sign-ups open an email instead of "Please confirm" | The `google_sheet:` line is missing in Shop settings, usually because a theme upload reset it. Paste it back (section 7). Without it, the newsletter box still shows, but each sign-up comes to you as an email (or WhatsApp) instead of landing in the Newsletter tab with double opt-in |
 | Request form or newsletter says "Something went wrong" | The newest Code.gs isn't deployed: paste it, run setup, Deploy → Manage deployments → New version |
 | Menu on the phone seems to freeze, or opens nowhere | Fixed in this version: upload the new theme (Theme → ⋮ → Restore). The menu now opens under the header wherever you are on the page |
+| A product row, the campaign band or the guides row is missing | They hide when nothing matches: check the label is spelled exactly like in your posts (capital letters count), the campaign's `until` date, and that sale products have an old price |
 | No daily or weekly report arrives | Settings → report time not `off`, then run **setup** once (it makes the triggers); check the Recipients tab has a `yes` under Daily/Weekly report |
 | Customers get emails while I'm testing | Settings → **Test mode: send every email to** = your address. Clear it before you go live |
 | The returning-customer column is empty for old orders | It is filled from now on; old rows stay as they are |
