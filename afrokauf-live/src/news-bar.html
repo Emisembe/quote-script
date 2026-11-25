@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AfroKauf Live – News Bar</title>
+<!--
+  AfroKauf Live – News Bar (title, headline, QR code and ticker) for XSplit Broadcaster, OBS or TikTok LIVE Studio.
+
+  =====================  EDIT HERE  =====================
+  Open this file with Notepad (right-click › Open with › Notepad).
+  Change only the text between the quotes "..." below, then save (Ctrl+S).
+  In XSplit: right-click the source › Refresh (or remove and add it again).
+-->
+<script>
+var SETTINGS = {
+  title:    "AFROKAUF LIVE",
+  headline: "Shop owner Ada asks this question",
+
+  // The QR code opens this address. Write "" (two quotes, nothing between) to hide the QR code.
+  qr_link:  "https://afrokauf.blogspot.com",
+  qr_label: "SCAN ME",
+
+  // The running text at the bottom: one message per line, each in quotes and followed by a comma.
+  ticker: [
+    "Free listing for every African shop in Germany",
+    "Order online, pick up in the shop",
+    "Seminars for shop owners",
+    "afrokauf.blogspot.com",
+    "Follow us: @afrokauf"
+  ],
+  ticker_speed: 110,     // how fast the text runs (bigger = faster). 80 to 160 is good.
+
+  show_seconds: 0,       // 0 = stays until you hide it in XSplit. 20 = slides out by itself after 20 seconds.
+  layout: "auto",        // "auto" = follows the screen shape; "wide" = 16:9 computer; "tall" = 9:16 phone / TikTok
+  green_screen: false    // true = green background (only if the background is not see-through: then use XSplit's colour key)
+};
+</script>
+<!-- =====================  END OF EDIT  ===================== -->
+<style>
+@font-face { font-family: 'AK Poppins'; font-weight: 600; src: url(data:font/ttf;base64,@@FONT_600@@) format('truetype'); }
+@font-face { font-family: 'AK Poppins'; font-weight: 800; src: url(data:font/ttf;base64,@@FONT_800@@) format('truetype'); }
+:root {
+  --green: #0E4D3A; --green2: #17644D; --gold: #E9A23B; --clay: #C4552D; --sand: #F3E3C3; --cream: #FBF6EE; --ink: #1F2420;
+}
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+body { font-family: 'AK Poppins', 'Poppins', 'Segoe UI', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body.test { background: #3a2f2a linear-gradient(180deg, #5c4c44, #2f2622); }
+body.green { background: #00B140; }
+
+/* The stage is drawn at 1920x1080 (wide) or 1080x1920 (tall) and scaled to the window, so it fits any canvas size. */
+#stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.wide #stage { width: 1920px; height: 1080px; }
+.tall #stage { width: 1080px; height: 1920px; }
+.part { position: absolute; }
+
+.stripe { display: flex; height: 8px; overflow: hidden; }
+.stripe i { flex: 0 0 48px; height: 8px; }
+.stripe i:nth-child(4n+1) { background: var(--gold); }
+.stripe i:nth-child(4n+2) { background: var(--clay); }
+.stripe i:nth-child(4n+3) { background: var(--green2); }
+.stripe i:nth-child(4n+4) { background: var(--sand); }
+
+.title { background: var(--clay); color: var(--cream); display: flex; align-items: center; justify-content: center;
+  font-weight: 800; letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; padding: 0 28px; box-sizing: border-box; }
+.headline { background: var(--cream); color: var(--green); display: flex; align-items: center; font-weight: 600;
+  overflow: hidden; padding: 0 28px; box-sizing: border-box; }
+.headline span { display: block; line-height: 1.15; }
+
+.ticker { background: var(--cream); border-top: 3px solid var(--sand); overflow: hidden; box-sizing: border-box; }
+.tab { position: absolute; left: 0; top: 0; bottom: 0; background: var(--green); border-right: 6px solid var(--clay);
+  display: flex; align-items: center; justify-content: center; font-weight: 800; z-index: 2; }
+.tab b { color: var(--cream); font-weight: 800; }
+.tab b + b { color: var(--gold); }
+.run { position: absolute; top: 0; bottom: 0; right: 0; overflow: hidden; }
+.track { position: absolute; top: 0; bottom: 0; left: 0; display: flex; align-items: center; white-space: nowrap; will-change: transform; }
+.track .msg { color: var(--ink); font-weight: 600; padding: 0 30px; }
+.track .sep { width: 6px; align-self: stretch; margin: 14px 0; background: var(--clay); flex: none; }
+
+.qr { background: #fff; border: 6px solid var(--gold); box-sizing: border-box; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); }
+.qr canvas { display: block; image-rendering: pixelated; }
+.qr .lab { color: var(--green); font-weight: 800; letter-spacing: 0.08em; margin-top: 4px; line-height: 1; }
+
+/* entry and exit */
+.slide { transition: transform 0.55s cubic-bezier(.2,.8,.2,1), opacity 0.4s; }
+.out .from-left { transform: translateX(-2100px); }
+.out .from-below { transform: translateY(260px); opacity: 0; }
+.out .pop { transform: scale(0.2); opacity: 0; }
+.d1 { transition-delay: 0.05s; } .d2 { transition-delay: 0.15s; } .d3 { transition-delay: 0.3s; } .d4 { transition-delay: 0.45s; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+/* QR Code Generator for JavaScript – Copyright (c) 2009 Kazuhiko Arase – MIT license – http://www.d-project.com/
+   "QR Code" is a registered trademark of DENSO WAVE INCORPORATED. */
+@@QRLIB@@
+</script>
+<script>
+(function () {
+  'use strict';
+  var S = window.SETTINGS || {};
+  // Advanced: any setting can also be given in the address, e.g. news-bar.html?headline=Hello&layout=tall
+  var q = new URLSearchParams(location.search);
+  ['title', 'headline', 'qr_link', 'qr_label', 'layout'].forEach(function (k) { if (q.has(k)) S[k] = q.get(k); });
+  if (q.has('ticker')) S.ticker = q.get('ticker').split('|');
+  if (q.has('show_seconds')) S.show_seconds = +q.get('show_seconds');
+  if (q.has('ticker_speed')) S.ticker_speed = +q.get('ticker_speed');
+  if (q.has('test')) document.body.classList.add('test');       // preview in a normal browser
+  if (q.has('green') || S.green_screen === true) document.body.classList.add('green');   // green background for a colour key
+
+  var stage = document.getElementById('stage');
+  var tall = false;
+
+  function box(cls, x, y, w, h, extra) {
+    var d = document.createElement('div');
+    d.className = 'part slide ' + cls + (extra ? ' ' + extra : '');
+    d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.width = w + 'px'; d.style.height = h + 'px';
+    stage.appendChild(d);
+    return d;
+  }
+  function stripe(x, y, w) {
+    var d = box('stripe from-left d1', x, y, w, 8);
+    for (var i = 0; i < Math.ceil(w / 48); i++) d.appendChild(document.createElement('i'));
+  }
+  // shrink text until it fits its box
+  function fit(el, inner, size, min, lines) {
+    inner.style.fontSize = size + 'px';
+    var maxH = el.clientHeight - 16;
+    while (size > min && (inner.scrollWidth > el.clientWidth - 56 + 1 || inner.offsetHeight > maxH || lineCount(inner, size) > lines)) {
+      size -= 2; inner.style.fontSize = size + 'px';
+    }
+  }
+  function lineCount(inner, size) { return Math.round(inner.offsetHeight / (size * 1.15)); }
+
+  function drawQR(holder, size) {
+    var link = String(S.qr_link || '').trim();
+    var qr = qrcode(0, 'M');
+    qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+    qr.addData(link, 'Byte');
+    qr.make();
+    var n = qr.getModuleCount(), quiet = 2, cell = Math.max(1, Math.floor(size / (n + quiet * 2)));
+    var px = cell * (n + quiet * 2);
+    var c = document.createElement('canvas');
+    c.width = px; c.height = px;
+    c.style.width = px + 'px'; c.style.height = px + 'px';
+    var g = c.getContext('2d');
+    g.fillStyle = '#fff'; g.fillRect(0, 0, px, px);
+    g.fillStyle = '#0E4D3A';
+    for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (qr.isDark(r, k)) g.fillRect((k + quiet) * cell, (r + quiet) * cell, cell, cell);
+    holder.appendChild(c);
+  }
+
+  function ticker(x, y, w, h, tabW, font) {
+    var t = box('ticker from-below d1', x, y, w, h);
+    var tab = document.createElement('div');
+    tab.className = 'tab'; tab.style.width = tabW + 'px'; tab.style.fontSize = font + 6 + 'px';
+    tab.innerHTML = '<b>Afro</b><b>Kauf</b>';
+    t.appendChild(tab);
+    var run = document.createElement('div');
+    run.className = 'run'; run.style.left = tabW + 'px';
+    var track = document.createElement('div');
+    track.className = 'track'; track.style.fontSize = font + 'px';
+    var items = (S.ticker || []).filter(function (s) { return String(s).trim(); });
+    if (!items.length) items = [' '];
+    // two copies back to back: when the first has scrolled away, jump back without a visible gap
+    for (var copy = 0; copy < 2; copy++) items.forEach(function (s) {
+      var m = document.createElement('span'); m.className = 'msg'; m.textContent = s; track.appendChild(m);
+      var sep = document.createElement('span'); sep.className = 'sep'; track.appendChild(sep);
+    });
+    run.appendChild(track);
+    t.appendChild(run);
+    var speed = Math.max(20, +S.ticker_speed || 110);
+    var start = null, half = 0;
+    function step(ts) {
+      if (!half) half = track.scrollWidth / 2;
+      if (start === null) start = ts;
+      var pos = ((ts - start) / 1000 * speed) % half;
+      track.style.transform = 'translateX(' + (-pos) + 'px)';
+      requestAnimationFrame(step);
+    }
+    // make sure one copy is at least as wide as the window, so the loop never shows a hole
+    requestAnimationFrame(function () {
+      while (track.scrollWidth / 2 < run.clientWidth + 200) {
+        items.forEach(function (s) {
+          var m = document.createElement('span'); m.className = 'msg'; m.textContent = s; track.appendChild(m);
+          var sep = document.createElement('span'); sep.className = 'sep'; track.appendChild(sep);
+        });
+        items = items.concat(items);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  function build() {
+    stage.innerHTML = '';
+    var hasQR = !!String(S.qr_link || '').trim();
+    var G;
+    if (!tall) {
+      G = { x: 60, w: 1800, sy: 856, titleW: 540, topH: 120, headH: 120, tickH: 72, tabW: 330, qr: 168, font: 34 };
+      stripe(G.x, G.sy, G.w);
+      var ty = G.sy + 8;
+      var ti = box('title from-left d1', G.x, ty, G.titleW, G.topH);
+      ti.innerHTML = '<span></span>'; ti.firstChild.textContent = S.title || '';
+      fit(ti, ti.firstChild, 58, 30, 1);
+      var hw = G.w - G.titleW - (hasQR ? G.qr + 24 : 0);
+      var he = box('headline from-left d2', G.x + G.titleW, ty, G.w - G.titleW, G.headH);
+      he.innerHTML = '<span></span>'; he.firstChild.textContent = S.headline || '';
+      he.firstChild.style.maxWidth = (hw - 56) + 'px';
+      fit(he, he.firstChild, 56, 28, 2);
+      if (hasQR) qrCard(G.x + G.w - G.qr - 12, ty + G.headH - G.qr + 4, G.qr);
+      ticker(G.x, ty + G.topH, G.w, G.tickH, G.tabW, G.font);
+    } else {
+      G = { x: 40, w: 1000, sy: 1290, titleW: 640, topH: 84, headH: 156, tickH: 80, tabW: 270, qr: 220, font: 36 };
+      stripe(G.x, G.sy, G.titleW);
+      var ty2 = G.sy + 8;
+      var ti2 = box('title from-left d1', G.x, ty2, G.titleW, G.topH);
+      ti2.style.justifyContent = 'flex-start';
+      ti2.innerHTML = '<span></span>'; ti2.firstChild.textContent = S.title || '';
+      fit(ti2, ti2.firstChild, 40, 24, 1);
+      var hy = ty2 + G.topH;
+      var he2 = box('headline from-left d2', G.x, hy, G.w, G.headH);
+      he2.innerHTML = '<span></span>'; he2.firstChild.textContent = S.headline || '';
+      he2.firstChild.style.maxWidth = (G.w - 56 - (hasQR ? G.qr + 12 : 0)) + 'px';
+      fit(he2, he2.firstChild, 58, 30, 2);
+      if (hasQR) qrCard(G.x + G.w - G.qr - 12, hy + G.headH - G.qr - 10, G.qr);
+      ticker(G.x, hy + G.headH, G.w, G.tickH, G.tabW, G.font);
+    }
+  }
+  function qrCard(x, y, size) {
+    var lab = String(S.qr_label || '').trim();
+    var c = box('qr pop d4', x, y, size, size + (lab ? 30 : 0));
+    c.style.top = (y - (lab ? 30 : 0)) + 'px';
+    drawQR(c, size - 24);
+    if (lab) { var l = document.createElement('div'); l.className = 'lab'; l.style.fontSize = '20px'; l.textContent = lab; c.appendChild(l); }
+  }
+
+  function layout() {
+    var W = window.innerWidth, H = window.innerHeight;
+    var want = S.layout === 'tall' ? true : S.layout === 'wide' ? false : H > W;
+    if (want !== tall || !stage.firstChild) { tall = want; document.body.className = document.body.className.replace(/\b(wide|tall)\b/g, '').trim() + (tall ? ' tall' : ' wide'); build(); }
+    var sw = tall ? 1080 : 1920, sh = tall ? 1920 : 1080;
+    var sc = Math.min(W / sw, H / sh);
+    stage.style.transform = 'translate(' + (W - sw * sc) / 2 + 'px,' + (H - sh * sc) + 'px) scale(' + sc + ')';
+  }
+
+  // slide in, and out again after show_seconds (if set). Also slides in again each time the page becomes visible.
+  var timer = null;
+  function enter() {
+    document.body.classList.add('out');
+    void stage.offsetWidth;
+    requestAnimationFrame(function () { document.body.classList.remove('out'); });
+    clearTimeout(timer);
+    if (+S.show_seconds > 0) timer = setTimeout(function () { document.body.classList.add('out'); }, S.show_seconds * 1000);
+  }
+  document.body.classList.add('out');
+  window.addEventListener('resize', layout);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) enter(); });
+  function go() { layout(); setTimeout(enter, 150); }
+  // load the fonts first, so the text is measured with the real letters (otherwise long headlines can overflow)
+  if (document.fonts && document.fonts.load) {
+    Promise.all([document.fonts.load('600 40px "AK Poppins"'), document.fonts.load('800 40px "AK Poppins"')])
+      .then(go, go);
+  } else window.addEventListener('load', go);
+})();
+</script>
+</body>
+</html>
