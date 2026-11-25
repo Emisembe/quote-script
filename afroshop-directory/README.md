@@ -114,52 +114,30 @@ Upcoming events appear on the homepage automatically, nearest date first. Past e
 | Deals of the week, Products from our shops, AfroKauf Magazine | Fill themselves from posts labelled `Product` (with an old price for deals) and `Magazine`; hidden while empty |
 | Newsletter band (footer) | Customer newsletter sign-up; shown when `crm_endpoint` is set in Directory settings |
 | Follow us (footer) | Links to your social media pages |
-| Directory settings | Label names and page addresses the script uses. Add `date_language: de-DE` for German dates |
-| Site words | Translate any button or message, one per line: `Open now: Jetzt geöffnet` |
+| Directory settings | Label names, page addresses and `languages:` (which languages visitors can choose) |
+| Language: Deutsch, Français, Kiswahili, Amharic, Tigrinya | One gadget per language with every text of the site (see Languages below) |
+| Site words: English changes | Optional: rename an English text, one per line: `Open now: Open today` |
 | Footer gadgets | About, owner links, legal links |
 
-German starter for **Site words**:
+## Languages
 
-```
-Open now: Jetzt geöffnet
-until: bis
-Closed: Geschlossen
-opens: öffnet
-today: heute
-tomorrow: morgen
-Call: Anrufen
-Directions: Route
-Featured: Empfohlen
-Searching...: Suche läuft...
-Shops selling: Shops mit
-in: in
-near you: in deiner Nähe
-shops found: Shops gefunden
-shop found: Shop gefunden
-No shops found. Try another word or a nearby city.: Nichts gefunden. Versuche ein anderes Wort oder eine Stadt in der Nähe.
-Contact & location: Kontakt & Anfahrt
-Opening hours: Öffnungszeiten
-We sell: Wir verkaufen
-Products from: Produkte aus
-Services: Service
-More shops in: Weitere Shops in
-See all: Alle ansehen
-Is this your shop?: Ist das dein Shop?
-Update your listing: Eintrag aktualisieren
-Report wrong information: Fehler melden
-Monday: Montag
-Tuesday: Dienstag
-Wednesday: Mittwoch
-Thursday: Donnerstag
-Friday: Freitag
-Saturday: Samstag
-Sunday: Sonntag
-African shops in: Afroshops in
-Event details: Veranstaltung
-Register: Anmelden
-Add to calendar: In den Kalender
-Show more: Mehr anzeigen
-```
+Visitors choose the language with the globe button in the header (EN, DE, FR, ...). The site also
+picks the visitor's browser language the first time, and remembers their choice.
+
+- **Step 1, ready:** English, Deutsch, Français. Switched on with this line in **Directory settings**:
+  `languages: en, de, fr`
+- **Step 2, drafts:** Kiswahili (`sw`), Amharic (`am`), Tigrinya (`ti`). The texts are in their gadgets
+  but **must be checked by a native speaker** before you switch them on. Then add them to the line:
+  `languages: en, de, fr, sw, am, ti`
+- Each language is one gadget in Layout, e.g. **Language: Deutsch**. First line `lang: de`, then one line per text:
+  `English text = Translation`. To correct a word, change the part after ` = ` and save.
+- Your own labels (categories, e.g. `Food`) can be translated too: add a line `Food = Lebensmittel`.
+- If you change an English text in a gadget (for example a FAQ answer), also change it in each language gadget,
+  otherwise that text stays in English.
+- What is not translated: your posts (shop pages, products, articles), shop names and city names, and the
+  "List your shop" / "Add products" form pages. Google sees the English site; the switch happens in the browser.
+- A link straight to a language: add `?lang=de` to any address, e.g. `https://your-blog-address/?lang=fr`.
+- Developers: all texts live in `src/i18n/strings.tsv` (one column per language); the build writes the gadgets.
 
 ## How it works and its limits
 
@@ -182,4 +160,5 @@ python3 preview/make_preview.py                        # preview/*.html with DEM
 ```
 
 Edit `src/` only: `theme.xml` (structure), `skin.css`, `theme.js` (menu, images, dates),
-`directory.js` (shops, events, search, hours, structured data).
+`directory.js` (shops, events, search, hours, structured data), `i18n.js` (language switch)
+and `i18n/strings.tsv` (translations).

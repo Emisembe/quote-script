@@ -15,10 +15,11 @@ import re
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent
 XML = (ROOT / 'src' / 'theme.xml').read_text(encoding='utf-8')
+BUILT = (ROOT / 'theme.xml').read_text(encoding='utf-8')   # language gadgets are filled in by the build
 
 
-def gadget(wid):
-    m = re.search(r"<b:widget id='%s'[^>]*title='([^']*)'.*?<!\[CDATA\[(.*?)\]\]>" % wid, XML, re.S)
+def gadget(wid, xml=None):
+    m = re.search(r"<b:widget id='%s'[^>]*title='([^']*)'.*?<!\[CDATA\[(.*?)\]\]>" % wid, xml or XML, re.S)
     return html.unescape(m.group(1)), m.group(2)
 
 
@@ -229,8 +230,11 @@ def block_owners():
 def settings():
     _, s = gadget('HTML90')
     s = s.replace('crm_endpoint: ', 'crm_endpoint: https://script.google.com/macros/s/PREVIEW/exec')
+    # the preview switches on every language, including the drafts, so they can be checked
+    s = s.replace('languages: en, de, fr', 'languages: en, de, fr, sw, am, ti')
     _, w = gadget('HTML91')
-    return '<div class="dir-admin"><div class="section"><div class="widget HTML" id="HTML90"><div class="dir-settings">%s</div></div><div class="widget HTML" id="HTML91"><div class="dir-words">%s</div></div></div></div>' % (s, w)
+    packs = ''.join('<div class="widget HTML" id="HTML%s"><div class="dir-lang">%s</div></div>' % (n, gadget('HTML' + n, BUILT)[1]) for n in ('92', '93', '94', '95', '96'))
+    return '<div class="dir-admin"><div class="section"><div class="widget HTML" id="HTML90"><div class="dir-settings">%s</div></div><div class="widget HTML" id="HTML91"><div class="dir-words">%s</div></div>%s</div></div>' % (s, w, packs)
 
 
 def footer():

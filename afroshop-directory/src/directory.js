@@ -37,6 +37,8 @@
   var WORDS = readPairs('.dir-words');
   function t(key) { return WORDS[key] || key; }
 
+  /* @@I18N@@ */
+
   var DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   var DAY_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   var SCHEMA_DAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
@@ -458,14 +460,17 @@
         // theme-rendered card: reveal only the category and city labels
         for (var i = 0; i < server.length; i++) {
           var lab = server[i].getAttribute('data-label');
-          if (want.indexOf(lab) >= 0 || (info && sameCity(lab, info.city))) server[i].classList.add('is-shown');
+          if (want.indexOf(lab) >= 0 || (info && sameCity(lab, info.city))) {
+            server[i].classList.add('is-shown');
+            server[i].textContent = t(server[i].textContent.trim());   // label names can be translated too
+          }
         }
         if (!kicker.querySelector('.is-shown') && info && info.city) {
           var c = el('span', 'dcard-label is-shown', info.city);
           kicker.appendChild(c);
         }
       } else {
-        want.forEach(function (w) { kicker.appendChild(el('span', 'dcard-label is-shown', w)); });
+        want.forEach(function (w) { kicker.appendChild(el('span', 'dcard-label is-shown', t(w))); });
       }
     }
     if (!info) { if (item.snippet && extra && !extra.textContent) extra.appendChild(el('p', 'dcard-snippet', item.snippet + '…')); return; }
@@ -1275,4 +1280,5 @@
   initSingle();
   initBlocks();
   initShop();
+  initLangSwitch();
 })();

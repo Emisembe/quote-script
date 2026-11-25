@@ -49,7 +49,33 @@ def directory_js():
     js = read('directory.js')
     if '/* @@MODULES@@ */' not in js:
         sys.exit('build: /* @@MODULES@@ */ missing from src/directory.js')
+    if '/* @@I18N@@ */' not in js:
+        sys.exit('build: /* @@I18N@@ */ missing from src/directory.js')
+    js = js.replace('/* @@I18N@@ */', read('i18n.js').strip('\n').lstrip())
     return js.replace('/* @@MODULES@@ */', '\n'.join(read(m).rstrip('\n') for m in MODULES))
+
+
+# Translations: src/i18n/strings.tsv has one row per English text and one column per language.
+# Each language becomes the content of its own gadget in Layout (marker @@LANG_xx@@ in theme.xml).
+LANG_CODES = ['de', 'fr', 'sw', 'am', 'ti']
+
+
+def lang_packs():
+    rows = [l.split('\t') for l in read('i18n/strings.tsv').rstrip('\n').split('\n')]
+    head, rows = rows[0], rows[1:]
+    packs = {}
+    for code in LANG_CODES:
+        col = head.index(code)
+        lines = ['lang: ' + code]
+        for r in rows:
+            if len(r) != len(head):
+                sys.exit(f'build: strings.tsv row has {len(r)} columns: {r[0]!r}')
+            if ' = ' in r[0] or ']]>' in r[col]:
+                sys.exit(f'build: strings.tsv text cannot contain " = " or "]]>": {r[0]!r}')
+            if r[col].strip():
+                lines.append(r[0] + ' = ' + r[col].strip())
+        packs['@@LANG_' + code + '@@'] = '\n'.join(lines)
+    return packs
 
 
 def skin_css():
@@ -63,6 +89,7 @@ def build():
         '@@THEME_JS@@': read('theme.js').rstrip('\n'),
         '@@DIR_JS@@': directory_js().rstrip('\n'),
     }
+    parts.update(lang_packs())
     for marker, path in INCLUDABLES.items():
         parts[marker] = read(path).rstrip('\n')
     for marker, content in parts.items():

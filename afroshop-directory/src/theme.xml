@@ -660,6 +660,7 @@ contact_page: /p/contact.html
 product_label: Product
 magazine_label: Magazine
 crm_endpoint: 
+languages: en, de, fr
 price_note: Prices incl. VAT. Pay and pick up in the shop.]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
@@ -667,12 +668,57 @@ price_note: Prices incl. VAT. Pay and pick up in the shop.]]></b:widget-setting>
         <b:include name='quickedit'/>
       </b:includable>
     </b:widget>
-    <b:widget id='HTML91' locked='false' title='Site words (optional translations)' type='HTML'>
+    <b:widget id='HTML91' locked='false' title='Site words: English changes (optional)' type='HTML'>
       <b:widget-settings>
         <b:widget-setting name='content'><![CDATA[Open now: Open now]]></b:widget-setting>
       </b:widget-settings>
       <b:includable id='main'>
         <div class='dir-words'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML92' locked='false' title='Language: Deutsch' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[@@LANG_de@@]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='dir-lang'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML93' locked='false' title='Language: Français' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[@@LANG_fr@@]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='dir-lang'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML94' locked='false' title='Language: Kiswahili (draft, needs a native-speaker check)' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[@@LANG_sw@@]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='dir-lang'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML95' locked='false' title='Language: Amharic (draft, needs a native-speaker check)' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[@@LANG_am@@]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='dir-lang'><data:content/></div>
+        <b:include name='quickedit'/>
+      </b:includable>
+    </b:widget>
+    <b:widget id='HTML96' locked='false' title='Language: Tigrinya (draft, needs a native-speaker check)' type='HTML'>
+      <b:widget-settings>
+        <b:widget-setting name='content'><![CDATA[@@LANG_ti@@]]></b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main'>
+        <div class='dir-lang'><data:content/></div>
         <b:include name='quickedit'/>
       </b:includable>
     </b:widget>

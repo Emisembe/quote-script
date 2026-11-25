@@ -163,7 +163,8 @@
       mail.placeholder = t('Your email address'); mail.setAttribute('aria-label', t('Your email address'));
       var lang = el('select'); lang.name = 'language'; lang.setAttribute('aria-label', t('Language'));
       ['English', 'Deutsch', 'Français'].forEach(function (l) { var o = el('option', null, l); o.value = l; lang.appendChild(o); });
-      if (/^de/i.test(SET.lang || doc.documentElement.lang || '')) lang.value = 'Deutsch';
+      if (/^de/i.test(SET.lang || '')) lang.value = 'Deutsch';
+      else if (/^fr/i.test(SET.lang || '')) lang.value = 'Français';
       var btn = el('button', 'btn btn-primary', t('Sign up')); btn.type = 'submit';
       row.appendChild(mail); row.appendChild(lang); row.appendChild(btn);
       var trap = el('input'); trap.name = 'company2'; trap.tabIndex = -1; trap.autocomplete = 'off'; trap.className = 'news-trap'; trap.setAttribute('aria-hidden', 'true');

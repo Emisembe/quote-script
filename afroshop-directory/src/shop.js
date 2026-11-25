@@ -98,7 +98,7 @@
     var c = el('section', 'panel-card product-card');
     if (dealActive(p)) c.appendChild(el('span', 'deal-badge deal-badge-inline', '-' + discount(p) + ' % · ' + (untilText(p) || t('Offer'))));
     c.appendChild(priceNode(p, true));
-    c.appendChild(el('p', 'price-note', SET.priceNote));
+    c.appendChild(el('p', 'price-note', t(SET.priceNote)));
     var id = entry.getAttribute('data-id') || '';
     var item = { id: id, url: url, title: name, img: image, info: p };
     if (!p.inStock) c.appendChild(el('p', 'stock-out', t('Sold out at the moment.')));
@@ -208,7 +208,7 @@
     var h = doc.querySelector('.js-list-title');
     if (h && (norm(labelFromHref(location.pathname)) === norm(SET.product) || norm(h.textContent) === norm(SET.product))) {
       h.textContent = t('Shop: order from African shops near you');
-      var note = el('p', 'list-note', SET.priceNote);
+      var note = el('p', 'list-note', t(SET.priceNote));
       if (h.parentNode) h.parentNode.parentNode.insertBefore(note, h.parentNode.nextSibling);
     }
   }
@@ -277,7 +277,7 @@
     sum.appendChild(el('span', null, t('Total')));
     sum.appendChild(el('strong', null, money(total(g.items))));
     box.appendChild(sum);
-    box.appendChild(el('p', 'price-note', SET.priceNote));
+    box.appendChild(el('p', 'price-note', t(SET.priceNote)));
     box.appendChild(orderForm(g));
     return box;
   }

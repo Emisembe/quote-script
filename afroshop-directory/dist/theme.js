@@ -3,6 +3,8 @@
 (function () {
   'use strict';
   var doc = document;
+  // Words in the visitor's language (set by the directory script; English if it is missing).
+  function tr(s) { return window.AK_T ? window.AK_T(s) : s; }
   var root = doc.documentElement;
 
   // Mobile menu
@@ -21,7 +23,7 @@
       root.classList.remove('nav-locked');
     }
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    toggle.setAttribute('aria-label', tr(open ? 'Close menu' : 'Open menu'));
   }
 
   if (header && toggle && drawer) {
@@ -140,13 +142,13 @@
       var url = btn.getAttribute('data-copy-url');
       var done = function () {
         var label = btn.textContent;
-        btn.textContent = 'Copied';
+        btn.textContent = tr('Copied');
         setTimeout(function () { btn.textContent = label; }, 1600);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(done, function () { window.prompt('Copy this link:', url); });
+        navigator.clipboard.writeText(url).then(done, function () { window.prompt(tr('Copy this link:'), url); });
       } else {
-        window.prompt('Copy this link:', url);
+        window.prompt(tr('Copy this link:'), url);
       }
     });
   }

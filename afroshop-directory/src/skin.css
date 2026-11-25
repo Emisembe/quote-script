@@ -993,6 +993,31 @@ body .widget .spotlight > ul > li a:hover { background: #fff; }
 @keyframes cart-bump { 50% { transform: scale(1.18); } }
 @media (min-width: 1024px) { .cart-btn { order: 3; margin-left: 12px; } }
 
+/* Language button in the header */
+.lang-switch { position: relative; margin-left: auto; }
+.lang-switch + .cart-btn { margin-left: 6px; }
+.lang-btn {
+  display: inline-flex; align-items: center; gap: 4px; height: 44px; padding: 0 10px;
+  border: 0; border-radius: 22px; background: rgba(255, 255, 255, 0.1); color: #fff; cursor: pointer;
+  font: inherit; font-size: 13px; font-weight: 800; letter-spacing: 0.04em;
+}
+.lang-btn:hover, .lang-btn[aria-expanded='true'] { background: rgba(255, 255, 255, 0.2); }
+.lang-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 150; min-width: 170px; margin: 0; padding: 6px; list-style: none;
+  background: #fff; border-radius: var(--d-radius-sm); box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+.lang-menu[hidden] { display: none; }
+.lang-menu a { display: block; padding: 10px 12px; border-radius: 6px; color: var(--d-text); font-weight: 700; text-decoration: none; }
+.lang-menu a:hover { background: var(--d-bg); }
+.lang-menu a.is-current { color: var(--d-primary); background: var(--d-bg); }
+.lang-menu a.is-current::after { content: ' \2713'; }
+@media (min-width: 1024px) {
+  .lang-switch { order: 3; margin-left: 12px; }
+  .lang-switch + .cart-btn { margin-left: 6px; }
+}
+/* Ethiopic script (Amharic, Tigrinya): add fonts that phones and computers already have for these letters */
+html[lang='am'] body, html[lang='ti'] body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans Ethiopic', 'Kefa', 'Ebrima', 'Nyala', 'Abyssinica SIL', Arial, sans-serif; }
+
 /* Cart drawer */
 html.cart-locked { overflow: hidden; }
 .cart-drawer { position: fixed; inset: 0; z-index: 200; visibility: hidden; }
