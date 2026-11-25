@@ -108,6 +108,37 @@ def lower_third(v=False):
     return W, H, T, L
 
 
+# ---------------------------------------------------------------- 2b. interview lower third (who is speaking)
+def interview_third(v=False, side='left'):
+    """Gold tag (e.g. SHOP OWNER / GUEST / HOST) + name + shop and city. side='right' for the person on the right."""
+    W, H = dims(v)
+    T = 240
+    E = T - 24
+    if v:
+        w, tag_w, tag_h, h1, h2 = 960, 300, 54, 112, 64
+        x, y = 60, 1150
+    else:
+        w, tag_w, tag_h, h1, h2 = 760, 250, 46, 92, 54
+        x, y = (80 if side == 'left' else W - 80 - 760), 770
+    dx = -(x + w) if (side == 'left' or v) else (W - x)
+    L = []
+    L.append(rect(x, y, tag_w, tag_h, GOLD, slot='Tag Colour', **mv(0, dx, 0, E + 6)))
+    L.append(text(x + 16, y + 6, tag_w - 32, tag_h - 12, 'SHOP OWNER', GREEN, weight=800, prop='Tag', **mv(0, dx, 0, E + 6)))
+    L.append(rect(x, y + tag_h, w, h1, GREEN, slot='Panel Colour', **mv(6, dx, 0, E + 4)))
+    L.append(rect(x, y + tag_h + h1, int(w * 0.8), h2, CREAM, **mv(12, dx, 0, E)))
+    L += stripe(x, y + tag_h + h1 + h2, int(w * 0.8), 8, E, 16, dx, 0, seg=40)
+    L.append(Matte((x, y + tag_h, w, h1),
+                   text(x + 28, y + tag_h + 12, w - 56, h1 - 24, 'Tunde Bello', CREAM, weight=800, align='left', prop='Name', **mv(18, 0, h1, E - 4))))
+    L.append(Matte((x, y + tag_h + h1, int(w * 0.8), h2),
+                   text(x + 28, y + tag_h + h1 + 10, int(w * 0.8) - 48, h2 - 20, 'Owner, Lagos Taste Afroshop, Frankfurt', GREEN, weight=600,
+                        align='left', prop='Shop and city', **mv(24, 0, -h2, E - 8))))
+    return W, H, T, L
+
+
+def interview_third_right(v=False):
+    return interview_third(v, 'right')
+
+
 # ---------------------------------------------------------------- 3. LIVE badge + show title
 def live_title(v=False):
     W, H = dims(v)
@@ -166,6 +197,8 @@ def end_card(v=False):
 ASSETS = [
     ('AfroKauf - Ticker - Offers and details', ticker),
     ('AfroKauf - Lower Third - Name and shop', lower_third),
+    ('AfroKauf - Lower Third - Interview guest (left)', interview_third),
+    ('AfroKauf - Lower Third - Interview guest (right)', interview_third_right),
     ('AfroKauf - LIVE Badge and Show Title', live_title),
     ('AfroKauf - End Card - Find shops and follow', end_card),
 ]
@@ -174,6 +207,8 @@ ASSETS = [
 def variants():
     for name, fn in ASSETS:
         for v, tag in ((False, '16x9 Desktop'), (True, '9x16 Mobile')):
+            if v and fn is interview_third_right:
+                continue   # on a phone both people share the same bottom area
             yield '%s - %s' % (name, tag), fn, v
 
 
