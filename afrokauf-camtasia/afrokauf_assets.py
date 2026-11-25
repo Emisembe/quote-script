@@ -264,24 +264,26 @@ def qr_third_plain(v=False):
     return qr_third(v, qr=False)
 
 
+# Short names without commas or brackets: Camtasia unpacks "<name>.asset/<name>.assetproj" into a deep folder,
+# and long names (path over Windows' 260-character limit) or commas made the import fail ("failed to import").
 ASSETS = [
-    ('AfroKauf - Ticker - Offers and details', ticker),
-    ('AfroKauf - Lower Third - Name and shop', lower_third),
-    ('AfroKauf - Lower Third - Interview guest (left)', interview_third),
-    ('AfroKauf - Lower Third - Interview guest (right)', interview_third_right),
-    ('AfroKauf - LIVE Badge and Show Title', live_title),
-    ('AfroKauf - End Card - Find shops and follow', end_card),
-    ('AfroKauf - News Bar - Title, headline, QR and ticker', qr_third),
-    ('AfroKauf - News Bar - Title, headline and ticker (no QR)', qr_third_plain),
+    ('AK Ticker', ticker),
+    ('AK Lower Third', lower_third),
+    ('AK Guest Left', interview_third),
+    ('AK Guest Right', interview_third_right),
+    ('AK Live Title', live_title),
+    ('AK End Card', end_card),
+    ('AK News Bar QR', qr_third),
+    ('AK News Bar', qr_third_plain),
 ]
 
 
 def variants():
     for name, fn in ASSETS:
-        for v, tag in ((False, '16x9 Desktop'), (True, '9x16 Mobile')):
+        for v, tag in ((False, '16x9'), (True, '9x16')):
             if v and fn is interview_third_right:
                 continue   # on a phone both people share the same bottom area
-            yield '%s - %s' % (name, tag), fn, v
+            yield '%s %s' % (name, tag), fn, v
 
 
 # ---------------------------------------------------------------- preview background (stand-in for real footage)
@@ -325,7 +327,7 @@ def preview(outdir):
     for name, img, v in tiles:
         if not v:
             t = img.resize((dw, 360))
-            sheet.paste(t, (xd, 60)); g.text((xd, 24), name.replace('AfroKauf - ', '').replace(' - 16x9 Desktop', ''), font=font, fill=INK)
+            sheet.paste(t, (xd, 60)); g.text((xd, 24), name.replace('AK ', '').replace(' 16x9', ''), font=font, fill=INK)
             xd += dw + 24
         else:
             t = img.resize((mw, 360))
