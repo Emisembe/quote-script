@@ -110,7 +110,7 @@ Do these steps in this order; each one points to the section with the details. T
 | File | What it's for |
 |---|---|
 | `theme-night-shop.xml` (in the main folder) | The theme you upload to Blogger |
-| `samples/` | Twelve ready-made product posts to copy (07 = digital download, 08–10 = kits, 11 = spares pack, 12 = universal template for any item: tractor, machine, vehicle, tool, appliance, furniture) |
+| `samples/` | Fourteen ready-made product posts to copy (07 = digital download, 08–10 = kits, 11 = spares pack, 12 = universal template for any item: tractor, machine, vehicle, tool, appliance, furniture, 13–14 = ready-made reading glasses: single pair and family pack of 3, in English, German and Swahili) |
 | `WHATSAPP-REPLIES.md` | Ready WhatsApp quick replies (English and Swahili): first contact, kits, objections, order, payment |
 | `pages/` | Page templates: shipping, delivery, returns, contact, impressum, privacy, team, fulfilment, kenya |
 | `apps-script/Code.gs` | The Google Sheet order inbox |
@@ -315,6 +315,11 @@ Nothing in the theme changes for this; it's content you add when you want it.
   numbers and a date, "Known wear" (say it before the buyer finds it), what's included, photos, delivery
   (Germany and Kenya, drained machines) and warranty. Delete the sections that don't fit and publish.
 - Ready WhatsApp replies for all of this: `WHATSAPP-REPLIES.md`.
+- **Reading glasses** (`samples/13`, `14`): new, ready-made reading glasses, label **Glasses**. The buyer picks the
+  strength (+1.0 to +3.5) and colour; the pack makes them pick a strength for each of the 3 pairs. Only sell pairs
+  with CE marking and keep the supplier's declaration of conformity: ready-made reading glasses are medical devices.
+  Keep the "does not replace an eye test" note. Prescription glasses are a regulated optician's craft and are not
+  part of Kreislo. Larger quantities for shops in Kenya: quote first, after checking the import rules.
 - **Leave out** tax advice, instalment plans and maintenance contracts unless you have a licence and a partner
   in Kenya for them. The replies sheet already answers "no cash now" and "spare parts?" without them.
 
