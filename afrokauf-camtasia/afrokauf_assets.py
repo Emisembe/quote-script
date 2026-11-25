@@ -195,8 +195,8 @@ def end_card(v=False):
 
 
 # ---------------------------------------------------------------- 5. news-style lower third: title block + headline + QR + ticker
-QR_TICKER_TEXT = ('Free listing for every African shop in Germany   •   Order online, pick up in the shop   •   '
-                  'Seminars for shop owners   •   afrokauf.blogspot.com   •   Follow us: @afrokauf')
+QR_TICKER_TEXT = ('Free listing for every African shop in Germany   |   Order online, pick up in the shop   |   '
+                  'Seminars for shop owners   |   afrokauf.blogspot.com   |   Follow us: @afrokauf')
 
 
 def qr_third(v=False, qr=True):

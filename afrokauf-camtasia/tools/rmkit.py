@@ -22,9 +22,21 @@ class Matte:
     def __init__(self, window, *children): self.window = window; self.children = list(children)
 
 def _templates():
+    """Pick the building blocks from the base by type, so any 4.0 asset built from breaking_news_left works
+    (the original base, or a River Musa / AfroKauf asset made with this kit): a rectangle callout, a text callout
+    without scrolling, a nested group (with a matte track) and the top group."""
     a = ct.load(BASE); C = ct.clips(a["proj"])
     strip = lambda c: _clean(copy.deepcopy(c))
-    return a, strip(C[12][0]), strip(C[7][0]), copy.deepcopy(C[11][0]), copy.deepcopy(C[2][0])
+    if all(i in C for i in (12, 7, 11, 2)) and C[12][0].get("def", {}).get("shape") == "shape-rectangle" \
+            and isinstance(C[7][0].get("def", {}).get("text"), str) and C[11][0]["_type"] == "Group":
+        return a, strip(C[12][0]), strip(C[7][0]), copy.deepcopy(C[11][0]), copy.deepcopy(C[2][0])
+    top = C[min(C)][0]
+    rect_ = next(c for c, par, tr in C.values() if c["_type"] == "Callout" and c["def"].get("shape") == "shape-rectangle" and not tr.get("matte"))
+    texts = [c for c, par, tr in C.values() if c["_type"] == "Callout" and isinstance(c["def"].get("text"), str)]
+    still = [c for c in texts if not any(p.get("interp") == "linr" for p in c["parameters"].values() if isinstance(p, dict))]
+    text_ = (still or texts)[0]
+    group = next(c for c, par, tr in C.values() if c["_type"] == "Group" and par is not None)
+    return a, strip(rect_), strip(text_), copy.deepcopy(group), copy.deepcopy(top)
 
 def _clean(c):
     for src in ("parameters", "def"):
