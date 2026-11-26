@@ -211,10 +211,12 @@ h2('7.2 A product')
 steps(['Blogger › New post. Title: product name with size, e.g. “Gari Ijebu, 1 kg”.',
        'HTML view: paste the product block and fill it in (price, size, shop, shop page, WhatsApp, city).',
        'Compose view: add the product photo and a short description. Labels: Product, Food, Frankfurt. Publish.'])
-code('<div class="product-info"\n  data-price="3.49" data-old-price="" data-unit="1 kg"\n  data-shop="Lagos Taste Afroshop"\n'
+code('<div class="product-info"\n  data-sku="AK-FD-GARIIJEBU-1KG-0001"\n  data-price="3.49" data-old-price="" data-unit="1 kg"\n  data-shop="Lagos Taste Afroshop"\n'
      '  data-shop-page="https://afrokauf.blogspot.com/…/lagos-taste.html"\n  data-whatsapp="+49 152 9876543" data-city="Frankfurt"\n'
      '  data-stock="yes" data-until="">3,49 € · 1 kg</div>')
 img('product.png', 15, 'A product page: photo, price with price per kilo, quantity, “Add to order”.')
+note('SKU (product code): products sent by shops get one automatically on the Products tab. For a product you make yourself, '
+     'write one in the same style: AK-category-word-size-number, e.g. AK-FD-GARIIJEBU-1KG-0001. Details: shop guide, part 4.3.')
 h2('7.3 A magazine article')
 steps(['Blogger › New post. Write the article (a recipe, a shop story, tips).', 'Put a good photo at the top. Label: Magazine. Publish.'])
 para('Full details on products, offers, own products with payment links and orders: guide “AfroKauf – Homepage sections and the shop”.')

@@ -116,8 +116,19 @@ MAGAZINE = [
 ]
 
 
+def demo_sku(p, n):
+    """Same codes the Google Sheet makes (makeSku_ in signup/Code.gs), run with node for the demo products."""
+    import json as _json, subprocess as _sp
+    cat = {'Events': ''}.get(p.get('cat', ''), p.get('cat', ''))
+    js = ("const vm=require('vm'),fs=require('fs');const c={};vm.createContext(c);"
+          "vm.runInContext(fs.readFileSync(%s,'utf8'),c);process.stdout.write(c.makeSku_(%s,%s,%s,%d));") % (
+        _json.dumps(str(ROOT / 'signup' / 'Code.gs')), _json.dumps(cat), _json.dumps(p['title'].split(',')[0]), _json.dumps(p['unit']), n)
+    return _sp.run(['node', '-e', js], capture_output=True, text=True, check=True).stdout
+
+
 def product_block(p, own=False):
     a = dict(price=p['price'], unit=p['unit'])
+    a['sku'] = demo_sku(p, (PRODUCTS + [OWN]).index(p) + 1)
     if p.get('old'): a['old-price'] = p['old']
     if own:
         a.update({'pay-link': p['pay'], 'seller': p['seller']})

@@ -945,6 +945,7 @@ body .widget .spotlight > ul > li a:hover { background: #fff; }
 .price-big .price-old { font-size: 18px; }
 .price-big .price-unit { font-size: 14px; }
 .price-note, .list-note { margin: 6px 0 12px; font-size: 13px; color: #646A63; }
+.product-card .sku { margin: -6px 0 12px; font-size: 12px; color: #646A63; letter-spacing: 0.03em; font-variant-numeric: tabular-nums; }
 .deal-badge {
   position: absolute; top: 10px; left: 10px; z-index: 1; padding: 4px 10px; border-radius: 999px;
   background: #C4552D; color: #fff; font-size: 13px; font-weight: 900;

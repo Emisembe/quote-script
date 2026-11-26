@@ -141,16 +141,31 @@ steps(['Blogger › New post. Title: the product name with size, e.g. “Gari Ij
        'Pencil › HTML view. Paste the product block (below) at the top and fill it in.',
        'Pencil › Compose view. Below the block, add the photo (white or plain background works best) and a short description.',
        'Labels: Product, the category (e.g. Food) and the city label of the shop (e.g. Frankfurt). Publish.'])
-code('<div class="product-info"\n  data-price="3.49"\n  data-old-price=""\n  data-unit="1 kg"\n  data-shop="Lagos Taste Afroshop"\n'
+code('<div class="product-info"\n  data-sku="AK-FD-GARIIJEBU-1KG-0042"\n  data-price="3.49"\n  data-old-price=""\n  data-unit="1 kg"\n  data-shop="Lagos Taste Afroshop"\n'
      '  data-shop-page="https://afrokauf.blogspot.com/2026/11/lagos-taste.html"\n  data-whatsapp="+49 152 9876543"\n  data-city="Frankfurt"\n'
      '  data-stock="yes"\n  data-until="">\n3,49 € · 1 kg · Lagos Taste Afroshop\n</div>')
 table(['Field', 'How to write it'], [
+    ['data-sku', 'The product code (SKU). The sheet makes it for products sent by shops; for a product you make yourself see 4.3'],
     ['data-price', 'Price with VAT, dot or comma: 3.49 or 3,49'],
     ['data-unit', 'Size: 1 kg, 500 g, 1 l, 6 x 0,33 l, 3 packs. The price per kg or litre is calculated by itself'],
     ['data-old-price + data-until', 'For an offer: the old price and the last day (2026-12-31). After that day the offer disappears by itself'],
     ['data-shop, data-shop-page, data-whatsapp, data-city', 'Copy them from the shop’s page. Orders go to this shop'],
     ['data-stock', 'yes, or no when sold out (the product stays visible with “Sold out”)'],
 ], widths=[5.2, 11.3])
+h2('4.3 SKUs: the product code')
+para('Every product gets its own code, the SKU (stock keeping unit). It is shown small under the price (“SKU” in English, '
+     '“Art.-Nr.” in German), travels with every order (WhatsApp, order form, Orders tab, emails) and tells Google the product number.')
+code('AK - FD - GARIIJEBU - 1KG - 0042\n│    │    │           │     └ running number: makes every code unique\n│    │    │           └ size from the product’s unit (1KG, 500G, 1L, 330ML, 6X330ML, 3PK)\n'
+     '│    │    └ main word of the product name (descriptions like fresh, red, best are skipped)\n│    └ category: FD food, BT hair & beauty, FS fashion, RS restaurant, SV services, WS wholesale, OT other\n└ AfroKauf')
+bullets([('Made by itself: ', 'when a shop sends products, the sheet writes the SKU on the Products tab and into the post code. Nobody types it.'),
+         ('Correct it before publishing: ', 'if the word is odd, change the readable part in the SKU cell (keep the number), then click the row › '
+          'AfroKauf › Show product post code: the post code takes the new SKU.'),
+         ('Never change a live SKU. ', 'Price, photo and text may change; the code stays. A different size or variant (5 kg instead of 1 kg) is a new product with a new SKU.'),
+         ('Products without SKU ', '(made before this update, or typed by hand on the Products tab): AfroKauf › Give SKUs to products that have none. '
+          'For a post that is already live, add data-sku="…" with the new code to its product block.'),
+         ('Later: ', 'the code without its number (AK-FD-GARIIJEBU-1KG) is the same for the same product in every shop. '
+          'It is the group code for joint buying and stock lists.')])
+
 h2('4.2 AfroKauf’s own products (seminar tickets, Premium)')
 para('For things AfroKauf sells itself, use a payment link instead of the cart:')
 code('<div class="product-info" data-price="29" data-unit="1 seat, 23 Jan 2027, Frankfurt"\n'
@@ -162,7 +177,7 @@ bullets(['Make the link in PayPal (paypal.me with the amount) or as a Stripe pay
 h1('5. Products sent by shops')
 steps(['A listed shop opens “Add products”, types its reference (AK-…) and its email, and adds up to 10 products with price, size, offer and photo.',
        'You get an email. The products are on the Products tab, with Status New.',
-       'Check the price, the size and the photo. Click the row › AfroKauf › Show product post code.',
+       'Check the price, the size, the photo and the SKU (4.3). Click the row › AfroKauf › Show product post code.',
        'Make the post as in 4.1: title, code in HTML view, photo, labels. Publish.',
        'Set Status to Published and paste the product page address into “Product page link”.'])
 note('Only shops with Status Live can send products, and only with the reference and the email from their own sign-up. So nobody can send products in someone else’s name.')

@@ -1675,7 +1675,8 @@
       base: a('base-price') || basePrice(price, a('unit')),
       shop: a('shop'), shopPage: safeUrl(a('shop-page')), whatsapp: a('whatsapp'), city: a('city'),
       inStock: !/^(no|0|sold ?out|nein|ausverkauft)$/i.test(a('stock')),
-      until: until, payLink: safeUrl(a('pay-link')), seller: a('seller')
+      until: until, payLink: safeUrl(a('pay-link')), seller: a('seller'),
+      sku: a('sku').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 40)   // AfroKauf product code, e.g. AK-FD-GARI-1KG-0042
     };
   }
   function todayIso() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
@@ -1726,7 +1727,7 @@
   }
   function cartItem(item) {
     var p = item.info;
-    return { id: String(item.id || ''), url: item.url, title: item.title, img: item.img || '', price: p.price, unit: p.unit,
+    return { id: String(item.id || ''), url: item.url, title: item.title, img: item.img || '', price: p.price, unit: p.unit, sku: p.sku || '',
       shop: p.shop || siteName(), shopPage: p.shopPage || '', whatsapp: p.whatsapp || '' };
   }
 
@@ -1737,6 +1738,7 @@
     if (dealActive(p)) c.appendChild(el('span', 'deal-badge deal-badge-inline', '-' + discount(p) + ' % · ' + (untilText(p) || t('Offer'))));
     c.appendChild(priceNode(p, true));
     c.appendChild(el('p', 'price-note', t(SET.priceNote)));
+    if (p.sku) c.appendChild(el('p', 'sku', t('SKU') + ': ' + p.sku));
     var id = entry.getAttribute('data-id') || '';
     var item = { id: id, url: url, title: name, img: image, info: p };
     if (!p.inStock) c.appendChild(el('p', 'stock-out', t('Sold out at the moment.')));
@@ -1760,7 +1762,7 @@
         add.addEventListener('click', function () { cartAdd(cartItem(item), Math.max(1, Math.min(99, parseInt(val.value, 10) || 1)), add); });
         actions.appendChild(add);
       }
-      var wa = waUrl(p.whatsapp, t('Hello, I am interested in') + ' "' + name + '" (' + url + ').');
+      var wa = waUrl(p.whatsapp, t('Hello, I am interested in') + ' "' + name + '"' + (p.sku ? ' [' + p.sku + ']' : '') + ' (' + url + ').');
       if (wa) actions.appendChild(link(t('Ask on WhatsApp'), wa, 'btn btn-whatsapp', true));
       c.appendChild(actions);
       if (p.shop) {
@@ -1789,6 +1791,7 @@
       seller: { '@type': 'Organization', name: isOwnProduct(p) ? (p.seller || siteName()) : p.shop || siteName() } };
     if (p.until && dealActive(p)) offer.priceValidUntil = p.until;
     var ld = { '@context': 'https://schema.org', '@type': 'Product', name: name, url: url, offers: offer };
+    if (p.sku) ld.sku = p.sku;
     if (image) ld.image = image;
     addJsonLd(ld);
   }
@@ -1977,7 +1980,7 @@
     var wab = acts.querySelector('.js-wa');
     if (wab) wab.addEventListener('click', function () {
       var err = check(false); if (err) { msg.textContent = err; return; }
-      var lines = g.items.map(function (i) { return '- ' + i.qty + ' × ' + i.title + (i.unit && norm(i.title).indexOf(norm(i.unit)) < 0 ? ' (' + i.unit + ')' : '') + ' = ' + money(i.price * i.qty); });
+      var lines = g.items.map(function (i) { return '- ' + i.qty + ' × ' + i.title + (i.unit && norm(i.title).indexOf(norm(i.unit)) < 0 ? ' (' + i.unit + ')' : '') + (i.sku ? ' [' + i.sku + ']' : '') + ' = ' + money(i.price * i.qty); });
       var text = t('Hello') + ' ' + g.shop + ', ' + t('I would like to order (via') + ' ' + siteName() + '):\n' + lines.join('\n') + '\n' +
         t('Total') + ': ' + money(total(g.items)) + '\n' + t('Name') + ': ' + val('name') + '\n' + t('Phone') + ': ' + val('phone') +
         (val('pickup') ? '\n' + t('Pick-up') + ': ' + val('pickup') : '') + (val('note') ? '\n' + t('Note') + ': ' + val('note') : '');
@@ -1990,7 +1993,7 @@
       var btn = f.querySelector('button[type=submit]'); btn.disabled = true; msg.textContent = t('Sending...');
       postCrm({ kind: 'order', shop: g.shop, shopPage: g.shopPage, name: val('name'), phone: val('phone'), email: val('email'),
         pickup: val('pickup'), note: val('note'), company2: trap.value, consent: true, language: SET.lang || '', page_url: location.href.split('#')[0],
-        items: g.items.map(function (i) { return { id: i.id, url: i.url, title: i.title, qty: i.qty, price: i.price }; }) })
+        items: g.items.map(function (i) { return { id: i.id, url: i.url, title: i.title, sku: i.sku || '', qty: i.qty, price: i.price }; }) })
         .then(function (res) { finish(g, res); })
         .catch(function (e) { btn.disabled = false; msg.textContent = (e && e.message && e.message !== 'error' && !/fetch/i.test(e.message) ? e.message + ' ' : '') + t('Sorry, sending did not work. Please try WhatsApp or call the shop.'); });
     });

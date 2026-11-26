@@ -65,7 +65,7 @@ Musterstraße 12, 60311 Frankfurt · Mo-Fr 10-20, Sa 9-18 · Tel. 069 1234567
 A product is a post with the labels `Product`, a category and a city, and this block at the top:
 
 ```html
-<div class="product-info" data-price="3.49" data-old-price="" data-unit="1 kg"
+<div class="product-info" data-sku="AK-FD-GARIIJEBU-1KG-0042" data-price="3.49" data-old-price="" data-unit="1 kg"
   data-shop="Lagos Taste Afroshop" data-shop-page="https://…/lagos-taste.html"
   data-whatsapp="+49 152 9876543" data-city="Frankfurt" data-stock="yes" data-until="">3,49 € · 1 kg</div>
 ```
@@ -75,6 +75,13 @@ The price per kg/l is calculated from `data-unit`. The cart sends one order per 
 blog feed, writes the Orders tab and emails the shop and the customer. AfroKauf's own products use
 `data-pay-link` (PayPal.me or a Stripe payment link) and a "Buy now" button. Shops can send products through the
 "Add products" page (`signup/add-products.html`).
+
+**SKU (product code):** `AK-<category>-<main word>-<size>-<running number>`, e.g. `AK-FD-GARIIJEBU-1KG-0042`.
+The sheet makes it automatically for products sent by shops (Products tab, `makeSku_` in `Code.gs`); you may correct the
+readable part before publishing, and "Show product post code" puts the corrected SKU into the post code. It is shown under
+the price ("SKU" / "Art.-Nr."), sent to Google as `sku`, and travels with every order (WhatsApp text, Orders tab `Items` and
+`SKUs`, emails). Menu "Give SKUs to products that have none" fills older rows. Never change a live SKU; a new size is a new SKU.
+The part without the number is the group code for the same product across shops (joint buying later).
 
 ## Favicon (the small icon in the browser tab)
 

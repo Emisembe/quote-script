@@ -40,10 +40,10 @@ var CAMPAIGN_COLS = ['Campaign ID', 'Type', 'Status', 'Only Bundesland', 'Only c
 var LOG_COLS = ['Sent at', 'Campaign ID', 'Reference', 'Shop name', 'Email', 'Language', 'How', 'Result'];
 var ORDERS = 'Orders', SUBS = 'Subscribers', PRODUCTS = 'Products';
 var ORDER_COLS = ['Order ID', 'Received', 'Status', 'Shop', 'Shop email', 'Customer', 'Phone', 'Email', 'Pick-up', 'Note',
-  'Items', 'Total', 'Price check', 'Language', 'Page', 'Your notes'];
+  'Items', 'SKUs', 'Total', 'Price check', 'Language', 'Page', 'Your notes'];
 var ORDER_STATUSES = ['New', 'Confirmed', 'Ready', 'Collected', 'Cancelled'];
 var SUB_COLS = ['Reference', 'Received', 'Email', 'Language', 'Newsletter', 'Newsletter consent', 'Source page'];
-var PRODUCT_COLS = ['Product ID', 'Received', 'Status', 'Shop reference', 'Shop name', 'Product', 'Price', 'Old price', 'Unit',
+var PRODUCT_COLS = ['Product ID', 'SKU', 'Received', 'Status', 'Shop reference', 'Shop name', 'Product', 'Price', 'Old price', 'Unit',
   'Category', 'Offer until', 'Description', 'Photo', 'Post title', 'Post labels', 'Post code (paste in HTML view)', 'Product page link', 'Your notes'];
 var STATUSES = ['New', 'Checking', 'Waiting for shop', 'Live', 'Update done', 'Rejected', 'Spam'];
 var CATEGORY_LABELS = ['Food', 'Hair & Beauty', 'Fashion', 'Restaurant', 'Services', 'Wholesale'];
@@ -208,6 +208,7 @@ function onOpen() {
     .addItem('Show post code for the selected row', 'showPostCode')
     .addItem('Remake post code for the selected row', 'remakeSelected')
     .addItem('Show product post code (Products tab, selected row)', 'showProductCode')
+    .addItem('Give SKUs to products that have none (Products tab)', 'fillMissingSkus')
     .addSeparator()
     .addItem('Message: page is live (selected row)', 'messageLive')
     .addItem('Message: missing information (selected row)', 'messageMissing')
@@ -1353,7 +1354,8 @@ function productFromFeed_(cfg, id) {
   var link = (entry.link || []).filter(function (l) { return l.rel === 'alternate'; })[0];
   var p = { title: entry.title.$t, url: link ? link.href : '', price: num_(attrOf_(tag[0], 'price')), unit: attrOf_(tag[0], 'unit'),
     shop: attrOf_(tag[0], 'shop'), shopPage: attrOf_(tag[0], 'shop-page'), whatsapp: attrOf_(tag[0], 'whatsapp'),
-    inStock: !/^(no|0|sold ?out|nein|ausverkauft)$/i.test(attrOf_(tag[0], 'stock')), payLink: attrOf_(tag[0], 'pay-link') };
+    inStock: !/^(no|0|sold ?out|nein|ausverkauft)$/i.test(attrOf_(tag[0], 'stock')), payLink: attrOf_(tag[0], 'pay-link'),
+    sku: attrOf_(tag[0], 'sku').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 40) };
   if (!(p.price >= 0)) return null;
   cache.put('p' + id, JSON.stringify(p), 600);
   return p;
@@ -1385,7 +1387,7 @@ function handleOrder_(d) {
     var qty = Math.max(1, Math.min(99, parseInt(it.qty, 10) || 1));
     if (Math.abs(num_(it.price) - p.price) > 0.005) changed = true;
     total += p.price * qty;
-    lines.push({ title: p.title, unit: p.unit, qty: qty, price: p.price, url: p.url });
+    lines.push({ title: p.title, unit: p.unit, sku: p.sku || '', qty: qty, price: p.price, url: p.url });
   }
   total = Math.round(total * 100) / 100;
   var sr = shopRow_(shop.name, shop.page);
@@ -1398,7 +1400,8 @@ function handleOrder_(d) {
     ref = uniqueId_('OR-' + initials_(shop.name), existingIds_(o.sh, 'Order ID'));
     var vals = { 'Order ID': ref, 'Received': new Date(), 'Status': 'New', 'Shop': shop.name, 'Shop email': shopEmail || '(none: forward on WhatsApp)',
       'Customer': clean_(d.name, 80), 'Phone': clean_(d.phone, 30), 'Email': clean_(d.email, 120), 'Pick-up': clean_(d.pickup, 120), 'Note': clean_(d.note, 500),
-      'Items': lines.map(function (l) { return l.qty + ' × ' + l.title + ' à ' + euro_(l.price); }).join('\n'), 'Total': total,
+      'Items': lines.map(function (l) { return l.qty + ' × ' + l.title + (l.sku ? ' [' + l.sku + ']' : '') + ' à ' + euro_(l.price); }).join('\n'),
+      'SKUs': lines.map(function (l) { return l.sku; }).filter(String).join(', '), 'Total': total,
       'Price check': changed ? 'Prices updated from the shop page' : 'OK', 'Language': langFromCode_(d.language), 'Page': clean_(d.page_url, 200) };
     var row = new Array(o.sh.getLastColumn());
     for (var k = 0; k < row.length; k++) row[k] = '';
@@ -1416,7 +1419,8 @@ function itemsTable_(b, lines, OW, total) {
   return '<table role="presentation" style="width:100%;border-collapse:collapse;margin:0 0 6px;"><tr><th ' + th('left') + '>' + esc_(OW.product) + '</th><th ' + th('center') +
     '>' + esc_(OW.qty) + '</th><th ' + th('right') + '>' + esc_(OW.price) + '</th></tr>' +
     lines.map(function (l) {
-      return '<tr>' + td('<strong>' + esc_(l.title) + '</strong>' + (l.unit ? '<br><span style="color:#9A9AA2;font-size:12px;">' + esc_(l.unit) + '</span>' : '')) +
+      var small = [l.unit, l.sku].filter(String).join(' · ');
+      return '<tr>' + td('<strong>' + esc_(l.title) + '</strong>' + (small ? '<br><span style="color:#9A9AA2;font-size:12px;">' + esc_(small) + '</span>' : '')) +
         td(String(l.qty), 'text-align:center;') + td(euro_(l.price * l.qty), 'text-align:right;white-space:nowrap;') + '</tr>';
     }).join('') +
     '<tr>' + td('<strong>' + esc_(OW.total) + '</strong>', 'border-bottom:0;') + td('', 'border-bottom:0;') + td('<strong>' + euro_(total) + '</strong>', 'text-align:right;border-bottom:0;font-size:16px;') + '</tr></table>' +
@@ -1520,9 +1524,9 @@ function handleProducts_(d) {
   var whats = String(shop.get('WhatsApp') || shop.get('Phone') || '').replace(/^'/, '');
   var lock = LockService.getScriptLock();
   lock.waitLock(25000);
-  var ids = [];
+  var ids = [], skus = [];
   try {
-    var existing = existingIds_(pr.sh, 'Product ID');
+    var existing = existingIds_(pr.sh, 'Product ID'), nextNo = nextSkuNumber_(pr.sh, pr.map);
     list.forEach(function (p) {
       var id = uniqueId_('PR-' + initials_(shopName), existing);
       var photo = '';
@@ -1532,14 +1536,15 @@ function handleProducts_(d) {
       }
       var price = num_(p.price), old = num_(p.old_price), cat = CATEGORY_LABELS.indexOf(clean_(p.category)) > -1 ? clean_(p.category) : '';
       var until = /^\d{4}-\d{2}-\d{2}$/.test(clean_(p.until)) ? clean_(p.until) : '';
-      var a = { price: price.toFixed(2), unit: clean_(p.unit, 40), shop: shopName, 'shop-page': page, whatsapp: whats, city: city };
+      var sku = makeSku_(cat, p.name, p.unit, nextNo++);
+      var a = { sku: sku, price: price.toFixed(2), unit: clean_(p.unit, 40), shop: shopName, 'shop-page': page, whatsapp: whats, city: city };
       if (old > price) a['old-price'] = old.toFixed(2);
       if (until && old > price) a.until = until;
       var code = '<div class="product-info"\n' + Object.keys(a).map(function (k) { return '  data-' + k + '="' + attr_(a[k]) + '"'; }).join('\n') + '>\n' +
         text_(euro_(price) + (a.unit ? ' · ' + a.unit : '') + ' · ' + shopName) + '\n</div>\n' +
         (clean_(p.description, 600) ? '\n<p>' + text_(clean_(p.description, 600)) + '</p>\n' : '') +
         '\n<!-- Photo: add it below this line with the picture button. -->';
-      var vals = { 'Product ID': id, 'Received': new Date(), 'Status': 'New', 'Shop reference': ref, 'Shop name': shopName, 'Product': clean_(p.name, 120),
+      var vals = { 'Product ID': id, 'SKU': sku, 'Received': new Date(), 'Status': 'New', 'Shop reference': ref, 'Shop name': shopName, 'Product': clean_(p.name, 120),
         'Price': price, 'Old price': old > price ? old : '', 'Unit': clean_(p.unit, 40), 'Category': cat, 'Offer until': until,
         'Description': clean_(p.description, 600), 'Photo': photo, 'Post title': clean_(p.name, 120),
         'Post labels': ['Product', cat, city].filter(String).join(', '), 'Post code (paste in HTML view)': code };
@@ -1548,6 +1553,7 @@ function handleProducts_(d) {
       Object.keys(vals).forEach(function (h) { if (pr.map[h]) row[pr.map[h] - 1] = safeCell_(vals[h]); });
       pr.sh.appendRow(row);
       ids.push(id);
+      skus.push(sku);
     });
   } finally {
     lock.releaseLock();
@@ -1556,11 +1562,99 @@ function handleProducts_(d) {
     var b = brand_(cfg, 'English');
     var html = wrapEmail_(b, { lang: 'English', banner: ['info', 'Products', list.length + ' new product' + (list.length === 1 ? '' : 's')], ref: ref,
       body: '<p style="' + F_ + 'font-size:15px;color:#222;line-height:1.7;">' + esc_(shopName) + ' sent products. Check them on the Products tab, then publish them as posts.</p>' +
-        detailsTable_(b, list.map(function (p, i) { return [ids[i], clean_(p.name) + ' · ' + euro_(num_(p.price)) + (p.unit ? ' · ' + clean_(p.unit) : '')]; })) +
+        detailsTable_(b, list.map(function (p, i) { return [skus[i], clean_(p.name) + ' · ' + euro_(num_(p.price)) + (p.unit ? ' · ' + clean_(p.unit) : '')]; })) +
         button_(b, 'Open the sheet', SpreadsheetApp.getActive().getUrl()) });
     send_(notifyTo_(cfg), 'AfroKauf: ' + list.length + ' new product(s) from ' + shopName, ids.join(', '), b, html);
   } catch (e) { console.error(e); }
   return { ok: true, count: list.length };
+}
+// ================================================================== SKUs (product codes)
+// AK-<category>-<main word>-<size>-<running number>, e.g. AK-FD-GARIIJEBU-1KG-0042. Made automatically from what the
+// shop wrote; you can correct the readable part in the SKU cell before publishing (the post code follows it).
+// A code never changes once the product is live. The part without the number (AK-FD-GARIIJEBU-1KG) is the
+// group code that links the same product across shops later (joint buying, stock lists).
+var SKU_CATS = { 'Food': 'FD', 'Hair & Beauty': 'BT', 'Fashion': 'FS', 'Restaurant': 'RS', 'Services': 'SV', 'Wholesale': 'WS' };
+var SKU_SKIP = ' A AN THE AND OF WITH FROM FOR IN BY RAW FRESH GROUND RED WHITE YELLOW BLACK BROWN GREEN DRIED DRY SMOKED ROASTED ' +
+  'SWEET HOT SPICY MILD BIG SMALL LARGE MEDIUM MINI ORGANIC PURE NATURAL BEST PREMIUM ORIGINAL NEW QUALITY SPECIAL EXTRA REAL ' +
+  'GENUINE HOMEMADE AFRICAN NIGERIAN GHANAIAN CAMEROONIAN CONGOLESE KENYAN ETHIOPIAN ERITREAN SENEGALESE IVORIAN TOGOLESE ' +
+  'FRISCH FRISCHE FRISCHES FRISCHER ROH ROTES ROTER ECHT ECHTES BIO NEU AFRIKANISCH AFRIKANISCHES ' +
+  'BAG BAGS SACK SACHET TIN TINS JAR BOX CARTON BOTTLE PACKET ';
+var SKU_UNITS = /^(KG|G|GR|L|ML|CL|LTR|PCS|PC|PACK|PACKS|PK|X|STK)$/;
+function skuWord_(name) {
+  var w = String(name || '').split(/[,(|\/]| - /)[0].normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/ß/g, 'SS')
+    .split(/[^A-Z0-9]+/).filter(function (x) { return x && !/^\d/.test(x) && SKU_SKIP.indexOf(' ' + x + ' ') < 0 && !SKU_UNITS.test(x); });
+  if (!w.length) return 'ITEM';
+  var a = w[0].slice(0, 10);
+  if (a.length <= 5 && w[1] && (a + w[1]).length <= 10) a += w[1];
+  return a;
+}
+function skuSize_(unit, name) {
+  var u = (String(unit || '') + ' ' + String(name || '')).toLowerCase().replace(/(\d),(\d)/g, '$1.$2'), mult = '';
+  var m = /(\d+)\s*[x×]\s*(\d+(?:\.\d+)?)\s*(kg|gr|g|ltr|litre|liter|l|ml|cl)\b/.exec(u);
+  if (m) { mult = m[1] + 'X'; u = m[2] + ' ' + m[3]; }
+  m = /(\d+(?:\.\d+)?)\s*(kg|gr|g|ltr|litre|liter|l|ml|cl)\b/.exec(u);
+  if (m) {
+    var n = parseFloat(m[1]), un = m[2];
+    if (un === 'gr') un = 'g';
+    if (/^(ltr|litre|liter)$/.test(un)) un = 'l';
+    if (un === 'cl') { n = n * 10; un = 'ml'; }
+    if (n % 1 !== 0) {
+      if (un === 'kg') { n = Math.round(n * 1000); un = 'g'; } else if (un === 'l') { n = Math.round(n * 1000); un = 'ml'; } else n = Math.round(n);
+    }
+    return mult + n + un.toUpperCase();
+  }
+  m = /(\d+)\s*(pcs|pc|pieces|piece|stk|stück|stueck|packs|pack|pk|bottles|bottle|cans|can|pairs|pair)\b/.exec(u);
+  var short = { pcs: 'PC', pc: 'PC', pieces: 'PC', piece: 'PC', stk: 'PC', 'stück': 'PC', stueck: 'PC', packs: 'PK', pack: 'PK', pk: 'PK',
+    bottles: 'BT', bottle: 'BT', cans: 'CN', can: 'CN', pairs: 'PR', pair: 'PR' };
+  return m ? m[1] + short[m[2]] : '';
+}
+function makeSku_(cat, name, unit, number) {
+  var no = String(number);
+  while (no.length < 4) no = '0' + no;
+  return ['AK', SKU_CATS[cat] || 'OT', skuWord_(name), skuSize_(unit, name), no].filter(String).join('-');
+}
+function cleanSku_(s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 40); }
+// next running number = highest number at the end of any SKU on the Products tab + 1
+function nextSkuNumber_(sh, map) {
+  var c = map['SKU'], n = 0;
+  if (!c || sh.getLastRow() < 2) return 1;
+  sh.getRange(2, c, sh.getLastRow() - 1, 1).getValues().forEach(function (r) {
+    var m = /-(\d{4,})$/.exec(String(r[0]));
+    if (m) n = Math.max(n, parseInt(m[1], 10));
+  });
+  return n + 1;
+}
+// put / replace data-sku="…" in a product-info block
+function withSku_(code, sku) {
+  code = String(code || '');
+  if (/data-sku\s*=\s*"[^"]*"/i.test(code)) return code.replace(/data-sku\s*=\s*"[^"]*"/i, 'data-sku="' + sku + '"');
+  return code.replace(/<div class="product-info"/i, '<div class="product-info"\n  data-sku="' + sku + '"');
+}
+// Menu: products added before SKUs existed (or rows you typed yourself) get a SKU; their post code is updated too
+function fillMissingSkus() {
+  run_(function () {
+    var pr = ensureSheet_(PRODUCTS, PRODUCT_COLS), sh = pr.sh, map = pr.map, last = sh.getLastRow();
+    if (last < 2) { SpreadsheetApp.getUi().alert('The Products tab is empty.'); return; }
+    var lock = LockService.getScriptLock();
+    lock.waitLock(20000);
+    var done = 0;
+    try {
+      var vals = sh.getRange(2, 1, last - 1, sh.getLastColumn()).getValues(), next = nextSkuNumber_(sh, map);
+      vals.forEach(function (v, i) {
+        var g = function (n) { return map[n] ? v[map[n] - 1] : ''; };
+        if (cleanSku_(g('SKU')) || !String(g('Product')).trim() || ['Spam', 'Rejected'].indexOf(String(g('Status'))) > -1) return;
+        var sku = makeSku_(String(g('Category')), g('Product'), g('Unit'), next++);
+        sh.getRange(i + 2, map['SKU']).setValue(sku);
+        var code = String(g('Post code (paste in HTML view)') || '');
+        if (code) sh.getRange(i + 2, map['Post code (paste in HTML view)']).setValue(withSku_(code, sku));
+        done++;
+      });
+    } finally {
+      lock.releaseLock();
+    }
+    SpreadsheetApp.getUi().alert(done ? done + ' product(s) got a SKU. For products that are already live: open the post in Blogger and add the SKU ' +
+      'with "Show product post code", or paste data-sku="…" into the product box.' : 'All products already have a SKU.');
+  });
 }
 function showProductCode() {
   run_(function () {
@@ -1570,7 +1664,15 @@ function showProductCode() {
     if (r < 2) throw new Error('Click a product row first (not the header).');
     var map = headerMap_(sh), v = sh.getRange(r, 1, 1, sh.getLastColumn()).getValues()[0];
     var g = function (n) { return map[n] ? v[map[n] - 1] : ''; };
+    // if you corrected the SKU in its cell, the post code follows it
+    var sku = cleanSku_(g('SKU')), code = String(g('Post code (paste in HTML view)') || '');
+    if (sku && code && withSku_(code, sku) !== code) {
+      code = withSku_(code, sku);
+      sh.getRange(r, map['Post code (paste in HTML view)']).setValue(code);
+      v[map['Post code (paste in HTML view)'] - 1] = code;
+    }
     var html = '<style>body{font:14px system-ui,sans-serif}textarea{width:100%;font:12px monospace}b{display:block;margin:12px 0 4px}</style>' +
+      (sku ? '<p>SKU: <strong>' + text_(sku) + '</strong></p>' : '') +
       '<b>1. Title</b><textarea rows="1" onclick="this.select()">' + text_(g('Post title')) + '</textarea>' +
       '<b>2. Labels</b><textarea rows="1" onclick="this.select()">' + text_(g('Post labels')) + '</textarea>' +
       '<b>3. Post code: paste in HTML view</b><textarea rows="14" onclick="this.select()">' + text_(g('Post code (paste in HTML view)')) + '</textarea>' +
